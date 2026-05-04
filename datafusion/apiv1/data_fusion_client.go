@@ -505,7 +505,7 @@ func (c *gRPCClient) ListAvailableVersions(ctx context.Context, req *datafusionp
 	}
 	opts = append((*c.CallOptions).ListAvailableVersions[0:len((*c.CallOptions).ListAvailableVersions):len((*c.CallOptions).ListAvailableVersions)], opts...)
 	it := &VersionIterator{}
-	req = proto.Clone(req).(*datafusionpb.ListAvailableVersionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datafusionpb.Version, string, error) {
 		resp := &datafusionpb.ListAvailableVersionsResponse{}
 		if pageToken != "" {
@@ -557,7 +557,7 @@ func (c *gRPCClient) ListInstances(ctx context.Context, req *datafusionpb.ListIn
 	}
 	opts = append((*c.CallOptions).ListInstances[0:len((*c.CallOptions).ListInstances):len((*c.CallOptions).ListInstances)], opts...)
 	it := &InstanceIterator{}
-	req = proto.Clone(req).(*datafusionpb.ListInstancesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datafusionpb.Instance, string, error) {
 		resp := &datafusionpb.ListInstancesResponse{}
 		if pageToken != "" {
@@ -725,7 +725,7 @@ func (c *gRPCClient) RestartInstance(ctx context.Context, req *datafusionpb.Rest
 // and location.
 func (c *restClient) ListAvailableVersions(ctx context.Context, req *datafusionpb.ListAvailableVersionsRequest, opts ...gax.CallOption) *VersionIterator {
 	it := &VersionIterator{}
-	req = proto.Clone(req).(*datafusionpb.ListAvailableVersionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datafusionpb.Version, string, error) {
 		resp := &datafusionpb.ListAvailableVersionsResponse{}
@@ -806,7 +806,7 @@ func (c *restClient) ListAvailableVersions(ctx context.Context, req *datafusionp
 // ListInstances lists Data Fusion instances in the specified project and location.
 func (c *restClient) ListInstances(ctx context.Context, req *datafusionpb.ListInstancesRequest, opts ...gax.CallOption) *InstanceIterator {
 	it := &InstanceIterator{}
-	req = proto.Clone(req).(*datafusionpb.ListInstancesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datafusionpb.Instance, string, error) {
 		resp := &datafusionpb.ListInstancesResponse{}

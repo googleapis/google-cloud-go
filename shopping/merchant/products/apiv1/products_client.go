@@ -421,7 +421,7 @@ func (c *gRPCClient) ListProducts(ctx context.Context, req *productspb.ListProdu
 	}
 	opts = append((*c.CallOptions).ListProducts[0:len((*c.CallOptions).ListProducts):len((*c.CallOptions).ListProducts)], opts...)
 	it := &ProductIterator{}
-	req = proto.Clone(req).(*productspb.ListProductsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*productspb.Product, string, error) {
 		resp := &productspb.ListProductsResponse{}
 		if pageToken != "" {
@@ -528,7 +528,7 @@ func (c *restClient) GetProduct(ctx context.Context, req *productspb.GetProductR
 // minutes before the updated processed product can be retrieved.
 func (c *restClient) ListProducts(ctx context.Context, req *productspb.ListProductsRequest, opts ...gax.CallOption) *ProductIterator {
 	it := &ProductIterator{}
-	req = proto.Clone(req).(*productspb.ListProductsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*productspb.Product, string, error) {
 		resp := &productspb.ListProductsResponse{}

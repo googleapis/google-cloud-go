@@ -793,7 +793,7 @@ func (c *azureClustersGRPCClient) ListAzureClients(ctx context.Context, req *gke
 	}
 	opts = append((*c.CallOptions).ListAzureClients[0:len((*c.CallOptions).ListAzureClients):len((*c.CallOptions).ListAzureClients)], opts...)
 	it := &AzureClientIterator{}
-	req = proto.Clone(req).(*gkemulticloudpb.ListAzureClientsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*gkemulticloudpb.AzureClient, string, error) {
 		resp := &gkemulticloudpb.ListAzureClientsResponse{}
 		if pageToken != "" {
@@ -944,7 +944,7 @@ func (c *azureClustersGRPCClient) ListAzureClusters(ctx context.Context, req *gk
 	}
 	opts = append((*c.CallOptions).ListAzureClusters[0:len((*c.CallOptions).ListAzureClusters):len((*c.CallOptions).ListAzureClusters)], opts...)
 	it := &AzureClusterIterator{}
-	req = proto.Clone(req).(*gkemulticloudpb.ListAzureClustersRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*gkemulticloudpb.AzureCluster, string, error) {
 		resp := &gkemulticloudpb.ListAzureClustersResponse{}
 		if pageToken != "" {
@@ -1143,7 +1143,7 @@ func (c *azureClustersGRPCClient) ListAzureNodePools(ctx context.Context, req *g
 	}
 	opts = append((*c.CallOptions).ListAzureNodePools[0:len((*c.CallOptions).ListAzureNodePools):len((*c.CallOptions).ListAzureNodePools)], opts...)
 	it := &AzureNodePoolIterator{}
-	req = proto.Clone(req).(*gkemulticloudpb.ListAzureNodePoolsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*gkemulticloudpb.AzureNodePool, string, error) {
 		resp := &gkemulticloudpb.ListAzureNodePoolsResponse{}
 		if pageToken != "" {
@@ -1345,7 +1345,7 @@ func (c *azureClustersGRPCClient) ListOperations(ctx context.Context, req *longr
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {

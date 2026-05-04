@@ -635,7 +635,7 @@ func (c *gRPCClient) ListApprovalRequests(ctx context.Context, req *accessapprov
 	}
 	opts = append((*c.CallOptions).ListApprovalRequests[0:len((*c.CallOptions).ListApprovalRequests):len((*c.CallOptions).ListApprovalRequests)], opts...)
 	it := &ApprovalRequestIterator{}
-	req = proto.Clone(req).(*accessapprovalpb.ListApprovalRequestsMessage)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*accessapprovalpb.ApprovalRequest, string, error) {
 		resp := &accessapprovalpb.ListApprovalRequestsResponse{}
 		if pageToken != "" {
@@ -861,7 +861,7 @@ func (c *gRPCClient) GetAccessApprovalServiceAccount(ctx context.Context, req *a
 // The order is reverse chronological.
 func (c *restClient) ListApprovalRequests(ctx context.Context, req *accessapprovalpb.ListApprovalRequestsMessage, opts ...gax.CallOption) *ApprovalRequestIterator {
 	it := &ApprovalRequestIterator{}
-	req = proto.Clone(req).(*accessapprovalpb.ListApprovalRequestsMessage)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*accessapprovalpb.ApprovalRequest, string, error) {
 		resp := &accessapprovalpb.ListApprovalRequestsResponse{}

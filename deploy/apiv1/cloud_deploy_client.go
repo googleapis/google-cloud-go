@@ -1605,7 +1605,7 @@ func (c *cloudDeployGRPCClient) ListDeliveryPipelines(ctx context.Context, req *
 	}
 	opts = append((*c.CallOptions).ListDeliveryPipelines[0:len((*c.CallOptions).ListDeliveryPipelines):len((*c.CallOptions).ListDeliveryPipelines)], opts...)
 	it := &DeliveryPipelineIterator{}
-	req = proto.Clone(req).(*deploypb.ListDeliveryPipelinesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*deploypb.DeliveryPipeline, string, error) {
 		resp := &deploypb.ListDeliveryPipelinesResponse{}
 		if pageToken != "" {
@@ -1756,7 +1756,7 @@ func (c *cloudDeployGRPCClient) ListTargets(ctx context.Context, req *deploypb.L
 	}
 	opts = append((*c.CallOptions).ListTargets[0:len((*c.CallOptions).ListTargets):len((*c.CallOptions).ListTargets)], opts...)
 	it := &TargetIterator{}
-	req = proto.Clone(req).(*deploypb.ListTargetsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*deploypb.Target, string, error) {
 		resp := &deploypb.ListTargetsResponse{}
 		if pageToken != "" {
@@ -1931,7 +1931,7 @@ func (c *cloudDeployGRPCClient) ListCustomTargetTypes(ctx context.Context, req *
 	}
 	opts = append((*c.CallOptions).ListCustomTargetTypes[0:len((*c.CallOptions).ListCustomTargetTypes):len((*c.CallOptions).ListCustomTargetTypes)], opts...)
 	it := &CustomTargetTypeIterator{}
-	req = proto.Clone(req).(*deploypb.ListCustomTargetTypesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*deploypb.CustomTargetType, string, error) {
 		resp := &deploypb.ListCustomTargetTypesResponse{}
 		if pageToken != "" {
@@ -2082,7 +2082,7 @@ func (c *cloudDeployGRPCClient) ListReleases(ctx context.Context, req *deploypb.
 	}
 	opts = append((*c.CallOptions).ListReleases[0:len((*c.CallOptions).ListReleases):len((*c.CallOptions).ListReleases)], opts...)
 	it := &ReleaseIterator{}
-	req = proto.Clone(req).(*deploypb.ListReleasesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*deploypb.Release, string, error) {
 		resp := &deploypb.ListReleasesResponse{}
 		if pageToken != "" {
@@ -2283,7 +2283,7 @@ func (c *cloudDeployGRPCClient) ListDeployPolicies(ctx context.Context, req *dep
 	}
 	opts = append((*c.CallOptions).ListDeployPolicies[0:len((*c.CallOptions).ListDeployPolicies):len((*c.CallOptions).ListDeployPolicies)], opts...)
 	it := &DeployPolicyIterator{}
-	req = proto.Clone(req).(*deploypb.ListDeployPoliciesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*deploypb.DeployPolicy, string, error) {
 		resp := &deploypb.ListDeployPoliciesResponse{}
 		if pageToken != "" {
@@ -2431,7 +2431,7 @@ func (c *cloudDeployGRPCClient) ListRollouts(ctx context.Context, req *deploypb.
 	}
 	opts = append((*c.CallOptions).ListRollouts[0:len((*c.CallOptions).ListRollouts):len((*c.CallOptions).ListRollouts)], opts...)
 	it := &RolloutIterator{}
-	req = proto.Clone(req).(*deploypb.ListRolloutsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*deploypb.Rollout, string, error) {
 		resp := &deploypb.ListRolloutsResponse{}
 		if pageToken != "" {
@@ -2581,7 +2581,7 @@ func (c *cloudDeployGRPCClient) ListJobRuns(ctx context.Context, req *deploypb.L
 	}
 	opts = append((*c.CallOptions).ListJobRuns[0:len((*c.CallOptions).ListJobRuns):len((*c.CallOptions).ListJobRuns)], opts...)
 	it := &JobRunIterator{}
-	req = proto.Clone(req).(*deploypb.ListJobRunsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*deploypb.JobRun, string, error) {
 		resp := &deploypb.ListJobRunsResponse{}
 		if pageToken != "" {
@@ -2804,7 +2804,7 @@ func (c *cloudDeployGRPCClient) ListAutomations(ctx context.Context, req *deploy
 	}
 	opts = append((*c.CallOptions).ListAutomations[0:len((*c.CallOptions).ListAutomations):len((*c.CallOptions).ListAutomations)], opts...)
 	it := &AutomationIterator{}
-	req = proto.Clone(req).(*deploypb.ListAutomationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*deploypb.Automation, string, error) {
 		resp := &deploypb.ListAutomationsResponse{}
 		if pageToken != "" {
@@ -2880,7 +2880,7 @@ func (c *cloudDeployGRPCClient) ListAutomationRuns(ctx context.Context, req *dep
 	}
 	opts = append((*c.CallOptions).ListAutomationRuns[0:len((*c.CallOptions).ListAutomationRuns):len((*c.CallOptions).ListAutomationRuns)], opts...)
 	it := &AutomationRunIterator{}
-	req = proto.Clone(req).(*deploypb.ListAutomationRunsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*deploypb.AutomationRun, string, error) {
 		resp := &deploypb.ListAutomationRunsResponse{}
 		if pageToken != "" {
@@ -2974,7 +2974,7 @@ func (c *cloudDeployGRPCClient) ListLocations(ctx context.Context, req *location
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -3150,7 +3150,7 @@ func (c *cloudDeployGRPCClient) ListOperations(ctx context.Context, req *longrun
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -3192,7 +3192,7 @@ func (c *cloudDeployGRPCClient) ListOperations(ctx context.Context, req *longrun
 // ListDeliveryPipelines lists DeliveryPipelines in a given project and location.
 func (c *cloudDeployRESTClient) ListDeliveryPipelines(ctx context.Context, req *deploypb.ListDeliveryPipelinesRequest, opts ...gax.CallOption) *DeliveryPipelineIterator {
 	it := &DeliveryPipelineIterator{}
-	req = proto.Clone(req).(*deploypb.ListDeliveryPipelinesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*deploypb.DeliveryPipeline, string, error) {
 		resp := &deploypb.ListDeliveryPipelinesResponse{}
@@ -3562,7 +3562,7 @@ func (c *cloudDeployRESTClient) DeleteDeliveryPipeline(ctx context.Context, req 
 // ListTargets lists Targets in a given project and location.
 func (c *cloudDeployRESTClient) ListTargets(ctx context.Context, req *deploypb.ListTargetsRequest, opts ...gax.CallOption) *TargetIterator {
 	it := &TargetIterator{}
-	req = proto.Clone(req).(*deploypb.ListTargetsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*deploypb.Target, string, error) {
 		resp := &deploypb.ListTargetsResponse{}
@@ -3992,7 +3992,7 @@ func (c *cloudDeployRESTClient) DeleteTarget(ctx context.Context, req *deploypb.
 // ListCustomTargetTypes lists CustomTargetTypes in a given project and location.
 func (c *cloudDeployRESTClient) ListCustomTargetTypes(ctx context.Context, req *deploypb.ListCustomTargetTypesRequest, opts ...gax.CallOption) *CustomTargetTypeIterator {
 	it := &CustomTargetTypeIterator{}
-	req = proto.Clone(req).(*deploypb.ListCustomTargetTypesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*deploypb.CustomTargetType, string, error) {
 		resp := &deploypb.ListCustomTargetTypesResponse{}
@@ -4359,7 +4359,7 @@ func (c *cloudDeployRESTClient) DeleteCustomTargetType(ctx context.Context, req 
 // ListReleases lists Releases in a given project and location.
 func (c *cloudDeployRESTClient) ListReleases(ctx context.Context, req *deploypb.ListReleasesRequest, opts ...gax.CallOption) *ReleaseIterator {
 	it := &ReleaseIterator{}
-	req = proto.Clone(req).(*deploypb.ListReleasesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*deploypb.Release, string, error) {
 		resp := &deploypb.ListReleasesResponse{}
@@ -4868,7 +4868,7 @@ func (c *cloudDeployRESTClient) DeleteDeployPolicy(ctx context.Context, req *dep
 // ListDeployPolicies lists DeployPolicies in a given project and location.
 func (c *cloudDeployRESTClient) ListDeployPolicies(ctx context.Context, req *deploypb.ListDeployPoliciesRequest, opts ...gax.CallOption) *DeployPolicyIterator {
 	it := &DeployPolicyIterator{}
-	req = proto.Clone(req).(*deploypb.ListDeployPoliciesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*deploypb.DeployPolicy, string, error) {
 		resp := &deploypb.ListDeployPoliciesResponse{}
@@ -5198,7 +5198,7 @@ func (c *cloudDeployRESTClient) CancelRollout(ctx context.Context, req *deploypb
 // ListRollouts lists Rollouts in a given project and location.
 func (c *cloudDeployRESTClient) ListRollouts(ctx context.Context, req *deploypb.ListRolloutsRequest, opts ...gax.CallOption) *RolloutIterator {
 	it := &RolloutIterator{}
-	req = proto.Clone(req).(*deploypb.ListRolloutsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*deploypb.Rollout, string, error) {
 		resp := &deploypb.ListRolloutsResponse{}
@@ -5547,7 +5547,7 @@ func (c *cloudDeployRESTClient) RetryJob(ctx context.Context, req *deploypb.Retr
 // ListJobRuns lists JobRuns in a given project and location.
 func (c *cloudDeployRESTClient) ListJobRuns(ctx context.Context, req *deploypb.ListJobRunsRequest, opts ...gax.CallOption) *JobRunIterator {
 	it := &JobRunIterator{}
-	req = proto.Clone(req).(*deploypb.ListJobRunsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*deploypb.JobRun, string, error) {
 		resp := &deploypb.ListJobRunsResponse{}
@@ -6091,7 +6091,7 @@ func (c *cloudDeployRESTClient) GetAutomation(ctx context.Context, req *deploypb
 // ListAutomations lists Automations in a given project and location.
 func (c *cloudDeployRESTClient) ListAutomations(ctx context.Context, req *deploypb.ListAutomationsRequest, opts ...gax.CallOption) *AutomationIterator {
 	it := &AutomationIterator{}
-	req = proto.Clone(req).(*deploypb.ListAutomationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*deploypb.Automation, string, error) {
 		resp := &deploypb.ListAutomationsResponse{}
@@ -6232,7 +6232,7 @@ func (c *cloudDeployRESTClient) GetAutomationRun(ctx context.Context, req *deplo
 // ListAutomationRuns lists AutomationRuns in a given project and location.
 func (c *cloudDeployRESTClient) ListAutomationRuns(ctx context.Context, req *deploypb.ListAutomationRunsRequest, opts ...gax.CallOption) *AutomationRunIterator {
 	it := &AutomationRunIterator{}
-	req = proto.Clone(req).(*deploypb.ListAutomationRunsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*deploypb.AutomationRun, string, error) {
 		resp := &deploypb.ListAutomationRunsResponse{}
@@ -6436,7 +6436,7 @@ func (c *cloudDeployRESTClient) GetLocation(ctx context.Context, req *locationpb
 // ListLocations lists information about the supported locations for this service.
 func (c *cloudDeployRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -6852,7 +6852,7 @@ func (c *cloudDeployRESTClient) GetOperation(ctx context.Context, req *longrunni
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *cloudDeployRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

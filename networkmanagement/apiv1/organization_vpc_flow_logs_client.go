@@ -617,7 +617,7 @@ func (c *organizationVpcFlowLogsGRPCClient) ListVpcFlowLogsConfigs(ctx context.C
 	}
 	opts = append((*c.CallOptions).ListVpcFlowLogsConfigs[0:len((*c.CallOptions).ListVpcFlowLogsConfigs):len((*c.CallOptions).ListVpcFlowLogsConfigs)], opts...)
 	it := &VpcFlowLogsConfigIterator{}
-	req = proto.Clone(req).(*networkmanagementpb.ListVpcFlowLogsConfigsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkmanagementpb.VpcFlowLogsConfig, string, error) {
 		resp := &networkmanagementpb.ListVpcFlowLogsConfigsResponse{}
 		if pageToken != "" {
@@ -786,7 +786,7 @@ func (c *organizationVpcFlowLogsGRPCClient) ListLocations(ctx context.Context, r
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -962,7 +962,7 @@ func (c *organizationVpcFlowLogsGRPCClient) ListOperations(ctx context.Context, 
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -1004,7 +1004,7 @@ func (c *organizationVpcFlowLogsGRPCClient) ListOperations(ctx context.Context, 
 // ListVpcFlowLogsConfigs lists all VpcFlowLogsConfigs in a given organization.
 func (c *organizationVpcFlowLogsRESTClient) ListVpcFlowLogsConfigs(ctx context.Context, req *networkmanagementpb.ListVpcFlowLogsConfigsRequest, opts ...gax.CallOption) *VpcFlowLogsConfigIterator {
 	it := &VpcFlowLogsConfigIterator{}
-	req = proto.Clone(req).(*networkmanagementpb.ListVpcFlowLogsConfigsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkmanagementpb.VpcFlowLogsConfig, string, error) {
 		resp := &networkmanagementpb.ListVpcFlowLogsConfigsResponse{}
@@ -1446,7 +1446,7 @@ func (c *organizationVpcFlowLogsRESTClient) GetLocation(ctx context.Context, req
 //	to the project.
 func (c *organizationVpcFlowLogsRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -1862,7 +1862,7 @@ func (c *organizationVpcFlowLogsRESTClient) GetOperation(ctx context.Context, re
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *organizationVpcFlowLogsRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

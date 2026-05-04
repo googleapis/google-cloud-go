@@ -1054,7 +1054,7 @@ func (c *dataprocMetastoreGRPCClient) ListServices(ctx context.Context, req *met
 	}
 	opts = append((*c.CallOptions).ListServices[0:len((*c.CallOptions).ListServices):len((*c.CallOptions).ListServices)], opts...)
 	it := &ServiceIterator{}
-	req = proto.Clone(req).(*metastorepb.ListServicesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*metastorepb.Service, string, error) {
 		resp := &metastorepb.ListServicesResponse{}
 		if pageToken != "" {
@@ -1205,7 +1205,7 @@ func (c *dataprocMetastoreGRPCClient) ListMetadataImports(ctx context.Context, r
 	}
 	opts = append((*c.CallOptions).ListMetadataImports[0:len((*c.CallOptions).ListMetadataImports):len((*c.CallOptions).ListMetadataImports)], opts...)
 	it := &MetadataImportIterator{}
-	req = proto.Clone(req).(*metastorepb.ListMetadataImportsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*metastorepb.MetadataImport, string, error) {
 		resp := &metastorepb.ListMetadataImportsResponse{}
 		if pageToken != "" {
@@ -1382,7 +1382,7 @@ func (c *dataprocMetastoreGRPCClient) ListBackups(ctx context.Context, req *meta
 	}
 	opts = append((*c.CallOptions).ListBackups[0:len((*c.CallOptions).ListBackups):len((*c.CallOptions).ListBackups)], opts...)
 	it := &BackupIterator{}
-	req = proto.Clone(req).(*metastorepb.ListBackupsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*metastorepb.Backup, string, error) {
 		resp := &metastorepb.ListBackupsResponse{}
 		if pageToken != "" {
@@ -1606,7 +1606,7 @@ func (c *dataprocMetastoreGRPCClient) ListLocations(ctx context.Context, req *lo
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -1782,7 +1782,7 @@ func (c *dataprocMetastoreGRPCClient) ListOperations(ctx context.Context, req *l
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -1824,7 +1824,7 @@ func (c *dataprocMetastoreGRPCClient) ListOperations(ctx context.Context, req *l
 // ListServices lists services in a project and location.
 func (c *dataprocMetastoreRESTClient) ListServices(ctx context.Context, req *metastorepb.ListServicesRequest, opts ...gax.CallOption) *ServiceIterator {
 	it := &ServiceIterator{}
-	req = proto.Clone(req).(*metastorepb.ListServicesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*metastorepb.Service, string, error) {
 		resp := &metastorepb.ListServicesResponse{}
@@ -2173,7 +2173,7 @@ func (c *dataprocMetastoreRESTClient) DeleteService(ctx context.Context, req *me
 // ListMetadataImports lists imports in a service.
 func (c *dataprocMetastoreRESTClient) ListMetadataImports(ctx context.Context, req *metastorepb.ListMetadataImportsRequest, opts ...gax.CallOption) *MetadataImportIterator {
 	it := &MetadataImportIterator{}
-	req = proto.Clone(req).(*metastorepb.ListMetadataImportsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*metastorepb.MetadataImport, string, error) {
 		resp := &metastorepb.ListMetadataImportsResponse{}
@@ -2592,7 +2592,7 @@ func (c *dataprocMetastoreRESTClient) RestoreService(ctx context.Context, req *m
 // ListBackups lists backups in a service.
 func (c *dataprocMetastoreRESTClient) ListBackups(ctx context.Context, req *metastorepb.ListBackupsRequest, opts ...gax.CallOption) *BackupIterator {
 	it := &BackupIterator{}
-	req = proto.Clone(req).(*metastorepb.ListBackupsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*metastorepb.Backup, string, error) {
 		resp := &metastorepb.ListBackupsResponse{}
@@ -3122,7 +3122,7 @@ func (c *dataprocMetastoreRESTClient) GetLocation(ctx context.Context, req *loca
 // ListLocations lists information about the supported locations for this service.
 func (c *dataprocMetastoreRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -3538,7 +3538,7 @@ func (c *dataprocMetastoreRESTClient) GetOperation(ctx context.Context, req *lon
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *dataprocMetastoreRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

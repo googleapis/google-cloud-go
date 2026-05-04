@@ -413,7 +413,7 @@ func (c *accountLimitsGRPCClient) ListAccountLimits(ctx context.Context, req *qu
 	}
 	opts = append((*c.CallOptions).ListAccountLimits[0:len((*c.CallOptions).ListAccountLimits):len((*c.CallOptions).ListAccountLimits)], opts...)
 	it := &AccountLimitIterator{}
-	req = proto.Clone(req).(*quotapb.ListAccountLimitsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*quotapb.AccountLimit, string, error) {
 		resp := &quotapb.ListAccountLimitsResponse{}
 		if pageToken != "" {
@@ -512,7 +512,7 @@ func (c *accountLimitsRESTClient) GetAccountLimit(ctx context.Context, req *quot
 // ListAccountLimits lists the limits of an account.
 func (c *accountLimitsRESTClient) ListAccountLimits(ctx context.Context, req *quotapb.ListAccountLimitsRequest, opts ...gax.CallOption) *AccountLimitIterator {
 	it := &AccountLimitIterator{}
-	req = proto.Clone(req).(*quotapb.ListAccountLimitsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*quotapb.AccountLimit, string, error) {
 		resp := &quotapb.ListAccountLimitsResponse{}

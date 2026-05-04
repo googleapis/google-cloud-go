@@ -1544,7 +1544,7 @@ func (c *gRPCClient) SearchCatalog(ctx context.Context, req *datacatalogpb.Searc
 	}
 	opts = append((*c.CallOptions).SearchCatalog[0:len((*c.CallOptions).SearchCatalog):len((*c.CallOptions).SearchCatalog)], opts...)
 	it := &SearchCatalogResultIterator{}
-	req = proto.Clone(req).(*datacatalogpb.SearchCatalogRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datacatalogpb.SearchCatalogResult, string, error) {
 		resp := &datacatalogpb.SearchCatalogResponse{}
 		if pageToken != "" {
@@ -1685,7 +1685,7 @@ func (c *gRPCClient) ListEntryGroups(ctx context.Context, req *datacatalogpb.Lis
 	}
 	opts = append((*c.CallOptions).ListEntryGroups[0:len((*c.CallOptions).ListEntryGroups):len((*c.CallOptions).ListEntryGroups)], opts...)
 	it := &EntryGroupIterator{}
-	req = proto.Clone(req).(*datacatalogpb.ListEntryGroupsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datacatalogpb.EntryGroup, string, error) {
 		resp := &datacatalogpb.ListEntryGroupsResponse{}
 		if pageToken != "" {
@@ -1844,7 +1844,7 @@ func (c *gRPCClient) ListEntries(ctx context.Context, req *datacatalogpb.ListEnt
 	}
 	opts = append((*c.CallOptions).ListEntries[0:len((*c.CallOptions).ListEntries):len((*c.CallOptions).ListEntries)], opts...)
 	it := &EntryIterator{}
-	req = proto.Clone(req).(*datacatalogpb.ListEntriesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datacatalogpb.Entry, string, error) {
 		resp := &datacatalogpb.ListEntriesResponse{}
 		if pageToken != "" {
@@ -2166,7 +2166,7 @@ func (c *gRPCClient) ListTags(ctx context.Context, req *datacatalogpb.ListTagsRe
 	}
 	opts = append((*c.CallOptions).ListTags[0:len((*c.CallOptions).ListTags):len((*c.CallOptions).ListTags)], opts...)
 	it := &TagIterator{}
-	req = proto.Clone(req).(*datacatalogpb.ListTagsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datacatalogpb.Tag, string, error) {
 		resp := &datacatalogpb.ListTagsResponse{}
 		if pageToken != "" {
@@ -2297,7 +2297,7 @@ func (c *gRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 // Deprecated: SearchCatalog may be removed in a future version.
 func (c *restClient) SearchCatalog(ctx context.Context, req *datacatalogpb.SearchCatalogRequest, opts ...gax.CallOption) *SearchCatalogResultIterator {
 	it := &SearchCatalogResultIterator{}
-	req = proto.Clone(req).(*datacatalogpb.SearchCatalogRequest)
+	req = proto.CloneOf(req)
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datacatalogpb.SearchCatalogResult, string, error) {
@@ -2632,7 +2632,7 @@ func (c *restClient) DeleteEntryGroup(ctx context.Context, req *datacatalogpb.De
 // Deprecated: ListEntryGroups may be removed in a future version.
 func (c *restClient) ListEntryGroups(ctx context.Context, req *datacatalogpb.ListEntryGroupsRequest, opts ...gax.CallOption) *EntryGroupIterator {
 	it := &EntryGroupIterator{}
-	req = proto.Clone(req).(*datacatalogpb.ListEntryGroupsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datacatalogpb.EntryGroup, string, error) {
 		resp := &datacatalogpb.ListEntryGroupsResponse{}
@@ -3017,7 +3017,7 @@ func (c *restClient) LookupEntry(ctx context.Context, req *datacatalogpb.LookupE
 // Deprecated: ListEntries may be removed in a future version.
 func (c *restClient) ListEntries(ctx context.Context, req *datacatalogpb.ListEntriesRequest, opts ...gax.CallOption) *EntryIterator {
 	it := &EntryIterator{}
-	req = proto.Clone(req).(*datacatalogpb.ListEntriesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datacatalogpb.Entry, string, error) {
 		resp := &datacatalogpb.ListEntriesResponse{}
@@ -3847,7 +3847,7 @@ func (c *restClient) DeleteTag(ctx context.Context, req *datacatalogpb.DeleteTag
 // Deprecated: ListTags may be removed in a future version.
 func (c *restClient) ListTags(ctx context.Context, req *datacatalogpb.ListTagsRequest, opts ...gax.CallOption) *TagIterator {
 	it := &TagIterator{}
-	req = proto.Clone(req).(*datacatalogpb.ListTagsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datacatalogpb.Tag, string, error) {
 		resp := &datacatalogpb.ListTagsResponse{}

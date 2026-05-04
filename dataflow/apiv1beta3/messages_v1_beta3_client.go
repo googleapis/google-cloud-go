@@ -343,7 +343,7 @@ func (c *messagesV1Beta3GRPCClient) ListJobMessages(ctx context.Context, req *da
 	}
 	opts = append((*c.CallOptions).ListJobMessages[0:len((*c.CallOptions).ListJobMessages):len((*c.CallOptions).ListJobMessages)], opts...)
 	it := &JobMessageIterator{}
-	req = proto.Clone(req).(*dataflowpb.ListJobMessagesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataflowpb.JobMessage, string, error) {
 		resp := &dataflowpb.ListJobMessagesResponse{}
 		if pageToken != "" {
@@ -391,7 +391,7 @@ func (c *messagesV1Beta3GRPCClient) ListJobMessages(ctx context.Context, req *da
 // the status of jobs that are running in us-central1.
 func (c *messagesV1Beta3RESTClient) ListJobMessages(ctx context.Context, req *dataflowpb.ListJobMessagesRequest, opts ...gax.CallOption) *JobMessageIterator {
 	it := &JobMessageIterator{}
-	req = proto.Clone(req).(*dataflowpb.ListJobMessagesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataflowpb.JobMessage, string, error) {
 		resp := &dataflowpb.ListJobMessagesResponse{}

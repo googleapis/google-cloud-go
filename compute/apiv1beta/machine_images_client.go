@@ -595,7 +595,7 @@ func (c *machineImagesRESTClient) Insert(ctx context.Context, req *computepb.Ins
 // the specified project.
 func (c *machineImagesRESTClient) List(ctx context.Context, req *computepb.ListMachineImagesRequest, opts ...gax.CallOption) *MachineImageIterator {
 	it := &MachineImageIterator{}
-	req = proto.Clone(req).(*computepb.ListMachineImagesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.MachineImage, string, error) {
 		resp := &computepb.MachineImageList{}

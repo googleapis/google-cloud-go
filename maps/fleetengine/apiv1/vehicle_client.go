@@ -565,7 +565,7 @@ func (c *vehicleGRPCClient) ListVehicles(ctx context.Context, req *fleetenginepb
 	}
 	opts = append((*c.CallOptions).ListVehicles[0:len((*c.CallOptions).ListVehicles):len((*c.CallOptions).ListVehicles)], opts...)
 	it := &VehicleIterator{}
-	req = proto.Clone(req).(*fleetenginepb.ListVehiclesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*fleetenginepb.Vehicle, string, error) {
 		resp := &fleetenginepb.ListVehiclesResponse{}
 		if pageToken != "" {

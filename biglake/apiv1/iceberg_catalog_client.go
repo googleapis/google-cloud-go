@@ -716,7 +716,7 @@ func (c *icebergCatalogGRPCClient) ListIcebergNamespaces(ctx context.Context, re
 	}
 	opts = append((*c.CallOptions).ListIcebergNamespaces[0:len((*c.CallOptions).ListIcebergNamespaces):len((*c.CallOptions).ListIcebergNamespaces)], opts...)
 	it := &ListValueIterator{}
-	req = proto.Clone(req).(*biglakepb.ListIcebergNamespacesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*structpb.ListValue, string, error) {
 		resp := &biglakepb.ListIcebergNamespacesResponse{}
 		if pageToken != "" {
@@ -874,7 +874,7 @@ func (c *icebergCatalogGRPCClient) ListIcebergTableIdentifiers(ctx context.Conte
 	}
 	opts = append((*c.CallOptions).ListIcebergTableIdentifiers[0:len((*c.CallOptions).ListIcebergTableIdentifiers):len((*c.CallOptions).ListIcebergTableIdentifiers)], opts...)
 	it := &TableIdentifierIterator{}
-	req = proto.Clone(req).(*biglakepb.ListIcebergTableIdentifiersRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*biglakepb.TableIdentifier, string, error) {
 		resp := &biglakepb.ListIcebergTableIdentifiersResponse{}
 		if pageToken != "" {
@@ -1104,7 +1104,7 @@ func (c *icebergCatalogGRPCClient) ListIcebergCatalogs(ctx context.Context, req 
 	}
 	opts = append((*c.CallOptions).ListIcebergCatalogs[0:len((*c.CallOptions).ListIcebergCatalogs):len((*c.CallOptions).ListIcebergCatalogs)], opts...)
 	it := &IcebergCatalogIterator{}
-	req = proto.Clone(req).(*biglakepb.ListIcebergCatalogsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*biglakepb.IcebergCatalog, string, error) {
 		resp := &biglakepb.ListIcebergCatalogsResponse{}
 		if pageToken != "" {
@@ -1292,7 +1292,7 @@ func (c *icebergCatalogRESTClient) GetIcebergCatalogConfig(ctx context.Context, 
 // nesting for namespaces.
 func (c *icebergCatalogRESTClient) ListIcebergNamespaces(ctx context.Context, req *biglakepb.ListIcebergNamespacesRequest, opts ...gax.CallOption) *ListValueIterator {
 	it := &ListValueIterator{}
-	req = proto.Clone(req).(*biglakepb.ListIcebergNamespacesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*structpb.ListValue, string, error) {
 		resp := &biglakepb.ListIcebergNamespacesResponse{}
@@ -1637,7 +1637,7 @@ func (c *icebergCatalogRESTClient) UpdateIcebergNamespace(ctx context.Context, r
 // ListIcebergTableIdentifiers lists table identifiers (not tables) in the namespace.
 func (c *icebergCatalogRESTClient) ListIcebergTableIdentifiers(ctx context.Context, req *biglakepb.ListIcebergTableIdentifiersRequest, opts ...gax.CallOption) *TableIdentifierIterator {
 	it := &TableIdentifierIterator{}
-	req = proto.Clone(req).(*biglakepb.ListIcebergTableIdentifiersRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*biglakepb.TableIdentifier, string, error) {
 		resp := &biglakepb.ListIcebergTableIdentifiersResponse{}
@@ -2167,7 +2167,7 @@ func (c *icebergCatalogRESTClient) GetIcebergCatalog(ctx context.Context, req *b
 // ListIcebergCatalogs lists the Iceberg REST Catalogs.
 func (c *icebergCatalogRESTClient) ListIcebergCatalogs(ctx context.Context, req *biglakepb.ListIcebergCatalogsRequest, opts ...gax.CallOption) *IcebergCatalogIterator {
 	it := &IcebergCatalogIterator{}
-	req = proto.Clone(req).(*biglakepb.ListIcebergCatalogsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*biglakepb.IcebergCatalog, string, error) {
 		resp := &biglakepb.ListIcebergCatalogsResponse{}

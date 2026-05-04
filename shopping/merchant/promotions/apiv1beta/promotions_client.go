@@ -473,7 +473,7 @@ func (c *gRPCClient) ListPromotions(ctx context.Context, req *promotionspb.ListP
 	}
 	opts = append((*c.CallOptions).ListPromotions[0:len((*c.CallOptions).ListPromotions):len((*c.CallOptions).ListPromotions)], opts...)
 	it := &PromotionIterator{}
-	req = proto.Clone(req).(*promotionspb.ListPromotionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*promotionspb.Promotion, string, error) {
 		resp := &promotionspb.ListPromotionsResponse{}
 		if pageToken != "" {
@@ -641,7 +641,7 @@ func (c *restClient) GetPromotion(ctx context.Context, req *promotionspb.GetProm
 // the updated processed promotion can be retrieved.
 func (c *restClient) ListPromotions(ctx context.Context, req *promotionspb.ListPromotionsRequest, opts ...gax.CallOption) *PromotionIterator {
 	it := &PromotionIterator{}
-	req = proto.Clone(req).(*promotionspb.ListPromotionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*promotionspb.Promotion, string, error) {
 		resp := &promotionspb.ListPromotionsResponse{}

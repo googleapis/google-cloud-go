@@ -592,7 +592,7 @@ func (c *policyTagManagerGRPCClient) ListTaxonomies(ctx context.Context, req *da
 	}
 	opts = append((*c.CallOptions).ListTaxonomies[0:len((*c.CallOptions).ListTaxonomies):len((*c.CallOptions).ListTaxonomies)], opts...)
 	it := &TaxonomyIterator{}
-	req = proto.Clone(req).(*datacatalogpb.ListTaxonomiesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datacatalogpb.Taxonomy, string, error) {
 		resp := &datacatalogpb.ListTaxonomiesResponse{}
 		if pageToken != "" {
@@ -733,7 +733,7 @@ func (c *policyTagManagerGRPCClient) ListPolicyTags(ctx context.Context, req *da
 	}
 	opts = append((*c.CallOptions).ListPolicyTags[0:len((*c.CallOptions).ListPolicyTags):len((*c.CallOptions).ListPolicyTags)], opts...)
 	it := &PolicyTagIterator{}
-	req = proto.Clone(req).(*datacatalogpb.ListPolicyTagsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datacatalogpb.PolicyTag, string, error) {
 		resp := &datacatalogpb.ListPolicyTagsResponse{}
 		if pageToken != "" {
@@ -1036,7 +1036,7 @@ func (c *policyTagManagerRESTClient) UpdateTaxonomy(ctx context.Context, req *da
 // has permission to view.
 func (c *policyTagManagerRESTClient) ListTaxonomies(ctx context.Context, req *datacatalogpb.ListTaxonomiesRequest, opts ...gax.CallOption) *TaxonomyIterator {
 	it := &TaxonomyIterator{}
-	req = proto.Clone(req).(*datacatalogpb.ListTaxonomiesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datacatalogpb.Taxonomy, string, error) {
 		resp := &datacatalogpb.ListTaxonomiesResponse{}
@@ -1331,7 +1331,7 @@ func (c *policyTagManagerRESTClient) UpdatePolicyTag(ctx context.Context, req *d
 // ListPolicyTags lists all policy tags in a taxonomy.
 func (c *policyTagManagerRESTClient) ListPolicyTags(ctx context.Context, req *datacatalogpb.ListPolicyTagsRequest, opts ...gax.CallOption) *PolicyTagIterator {
 	it := &PolicyTagIterator{}
-	req = proto.Clone(req).(*datacatalogpb.ListPolicyTagsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datacatalogpb.PolicyTag, string, error) {
 		resp := &datacatalogpb.ListPolicyTagsResponse{}

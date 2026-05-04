@@ -551,7 +551,7 @@ func (c *cloudChannelReportsGRPCClient) FetchReportResults(ctx context.Context, 
 	}
 	opts = append((*c.CallOptions).FetchReportResults[0:len((*c.CallOptions).FetchReportResults):len((*c.CallOptions).FetchReportResults)], opts...)
 	it := &RowIterator{}
-	req = proto.Clone(req).(*channelpb.FetchReportResultsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*channelpb.Row, string, error) {
 		resp := &channelpb.FetchReportResultsResponse{}
 		if pageToken != "" {
@@ -600,7 +600,7 @@ func (c *cloudChannelReportsGRPCClient) ListReports(ctx context.Context, req *ch
 	}
 	opts = append((*c.CallOptions).ListReports[0:len((*c.CallOptions).ListReports):len((*c.CallOptions).ListReports)], opts...)
 	it := &ReportIterator{}
-	req = proto.Clone(req).(*channelpb.ListReportsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*channelpb.Report, string, error) {
 		resp := &channelpb.ListReportsResponse{}
 		if pageToken != "" {
@@ -704,7 +704,7 @@ func (c *cloudChannelReportsGRPCClient) ListOperations(ctx context.Context, req 
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -853,7 +853,7 @@ func (c *cloudChannelReportsRESTClient) RunReportJob(ctx context.Context, req *c
 // Deprecated: FetchReportResults may be removed in a future version.
 func (c *cloudChannelReportsRESTClient) FetchReportResults(ctx context.Context, req *channelpb.FetchReportResultsRequest, opts ...gax.CallOption) *RowIterator {
 	it := &RowIterator{}
-	req = proto.Clone(req).(*channelpb.FetchReportResultsRequest)
+	req = proto.CloneOf(req)
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*channelpb.Row, string, error) {
@@ -938,7 +938,7 @@ func (c *cloudChannelReportsRESTClient) FetchReportResults(ctx context.Context, 
 // Deprecated: ListReports may be removed in a future version.
 func (c *cloudChannelReportsRESTClient) ListReports(ctx context.Context, req *channelpb.ListReportsRequest, opts ...gax.CallOption) *ReportIterator {
 	it := &ReportIterator{}
-	req = proto.Clone(req).(*channelpb.ListReportsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*channelpb.Report, string, error) {
 		resp := &channelpb.ListReportsResponse{}
@@ -1157,7 +1157,7 @@ func (c *cloudChannelReportsRESTClient) GetOperation(ctx context.Context, req *l
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *cloudChannelReportsRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

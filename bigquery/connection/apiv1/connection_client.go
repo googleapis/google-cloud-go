@@ -564,7 +564,7 @@ func (c *gRPCClient) ListConnections(ctx context.Context, req *connectionpb.List
 	}
 	opts = append((*c.CallOptions).ListConnections[0:len((*c.CallOptions).ListConnections):len((*c.CallOptions).ListConnections)], opts...)
 	it := &ConnectionIterator{}
-	req = proto.Clone(req).(*connectionpb.ListConnectionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*connectionpb.Connection, string, error) {
 		resp := &connectionpb.ListConnectionsResponse{}
 		if pageToken != "" {
@@ -846,7 +846,7 @@ func (c *restClient) GetConnection(ctx context.Context, req *connectionpb.GetCon
 // ListConnections returns a list of connections in the given project.
 func (c *restClient) ListConnections(ctx context.Context, req *connectionpb.ListConnectionsRequest, opts ...gax.CallOption) *ConnectionIterator {
 	it := &ConnectionIterator{}
-	req = proto.Clone(req).(*connectionpb.ListConnectionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*connectionpb.Connection, string, error) {
 		resp := &connectionpb.ListConnectionsResponse{}

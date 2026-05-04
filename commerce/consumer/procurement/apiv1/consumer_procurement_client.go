@@ -581,7 +581,7 @@ func (c *consumerProcurementGRPCClient) ListOrders(ctx context.Context, req *pro
 	}
 	opts = append((*c.CallOptions).ListOrders[0:len((*c.CallOptions).ListOrders):len((*c.CallOptions).ListOrders)], opts...)
 	it := &OrderIterator{}
-	req = proto.Clone(req).(*procurementpb.ListOrdersRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*procurementpb.Order, string, error) {
 		resp := &procurementpb.ListOrdersResponse{}
 		if pageToken != "" {
@@ -822,7 +822,7 @@ func (c *consumerProcurementRESTClient) GetOrder(ctx context.Context, req *procu
 // resource.
 func (c *consumerProcurementRESTClient) ListOrders(ctx context.Context, req *procurementpb.ListOrdersRequest, opts ...gax.CallOption) *OrderIterator {
 	it := &OrderIterator{}
-	req = proto.Clone(req).(*procurementpb.ListOrdersRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*procurementpb.Order, string, error) {
 		resp := &procurementpb.ListOrdersResponse{}

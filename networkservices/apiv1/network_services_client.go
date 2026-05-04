@@ -1583,7 +1583,7 @@ func (c *gRPCClient) ListEndpointPolicies(ctx context.Context, req *networkservi
 	}
 	opts = append((*c.CallOptions).ListEndpointPolicies[0:len((*c.CallOptions).ListEndpointPolicies):len((*c.CallOptions).ListEndpointPolicies)], opts...)
 	it := &EndpointPolicyIterator{}
-	req = proto.Clone(req).(*networkservicespb.ListEndpointPoliciesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkservicespb.EndpointPolicy, string, error) {
 		resp := &networkservicespb.ListEndpointPoliciesResponse{}
 		if pageToken != "" {
@@ -1734,7 +1734,7 @@ func (c *gRPCClient) ListWasmPluginVersions(ctx context.Context, req *networkser
 	}
 	opts = append((*c.CallOptions).ListWasmPluginVersions[0:len((*c.CallOptions).ListWasmPluginVersions):len((*c.CallOptions).ListWasmPluginVersions)], opts...)
 	it := &WasmPluginVersionIterator{}
-	req = proto.Clone(req).(*networkservicespb.ListWasmPluginVersionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkservicespb.WasmPluginVersion, string, error) {
 		resp := &networkservicespb.ListWasmPluginVersionsResponse{}
 		if pageToken != "" {
@@ -1862,7 +1862,7 @@ func (c *gRPCClient) ListWasmPlugins(ctx context.Context, req *networkservicespb
 	}
 	opts = append((*c.CallOptions).ListWasmPlugins[0:len((*c.CallOptions).ListWasmPlugins):len((*c.CallOptions).ListWasmPlugins)], opts...)
 	it := &WasmPluginIterator{}
-	req = proto.Clone(req).(*networkservicespb.ListWasmPluginsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkservicespb.WasmPlugin, string, error) {
 		resp := &networkservicespb.ListWasmPluginsResponse{}
 		if pageToken != "" {
@@ -2013,7 +2013,7 @@ func (c *gRPCClient) ListGateways(ctx context.Context, req *networkservicespb.Li
 	}
 	opts = append((*c.CallOptions).ListGateways[0:len((*c.CallOptions).ListGateways):len((*c.CallOptions).ListGateways)], opts...)
 	it := &GatewayIterator{}
-	req = proto.Clone(req).(*networkservicespb.ListGatewaysRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkservicespb.Gateway, string, error) {
 		resp := &networkservicespb.ListGatewaysResponse{}
 		if pageToken != "" {
@@ -2164,7 +2164,7 @@ func (c *gRPCClient) ListGrpcRoutes(ctx context.Context, req *networkservicespb.
 	}
 	opts = append((*c.CallOptions).ListGrpcRoutes[0:len((*c.CallOptions).ListGrpcRoutes):len((*c.CallOptions).ListGrpcRoutes)], opts...)
 	it := &GrpcRouteIterator{}
-	req = proto.Clone(req).(*networkservicespb.ListGrpcRoutesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkservicespb.GrpcRoute, string, error) {
 		resp := &networkservicespb.ListGrpcRoutesResponse{}
 		if pageToken != "" {
@@ -2315,7 +2315,7 @@ func (c *gRPCClient) ListHttpRoutes(ctx context.Context, req *networkservicespb.
 	}
 	opts = append((*c.CallOptions).ListHttpRoutes[0:len((*c.CallOptions).ListHttpRoutes):len((*c.CallOptions).ListHttpRoutes)], opts...)
 	it := &HttpRouteIterator{}
-	req = proto.Clone(req).(*networkservicespb.ListHttpRoutesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkservicespb.HttpRoute, string, error) {
 		resp := &networkservicespb.ListHttpRoutesResponse{}
 		if pageToken != "" {
@@ -2466,7 +2466,7 @@ func (c *gRPCClient) ListTcpRoutes(ctx context.Context, req *networkservicespb.L
 	}
 	opts = append((*c.CallOptions).ListTcpRoutes[0:len((*c.CallOptions).ListTcpRoutes):len((*c.CallOptions).ListTcpRoutes)], opts...)
 	it := &TcpRouteIterator{}
-	req = proto.Clone(req).(*networkservicespb.ListTcpRoutesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkservicespb.TcpRoute, string, error) {
 		resp := &networkservicespb.ListTcpRoutesResponse{}
 		if pageToken != "" {
@@ -2617,7 +2617,7 @@ func (c *gRPCClient) ListTlsRoutes(ctx context.Context, req *networkservicespb.L
 	}
 	opts = append((*c.CallOptions).ListTlsRoutes[0:len((*c.CallOptions).ListTlsRoutes):len((*c.CallOptions).ListTlsRoutes)], opts...)
 	it := &TlsRouteIterator{}
-	req = proto.Clone(req).(*networkservicespb.ListTlsRoutesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkservicespb.TlsRoute, string, error) {
 		resp := &networkservicespb.ListTlsRoutesResponse{}
 		if pageToken != "" {
@@ -2768,7 +2768,7 @@ func (c *gRPCClient) ListServiceBindings(ctx context.Context, req *networkservic
 	}
 	opts = append((*c.CallOptions).ListServiceBindings[0:len((*c.CallOptions).ListServiceBindings):len((*c.CallOptions).ListServiceBindings)], opts...)
 	it := &ServiceBindingIterator{}
-	req = proto.Clone(req).(*networkservicespb.ListServiceBindingsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkservicespb.ServiceBinding, string, error) {
 		resp := &networkservicespb.ListServiceBindingsResponse{}
 		if pageToken != "" {
@@ -2919,7 +2919,7 @@ func (c *gRPCClient) ListMeshes(ctx context.Context, req *networkservicespb.List
 	}
 	opts = append((*c.CallOptions).ListMeshes[0:len((*c.CallOptions).ListMeshes):len((*c.CallOptions).ListMeshes)], opts...)
 	it := &MeshIterator{}
-	req = proto.Clone(req).(*networkservicespb.ListMeshesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkservicespb.Mesh, string, error) {
 		resp := &networkservicespb.ListMeshesResponse{}
 		if pageToken != "" {
@@ -3070,7 +3070,7 @@ func (c *gRPCClient) ListServiceLbPolicies(ctx context.Context, req *networkserv
 	}
 	opts = append((*c.CallOptions).ListServiceLbPolicies[0:len((*c.CallOptions).ListServiceLbPolicies):len((*c.CallOptions).ListServiceLbPolicies)], opts...)
 	it := &ServiceLbPolicyIterator{}
-	req = proto.Clone(req).(*networkservicespb.ListServiceLbPoliciesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkservicespb.ServiceLbPolicy, string, error) {
 		resp := &networkservicespb.ListServiceLbPoliciesResponse{}
 		if pageToken != "" {
@@ -3269,7 +3269,7 @@ func (c *gRPCClient) ListGatewayRouteViews(ctx context.Context, req *networkserv
 	}
 	opts = append((*c.CallOptions).ListGatewayRouteViews[0:len((*c.CallOptions).ListGatewayRouteViews):len((*c.CallOptions).ListGatewayRouteViews)], opts...)
 	it := &GatewayRouteViewIterator{}
-	req = proto.Clone(req).(*networkservicespb.ListGatewayRouteViewsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkservicespb.GatewayRouteView, string, error) {
 		resp := &networkservicespb.ListGatewayRouteViewsResponse{}
 		if pageToken != "" {
@@ -3321,7 +3321,7 @@ func (c *gRPCClient) ListMeshRouteViews(ctx context.Context, req *networkservice
 	}
 	opts = append((*c.CallOptions).ListMeshRouteViews[0:len((*c.CallOptions).ListMeshRouteViews):len((*c.CallOptions).ListMeshRouteViews)], opts...)
 	it := &MeshRouteViewIterator{}
-	req = proto.Clone(req).(*networkservicespb.ListMeshRouteViewsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkservicespb.MeshRouteView, string, error) {
 		resp := &networkservicespb.ListMeshRouteViewsResponse{}
 		if pageToken != "" {
@@ -3391,7 +3391,7 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -3567,7 +3567,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -3609,7 +3609,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // ListEndpointPolicies lists EndpointPolicies in a given project and location.
 func (c *restClient) ListEndpointPolicies(ctx context.Context, req *networkservicespb.ListEndpointPoliciesRequest, opts ...gax.CallOption) *EndpointPolicyIterator {
 	it := &EndpointPolicyIterator{}
-	req = proto.Clone(req).(*networkservicespb.ListEndpointPoliciesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkservicespb.EndpointPolicy, string, error) {
 		resp := &networkservicespb.ListEndpointPoliciesResponse{}
@@ -3947,7 +3947,7 @@ func (c *restClient) DeleteEndpointPolicy(ctx context.Context, req *networkservi
 // location.
 func (c *restClient) ListWasmPluginVersions(ctx context.Context, req *networkservicespb.ListWasmPluginVersionsRequest, opts ...gax.CallOption) *WasmPluginVersionIterator {
 	it := &WasmPluginVersionIterator{}
-	req = proto.Clone(req).(*networkservicespb.ListWasmPluginVersionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkservicespb.WasmPluginVersion, string, error) {
 		resp := &networkservicespb.ListWasmPluginVersionsResponse{}
@@ -4212,7 +4212,7 @@ func (c *restClient) DeleteWasmPluginVersion(ctx context.Context, req *networkse
 // location.
 func (c *restClient) ListWasmPlugins(ctx context.Context, req *networkservicespb.ListWasmPluginsRequest, opts ...gax.CallOption) *WasmPluginIterator {
 	it := &WasmPluginIterator{}
-	req = proto.Clone(req).(*networkservicespb.ListWasmPluginsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkservicespb.WasmPlugin, string, error) {
 		resp := &networkservicespb.ListWasmPluginsResponse{}
@@ -4550,7 +4550,7 @@ func (c *restClient) DeleteWasmPlugin(ctx context.Context, req *networkservicesp
 // ListGateways lists Gateways in a given project and location.
 func (c *restClient) ListGateways(ctx context.Context, req *networkservicespb.ListGatewaysRequest, opts ...gax.CallOption) *GatewayIterator {
 	it := &GatewayIterator{}
-	req = proto.Clone(req).(*networkservicespb.ListGatewaysRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkservicespb.Gateway, string, error) {
 		resp := &networkservicespb.ListGatewaysResponse{}
@@ -4884,7 +4884,7 @@ func (c *restClient) DeleteGateway(ctx context.Context, req *networkservicespb.D
 // ListGrpcRoutes lists GrpcRoutes in a given project and location.
 func (c *restClient) ListGrpcRoutes(ctx context.Context, req *networkservicespb.ListGrpcRoutesRequest, opts ...gax.CallOption) *GrpcRouteIterator {
 	it := &GrpcRouteIterator{}
-	req = proto.Clone(req).(*networkservicespb.ListGrpcRoutesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkservicespb.GrpcRoute, string, error) {
 		resp := &networkservicespb.ListGrpcRoutesResponse{}
@@ -5221,7 +5221,7 @@ func (c *restClient) DeleteGrpcRoute(ctx context.Context, req *networkservicespb
 // ListHttpRoutes lists HttpRoute in a given project and location.
 func (c *restClient) ListHttpRoutes(ctx context.Context, req *networkservicespb.ListHttpRoutesRequest, opts ...gax.CallOption) *HttpRouteIterator {
 	it := &HttpRouteIterator{}
-	req = proto.Clone(req).(*networkservicespb.ListHttpRoutesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkservicespb.HttpRoute, string, error) {
 		resp := &networkservicespb.ListHttpRoutesResponse{}
@@ -5558,7 +5558,7 @@ func (c *restClient) DeleteHttpRoute(ctx context.Context, req *networkservicespb
 // ListTcpRoutes lists TcpRoute in a given project and location.
 func (c *restClient) ListTcpRoutes(ctx context.Context, req *networkservicespb.ListTcpRoutesRequest, opts ...gax.CallOption) *TcpRouteIterator {
 	it := &TcpRouteIterator{}
-	req = proto.Clone(req).(*networkservicespb.ListTcpRoutesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkservicespb.TcpRoute, string, error) {
 		resp := &networkservicespb.ListTcpRoutesResponse{}
@@ -5895,7 +5895,7 @@ func (c *restClient) DeleteTcpRoute(ctx context.Context, req *networkservicespb.
 // ListTlsRoutes lists TlsRoute in a given project and location.
 func (c *restClient) ListTlsRoutes(ctx context.Context, req *networkservicespb.ListTlsRoutesRequest, opts ...gax.CallOption) *TlsRouteIterator {
 	it := &TlsRouteIterator{}
-	req = proto.Clone(req).(*networkservicespb.ListTlsRoutesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkservicespb.TlsRoute, string, error) {
 		resp := &networkservicespb.ListTlsRoutesResponse{}
@@ -6232,7 +6232,7 @@ func (c *restClient) DeleteTlsRoute(ctx context.Context, req *networkservicespb.
 // ListServiceBindings lists ServiceBinding in a given project and location.
 func (c *restClient) ListServiceBindings(ctx context.Context, req *networkservicespb.ListServiceBindingsRequest, opts ...gax.CallOption) *ServiceBindingIterator {
 	it := &ServiceBindingIterator{}
-	req = proto.Clone(req).(*networkservicespb.ListServiceBindingsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkservicespb.ServiceBinding, string, error) {
 		resp := &networkservicespb.ListServiceBindingsResponse{}
@@ -6566,7 +6566,7 @@ func (c *restClient) DeleteServiceBinding(ctx context.Context, req *networkservi
 // ListMeshes lists Meshes in a given project and location.
 func (c *restClient) ListMeshes(ctx context.Context, req *networkservicespb.ListMeshesRequest, opts ...gax.CallOption) *MeshIterator {
 	it := &MeshIterator{}
-	req = proto.Clone(req).(*networkservicespb.ListMeshesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkservicespb.Mesh, string, error) {
 		resp := &networkservicespb.ListMeshesResponse{}
@@ -6903,7 +6903,7 @@ func (c *restClient) DeleteMesh(ctx context.Context, req *networkservicespb.Dele
 // ListServiceLbPolicies lists ServiceLbPolicies in a given project and location.
 func (c *restClient) ListServiceLbPolicies(ctx context.Context, req *networkservicespb.ListServiceLbPoliciesRequest, opts ...gax.CallOption) *ServiceLbPolicyIterator {
 	it := &ServiceLbPolicyIterator{}
-	req = proto.Clone(req).(*networkservicespb.ListServiceLbPoliciesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkservicespb.ServiceLbPolicy, string, error) {
 		resp := &networkservicespb.ListServiceLbPoliciesResponse{}
@@ -7351,7 +7351,7 @@ func (c *restClient) GetMeshRouteView(ctx context.Context, req *networkservicesp
 // ListGatewayRouteViews lists RouteViews
 func (c *restClient) ListGatewayRouteViews(ctx context.Context, req *networkservicespb.ListGatewayRouteViewsRequest, opts ...gax.CallOption) *GatewayRouteViewIterator {
 	it := &GatewayRouteViewIterator{}
-	req = proto.Clone(req).(*networkservicespb.ListGatewayRouteViewsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkservicespb.GatewayRouteView, string, error) {
 		resp := &networkservicespb.ListGatewayRouteViewsResponse{}
@@ -7429,7 +7429,7 @@ func (c *restClient) ListGatewayRouteViews(ctx context.Context, req *networkserv
 // ListMeshRouteViews lists RouteViews
 func (c *restClient) ListMeshRouteViews(ctx context.Context, req *networkservicespb.ListMeshRouteViewsRequest, opts ...gax.CallOption) *MeshRouteViewIterator {
 	it := &MeshRouteViewIterator{}
-	req = proto.Clone(req).(*networkservicespb.ListMeshRouteViewsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkservicespb.MeshRouteView, string, error) {
 		resp := &networkservicespb.ListMeshRouteViewsResponse{}
@@ -7561,7 +7561,7 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 // ListLocations lists information about the supported locations for this service.
 func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -7977,7 +7977,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

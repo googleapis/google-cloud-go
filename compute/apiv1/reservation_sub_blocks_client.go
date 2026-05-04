@@ -521,7 +521,7 @@ func (c *reservationSubBlocksRESTClient) GetVersion(ctx context.Context, req *co
 // List retrieves a list of reservation subBlocks under a single reservation.
 func (c *reservationSubBlocksRESTClient) List(ctx context.Context, req *computepb.ListReservationSubBlocksRequest, opts ...gax.CallOption) *ReservationSubBlockIterator {
 	it := &ReservationSubBlockIterator{}
-	req = proto.Clone(req).(*computepb.ListReservationSubBlocksRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.ReservationSubBlock, string, error) {
 		resp := &computepb.ReservationSubBlocksListResponse{}

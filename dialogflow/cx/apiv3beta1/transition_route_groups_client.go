@@ -585,7 +585,7 @@ func (c *transitionRouteGroupsGRPCClient) ListTransitionRouteGroups(ctx context.
 	}
 	opts = append((*c.CallOptions).ListTransitionRouteGroups[0:len((*c.CallOptions).ListTransitionRouteGroups):len((*c.CallOptions).ListTransitionRouteGroups)], opts...)
 	it := &TransitionRouteGroupIterator{}
-	req = proto.Clone(req).(*cxpb.ListTransitionRouteGroupsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cxpb.TransitionRouteGroup, string, error) {
 		resp := &cxpb.ListTransitionRouteGroupsResponse{}
 		if pageToken != "" {
@@ -744,7 +744,7 @@ func (c *transitionRouteGroupsGRPCClient) ListLocations(ctx context.Context, req
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -831,7 +831,7 @@ func (c *transitionRouteGroupsGRPCClient) ListOperations(ctx context.Context, re
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -873,7 +873,7 @@ func (c *transitionRouteGroupsGRPCClient) ListOperations(ctx context.Context, re
 // ListTransitionRouteGroups returns the list of all transition route groups in the specified flow.
 func (c *transitionRouteGroupsRESTClient) ListTransitionRouteGroups(ctx context.Context, req *cxpb.ListTransitionRouteGroupsRequest, opts ...gax.CallOption) *TransitionRouteGroupIterator {
 	it := &TransitionRouteGroupIterator{}
-	req = proto.Clone(req).(*cxpb.ListTransitionRouteGroupsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cxpb.TransitionRouteGroup, string, error) {
 		resp := &cxpb.ListTransitionRouteGroupsResponse{}
@@ -1284,7 +1284,7 @@ func (c *transitionRouteGroupsRESTClient) GetLocation(ctx context.Context, req *
 // implementation and version.
 func (c *transitionRouteGroupsRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -1458,7 +1458,7 @@ func (c *transitionRouteGroupsRESTClient) GetOperation(ctx context.Context, req 
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *transitionRouteGroupsRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

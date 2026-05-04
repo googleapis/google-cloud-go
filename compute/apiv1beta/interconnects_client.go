@@ -670,7 +670,7 @@ func (c *interconnectsRESTClient) Insert(ctx context.Context, req *computepb.Ins
 // List retrieves the list of Interconnects available to the specified project.
 func (c *interconnectsRESTClient) List(ctx context.Context, req *computepb.ListInterconnectsRequest, opts ...gax.CallOption) *InterconnectIterator {
 	it := &InterconnectIterator{}
-	req = proto.Clone(req).(*computepb.ListInterconnectsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.Interconnect, string, error) {
 		resp := &computepb.InterconnectList{}

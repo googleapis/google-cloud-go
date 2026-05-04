@@ -439,7 +439,7 @@ func (c *localInventoryGRPCClient) ListLocalInventories(ctx context.Context, req
 	}
 	opts = append((*c.CallOptions).ListLocalInventories[0:len((*c.CallOptions).ListLocalInventories):len((*c.CallOptions).ListLocalInventories)], opts...)
 	it := &LocalInventoryIterator{}
-	req = proto.Clone(req).(*inventoriespb.ListLocalInventoriesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*inventoriespb.LocalInventory, string, error) {
 		resp := &inventoriespb.ListLocalInventoriesResponse{}
 		if pageToken != "" {
@@ -530,7 +530,7 @@ func (c *localInventoryGRPCClient) DeleteLocalInventory(ctx context.Context, req
 // LocalInventory resources are listed per product for a given account.
 func (c *localInventoryRESTClient) ListLocalInventories(ctx context.Context, req *inventoriespb.ListLocalInventoriesRequest, opts ...gax.CallOption) *LocalInventoryIterator {
 	it := &LocalInventoryIterator{}
-	req = proto.Clone(req).(*inventoriespb.ListLocalInventoriesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*inventoriespb.LocalInventory, string, error) {
 		resp := &inventoriespb.ListLocalInventoriesResponse{}

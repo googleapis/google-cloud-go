@@ -1028,7 +1028,7 @@ func (c *gRPCClient) ListSessions(ctx context.Context, req *spannerpb.ListSessio
 	}
 	opts = append((*c.CallOptions).ListSessions[0:len((*c.CallOptions).ListSessions):len((*c.CallOptions).ListSessions)], opts...)
 	it := &SessionIterator{}
-	req = proto.Clone(req).(*spannerpb.ListSessionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*spannerpb.Session, string, error) {
 		resp := &spannerpb.ListSessionsResponse{}
 		if pageToken != "" {
@@ -1562,7 +1562,7 @@ func (c *restClient) GetSession(ctx context.Context, req *spannerpb.GetSessionRe
 // ListSessions lists all sessions in a given database.
 func (c *restClient) ListSessions(ctx context.Context, req *spannerpb.ListSessionsRequest, opts ...gax.CallOption) *SessionIterator {
 	it := &SessionIterator{}
-	req = proto.Clone(req).(*spannerpb.ListSessionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*spannerpb.Session, string, error) {
 		resp := &spannerpb.ListSessionsResponse{}

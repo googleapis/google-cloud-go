@@ -327,7 +327,7 @@ func (c *packetMirroringsRESTClient) Connection() *grpc.ClientConn {
 // returnPartialSuccess parameter to true.
 func (c *packetMirroringsRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListPacketMirroringsRequest, opts ...gax.CallOption) *PacketMirroringsScopedListPairIterator {
 	it := &PacketMirroringsScopedListPairIterator{}
-	req = proto.Clone(req).(*computepb.AggregatedListPacketMirroringsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]PacketMirroringsScopedListPair, string, error) {
 		resp := &computepb.PacketMirroringAggregatedList{}
@@ -621,7 +621,7 @@ func (c *packetMirroringsRESTClient) Insert(ctx context.Context, req *computepb.
 // project and region.
 func (c *packetMirroringsRESTClient) List(ctx context.Context, req *computepb.ListPacketMirroringsRequest, opts ...gax.CallOption) *PacketMirroringIterator {
 	it := &PacketMirroringIterator{}
-	req = proto.Clone(req).(*computepb.ListPacketMirroringsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.PacketMirroring, string, error) {
 		resp := &computepb.PacketMirroringList{}

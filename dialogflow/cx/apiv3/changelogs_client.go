@@ -468,7 +468,7 @@ func (c *changelogsGRPCClient) ListChangelogs(ctx context.Context, req *cxpb.Lis
 	}
 	opts = append((*c.CallOptions).ListChangelogs[0:len((*c.CallOptions).ListChangelogs):len((*c.CallOptions).ListChangelogs)], opts...)
 	it := &ChangelogIterator{}
-	req = proto.Clone(req).(*cxpb.ListChangelogsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cxpb.Changelog, string, error) {
 		resp := &cxpb.ListChangelogsResponse{}
 		if pageToken != "" {
@@ -562,7 +562,7 @@ func (c *changelogsGRPCClient) ListLocations(ctx context.Context, req *locationp
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -649,7 +649,7 @@ func (c *changelogsGRPCClient) ListOperations(ctx context.Context, req *longrunn
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -691,7 +691,7 @@ func (c *changelogsGRPCClient) ListOperations(ctx context.Context, req *longrunn
 // ListChangelogs returns the list of Changelogs.
 func (c *changelogsRESTClient) ListChangelogs(ctx context.Context, req *cxpb.ListChangelogsRequest, opts ...gax.CallOption) *ChangelogIterator {
 	it := &ChangelogIterator{}
-	req = proto.Clone(req).(*cxpb.ListChangelogsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cxpb.Changelog, string, error) {
 		resp := &cxpb.ListChangelogsResponse{}
@@ -899,7 +899,7 @@ func (c *changelogsRESTClient) GetLocation(ctx context.Context, req *locationpb.
 // implementation and version.
 func (c *changelogsRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -1073,7 +1073,7 @@ func (c *changelogsRESTClient) GetOperation(ctx context.Context, req *longrunnin
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *changelogsRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

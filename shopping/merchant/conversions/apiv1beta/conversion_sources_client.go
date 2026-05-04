@@ -636,7 +636,7 @@ func (c *conversionSourcesGRPCClient) ListConversionSources(ctx context.Context,
 	}
 	opts = append((*c.CallOptions).ListConversionSources[0:len((*c.CallOptions).ListConversionSources):len((*c.CallOptions).ListConversionSources)], opts...)
 	it := &ConversionSourceIterator{}
-	req = proto.Clone(req).(*conversionspb.ListConversionSourcesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*conversionspb.ConversionSource, string, error) {
 		resp := &conversionspb.ListConversionSourcesResponse{}
 		if pageToken != "" {
@@ -977,7 +977,7 @@ func (c *conversionSourcesRESTClient) GetConversionSource(ctx context.Context, r
 // ListConversionSources retrieves the list of conversion sources the caller has access to.
 func (c *conversionSourcesRESTClient) ListConversionSources(ctx context.Context, req *conversionspb.ListConversionSourcesRequest, opts ...gax.CallOption) *ConversionSourceIterator {
 	it := &ConversionSourceIterator{}
-	req = proto.Clone(req).(*conversionspb.ListConversionSourcesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*conversionspb.ConversionSource, string, error) {
 		resp := &conversionspb.ListConversionSourcesResponse{}

@@ -854,7 +854,7 @@ func (c *gRPCClient) ListReportConfigs(ctx context.Context, req *storageinsights
 	}
 	opts = append((*c.CallOptions).ListReportConfigs[0:len((*c.CallOptions).ListReportConfigs):len((*c.CallOptions).ListReportConfigs)], opts...)
 	it := &ReportConfigIterator{}
-	req = proto.Clone(req).(*storageinsightspb.ListReportConfigsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*storageinsightspb.ReportConfig, string, error) {
 		resp := &storageinsightspb.ListReportConfigsResponse{}
 		if pageToken != "" {
@@ -995,7 +995,7 @@ func (c *gRPCClient) ListReportDetails(ctx context.Context, req *storageinsights
 	}
 	opts = append((*c.CallOptions).ListReportDetails[0:len((*c.CallOptions).ListReportDetails):len((*c.CallOptions).ListReportDetails)], opts...)
 	it := &ReportDetailIterator{}
-	req = proto.Clone(req).(*storageinsightspb.ListReportDetailsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*storageinsightspb.ReportDetail, string, error) {
 		resp := &storageinsightspb.ListReportDetailsResponse{}
 		if pageToken != "" {
@@ -1071,7 +1071,7 @@ func (c *gRPCClient) ListDatasetConfigs(ctx context.Context, req *storageinsight
 	}
 	opts = append((*c.CallOptions).ListDatasetConfigs[0:len((*c.CallOptions).ListDatasetConfigs):len((*c.CallOptions).ListDatasetConfigs)], opts...)
 	it := &DatasetConfigIterator{}
-	req = proto.Clone(req).(*storageinsightspb.ListDatasetConfigsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*storageinsightspb.DatasetConfig, string, error) {
 		resp := &storageinsightspb.ListDatasetConfigsResponse{}
 		if pageToken != "" {
@@ -1292,7 +1292,7 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -1396,7 +1396,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -1438,7 +1438,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // ListReportConfigs lists ReportConfigs in a given project and location.
 func (c *restClient) ListReportConfigs(ctx context.Context, req *storageinsightspb.ListReportConfigsRequest, opts ...gax.CallOption) *ReportConfigIterator {
 	it := &ReportConfigIterator{}
-	req = proto.Clone(req).(*storageinsightspb.ListReportConfigsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*storageinsightspb.ReportConfig, string, error) {
 		resp := &storageinsightspb.ListReportConfigsResponse{}
@@ -1765,7 +1765,7 @@ func (c *restClient) DeleteReportConfig(ctx context.Context, req *storageinsight
 // ListReportDetails lists ReportDetails in a given project and location.
 func (c *restClient) ListReportDetails(ctx context.Context, req *storageinsightspb.ListReportDetailsRequest, opts ...gax.CallOption) *ReportDetailIterator {
 	it := &ReportDetailIterator{}
-	req = proto.Clone(req).(*storageinsightspb.ListReportDetailsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*storageinsightspb.ReportDetail, string, error) {
 		resp := &storageinsightspb.ListReportDetailsResponse{}
@@ -1906,7 +1906,7 @@ func (c *restClient) GetReportDetail(ctx context.Context, req *storageinsightspb
 // ListDatasetConfigs lists the dataset configurations in a given project for a given location.
 func (c *restClient) ListDatasetConfigs(ctx context.Context, req *storageinsightspb.ListDatasetConfigsRequest, opts ...gax.CallOption) *DatasetConfigIterator {
 	it := &DatasetConfigIterator{}
-	req = proto.Clone(req).(*storageinsightspb.ListDatasetConfigsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*storageinsightspb.DatasetConfig, string, error) {
 		resp := &storageinsightspb.ListDatasetConfigsResponse{}
@@ -2442,7 +2442,7 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 // ListLocations lists information about the supported locations for this service.
 func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -2661,7 +2661,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

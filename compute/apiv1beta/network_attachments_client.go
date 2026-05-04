@@ -361,7 +361,7 @@ func (c *networkAttachmentsRESTClient) Connection() *grpc.ClientConn {
 // returnPartialSuccess parameter to true.
 func (c *networkAttachmentsRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListNetworkAttachmentsRequest, opts ...gax.CallOption) *NetworkAttachmentsScopedListPairIterator {
 	it := &NetworkAttachmentsScopedListPairIterator{}
-	req = proto.Clone(req).(*computepb.AggregatedListNetworkAttachmentsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]NetworkAttachmentsScopedListPair, string, error) {
 		resp := &computepb.NetworkAttachmentAggregatedList{}
@@ -714,7 +714,7 @@ func (c *networkAttachmentsRESTClient) Insert(ctx context.Context, req *computep
 // List lists the NetworkAttachments for a project in the given scope.
 func (c *networkAttachmentsRESTClient) List(ctx context.Context, req *computepb.ListNetworkAttachmentsRequest, opts ...gax.CallOption) *NetworkAttachmentIterator {
 	it := &NetworkAttachmentIterator{}
-	req = proto.Clone(req).(*computepb.ListNetworkAttachmentsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.NetworkAttachment, string, error) {
 		resp := &computepb.NetworkAttachmentList{}

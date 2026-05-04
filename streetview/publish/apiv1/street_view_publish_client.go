@@ -966,7 +966,7 @@ func (c *streetViewPublishGRPCClient) ListPhotos(ctx context.Context, req *publi
 	}
 	opts = append((*c.CallOptions).ListPhotos[0:len((*c.CallOptions).ListPhotos):len((*c.CallOptions).ListPhotos)], opts...)
 	it := &PhotoIterator{}
-	req = proto.Clone(req).(*publishpb.ListPhotosRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*publishpb.Photo, string, error) {
 		resp := &publishpb.ListPhotosResponse{}
 		if pageToken != "" {
@@ -1147,7 +1147,7 @@ func (c *streetViewPublishGRPCClient) ListPhotoSequences(ctx context.Context, re
 	}
 	opts = append((*c.CallOptions).ListPhotoSequences[0:len((*c.CallOptions).ListPhotoSequences):len((*c.CallOptions).ListPhotoSequences)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*publishpb.ListPhotoSequencesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &publishpb.ListPhotoSequencesResponse{}
 		if pageToken != "" {
@@ -1513,7 +1513,7 @@ func (c *streetViewPublishRESTClient) BatchGetPhotos(ctx context.Context, req *p
 // being indexed are not returned in the response.
 func (c *streetViewPublishRESTClient) ListPhotos(ctx context.Context, req *publishpb.ListPhotosRequest, opts ...gax.CallOption) *PhotoIterator {
 	it := &PhotoIterator{}
-	req = proto.Clone(req).(*publishpb.ListPhotosRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*publishpb.Photo, string, error) {
 		resp := &publishpb.ListPhotosResponse{}
@@ -2130,7 +2130,7 @@ func (c *streetViewPublishRESTClient) GetPhotoSequence(ctx context.Context, req 
 // that belong to the user, in descending CreatePhotoSequence timestamp order.
 func (c *streetViewPublishRESTClient) ListPhotoSequences(ctx context.Context, req *publishpb.ListPhotoSequencesRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*publishpb.ListPhotoSequencesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &publishpb.ListPhotoSequencesResponse{}

@@ -454,7 +454,7 @@ func (c *runtimeProjectAttachmentRESTClient) GetRuntimeProjectAttachment(ctx con
 // ListRuntimeProjectAttachments list runtime projects attached to the host project.
 func (c *runtimeProjectAttachmentRESTClient) ListRuntimeProjectAttachments(ctx context.Context, req *apihubpb.ListRuntimeProjectAttachmentsRequest, opts ...gax.CallOption) *RuntimeProjectAttachmentIterator {
 	it := &RuntimeProjectAttachmentIterator{}
-	req = proto.Clone(req).(*apihubpb.ListRuntimeProjectAttachmentsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apihubpb.RuntimeProjectAttachment, string, error) {
 		resp := &apihubpb.ListRuntimeProjectAttachmentsResponse{}
@@ -693,7 +693,7 @@ func (c *runtimeProjectAttachmentRESTClient) GetLocation(ctx context.Context, re
 // ListLocations lists information about the supported locations for this service.
 func (c *runtimeProjectAttachmentRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -912,7 +912,7 @@ func (c *runtimeProjectAttachmentRESTClient) GetOperation(ctx context.Context, r
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *runtimeProjectAttachmentRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

@@ -884,7 +884,7 @@ func (c *analyticsHubGRPCClient) ListDataExchanges(ctx context.Context, req *dat
 	}
 	opts = append((*c.CallOptions).ListDataExchanges[0:len((*c.CallOptions).ListDataExchanges):len((*c.CallOptions).ListDataExchanges)], opts...)
 	it := &DataExchangeIterator{}
-	req = proto.Clone(req).(*dataexchangepb.ListDataExchangesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataexchangepb.DataExchange, string, error) {
 		resp := &dataexchangepb.ListDataExchangesResponse{}
 		if pageToken != "" {
@@ -936,7 +936,7 @@ func (c *analyticsHubGRPCClient) ListOrgDataExchanges(ctx context.Context, req *
 	}
 	opts = append((*c.CallOptions).ListOrgDataExchanges[0:len((*c.CallOptions).ListOrgDataExchanges):len((*c.CallOptions).ListOrgDataExchanges)], opts...)
 	it := &DataExchangeIterator{}
-	req = proto.Clone(req).(*dataexchangepb.ListOrgDataExchangesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataexchangepb.DataExchange, string, error) {
 		resp := &dataexchangepb.ListOrgDataExchangesResponse{}
 		if pageToken != "" {
@@ -1080,7 +1080,7 @@ func (c *analyticsHubGRPCClient) ListListings(ctx context.Context, req *dataexch
 	}
 	opts = append((*c.CallOptions).ListListings[0:len((*c.CallOptions).ListListings):len((*c.CallOptions).ListListings)], opts...)
 	it := &ListingIterator{}
-	req = proto.Clone(req).(*dataexchangepb.ListListingsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataexchangepb.Listing, string, error) {
 		resp := &dataexchangepb.ListListingsResponse{}
 		if pageToken != "" {
@@ -1344,7 +1344,7 @@ func (c *analyticsHubGRPCClient) ListLocations(ctx context.Context, req *locatio
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -1386,7 +1386,7 @@ func (c *analyticsHubGRPCClient) ListLocations(ctx context.Context, req *locatio
 // ListDataExchanges lists all data exchanges in a given project and location.
 func (c *analyticsHubRESTClient) ListDataExchanges(ctx context.Context, req *dataexchangepb.ListDataExchangesRequest, opts ...gax.CallOption) *DataExchangeIterator {
 	it := &DataExchangeIterator{}
-	req = proto.Clone(req).(*dataexchangepb.ListDataExchangesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataexchangepb.DataExchange, string, error) {
 		resp := &dataexchangepb.ListDataExchangesResponse{}
@@ -1464,7 +1464,7 @@ func (c *analyticsHubRESTClient) ListDataExchanges(ctx context.Context, req *dat
 // location.
 func (c *analyticsHubRESTClient) ListOrgDataExchanges(ctx context.Context, req *dataexchangepb.ListOrgDataExchangesRequest, opts ...gax.CallOption) *DataExchangeIterator {
 	it := &DataExchangeIterator{}
-	req = proto.Clone(req).(*dataexchangepb.ListOrgDataExchangesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataexchangepb.DataExchange, string, error) {
 		resp := &dataexchangepb.ListOrgDataExchangesResponse{}
@@ -1764,7 +1764,7 @@ func (c *analyticsHubRESTClient) DeleteDataExchange(ctx context.Context, req *da
 // ListListings lists all listings in a given project and location.
 func (c *analyticsHubRESTClient) ListListings(ctx context.Context, req *dataexchangepb.ListListingsRequest, opts ...gax.CallOption) *ListingIterator {
 	it := &ListingIterator{}
-	req = proto.Clone(req).(*dataexchangepb.ListListingsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataexchangepb.Listing, string, error) {
 		resp := &dataexchangepb.ListListingsResponse{}
@@ -2353,7 +2353,7 @@ func (c *analyticsHubRESTClient) GetLocation(ctx context.Context, req *locationp
 // ListLocations lists information about the supported locations for this service.
 func (c *analyticsHubRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}

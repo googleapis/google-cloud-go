@@ -368,7 +368,7 @@ func (c *gRPCClient) ListMigrationWorkflows(ctx context.Context, req *migrationp
 	}
 	opts = append((*c.CallOptions).ListMigrationWorkflows[0:len((*c.CallOptions).ListMigrationWorkflows):len((*c.CallOptions).ListMigrationWorkflows)], opts...)
 	it := &MigrationWorkflowIterator{}
-	req = proto.Clone(req).(*migrationpb.ListMigrationWorkflowsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*migrationpb.MigrationWorkflow, string, error) {
 		resp := &migrationpb.ListMigrationWorkflowsResponse{}
 		if pageToken != "" {
@@ -484,7 +484,7 @@ func (c *gRPCClient) ListMigrationSubtasks(ctx context.Context, req *migrationpb
 	}
 	opts = append((*c.CallOptions).ListMigrationSubtasks[0:len((*c.CallOptions).ListMigrationSubtasks):len((*c.CallOptions).ListMigrationSubtasks)], opts...)
 	it := &MigrationSubtaskIterator{}
-	req = proto.Clone(req).(*migrationpb.ListMigrationSubtasksRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*migrationpb.MigrationSubtask, string, error) {
 		resp := &migrationpb.ListMigrationSubtasksResponse{}
 		if pageToken != "" {

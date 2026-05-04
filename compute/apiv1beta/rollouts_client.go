@@ -459,7 +459,7 @@ func (c *rolloutsRESTClient) Get(ctx context.Context, req *computepb.GetRolloutR
 // List lists Rollouts in a given project and location.
 func (c *rolloutsRESTClient) List(ctx context.Context, req *computepb.ListRolloutsRequest, opts ...gax.CallOption) *RolloutIterator {
 	it := &RolloutIterator{}
-	req = proto.Clone(req).(*computepb.ListRolloutsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.Rollout, string, error) {
 		resp := &computepb.RolloutsListResponse{}

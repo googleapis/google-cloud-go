@@ -557,7 +557,7 @@ func (c *regionNetworkPoliciesRESTClient) AddTrafficClassificationRule(ctx conte
 // returnPartialSuccess parameter to true.
 func (c *regionNetworkPoliciesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListRegionNetworkPoliciesRequest, opts ...gax.CallOption) *NetworkPoliciesScopedListPairIterator {
 	it := &NetworkPoliciesScopedListPairIterator{}
-	req = proto.Clone(req).(*computepb.AggregatedListRegionNetworkPoliciesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]NetworkPoliciesScopedListPair, string, error) {
 		resp := &computepb.NetworkPolicyAggregatedList{}
@@ -969,7 +969,7 @@ func (c *regionNetworkPoliciesRESTClient) Insert(ctx context.Context, req *compu
 // in the given region.
 func (c *regionNetworkPoliciesRESTClient) List(ctx context.Context, req *computepb.ListRegionNetworkPoliciesRequest, opts ...gax.CallOption) *NetworkPolicyIterator {
 	it := &NetworkPolicyIterator{}
-	req = proto.Clone(req).(*computepb.ListRegionNetworkPoliciesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.NetworkPolicy, string, error) {
 		resp := &computepb.NetworkPolicyList{}

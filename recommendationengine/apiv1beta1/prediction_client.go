@@ -363,7 +363,7 @@ func (c *predictionGRPCClient) Predict(ctx context.Context, req *recommendatione
 	}
 	opts = append((*c.CallOptions).Predict[0:len((*c.CallOptions).Predict):len((*c.CallOptions).Predict)], opts...)
 	it := &PredictResponse_PredictionResultIterator{}
-	req = proto.Clone(req).(*recommendationenginepb.PredictRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*recommendationenginepb.PredictResponse_PredictionResult, string, error) {
 		resp := &recommendationenginepb.PredictResponse{}
 		if pageToken != "" {
@@ -408,7 +408,7 @@ func (c *predictionGRPCClient) Predict(ctx context.Context, req *recommendatione
 // service. Learn more (at /recommendations-ai/docs/setting-up#register-key).
 func (c *predictionRESTClient) Predict(ctx context.Context, req *recommendationenginepb.PredictRequest, opts ...gax.CallOption) *PredictResponse_PredictionResultIterator {
 	it := &PredictResponse_PredictionResultIterator{}
-	req = proto.Clone(req).(*recommendationenginepb.PredictRequest)
+	req = proto.CloneOf(req)
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*recommendationenginepb.PredictResponse_PredictionResult, string, error) {

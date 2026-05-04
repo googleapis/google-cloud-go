@@ -757,7 +757,7 @@ func (c *regionsGRPCClient) ListRegions(ctx context.Context, req *accountspb.Lis
 	}
 	opts = append((*c.CallOptions).ListRegions[0:len((*c.CallOptions).ListRegions):len((*c.CallOptions).ListRegions)], opts...)
 	it := &RegionIterator{}
-	req = proto.Clone(req).(*accountspb.ListRegionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*accountspb.Region, string, error) {
 		resp := &accountspb.ListRegionsResponse{}
 		if pageToken != "" {
@@ -1211,7 +1211,7 @@ func (c *regionsRESTClient) BatchDeleteRegions(ctx context.Context, req *account
 // ListRegions lists the regions in your Merchant Center account.
 func (c *regionsRESTClient) ListRegions(ctx context.Context, req *accountspb.ListRegionsRequest, opts ...gax.CallOption) *RegionIterator {
 	it := &RegionIterator{}
-	req = proto.Clone(req).(*accountspb.ListRegionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*accountspb.Region, string, error) {
 		resp := &accountspb.ListRegionsResponse{}

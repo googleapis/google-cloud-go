@@ -553,7 +553,7 @@ func (c *gRPCClient) ListJobs(ctx context.Context, req *transcoderpb.ListJobsReq
 	}
 	opts = append((*c.CallOptions).ListJobs[0:len((*c.CallOptions).ListJobs):len((*c.CallOptions).ListJobs)], opts...)
 	it := &JobIterator{}
-	req = proto.Clone(req).(*transcoderpb.ListJobsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*transcoderpb.Job, string, error) {
 		resp := &transcoderpb.ListJobsResponse{}
 		if pageToken != "" {
@@ -673,7 +673,7 @@ func (c *gRPCClient) ListJobTemplates(ctx context.Context, req *transcoderpb.Lis
 	}
 	opts = append((*c.CallOptions).ListJobTemplates[0:len((*c.CallOptions).ListJobTemplates):len((*c.CallOptions).ListJobTemplates)], opts...)
 	it := &JobTemplateIterator{}
-	req = proto.Clone(req).(*transcoderpb.ListJobTemplatesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*transcoderpb.JobTemplate, string, error) {
 		resp := &transcoderpb.ListJobTemplatesResponse{}
 		if pageToken != "" {
@@ -823,7 +823,7 @@ func (c *restClient) CreateJob(ctx context.Context, req *transcoderpb.CreateJobR
 // ListJobs lists jobs in the specified region.
 func (c *restClient) ListJobs(ctx context.Context, req *transcoderpb.ListJobsRequest, opts ...gax.CallOption) *JobIterator {
 	it := &JobIterator{}
-	req = proto.Clone(req).(*transcoderpb.ListJobsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*transcoderpb.Job, string, error) {
 		resp := &transcoderpb.ListJobsResponse{}
@@ -1074,7 +1074,7 @@ func (c *restClient) CreateJobTemplate(ctx context.Context, req *transcoderpb.Cr
 // ListJobTemplates lists job templates in the specified region.
 func (c *restClient) ListJobTemplates(ctx context.Context, req *transcoderpb.ListJobTemplatesRequest, opts ...gax.CallOption) *JobTemplateIterator {
 	it := &JobTemplateIterator{}
-	req = proto.Clone(req).(*transcoderpb.ListJobTemplatesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*transcoderpb.JobTemplate, string, error) {
 		resp := &transcoderpb.ListJobTemplatesResponse{}

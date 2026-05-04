@@ -480,7 +480,7 @@ func (c *backupDrProtectionSummaryGRPCClient) ListResourceBackupConfigs(ctx cont
 	}
 	opts = append((*c.CallOptions).ListResourceBackupConfigs[0:len((*c.CallOptions).ListResourceBackupConfigs):len((*c.CallOptions).ListResourceBackupConfigs)], opts...)
 	it := &ResourceBackupConfigIterator{}
-	req = proto.Clone(req).(*backupdrpb.ListResourceBackupConfigsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*backupdrpb.ResourceBackupConfig, string, error) {
 		resp := &backupdrpb.ListResourceBackupConfigsResponse{}
 		if pageToken != "" {
@@ -550,7 +550,7 @@ func (c *backupDrProtectionSummaryGRPCClient) ListLocations(ctx context.Context,
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -726,7 +726,7 @@ func (c *backupDrProtectionSummaryGRPCClient) ListOperations(ctx context.Context
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -768,7 +768,7 @@ func (c *backupDrProtectionSummaryGRPCClient) ListOperations(ctx context.Context
 // ListResourceBackupConfigs lists ResourceBackupConfigs.
 func (c *backupDrProtectionSummaryRESTClient) ListResourceBackupConfigs(ctx context.Context, req *backupdrpb.ListResourceBackupConfigsRequest, opts ...gax.CallOption) *ResourceBackupConfigIterator {
 	it := &ResourceBackupConfigIterator{}
-	req = proto.Clone(req).(*backupdrpb.ListResourceBackupConfigsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*backupdrpb.ResourceBackupConfig, string, error) {
 		resp := &backupdrpb.ListResourceBackupConfigsResponse{}
@@ -906,7 +906,7 @@ func (c *backupDrProtectionSummaryRESTClient) GetLocation(ctx context.Context, r
 // ListLocations lists information about the supported locations for this service.
 func (c *backupDrProtectionSummaryRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -1322,7 +1322,7 @@ func (c *backupDrProtectionSummaryRESTClient) GetOperation(ctx context.Context, 
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *backupDrProtectionSummaryRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

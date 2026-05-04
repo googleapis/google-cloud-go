@@ -1184,7 +1184,7 @@ func (c *firestoreAdminGRPCClient) ListIndexes(ctx context.Context, req *adminpb
 	}
 	opts = append((*c.CallOptions).ListIndexes[0:len((*c.CallOptions).ListIndexes):len((*c.CallOptions).ListIndexes)], opts...)
 	it := &IndexIterator{}
-	req = proto.Clone(req).(*adminpb.ListIndexesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.Index, string, error) {
 		resp := &adminpb.ListIndexesResponse{}
 		if pageToken != "" {
@@ -1327,7 +1327,7 @@ func (c *firestoreAdminGRPCClient) ListFields(ctx context.Context, req *adminpb.
 	}
 	opts = append((*c.CallOptions).ListFields[0:len((*c.CallOptions).ListFields):len((*c.CallOptions).ListFields)], opts...)
 	it := &FieldIterator{}
-	req = proto.Clone(req).(*adminpb.ListFieldsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.Field, string, error) {
 		resp := &adminpb.ListFieldsResponse{}
 		if pageToken != "" {
@@ -2046,7 +2046,7 @@ func (c *firestoreAdminGRPCClient) ListOperations(ctx context.Context, req *long
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -2159,7 +2159,7 @@ func (c *firestoreAdminRESTClient) CreateIndex(ctx context.Context, req *adminpb
 // ListIndexes lists composite indexes.
 func (c *firestoreAdminRESTClient) ListIndexes(ctx context.Context, req *adminpb.ListIndexesRequest, opts ...gax.CallOption) *IndexIterator {
 	it := &IndexIterator{}
-	req = proto.Clone(req).(*adminpb.ListIndexesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.Index, string, error) {
 		resp := &adminpb.ListIndexesResponse{}
@@ -2489,7 +2489,7 @@ func (c *firestoreAdminRESTClient) UpdateField(ctx context.Context, req *adminpb
 // ttlConfig:*.
 func (c *firestoreAdminRESTClient) ListFields(ctx context.Context, req *adminpb.ListFieldsRequest, opts ...gax.CallOption) *FieldIterator {
 	it := &FieldIterator{}
-	req = proto.Clone(req).(*adminpb.ListFieldsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.Field, string, error) {
 		resp := &adminpb.ListFieldsResponse{}
@@ -4288,7 +4288,7 @@ func (c *firestoreAdminRESTClient) GetOperation(ctx context.Context, req *longru
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *firestoreAdminRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

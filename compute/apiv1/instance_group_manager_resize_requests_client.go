@@ -558,7 +558,7 @@ func (c *instanceGroupManagerResizeRequestsRESTClient) Insert(ctx context.Contex
 // managed instance group.
 func (c *instanceGroupManagerResizeRequestsRESTClient) List(ctx context.Context, req *computepb.ListInstanceGroupManagerResizeRequestsRequest, opts ...gax.CallOption) *InstanceGroupManagerResizeRequestIterator {
 	it := &InstanceGroupManagerResizeRequestIterator{}
-	req = proto.Clone(req).(*computepb.ListInstanceGroupManagerResizeRequestsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.InstanceGroupManagerResizeRequest, string, error) {
 		resp := &computepb.InstanceGroupManagerResizeRequestsListResponse{}

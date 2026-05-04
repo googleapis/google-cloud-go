@@ -642,7 +642,7 @@ func (c *gRPCClient) ListInsights(ctx context.Context, req *recommenderpb.ListIn
 	}
 	opts = append((*c.CallOptions).ListInsights[0:len((*c.CallOptions).ListInsights):len((*c.CallOptions).ListInsights)], opts...)
 	it := &InsightIterator{}
-	req = proto.Clone(req).(*recommenderpb.ListInsightsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*recommenderpb.Insight, string, error) {
 		resp := &recommenderpb.ListInsightsResponse{}
 		if pageToken != "" {
@@ -742,7 +742,7 @@ func (c *gRPCClient) ListRecommendations(ctx context.Context, req *recommenderpb
 	}
 	opts = append((*c.CallOptions).ListRecommendations[0:len((*c.CallOptions).ListRecommendations):len((*c.CallOptions).ListRecommendations)], opts...)
 	it := &RecommendationIterator{}
-	req = proto.Clone(req).(*recommenderpb.ListRecommendationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*recommenderpb.Recommendation, string, error) {
 		resp := &recommenderpb.ListRecommendationsResponse{}
 		if pageToken != "" {
@@ -974,7 +974,7 @@ func (c *gRPCClient) ListRecommenders(ctx context.Context, req *recommenderpb.Li
 	}
 	opts = append((*c.CallOptions).ListRecommenders[0:len((*c.CallOptions).ListRecommenders):len((*c.CallOptions).ListRecommenders)], opts...)
 	it := &RecommenderTypeIterator{}
-	req = proto.Clone(req).(*recommenderpb.ListRecommendersRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*recommenderpb.RecommenderType, string, error) {
 		resp := &recommenderpb.ListRecommendersResponse{}
 		if pageToken != "" {
@@ -1020,7 +1020,7 @@ func (c *gRPCClient) ListInsightTypes(ctx context.Context, req *recommenderpb.Li
 	}
 	opts = append((*c.CallOptions).ListInsightTypes[0:len((*c.CallOptions).ListInsightTypes):len((*c.CallOptions).ListInsightTypes)], opts...)
 	it := &InsightTypeIterator{}
-	req = proto.Clone(req).(*recommenderpb.ListInsightTypesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*recommenderpb.InsightType, string, error) {
 		resp := &recommenderpb.ListInsightTypesResponse{}
 		if pageToken != "" {
@@ -1063,7 +1063,7 @@ func (c *gRPCClient) ListInsightTypes(ctx context.Context, req *recommenderpb.Li
 // recommender.*.list IAM permission for the specified insight type.
 func (c *restClient) ListInsights(ctx context.Context, req *recommenderpb.ListInsightsRequest, opts ...gax.CallOption) *InsightIterator {
 	it := &InsightIterator{}
-	req = proto.Clone(req).(*recommenderpb.ListInsightsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*recommenderpb.Insight, string, error) {
 		resp := &recommenderpb.ListInsightsResponse{}
@@ -1271,7 +1271,7 @@ func (c *restClient) MarkInsightAccepted(ctx context.Context, req *recommenderpb
 // recommender.*.list IAM permission for the specified recommender.
 func (c *restClient) ListRecommendations(ctx context.Context, req *recommenderpb.ListRecommendationsRequest, opts ...gax.CallOption) *RecommendationIterator {
 	it := &RecommendationIterator{}
-	req = proto.Clone(req).(*recommenderpb.ListRecommendationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*recommenderpb.Recommendation, string, error) {
 		resp := &recommenderpb.ListRecommendationsResponse{}
@@ -1889,7 +1889,7 @@ func (c *restClient) UpdateInsightTypeConfig(ctx context.Context, req *recommend
 // No IAM permissions are required.
 func (c *restClient) ListRecommenders(ctx context.Context, req *recommenderpb.ListRecommendersRequest, opts ...gax.CallOption) *RecommenderTypeIterator {
 	it := &RecommenderTypeIterator{}
-	req = proto.Clone(req).(*recommenderpb.ListRecommendersRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*recommenderpb.RecommenderType, string, error) {
 		resp := &recommenderpb.ListRecommendersResponse{}
@@ -1968,7 +1968,7 @@ func (c *restClient) ListRecommenders(ctx context.Context, req *recommenderpb.Li
 // No IAM permissions are required.
 func (c *restClient) ListInsightTypes(ctx context.Context, req *recommenderpb.ListInsightTypesRequest, opts ...gax.CallOption) *InsightTypeIterator {
 	it := &InsightTypeIterator{}
-	req = proto.Clone(req).(*recommenderpb.ListInsightTypesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*recommenderpb.InsightType, string, error) {
 		resp := &recommenderpb.ListInsightTypesResponse{}

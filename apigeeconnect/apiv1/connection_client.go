@@ -239,7 +239,7 @@ func (c *connectionGRPCClient) ListConnections(ctx context.Context, req *apigeec
 	}
 	opts = append((*c.CallOptions).ListConnections[0:len((*c.CallOptions).ListConnections):len((*c.CallOptions).ListConnections)], opts...)
 	it := &ConnectionIterator{}
-	req = proto.Clone(req).(*apigeeconnectpb.ListConnectionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apigeeconnectpb.Connection, string, error) {
 		resp := &apigeeconnectpb.ListConnectionsResponse{}
 		if pageToken != "" {

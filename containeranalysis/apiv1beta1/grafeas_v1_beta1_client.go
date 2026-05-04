@@ -784,7 +784,7 @@ func (c *grafeasV1Beta1GRPCClient) ListOccurrences(ctx context.Context, req *gra
 	}
 	opts = append((*c.CallOptions).ListOccurrences[0:len((*c.CallOptions).ListOccurrences):len((*c.CallOptions).ListOccurrences)], opts...)
 	it := &OccurrenceIterator{}
-	req = proto.Clone(req).(*grafeaspb.ListOccurrencesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*grafeaspb.Occurrence, string, error) {
 		resp := &grafeaspb.ListOccurrencesResponse{}
 		if pageToken != "" {
@@ -955,7 +955,7 @@ func (c *grafeasV1Beta1GRPCClient) ListNotes(ctx context.Context, req *grafeaspb
 	}
 	opts = append((*c.CallOptions).ListNotes[0:len((*c.CallOptions).ListNotes):len((*c.CallOptions).ListNotes)], opts...)
 	it := &NoteIterator{}
-	req = proto.Clone(req).(*grafeaspb.ListNotesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*grafeaspb.Note, string, error) {
 		resp := &grafeaspb.ListNotesResponse{}
 		if pageToken != "" {
@@ -1084,7 +1084,7 @@ func (c *grafeasV1Beta1GRPCClient) ListNoteOccurrences(ctx context.Context, req 
 	}
 	opts = append((*c.CallOptions).ListNoteOccurrences[0:len((*c.CallOptions).ListNoteOccurrences):len((*c.CallOptions).ListNoteOccurrences)], opts...)
 	it := &OccurrenceIterator{}
-	req = proto.Clone(req).(*grafeaspb.ListNoteOccurrencesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*grafeaspb.Occurrence, string, error) {
 		resp := &grafeaspb.ListNoteOccurrencesResponse{}
 		if pageToken != "" {
@@ -1201,7 +1201,7 @@ func (c *grafeasV1Beta1RESTClient) GetOccurrence(ctx context.Context, req *grafe
 // ListOccurrences lists occurrences for the specified project.
 func (c *grafeasV1Beta1RESTClient) ListOccurrences(ctx context.Context, req *grafeaspb.ListOccurrencesRequest, opts ...gax.CallOption) *OccurrenceIterator {
 	it := &OccurrenceIterator{}
-	req = proto.Clone(req).(*grafeaspb.ListOccurrencesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*grafeaspb.Occurrence, string, error) {
 		resp := &grafeaspb.ListOccurrencesResponse{}
@@ -1621,7 +1621,7 @@ func (c *grafeasV1Beta1RESTClient) GetNote(ctx context.Context, req *grafeaspb.G
 // ListNotes lists notes for the specified project.
 func (c *grafeasV1Beta1RESTClient) ListNotes(ctx context.Context, req *grafeaspb.ListNotesRequest, opts ...gax.CallOption) *NoteIterator {
 	it := &NoteIterator{}
-	req = proto.Clone(req).(*grafeaspb.ListNotesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*grafeaspb.Note, string, error) {
 		resp := &grafeaspb.ListNotesResponse{}
@@ -1935,7 +1935,7 @@ func (c *grafeasV1Beta1RESTClient) UpdateNote(ctx context.Context, req *grafeasp
 // specified note.
 func (c *grafeasV1Beta1RESTClient) ListNoteOccurrences(ctx context.Context, req *grafeaspb.ListNoteOccurrencesRequest, opts ...gax.CallOption) *OccurrenceIterator {
 	it := &OccurrenceIterator{}
-	req = proto.Clone(req).(*grafeaspb.ListNoteOccurrencesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*grafeaspb.Occurrence, string, error) {
 		resp := &grafeaspb.ListNoteOccurrencesResponse{}

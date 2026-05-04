@@ -349,7 +349,7 @@ func (c *regionCompositeHealthChecksRESTClient) Connection() *grpc.ClientConn {
 // returnPartialSuccess parameter to true.
 func (c *regionCompositeHealthChecksRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListRegionCompositeHealthChecksRequest, opts ...gax.CallOption) *CompositeHealthChecksScopedListPairIterator {
 	it := &CompositeHealthChecksScopedListPairIterator{}
-	req = proto.Clone(req).(*computepb.AggregatedListRegionCompositeHealthChecksRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]CompositeHealthChecksScopedListPair, string, error) {
 		resp := &computepb.CompositeHealthCheckAggregatedList{}
@@ -695,7 +695,7 @@ func (c *regionCompositeHealthChecksRESTClient) Insert(ctx context.Context, req 
 // List lists the CompositeHealthChecks for a project in the given region.
 func (c *regionCompositeHealthChecksRESTClient) List(ctx context.Context, req *computepb.ListRegionCompositeHealthChecksRequest, opts ...gax.CallOption) *CompositeHealthCheckIterator {
 	it := &CompositeHealthCheckIterator{}
-	req = proto.Clone(req).(*computepb.ListRegionCompositeHealthChecksRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.CompositeHealthCheck, string, error) {
 		resp := &computepb.CompositeHealthCheckList{}

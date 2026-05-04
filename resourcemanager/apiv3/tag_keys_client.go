@@ -594,7 +594,7 @@ func (c *tagKeysGRPCClient) ListTagKeys(ctx context.Context, req *resourcemanage
 	}
 	opts = append((*c.CallOptions).ListTagKeys[0:len((*c.CallOptions).ListTagKeys):len((*c.CallOptions).ListTagKeys)], opts...)
 	it := &TagKeyIterator{}
-	req = proto.Clone(req).(*resourcemanagerpb.ListTagKeysRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*resourcemanagerpb.TagKey, string, error) {
 		resp := &resourcemanagerpb.ListTagKeysResponse{}
 		if pageToken != "" {
@@ -840,7 +840,7 @@ func (c *tagKeysGRPCClient) GetOperation(ctx context.Context, req *longrunningpb
 // ListTagKeys lists all TagKeys for a parent resource.
 func (c *tagKeysRESTClient) ListTagKeys(ctx context.Context, req *resourcemanagerpb.ListTagKeysRequest, opts ...gax.CallOption) *TagKeyIterator {
 	it := &TagKeyIterator{}
-	req = proto.Clone(req).(*resourcemanagerpb.ListTagKeysRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*resourcemanagerpb.TagKey, string, error) {
 		resp := &resourcemanagerpb.ListTagKeysResponse{}

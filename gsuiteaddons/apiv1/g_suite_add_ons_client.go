@@ -753,7 +753,7 @@ func (c *gRPCClient) ListDeployments(ctx context.Context, req *gsuiteaddonspb.Li
 	}
 	opts = append((*c.CallOptions).ListDeployments[0:len((*c.CallOptions).ListDeployments):len((*c.CallOptions).ListDeployments)], opts...)
 	it := &DeploymentIterator{}
-	req = proto.Clone(req).(*gsuiteaddonspb.ListDeploymentsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*gsuiteaddonspb.Deployment, string, error) {
 		resp := &gsuiteaddonspb.ListDeploymentsResponse{}
 		if pageToken != "" {
@@ -1119,7 +1119,7 @@ func (c *restClient) GetDeployment(ctx context.Context, req *gsuiteaddonspb.GetD
 // ListDeployments lists all deployments in a particular project.
 func (c *restClient) ListDeployments(ctx context.Context, req *gsuiteaddonspb.ListDeploymentsRequest, opts ...gax.CallOption) *DeploymentIterator {
 	it := &DeploymentIterator{}
-	req = proto.Clone(req).(*gsuiteaddonspb.ListDeploymentsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*gsuiteaddonspb.Deployment, string, error) {
 		resp := &gsuiteaddonspb.ListDeploymentsResponse{}

@@ -365,7 +365,7 @@ func (c *instantSnapshotsRESTClient) Connection() *grpc.ClientConn {
 // returnPartialSuccess parameter to true.
 func (c *instantSnapshotsRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListInstantSnapshotsRequest, opts ...gax.CallOption) *InstantSnapshotsScopedListPairIterator {
 	it := &InstantSnapshotsScopedListPairIterator{}
-	req = proto.Clone(req).(*computepb.AggregatedListInstantSnapshotsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]InstantSnapshotsScopedListPair, string, error) {
 		resp := &computepb.InstantSnapshotAggregatedList{}
@@ -725,7 +725,7 @@ func (c *instantSnapshotsRESTClient) Insert(ctx context.Context, req *computepb.
 // the specified zone.
 func (c *instantSnapshotsRESTClient) List(ctx context.Context, req *computepb.ListInstantSnapshotsRequest, opts ...gax.CallOption) *InstantSnapshotIterator {
 	it := &InstantSnapshotIterator{}
-	req = proto.Clone(req).(*computepb.ListInstantSnapshotsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.InstantSnapshot, string, error) {
 		resp := &computepb.InstantSnapshotList{}

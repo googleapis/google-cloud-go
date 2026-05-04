@@ -356,7 +356,7 @@ func (c *resourcePoliciesRESTClient) Connection() *grpc.ClientConn {
 // returnPartialSuccess parameter to true.
 func (c *resourcePoliciesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListResourcePoliciesRequest, opts ...gax.CallOption) *ResourcePoliciesScopedListPairIterator {
 	it := &ResourcePoliciesScopedListPairIterator{}
-	req = proto.Clone(req).(*computepb.AggregatedListResourcePoliciesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]ResourcePoliciesScopedListPair, string, error) {
 		resp := &computepb.ResourcePolicyAggregatedList{}
@@ -709,7 +709,7 @@ func (c *resourcePoliciesRESTClient) Insert(ctx context.Context, req *computepb.
 // specified project in specified region.
 func (c *resourcePoliciesRESTClient) List(ctx context.Context, req *computepb.ListResourcePoliciesRequest, opts ...gax.CallOption) *ResourcePolicyIterator {
 	it := &ResourcePolicyIterator{}
-	req = proto.Clone(req).(*computepb.ListResourcePoliciesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.ResourcePolicy, string, error) {
 		resp := &computepb.ResourcePolicyList{}

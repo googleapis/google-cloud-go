@@ -382,7 +382,7 @@ func (c *snapshotsRESTClient) Connection() *grpc.ClientConn {
 // returnPartialSuccess parameter to true.
 func (c *snapshotsRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListSnapshotsRequest, opts ...gax.CallOption) *SnapshotsScopedListPairIterator {
 	it := &SnapshotsScopedListPairIterator{}
-	req = proto.Clone(req).(*computepb.AggregatedListSnapshotsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]SnapshotsScopedListPair, string, error) {
 		resp := &computepb.SnapshotAggregatedList{}
@@ -744,7 +744,7 @@ func (c *snapshotsRESTClient) Insert(ctx context.Context, req *computepb.InsertS
 // the specified project.
 func (c *snapshotsRESTClient) List(ctx context.Context, req *computepb.ListSnapshotsRequest, opts ...gax.CallOption) *SnapshotIterator {
 	it := &SnapshotIterator{}
-	req = proto.Clone(req).(*computepb.ListSnapshotsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.Snapshot, string, error) {
 		resp := &computepb.SnapshotList{}

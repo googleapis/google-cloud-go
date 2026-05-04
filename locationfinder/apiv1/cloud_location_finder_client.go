@@ -447,7 +447,7 @@ func (c *cloudLocationFinderGRPCClient) ListCloudLocations(ctx context.Context, 
 	}
 	opts = append((*c.CallOptions).ListCloudLocations[0:len((*c.CallOptions).ListCloudLocations):len((*c.CallOptions).ListCloudLocations)], opts...)
 	it := &CloudLocationIterator{}
-	req = proto.Clone(req).(*locationfinderpb.ListCloudLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationfinderpb.CloudLocation, string, error) {
 		resp := &locationfinderpb.ListCloudLocationsResponse{}
 		if pageToken != "" {
@@ -523,7 +523,7 @@ func (c *cloudLocationFinderGRPCClient) SearchCloudLocations(ctx context.Context
 	}
 	opts = append((*c.CallOptions).SearchCloudLocations[0:len((*c.CallOptions).SearchCloudLocations):len((*c.CallOptions).SearchCloudLocations)], opts...)
 	it := &CloudLocationIterator{}
-	req = proto.Clone(req).(*locationfinderpb.SearchCloudLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationfinderpb.CloudLocation, string, error) {
 		resp := &locationfinderpb.SearchCloudLocationsResponse{}
 		if pageToken != "" {
@@ -593,7 +593,7 @@ func (c *cloudLocationFinderGRPCClient) ListLocations(ctx context.Context, req *
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -635,7 +635,7 @@ func (c *cloudLocationFinderGRPCClient) ListLocations(ctx context.Context, req *
 // ListCloudLocations lists cloud locations under a given project and location.
 func (c *cloudLocationFinderRESTClient) ListCloudLocations(ctx context.Context, req *locationfinderpb.ListCloudLocationsRequest, opts ...gax.CallOption) *CloudLocationIterator {
 	it := &CloudLocationIterator{}
-	req = proto.Clone(req).(*locationfinderpb.ListCloudLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationfinderpb.CloudLocation, string, error) {
 		resp := &locationfinderpb.ListCloudLocationsResponse{}
@@ -773,7 +773,7 @@ func (c *cloudLocationFinderRESTClient) GetCloudLocation(ctx context.Context, re
 // SearchCloudLocations searches for cloud locations from a given source location.
 func (c *cloudLocationFinderRESTClient) SearchCloudLocations(ctx context.Context, req *locationfinderpb.SearchCloudLocationsRequest, opts ...gax.CallOption) *CloudLocationIterator {
 	it := &CloudLocationIterator{}
-	req = proto.Clone(req).(*locationfinderpb.SearchCloudLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationfinderpb.CloudLocation, string, error) {
 		resp := &locationfinderpb.SearchCloudLocationsResponse{}
@@ -909,7 +909,7 @@ func (c *cloudLocationFinderRESTClient) GetLocation(ctx context.Context, req *lo
 // ListLocations lists information about the supported locations for this service.
 func (c *cloudLocationFinderRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}

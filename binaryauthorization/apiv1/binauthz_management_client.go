@@ -697,7 +697,7 @@ func (c *binauthzManagementGRPCClient) ListAttestors(ctx context.Context, req *b
 	}
 	opts = append((*c.CallOptions).ListAttestors[0:len((*c.CallOptions).ListAttestors):len((*c.CallOptions).ListAttestors)], opts...)
 	it := &AttestorIterator{}
-	req = proto.Clone(req).(*binaryauthorizationpb.ListAttestorsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*binaryauthorizationpb.Attestor, string, error) {
 		resp := &binaryauthorizationpb.ListAttestorsResponse{}
 		if pageToken != "" {
@@ -1076,7 +1076,7 @@ func (c *binauthzManagementRESTClient) UpdateAttestor(ctx context.Context, req *
 // Returns INVALID_ARGUMENT if the project does not exist.
 func (c *binauthzManagementRESTClient) ListAttestors(ctx context.Context, req *binaryauthorizationpb.ListAttestorsRequest, opts ...gax.CallOption) *AttestorIterator {
 	it := &AttestorIterator{}
-	req = proto.Clone(req).(*binaryauthorizationpb.ListAttestorsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*binaryauthorizationpb.Attestor, string, error) {
 		resp := &binaryauthorizationpb.ListAttestorsResponse{}

@@ -262,7 +262,7 @@ func (c *storagePoolTypesRESTClient) Connection() *grpc.ClientConn {
 // returnPartialSuccess parameter to true.
 func (c *storagePoolTypesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListStoragePoolTypesRequest, opts ...gax.CallOption) *StoragePoolTypesScopedListPairIterator {
 	it := &StoragePoolTypesScopedListPairIterator{}
-	req = proto.Clone(req).(*computepb.AggregatedListStoragePoolTypesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]StoragePoolTypesScopedListPair, string, error) {
 		resp := &computepb.StoragePoolTypeAggregatedList{}
@@ -414,7 +414,7 @@ func (c *storagePoolTypesRESTClient) Get(ctx context.Context, req *computepb.Get
 // project.
 func (c *storagePoolTypesRESTClient) List(ctx context.Context, req *computepb.ListStoragePoolTypesRequest, opts ...gax.CallOption) *StoragePoolTypeIterator {
 	it := &StoragePoolTypeIterator{}
-	req = proto.Clone(req).(*computepb.ListStoragePoolTypesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.StoragePoolType, string, error) {
 		resp := &computepb.StoragePoolTypeList{}

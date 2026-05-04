@@ -486,7 +486,7 @@ func (c *organizationsGRPCClient) SearchOrganizations(ctx context.Context, req *
 	}
 	opts = append((*c.CallOptions).SearchOrganizations[0:len((*c.CallOptions).SearchOrganizations):len((*c.CallOptions).SearchOrganizations)], opts...)
 	it := &OrganizationIterator{}
-	req = proto.Clone(req).(*resourcemanagerpb.SearchOrganizationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*resourcemanagerpb.Organization, string, error) {
 		resp := &resourcemanagerpb.SearchOrganizationsResponse{}
 		if pageToken != "" {
@@ -684,7 +684,7 @@ func (c *organizationsRESTClient) GetOrganization(ctx context.Context, req *reso
 // resourcemanager.organizations.get
 func (c *organizationsRESTClient) SearchOrganizations(ctx context.Context, req *resourcemanagerpb.SearchOrganizationsRequest, opts ...gax.CallOption) *OrganizationIterator {
 	it := &OrganizationIterator{}
-	req = proto.Clone(req).(*resourcemanagerpb.SearchOrganizationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*resourcemanagerpb.Organization, string, error) {
 		resp := &resourcemanagerpb.SearchOrganizationsResponse{}

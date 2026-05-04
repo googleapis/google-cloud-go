@@ -477,7 +477,7 @@ func (c *zoneVmExtensionPoliciesRESTClient) Insert(ctx context.Context, req *com
 // List lists all VM extension policies within a specific zone for a project.
 func (c *zoneVmExtensionPoliciesRESTClient) List(ctx context.Context, req *computepb.ListZoneVmExtensionPoliciesRequest, opts ...gax.CallOption) *VmExtensionPolicyIterator {
 	it := &VmExtensionPolicyIterator{}
-	req = proto.Clone(req).(*computepb.ListZoneVmExtensionPoliciesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.VmExtensionPolicy, string, error) {
 		resp := &computepb.VmExtensionPolicyList{}

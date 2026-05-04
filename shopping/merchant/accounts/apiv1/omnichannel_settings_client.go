@@ -516,7 +516,7 @@ func (c *omnichannelSettingsGRPCClient) ListOmnichannelSettings(ctx context.Cont
 	}
 	opts = append((*c.CallOptions).ListOmnichannelSettings[0:len((*c.CallOptions).ListOmnichannelSettings):len((*c.CallOptions).ListOmnichannelSettings)], opts...)
 	it := &OmnichannelSettingIterator{}
-	req = proto.Clone(req).(*accountspb.ListOmnichannelSettingsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*accountspb.OmnichannelSetting, string, error) {
 		resp := &accountspb.ListOmnichannelSettingsResponse{}
 		if pageToken != "" {
@@ -684,7 +684,7 @@ func (c *omnichannelSettingsRESTClient) GetOmnichannelSetting(ctx context.Contex
 // ListOmnichannelSettings list all the omnichannel settings for a given merchant.
 func (c *omnichannelSettingsRESTClient) ListOmnichannelSettings(ctx context.Context, req *accountspb.ListOmnichannelSettingsRequest, opts ...gax.CallOption) *OmnichannelSettingIterator {
 	it := &OmnichannelSettingIterator{}
-	req = proto.Clone(req).(*accountspb.ListOmnichannelSettingsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*accountspb.OmnichannelSetting, string, error) {
 		resp := &accountspb.ListOmnichannelSettingsResponse{}

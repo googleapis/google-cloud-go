@@ -943,7 +943,7 @@ func (c *regionDisksRESTClient) Insert(ctx context.Context, req *computepb.Inser
 // the specified region.
 func (c *regionDisksRESTClient) List(ctx context.Context, req *computepb.ListRegionDisksRequest, opts ...gax.CallOption) *DiskIterator {
 	it := &DiskIterator{}
-	req = proto.Clone(req).(*computepb.ListRegionDisksRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.Disk, string, error) {
 		resp := &computepb.DiskList{}

@@ -339,7 +339,7 @@ func (c *autoscalersRESTClient) Connection() *grpc.ClientConn {
 // returnPartialSuccess parameter to true.
 func (c *autoscalersRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListAutoscalersRequest, opts ...gax.CallOption) *AutoscalersScopedListPairIterator {
 	it := &AutoscalersScopedListPairIterator{}
-	req = proto.Clone(req).(*computepb.AggregatedListAutoscalersRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]AutoscalersScopedListPair, string, error) {
 		resp := &computepb.AutoscalerAggregatedList{}
@@ -633,7 +633,7 @@ func (c *autoscalersRESTClient) Insert(ctx context.Context, req *computepb.Inser
 // the specified zone.
 func (c *autoscalersRESTClient) List(ctx context.Context, req *computepb.ListAutoscalersRequest, opts ...gax.CallOption) *AutoscalerIterator {
 	it := &AutoscalerIterator{}
-	req = proto.Clone(req).(*computepb.ListAutoscalersRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.Autoscaler, string, error) {
 		resp := &computepb.AutoscalerList{}

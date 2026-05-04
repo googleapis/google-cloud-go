@@ -620,7 +620,7 @@ func (c *saasRolloutsGRPCClient) ListRollouts(ctx context.Context, req *saasserv
 	}
 	opts = append((*c.CallOptions).ListRollouts[0:len((*c.CallOptions).ListRollouts):len((*c.CallOptions).ListRollouts)], opts...)
 	it := &RolloutIterator{}
-	req = proto.Clone(req).(*saasservicemgmtpb.ListRolloutsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*saasservicemgmtpb.Rollout, string, error) {
 		resp := &saasservicemgmtpb.ListRolloutsResponse{}
 		if pageToken != "" {
@@ -761,7 +761,7 @@ func (c *saasRolloutsGRPCClient) ListRolloutKinds(ctx context.Context, req *saas
 	}
 	opts = append((*c.CallOptions).ListRolloutKinds[0:len((*c.CallOptions).ListRolloutKinds):len((*c.CallOptions).ListRolloutKinds)], opts...)
 	it := &RolloutKindIterator{}
-	req = proto.Clone(req).(*saasservicemgmtpb.ListRolloutKindsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*saasservicemgmtpb.RolloutKind, string, error) {
 		resp := &saasservicemgmtpb.ListRolloutKindsResponse{}
 		if pageToken != "" {
@@ -920,7 +920,7 @@ func (c *saasRolloutsGRPCClient) ListLocations(ctx context.Context, req *locatio
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -962,7 +962,7 @@ func (c *saasRolloutsGRPCClient) ListLocations(ctx context.Context, req *locatio
 // ListRollouts retrieve a collection of rollouts.
 func (c *saasRolloutsRESTClient) ListRollouts(ctx context.Context, req *saasservicemgmtpb.ListRolloutsRequest, opts ...gax.CallOption) *RolloutIterator {
 	it := &RolloutIterator{}
-	req = proto.Clone(req).(*saasservicemgmtpb.ListRolloutsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*saasservicemgmtpb.Rollout, string, error) {
 		resp := &saasservicemgmtpb.ListRolloutsResponse{}
@@ -1299,7 +1299,7 @@ func (c *saasRolloutsRESTClient) DeleteRollout(ctx context.Context, req *saasser
 // ListRolloutKinds retrieve a collection of rollout kinds.
 func (c *saasRolloutsRESTClient) ListRolloutKinds(ctx context.Context, req *saasservicemgmtpb.ListRolloutKindsRequest, opts ...gax.CallOption) *RolloutKindIterator {
 	it := &RolloutKindIterator{}
-	req = proto.Clone(req).(*saasservicemgmtpb.ListRolloutKindsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*saasservicemgmtpb.RolloutKind, string, error) {
 		resp := &saasservicemgmtpb.ListRolloutKindsResponse{}
@@ -1706,7 +1706,7 @@ func (c *saasRolloutsRESTClient) GetLocation(ctx context.Context, req *locationp
 // implementation and version.
 func (c *saasRolloutsRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}

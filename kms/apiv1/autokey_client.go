@@ -667,7 +667,7 @@ func (c *autokeyGRPCClient) ListKeyHandles(ctx context.Context, req *kmspb.ListK
 	}
 	opts = append((*c.CallOptions).ListKeyHandles[0:len((*c.CallOptions).ListKeyHandles):len((*c.CallOptions).ListKeyHandles)], opts...)
 	it := &KeyHandleIterator{}
-	req = proto.Clone(req).(*kmspb.ListKeyHandlesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*kmspb.KeyHandle, string, error) {
 		resp := &kmspb.ListKeyHandlesResponse{}
 		if pageToken != "" {
@@ -737,7 +737,7 @@ func (c *autokeyGRPCClient) ListLocations(ctx context.Context, req *locationpb.L
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -1005,7 +1005,7 @@ func (c *autokeyRESTClient) GetKeyHandle(ctx context.Context, req *kmspb.GetKeyH
 // ListKeyHandles lists KeyHandles.
 func (c *autokeyRESTClient) ListKeyHandles(ctx context.Context, req *kmspb.ListKeyHandlesRequest, opts ...gax.CallOption) *KeyHandleIterator {
 	it := &KeyHandleIterator{}
-	req = proto.Clone(req).(*kmspb.ListKeyHandlesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*kmspb.KeyHandle, string, error) {
 		resp := &kmspb.ListKeyHandlesResponse{}
@@ -1156,7 +1156,7 @@ func (c *autokeyRESTClient) GetLocation(ctx context.Context, req *locationpb.Get
 // implementation and version.
 func (c *autokeyRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}

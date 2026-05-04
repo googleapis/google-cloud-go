@@ -343,7 +343,7 @@ func (c *keyDashboardGRPCClient) ListCryptoKeys(ctx context.Context, req *invent
 	}
 	opts = append((*c.CallOptions).ListCryptoKeys[0:len((*c.CallOptions).ListCryptoKeys):len((*c.CallOptions).ListCryptoKeys)], opts...)
 	it := &CryptoKeyIterator{}
-	req = proto.Clone(req).(*inventorypb.ListCryptoKeysRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*kmspb.CryptoKey, string, error) {
 		resp := &inventorypb.ListCryptoKeysResponse{}
 		if pageToken != "" {
@@ -387,7 +387,7 @@ func (c *keyDashboardGRPCClient) ListCryptoKeys(ctx context.Context, req *invent
 // completely reflect the actual state of key metadata at call time.
 func (c *keyDashboardRESTClient) ListCryptoKeys(ctx context.Context, req *inventorypb.ListCryptoKeysRequest, opts ...gax.CallOption) *CryptoKeyIterator {
 	it := &CryptoKeyIterator{}
-	req = proto.Clone(req).(*inventorypb.ListCryptoKeysRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*kmspb.CryptoKey, string, error) {
 		resp := &inventorypb.ListCryptoKeysResponse{}

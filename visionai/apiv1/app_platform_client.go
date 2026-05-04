@@ -857,7 +857,7 @@ func (c *appPlatformGRPCClient) ListApplications(ctx context.Context, req *visio
 	}
 	opts = append((*c.CallOptions).ListApplications[0:len((*c.CallOptions).ListApplications):len((*c.CallOptions).ListApplications)], opts...)
 	it := &ApplicationIterator{}
-	req = proto.Clone(req).(*visionaipb.ListApplicationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*visionaipb.Application, string, error) {
 		resp := &visionaipb.ListApplicationsResponse{}
 		if pageToken != "" {
@@ -1138,7 +1138,7 @@ func (c *appPlatformGRPCClient) ListInstances(ctx context.Context, req *visionai
 	}
 	opts = append((*c.CallOptions).ListInstances[0:len((*c.CallOptions).ListInstances):len((*c.CallOptions).ListInstances)], opts...)
 	it := &InstanceIterator{}
-	req = proto.Clone(req).(*visionaipb.ListInstancesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*visionaipb.Instance, string, error) {
 		resp := &visionaipb.ListInstancesResponse{}
 		if pageToken != "" {
@@ -1292,7 +1292,7 @@ func (c *appPlatformGRPCClient) ListDrafts(ctx context.Context, req *visionaipb.
 	}
 	opts = append((*c.CallOptions).ListDrafts[0:len((*c.CallOptions).ListDrafts):len((*c.CallOptions).ListDrafts)], opts...)
 	it := &DraftIterator{}
-	req = proto.Clone(req).(*visionaipb.ListDraftsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*visionaipb.Draft, string, error) {
 		resp := &visionaipb.ListDraftsResponse{}
 		if pageToken != "" {
@@ -1443,7 +1443,7 @@ func (c *appPlatformGRPCClient) ListProcessors(ctx context.Context, req *visiona
 	}
 	opts = append((*c.CallOptions).ListProcessors[0:len((*c.CallOptions).ListProcessors):len((*c.CallOptions).ListProcessors)], opts...)
 	it := &ProcessorIterator{}
-	req = proto.Clone(req).(*visionaipb.ListProcessorsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*visionaipb.Processor, string, error) {
 		resp := &visionaipb.ListProcessorsResponse{}
 		if pageToken != "" {
@@ -1636,7 +1636,7 @@ func (c *appPlatformGRPCClient) ListLocations(ctx context.Context, req *location
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -1740,7 +1740,7 @@ func (c *appPlatformGRPCClient) ListOperations(ctx context.Context, req *longrun
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -1782,7 +1782,7 @@ func (c *appPlatformGRPCClient) ListOperations(ctx context.Context, req *longrun
 // ListApplications lists Applications in a given project and location.
 func (c *appPlatformRESTClient) ListApplications(ctx context.Context, req *visionaipb.ListApplicationsRequest, opts ...gax.CallOption) *ApplicationIterator {
 	it := &ApplicationIterator{}
-	req = proto.Clone(req).(*visionaipb.ListApplicationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*visionaipb.Application, string, error) {
 		resp := &visionaipb.ListApplicationsResponse{}
@@ -2471,7 +2471,7 @@ func (c *appPlatformRESTClient) UpdateApplicationStreamInput(ctx context.Context
 // ListInstances lists Instances in a given project and location.
 func (c *appPlatformRESTClient) ListInstances(ctx context.Context, req *visionaipb.ListInstancesRequest, opts ...gax.CallOption) *InstanceIterator {
 	it := &InstanceIterator{}
-	req = proto.Clone(req).(*visionaipb.ListInstancesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*visionaipb.Instance, string, error) {
 		resp := &visionaipb.ListInstancesResponse{}
@@ -2818,7 +2818,7 @@ func (c *appPlatformRESTClient) UpdateApplicationInstances(ctx context.Context, 
 // ListDrafts lists Drafts in a given project and location.
 func (c *appPlatformRESTClient) ListDrafts(ctx context.Context, req *visionaipb.ListDraftsRequest, opts ...gax.CallOption) *DraftIterator {
 	it := &DraftIterator{}
-	req = proto.Clone(req).(*visionaipb.ListDraftsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*visionaipb.Draft, string, error) {
 		resp := &visionaipb.ListDraftsResponse{}
@@ -3170,7 +3170,7 @@ func (c *appPlatformRESTClient) DeleteDraft(ctx context.Context, req *visionaipb
 // ListProcessors lists Processors in a given project and location.
 func (c *appPlatformRESTClient) ListProcessors(ctx context.Context, req *visionaipb.ListProcessorsRequest, opts ...gax.CallOption) *ProcessorIterator {
 	it := &ProcessorIterator{}
-	req = proto.Clone(req).(*visionaipb.ListProcessorsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*visionaipb.Processor, string, error) {
 		resp := &visionaipb.ListProcessorsResponse{}
@@ -3637,7 +3637,7 @@ func (c *appPlatformRESTClient) GetLocation(ctx context.Context, req *locationpb
 // ListLocations lists information about the supported locations for this service.
 func (c *appPlatformRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -3856,7 +3856,7 @@ func (c *appPlatformRESTClient) GetOperation(ctx context.Context, req *longrunni
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *appPlatformRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

@@ -2069,7 +2069,7 @@ func (c *gRPCClient) ListStoragePools(ctx context.Context, req *netapppb.ListSto
 	}
 	opts = append((*c.CallOptions).ListStoragePools[0:len((*c.CallOptions).ListStoragePools):len((*c.CallOptions).ListStoragePools)], opts...)
 	it := &StoragePoolIterator{}
-	req = proto.Clone(req).(*netapppb.ListStoragePoolsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*netapppb.StoragePool, string, error) {
 		resp := &netapppb.ListStoragePoolsResponse{}
 		if pageToken != "" {
@@ -2272,7 +2272,7 @@ func (c *gRPCClient) ListVolumes(ctx context.Context, req *netapppb.ListVolumesR
 	}
 	opts = append((*c.CallOptions).ListVolumes[0:len((*c.CallOptions).ListVolumes):len((*c.CallOptions).ListVolumes)], opts...)
 	it := &VolumeIterator{}
-	req = proto.Clone(req).(*netapppb.ListVolumesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*netapppb.Volume, string, error) {
 		resp := &netapppb.ListVolumesResponse{}
 		if pageToken != "" {
@@ -2475,7 +2475,7 @@ func (c *gRPCClient) ListSnapshots(ctx context.Context, req *netapppb.ListSnapsh
 	}
 	opts = append((*c.CallOptions).ListSnapshots[0:len((*c.CallOptions).ListSnapshots):len((*c.CallOptions).ListSnapshots)], opts...)
 	it := &SnapshotIterator{}
-	req = proto.Clone(req).(*netapppb.ListSnapshotsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*netapppb.Snapshot, string, error) {
 		resp := &netapppb.ListSnapshotsResponse{}
 		if pageToken != "" {
@@ -2626,7 +2626,7 @@ func (c *gRPCClient) ListActiveDirectories(ctx context.Context, req *netapppb.Li
 	}
 	opts = append((*c.CallOptions).ListActiveDirectories[0:len((*c.CallOptions).ListActiveDirectories):len((*c.CallOptions).ListActiveDirectories)], opts...)
 	it := &ActiveDirectoryIterator{}
-	req = proto.Clone(req).(*netapppb.ListActiveDirectoriesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*netapppb.ActiveDirectory, string, error) {
 		resp := &netapppb.ListActiveDirectoriesResponse{}
 		if pageToken != "" {
@@ -2777,7 +2777,7 @@ func (c *gRPCClient) ListKmsConfigs(ctx context.Context, req *netapppb.ListKmsCo
 	}
 	opts = append((*c.CallOptions).ListKmsConfigs[0:len((*c.CallOptions).ListKmsConfigs):len((*c.CallOptions).ListKmsConfigs)], opts...)
 	it := &KmsConfigIterator{}
-	req = proto.Clone(req).(*netapppb.ListKmsConfigsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*netapppb.KmsConfig, string, error) {
 		resp := &netapppb.ListKmsConfigsResponse{}
 		if pageToken != "" {
@@ -2978,7 +2978,7 @@ func (c *gRPCClient) ListReplications(ctx context.Context, req *netapppb.ListRep
 	}
 	opts = append((*c.CallOptions).ListReplications[0:len((*c.CallOptions).ListReplications):len((*c.CallOptions).ListReplications)], opts...)
 	it := &ReplicationIterator{}
-	req = proto.Clone(req).(*netapppb.ListReplicationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*netapppb.Replication, string, error) {
 		resp := &netapppb.ListReplicationsResponse{}
 		if pageToken != "" {
@@ -3309,7 +3309,7 @@ func (c *gRPCClient) ListBackupVaults(ctx context.Context, req *netapppb.ListBac
 	}
 	opts = append((*c.CallOptions).ListBackupVaults[0:len((*c.CallOptions).ListBackupVaults):len((*c.CallOptions).ListBackupVaults)], opts...)
 	it := &BackupVaultIterator{}
-	req = proto.Clone(req).(*netapppb.ListBackupVaultsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*netapppb.BackupVault, string, error) {
 		resp := &netapppb.ListBackupVaultsResponse{}
 		if pageToken != "" {
@@ -3460,7 +3460,7 @@ func (c *gRPCClient) ListBackups(ctx context.Context, req *netapppb.ListBackupsR
 	}
 	opts = append((*c.CallOptions).ListBackups[0:len((*c.CallOptions).ListBackups):len((*c.CallOptions).ListBackups)], opts...)
 	it := &BackupIterator{}
-	req = proto.Clone(req).(*netapppb.ListBackupsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*netapppb.Backup, string, error) {
 		resp := &netapppb.ListBackupsResponse{}
 		if pageToken != "" {
@@ -3611,7 +3611,7 @@ func (c *gRPCClient) ListBackupPolicies(ctx context.Context, req *netapppb.ListB
 	}
 	opts = append((*c.CallOptions).ListBackupPolicies[0:len((*c.CallOptions).ListBackupPolicies):len((*c.CallOptions).ListBackupPolicies)], opts...)
 	it := &BackupPolicyIterator{}
-	req = proto.Clone(req).(*netapppb.ListBackupPoliciesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*netapppb.BackupPolicy, string, error) {
 		resp := &netapppb.ListBackupPoliciesResponse{}
 		if pageToken != "" {
@@ -3712,7 +3712,7 @@ func (c *gRPCClient) ListQuotaRules(ctx context.Context, req *netapppb.ListQuota
 	}
 	opts = append((*c.CallOptions).ListQuotaRules[0:len((*c.CallOptions).ListQuotaRules):len((*c.CallOptions).ListQuotaRules)], opts...)
 	it := &QuotaRuleIterator{}
-	req = proto.Clone(req).(*netapppb.ListQuotaRulesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*netapppb.QuotaRule, string, error) {
 		resp := &netapppb.ListQuotaRulesResponse{}
 		if pageToken != "" {
@@ -3889,7 +3889,7 @@ func (c *gRPCClient) ListHostGroups(ctx context.Context, req *netapppb.ListHostG
 	}
 	opts = append((*c.CallOptions).ListHostGroups[0:len((*c.CallOptions).ListHostGroups):len((*c.CallOptions).ListHostGroups)], opts...)
 	it := &HostGroupIterator{}
-	req = proto.Clone(req).(*netapppb.ListHostGroupsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*netapppb.HostGroup, string, error) {
 		resp := &netapppb.ListHostGroupsResponse{}
 		if pageToken != "" {
@@ -4142,7 +4142,7 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -4246,7 +4246,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -4288,7 +4288,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // ListStoragePools returns descriptions of all storage pools owned by the caller.
 func (c *restClient) ListStoragePools(ctx context.Context, req *netapppb.ListStoragePoolsRequest, opts ...gax.CallOption) *StoragePoolIterator {
 	it := &StoragePoolIterator{}
-	req = proto.Clone(req).(*netapppb.ListStoragePoolsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*netapppb.StoragePool, string, error) {
 		resp := &netapppb.ListStoragePoolsResponse{}
@@ -4762,7 +4762,7 @@ func (c *restClient) SwitchActiveReplicaZone(ctx context.Context, req *netapppb.
 // ListVolumes lists Volumes in a given project.
 func (c *restClient) ListVolumes(ctx context.Context, req *netapppb.ListVolumesRequest, opts ...gax.CallOption) *VolumeIterator {
 	it := &VolumeIterator{}
-	req = proto.Clone(req).(*netapppb.ListVolumesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*netapppb.Volume, string, error) {
 		resp := &netapppb.ListVolumesResponse{}
@@ -5240,7 +5240,7 @@ func (c *restClient) EstablishVolumePeering(ctx context.Context, req *netapppb.E
 // ListSnapshots returns descriptions of all snapshots for a volume.
 func (c *restClient) ListSnapshots(ctx context.Context, req *netapppb.ListSnapshotsRequest, opts ...gax.CallOption) *SnapshotIterator {
 	it := &SnapshotIterator{}
-	req = proto.Clone(req).(*netapppb.ListSnapshotsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*netapppb.Snapshot, string, error) {
 		resp := &netapppb.ListSnapshotsResponse{}
@@ -5580,7 +5580,7 @@ func (c *restClient) UpdateSnapshot(ctx context.Context, req *netapppb.UpdateSna
 // ListActiveDirectories lists active directories.
 func (c *restClient) ListActiveDirectories(ctx context.Context, req *netapppb.ListActiveDirectoriesRequest, opts ...gax.CallOption) *ActiveDirectoryIterator {
 	it := &ActiveDirectoryIterator{}
-	req = proto.Clone(req).(*netapppb.ListActiveDirectoriesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*netapppb.ActiveDirectory, string, error) {
 		resp := &netapppb.ListActiveDirectoriesResponse{}
@@ -5921,7 +5921,7 @@ func (c *restClient) DeleteActiveDirectory(ctx context.Context, req *netapppb.De
 // ListKmsConfigs returns descriptions of all KMS configs owned by the caller.
 func (c *restClient) ListKmsConfigs(ctx context.Context, req *netapppb.ListKmsConfigsRequest, opts ...gax.CallOption) *KmsConfigIterator {
 	it := &KmsConfigIterator{}
-	req = proto.Clone(req).(*netapppb.ListKmsConfigsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*netapppb.KmsConfig, string, error) {
 		resp := &netapppb.ListKmsConfigsResponse{}
@@ -6391,7 +6391,7 @@ func (c *restClient) DeleteKmsConfig(ctx context.Context, req *netapppb.DeleteKm
 // ListReplications returns descriptions of all replications for a volume.
 func (c *restClient) ListReplications(ctx context.Context, req *netapppb.ListReplicationsRequest, opts ...gax.CallOption) *ReplicationIterator {
 	it := &ReplicationIterator{}
-	req = proto.Clone(req).(*netapppb.ListReplicationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*netapppb.Replication, string, error) {
 		resp := &netapppb.ListReplicationsResponse{}
@@ -7188,7 +7188,7 @@ func (c *restClient) GetBackupVault(ctx context.Context, req *netapppb.GetBackup
 // ListBackupVaults returns list of all available backup vaults.
 func (c *restClient) ListBackupVaults(ctx context.Context, req *netapppb.ListBackupVaultsRequest, opts ...gax.CallOption) *BackupVaultIterator {
 	it := &BackupVaultIterator{}
-	req = proto.Clone(req).(*netapppb.ListBackupVaultsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*netapppb.BackupVault, string, error) {
 		resp := &netapppb.ListBackupVaultsResponse{}
@@ -7531,7 +7531,7 @@ func (c *restClient) GetBackup(ctx context.Context, req *netapppb.GetBackupReque
 // ListBackups returns descriptions of all backups for a backupVault.
 func (c *restClient) ListBackups(ctx context.Context, req *netapppb.ListBackupsRequest, opts ...gax.CallOption) *BackupIterator {
 	it := &BackupIterator{}
-	req = proto.Clone(req).(*netapppb.ListBackupsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*netapppb.Backup, string, error) {
 		resp := &netapppb.ListBackupsResponse{}
@@ -7871,7 +7871,7 @@ func (c *restClient) GetBackupPolicy(ctx context.Context, req *netapppb.GetBacku
 // ListBackupPolicies returns list of all available backup policies.
 func (c *restClient) ListBackupPolicies(ctx context.Context, req *netapppb.ListBackupPoliciesRequest, opts ...gax.CallOption) *BackupPolicyIterator {
 	it := &BackupPolicyIterator{}
-	req = proto.Clone(req).(*netapppb.ListBackupPoliciesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*netapppb.BackupPolicy, string, error) {
 		resp := &netapppb.ListBackupPoliciesResponse{}
@@ -8086,7 +8086,7 @@ func (c *restClient) DeleteBackupPolicy(ctx context.Context, req *netapppb.Delet
 // ListQuotaRules returns list of all quota rules in a location.
 func (c *restClient) ListQuotaRules(ctx context.Context, req *netapppb.ListQuotaRulesRequest, opts ...gax.CallOption) *QuotaRuleIterator {
 	it := &QuotaRuleIterator{}
-	req = proto.Clone(req).(*netapppb.ListQuotaRulesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*netapppb.QuotaRule, string, error) {
 		resp := &netapppb.ListQuotaRulesResponse{}
@@ -8493,7 +8493,7 @@ func (c *restClient) RestoreBackupFiles(ctx context.Context, req *netapppb.Resto
 // host groups across all locations.
 func (c *restClient) ListHostGroups(ctx context.Context, req *netapppb.ListHostGroupsRequest, opts ...gax.CallOption) *HostGroupIterator {
 	it := &HostGroupIterator{}
-	req = proto.Clone(req).(*netapppb.ListHostGroupsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*netapppb.HostGroup, string, error) {
 		resp := &netapppb.ListHostGroupsResponse{}
@@ -9134,7 +9134,7 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 // implementation and version.
 func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -9353,7 +9353,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

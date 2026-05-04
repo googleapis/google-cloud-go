@@ -336,7 +336,7 @@ func (c *addressesRESTClient) Connection() *grpc.ClientConn {
 // returnPartialSuccess parameter to true.
 func (c *addressesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListAddressesRequest, opts ...gax.CallOption) *AddressesScopedListPairIterator {
 	it := &AddressesScopedListPairIterator{}
-	req = proto.Clone(req).(*computepb.AggregatedListAddressesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]AddressesScopedListPair, string, error) {
 		resp := &computepb.AddressAggregatedList{}
@@ -630,7 +630,7 @@ func (c *addressesRESTClient) Insert(ctx context.Context, req *computepb.InsertA
 // the specified region.
 func (c *addressesRESTClient) List(ctx context.Context, req *computepb.ListAddressesRequest, opts ...gax.CallOption) *AddressIterator {
 	it := &AddressIterator{}
-	req = proto.Clone(req).(*computepb.ListAddressesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.Address, string, error) {
 		resp := &computepb.AddressList{}

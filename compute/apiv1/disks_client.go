@@ -575,7 +575,7 @@ func (c *disksRESTClient) AddResourcePolicies(ctx context.Context, req *computep
 // returnPartialSuccess parameter to true.
 func (c *disksRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListDisksRequest, opts ...gax.CallOption) *DisksScopedListPairIterator {
 	it := &DisksScopedListPairIterator{}
-	req = proto.Clone(req).(*computepb.AggregatedListDisksRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]DisksScopedListPair, string, error) {
 		resp := &computepb.DiskAggregatedList{}
@@ -1171,7 +1171,7 @@ func (c *disksRESTClient) Insert(ctx context.Context, req *computepb.InsertDiskR
 // the specified zone.
 func (c *disksRESTClient) List(ctx context.Context, req *computepb.ListDisksRequest, opts ...gax.CallOption) *DiskIterator {
 	it := &DiskIterator{}
-	req = proto.Clone(req).(*computepb.ListDisksRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.Disk, string, error) {
 		resp := &computepb.DiskList{}

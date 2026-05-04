@@ -1180,7 +1180,7 @@ func (c *instancesRESTClient) AddResourcePolicies(ctx context.Context, req *comp
 // returnPartialSuccess parameter to true.
 func (c *instancesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListInstancesRequest, opts ...gax.CallOption) *InstancesScopedListPairIterator {
 	it := &InstancesScopedListPairIterator{}
-	req = proto.Clone(req).(*computepb.AggregatedListInstancesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]InstancesScopedListPair, string, error) {
 		resp := &computepb.InstanceAggregatedList{}
@@ -2193,7 +2193,7 @@ func (c *instancesRESTClient) Insert(ctx context.Context, req *computepb.InsertI
 // the specified zone.
 func (c *instancesRESTClient) List(ctx context.Context, req *computepb.ListInstancesRequest, opts ...gax.CallOption) *InstanceIterator {
 	it := &InstanceIterator{}
-	req = proto.Clone(req).(*computepb.ListInstancesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.Instance, string, error) {
 		resp := &computepb.InstanceList{}
@@ -2283,7 +2283,7 @@ func (c *instancesRESTClient) List(ctx context.Context, req *computepb.ListInsta
 // referrers to VM instances.
 func (c *instancesRESTClient) ListReferrers(ctx context.Context, req *computepb.ListReferrersInstancesRequest, opts ...gax.CallOption) *ReferenceIterator {
 	it := &ReferenceIterator{}
-	req = proto.Clone(req).(*computepb.ListReferrersInstancesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.Reference, string, error) {
 		resp := &computepb.InstanceListReferrers{}

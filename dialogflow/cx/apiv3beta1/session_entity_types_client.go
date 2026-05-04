@@ -568,7 +568,7 @@ func (c *sessionEntityTypesGRPCClient) ListSessionEntityTypes(ctx context.Contex
 	}
 	opts = append((*c.CallOptions).ListSessionEntityTypes[0:len((*c.CallOptions).ListSessionEntityTypes):len((*c.CallOptions).ListSessionEntityTypes)], opts...)
 	it := &SessionEntityTypeIterator{}
-	req = proto.Clone(req).(*cxpb.ListSessionEntityTypesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cxpb.SessionEntityType, string, error) {
 		resp := &cxpb.ListSessionEntityTypesResponse{}
 		if pageToken != "" {
@@ -727,7 +727,7 @@ func (c *sessionEntityTypesGRPCClient) ListLocations(ctx context.Context, req *l
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -814,7 +814,7 @@ func (c *sessionEntityTypesGRPCClient) ListOperations(ctx context.Context, req *
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -856,7 +856,7 @@ func (c *sessionEntityTypesGRPCClient) ListOperations(ctx context.Context, req *
 // ListSessionEntityTypes returns the list of all session entity types in the specified session.
 func (c *sessionEntityTypesRESTClient) ListSessionEntityTypes(ctx context.Context, req *cxpb.ListSessionEntityTypesRequest, opts ...gax.CallOption) *SessionEntityTypeIterator {
 	it := &SessionEntityTypeIterator{}
-	req = proto.Clone(req).(*cxpb.ListSessionEntityTypesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cxpb.SessionEntityType, string, error) {
 		resp := &cxpb.ListSessionEntityTypesResponse{}
@@ -1235,7 +1235,7 @@ func (c *sessionEntityTypesRESTClient) GetLocation(ctx context.Context, req *loc
 // implementation and version.
 func (c *sessionEntityTypesRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -1409,7 +1409,7 @@ func (c *sessionEntityTypesRESTClient) GetOperation(ctx context.Context, req *lo
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *sessionEntityTypesRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

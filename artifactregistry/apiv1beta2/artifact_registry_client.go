@@ -1149,7 +1149,7 @@ func (c *gRPCClient) ListRepositories(ctx context.Context, req *artifactregistry
 	}
 	opts = append((*c.CallOptions).ListRepositories[0:len((*c.CallOptions).ListRepositories):len((*c.CallOptions).ListRepositories)], opts...)
 	it := &RepositoryIterator{}
-	req = proto.Clone(req).(*artifactregistrypb.ListRepositoriesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*artifactregistrypb.Repository, string, error) {
 		resp := &artifactregistrypb.ListRepositoriesResponse{}
 		if pageToken != "" {
@@ -1295,7 +1295,7 @@ func (c *gRPCClient) ListPackages(ctx context.Context, req *artifactregistrypb.L
 	}
 	opts = append((*c.CallOptions).ListPackages[0:len((*c.CallOptions).ListPackages):len((*c.CallOptions).ListPackages)], opts...)
 	it := &PackageIterator{}
-	req = proto.Clone(req).(*artifactregistrypb.ListPackagesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*artifactregistrypb.Package, string, error) {
 		resp := &artifactregistrypb.ListPackagesResponse{}
 		if pageToken != "" {
@@ -1388,7 +1388,7 @@ func (c *gRPCClient) ListVersions(ctx context.Context, req *artifactregistrypb.L
 	}
 	opts = append((*c.CallOptions).ListVersions[0:len((*c.CallOptions).ListVersions):len((*c.CallOptions).ListVersions)], opts...)
 	it := &VersionIterator{}
-	req = proto.Clone(req).(*artifactregistrypb.ListVersionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*artifactregistrypb.Version, string, error) {
 		resp := &artifactregistrypb.ListVersionsResponse{}
 		if pageToken != "" {
@@ -1481,7 +1481,7 @@ func (c *gRPCClient) ListFiles(ctx context.Context, req *artifactregistrypb.List
 	}
 	opts = append((*c.CallOptions).ListFiles[0:len((*c.CallOptions).ListFiles):len((*c.CallOptions).ListFiles)], opts...)
 	it := &FileIterator{}
-	req = proto.Clone(req).(*artifactregistrypb.ListFilesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*artifactregistrypb.File, string, error) {
 		resp := &artifactregistrypb.ListFilesResponse{}
 		if pageToken != "" {
@@ -1551,7 +1551,7 @@ func (c *gRPCClient) ListTags(ctx context.Context, req *artifactregistrypb.ListT
 	}
 	opts = append((*c.CallOptions).ListTags[0:len((*c.CallOptions).ListTags):len((*c.CallOptions).ListTags)], opts...)
 	it := &TagIterator{}
-	req = proto.Clone(req).(*artifactregistrypb.ListTagsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*artifactregistrypb.Tag, string, error) {
 		resp := &artifactregistrypb.ListTagsResponse{}
 		if pageToken != "" {
@@ -1818,7 +1818,7 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -1992,7 +1992,7 @@ func (c *restClient) ImportYumArtifacts(ctx context.Context, req *artifactregist
 // ListRepositories lists repositories.
 func (c *restClient) ListRepositories(ctx context.Context, req *artifactregistrypb.ListRepositoriesRequest, opts ...gax.CallOption) *RepositoryIterator {
 	it := &RepositoryIterator{}
-	req = proto.Clone(req).(*artifactregistrypb.ListRepositoriesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*artifactregistrypb.Repository, string, error) {
 		resp := &artifactregistrypb.ListRepositoriesResponse{}
@@ -2328,7 +2328,7 @@ func (c *restClient) DeleteRepository(ctx context.Context, req *artifactregistry
 // ListPackages lists packages.
 func (c *restClient) ListPackages(ctx context.Context, req *artifactregistrypb.ListPackagesRequest, opts ...gax.CallOption) *PackageIterator {
 	it := &PackageIterator{}
-	req = proto.Clone(req).(*artifactregistrypb.ListPackagesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*artifactregistrypb.Package, string, error) {
 		resp := &artifactregistrypb.ListPackagesResponse{}
@@ -2518,7 +2518,7 @@ func (c *restClient) DeletePackage(ctx context.Context, req *artifactregistrypb.
 // ListVersions lists versions.
 func (c *restClient) ListVersions(ctx context.Context, req *artifactregistrypb.ListVersionsRequest, opts ...gax.CallOption) *VersionIterator {
 	it := &VersionIterator{}
-	req = proto.Clone(req).(*artifactregistrypb.ListVersionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*artifactregistrypb.Version, string, error) {
 		resp := &artifactregistrypb.ListVersionsResponse{}
@@ -2720,7 +2720,7 @@ func (c *restClient) DeleteVersion(ctx context.Context, req *artifactregistrypb.
 // ListFiles lists files.
 func (c *restClient) ListFiles(ctx context.Context, req *artifactregistrypb.ListFilesRequest, opts ...gax.CallOption) *FileIterator {
 	it := &FileIterator{}
-	req = proto.Clone(req).(*artifactregistrypb.ListFilesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*artifactregistrypb.File, string, error) {
 		resp := &artifactregistrypb.ListFilesResponse{}
@@ -2855,7 +2855,7 @@ func (c *restClient) GetFile(ctx context.Context, req *artifactregistrypb.GetFil
 // ListTags lists tags.
 func (c *restClient) ListTags(ctx context.Context, req *artifactregistrypb.ListTagsRequest, opts ...gax.CallOption) *TagIterator {
 	it := &TagIterator{}
-	req = proto.Clone(req).(*artifactregistrypb.ListTagsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*artifactregistrypb.Tag, string, error) {
 		resp := &artifactregistrypb.ListTagsResponse{}
@@ -3526,7 +3526,7 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 // ListLocations lists information about the supported locations for this service.
 func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}

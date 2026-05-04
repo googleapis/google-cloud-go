@@ -443,7 +443,7 @@ func (c *gkeInferenceQuickstartGRPCClient) FetchModels(ctx context.Context, req 
 	}
 	opts = append((*c.CallOptions).FetchModels[0:len((*c.CallOptions).FetchModels):len((*c.CallOptions).FetchModels)], opts...)
 	it := &StringIterator{}
-	req = proto.Clone(req).(*gkerecommenderpb.FetchModelsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]string, string, error) {
 		resp := &gkerecommenderpb.FetchModelsResponse{}
 		if pageToken != "" {
@@ -489,7 +489,7 @@ func (c *gkeInferenceQuickstartGRPCClient) FetchModelServers(ctx context.Context
 	}
 	opts = append((*c.CallOptions).FetchModelServers[0:len((*c.CallOptions).FetchModelServers):len((*c.CallOptions).FetchModelServers)], opts...)
 	it := &StringIterator{}
-	req = proto.Clone(req).(*gkerecommenderpb.FetchModelServersRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]string, string, error) {
 		resp := &gkerecommenderpb.FetchModelServersResponse{}
 		if pageToken != "" {
@@ -535,7 +535,7 @@ func (c *gkeInferenceQuickstartGRPCClient) FetchModelServerVersions(ctx context.
 	}
 	opts = append((*c.CallOptions).FetchModelServerVersions[0:len((*c.CallOptions).FetchModelServerVersions):len((*c.CallOptions).FetchModelServerVersions)], opts...)
 	it := &StringIterator{}
-	req = proto.Clone(req).(*gkerecommenderpb.FetchModelServerVersionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]string, string, error) {
 		resp := &gkerecommenderpb.FetchModelServerVersionsResponse{}
 		if pageToken != "" {
@@ -581,7 +581,7 @@ func (c *gkeInferenceQuickstartGRPCClient) FetchProfiles(ctx context.Context, re
 	}
 	opts = append((*c.CallOptions).FetchProfiles[0:len((*c.CallOptions).FetchProfiles):len((*c.CallOptions).FetchProfiles)], opts...)
 	it := &ProfileIterator{}
-	req = proto.Clone(req).(*gkerecommenderpb.FetchProfilesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*gkerecommenderpb.Profile, string, error) {
 		resp := &gkerecommenderpb.FetchProfilesResponse{}
 		if pageToken != "" {
@@ -660,7 +660,7 @@ func (c *gkeInferenceQuickstartGRPCClient) FetchBenchmarkingData(ctx context.Con
 // owner/model_name format.
 func (c *gkeInferenceQuickstartRESTClient) FetchModels(ctx context.Context, req *gkerecommenderpb.FetchModelsRequest, opts ...gax.CallOption) *StringIterator {
 	it := &StringIterator{}
-	req = proto.Clone(req).(*gkerecommenderpb.FetchModelsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]string, string, error) {
 		resp := &gkerecommenderpb.FetchModelsResponse{}
@@ -739,7 +739,7 @@ func (c *gkeInferenceQuickstartRESTClient) FetchModels(ctx context.Context, req 
 // lowercase names (e.g., vllm).
 func (c *gkeInferenceQuickstartRESTClient) FetchModelServers(ctx context.Context, req *gkerecommenderpb.FetchModelServersRequest, opts ...gax.CallOption) *StringIterator {
 	it := &StringIterator{}
-	req = proto.Clone(req).(*gkerecommenderpb.FetchModelServersRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]string, string, error) {
 		resp := &gkerecommenderpb.FetchModelServersResponse{}
@@ -824,7 +824,7 @@ func (c *gkeInferenceQuickstartRESTClient) FetchModelServers(ctx context.Context
 // schemas are present.
 func (c *gkeInferenceQuickstartRESTClient) FetchModelServerVersions(ctx context.Context, req *gkerecommenderpb.FetchModelServerVersionsRequest, opts ...gax.CallOption) *StringIterator {
 	it := &StringIterator{}
-	req = proto.Clone(req).(*gkerecommenderpb.FetchModelServerVersionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]string, string, error) {
 		resp := &gkerecommenderpb.FetchModelServerVersionsResponse{}
@@ -914,7 +914,7 @@ func (c *gkeInferenceQuickstartRESTClient) FetchModelServerVersions(ctx context.
 // for details.
 func (c *gkeInferenceQuickstartRESTClient) FetchProfiles(ctx context.Context, req *gkerecommenderpb.FetchProfilesRequest, opts ...gax.CallOption) *ProfileIterator {
 	it := &ProfileIterator{}
-	req = proto.Clone(req).(*gkerecommenderpb.FetchProfilesRequest)
+	req = proto.CloneOf(req)
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*gkerecommenderpb.Profile, string, error) {

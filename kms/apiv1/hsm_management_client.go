@@ -845,7 +845,7 @@ func (c *hsmManagementGRPCClient) ListSingleTenantHsmInstances(ctx context.Conte
 	}
 	opts = append((*c.CallOptions).ListSingleTenantHsmInstances[0:len((*c.CallOptions).ListSingleTenantHsmInstances):len((*c.CallOptions).ListSingleTenantHsmInstances)], opts...)
 	it := &SingleTenantHsmInstanceIterator{}
-	req = proto.Clone(req).(*kmspb.ListSingleTenantHsmInstancesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*kmspb.SingleTenantHsmInstance, string, error) {
 		resp := &kmspb.ListSingleTenantHsmInstancesResponse{}
 		if pageToken != "" {
@@ -1047,7 +1047,7 @@ func (c *hsmManagementGRPCClient) ListSingleTenantHsmInstanceProposals(ctx conte
 	}
 	opts = append((*c.CallOptions).ListSingleTenantHsmInstanceProposals[0:len((*c.CallOptions).ListSingleTenantHsmInstanceProposals):len((*c.CallOptions).ListSingleTenantHsmInstanceProposals)], opts...)
 	it := &SingleTenantHsmInstanceProposalIterator{}
-	req = proto.Clone(req).(*kmspb.ListSingleTenantHsmInstanceProposalsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*kmspb.SingleTenantHsmInstanceProposal, string, error) {
 		resp := &kmspb.ListSingleTenantHsmInstanceProposalsResponse{}
 		if pageToken != "" {
@@ -1137,7 +1137,7 @@ func (c *hsmManagementGRPCClient) ListLocations(ctx context.Context, req *locati
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -1273,7 +1273,7 @@ func (c *hsmManagementGRPCClient) GetOperation(ctx context.Context, req *longrun
 // SingleTenantHsmInstances.
 func (c *hsmManagementRESTClient) ListSingleTenantHsmInstances(ctx context.Context, req *kmspb.ListSingleTenantHsmInstancesRequest, opts ...gax.CallOption) *SingleTenantHsmInstanceIterator {
 	it := &SingleTenantHsmInstanceIterator{}
-	req = proto.Clone(req).(*kmspb.ListSingleTenantHsmInstancesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*kmspb.SingleTenantHsmInstance, string, error) {
 		resp := &kmspb.ListSingleTenantHsmInstancesResponse{}
@@ -1765,7 +1765,7 @@ func (c *hsmManagementRESTClient) GetSingleTenantHsmInstanceProposal(ctx context
 // SingleTenantHsmInstanceProposals.
 func (c *hsmManagementRESTClient) ListSingleTenantHsmInstanceProposals(ctx context.Context, req *kmspb.ListSingleTenantHsmInstanceProposalsRequest, opts ...gax.CallOption) *SingleTenantHsmInstanceProposalIterator {
 	it := &SingleTenantHsmInstanceProposalIterator{}
-	req = proto.Clone(req).(*kmspb.ListSingleTenantHsmInstanceProposalsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*kmspb.SingleTenantHsmInstanceProposal, string, error) {
 		resp := &kmspb.ListSingleTenantHsmInstanceProposalsResponse{}
@@ -1965,7 +1965,7 @@ func (c *hsmManagementRESTClient) GetLocation(ctx context.Context, req *location
 // implementation and version.
 func (c *hsmManagementRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}

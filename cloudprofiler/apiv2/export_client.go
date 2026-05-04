@@ -361,7 +361,7 @@ func (c *exportGRPCClient) ListProfiles(ctx context.Context, req *cloudprofilerp
 	}
 	opts = append((*c.CallOptions).ListProfiles[0:len((*c.CallOptions).ListProfiles):len((*c.CallOptions).ListProfiles)], opts...)
 	it := &ProfileIterator{}
-	req = proto.Clone(req).(*cloudprofilerpb.ListProfilesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cloudprofilerpb.Profile, string, error) {
 		resp := &cloudprofilerpb.ListProfilesResponse{}
 		if pageToken != "" {
@@ -404,7 +404,7 @@ func (c *exportGRPCClient) ListProfiles(ctx context.Context, req *cloudprofilerp
 // has permission to view.
 func (c *exportRESTClient) ListProfiles(ctx context.Context, req *cloudprofilerpb.ListProfilesRequest, opts ...gax.CallOption) *ProfileIterator {
 	it := &ProfileIterator{}
-	req = proto.Clone(req).(*cloudprofilerpb.ListProfilesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cloudprofilerpb.Profile, string, error) {
 		resp := &cloudprofilerpb.ListProfilesResponse{}

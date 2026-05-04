@@ -755,7 +755,7 @@ func (c *gRPCClient) ListScanConfigs(ctx context.Context, req *websecurityscanne
 	}
 	opts = append((*c.CallOptions).ListScanConfigs[0:len((*c.CallOptions).ListScanConfigs):len((*c.CallOptions).ListScanConfigs)], opts...)
 	it := &ScanConfigIterator{}
-	req = proto.Clone(req).(*websecurityscannerpb.ListScanConfigsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*websecurityscannerpb.ScanConfig, string, error) {
 		resp := &websecurityscannerpb.ListScanConfigsResponse{}
 		if pageToken != "" {
@@ -867,7 +867,7 @@ func (c *gRPCClient) ListScanRuns(ctx context.Context, req *websecurityscannerpb
 	}
 	opts = append((*c.CallOptions).ListScanRuns[0:len((*c.CallOptions).ListScanRuns):len((*c.CallOptions).ListScanRuns)], opts...)
 	it := &ScanRunIterator{}
-	req = proto.Clone(req).(*websecurityscannerpb.ListScanRunsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*websecurityscannerpb.ScanRun, string, error) {
 		resp := &websecurityscannerpb.ListScanRunsResponse{}
 		if pageToken != "" {
@@ -937,7 +937,7 @@ func (c *gRPCClient) ListCrawledUrls(ctx context.Context, req *websecurityscanne
 	}
 	opts = append((*c.CallOptions).ListCrawledUrls[0:len((*c.CallOptions).ListCrawledUrls):len((*c.CallOptions).ListCrawledUrls)], opts...)
 	it := &CrawledUrlIterator{}
-	req = proto.Clone(req).(*websecurityscannerpb.ListCrawledUrlsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*websecurityscannerpb.CrawledUrl, string, error) {
 		resp := &websecurityscannerpb.ListCrawledUrlsResponse{}
 		if pageToken != "" {
@@ -1007,7 +1007,7 @@ func (c *gRPCClient) ListFindings(ctx context.Context, req *websecurityscannerpb
 	}
 	opts = append((*c.CallOptions).ListFindings[0:len((*c.CallOptions).ListFindings):len((*c.CallOptions).ListFindings)], opts...)
 	it := &FindingIterator{}
-	req = proto.Clone(req).(*websecurityscannerpb.ListFindingsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*websecurityscannerpb.Finding, string, error) {
 		resp := &websecurityscannerpb.ListFindingsResponse{}
 		if pageToken != "" {
@@ -1224,7 +1224,7 @@ func (c *restClient) GetScanConfig(ctx context.Context, req *websecurityscannerp
 // ListScanConfigs lists ScanConfigs under a given project.
 func (c *restClient) ListScanConfigs(ctx context.Context, req *websecurityscannerpb.ListScanConfigsRequest, opts ...gax.CallOption) *ScanConfigIterator {
 	it := &ScanConfigIterator{}
-	req = proto.Clone(req).(*websecurityscannerpb.ListScanConfigsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*websecurityscannerpb.ScanConfig, string, error) {
 		resp := &websecurityscannerpb.ListScanConfigsResponse{}
@@ -1485,7 +1485,7 @@ func (c *restClient) GetScanRun(ctx context.Context, req *websecurityscannerpb.G
 // stop time.
 func (c *restClient) ListScanRuns(ctx context.Context, req *websecurityscannerpb.ListScanRunsRequest, opts ...gax.CallOption) *ScanRunIterator {
 	it := &ScanRunIterator{}
-	req = proto.Clone(req).(*websecurityscannerpb.ListScanRunsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*websecurityscannerpb.ScanRun, string, error) {
 		resp := &websecurityscannerpb.ListScanRunsResponse{}
@@ -1623,7 +1623,7 @@ func (c *restClient) StopScanRun(ctx context.Context, req *websecurityscannerpb.
 // ListCrawledUrls list CrawledUrls under a given ScanRun.
 func (c *restClient) ListCrawledUrls(ctx context.Context, req *websecurityscannerpb.ListCrawledUrlsRequest, opts ...gax.CallOption) *CrawledUrlIterator {
 	it := &CrawledUrlIterator{}
-	req = proto.Clone(req).(*websecurityscannerpb.ListCrawledUrlsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*websecurityscannerpb.CrawledUrl, string, error) {
 		resp := &websecurityscannerpb.ListCrawledUrlsResponse{}
@@ -1755,7 +1755,7 @@ func (c *restClient) GetFinding(ctx context.Context, req *websecurityscannerpb.G
 // ListFindings list Findings under a given ScanRun.
 func (c *restClient) ListFindings(ctx context.Context, req *websecurityscannerpb.ListFindingsRequest, opts ...gax.CallOption) *FindingIterator {
 	it := &FindingIterator{}
-	req = proto.Clone(req).(*websecurityscannerpb.ListFindingsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*websecurityscannerpb.Finding, string, error) {
 		resp := &websecurityscannerpb.ListFindingsResponse{}

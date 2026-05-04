@@ -517,7 +517,7 @@ func (c *regionSslPoliciesRESTClient) Insert(ctx context.Context, req *computepb
 // project and region.
 func (c *regionSslPoliciesRESTClient) List(ctx context.Context, req *computepb.ListRegionSslPoliciesRequest, opts ...gax.CallOption) *SslPolicyIterator {
 	it := &SslPolicyIterator{}
-	req = proto.Clone(req).(*computepb.ListRegionSslPoliciesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.SslPolicy, string, error) {
 		resp := &computepb.SslPoliciesList{}

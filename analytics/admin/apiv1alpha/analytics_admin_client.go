@@ -5350,7 +5350,7 @@ func (c *analyticsAdminGRPCClient) ListAccounts(ctx context.Context, req *adminp
 	}
 	opts = append((*c.CallOptions).ListAccounts[0:len((*c.CallOptions).ListAccounts):len((*c.CallOptions).ListAccounts)], opts...)
 	it := &AccountIterator{}
-	req = proto.Clone(req).(*adminpb.ListAccountsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.Account, string, error) {
 		resp := &adminpb.ListAccountsResponse{}
 		if pageToken != "" {
@@ -5455,7 +5455,7 @@ func (c *analyticsAdminGRPCClient) ListAccountSummaries(ctx context.Context, req
 	}
 	opts = append((*c.CallOptions).ListAccountSummaries[0:len((*c.CallOptions).ListAccountSummaries):len((*c.CallOptions).ListAccountSummaries)], opts...)
 	it := &AccountSummaryIterator{}
-	req = proto.Clone(req).(*adminpb.ListAccountSummariesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.AccountSummary, string, error) {
 		resp := &adminpb.ListAccountSummariesResponse{}
 		if pageToken != "" {
@@ -5525,7 +5525,7 @@ func (c *analyticsAdminGRPCClient) ListProperties(ctx context.Context, req *admi
 	}
 	opts = append((*c.CallOptions).ListProperties[0:len((*c.CallOptions).ListProperties):len((*c.CallOptions).ListProperties)], opts...)
 	it := &PropertyIterator{}
-	req = proto.Clone(req).(*adminpb.ListPropertiesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.Property, string, error) {
 		resp := &adminpb.ListPropertiesResponse{}
 		if pageToken != "" {
@@ -5684,7 +5684,7 @@ func (c *analyticsAdminGRPCClient) ListFirebaseLinks(ctx context.Context, req *a
 	}
 	opts = append((*c.CallOptions).ListFirebaseLinks[0:len((*c.CallOptions).ListFirebaseLinks):len((*c.CallOptions).ListFirebaseLinks)], opts...)
 	it := &FirebaseLinkIterator{}
-	req = proto.Clone(req).(*adminpb.ListFirebaseLinksRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.FirebaseLink, string, error) {
 		resp := &adminpb.ListFirebaseLinksResponse{}
 		if pageToken != "" {
@@ -5825,7 +5825,7 @@ func (c *analyticsAdminGRPCClient) ListGoogleAdsLinks(ctx context.Context, req *
 	}
 	opts = append((*c.CallOptions).ListGoogleAdsLinks[0:len((*c.CallOptions).ListGoogleAdsLinks):len((*c.CallOptions).ListGoogleAdsLinks)], opts...)
 	it := &GoogleAdsLinkIterator{}
-	req = proto.Clone(req).(*adminpb.ListGoogleAdsLinksRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.GoogleAdsLink, string, error) {
 		resp := &adminpb.ListGoogleAdsLinksResponse{}
 		if pageToken != "" {
@@ -5925,7 +5925,7 @@ func (c *analyticsAdminGRPCClient) ListMeasurementProtocolSecrets(ctx context.Co
 	}
 	opts = append((*c.CallOptions).ListMeasurementProtocolSecrets[0:len((*c.CallOptions).ListMeasurementProtocolSecrets):len((*c.CallOptions).ListMeasurementProtocolSecrets)], opts...)
 	it := &MeasurementProtocolSecretIterator{}
-	req = proto.Clone(req).(*adminpb.ListMeasurementProtocolSecretsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.MeasurementProtocolSecret, string, error) {
 		resp := &adminpb.ListMeasurementProtocolSecretsResponse{}
 		if pageToken != "" {
@@ -6155,7 +6155,7 @@ func (c *analyticsAdminGRPCClient) ListSKAdNetworkConversionValueSchemas(ctx con
 	}
 	opts = append((*c.CallOptions).ListSKAdNetworkConversionValueSchemas[0:len((*c.CallOptions).ListSKAdNetworkConversionValueSchemas):len((*c.CallOptions).ListSKAdNetworkConversionValueSchemas)], opts...)
 	it := &SKAdNetworkConversionValueSchemaIterator{}
-	req = proto.Clone(req).(*adminpb.ListSKAdNetworkConversionValueSchemasRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.SKAdNetworkConversionValueSchema, string, error) {
 		resp := &adminpb.ListSKAdNetworkConversionValueSchemasResponse{}
 		if pageToken != "" {
@@ -6207,7 +6207,7 @@ func (c *analyticsAdminGRPCClient) SearchChangeHistoryEvents(ctx context.Context
 	}
 	opts = append((*c.CallOptions).SearchChangeHistoryEvents[0:len((*c.CallOptions).SearchChangeHistoryEvents):len((*c.CallOptions).SearchChangeHistoryEvents)], opts...)
 	it := &ChangeHistoryEventIterator{}
-	req = proto.Clone(req).(*adminpb.SearchChangeHistoryEventsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.ChangeHistoryEvent, string, error) {
 		resp := &adminpb.SearchChangeHistoryEventsResponse{}
 		if pageToken != "" {
@@ -6393,7 +6393,7 @@ func (c *analyticsAdminGRPCClient) ListConversionEvents(ctx context.Context, req
 	}
 	opts = append((*c.CallOptions).ListConversionEvents[0:len((*c.CallOptions).ListConversionEvents):len((*c.CallOptions).ListConversionEvents)], opts...)
 	it := &ConversionEventIterator{}
-	req = proto.Clone(req).(*adminpb.ListConversionEventsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.ConversionEvent, string, error) {
 		resp := &adminpb.ListConversionEventsResponse{}
 		if pageToken != "" {
@@ -6534,7 +6534,7 @@ func (c *analyticsAdminGRPCClient) ListKeyEvents(ctx context.Context, req *admin
 	}
 	opts = append((*c.CallOptions).ListKeyEvents[0:len((*c.CallOptions).ListKeyEvents):len((*c.CallOptions).ListKeyEvents)], opts...)
 	it := &KeyEventIterator{}
-	req = proto.Clone(req).(*adminpb.ListKeyEventsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.KeyEvent, string, error) {
 		resp := &adminpb.ListKeyEventsResponse{}
 		if pageToken != "" {
@@ -6610,7 +6610,7 @@ func (c *analyticsAdminGRPCClient) ListDisplayVideo360AdvertiserLinks(ctx contex
 	}
 	opts = append((*c.CallOptions).ListDisplayVideo360AdvertiserLinks[0:len((*c.CallOptions).ListDisplayVideo360AdvertiserLinks):len((*c.CallOptions).ListDisplayVideo360AdvertiserLinks)], opts...)
 	it := &DisplayVideo360AdvertiserLinkIterator{}
-	req = proto.Clone(req).(*adminpb.ListDisplayVideo360AdvertiserLinksRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.DisplayVideo360AdvertiserLink, string, error) {
 		resp := &adminpb.ListDisplayVideo360AdvertiserLinksResponse{}
 		if pageToken != "" {
@@ -6751,7 +6751,7 @@ func (c *analyticsAdminGRPCClient) ListDisplayVideo360AdvertiserLinkProposals(ct
 	}
 	opts = append((*c.CallOptions).ListDisplayVideo360AdvertiserLinkProposals[0:len((*c.CallOptions).ListDisplayVideo360AdvertiserLinkProposals):len((*c.CallOptions).ListDisplayVideo360AdvertiserLinkProposals)], opts...)
 	it := &DisplayVideo360AdvertiserLinkProposalIterator{}
-	req = proto.Clone(req).(*adminpb.ListDisplayVideo360AdvertiserLinkProposalsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.DisplayVideo360AdvertiserLinkProposal, string, error) {
 		resp := &adminpb.ListDisplayVideo360AdvertiserLinkProposalsResponse{}
 		if pageToken != "" {
@@ -6940,7 +6940,7 @@ func (c *analyticsAdminGRPCClient) ListCustomDimensions(ctx context.Context, req
 	}
 	opts = append((*c.CallOptions).ListCustomDimensions[0:len((*c.CallOptions).ListCustomDimensions):len((*c.CallOptions).ListCustomDimensions)], opts...)
 	it := &CustomDimensionIterator{}
-	req = proto.Clone(req).(*adminpb.ListCustomDimensionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.CustomDimension, string, error) {
 		resp := &adminpb.ListCustomDimensionsResponse{}
 		if pageToken != "" {
@@ -7081,7 +7081,7 @@ func (c *analyticsAdminGRPCClient) ListCustomMetrics(ctx context.Context, req *a
 	}
 	opts = append((*c.CallOptions).ListCustomMetrics[0:len((*c.CallOptions).ListCustomMetrics):len((*c.CallOptions).ListCustomMetrics)], opts...)
 	it := &CustomMetricIterator{}
-	req = proto.Clone(req).(*adminpb.ListCustomMetricsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.CustomMetric, string, error) {
 		resp := &adminpb.ListCustomMetricsResponse{}
 		if pageToken != "" {
@@ -7287,7 +7287,7 @@ func (c *analyticsAdminGRPCClient) ListDataStreams(ctx context.Context, req *adm
 	}
 	opts = append((*c.CallOptions).ListDataStreams[0:len((*c.CallOptions).ListDataStreams):len((*c.CallOptions).ListDataStreams)], opts...)
 	it := &DataStreamIterator{}
-	req = proto.Clone(req).(*adminpb.ListDataStreamsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.DataStream, string, error) {
 		resp := &adminpb.ListDataStreamsResponse{}
 		if pageToken != "" {
@@ -7387,7 +7387,7 @@ func (c *analyticsAdminGRPCClient) ListAudiences(ctx context.Context, req *admin
 	}
 	opts = append((*c.CallOptions).ListAudiences[0:len((*c.CallOptions).ListAudiences):len((*c.CallOptions).ListAudiences)], opts...)
 	it := &AudienceIterator{}
-	req = proto.Clone(req).(*adminpb.ListAudiencesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.Audience, string, error) {
 		resp := &adminpb.ListAudiencesResponse{}
 		if pageToken != "" {
@@ -7528,7 +7528,7 @@ func (c *analyticsAdminGRPCClient) ListSearchAds360Links(ctx context.Context, re
 	}
 	opts = append((*c.CallOptions).ListSearchAds360Links[0:len((*c.CallOptions).ListSearchAds360Links):len((*c.CallOptions).ListSearchAds360Links)], opts...)
 	it := &SearchAds360LinkIterator{}
-	req = proto.Clone(req).(*adminpb.ListSearchAds360LinksRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.SearchAds360Link, string, error) {
 		resp := &adminpb.ListSearchAds360LinksResponse{}
 		if pageToken != "" {
@@ -7800,7 +7800,7 @@ func (c *analyticsAdminGRPCClient) ListAccessBindings(ctx context.Context, req *
 	}
 	opts = append((*c.CallOptions).ListAccessBindings[0:len((*c.CallOptions).ListAccessBindings):len((*c.CallOptions).ListAccessBindings)], opts...)
 	it := &AccessBindingIterator{}
-	req = proto.Clone(req).(*adminpb.ListAccessBindingsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.AccessBinding, string, error) {
 		resp := &adminpb.ListAccessBindingsResponse{}
 		if pageToken != "" {
@@ -7968,7 +7968,7 @@ func (c *analyticsAdminGRPCClient) ListExpandedDataSets(ctx context.Context, req
 	}
 	opts = append((*c.CallOptions).ListExpandedDataSets[0:len((*c.CallOptions).ListExpandedDataSets):len((*c.CallOptions).ListExpandedDataSets)], opts...)
 	it := &ExpandedDataSetIterator{}
-	req = proto.Clone(req).(*adminpb.ListExpandedDataSetsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.ExpandedDataSet, string, error) {
 		resp := &adminpb.ListExpandedDataSetsResponse{}
 		if pageToken != "" {
@@ -8109,7 +8109,7 @@ func (c *analyticsAdminGRPCClient) ListChannelGroups(ctx context.Context, req *a
 	}
 	opts = append((*c.CallOptions).ListChannelGroups[0:len((*c.CallOptions).ListChannelGroups):len((*c.CallOptions).ListChannelGroups)], opts...)
 	it := &ChannelGroupIterator{}
-	req = proto.Clone(req).(*adminpb.ListChannelGroupsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.ChannelGroup, string, error) {
 		resp := &adminpb.ListChannelGroupsResponse{}
 		if pageToken != "" {
@@ -8274,7 +8274,7 @@ func (c *analyticsAdminGRPCClient) ListBigQueryLinks(ctx context.Context, req *a
 	}
 	opts = append((*c.CallOptions).ListBigQueryLinks[0:len((*c.CallOptions).ListBigQueryLinks):len((*c.CallOptions).ListBigQueryLinks)], opts...)
 	it := &BigQueryLinkIterator{}
-	req = proto.Clone(req).(*adminpb.ListBigQueryLinksRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.BigQueryLink, string, error) {
 		resp := &adminpb.ListBigQueryLinksResponse{}
 		if pageToken != "" {
@@ -8480,7 +8480,7 @@ func (c *analyticsAdminGRPCClient) ListAdSenseLinks(ctx context.Context, req *ad
 	}
 	opts = append((*c.CallOptions).ListAdSenseLinks[0:len((*c.CallOptions).ListAdSenseLinks):len((*c.CallOptions).ListAdSenseLinks)], opts...)
 	it := &AdSenseLinkIterator{}
-	req = proto.Clone(req).(*adminpb.ListAdSenseLinksRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.AdSenseLink, string, error) {
 		resp := &adminpb.ListAdSenseLinksResponse{}
 		if pageToken != "" {
@@ -8556,7 +8556,7 @@ func (c *analyticsAdminGRPCClient) ListEventCreateRules(ctx context.Context, req
 	}
 	opts = append((*c.CallOptions).ListEventCreateRules[0:len((*c.CallOptions).ListEventCreateRules):len((*c.CallOptions).ListEventCreateRules)], opts...)
 	it := &EventCreateRuleIterator{}
-	req = proto.Clone(req).(*adminpb.ListEventCreateRulesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.EventCreateRule, string, error) {
 		resp := &adminpb.ListEventCreateRulesResponse{}
 		if pageToken != "" {
@@ -8697,7 +8697,7 @@ func (c *analyticsAdminGRPCClient) ListEventEditRules(ctx context.Context, req *
 	}
 	opts = append((*c.CallOptions).ListEventEditRules[0:len((*c.CallOptions).ListEventEditRules):len((*c.CallOptions).ListEventEditRules)], opts...)
 	it := &EventEditRuleIterator{}
-	req = proto.Clone(req).(*adminpb.ListEventEditRulesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.EventEditRule, string, error) {
 		resp := &adminpb.ListEventEditRulesResponse{}
 		if pageToken != "" {
@@ -8927,7 +8927,7 @@ func (c *analyticsAdminGRPCClient) ListCalculatedMetrics(ctx context.Context, re
 	}
 	opts = append((*c.CallOptions).ListCalculatedMetrics[0:len((*c.CallOptions).ListCalculatedMetrics):len((*c.CallOptions).ListCalculatedMetrics)], opts...)
 	it := &CalculatedMetricIterator{}
-	req = proto.Clone(req).(*adminpb.ListCalculatedMetricsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.CalculatedMetric, string, error) {
 		resp := &adminpb.ListCalculatedMetricsResponse{}
 		if pageToken != "" {
@@ -9062,7 +9062,7 @@ func (c *analyticsAdminGRPCClient) ListRollupPropertySourceLinks(ctx context.Con
 	}
 	opts = append((*c.CallOptions).ListRollupPropertySourceLinks[0:len((*c.CallOptions).ListRollupPropertySourceLinks):len((*c.CallOptions).ListRollupPropertySourceLinks)], opts...)
 	it := &RollupPropertySourceLinkIterator{}
-	req = proto.Clone(req).(*adminpb.ListRollupPropertySourceLinksRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.RollupPropertySourceLink, string, error) {
 		resp := &adminpb.ListRollupPropertySourceLinksResponse{}
 		if pageToken != "" {
@@ -9224,7 +9224,7 @@ func (c *analyticsAdminGRPCClient) ListSubpropertyEventFilters(ctx context.Conte
 	}
 	opts = append((*c.CallOptions).ListSubpropertyEventFilters[0:len((*c.CallOptions).ListSubpropertyEventFilters):len((*c.CallOptions).ListSubpropertyEventFilters)], opts...)
 	it := &SubpropertyEventFilterIterator{}
-	req = proto.Clone(req).(*adminpb.ListSubpropertyEventFiltersRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.SubpropertyEventFilter, string, error) {
 		resp := &adminpb.ListSubpropertyEventFiltersResponse{}
 		if pageToken != "" {
@@ -9365,7 +9365,7 @@ func (c *analyticsAdminGRPCClient) ListReportingDataAnnotations(ctx context.Cont
 	}
 	opts = append((*c.CallOptions).ListReportingDataAnnotations[0:len((*c.CallOptions).ListReportingDataAnnotations):len((*c.CallOptions).ListReportingDataAnnotations)], opts...)
 	it := &ReportingDataAnnotationIterator{}
-	req = proto.Clone(req).(*adminpb.ListReportingDataAnnotationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.ReportingDataAnnotation, string, error) {
 		resp := &adminpb.ListReportingDataAnnotationsResponse{}
 		if pageToken != "" {
@@ -9482,7 +9482,7 @@ func (c *analyticsAdminGRPCClient) ListSubpropertySyncConfigs(ctx context.Contex
 	}
 	opts = append((*c.CallOptions).ListSubpropertySyncConfigs[0:len((*c.CallOptions).ListSubpropertySyncConfigs):len((*c.CallOptions).ListSubpropertySyncConfigs)], opts...)
 	it := &SubpropertySyncConfigIterator{}
-	req = proto.Clone(req).(*adminpb.ListSubpropertySyncConfigsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.SubpropertySyncConfig, string, error) {
 		resp := &adminpb.ListSubpropertySyncConfigsResponse{}
 		if pageToken != "" {
@@ -9678,7 +9678,7 @@ func (c *analyticsAdminRESTClient) GetAccount(ctx context.Context, req *adminpb.
 // Returns an empty list if no relevant accounts are found.
 func (c *analyticsAdminRESTClient) ListAccounts(ctx context.Context, req *adminpb.ListAccountsRequest, opts ...gax.CallOption) *AccountIterator {
 	it := &AccountIterator{}
-	req = proto.Clone(req).(*adminpb.ListAccountsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.Account, string, error) {
 		resp := &adminpb.ListAccountsResponse{}
@@ -9936,7 +9936,7 @@ func (c *analyticsAdminRESTClient) ProvisionAccountTicket(ctx context.Context, r
 // ListAccountSummaries returns summaries of all accounts accessible by the caller.
 func (c *analyticsAdminRESTClient) ListAccountSummaries(ctx context.Context, req *adminpb.ListAccountSummariesRequest, opts ...gax.CallOption) *AccountSummaryIterator {
 	it := &AccountSummaryIterator{}
-	req = proto.Clone(req).(*adminpb.ListAccountSummariesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.AccountSummary, string, error) {
 		resp := &adminpb.ListAccountSummariesResponse{}
@@ -10075,7 +10075,7 @@ func (c *analyticsAdminRESTClient) GetProperty(ctx context.Context, req *adminpb
 // Returns an empty list if no relevant properties are found.
 func (c *analyticsAdminRESTClient) ListProperties(ctx context.Context, req *adminpb.ListPropertiesRequest, opts ...gax.CallOption) *PropertyIterator {
 	it := &PropertyIterator{}
-	req = proto.Clone(req).(*adminpb.ListPropertiesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.Property, string, error) {
 		resp := &adminpb.ListPropertiesResponse{}
@@ -10460,7 +10460,7 @@ func (c *analyticsAdminRESTClient) DeleteFirebaseLink(ctx context.Context, req *
 // Properties can have at most one FirebaseLink.
 func (c *analyticsAdminRESTClient) ListFirebaseLinks(ctx context.Context, req *adminpb.ListFirebaseLinksRequest, opts ...gax.CallOption) *FirebaseLinkIterator {
 	it := &FirebaseLinkIterator{}
-	req = proto.Clone(req).(*adminpb.ListFirebaseLinksRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.FirebaseLink, string, error) {
 		resp := &adminpb.ListFirebaseLinksResponse{}
@@ -10770,7 +10770,7 @@ func (c *analyticsAdminRESTClient) DeleteGoogleAdsLink(ctx context.Context, req 
 // ListGoogleAdsLinks lists GoogleAdsLinks on a property.
 func (c *analyticsAdminRESTClient) ListGoogleAdsLinks(ctx context.Context, req *adminpb.ListGoogleAdsLinksRequest, opts ...gax.CallOption) *GoogleAdsLinkIterator {
 	it := &GoogleAdsLinkIterator{}
-	req = proto.Clone(req).(*adminpb.ListGoogleAdsLinksRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.GoogleAdsLink, string, error) {
 		resp := &adminpb.ListGoogleAdsLinksResponse{}
@@ -10964,7 +10964,7 @@ func (c *analyticsAdminRESTClient) GetMeasurementProtocolSecret(ctx context.Cont
 // Property.
 func (c *analyticsAdminRESTClient) ListMeasurementProtocolSecrets(ctx context.Context, req *adminpb.ListMeasurementProtocolSecretsRequest, opts ...gax.CallOption) *MeasurementProtocolSecretIterator {
 	it := &MeasurementProtocolSecretIterator{}
-	req = proto.Clone(req).(*adminpb.ListMeasurementProtocolSecretsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.MeasurementProtocolSecret, string, error) {
 		resp := &adminpb.ListMeasurementProtocolSecretsResponse{}
@@ -11515,7 +11515,7 @@ func (c *analyticsAdminRESTClient) UpdateSKAdNetworkConversionValueSchema(ctx co
 // Properties can have at most one SKAdNetworkConversionValueSchema.
 func (c *analyticsAdminRESTClient) ListSKAdNetworkConversionValueSchemas(ctx context.Context, req *adminpb.ListSKAdNetworkConversionValueSchemasRequest, opts ...gax.CallOption) *SKAdNetworkConversionValueSchemaIterator {
 	it := &SKAdNetworkConversionValueSchemaIterator{}
-	req = proto.Clone(req).(*adminpb.ListSKAdNetworkConversionValueSchemasRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.SKAdNetworkConversionValueSchema, string, error) {
 		resp := &adminpb.ListSKAdNetworkConversionValueSchemasResponse{}
@@ -11597,7 +11597,7 @@ func (c *analyticsAdminRESTClient) ListSKAdNetworkConversionValueSchemas(ctx con
 // additional changes.
 func (c *analyticsAdminRESTClient) SearchChangeHistoryEvents(ctx context.Context, req *adminpb.SearchChangeHistoryEventsRequest, opts ...gax.CallOption) *ChangeHistoryEventIterator {
 	it := &ChangeHistoryEventIterator{}
-	req = proto.Clone(req).(*adminpb.SearchChangeHistoryEventsRequest)
+	req = proto.CloneOf(req)
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.ChangeHistoryEvent, string, error) {
@@ -12048,7 +12048,7 @@ func (c *analyticsAdminRESTClient) DeleteConversionEvent(ctx context.Context, re
 // Deprecated: ListConversionEvents may be removed in a future version.
 func (c *analyticsAdminRESTClient) ListConversionEvents(ctx context.Context, req *adminpb.ListConversionEventsRequest, opts ...gax.CallOption) *ConversionEventIterator {
 	it := &ConversionEventIterator{}
-	req = proto.Clone(req).(*adminpb.ListConversionEventsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.ConversionEvent, string, error) {
 		resp := &adminpb.ListConversionEventsResponse{}
@@ -12358,7 +12358,7 @@ func (c *analyticsAdminRESTClient) DeleteKeyEvent(ctx context.Context, req *admi
 // Returns an empty list if no Key Events are found.
 func (c *analyticsAdminRESTClient) ListKeyEvents(ctx context.Context, req *adminpb.ListKeyEventsRequest, opts ...gax.CallOption) *KeyEventIterator {
 	it := &KeyEventIterator{}
-	req = proto.Clone(req).(*adminpb.ListKeyEventsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.KeyEvent, string, error) {
 		resp := &adminpb.ListKeyEventsResponse{}
@@ -12493,7 +12493,7 @@ func (c *analyticsAdminRESTClient) GetDisplayVideo360AdvertiserLink(ctx context.
 // ListDisplayVideo360AdvertiserLinks lists all DisplayVideo360AdvertiserLinks on a property.
 func (c *analyticsAdminRESTClient) ListDisplayVideo360AdvertiserLinks(ctx context.Context, req *adminpb.ListDisplayVideo360AdvertiserLinksRequest, opts ...gax.CallOption) *DisplayVideo360AdvertiserLinkIterator {
 	it := &DisplayVideo360AdvertiserLinkIterator{}
-	req = proto.Clone(req).(*adminpb.ListDisplayVideo360AdvertiserLinksRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.DisplayVideo360AdvertiserLink, string, error) {
 		resp := &adminpb.ListDisplayVideo360AdvertiserLinksResponse{}
@@ -12806,7 +12806,7 @@ func (c *analyticsAdminRESTClient) GetDisplayVideo360AdvertiserLinkProposal(ctx 
 // ListDisplayVideo360AdvertiserLinkProposals lists DisplayVideo360AdvertiserLinkProposals on a property.
 func (c *analyticsAdminRESTClient) ListDisplayVideo360AdvertiserLinkProposals(ctx context.Context, req *adminpb.ListDisplayVideo360AdvertiserLinkProposalsRequest, opts ...gax.CallOption) *DisplayVideo360AdvertiserLinkProposalIterator {
 	it := &DisplayVideo360AdvertiserLinkProposalIterator{}
-	req = proto.Clone(req).(*adminpb.ListDisplayVideo360AdvertiserLinkProposalsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.DisplayVideo360AdvertiserLinkProposal, string, error) {
 		resp := &adminpb.ListDisplayVideo360AdvertiserLinkProposalsResponse{}
@@ -13257,7 +13257,7 @@ func (c *analyticsAdminRESTClient) UpdateCustomDimension(ctx context.Context, re
 // ListCustomDimensions lists CustomDimensions on a property.
 func (c *analyticsAdminRESTClient) ListCustomDimensions(ctx context.Context, req *adminpb.ListCustomDimensionsRequest, opts ...gax.CallOption) *CustomDimensionIterator {
 	it := &CustomDimensionIterator{}
-	req = proto.Clone(req).(*adminpb.ListCustomDimensionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.CustomDimension, string, error) {
 		resp := &adminpb.ListCustomDimensionsResponse{}
@@ -13572,7 +13572,7 @@ func (c *analyticsAdminRESTClient) UpdateCustomMetric(ctx context.Context, req *
 // ListCustomMetrics lists CustomMetrics on a property.
 func (c *analyticsAdminRESTClient) ListCustomMetrics(ctx context.Context, req *adminpb.ListCustomMetricsRequest, opts ...gax.CallOption) *CustomMetricIterator {
 	it := &CustomMetricIterator{}
-	req = proto.Clone(req).(*adminpb.ListCustomMetricsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.CustomMetric, string, error) {
 		resp := &adminpb.ListCustomMetricsResponse{}
@@ -14054,7 +14054,7 @@ func (c *analyticsAdminRESTClient) UpdateDataStream(ctx context.Context, req *ad
 // ListDataStreams lists DataStreams on a property.
 func (c *analyticsAdminRESTClient) ListDataStreams(ctx context.Context, req *adminpb.ListDataStreamsRequest, opts ...gax.CallOption) *DataStreamIterator {
 	it := &DataStreamIterator{}
-	req = proto.Clone(req).(*adminpb.ListDataStreamsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.DataStream, string, error) {
 		resp := &adminpb.ListDataStreamsResponse{}
@@ -14250,7 +14250,7 @@ func (c *analyticsAdminRESTClient) GetAudience(ctx context.Context, req *adminpb
 // Default audiences will not show filter definitions.
 func (c *analyticsAdminRESTClient) ListAudiences(ctx context.Context, req *adminpb.ListAudiencesRequest, opts ...gax.CallOption) *AudienceIterator {
 	it := &AudienceIterator{}
-	req = proto.Clone(req).(*adminpb.ListAudiencesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.Audience, string, error) {
 		resp := &adminpb.ListAudiencesResponse{}
@@ -14565,7 +14565,7 @@ func (c *analyticsAdminRESTClient) GetSearchAds360Link(ctx context.Context, req 
 // ListSearchAds360Links lists all SearchAds360Links on a property.
 func (c *analyticsAdminRESTClient) ListSearchAds360Links(ctx context.Context, req *adminpb.ListSearchAds360LinksRequest, opts ...gax.CallOption) *SearchAds360LinkIterator {
 	it := &SearchAds360LinkIterator{}
-	req = proto.Clone(req).(*adminpb.ListSearchAds360LinksRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.SearchAds360Link, string, error) {
 		resp := &adminpb.ListSearchAds360LinksResponse{}
@@ -15245,7 +15245,7 @@ func (c *analyticsAdminRESTClient) DeleteAccessBinding(ctx context.Context, req 
 // ListAccessBindings lists all access bindings on an account or property.
 func (c *analyticsAdminRESTClient) ListAccessBindings(ctx context.Context, req *adminpb.ListAccessBindingsRequest, opts ...gax.CallOption) *AccessBindingIterator {
 	it := &AccessBindingIterator{}
-	req = proto.Clone(req).(*adminpb.ListAccessBindingsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.AccessBinding, string, error) {
 		resp := &adminpb.ListAccessBindingsResponse{}
@@ -15621,7 +15621,7 @@ func (c *analyticsAdminRESTClient) GetExpandedDataSet(ctx context.Context, req *
 // ListExpandedDataSets lists ExpandedDataSets on a property.
 func (c *analyticsAdminRESTClient) ListExpandedDataSets(ctx context.Context, req *adminpb.ListExpandedDataSetsRequest, opts ...gax.CallOption) *ExpandedDataSetIterator {
 	it := &ExpandedDataSetIterator{}
-	req = proto.Clone(req).(*adminpb.ListExpandedDataSetsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.ExpandedDataSet, string, error) {
 		resp := &adminpb.ListExpandedDataSetsResponse{}
@@ -15930,7 +15930,7 @@ func (c *analyticsAdminRESTClient) GetChannelGroup(ctx context.Context, req *adm
 // ListChannelGroups lists ChannelGroups on a property.
 func (c *analyticsAdminRESTClient) ListChannelGroups(ctx context.Context, req *adminpb.ListChannelGroupsRequest, opts ...gax.CallOption) *ChannelGroupIterator {
 	it := &ChannelGroupIterator{}
-	req = proto.Clone(req).(*adminpb.ListChannelGroupsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.ChannelGroup, string, error) {
 		resp := &adminpb.ListChannelGroupsResponse{}
@@ -16303,7 +16303,7 @@ func (c *analyticsAdminRESTClient) GetBigQueryLink(ctx context.Context, req *adm
 // ListBigQueryLinks lists BigQuery Links on a property.
 func (c *analyticsAdminRESTClient) ListBigQueryLinks(ctx context.Context, req *adminpb.ListBigQueryLinksRequest, opts ...gax.CallOption) *BigQueryLinkIterator {
 	it := &BigQueryLinkIterator{}
-	req = proto.Clone(req).(*adminpb.ListBigQueryLinksRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.BigQueryLink, string, error) {
 		resp := &adminpb.ListBigQueryLinksResponse{}
@@ -16783,7 +16783,7 @@ func (c *analyticsAdminRESTClient) DeleteAdSenseLink(ctx context.Context, req *a
 // ListAdSenseLinks lists AdSenseLinks on a property.
 func (c *analyticsAdminRESTClient) ListAdSenseLinks(ctx context.Context, req *adminpb.ListAdSenseLinksRequest, opts ...gax.CallOption) *AdSenseLinkIterator {
 	it := &AdSenseLinkIterator{}
-	req = proto.Clone(req).(*adminpb.ListAdSenseLinksRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.AdSenseLink, string, error) {
 		resp := &adminpb.ListAdSenseLinksResponse{}
@@ -16918,7 +16918,7 @@ func (c *analyticsAdminRESTClient) GetEventCreateRule(ctx context.Context, req *
 // ListEventCreateRules lists EventCreateRules on a web data stream.
 func (c *analyticsAdminRESTClient) ListEventCreateRules(ctx context.Context, req *adminpb.ListEventCreateRulesRequest, opts ...gax.CallOption) *EventCreateRuleIterator {
 	it := &EventCreateRuleIterator{}
-	req = proto.Clone(req).(*adminpb.ListEventCreateRulesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.EventCreateRule, string, error) {
 		resp := &adminpb.ListEventCreateRulesResponse{}
@@ -17227,7 +17227,7 @@ func (c *analyticsAdminRESTClient) GetEventEditRule(ctx context.Context, req *ad
 // ListEventEditRules lists EventEditRules on a web data stream.
 func (c *analyticsAdminRESTClient) ListEventEditRules(ctx context.Context, req *adminpb.ListEventEditRulesRequest, opts ...gax.CallOption) *EventEditRuleIterator {
 	it := &EventEditRuleIterator{}
-	req = proto.Clone(req).(*adminpb.ListEventEditRulesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.EventEditRule, string, error) {
 		resp := &adminpb.ListEventEditRulesResponse{}
@@ -17774,7 +17774,7 @@ func (c *analyticsAdminRESTClient) CreateCalculatedMetric(ctx context.Context, r
 // ListCalculatedMetrics lists CalculatedMetrics on a property.
 func (c *analyticsAdminRESTClient) ListCalculatedMetrics(ctx context.Context, req *adminpb.ListCalculatedMetricsRequest, opts ...gax.CallOption) *CalculatedMetricIterator {
 	it := &CalculatedMetricIterator{}
-	req = proto.Clone(req).(*adminpb.ListCalculatedMetricsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.CalculatedMetric, string, error) {
 		resp := &adminpb.ListCalculatedMetricsResponse{}
@@ -18080,7 +18080,7 @@ func (c *analyticsAdminRESTClient) GetRollupPropertySourceLink(ctx context.Conte
 // error if used on other types of properties.
 func (c *analyticsAdminRESTClient) ListRollupPropertySourceLinks(ctx context.Context, req *adminpb.ListRollupPropertySourceLinksRequest, opts ...gax.CallOption) *RollupPropertySourceLinkIterator {
 	it := &RollupPropertySourceLinkIterator{}
-	req = proto.Clone(req).(*adminpb.ListRollupPropertySourceLinksRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.RollupPropertySourceLink, string, error) {
 		resp := &adminpb.ListRollupPropertySourceLinksResponse{}
@@ -18447,7 +18447,7 @@ func (c *analyticsAdminRESTClient) GetSubpropertyEventFilter(ctx context.Context
 // ListSubpropertyEventFilters list all subproperty Event Filters on a property.
 func (c *analyticsAdminRESTClient) ListSubpropertyEventFilters(ctx context.Context, req *adminpb.ListSubpropertyEventFiltersRequest, opts ...gax.CallOption) *SubpropertyEventFilterIterator {
 	it := &SubpropertyEventFilterIterator{}
-	req = proto.Clone(req).(*adminpb.ListSubpropertyEventFiltersRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.SubpropertyEventFilter, string, error) {
 		resp := &adminpb.ListSubpropertyEventFiltersResponse{}
@@ -18756,7 +18756,7 @@ func (c *analyticsAdminRESTClient) GetReportingDataAnnotation(ctx context.Contex
 // ListReportingDataAnnotations list all Reporting Data Annotations on a property.
 func (c *analyticsAdminRESTClient) ListReportingDataAnnotations(ctx context.Context, req *adminpb.ListReportingDataAnnotationsRequest, opts ...gax.CallOption) *ReportingDataAnnotationIterator {
 	it := &ReportingDataAnnotationIterator{}
-	req = proto.Clone(req).(*adminpb.ListReportingDataAnnotationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.ReportingDataAnnotation, string, error) {
 		resp := &adminpb.ListReportingDataAnnotationsResponse{}
@@ -19010,7 +19010,7 @@ func (c *analyticsAdminRESTClient) SubmitUserDeletion(ctx context.Context, req *
 // ListSubpropertySyncConfigs list all SubpropertySyncConfig resources for a property.
 func (c *analyticsAdminRESTClient) ListSubpropertySyncConfigs(ctx context.Context, req *adminpb.ListSubpropertySyncConfigsRequest, opts ...gax.CallOption) *SubpropertySyncConfigIterator {
 	it := &SubpropertySyncConfigIterator{}
-	req = proto.Clone(req).(*adminpb.ListSubpropertySyncConfigsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.SubpropertySyncConfig, string, error) {
 		resp := &adminpb.ListSubpropertySyncConfigsResponse{}

@@ -707,7 +707,7 @@ func (c *deploymentGRPCClient) ListFrameworkDeployments(ctx context.Context, req
 	}
 	opts = append((*c.CallOptions).ListFrameworkDeployments[0:len((*c.CallOptions).ListFrameworkDeployments):len((*c.CallOptions).ListFrameworkDeployments)], opts...)
 	it := &FrameworkDeploymentIterator{}
-	req = proto.Clone(req).(*cloudsecuritycompliancepb.ListFrameworkDeploymentsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cloudsecuritycompliancepb.FrameworkDeployment, string, error) {
 		resp := &cloudsecuritycompliancepb.ListFrameworkDeploymentsResponse{}
 		if pageToken != "" {
@@ -783,7 +783,7 @@ func (c *deploymentGRPCClient) ListCloudControlDeployments(ctx context.Context, 
 	}
 	opts = append((*c.CallOptions).ListCloudControlDeployments[0:len((*c.CallOptions).ListCloudControlDeployments):len((*c.CallOptions).ListCloudControlDeployments)], opts...)
 	it := &CloudControlDeploymentIterator{}
-	req = proto.Clone(req).(*cloudsecuritycompliancepb.ListCloudControlDeploymentsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cloudsecuritycompliancepb.CloudControlDeployment, string, error) {
 		resp := &cloudsecuritycompliancepb.ListCloudControlDeploymentsResponse{}
 		if pageToken != "" {
@@ -853,7 +853,7 @@ func (c *deploymentGRPCClient) ListLocations(ctx context.Context, req *locationp
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -957,7 +957,7 @@ func (c *deploymentGRPCClient) ListOperations(ctx context.Context, req *longrunn
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -1192,7 +1192,7 @@ func (c *deploymentRESTClient) GetFrameworkDeployment(ctx context.Context, req *
 // ListFrameworkDeployments lists the framework deployments in a given parent resource.
 func (c *deploymentRESTClient) ListFrameworkDeployments(ctx context.Context, req *cloudsecuritycompliancepb.ListFrameworkDeploymentsRequest, opts ...gax.CallOption) *FrameworkDeploymentIterator {
 	it := &FrameworkDeploymentIterator{}
-	req = proto.Clone(req).(*cloudsecuritycompliancepb.ListFrameworkDeploymentsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cloudsecuritycompliancepb.FrameworkDeployment, string, error) {
 		resp := &cloudsecuritycompliancepb.ListFrameworkDeploymentsResponse{}
@@ -1333,7 +1333,7 @@ func (c *deploymentRESTClient) GetCloudControlDeployment(ctx context.Context, re
 // ListCloudControlDeployments lists the cloud conrol deployments in a given parent resource.
 func (c *deploymentRESTClient) ListCloudControlDeployments(ctx context.Context, req *cloudsecuritycompliancepb.ListCloudControlDeploymentsRequest, opts ...gax.CallOption) *CloudControlDeploymentIterator {
 	it := &CloudControlDeploymentIterator{}
-	req = proto.Clone(req).(*cloudsecuritycompliancepb.ListCloudControlDeploymentsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cloudsecuritycompliancepb.CloudControlDeployment, string, error) {
 		resp := &cloudsecuritycompliancepb.ListCloudControlDeploymentsResponse{}
@@ -1486,7 +1486,7 @@ func (c *deploymentRESTClient) GetLocation(ctx context.Context, req *locationpb.
 // implementation and version.
 func (c *deploymentRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -1705,7 +1705,7 @@ func (c *deploymentRESTClient) GetOperation(ctx context.Context, req *longrunnin
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *deploymentRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

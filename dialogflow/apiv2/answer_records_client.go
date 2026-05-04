@@ -473,7 +473,7 @@ func (c *answerRecordsGRPCClient) ListAnswerRecords(ctx context.Context, req *di
 	}
 	opts = append((*c.CallOptions).ListAnswerRecords[0:len((*c.CallOptions).ListAnswerRecords):len((*c.CallOptions).ListAnswerRecords)], opts...)
 	it := &AnswerRecordIterator{}
-	req = proto.Clone(req).(*dialogflowpb.ListAnswerRecordsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dialogflowpb.AnswerRecord, string, error) {
 		resp := &dialogflowpb.ListAnswerRecordsResponse{}
 		if pageToken != "" {
@@ -564,7 +564,7 @@ func (c *answerRecordsGRPCClient) ListLocations(ctx context.Context, req *locati
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -651,7 +651,7 @@ func (c *answerRecordsGRPCClient) ListOperations(ctx context.Context, req *longr
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -694,7 +694,7 @@ func (c *answerRecordsGRPCClient) ListOperations(ctx context.Context, req *longr
 // chronological order.
 func (c *answerRecordsRESTClient) ListAnswerRecords(ctx context.Context, req *dialogflowpb.ListAnswerRecordsRequest, opts ...gax.CallOption) *AnswerRecordIterator {
 	it := &AnswerRecordIterator{}
-	req = proto.Clone(req).(*dialogflowpb.ListAnswerRecordsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dialogflowpb.AnswerRecord, string, error) {
 		resp := &dialogflowpb.ListAnswerRecordsResponse{}
@@ -913,7 +913,7 @@ func (c *answerRecordsRESTClient) GetLocation(ctx context.Context, req *location
 // implementation and version.
 func (c *answerRecordsRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -1087,7 +1087,7 @@ func (c *answerRecordsRESTClient) GetOperation(ctx context.Context, req *longrun
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *answerRecordsRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

@@ -556,7 +556,7 @@ func (c *gRPCClient) ListTables(ctx context.Context, req *tablespb.ListTablesReq
 	}
 	opts = append((*c.CallOptions).ListTables[0:len((*c.CallOptions).ListTables):len((*c.CallOptions).ListTables)], opts...)
 	it := &TableIterator{}
-	req = proto.Clone(req).(*tablespb.ListTablesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*tablespb.Table, string, error) {
 		resp := &tablespb.ListTablesResponse{}
 		if pageToken != "" {
@@ -626,7 +626,7 @@ func (c *gRPCClient) ListWorkspaces(ctx context.Context, req *tablespb.ListWorks
 	}
 	opts = append((*c.CallOptions).ListWorkspaces[0:len((*c.CallOptions).ListWorkspaces):len((*c.CallOptions).ListWorkspaces)], opts...)
 	it := &WorkspaceIterator{}
-	req = proto.Clone(req).(*tablespb.ListWorkspacesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*tablespb.Workspace, string, error) {
 		resp := &tablespb.ListWorkspacesResponse{}
 		if pageToken != "" {
@@ -699,7 +699,7 @@ func (c *gRPCClient) ListRows(ctx context.Context, req *tablespb.ListRowsRequest
 	}
 	opts = append((*c.CallOptions).ListRows[0:len((*c.CallOptions).ListRows):len((*c.CallOptions).ListRows)], opts...)
 	it := &RowIterator{}
-	req = proto.Clone(req).(*tablespb.ListRowsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*tablespb.Row, string, error) {
 		resp := &tablespb.ListRowsResponse{}
 		if pageToken != "" {
@@ -922,7 +922,7 @@ func (c *restClient) GetTable(ctx context.Context, req *tablespb.GetTableRequest
 // ListTables lists tables for the user.
 func (c *restClient) ListTables(ctx context.Context, req *tablespb.ListTablesRequest, opts ...gax.CallOption) *TableIterator {
 	it := &TableIterator{}
-	req = proto.Clone(req).(*tablespb.ListTablesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*tablespb.Table, string, error) {
 		resp := &tablespb.ListTablesResponse{}
@@ -1057,7 +1057,7 @@ func (c *restClient) GetWorkspace(ctx context.Context, req *tablespb.GetWorkspac
 // ListWorkspaces lists workspaces for the user.
 func (c *restClient) ListWorkspaces(ctx context.Context, req *tablespb.ListWorkspacesRequest, opts ...gax.CallOption) *WorkspaceIterator {
 	it := &WorkspaceIterator{}
-	req = proto.Clone(req).(*tablespb.ListWorkspacesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*tablespb.Workspace, string, error) {
 		resp := &tablespb.ListWorkspacesResponse{}
@@ -1195,7 +1195,7 @@ func (c *restClient) GetRow(ctx context.Context, req *tablespb.GetRowRequest, op
 // ListRows lists rows in a table. Returns NOT_FOUND if the table does not exist.
 func (c *restClient) ListRows(ctx context.Context, req *tablespb.ListRowsRequest, opts ...gax.CallOption) *RowIterator {
 	it := &RowIterator{}
-	req = proto.Clone(req).(*tablespb.ListRowsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*tablespb.Row, string, error) {
 		resp := &tablespb.ListRowsResponse{}

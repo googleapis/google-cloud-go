@@ -575,7 +575,7 @@ func (c *instantSnapshotGroupsRESTClient) Insert(ctx context.Context, req *compu
 // the specified zone.
 func (c *instantSnapshotGroupsRESTClient) List(ctx context.Context, req *computepb.ListInstantSnapshotGroupsRequest, opts ...gax.CallOption) *InstantSnapshotGroupIterator {
 	it := &InstantSnapshotGroupIterator{}
-	req = proto.Clone(req).(*computepb.ListInstantSnapshotGroupsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.InstantSnapshotGroup, string, error) {
 		resp := &computepb.ListInstantSnapshotGroups{}

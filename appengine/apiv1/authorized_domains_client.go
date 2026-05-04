@@ -342,7 +342,7 @@ func (c *authorizedDomainsGRPCClient) ListAuthorizedDomains(ctx context.Context,
 	}
 	opts = append((*c.CallOptions).ListAuthorizedDomains[0:len((*c.CallOptions).ListAuthorizedDomains):len((*c.CallOptions).ListAuthorizedDomains)], opts...)
 	it := &AuthorizedDomainIterator{}
-	req = proto.Clone(req).(*appenginepb.ListAuthorizedDomainsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*appenginepb.AuthorizedDomain, string, error) {
 		resp := &appenginepb.ListAuthorizedDomainsResponse{}
 		if pageToken != "" {
@@ -384,7 +384,7 @@ func (c *authorizedDomainsGRPCClient) ListAuthorizedDomains(ctx context.Context,
 // ListAuthorizedDomains lists all domains the user is authorized to administer.
 func (c *authorizedDomainsRESTClient) ListAuthorizedDomains(ctx context.Context, req *appenginepb.ListAuthorizedDomainsRequest, opts ...gax.CallOption) *AuthorizedDomainIterator {
 	it := &AuthorizedDomainIterator{}
-	req = proto.Clone(req).(*appenginepb.ListAuthorizedDomainsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*appenginepb.AuthorizedDomain, string, error) {
 		resp := &appenginepb.ListAuthorizedDomainsResponse{}

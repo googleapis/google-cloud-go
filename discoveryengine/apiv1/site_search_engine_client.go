@@ -855,7 +855,7 @@ func (c *siteSearchEngineGRPCClient) ListTargetSites(ctx context.Context, req *d
 	}
 	opts = append((*c.CallOptions).ListTargetSites[0:len((*c.CallOptions).ListTargetSites):len((*c.CallOptions).ListTargetSites)], opts...)
 	it := &TargetSiteIterator{}
-	req = proto.Clone(req).(*discoveryenginepb.ListTargetSitesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*discoveryenginepb.TargetSite, string, error) {
 		resp := &discoveryenginepb.ListTargetSitesResponse{}
 		if pageToken != "" {
@@ -1087,7 +1087,7 @@ func (c *siteSearchEngineGRPCClient) FetchDomainVerificationStatus(ctx context.C
 	}
 	opts = append((*c.CallOptions).FetchDomainVerificationStatus[0:len((*c.CallOptions).FetchDomainVerificationStatus):len((*c.CallOptions).FetchDomainVerificationStatus)], opts...)
 	it := &TargetSiteIterator{}
-	req = proto.Clone(req).(*discoveryenginepb.FetchDomainVerificationStatusRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*discoveryenginepb.TargetSite, string, error) {
 		resp := &discoveryenginepb.FetchDomainVerificationStatusResponse{}
 		if pageToken != "" {
@@ -1174,7 +1174,7 @@ func (c *siteSearchEngineGRPCClient) ListOperations(ctx context.Context, req *lo
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -1589,7 +1589,7 @@ func (c *siteSearchEngineRESTClient) DeleteTargetSite(ctx context.Context, req *
 // ListTargetSites gets a list of TargetSites.
 func (c *siteSearchEngineRESTClient) ListTargetSites(ctx context.Context, req *discoveryenginepb.ListTargetSitesRequest, opts ...gax.CallOption) *TargetSiteIterator {
 	it := &TargetSiteIterator{}
-	req = proto.Clone(req).(*discoveryenginepb.ListTargetSitesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*discoveryenginepb.TargetSite, string, error) {
 		resp := &discoveryenginepb.ListTargetSitesResponse{}
@@ -2125,7 +2125,7 @@ func (c *siteSearchEngineRESTClient) BatchVerifyTargetSites(ctx context.Context,
 // state at the moment.
 func (c *siteSearchEngineRESTClient) FetchDomainVerificationStatus(ctx context.Context, req *discoveryenginepb.FetchDomainVerificationStatusRequest, opts ...gax.CallOption) *TargetSiteIterator {
 	it := &TargetSiteIterator{}
-	req = proto.Clone(req).(*discoveryenginepb.FetchDomainVerificationStatusRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*discoveryenginepb.TargetSite, string, error) {
 		resp := &discoveryenginepb.FetchDomainVerificationStatusResponse{}
@@ -2302,7 +2302,7 @@ func (c *siteSearchEngineRESTClient) GetOperation(ctx context.Context, req *long
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *siteSearchEngineRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

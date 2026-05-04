@@ -262,7 +262,7 @@ func (c *diskTypesRESTClient) Connection() *grpc.ClientConn {
 // returnPartialSuccess parameter to true.
 func (c *diskTypesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListDiskTypesRequest, opts ...gax.CallOption) *DiskTypesScopedListPairIterator {
 	it := &DiskTypesScopedListPairIterator{}
-	req = proto.Clone(req).(*computepb.AggregatedListDiskTypesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]DiskTypesScopedListPair, string, error) {
 		resp := &computepb.DiskTypeAggregatedList{}
@@ -414,7 +414,7 @@ func (c *diskTypesRESTClient) Get(ctx context.Context, req *computepb.GetDiskTyp
 // project.
 func (c *diskTypesRESTClient) List(ctx context.Context, req *computepb.ListDiskTypesRequest, opts ...gax.CallOption) *DiskTypeIterator {
 	it := &DiskTypeIterator{}
-	req = proto.Clone(req).(*computepb.ListDiskTypesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.DiskType, string, error) {
 		resp := &computepb.DiskTypeList{}

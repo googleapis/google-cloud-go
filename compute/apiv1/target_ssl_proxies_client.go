@@ -537,7 +537,7 @@ func (c *targetSslProxiesRESTClient) Insert(ctx context.Context, req *computepb.
 // available to the specified project.
 func (c *targetSslProxiesRESTClient) List(ctx context.Context, req *computepb.ListTargetSslProxiesRequest, opts ...gax.CallOption) *TargetSslProxyIterator {
 	it := &TargetSslProxyIterator{}
-	req = proto.Clone(req).(*computepb.ListTargetSslProxiesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.TargetSslProxy, string, error) {
 		resp := &computepb.TargetSslProxyList{}

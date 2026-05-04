@@ -357,7 +357,7 @@ func (c *quotaGRPCClient) ListQuotaGroups(ctx context.Context, req *csspb.ListQu
 	}
 	opts = append((*c.CallOptions).ListQuotaGroups[0:len((*c.CallOptions).ListQuotaGroups):len((*c.CallOptions).ListQuotaGroups)], opts...)
 	it := &QuotaGroupIterator{}
-	req = proto.Clone(req).(*csspb.ListQuotaGroupsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*csspb.QuotaGroup, string, error) {
 		resp := &csspb.ListQuotaGroupsResponse{}
 		if pageToken != "" {
@@ -399,7 +399,7 @@ func (c *quotaGRPCClient) ListQuotaGroups(ctx context.Context, req *csspb.ListQu
 // ListQuotaGroups lists the daily call quota and usage per group for your CSS Center account.
 func (c *quotaRESTClient) ListQuotaGroups(ctx context.Context, req *csspb.ListQuotaGroupsRequest, opts ...gax.CallOption) *QuotaGroupIterator {
 	it := &QuotaGroupIterator{}
-	req = proto.Clone(req).(*csspb.ListQuotaGroupsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*csspb.QuotaGroup, string, error) {
 		resp := &csspb.ListQuotaGroupsResponse{}

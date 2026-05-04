@@ -1290,7 +1290,7 @@ func (c *gRPCClient) ListLakes(ctx context.Context, req *dataplexpb.ListLakesReq
 	}
 	opts = append((*c.CallOptions).ListLakes[0:len((*c.CallOptions).ListLakes):len((*c.CallOptions).ListLakes)], opts...)
 	it := &LakeIterator{}
-	req = proto.Clone(req).(*dataplexpb.ListLakesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.Lake, string, error) {
 		resp := &dataplexpb.ListLakesResponse{}
 		if pageToken != "" {
@@ -1366,7 +1366,7 @@ func (c *gRPCClient) ListLakeActions(ctx context.Context, req *dataplexpb.ListLa
 	}
 	opts = append((*c.CallOptions).ListLakeActions[0:len((*c.CallOptions).ListLakeActions):len((*c.CallOptions).ListLakeActions)], opts...)
 	it := &ActionIterator{}
-	req = proto.Clone(req).(*dataplexpb.ListLakeActionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.Action, string, error) {
 		resp := &dataplexpb.ListActionsResponse{}
 		if pageToken != "" {
@@ -1493,7 +1493,7 @@ func (c *gRPCClient) ListZones(ctx context.Context, req *dataplexpb.ListZonesReq
 	}
 	opts = append((*c.CallOptions).ListZones[0:len((*c.CallOptions).ListZones):len((*c.CallOptions).ListZones)], opts...)
 	it := &ZoneIterator{}
-	req = proto.Clone(req).(*dataplexpb.ListZonesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.Zone, string, error) {
 		resp := &dataplexpb.ListZonesResponse{}
 		if pageToken != "" {
@@ -1569,7 +1569,7 @@ func (c *gRPCClient) ListZoneActions(ctx context.Context, req *dataplexpb.ListZo
 	}
 	opts = append((*c.CallOptions).ListZoneActions[0:len((*c.CallOptions).ListZoneActions):len((*c.CallOptions).ListZoneActions)], opts...)
 	it := &ActionIterator{}
-	req = proto.Clone(req).(*dataplexpb.ListZoneActionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.Action, string, error) {
 		resp := &dataplexpb.ListActionsResponse{}
 		if pageToken != "" {
@@ -1696,7 +1696,7 @@ func (c *gRPCClient) ListAssets(ctx context.Context, req *dataplexpb.ListAssetsR
 	}
 	opts = append((*c.CallOptions).ListAssets[0:len((*c.CallOptions).ListAssets):len((*c.CallOptions).ListAssets)], opts...)
 	it := &AssetIterator{}
-	req = proto.Clone(req).(*dataplexpb.ListAssetsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.Asset, string, error) {
 		resp := &dataplexpb.ListAssetsResponse{}
 		if pageToken != "" {
@@ -1772,7 +1772,7 @@ func (c *gRPCClient) ListAssetActions(ctx context.Context, req *dataplexpb.ListA
 	}
 	opts = append((*c.CallOptions).ListAssetActions[0:len((*c.CallOptions).ListAssetActions):len((*c.CallOptions).ListAssetActions)], opts...)
 	it := &ActionIterator{}
-	req = proto.Clone(req).(*dataplexpb.ListAssetActionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.Action, string, error) {
 		resp := &dataplexpb.ListActionsResponse{}
 		if pageToken != "" {
@@ -1899,7 +1899,7 @@ func (c *gRPCClient) ListTasks(ctx context.Context, req *dataplexpb.ListTasksReq
 	}
 	opts = append((*c.CallOptions).ListTasks[0:len((*c.CallOptions).ListTasks):len((*c.CallOptions).ListTasks)], opts...)
 	it := &TaskIterator{}
-	req = proto.Clone(req).(*dataplexpb.ListTasksRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.Task, string, error) {
 		resp := &dataplexpb.ListTasksResponse{}
 		if pageToken != "" {
@@ -1975,7 +1975,7 @@ func (c *gRPCClient) ListJobs(ctx context.Context, req *dataplexpb.ListJobsReque
 	}
 	opts = append((*c.CallOptions).ListJobs[0:len((*c.CallOptions).ListJobs):len((*c.CallOptions).ListJobs)], opts...)
 	it := &JobIterator{}
-	req = proto.Clone(req).(*dataplexpb.ListJobsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.Job, string, error) {
 		resp := &dataplexpb.ListJobsResponse{}
 		if pageToken != "" {
@@ -2113,7 +2113,7 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -2289,7 +2289,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -2537,7 +2537,7 @@ func (c *restClient) DeleteLake(ctx context.Context, req *dataplexpb.DeleteLakeR
 // ListLakes lists lake resources in a project and location.
 func (c *restClient) ListLakes(ctx context.Context, req *dataplexpb.ListLakesRequest, opts ...gax.CallOption) *LakeIterator {
 	it := &LakeIterator{}
-	req = proto.Clone(req).(*dataplexpb.ListLakesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.Lake, string, error) {
 		resp := &dataplexpb.ListLakesResponse{}
@@ -2678,7 +2678,7 @@ func (c *restClient) GetLake(ctx context.Context, req *dataplexpb.GetLakeRequest
 // ListLakeActions lists action resources in a lake.
 func (c *restClient) ListLakeActions(ctx context.Context, req *dataplexpb.ListLakeActionsRequest, opts ...gax.CallOption) *ActionIterator {
 	it := &ActionIterator{}
-	req = proto.Clone(req).(*dataplexpb.ListLakeActionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.Action, string, error) {
 		resp := &dataplexpb.ListActionsResponse{}
@@ -2962,7 +2962,7 @@ func (c *restClient) DeleteZone(ctx context.Context, req *dataplexpb.DeleteZoneR
 // ListZones lists zone resources in a lake.
 func (c *restClient) ListZones(ctx context.Context, req *dataplexpb.ListZonesRequest, opts ...gax.CallOption) *ZoneIterator {
 	it := &ZoneIterator{}
-	req = proto.Clone(req).(*dataplexpb.ListZonesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.Zone, string, error) {
 		resp := &dataplexpb.ListZonesResponse{}
@@ -3103,7 +3103,7 @@ func (c *restClient) GetZone(ctx context.Context, req *dataplexpb.GetZoneRequest
 // ListZoneActions lists action resources in a zone.
 func (c *restClient) ListZoneActions(ctx context.Context, req *dataplexpb.ListZoneActionsRequest, opts ...gax.CallOption) *ActionIterator {
 	it := &ActionIterator{}
-	req = proto.Clone(req).(*dataplexpb.ListZoneActionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.Action, string, error) {
 		resp := &dataplexpb.ListActionsResponse{}
@@ -3387,7 +3387,7 @@ func (c *restClient) DeleteAsset(ctx context.Context, req *dataplexpb.DeleteAsse
 // ListAssets lists asset resources in a zone.
 func (c *restClient) ListAssets(ctx context.Context, req *dataplexpb.ListAssetsRequest, opts ...gax.CallOption) *AssetIterator {
 	it := &AssetIterator{}
-	req = proto.Clone(req).(*dataplexpb.ListAssetsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.Asset, string, error) {
 		resp := &dataplexpb.ListAssetsResponse{}
@@ -3528,7 +3528,7 @@ func (c *restClient) GetAsset(ctx context.Context, req *dataplexpb.GetAssetReque
 // ListAssetActions lists action resources in an asset.
 func (c *restClient) ListAssetActions(ctx context.Context, req *dataplexpb.ListAssetActionsRequest, opts ...gax.CallOption) *ActionIterator {
 	it := &ActionIterator{}
-	req = proto.Clone(req).(*dataplexpb.ListAssetActionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.Action, string, error) {
 		resp := &dataplexpb.ListActionsResponse{}
@@ -3811,7 +3811,7 @@ func (c *restClient) DeleteTask(ctx context.Context, req *dataplexpb.DeleteTaskR
 // ListTasks lists tasks under the given lake.
 func (c *restClient) ListTasks(ctx context.Context, req *dataplexpb.ListTasksRequest, opts ...gax.CallOption) *TaskIterator {
 	it := &TaskIterator{}
-	req = proto.Clone(req).(*dataplexpb.ListTasksRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.Task, string, error) {
 		resp := &dataplexpb.ListTasksResponse{}
@@ -3952,7 +3952,7 @@ func (c *restClient) GetTask(ctx context.Context, req *dataplexpb.GetTaskRequest
 // ListJobs lists Jobs under the given task.
 func (c *restClient) ListJobs(ctx context.Context, req *dataplexpb.ListJobsRequest, opts ...gax.CallOption) *JobIterator {
 	it := &JobIterator{}
-	req = proto.Clone(req).(*dataplexpb.ListJobsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.Job, string, error) {
 		resp := &dataplexpb.ListJobsResponse{}
@@ -4260,7 +4260,7 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 //	to the project.
 func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -4676,7 +4676,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

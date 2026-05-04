@@ -692,7 +692,7 @@ func (c *cloudFunctionsGRPCClient) ListFunctions(ctx context.Context, req *funct
 	}
 	opts = append((*c.CallOptions).ListFunctions[0:len((*c.CallOptions).ListFunctions):len((*c.CallOptions).ListFunctions)], opts...)
 	it := &CloudFunctionIterator{}
-	req = proto.Clone(req).(*functionspb.ListFunctionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*functionspb.CloudFunction, string, error) {
 		resp := &functionspb.ListFunctionsResponse{}
 		if pageToken != "" {
@@ -981,7 +981,7 @@ func (c *cloudFunctionsGRPCClient) ListLocations(ctx context.Context, req *locat
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -1048,7 +1048,7 @@ func (c *cloudFunctionsGRPCClient) ListOperations(ctx context.Context, req *long
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -1090,7 +1090,7 @@ func (c *cloudFunctionsGRPCClient) ListOperations(ctx context.Context, req *long
 // ListFunctions returns a list of functions that belong to the requested project.
 func (c *cloudFunctionsRESTClient) ListFunctions(ctx context.Context, req *functionspb.ListFunctionsRequest, opts ...gax.CallOption) *CloudFunctionIterator {
 	it := &CloudFunctionIterator{}
-	req = proto.Clone(req).(*functionspb.ListFunctionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*functionspb.CloudFunction, string, error) {
 		resp := &functionspb.ListFunctionsResponse{}
@@ -1842,7 +1842,7 @@ func (c *cloudFunctionsRESTClient) TestIamPermissions(ctx context.Context, req *
 // ListLocations lists information about the supported locations for this service.
 func (c *cloudFunctionsRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -1977,7 +1977,7 @@ func (c *cloudFunctionsRESTClient) GetOperation(ctx context.Context, req *longru
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *cloudFunctionsRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

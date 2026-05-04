@@ -913,7 +913,7 @@ func (c *notebookGRPCClient) ListInstances(ctx context.Context, req *notebookspb
 	}
 	opts = append((*c.CallOptions).ListInstances[0:len((*c.CallOptions).ListInstances):len((*c.CallOptions).ListInstances)], opts...)
 	it := &InstanceIterator{}
-	req = proto.Clone(req).(*notebookspb.ListInstancesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*notebookspb.Instance, string, error) {
 		resp := &notebookspb.ListInstancesResponse{}
 		if pageToken != "" {
@@ -1420,7 +1420,7 @@ func (c *notebookGRPCClient) ListEnvironments(ctx context.Context, req *notebook
 	}
 	opts = append((*c.CallOptions).ListEnvironments[0:len((*c.CallOptions).ListEnvironments):len((*c.CallOptions).ListEnvironments)], opts...)
 	it := &EnvironmentIterator{}
-	req = proto.Clone(req).(*notebookspb.ListEnvironmentsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*notebookspb.Environment, string, error) {
 		resp := &notebookspb.ListEnvironmentsResponse{}
 		if pageToken != "" {
@@ -1539,7 +1539,7 @@ func (c *notebookGRPCClient) ListSchedules(ctx context.Context, req *notebookspb
 	}
 	opts = append((*c.CallOptions).ListSchedules[0:len((*c.CallOptions).ListSchedules):len((*c.CallOptions).ListSchedules)], opts...)
 	it := &ScheduleIterator{}
-	req = proto.Clone(req).(*notebookspb.ListSchedulesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*notebookspb.Schedule, string, error) {
 		resp := &notebookspb.ListSchedulesResponse{}
 		if pageToken != "" {
@@ -1693,7 +1693,7 @@ func (c *notebookGRPCClient) ListExecutions(ctx context.Context, req *notebooksp
 	}
 	opts = append((*c.CallOptions).ListExecutions[0:len((*c.CallOptions).ListExecutions):len((*c.CallOptions).ListExecutions)], opts...)
 	it := &ExecutionIterator{}
-	req = proto.Clone(req).(*notebookspb.ListExecutionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*notebookspb.Execution, string, error) {
 		resp := &notebookspb.ListExecutionsResponse{}
 		if pageToken != "" {
@@ -1839,7 +1839,7 @@ func (c *notebookGRPCClient) ListLocations(ctx context.Context, req *locationpb.
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -2015,7 +2015,7 @@ func (c *notebookGRPCClient) ListOperations(ctx context.Context, req *longrunnin
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {

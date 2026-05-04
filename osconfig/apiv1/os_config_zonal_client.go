@@ -889,7 +889,7 @@ func (c *osConfigZonalGRPCClient) ListOSPolicyAssignments(ctx context.Context, r
 	}
 	opts = append((*c.CallOptions).ListOSPolicyAssignments[0:len((*c.CallOptions).ListOSPolicyAssignments):len((*c.CallOptions).ListOSPolicyAssignments)], opts...)
 	it := &OSPolicyAssignmentIterator{}
-	req = proto.Clone(req).(*osconfigpb.ListOSPolicyAssignmentsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*osconfigpb.OSPolicyAssignment, string, error) {
 		resp := &osconfigpb.ListOSPolicyAssignmentsResponse{}
 		if pageToken != "" {
@@ -941,7 +941,7 @@ func (c *osConfigZonalGRPCClient) ListOSPolicyAssignmentRevisions(ctx context.Co
 	}
 	opts = append((*c.CallOptions).ListOSPolicyAssignmentRevisions[0:len((*c.CallOptions).ListOSPolicyAssignmentRevisions):len((*c.CallOptions).ListOSPolicyAssignmentRevisions)], opts...)
 	it := &OSPolicyAssignmentIterator{}
-	req = proto.Clone(req).(*osconfigpb.ListOSPolicyAssignmentRevisionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*osconfigpb.OSPolicyAssignment, string, error) {
 		resp := &osconfigpb.ListOSPolicyAssignmentRevisionsResponse{}
 		if pageToken != "" {
@@ -1043,7 +1043,7 @@ func (c *osConfigZonalGRPCClient) ListOSPolicyAssignmentReports(ctx context.Cont
 	}
 	opts = append((*c.CallOptions).ListOSPolicyAssignmentReports[0:len((*c.CallOptions).ListOSPolicyAssignmentReports):len((*c.CallOptions).ListOSPolicyAssignmentReports)], opts...)
 	it := &OSPolicyAssignmentReportIterator{}
-	req = proto.Clone(req).(*osconfigpb.ListOSPolicyAssignmentReportsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*osconfigpb.OSPolicyAssignmentReport, string, error) {
 		resp := &osconfigpb.ListOSPolicyAssignmentReportsResponse{}
 		if pageToken != "" {
@@ -1119,7 +1119,7 @@ func (c *osConfigZonalGRPCClient) ListInventories(ctx context.Context, req *osco
 	}
 	opts = append((*c.CallOptions).ListInventories[0:len((*c.CallOptions).ListInventories):len((*c.CallOptions).ListInventories)], opts...)
 	it := &InventoryIterator{}
-	req = proto.Clone(req).(*osconfigpb.ListInventoriesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*osconfigpb.Inventory, string, error) {
 		resp := &osconfigpb.ListInventoriesResponse{}
 		if pageToken != "" {
@@ -1195,7 +1195,7 @@ func (c *osConfigZonalGRPCClient) ListVulnerabilityReports(ctx context.Context, 
 	}
 	opts = append((*c.CallOptions).ListVulnerabilityReports[0:len((*c.CallOptions).ListVulnerabilityReports):len((*c.CallOptions).ListVulnerabilityReports)], opts...)
 	it := &VulnerabilityReportIterator{}
-	req = proto.Clone(req).(*osconfigpb.ListVulnerabilityReportsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*osconfigpb.VulnerabilityReport, string, error) {
 		resp := &osconfigpb.ListVulnerabilityReportsResponse{}
 		if pageToken != "" {
@@ -1455,7 +1455,7 @@ func (c *osConfigZonalRESTClient) GetOSPolicyAssignment(ctx context.Context, req
 // For each OS policy assignment, the latest revision is returned.
 func (c *osConfigZonalRESTClient) ListOSPolicyAssignments(ctx context.Context, req *osconfigpb.ListOSPolicyAssignmentsRequest, opts ...gax.CallOption) *OSPolicyAssignmentIterator {
 	it := &OSPolicyAssignmentIterator{}
-	req = proto.Clone(req).(*osconfigpb.ListOSPolicyAssignmentsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*osconfigpb.OSPolicyAssignment, string, error) {
 		resp := &osconfigpb.ListOSPolicyAssignmentsResponse{}
@@ -1533,7 +1533,7 @@ func (c *osConfigZonalRESTClient) ListOSPolicyAssignments(ctx context.Context, r
 // ListOSPolicyAssignmentRevisions list the OS policy assignment revisions for a given OS policy assignment.
 func (c *osConfigZonalRESTClient) ListOSPolicyAssignmentRevisions(ctx context.Context, req *osconfigpb.ListOSPolicyAssignmentRevisionsRequest, opts ...gax.CallOption) *OSPolicyAssignmentIterator {
 	it := &OSPolicyAssignmentIterator{}
-	req = proto.Clone(req).(*osconfigpb.ListOSPolicyAssignmentRevisionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*osconfigpb.OSPolicyAssignment, string, error) {
 		resp := &osconfigpb.ListOSPolicyAssignmentRevisionsResponse{}
@@ -1741,7 +1741,7 @@ func (c *osConfigZonalRESTClient) GetOSPolicyAssignmentReport(ctx context.Contex
 // the specified zone.
 func (c *osConfigZonalRESTClient) ListOSPolicyAssignmentReports(ctx context.Context, req *osconfigpb.ListOSPolicyAssignmentReportsRequest, opts ...gax.CallOption) *OSPolicyAssignmentReportIterator {
 	it := &OSPolicyAssignmentReportIterator{}
-	req = proto.Clone(req).(*osconfigpb.ListOSPolicyAssignmentReportsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*osconfigpb.OSPolicyAssignmentReport, string, error) {
 		resp := &osconfigpb.ListOSPolicyAssignmentReportsResponse{}
@@ -1883,7 +1883,7 @@ func (c *osConfigZonalRESTClient) GetInventory(ctx context.Context, req *osconfi
 // ListInventories list inventory data for all VM instances in the specified zone.
 func (c *osConfigZonalRESTClient) ListInventories(ctx context.Context, req *osconfigpb.ListInventoriesRequest, opts ...gax.CallOption) *InventoryIterator {
 	it := &InventoryIterator{}
-	req = proto.Clone(req).(*osconfigpb.ListInventoriesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*osconfigpb.Inventory, string, error) {
 		resp := &osconfigpb.ListInventoriesResponse{}
@@ -2025,7 +2025,7 @@ func (c *osConfigZonalRESTClient) GetVulnerabilityReport(ctx context.Context, re
 // ListVulnerabilityReports list vulnerability reports for all VM instances in the specified zone.
 func (c *osConfigZonalRESTClient) ListVulnerabilityReports(ctx context.Context, req *osconfigpb.ListVulnerabilityReportsRequest, opts ...gax.CallOption) *VulnerabilityReportIterator {
 	it := &VulnerabilityReportIterator{}
-	req = proto.Clone(req).(*osconfigpb.ListVulnerabilityReportsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*osconfigpb.VulnerabilityReport, string, error) {
 		resp := &osconfigpb.ListVulnerabilityReportsResponse{}

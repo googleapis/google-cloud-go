@@ -581,7 +581,7 @@ func (c *gRPCClient) ListKeys(ctx context.Context, req *apikeyspb.ListKeysReques
 	}
 	opts = append((*c.CallOptions).ListKeys[0:len((*c.CallOptions).ListKeys):len((*c.CallOptions).ListKeys)], opts...)
 	it := &KeyIterator{}
-	req = proto.Clone(req).(*apikeyspb.ListKeysRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apikeyspb.Key, string, error) {
 		resp := &apikeyspb.ListKeysResponse{}
 		if pageToken != "" {
@@ -862,7 +862,7 @@ func (c *restClient) CreateKey(ctx context.Context, req *apikeyspb.CreateKeyRequ
 // location is global.
 func (c *restClient) ListKeys(ctx context.Context, req *apikeyspb.ListKeysRequest, opts ...gax.CallOption) *KeyIterator {
 	it := &KeyIterator{}
-	req = proto.Clone(req).(*apikeyspb.ListKeysRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apikeyspb.Key, string, error) {
 		resp := &apikeyspb.ListKeysResponse{}

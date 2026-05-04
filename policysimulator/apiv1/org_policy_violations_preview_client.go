@@ -553,7 +553,7 @@ func (c *orgPolicyViolationsPreviewGRPCClient) ListOrgPolicyViolationsPreviews(c
 	}
 	opts = append((*c.CallOptions).ListOrgPolicyViolationsPreviews[0:len((*c.CallOptions).ListOrgPolicyViolationsPreviews):len((*c.CallOptions).ListOrgPolicyViolationsPreviews)], opts...)
 	it := &OrgPolicyViolationsPreviewIterator{}
-	req = proto.Clone(req).(*policysimulatorpb.ListOrgPolicyViolationsPreviewsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*policysimulatorpb.OrgPolicyViolationsPreview, string, error) {
 		resp := &policysimulatorpb.ListOrgPolicyViolationsPreviewsResponse{}
 		if pageToken != "" {
@@ -655,7 +655,7 @@ func (c *orgPolicyViolationsPreviewGRPCClient) ListOrgPolicyViolations(ctx conte
 	}
 	opts = append((*c.CallOptions).ListOrgPolicyViolations[0:len((*c.CallOptions).ListOrgPolicyViolations):len((*c.CallOptions).ListOrgPolicyViolations)], opts...)
 	it := &OrgPolicyViolationIterator{}
-	req = proto.Clone(req).(*policysimulatorpb.ListOrgPolicyViolationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*policysimulatorpb.OrgPolicyViolation, string, error) {
 		resp := &policysimulatorpb.ListOrgPolicyViolationsResponse{}
 		if pageToken != "" {
@@ -725,7 +725,7 @@ func (c *orgPolicyViolationsPreviewGRPCClient) ListOperations(ctx context.Contex
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -771,7 +771,7 @@ func (c *orgPolicyViolationsPreviewGRPCClient) ListOperations(ctx context.Contex
 // is available for at least 7 days.
 func (c *orgPolicyViolationsPreviewRESTClient) ListOrgPolicyViolationsPreviews(ctx context.Context, req *policysimulatorpb.ListOrgPolicyViolationsPreviewsRequest, opts ...gax.CallOption) *OrgPolicyViolationsPreviewIterator {
 	it := &OrgPolicyViolationsPreviewIterator{}
-	req = proto.Clone(req).(*policysimulatorpb.ListOrgPolicyViolationsPreviewsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*policysimulatorpb.OrgPolicyViolationsPreview, string, error) {
 		resp := &policysimulatorpb.ListOrgPolicyViolationsPreviewsResponse{}
@@ -987,7 +987,7 @@ func (c *orgPolicyViolationsPreviewRESTClient) CreateOrgPolicyViolationsPreview(
 // OrgPolicyViolationsPreview.
 func (c *orgPolicyViolationsPreviewRESTClient) ListOrgPolicyViolations(ctx context.Context, req *policysimulatorpb.ListOrgPolicyViolationsRequest, opts ...gax.CallOption) *OrgPolicyViolationIterator {
 	it := &OrgPolicyViolationIterator{}
-	req = proto.Clone(req).(*policysimulatorpb.ListOrgPolicyViolationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*policysimulatorpb.OrgPolicyViolation, string, error) {
 		resp := &policysimulatorpb.ListOrgPolicyViolationsResponse{}
@@ -1119,7 +1119,7 @@ func (c *orgPolicyViolationsPreviewRESTClient) GetOperation(ctx context.Context,
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *orgPolicyViolationsPreviewRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

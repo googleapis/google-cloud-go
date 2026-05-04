@@ -637,7 +637,7 @@ func (c *gRPCClient) ListInsights(ctx context.Context, req *recommenderpb.ListIn
 	}
 	opts = append((*c.CallOptions).ListInsights[0:len((*c.CallOptions).ListInsights):len((*c.CallOptions).ListInsights)], opts...)
 	it := &InsightIterator{}
-	req = proto.Clone(req).(*recommenderpb.ListInsightsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*recommenderpb.Insight, string, error) {
 		resp := &recommenderpb.ListInsightsResponse{}
 		if pageToken != "" {
@@ -737,7 +737,7 @@ func (c *gRPCClient) ListRecommendations(ctx context.Context, req *recommenderpb
 	}
 	opts = append((*c.CallOptions).ListRecommendations[0:len((*c.CallOptions).ListRecommendations):len((*c.CallOptions).ListRecommendations)], opts...)
 	it := &RecommendationIterator{}
-	req = proto.Clone(req).(*recommenderpb.ListRecommendationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*recommenderpb.Recommendation, string, error) {
 		resp := &recommenderpb.ListRecommendationsResponse{}
 		if pageToken != "" {
@@ -990,7 +990,7 @@ func (c *gRPCClient) UpdateInsightTypeConfig(ctx context.Context, req *recommend
 // recommender.*.list IAM permission for the specified insight type.
 func (c *restClient) ListInsights(ctx context.Context, req *recommenderpb.ListInsightsRequest, opts ...gax.CallOption) *InsightIterator {
 	it := &InsightIterator{}
-	req = proto.Clone(req).(*recommenderpb.ListInsightsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*recommenderpb.Insight, string, error) {
 		resp := &recommenderpb.ListInsightsResponse{}
@@ -1198,7 +1198,7 @@ func (c *restClient) MarkInsightAccepted(ctx context.Context, req *recommenderpb
 // recommender.*.list IAM permission for the specified recommender.
 func (c *restClient) ListRecommendations(ctx context.Context, req *recommenderpb.ListRecommendationsRequest, opts ...gax.CallOption) *RecommendationIterator {
 	it := &RecommendationIterator{}
-	req = proto.Clone(req).(*recommenderpb.ListRecommendationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*recommenderpb.Recommendation, string, error) {
 		resp := &recommenderpb.ListRecommendationsResponse{}

@@ -349,7 +349,7 @@ func (c *regionHealthSourcesRESTClient) Connection() *grpc.ClientConn {
 // returnPartialSuccess parameter to true.
 func (c *regionHealthSourcesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListRegionHealthSourcesRequest, opts ...gax.CallOption) *HealthSourcesScopedListPairIterator {
 	it := &HealthSourcesScopedListPairIterator{}
-	req = proto.Clone(req).(*computepb.AggregatedListRegionHealthSourcesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]HealthSourcesScopedListPair, string, error) {
 		resp := &computepb.HealthSourceAggregatedList{}
@@ -695,7 +695,7 @@ func (c *regionHealthSourcesRESTClient) Insert(ctx context.Context, req *compute
 // List lists the HealthSources for a project in the given region.
 func (c *regionHealthSourcesRESTClient) List(ctx context.Context, req *computepb.ListRegionHealthSourcesRequest, opts ...gax.CallOption) *HealthSourceIterator {
 	it := &HealthSourceIterator{}
-	req = proto.Clone(req).(*computepb.ListRegionHealthSourcesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.HealthSource, string, error) {
 		resp := &computepb.HealthSourceList{}

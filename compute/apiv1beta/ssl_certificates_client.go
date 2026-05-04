@@ -315,7 +315,7 @@ func (c *sslCertificatesRESTClient) Connection() *grpc.ClientConn {
 // returnPartialSuccess parameter to true.
 func (c *sslCertificatesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListSslCertificatesRequest, opts ...gax.CallOption) *SslCertificatesScopedListPairIterator {
 	it := &SslCertificatesScopedListPairIterator{}
-	req = proto.Clone(req).(*computepb.AggregatedListSslCertificatesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]SslCertificatesScopedListPair, string, error) {
 		resp := &computepb.SslCertificateAggregatedList{}
@@ -607,7 +607,7 @@ func (c *sslCertificatesRESTClient) Insert(ctx context.Context, req *computepb.I
 // project.
 func (c *sslCertificatesRESTClient) List(ctx context.Context, req *computepb.ListSslCertificatesRequest, opts ...gax.CallOption) *SslCertificateIterator {
 	it := &SslCertificateIterator{}
-	req = proto.Clone(req).(*computepb.ListSslCertificatesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.SslCertificate, string, error) {
 		resp := &computepb.SslCertificateList{}

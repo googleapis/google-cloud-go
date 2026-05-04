@@ -509,7 +509,7 @@ func (c *restClient) Connection() *grpc.ClientConn {
 // ListInstances lists Instances in a given project and location.
 func (c *restClient) ListInstances(ctx context.Context, req *memorystorepb.ListInstancesRequest, opts ...gax.CallOption) *InstanceIterator {
 	it := &InstanceIterator{}
-	req = proto.Clone(req).(*memorystorepb.ListInstancesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*memorystorepb.Instance, string, error) {
 		resp := &memorystorepb.ListInstancesResponse{}
@@ -1043,7 +1043,7 @@ func (c *restClient) RescheduleMaintenance(ctx context.Context, req *memorystore
 // available to the project are queried, and the results are aggregated.
 func (c *restClient) ListBackupCollections(ctx context.Context, req *memorystorepb.ListBackupCollectionsRequest, opts ...gax.CallOption) *BackupCollectionIterator {
 	it := &BackupCollectionIterator{}
-	req = proto.Clone(req).(*memorystorepb.ListBackupCollectionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*memorystorepb.BackupCollection, string, error) {
 		resp := &memorystorepb.ListBackupCollectionsResponse{}
@@ -1178,7 +1178,7 @@ func (c *restClient) GetBackupCollection(ctx context.Context, req *memorystorepb
 // ListBackups lists all backups owned by a backup collection.
 func (c *restClient) ListBackups(ctx context.Context, req *memorystorepb.ListBackupsRequest, opts ...gax.CallOption) *BackupIterator {
 	it := &BackupIterator{}
-	req = proto.Clone(req).(*memorystorepb.ListBackupsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*memorystorepb.Backup, string, error) {
 		resp := &memorystorepb.ListBackupsResponse{}
@@ -1573,7 +1573,7 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 // ListLocations lists information about the supported locations for this service.
 func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -1786,7 +1786,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

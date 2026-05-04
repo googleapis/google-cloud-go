@@ -431,7 +431,7 @@ func (c *partnerLinkGRPCClient) SearchPartnerLinks(ctx context.Context, req *dat
 	}
 	opts = append((*c.CallOptions).SearchPartnerLinks[0:len((*c.CallOptions).SearchPartnerLinks):len((*c.CallOptions).SearchPartnerLinks)], opts...)
 	it := &PartnerLinkIterator{}
-	req = proto.Clone(req).(*datamanagerpb.SearchPartnerLinksRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datamanagerpb.PartnerLink, string, error) {
 		resp := &datamanagerpb.SearchPartnerLinksResponse{}
 		if pageToken != "" {
@@ -609,7 +609,7 @@ func (c *partnerLinkRESTClient) DeletePartnerLink(ctx context.Context, req *data
 //	accountTypes/{loginAccountType}/accounts/{loginAccountId}
 func (c *partnerLinkRESTClient) SearchPartnerLinks(ctx context.Context, req *datamanagerpb.SearchPartnerLinksRequest, opts ...gax.CallOption) *PartnerLinkIterator {
 	it := &PartnerLinkIterator{}
-	req = proto.Clone(req).(*datamanagerpb.SearchPartnerLinksRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datamanagerpb.PartnerLink, string, error) {
 		resp := &datamanagerpb.SearchPartnerLinksResponse{}

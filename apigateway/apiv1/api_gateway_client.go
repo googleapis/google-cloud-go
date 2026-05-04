@@ -800,7 +800,7 @@ func (c *gRPCClient) ListGateways(ctx context.Context, req *apigatewaypb.ListGat
 	}
 	opts = append((*c.CallOptions).ListGateways[0:len((*c.CallOptions).ListGateways):len((*c.CallOptions).ListGateways)], opts...)
 	it := &GatewayIterator{}
-	req = proto.Clone(req).(*apigatewaypb.ListGatewaysRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apigatewaypb.Gateway, string, error) {
 		resp := &apigatewaypb.ListGatewaysResponse{}
 		if pageToken != "" {
@@ -951,7 +951,7 @@ func (c *gRPCClient) ListApis(ctx context.Context, req *apigatewaypb.ListApisReq
 	}
 	opts = append((*c.CallOptions).ListApis[0:len((*c.CallOptions).ListApis):len((*c.CallOptions).ListApis)], opts...)
 	it := &ApiIterator{}
-	req = proto.Clone(req).(*apigatewaypb.ListApisRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apigatewaypb.Api, string, error) {
 		resp := &apigatewaypb.ListApisResponse{}
 		if pageToken != "" {
@@ -1102,7 +1102,7 @@ func (c *gRPCClient) ListApiConfigs(ctx context.Context, req *apigatewaypb.ListA
 	}
 	opts = append((*c.CallOptions).ListApiConfigs[0:len((*c.CallOptions).ListApiConfigs):len((*c.CallOptions).ListApiConfigs)], opts...)
 	it := &ApiConfigIterator{}
-	req = proto.Clone(req).(*apigatewaypb.ListApiConfigsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apigatewaypb.ApiConfig, string, error) {
 		resp := &apigatewaypb.ListApiConfigsResponse{}
 		if pageToken != "" {
@@ -1243,7 +1243,7 @@ func (c *gRPCClient) DeleteApiConfig(ctx context.Context, req *apigatewaypb.Dele
 // ListGateways lists Gateways in a given project and location.
 func (c *restClient) ListGateways(ctx context.Context, req *apigatewaypb.ListGatewaysRequest, opts ...gax.CallOption) *GatewayIterator {
 	it := &GatewayIterator{}
-	req = proto.Clone(req).(*apigatewaypb.ListGatewaysRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apigatewaypb.Gateway, string, error) {
 		resp := &apigatewaypb.ListGatewaysResponse{}
@@ -1583,7 +1583,7 @@ func (c *restClient) DeleteGateway(ctx context.Context, req *apigatewaypb.Delete
 // ListApis lists Apis in a given project and location.
 func (c *restClient) ListApis(ctx context.Context, req *apigatewaypb.ListApisRequest, opts ...gax.CallOption) *ApiIterator {
 	it := &ApiIterator{}
-	req = proto.Clone(req).(*apigatewaypb.ListApisRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apigatewaypb.Api, string, error) {
 		resp := &apigatewaypb.ListApisResponse{}
@@ -1923,7 +1923,7 @@ func (c *restClient) DeleteApi(ctx context.Context, req *apigatewaypb.DeleteApiR
 // ListApiConfigs lists ApiConfigs in a given project and location.
 func (c *restClient) ListApiConfigs(ctx context.Context, req *apigatewaypb.ListApiConfigsRequest, opts ...gax.CallOption) *ApiConfigIterator {
 	it := &ApiConfigIterator{}
-	req = proto.Clone(req).(*apigatewaypb.ListApiConfigsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apigatewaypb.ApiConfig, string, error) {
 		resp := &apigatewaypb.ListApiConfigsResponse{}

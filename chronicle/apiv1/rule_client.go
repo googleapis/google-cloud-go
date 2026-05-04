@@ -769,7 +769,7 @@ func (c *ruleGRPCClient) ListRules(ctx context.Context, req *chroniclepb.ListRul
 	}
 	opts = append((*c.CallOptions).ListRules[0:len((*c.CallOptions).ListRules):len((*c.CallOptions).ListRules)], opts...)
 	it := &RuleIterator{}
-	req = proto.Clone(req).(*chroniclepb.ListRulesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*chroniclepb.Rule, string, error) {
 		resp := &chroniclepb.ListRulesResponse{}
 		if pageToken != "" {
@@ -862,7 +862,7 @@ func (c *ruleGRPCClient) ListRuleRevisions(ctx context.Context, req *chroniclepb
 	}
 	opts = append((*c.CallOptions).ListRuleRevisions[0:len((*c.CallOptions).ListRuleRevisions):len((*c.CallOptions).ListRuleRevisions)], opts...)
 	it := &RuleIterator{}
-	req = proto.Clone(req).(*chroniclepb.ListRuleRevisionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*chroniclepb.Rule, string, error) {
 		resp := &chroniclepb.ListRuleRevisionsResponse{}
 		if pageToken != "" {
@@ -964,7 +964,7 @@ func (c *ruleGRPCClient) ListRetrohunts(ctx context.Context, req *chroniclepb.Li
 	}
 	opts = append((*c.CallOptions).ListRetrohunts[0:len((*c.CallOptions).ListRetrohunts):len((*c.CallOptions).ListRetrohunts)], opts...)
 	it := &RetrohuntIterator{}
-	req = proto.Clone(req).(*chroniclepb.ListRetrohuntsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*chroniclepb.Retrohunt, string, error) {
 		resp := &chroniclepb.ListRetrohuntsResponse{}
 		if pageToken != "" {
@@ -1040,7 +1040,7 @@ func (c *ruleGRPCClient) ListRuleDeployments(ctx context.Context, req *chronicle
 	}
 	opts = append((*c.CallOptions).ListRuleDeployments[0:len((*c.CallOptions).ListRuleDeployments):len((*c.CallOptions).ListRuleDeployments)], opts...)
 	it := &RuleDeploymentIterator{}
-	req = proto.Clone(req).(*chroniclepb.ListRuleDeploymentsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*chroniclepb.RuleDeployment, string, error) {
 		resp := &chroniclepb.ListRuleDeploymentsResponse{}
 		if pageToken != "" {
@@ -1165,7 +1165,7 @@ func (c *ruleGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -1331,7 +1331,7 @@ func (c *ruleRESTClient) GetRule(ctx context.Context, req *chroniclepb.GetRuleRe
 // ListRules lists Rules.
 func (c *ruleRESTClient) ListRules(ctx context.Context, req *chroniclepb.ListRulesRequest, opts ...gax.CallOption) *RuleIterator {
 	it := &RuleIterator{}
-	req = proto.Clone(req).(*chroniclepb.ListRulesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*chroniclepb.Rule, string, error) {
 		resp := &chroniclepb.ListRulesResponse{}
@@ -1528,7 +1528,7 @@ func (c *ruleRESTClient) DeleteRule(ctx context.Context, req *chroniclepb.Delete
 // ListRuleRevisions lists all revisions of the rule.
 func (c *ruleRESTClient) ListRuleRevisions(ctx context.Context, req *chroniclepb.ListRuleRevisionsRequest, opts ...gax.CallOption) *RuleIterator {
 	it := &RuleIterator{}
-	req = proto.Clone(req).(*chroniclepb.ListRuleRevisionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*chroniclepb.Rule, string, error) {
 		resp := &chroniclepb.ListRuleRevisionsResponse{}
@@ -1733,7 +1733,7 @@ func (c *ruleRESTClient) GetRetrohunt(ctx context.Context, req *chroniclepb.GetR
 // ListRetrohunts list Retrohunts.
 func (c *ruleRESTClient) ListRetrohunts(ctx context.Context, req *chroniclepb.ListRetrohuntsRequest, opts ...gax.CallOption) *RetrohuntIterator {
 	it := &RetrohuntIterator{}
-	req = proto.Clone(req).(*chroniclepb.ListRetrohuntsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*chroniclepb.Retrohunt, string, error) {
 		resp := &chroniclepb.ListRetrohuntsResponse{}
@@ -1871,7 +1871,7 @@ func (c *ruleRESTClient) GetRuleDeployment(ctx context.Context, req *chroniclepb
 // ListRuleDeployments lists RuleDeployments across all Rules.
 func (c *ruleRESTClient) ListRuleDeployments(ctx context.Context, req *chroniclepb.ListRuleDeploymentsRequest, opts ...gax.CallOption) *RuleDeploymentIterator {
 	it := &RuleDeploymentIterator{}
-	req = proto.Clone(req).(*chroniclepb.ListRuleDeploymentsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*chroniclepb.RuleDeployment, string, error) {
 		resp := &chroniclepb.ListRuleDeploymentsResponse{}
@@ -2161,7 +2161,7 @@ func (c *ruleRESTClient) GetOperation(ctx context.Context, req *longrunningpb.Ge
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *ruleRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

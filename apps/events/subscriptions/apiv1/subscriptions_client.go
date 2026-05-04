@@ -632,7 +632,7 @@ func (c *gRPCClient) ListSubscriptions(ctx context.Context, req *subscriptionspb
 	}
 	opts = append((*c.CallOptions).ListSubscriptions[0:len((*c.CallOptions).ListSubscriptions):len((*c.CallOptions).ListSubscriptions)], opts...)
 	it := &SubscriptionIterator{}
-	req = proto.Clone(req).(*subscriptionspb.ListSubscriptionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*subscriptionspb.Subscription, string, error) {
 		resp := &subscriptionspb.ListSubscriptionsResponse{}
 		if pageToken != "" {
@@ -942,7 +942,7 @@ func (c *restClient) GetSubscription(ctx context.Context, req *subscriptionspb.G
 // subscriptions (at https://developers.google.com/workspace/events/guides/list-subscriptions).
 func (c *restClient) ListSubscriptions(ctx context.Context, req *subscriptionspb.ListSubscriptionsRequest, opts ...gax.CallOption) *SubscriptionIterator {
 	it := &SubscriptionIterator{}
-	req = proto.Clone(req).(*subscriptionspb.ListSubscriptionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*subscriptionspb.Subscription, string, error) {
 		resp := &subscriptionspb.ListSubscriptionsResponse{}

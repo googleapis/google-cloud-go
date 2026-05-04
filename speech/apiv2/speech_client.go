@@ -1356,7 +1356,7 @@ func (c *gRPCClient) ListRecognizers(ctx context.Context, req *speechpb.ListReco
 	}
 	opts = append((*c.CallOptions).ListRecognizers[0:len((*c.CallOptions).ListRecognizers):len((*c.CallOptions).ListRecognizers)], opts...)
 	it := &RecognizerIterator{}
-	req = proto.Clone(req).(*speechpb.ListRecognizersRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*speechpb.Recognizer, string, error) {
 		resp := &speechpb.ListRecognizersResponse{}
 		if pageToken != "" {
@@ -1648,7 +1648,7 @@ func (c *gRPCClient) ListCustomClasses(ctx context.Context, req *speechpb.ListCu
 	}
 	opts = append((*c.CallOptions).ListCustomClasses[0:len((*c.CallOptions).ListCustomClasses):len((*c.CallOptions).ListCustomClasses)], opts...)
 	it := &CustomClassIterator{}
-	req = proto.Clone(req).(*speechpb.ListCustomClassesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*speechpb.CustomClass, string, error) {
 		resp := &speechpb.ListCustomClassesResponse{}
 		if pageToken != "" {
@@ -1825,7 +1825,7 @@ func (c *gRPCClient) ListPhraseSets(ctx context.Context, req *speechpb.ListPhras
 	}
 	opts = append((*c.CallOptions).ListPhraseSets[0:len((*c.CallOptions).ListPhraseSets):len((*c.CallOptions).ListPhraseSets)], opts...)
 	it := &PhraseSetIterator{}
-	req = proto.Clone(req).(*speechpb.ListPhraseSetsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*speechpb.PhraseSet, string, error) {
 		resp := &speechpb.ListPhraseSetsResponse{}
 		if pageToken != "" {
@@ -1994,7 +1994,7 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -2098,7 +2098,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -2213,7 +2213,7 @@ func (c *restClient) CreateRecognizer(ctx context.Context, req *speechpb.CreateR
 // ListRecognizers lists Recognizers.
 func (c *restClient) ListRecognizers(ctx context.Context, req *speechpb.ListRecognizersRequest, opts ...gax.CallOption) *RecognizerIterator {
 	it := &RecognizerIterator{}
-	req = proto.Clone(req).(*speechpb.ListRecognizersRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*speechpb.Recognizer, string, error) {
 		resp := &speechpb.ListRecognizersResponse{}
@@ -2901,7 +2901,7 @@ func (c *restClient) CreateCustomClass(ctx context.Context, req *speechpb.Create
 // ListCustomClasses lists CustomClasses.
 func (c *restClient) ListCustomClasses(ctx context.Context, req *speechpb.ListCustomClassesRequest, opts ...gax.CallOption) *CustomClassIterator {
 	it := &CustomClassIterator{}
-	req = proto.Clone(req).(*speechpb.ListCustomClassesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*speechpb.CustomClass, string, error) {
 		resp := &speechpb.ListCustomClassesResponse{}
@@ -3322,7 +3322,7 @@ func (c *restClient) CreatePhraseSet(ctx context.Context, req *speechpb.CreatePh
 // ListPhraseSets lists PhraseSets.
 func (c *restClient) ListPhraseSets(ctx context.Context, req *speechpb.ListPhraseSetsRequest, opts ...gax.CallOption) *PhraseSetIterator {
 	it := &PhraseSetIterator{}
-	req = proto.Clone(req).(*speechpb.ListPhraseSetsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*speechpb.PhraseSet, string, error) {
 		resp := &speechpb.ListPhraseSetsResponse{}
@@ -3732,7 +3732,7 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 //	to the project.
 func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -3951,7 +3951,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

@@ -841,7 +841,7 @@ func (c *projectsRESTClient) GetXpnHost(ctx context.Context, req *computepb.GetX
 // project.
 func (c *projectsRESTClient) GetXpnResources(ctx context.Context, req *computepb.GetXpnResourcesProjectsRequest, opts ...gax.CallOption) *XpnResourceIdIterator {
 	it := &XpnResourceIdIterator{}
-	req = proto.Clone(req).(*computepb.GetXpnResourcesProjectsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.XpnResourceId, string, error) {
 		resp := &computepb.ProjectsGetXpnResources{}
@@ -927,7 +927,7 @@ func (c *projectsRESTClient) GetXpnResources(ctx context.Context, req *computepb
 // ListXpnHosts lists all shared VPC host projects visible to the user in an organization.
 func (c *projectsRESTClient) ListXpnHosts(ctx context.Context, req *computepb.ListXpnHostsProjectsRequest, opts ...gax.CallOption) *ProjectIterator {
 	it := &ProjectIterator{}
-	req = proto.Clone(req).(*computepb.ListXpnHostsProjectsRequest)
+	req = proto.CloneOf(req)
 	m := protojson.MarshalOptions{AllowPartial: true}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.Project, string, error) {

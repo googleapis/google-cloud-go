@@ -431,7 +431,7 @@ func (c *errorStatsGRPCClient) ListGroupStats(ctx context.Context, req *errorrep
 	}
 	opts = append((*c.CallOptions).ListGroupStats[0:len((*c.CallOptions).ListGroupStats):len((*c.CallOptions).ListGroupStats)], opts...)
 	it := &ErrorGroupStatsIterator{}
-	req = proto.Clone(req).(*errorreportingpb.ListGroupStatsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*errorreportingpb.ErrorGroupStats, string, error) {
 		resp := &errorreportingpb.ListGroupStatsResponse{}
 		if pageToken != "" {
@@ -483,7 +483,7 @@ func (c *errorStatsGRPCClient) ListEvents(ctx context.Context, req *errorreporti
 	}
 	opts = append((*c.CallOptions).ListEvents[0:len((*c.CallOptions).ListEvents):len((*c.CallOptions).ListEvents)], opts...)
 	it := &ErrorEventIterator{}
-	req = proto.Clone(req).(*errorreportingpb.ListEventsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*errorreportingpb.ErrorEvent, string, error) {
 		resp := &errorreportingpb.ListEventsResponse{}
 		if pageToken != "" {
@@ -549,7 +549,7 @@ func (c *errorStatsGRPCClient) DeleteEvents(ctx context.Context, req *errorrepor
 // ListGroupStats lists the specified groups.
 func (c *errorStatsRESTClient) ListGroupStats(ctx context.Context, req *errorreportingpb.ListGroupStatsRequest, opts ...gax.CallOption) *ErrorGroupStatsIterator {
 	it := &ErrorGroupStatsIterator{}
-	req = proto.Clone(req).(*errorreportingpb.ListGroupStatsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*errorreportingpb.ErrorGroupStats, string, error) {
 		resp := &errorreportingpb.ListGroupStatsResponse{}
@@ -664,7 +664,7 @@ func (c *errorStatsRESTClient) ListGroupStats(ctx context.Context, req *errorrep
 // ListEvents lists the specified events.
 func (c *errorStatsRESTClient) ListEvents(ctx context.Context, req *errorreportingpb.ListEventsRequest, opts ...gax.CallOption) *ErrorEventIterator {
 	it := &ErrorEventIterator{}
-	req = proto.Clone(req).(*errorreportingpb.ListEventsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*errorreportingpb.ErrorEvent, string, error) {
 		resp := &errorreportingpb.ListEventsResponse{}

@@ -545,7 +545,7 @@ func (c *identityAwareProxyOAuthGRPCClient) ListIdentityAwareProxyClients(ctx co
 	}
 	opts = append((*c.CallOptions).ListIdentityAwareProxyClients[0:len((*c.CallOptions).ListIdentityAwareProxyClients):len((*c.CallOptions).ListIdentityAwareProxyClients)], opts...)
 	it := &IdentityAwareProxyClientIterator{}
-	req = proto.Clone(req).(*iappb.ListIdentityAwareProxyClientsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*iappb.IdentityAwareProxyClient, string, error) {
 		resp := &iappb.ListIdentityAwareProxyClientsResponse{}
 		if pageToken != "" {
@@ -885,7 +885,7 @@ func (c *identityAwareProxyOAuthRESTClient) CreateIdentityAwareProxyClient(ctx c
 // ListIdentityAwareProxyClients lists the existing clients for the brand.
 func (c *identityAwareProxyOAuthRESTClient) ListIdentityAwareProxyClients(ctx context.Context, req *iappb.ListIdentityAwareProxyClientsRequest, opts ...gax.CallOption) *IdentityAwareProxyClientIterator {
 	it := &IdentityAwareProxyClientIterator{}
-	req = proto.Clone(req).(*iappb.ListIdentityAwareProxyClientsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*iappb.IdentityAwareProxyClient, string, error) {
 		resp := &iappb.ListIdentityAwareProxyClientsResponse{}
