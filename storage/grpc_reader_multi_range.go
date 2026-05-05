@@ -751,8 +751,9 @@ func (m *multiRangeDownloaderManager) setPermanentError(err error) {
 // object in GCS. Spins up goroutines for the read and write sides of the
 // stream.
 type bidiReadStreamSession struct {
-	ctx    context.Context
-	cancel context.CancelFunc
+	managerCtx context.Context
+	ctx        context.Context
+	cancel     context.CancelFunc
 
 	stream   storagepb.Storage_BidiReadObjectClient
 	client   *grpcStorageClient
@@ -772,14 +773,15 @@ func newBidiReadStreamSession(ctx context.Context, respC chan<- mrdSessionResult
 	sCtx, cancel := context.WithCancel(ctx)
 
 	s := &bidiReadStreamSession{
-		ctx:      sCtx,
-		cancel:   cancel,
-		client:   client,
-		settings: settings,
-		params:   params,
-		readSpec: readSpec,
-		reqC:     make(chan *storagepb.BidiReadObjectRequest, 100),
-		respC:    respC,
+		ctx:        sCtx,
+		cancel:     cancel,
+		managerCtx: ctx,
+		client:     client,
+		settings:   settings,
+		params:     params,
+		readSpec:   readSpec,
+		reqC:       make(chan *storagepb.BidiReadObjectRequest, 100),
+		respC:      respC,
 	}
 
 	initialReq := &storagepb.BidiReadObjectRequest{
@@ -841,7 +843,9 @@ func (s *bidiReadStreamSession) sendLoop() {
 			}
 			if err := s.stream.Send(req); err != nil {
 				s.setError(err)
-				s.cancel()
+				if err != io.EOF {
+					s.cancel()
+				}
 				return
 			}
 		case <-s.ctx.Done():
@@ -853,10 +857,6 @@ func (s *bidiReadStreamSession) receiveLoop() {
 	defer s.wg.Done()
 	defer s.cancel()
 	for {
-		if err := s.ctx.Err(); err != nil {
-			return
-		}
-
 		// Receive message without a copy.
 		databufs := mem.BufferSlice{}
 		err := s.stream.RecvMsg(&databufs)
@@ -879,10 +879,12 @@ func (s *bidiReadStreamSession) receiveLoop() {
 				result.err = err
 			}
 			s.setError(err)
-
+			if s.managerCtx.Err() != nil {
+				return
+			}
 			select {
 			case s.respC <- result:
-			case <-s.ctx.Done():
+			case <-s.managerCtx.Done():
 			}
 			return
 		}
@@ -890,6 +892,24 @@ func (s *bidiReadStreamSession) receiveLoop() {
 		select {
 		case s.respC <- mrdSessionResult{decoder: decoder}:
 		case <-s.ctx.Done():
+			// If context is cancelled unexpectedly, make sure to notify
+			// eventLoop before returning.
+			err := s.streamErr
+			if err == nil {
+				err = s.ctx.Err()
+			}
+			// Make sure the event loop is active before sending error
+			// to make sure we do not send on a closed respC channel
+			// during normal MRD close.
+			if s.managerCtx.Err() != nil {
+				databufs.Free()
+				return
+			}
+			select {
+			case s.respC <- mrdSessionResult{err: err}:
+			case <-s.managerCtx.Done():
+			}
+			databufs.Free()
 			return
 		}
 	}
