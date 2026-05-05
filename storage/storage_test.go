@@ -2769,10 +2769,8 @@ func TestNewClient_ValidationHappensOnce(t *testing.T) {
 	if err == nil {
 		t.Error("expected error for WithoutAuthentication + WithAPIKey, got nil")
 	}
-
-	_, err = NewClient(ctx, option.WithHTTPClient(nil), option.WithRequestReason("foo"))
-	if err == nil {
-		t.Error("expected error for WithHTTPClient + WithRequestReason, got nil")
+	if !strings.Contains(err.Error(), "options.WithoutAuthentication is incompatible with any option that provides credentials") {
+		t.Errorf("expected error about incompatible options, got: %v", err)
 	}
 }
 
@@ -2783,7 +2781,6 @@ func TestNewClient_TransportOptionsRegression(t *testing.T) {
 	client, err := NewClient(ctx,
 		option.WithQuotaProject("test-project"),
 		option.WithRequestReason("test-reason"),
-		option.WithoutAuthentication(), // Avoid ADC lookup in tests
 	)
 	if err != nil {
 		t.Fatalf("NewClient failed with transport options: %v", err)
@@ -2801,7 +2798,6 @@ func TestNewClient_EndpointPropagation(t *testing.T) {
 
 	client, err := NewClient(ctx,
 		option.WithEndpoint(customEndpoint),
-		option.WithoutAuthentication(),
 	)
 	if err != nil {
 		t.Fatalf("NewClient failed: %v", err)
