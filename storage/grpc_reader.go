@@ -285,9 +285,10 @@ func (r *gRPCReadObjectReader) Read(p []byte) (int, error) {
 	// not surfacing trailer errors on the Read path; clearing r.stream makes
 	// re-entry idempotent.
 	if r.size == r.seen || r.zeroRange {
-		if r.stream != nil {
-			_ = r.recv()
-			r.stream = nil
+		for r.stream != nil {
+			if err := r.recv(); err != nil {
+				r.stream = nil
+			}
 		}
 		if err := r.runCRCCheck(); err != nil {
 			return 0, err

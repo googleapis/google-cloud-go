@@ -105,6 +105,29 @@ func TestGRPCReader_ReadAtEOF_DrainsStream(t *testing.T) {
 	}
 }
 
+// TestGRPCReader_ReadAtEOF_ExhaustiveDrain verifies that Read loops until
+// the stream is fully exhausted (receives EOF), even if multiple messages
+// are required.
+func TestGRPCReader_ReadAtEOF_ExhaustiveDrain(t *testing.T) {
+	fake := &fakeReadObjectClient{
+		// Two successes (e.g., metadata messages) followed by EOF.
+		recvMsgErrs: []error{nil, nil},
+	}
+	r := newReaderForTest(fake, 10, func() {})
+
+	_, err := r.Read(make([]byte, 4))
+	if err != io.EOF {
+		t.Fatalf("Read err = %v; want io.EOF", err)
+	}
+	// Total calls = 2 (for the nils) + 1 (for the final io.EOF) = 3
+	if fake.recvMsgN != 3 {
+		t.Errorf("RecvMsg invocations = %d; want 3 (exhaustive drain)", fake.recvMsgN)
+	}
+	if r.stream != nil {
+		t.Errorf("r.stream not cleared after exhaustive drain")
+	}
+}
+
 // TestGRPCReader_ReadAtEOF_DrainSwallowsNonEOF pins the deliberate behavior
 // choice: trailer errors observed during the EOS drain are dropped, matching
 // the prior contract that Read users do not see post-success trailer errors.
