@@ -278,9 +278,17 @@ func (r *gRPCReadObjectReader) runCRCCheck() error {
 
 // Read reads bytes into the user's buffer from an open gRPC stream.
 func (r *gRPCReadObjectReader) Read(p []byte) (int, error) {
-	// The entire object has been read by this reader, check the checksum if
-	// necessary and return EOF.
+	// All bytes received: drain the trailing EOS so the gRPC client stream
+	// finalizes naturally (matching WriteTo). Without this, Close()'s cancel()
+	// is what ends the stream and otelgrpc records the span as Cancelled. Any
+	// non-EOF error from the drain is dropped to preserve current behavior of
+	// not surfacing trailer errors on the Read path; clearing r.stream makes
+	// re-entry idempotent.
 	if r.size == r.seen || r.zeroRange {
+		if r.stream != nil {
+			_ = r.recv()
+			r.stream = nil
+		}
 		if err := r.runCRCCheck(); err != nil {
 			return 0, err
 		}
