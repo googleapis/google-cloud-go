@@ -2764,10 +2764,15 @@ func isZeroValue(v reflect.Value) (bool, error) {
 
 func TestNewClient_ValidationHappensOnce(t *testing.T) {
 	ctx := context.Background()
-	// Passing incompatible options should be caught in the first pass (e.g., WithoutAuthentication + WithAPIKey).
+	// Passing incompatible options should be caught in the first pass.
 	_, err := NewClient(ctx, option.WithoutAuthentication(), option.WithAPIKey("fake-api-key"))
 	if err == nil {
-		t.Error("expected error for incompatible options, got nil")
+		t.Error("expected error for WithoutAuthentication + WithAPIKey, got nil")
+	}
+
+	_, err = NewClient(ctx, option.WithHTTPClient(nil), option.WithRequestReason("foo"))
+	if err == nil {
+		t.Error("expected error for WithHTTPClient + WithRequestReason, got nil")
 	}
 }
 
@@ -2778,6 +2783,7 @@ func TestNewClient_TransportOptionsRegression(t *testing.T) {
 	client, err := NewClient(ctx,
 		option.WithQuotaProject("test-project"),
 		option.WithRequestReason("test-reason"),
+		option.WithoutAuthentication(), // Avoid ADC lookup in tests
 	)
 	if err != nil {
 		t.Fatalf("NewClient failed with transport options: %v", err)
@@ -2795,6 +2801,7 @@ func TestNewClient_EndpointPropagation(t *testing.T) {
 
 	client, err := NewClient(ctx,
 		option.WithEndpoint(customEndpoint),
+		option.WithoutAuthentication(),
 	)
 	if err != nil {
 		t.Fatalf("NewClient failed: %v", err)
