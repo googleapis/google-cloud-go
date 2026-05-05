@@ -2778,7 +2778,6 @@ func TestNewClient_TransportOptionsRegression(t *testing.T) {
 	client, err := NewClient(ctx,
 		option.WithQuotaProject("test-project"),
 		option.WithRequestReason("test-reason"),
-		option.WithoutAuthentication(), // Avoid ADC lookup in tests
 	)
 	if err != nil {
 		t.Fatalf("NewClient failed with transport options: %v", err)
@@ -2796,7 +2795,6 @@ func TestNewClient_EndpointPropagation(t *testing.T) {
 
 	client, err := NewClient(ctx,
 		option.WithEndpoint(customEndpoint),
-		option.WithoutAuthentication(),
 	)
 	if err != nil {
 		t.Fatalf("NewClient failed: %v", err)
