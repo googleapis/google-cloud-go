@@ -572,7 +572,7 @@ func (c *snapshotGroupsRESTClient) Insert(ctx context.Context, req *computepb.In
 // the specified project.
 func (c *snapshotGroupsRESTClient) List(ctx context.Context, req *computepb.ListSnapshotGroupsRequest, opts ...gax.CallOption) *SnapshotGroupIterator {
 	it := &SnapshotGroupIterator{}
-	req = proto.Clone(req).(*computepb.ListSnapshotGroupsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.SnapshotGroup, string, error) {
 		resp := &computepb.ListSnapshotGroups{}

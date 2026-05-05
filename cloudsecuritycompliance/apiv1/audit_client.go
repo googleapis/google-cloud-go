@@ -601,7 +601,7 @@ func (c *auditGRPCClient) ListFrameworkAudits(ctx context.Context, req *cloudsec
 	}
 	opts = append((*c.CallOptions).ListFrameworkAudits[0:len((*c.CallOptions).ListFrameworkAudits):len((*c.CallOptions).ListFrameworkAudits)], opts...)
 	it := &FrameworkAuditIterator{}
-	req = proto.Clone(req).(*cloudsecuritycompliancepb.ListFrameworkAuditsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cloudsecuritycompliancepb.FrameworkAudit, string, error) {
 		resp := &cloudsecuritycompliancepb.ListFrameworkAuditsResponse{}
 		if pageToken != "" {
@@ -695,7 +695,7 @@ func (c *auditGRPCClient) ListLocations(ctx context.Context, req *locationpb.Lis
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -799,7 +799,7 @@ func (c *auditGRPCClient) ListOperations(ctx context.Context, req *longrunningpb
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -971,7 +971,7 @@ func (c *auditRESTClient) CreateFrameworkAudit(ctx context.Context, req *cloudse
 // ListFrameworkAudits lists the framework audits for a given organization, folder, or project.
 func (c *auditRESTClient) ListFrameworkAudits(ctx context.Context, req *cloudsecuritycompliancepb.ListFrameworkAuditsRequest, opts ...gax.CallOption) *FrameworkAuditIterator {
 	it := &FrameworkAuditIterator{}
-	req = proto.Clone(req).(*cloudsecuritycompliancepb.ListFrameworkAuditsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cloudsecuritycompliancepb.FrameworkAudit, string, error) {
 		resp := &cloudsecuritycompliancepb.ListFrameworkAuditsResponse{}
@@ -1178,7 +1178,7 @@ func (c *auditRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLo
 // implementation and version.
 func (c *auditRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -1397,7 +1397,7 @@ func (c *auditRESTClient) GetOperation(ctx context.Context, req *longrunningpb.G
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *auditRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

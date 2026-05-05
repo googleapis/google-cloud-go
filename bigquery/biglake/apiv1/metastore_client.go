@@ -947,7 +947,7 @@ func (c *metastoreGRPCClient) ListCatalogs(ctx context.Context, req *biglakepb.L
 	}
 	opts = append((*c.CallOptions).ListCatalogs[0:len((*c.CallOptions).ListCatalogs):len((*c.CallOptions).ListCatalogs)], opts...)
 	it := &CatalogIterator{}
-	req = proto.Clone(req).(*biglakepb.ListCatalogsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*biglakepb.Catalog, string, error) {
 		resp := &biglakepb.ListCatalogsResponse{}
 		if pageToken != "" {
@@ -1095,7 +1095,7 @@ func (c *metastoreGRPCClient) ListDatabases(ctx context.Context, req *biglakepb.
 	}
 	opts = append((*c.CallOptions).ListDatabases[0:len((*c.CallOptions).ListDatabases):len((*c.CallOptions).ListDatabases)], opts...)
 	it := &DatabaseIterator{}
-	req = proto.Clone(req).(*biglakepb.ListDatabasesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*biglakepb.Database, string, error) {
 		resp := &biglakepb.ListDatabasesResponse{}
 		if pageToken != "" {
@@ -1267,7 +1267,7 @@ func (c *metastoreGRPCClient) ListTables(ctx context.Context, req *biglakepb.Lis
 	}
 	opts = append((*c.CallOptions).ListTables[0:len((*c.CallOptions).ListTables):len((*c.CallOptions).ListTables)], opts...)
 	it := &TableIterator{}
-	req = proto.Clone(req).(*biglakepb.ListTablesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*biglakepb.Table, string, error) {
 		resp := &biglakepb.ListTablesResponse{}
 		if pageToken != "" {
@@ -1488,7 +1488,7 @@ func (c *metastoreRESTClient) GetCatalog(ctx context.Context, req *biglakepb.Get
 // ListCatalogs list all catalogs in a specified project.
 func (c *metastoreRESTClient) ListCatalogs(ctx context.Context, req *biglakepb.ListCatalogsRequest, opts ...gax.CallOption) *CatalogIterator {
 	it := &CatalogIterator{}
-	req = proto.Clone(req).(*biglakepb.ListCatalogsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*biglakepb.Catalog, string, error) {
 		resp := &biglakepb.ListCatalogsResponse{}
@@ -1816,7 +1816,7 @@ func (c *metastoreRESTClient) GetDatabase(ctx context.Context, req *biglakepb.Ge
 // ListDatabases list all databases in a specified catalog.
 func (c *metastoreRESTClient) ListDatabases(ctx context.Context, req *biglakepb.ListDatabasesRequest, opts ...gax.CallOption) *DatabaseIterator {
 	it := &DatabaseIterator{}
-	req = proto.Clone(req).(*biglakepb.ListDatabasesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*biglakepb.Database, string, error) {
 		resp := &biglakepb.ListDatabasesResponse{}
@@ -2207,7 +2207,7 @@ func (c *metastoreRESTClient) GetTable(ctx context.Context, req *biglakepb.GetTa
 // ListTables list all tables in a specified database.
 func (c *metastoreRESTClient) ListTables(ctx context.Context, req *biglakepb.ListTablesRequest, opts ...gax.CallOption) *TableIterator {
 	it := &TableIterator{}
-	req = proto.Clone(req).(*biglakepb.ListTablesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*biglakepb.Table, string, error) {
 		resp := &biglakepb.ListTablesResponse{}

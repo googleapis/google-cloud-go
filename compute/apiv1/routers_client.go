@@ -495,7 +495,7 @@ func (c *routersRESTClient) Connection() *grpc.ClientConn {
 // returnPartialSuccess parameter to true.
 func (c *routersRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListRoutersRequest, opts ...gax.CallOption) *RoutersScopedListPairIterator {
 	it := &RoutersScopedListPairIterator{}
-	req = proto.Clone(req).(*computepb.AggregatedListRoutersRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]RoutersScopedListPair, string, error) {
 		resp := &computepb.RouterAggregatedList{}
@@ -842,7 +842,7 @@ func (c *routersRESTClient) GetNatIpInfo(ctx context.Context, req *computepb.Get
 // GetNatMappingInfo retrieves runtime Nat mapping information of VM endpoints.
 func (c *routersRESTClient) GetNatMappingInfo(ctx context.Context, req *computepb.GetNatMappingInfoRoutersRequest, opts ...gax.CallOption) *VmEndpointNatMappingsIterator {
 	it := &VmEndpointNatMappingsIterator{}
-	req = proto.Clone(req).(*computepb.GetNatMappingInfoRoutersRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.VmEndpointNatMappings, string, error) {
 		resp := &computepb.VmEndpointNatMappingsList{}
@@ -1117,7 +1117,7 @@ func (c *routersRESTClient) Insert(ctx context.Context, req *computepb.InsertRou
 // List retrieves a list of Router resources available to the specified project.
 func (c *routersRESTClient) List(ctx context.Context, req *computepb.ListRoutersRequest, opts ...gax.CallOption) *RouterIterator {
 	it := &RouterIterator{}
-	req = proto.Clone(req).(*computepb.ListRoutersRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.Router, string, error) {
 		resp := &computepb.RouterList{}
@@ -1203,7 +1203,7 @@ func (c *routersRESTClient) List(ctx context.Context, req *computepb.ListRouters
 // ListBgpRoutes retrieves a list of router bgp routes available to the specified project.
 func (c *routersRESTClient) ListBgpRoutes(ctx context.Context, req *computepb.ListBgpRoutesRoutersRequest, opts ...gax.CallOption) *BgpRouteIterator {
 	it := &BgpRouteIterator{}
-	req = proto.Clone(req).(*computepb.ListBgpRoutesRoutersRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.BgpRoute, string, error) {
 		resp := &computepb.RoutersListBgpRoutes{}
@@ -1305,7 +1305,7 @@ func (c *routersRESTClient) ListBgpRoutes(ctx context.Context, req *computepb.Li
 // specified project.
 func (c *routersRESTClient) ListRoutePolicies(ctx context.Context, req *computepb.ListRoutePoliciesRoutersRequest, opts ...gax.CallOption) *RoutePolicyIterator {
 	it := &RoutePolicyIterator{}
-	req = proto.Clone(req).(*computepb.ListRoutePoliciesRoutersRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.RoutePolicy, string, error) {
 		resp := &computepb.RoutersListRoutePolicies{}

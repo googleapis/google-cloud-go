@@ -360,7 +360,7 @@ func (c *reportGRPCClient) Search(ctx context.Context, req *reportspb.SearchRequ
 	}
 	opts = append((*c.CallOptions).Search[0:len((*c.CallOptions).Search):len((*c.CallOptions).Search)], opts...)
 	it := &ReportRowIterator{}
-	req = proto.Clone(req).(*reportspb.SearchRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*reportspb.ReportRow, string, error) {
 		resp := &reportspb.SearchResponse{}
 		if pageToken != "" {
@@ -404,7 +404,7 @@ func (c *reportGRPCClient) Search(ctx context.Context, req *reportspb.SearchRequ
 // determine if there are more rows to be requested.
 func (c *reportRESTClient) Search(ctx context.Context, req *reportspb.SearchRequest, opts ...gax.CallOption) *ReportRowIterator {
 	it := &ReportRowIterator{}
-	req = proto.Clone(req).(*reportspb.SearchRequest)
+	req = proto.CloneOf(req)
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*reportspb.ReportRow, string, error) {

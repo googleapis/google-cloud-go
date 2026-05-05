@@ -544,7 +544,7 @@ func (c *dataObjectSearchGRPCClient) SearchDataObjects(ctx context.Context, req 
 	}
 	opts = append((*c.CallOptions).SearchDataObjects[0:len((*c.CallOptions).SearchDataObjects):len((*c.CallOptions).SearchDataObjects)], opts...)
 	it := &SearchResultIterator{}
-	req = proto.Clone(req).(*vectorsearchpb.SearchDataObjectsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*vectorsearchpb.SearchResult, string, error) {
 		resp := &vectorsearchpb.SearchDataObjectsResponse{}
 		if pageToken != "" {
@@ -596,7 +596,7 @@ func (c *dataObjectSearchGRPCClient) QueryDataObjects(ctx context.Context, req *
 	}
 	opts = append((*c.CallOptions).QueryDataObjects[0:len((*c.CallOptions).QueryDataObjects):len((*c.CallOptions).QueryDataObjects)], opts...)
 	it := &DataObjectIterator{}
-	req = proto.Clone(req).(*vectorsearchpb.QueryDataObjectsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*vectorsearchpb.DataObject, string, error) {
 		resp := &vectorsearchpb.QueryDataObjectsResponse{}
 		if pageToken != "" {
@@ -714,7 +714,7 @@ func (c *dataObjectSearchGRPCClient) ListLocations(ctx context.Context, req *loc
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -818,7 +818,7 @@ func (c *dataObjectSearchGRPCClient) ListOperations(ctx context.Context, req *lo
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -860,7 +860,7 @@ func (c *dataObjectSearchGRPCClient) ListOperations(ctx context.Context, req *lo
 // SearchDataObjects searches data objects.
 func (c *dataObjectSearchRESTClient) SearchDataObjects(ctx context.Context, req *vectorsearchpb.SearchDataObjectsRequest, opts ...gax.CallOption) *SearchResultIterator {
 	it := &SearchResultIterator{}
-	req = proto.Clone(req).(*vectorsearchpb.SearchDataObjectsRequest)
+	req = proto.CloneOf(req)
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*vectorsearchpb.SearchResult, string, error) {
@@ -938,7 +938,7 @@ func (c *dataObjectSearchRESTClient) SearchDataObjects(ctx context.Context, req 
 // QueryDataObjects queries data objects.
 func (c *dataObjectSearchRESTClient) QueryDataObjects(ctx context.Context, req *vectorsearchpb.QueryDataObjectsRequest, opts ...gax.CallOption) *DataObjectIterator {
 	it := &DataObjectIterator{}
-	req = proto.Clone(req).(*vectorsearchpb.QueryDataObjectsRequest)
+	req = proto.CloneOf(req)
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*vectorsearchpb.DataObject, string, error) {
@@ -1212,7 +1212,7 @@ func (c *dataObjectSearchRESTClient) GetLocation(ctx context.Context, req *locat
 // implementation and version.
 func (c *dataObjectSearchRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -1431,7 +1431,7 @@ func (c *dataObjectSearchRESTClient) GetOperation(ctx context.Context, req *long
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *dataObjectSearchRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

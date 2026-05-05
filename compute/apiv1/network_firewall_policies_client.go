@@ -753,7 +753,7 @@ func (c *networkFirewallPoliciesRESTClient) AddRule(ctx context.Context, req *co
 // returnPartialSuccess parameter to true.
 func (c *networkFirewallPoliciesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListNetworkFirewallPoliciesRequest, opts ...gax.CallOption) *FirewallPoliciesScopedListPairIterator {
 	it := &FirewallPoliciesScopedListPairIterator{}
-	req = proto.Clone(req).(*computepb.AggregatedListNetworkFirewallPoliciesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]FirewallPoliciesScopedListPair, string, error) {
 		resp := &computepb.NetworkFirewallPolicyAggregatedList{}
@@ -1350,7 +1350,7 @@ func (c *networkFirewallPoliciesRESTClient) Insert(ctx context.Context, req *com
 // List lists all the policies that have been configured for the specified project.
 func (c *networkFirewallPoliciesRESTClient) List(ctx context.Context, req *computepb.ListNetworkFirewallPoliciesRequest, opts ...gax.CallOption) *FirewallPolicyIterator {
 	it := &FirewallPolicyIterator{}
-	req = proto.Clone(req).(*computepb.ListNetworkFirewallPoliciesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.FirewallPolicy, string, error) {
 		resp := &computepb.FirewallPolicyList{}

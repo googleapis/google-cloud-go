@@ -1096,7 +1096,7 @@ func (c *gRPCClient) ListProcesses(ctx context.Context, req *lineagepb.ListProce
 	}
 	opts = append((*c.CallOptions).ListProcesses[0:len((*c.CallOptions).ListProcesses):len((*c.CallOptions).ListProcesses)], opts...)
 	it := &ProcessIterator{}
-	req = proto.Clone(req).(*lineagepb.ListProcessesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*lineagepb.Process, string, error) {
 		resp := &lineagepb.ListProcessesResponse{}
 		if pageToken != "" {
@@ -1243,7 +1243,7 @@ func (c *gRPCClient) ListRuns(ctx context.Context, req *lineagepb.ListRunsReques
 	}
 	opts = append((*c.CallOptions).ListRuns[0:len((*c.CallOptions).ListRuns):len((*c.CallOptions).ListRuns)], opts...)
 	it := &RunIterator{}
-	req = proto.Clone(req).(*lineagepb.ListRunsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*lineagepb.Run, string, error) {
 		resp := &lineagepb.ListRunsResponse{}
 		if pageToken != "" {
@@ -1369,7 +1369,7 @@ func (c *gRPCClient) ListLineageEvents(ctx context.Context, req *lineagepb.ListL
 	}
 	opts = append((*c.CallOptions).ListLineageEvents[0:len((*c.CallOptions).ListLineageEvents):len((*c.CallOptions).ListLineageEvents)], opts...)
 	it := &LineageEventIterator{}
-	req = proto.Clone(req).(*lineagepb.ListLineageEventsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*lineagepb.LineageEvent, string, error) {
 		resp := &lineagepb.ListLineageEventsResponse{}
 		if pageToken != "" {
@@ -1441,7 +1441,7 @@ func (c *gRPCClient) SearchLinks(ctx context.Context, req *lineagepb.SearchLinks
 	}
 	opts = append((*c.CallOptions).SearchLinks[0:len((*c.CallOptions).SearchLinks):len((*c.CallOptions).SearchLinks)], opts...)
 	it := &LinkIterator{}
-	req = proto.Clone(req).(*lineagepb.SearchLinksRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*lineagepb.Link, string, error) {
 		resp := &lineagepb.SearchLinksResponse{}
 		if pageToken != "" {
@@ -1493,7 +1493,7 @@ func (c *gRPCClient) BatchSearchLinkProcesses(ctx context.Context, req *lineagep
 	}
 	opts = append((*c.CallOptions).BatchSearchLinkProcesses[0:len((*c.CallOptions).BatchSearchLinkProcesses):len((*c.CallOptions).BatchSearchLinkProcesses)], opts...)
 	it := &ProcessLinksIterator{}
-	req = proto.Clone(req).(*lineagepb.BatchSearchLinkProcessesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*lineagepb.ProcessLinks, string, error) {
 		resp := &lineagepb.BatchSearchLinkProcessesResponse{}
 		if pageToken != "" {
@@ -1597,7 +1597,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -1902,7 +1902,7 @@ func (c *restClient) GetProcess(ctx context.Context, req *lineagepb.GetProcessRe
 // by insertion time.
 func (c *restClient) ListProcesses(ctx context.Context, req *lineagepb.ListProcessesRequest, opts ...gax.CallOption) *ProcessIterator {
 	it := &ProcessIterator{}
-	req = proto.Clone(req).(*lineagepb.ListProcessesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*lineagepb.Process, string, error) {
 		resp := &lineagepb.ListProcessesResponse{}
@@ -2239,7 +2239,7 @@ func (c *restClient) GetRun(ctx context.Context, req *lineagepb.GetRunRequest, o
 // start_time.
 func (c *restClient) ListRuns(ctx context.Context, req *lineagepb.ListRunsRequest, opts ...gax.CallOption) *RunIterator {
 	it := &RunIterator{}
-	req = proto.Clone(req).(*lineagepb.ListRunsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*lineagepb.Run, string, error) {
 		resp := &lineagepb.ListRunsResponse{}
@@ -2505,7 +2505,7 @@ func (c *restClient) GetLineageEvent(ctx context.Context, req *lineagepb.GetLine
 // not defined.
 func (c *restClient) ListLineageEvents(ctx context.Context, req *lineagepb.ListLineageEventsRequest, opts ...gax.CallOption) *LineageEventIterator {
 	it := &LineageEventIterator{}
-	req = proto.Clone(req).(*lineagepb.ListLineageEventsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*lineagepb.LineageEvent, string, error) {
 		resp := &lineagepb.ListLineageEventsResponse{}
@@ -2636,7 +2636,7 @@ func (c *restClient) DeleteLineageEvent(ctx context.Context, req *lineagepb.Dele
 // is used for Billing and Quota.
 func (c *restClient) SearchLinks(ctx context.Context, req *lineagepb.SearchLinksRequest, opts ...gax.CallOption) *LinkIterator {
 	it := &LinkIterator{}
-	req = proto.Clone(req).(*lineagepb.SearchLinksRequest)
+	req = proto.CloneOf(req)
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*lineagepb.Link, string, error) {
@@ -2727,7 +2727,7 @@ func (c *restClient) SearchLinks(ctx context.Context, req *lineagepb.SearchLinks
 // URL is used for Billing and Quota.
 func (c *restClient) BatchSearchLinkProcesses(ctx context.Context, req *lineagepb.BatchSearchLinkProcessesRequest, opts ...gax.CallOption) *ProcessLinksIterator {
 	it := &ProcessLinksIterator{}
-	req = proto.Clone(req).(*lineagepb.BatchSearchLinkProcessesRequest)
+	req = proto.CloneOf(req)
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*lineagepb.ProcessLinks, string, error) {
@@ -2943,7 +2943,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

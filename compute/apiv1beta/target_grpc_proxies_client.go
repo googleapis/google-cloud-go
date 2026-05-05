@@ -491,7 +491,7 @@ func (c *targetGrpcProxiesRESTClient) Insert(ctx context.Context, req *computepb
 // List lists the TargetGrpcProxies for a project in the given scope.
 func (c *targetGrpcProxiesRESTClient) List(ctx context.Context, req *computepb.ListTargetGrpcProxiesRequest, opts ...gax.CallOption) *TargetGrpcProxyIterator {
 	it := &TargetGrpcProxyIterator{}
-	req = proto.Clone(req).(*computepb.ListTargetGrpcProxiesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.TargetGrpcProxy, string, error) {
 		resp := &computepb.TargetGrpcProxyList{}

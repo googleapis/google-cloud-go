@@ -507,7 +507,7 @@ func (c *regionAutoscalersRESTClient) Insert(ctx context.Context, req *computepb
 // the specified region.
 func (c *regionAutoscalersRESTClient) List(ctx context.Context, req *computepb.ListRegionAutoscalersRequest, opts ...gax.CallOption) *AutoscalerIterator {
 	it := &AutoscalerIterator{}
-	req = proto.Clone(req).(*computepb.ListRegionAutoscalersRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.Autoscaler, string, error) {
 		resp := &computepb.RegionAutoscalerList{}

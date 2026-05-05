@@ -478,7 +478,7 @@ func (c *productReviewsGRPCClient) ListProductReviews(ctx context.Context, req *
 	}
 	opts = append((*c.CallOptions).ListProductReviews[0:len((*c.CallOptions).ListProductReviews):len((*c.CallOptions).ListProductReviews)], opts...)
 	it := &ProductReviewIterator{}
-	req = proto.Clone(req).(*reviewspb.ListProductReviewsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*reviewspb.ProductReview, string, error) {
 		resp := &reviewspb.ListProductReviewsResponse{}
 		if pageToken != "" {
@@ -618,7 +618,7 @@ func (c *productReviewsRESTClient) GetProductReview(ctx context.Context, req *re
 // ListProductReviews lists product reviews.
 func (c *productReviewsRESTClient) ListProductReviews(ctx context.Context, req *reviewspb.ListProductReviewsRequest, opts ...gax.CallOption) *ProductReviewIterator {
 	it := &ProductReviewIterator{}
-	req = proto.Clone(req).(*reviewspb.ListProductReviewsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*reviewspb.ProductReview, string, error) {
 		resp := &reviewspb.ListProductReviewsResponse{}

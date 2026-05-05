@@ -266,7 +266,7 @@ func (c *acceleratorTypesRESTClient) Connection() *grpc.ClientConn {
 // returnPartialSuccess parameter to true.
 func (c *acceleratorTypesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListAcceleratorTypesRequest, opts ...gax.CallOption) *AcceleratorTypesScopedListPairIterator {
 	it := &AcceleratorTypesScopedListPairIterator{}
-	req = proto.Clone(req).(*computepb.AggregatedListAcceleratorTypesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]AcceleratorTypesScopedListPair, string, error) {
 		resp := &computepb.AcceleratorTypeAggregatedList{}
@@ -418,7 +418,7 @@ func (c *acceleratorTypesRESTClient) Get(ctx context.Context, req *computepb.Get
 // project.
 func (c *acceleratorTypesRESTClient) List(ctx context.Context, req *computepb.ListAcceleratorTypesRequest, opts ...gax.CallOption) *AcceleratorTypeIterator {
 	it := &AcceleratorTypeIterator{}
-	req = proto.Clone(req).(*computepb.ListAcceleratorTypesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.AcceleratorType, string, error) {
 		resp := &computepb.AcceleratorTypeList{}

@@ -638,7 +638,7 @@ func (c *identityAwareProxyAdminGRPCClient) ListTunnelDestGroups(ctx context.Con
 	}
 	opts = append((*c.CallOptions).ListTunnelDestGroups[0:len((*c.CallOptions).ListTunnelDestGroups):len((*c.CallOptions).ListTunnelDestGroups)], opts...)
 	it := &TunnelDestGroupIterator{}
-	req = proto.Clone(req).(*iappb.ListTunnelDestGroupsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*iappb.TunnelDestGroup, string, error) {
 		resp := &iappb.ListTunnelDestGroupsResponse{}
 		if pageToken != "" {
@@ -1147,7 +1147,7 @@ func (c *identityAwareProxyAdminRESTClient) ValidateIapAttributeExpression(ctx c
 // /v1/projects/123/iap_tunnel/locations/-/destGroups
 func (c *identityAwareProxyAdminRESTClient) ListTunnelDestGroups(ctx context.Context, req *iappb.ListTunnelDestGroupsRequest, opts ...gax.CallOption) *TunnelDestGroupIterator {
 	it := &TunnelDestGroupIterator{}
-	req = proto.Clone(req).(*iappb.ListTunnelDestGroupsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*iappb.TunnelDestGroup, string, error) {
 		resp := &iappb.ListTunnelDestGroupsResponse{}

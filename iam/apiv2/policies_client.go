@@ -574,7 +574,7 @@ func (c *policiesGRPCClient) ListPolicies(ctx context.Context, req *iampb.ListPo
 	}
 	opts = append((*c.CallOptions).ListPolicies[0:len((*c.CallOptions).ListPolicies):len((*c.CallOptions).ListPolicies)], opts...)
 	it := &PolicyIterator{}
-	req = proto.Clone(req).(*iampb.ListPoliciesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*iampb.Policy, string, error) {
 		resp := &iampb.ListPoliciesResponse{}
 		if pageToken != "" {
@@ -731,7 +731,7 @@ func (c *policiesGRPCClient) GetOperation(ctx context.Context, req *longrunningp
 // omitted.
 func (c *policiesRESTClient) ListPolicies(ctx context.Context, req *iampb.ListPoliciesRequest, opts ...gax.CallOption) *PolicyIterator {
 	it := &PolicyIterator{}
-	req = proto.Clone(req).(*iampb.ListPoliciesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*iampb.Policy, string, error) {
 		resp := &iampb.ListPoliciesResponse{}

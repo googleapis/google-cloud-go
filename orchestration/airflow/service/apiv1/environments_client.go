@@ -796,7 +796,7 @@ func (c *environmentsGRPCClient) ListEnvironments(ctx context.Context, req *serv
 	}
 	opts = append((*c.CallOptions).ListEnvironments[0:len((*c.CallOptions).ListEnvironments):len((*c.CallOptions).ListEnvironments)], opts...)
 	it := &EnvironmentIterator{}
-	req = proto.Clone(req).(*servicepb.ListEnvironmentsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*servicepb.Environment, string, error) {
 		resp := &servicepb.ListEnvironmentsResponse{}
 		if pageToken != "" {
@@ -957,7 +957,7 @@ func (c *environmentsGRPCClient) ListWorkloads(ctx context.Context, req *service
 	}
 	opts = append((*c.CallOptions).ListWorkloads[0:len((*c.CallOptions).ListWorkloads):len((*c.CallOptions).ListWorkloads)], opts...)
 	it := &ListWorkloadsResponse_ComposerWorkloadIterator{}
-	req = proto.Clone(req).(*servicepb.ListWorkloadsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*servicepb.ListWorkloadsResponse_ComposerWorkload, string, error) {
 		resp := &servicepb.ListWorkloadsResponse{}
 		if pageToken != "" {
@@ -1080,7 +1080,7 @@ func (c *environmentsGRPCClient) ListUserWorkloadsSecrets(ctx context.Context, r
 	}
 	opts = append((*c.CallOptions).ListUserWorkloadsSecrets[0:len((*c.CallOptions).ListUserWorkloadsSecrets):len((*c.CallOptions).ListUserWorkloadsSecrets)], opts...)
 	it := &UserWorkloadsSecretIterator{}
-	req = proto.Clone(req).(*servicepb.ListUserWorkloadsSecretsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*servicepb.UserWorkloadsSecret, string, error) {
 		resp := &servicepb.ListUserWorkloadsSecretsResponse{}
 		if pageToken != "" {
@@ -1221,7 +1221,7 @@ func (c *environmentsGRPCClient) ListUserWorkloadsConfigMaps(ctx context.Context
 	}
 	opts = append((*c.CallOptions).ListUserWorkloadsConfigMaps[0:len((*c.CallOptions).ListUserWorkloadsConfigMaps):len((*c.CallOptions).ListUserWorkloadsConfigMaps)], opts...)
 	it := &UserWorkloadsConfigMapIterator{}
-	req = proto.Clone(req).(*servicepb.ListUserWorkloadsConfigMapsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*servicepb.UserWorkloadsConfigMap, string, error) {
 		resp := &servicepb.ListUserWorkloadsConfigMapsResponse{}
 		if pageToken != "" {
@@ -1442,7 +1442,7 @@ func (c *environmentsGRPCClient) ListOperations(ctx context.Context, req *longru
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -1602,7 +1602,7 @@ func (c *environmentsRESTClient) GetEnvironment(ctx context.Context, req *servic
 // ListEnvironments list environments.
 func (c *environmentsRESTClient) ListEnvironments(ctx context.Context, req *servicepb.ListEnvironmentsRequest, opts ...gax.CallOption) *EnvironmentIterator {
 	it := &EnvironmentIterator{}
-	req = proto.Clone(req).(*servicepb.ListEnvironmentsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*servicepb.Environment, string, error) {
 		resp := &servicepb.ListEnvironmentsResponse{}
@@ -1992,7 +1992,7 @@ func (c *environmentsRESTClient) PollAirflowCommand(ctx context.Context, req *se
 // composer-2..-airflow-..* and newer.
 func (c *environmentsRESTClient) ListWorkloads(ctx context.Context, req *servicepb.ListWorkloadsRequest, opts ...gax.CallOption) *ListWorkloadsResponse_ComposerWorkloadIterator {
 	it := &ListWorkloadsResponse_ComposerWorkloadIterator{}
-	req = proto.Clone(req).(*servicepb.ListWorkloadsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*servicepb.ListWorkloadsResponse_ComposerWorkload, string, error) {
 		resp := &servicepb.ListWorkloadsResponse{}
@@ -2269,7 +2269,7 @@ func (c *environmentsRESTClient) GetUserWorkloadsSecret(ctx context.Context, req
 // composer-3-airflow-..-build. and newer.
 func (c *environmentsRESTClient) ListUserWorkloadsSecrets(ctx context.Context, req *servicepb.ListUserWorkloadsSecretsRequest, opts ...gax.CallOption) *UserWorkloadsSecretIterator {
 	it := &UserWorkloadsSecretIterator{}
-	req = proto.Clone(req).(*servicepb.ListUserWorkloadsSecretsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*servicepb.UserWorkloadsSecret, string, error) {
 		resp := &servicepb.ListUserWorkloadsSecretsResponse{}
@@ -2586,7 +2586,7 @@ func (c *environmentsRESTClient) GetUserWorkloadsConfigMap(ctx context.Context, 
 // composer-3-airflow-..-build. and newer.
 func (c *environmentsRESTClient) ListUserWorkloadsConfigMaps(ctx context.Context, req *servicepb.ListUserWorkloadsConfigMapsRequest, opts ...gax.CallOption) *UserWorkloadsConfigMapIterator {
 	it := &UserWorkloadsConfigMapIterator{}
-	req = proto.Clone(req).(*servicepb.ListUserWorkloadsConfigMapsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*servicepb.UserWorkloadsConfigMap, string, error) {
 		resp := &servicepb.ListUserWorkloadsConfigMapsResponse{}
@@ -3118,7 +3118,7 @@ func (c *environmentsRESTClient) GetOperation(ctx context.Context, req *longrunn
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *environmentsRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

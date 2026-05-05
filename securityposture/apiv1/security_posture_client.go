@@ -971,7 +971,7 @@ func (c *gRPCClient) ListPostures(ctx context.Context, req *securityposturepb.Li
 	}
 	opts = append((*c.CallOptions).ListPostures[0:len((*c.CallOptions).ListPostures):len((*c.CallOptions).ListPostures)], opts...)
 	it := &PostureIterator{}
-	req = proto.Clone(req).(*securityposturepb.ListPosturesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securityposturepb.Posture, string, error) {
 		resp := &securityposturepb.ListPosturesResponse{}
 		if pageToken != "" {
@@ -1023,7 +1023,7 @@ func (c *gRPCClient) ListPostureRevisions(ctx context.Context, req *securitypost
 	}
 	opts = append((*c.CallOptions).ListPostureRevisions[0:len((*c.CallOptions).ListPostureRevisions):len((*c.CallOptions).ListPostureRevisions)], opts...)
 	it := &PostureIterator{}
-	req = proto.Clone(req).(*securityposturepb.ListPostureRevisionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securityposturepb.Posture, string, error) {
 		resp := &securityposturepb.ListPostureRevisionsResponse{}
 		if pageToken != "" {
@@ -1200,7 +1200,7 @@ func (c *gRPCClient) ListPostureDeployments(ctx context.Context, req *securitypo
 	}
 	opts = append((*c.CallOptions).ListPostureDeployments[0:len((*c.CallOptions).ListPostureDeployments):len((*c.CallOptions).ListPostureDeployments)], opts...)
 	it := &PostureDeploymentIterator{}
-	req = proto.Clone(req).(*securityposturepb.ListPostureDeploymentsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securityposturepb.PostureDeployment, string, error) {
 		resp := &securityposturepb.ListPostureDeploymentsResponse{}
 		if pageToken != "" {
@@ -1351,7 +1351,7 @@ func (c *gRPCClient) ListPostureTemplates(ctx context.Context, req *securitypost
 	}
 	opts = append((*c.CallOptions).ListPostureTemplates[0:len((*c.CallOptions).ListPostureTemplates):len((*c.CallOptions).ListPostureTemplates)], opts...)
 	it := &PostureTemplateIterator{}
-	req = proto.Clone(req).(*securityposturepb.ListPostureTemplatesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securityposturepb.PostureTemplate, string, error) {
 		resp := &securityposturepb.ListPostureTemplatesResponse{}
 		if pageToken != "" {
@@ -1445,7 +1445,7 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -1549,7 +1549,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -1597,7 +1597,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // as per UpdateTime will be returned.
 func (c *restClient) ListPostures(ctx context.Context, req *securityposturepb.ListPosturesRequest, opts ...gax.CallOption) *PostureIterator {
 	it := &PostureIterator{}
-	req = proto.Clone(req).(*securityposturepb.ListPosturesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securityposturepb.Posture, string, error) {
 		resp := &securityposturepb.ListPosturesResponse{}
@@ -1675,7 +1675,7 @@ func (c *restClient) ListPostures(ctx context.Context, req *securityposturepb.Li
 // ListPostureRevisions lists revisions of a Posture in a given organization and location.
 func (c *restClient) ListPostureRevisions(ctx context.Context, req *securityposturepb.ListPostureRevisionsRequest, opts ...gax.CallOption) *PostureIterator {
 	it := &PostureIterator{}
-	req = proto.Clone(req).(*securityposturepb.ListPostureRevisionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securityposturepb.Posture, string, error) {
 		resp := &securityposturepb.ListPostureRevisionsResponse{}
@@ -2106,7 +2106,7 @@ func (c *restClient) ExtractPosture(ctx context.Context, req *securityposturepb.
 // Lists PostureDeployments in a given project and location.
 func (c *restClient) ListPostureDeployments(ctx context.Context, req *securityposturepb.ListPostureDeploymentsRequest, opts ...gax.CallOption) *PostureDeploymentIterator {
 	it := &PostureDeploymentIterator{}
-	req = proto.Clone(req).(*securityposturepb.ListPostureDeploymentsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securityposturepb.PostureDeployment, string, error) {
 		resp := &securityposturepb.ListPostureDeploymentsResponse{}
@@ -2447,7 +2447,7 @@ func (c *restClient) DeletePostureDeployment(ctx context.Context, req *securityp
 // Lists all the PostureTemplates available to the user.
 func (c *restClient) ListPostureTemplates(ctx context.Context, req *securityposturepb.ListPostureTemplatesRequest, opts ...gax.CallOption) *PostureTemplateIterator {
 	it := &PostureTemplateIterator{}
-	req = proto.Clone(req).(*securityposturepb.ListPostureTemplatesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securityposturepb.PostureTemplate, string, error) {
 		resp := &securityposturepb.ListPostureTemplatesResponse{}
@@ -2647,7 +2647,7 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 // ListLocations lists information about the supported locations for this service.
 func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -2866,7 +2866,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

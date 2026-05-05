@@ -1193,7 +1193,7 @@ func (c *gRPCClient) ListAssets(ctx context.Context, req *assetpb.ListAssetsRequ
 	}
 	opts = append((*c.CallOptions).ListAssets[0:len((*c.CallOptions).ListAssets):len((*c.CallOptions).ListAssets)], opts...)
 	it := &AssetIterator{}
-	req = proto.Clone(req).(*assetpb.ListAssetsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*assetpb.Asset, string, error) {
 		resp := &assetpb.ListAssetsResponse{}
 		if pageToken != "" {
@@ -1373,7 +1373,7 @@ func (c *gRPCClient) SearchAllResources(ctx context.Context, req *assetpb.Search
 	}
 	opts = append((*c.CallOptions).SearchAllResources[0:len((*c.CallOptions).SearchAllResources):len((*c.CallOptions).SearchAllResources)], opts...)
 	it := &ResourceSearchResultIterator{}
-	req = proto.Clone(req).(*assetpb.SearchAllResourcesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*assetpb.ResourceSearchResult, string, error) {
 		resp := &assetpb.SearchAllResourcesResponse{}
 		if pageToken != "" {
@@ -1422,7 +1422,7 @@ func (c *gRPCClient) SearchAllIamPolicies(ctx context.Context, req *assetpb.Sear
 	}
 	opts = append((*c.CallOptions).SearchAllIamPolicies[0:len((*c.CallOptions).SearchAllIamPolicies):len((*c.CallOptions).SearchAllIamPolicies)], opts...)
 	it := &IamPolicySearchResultIterator{}
-	req = proto.Clone(req).(*assetpb.SearchAllIamPoliciesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*assetpb.IamPolicySearchResult, string, error) {
 		resp := &assetpb.SearchAllIamPoliciesResponse{}
 		if pageToken != "" {
@@ -1614,7 +1614,7 @@ func (c *gRPCClient) ListSavedQueries(ctx context.Context, req *assetpb.ListSave
 	}
 	opts = append((*c.CallOptions).ListSavedQueries[0:len((*c.CallOptions).ListSavedQueries):len((*c.CallOptions).ListSavedQueries)], opts...)
 	it := &SavedQueryIterator{}
-	req = proto.Clone(req).(*assetpb.ListSavedQueriesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*assetpb.SavedQuery, string, error) {
 		resp := &assetpb.ListSavedQueriesResponse{}
 		if pageToken != "" {
@@ -1728,7 +1728,7 @@ func (c *gRPCClient) AnalyzeOrgPolicies(ctx context.Context, req *assetpb.Analyz
 	}
 	opts = append((*c.CallOptions).AnalyzeOrgPolicies[0:len((*c.CallOptions).AnalyzeOrgPolicies):len((*c.CallOptions).AnalyzeOrgPolicies)], opts...)
 	it := &AnalyzeOrgPoliciesResponse_OrgPolicyResultIterator{}
-	req = proto.Clone(req).(*assetpb.AnalyzeOrgPoliciesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*assetpb.AnalyzeOrgPoliciesResponse_OrgPolicyResult, string, error) {
 		resp := &assetpb.AnalyzeOrgPoliciesResponse{}
 		if pageToken != "" {
@@ -1777,7 +1777,7 @@ func (c *gRPCClient) AnalyzeOrgPolicyGovernedContainers(ctx context.Context, req
 	}
 	opts = append((*c.CallOptions).AnalyzeOrgPolicyGovernedContainers[0:len((*c.CallOptions).AnalyzeOrgPolicyGovernedContainers):len((*c.CallOptions).AnalyzeOrgPolicyGovernedContainers)], opts...)
 	it := &AnalyzeOrgPolicyGovernedContainersResponse_GovernedContainerIterator{}
-	req = proto.Clone(req).(*assetpb.AnalyzeOrgPolicyGovernedContainersRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*assetpb.AnalyzeOrgPolicyGovernedContainersResponse_GovernedContainer, string, error) {
 		resp := &assetpb.AnalyzeOrgPolicyGovernedContainersResponse{}
 		if pageToken != "" {
@@ -1826,7 +1826,7 @@ func (c *gRPCClient) AnalyzeOrgPolicyGovernedAssets(ctx context.Context, req *as
 	}
 	opts = append((*c.CallOptions).AnalyzeOrgPolicyGovernedAssets[0:len((*c.CallOptions).AnalyzeOrgPolicyGovernedAssets):len((*c.CallOptions).AnalyzeOrgPolicyGovernedAssets)], opts...)
 	it := &AnalyzeOrgPolicyGovernedAssetsResponse_GovernedAssetIterator{}
-	req = proto.Clone(req).(*assetpb.AnalyzeOrgPolicyGovernedAssetsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*assetpb.AnalyzeOrgPolicyGovernedAssetsResponse_GovernedAsset, string, error) {
 		resp := &assetpb.AnalyzeOrgPolicyGovernedAssetsResponse{}
 		if pageToken != "" {
@@ -1966,7 +1966,7 @@ func (c *restClient) ExportAssets(ctx context.Context, req *assetpb.ExportAssets
 // response.
 func (c *restClient) ListAssets(ctx context.Context, req *assetpb.ListAssetsRequest, opts ...gax.CallOption) *AssetIterator {
 	it := &AssetIterator{}
-	req = proto.Clone(req).(*assetpb.ListAssetsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*assetpb.Asset, string, error) {
 		resp := &assetpb.ListAssetsResponse{}
@@ -2431,7 +2431,7 @@ func (c *restClient) DeleteFeed(ctx context.Context, req *assetpb.DeleteFeedRequ
 // otherwise the request will be rejected.
 func (c *restClient) SearchAllResources(ctx context.Context, req *assetpb.SearchAllResourcesRequest, opts ...gax.CallOption) *ResourceSearchResultIterator {
 	it := &ResourceSearchResultIterator{}
-	req = proto.Clone(req).(*assetpb.SearchAllResourcesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*assetpb.ResourceSearchResult, string, error) {
 		resp := &assetpb.SearchAllResourcesResponse{}
@@ -2530,7 +2530,7 @@ func (c *restClient) SearchAllResources(ctx context.Context, req *assetpb.Search
 // otherwise the request will be rejected.
 func (c *restClient) SearchAllIamPolicies(ctx context.Context, req *assetpb.SearchAllIamPoliciesRequest, opts ...gax.CallOption) *IamPolicySearchResultIterator {
 	it := &IamPolicySearchResultIterator{}
-	req = proto.Clone(req).(*assetpb.SearchAllIamPoliciesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*assetpb.IamPolicySearchResult, string, error) {
 		resp := &assetpb.SearchAllIamPoliciesResponse{}
@@ -3054,7 +3054,7 @@ func (c *restClient) GetSavedQuery(ctx context.Context, req *assetpb.GetSavedQue
 // ListSavedQueries lists all saved queries in a parent project/folder/organization.
 func (c *restClient) ListSavedQueries(ctx context.Context, req *assetpb.ListSavedQueriesRequest, opts ...gax.CallOption) *SavedQueryIterator {
 	it := &SavedQueryIterator{}
-	req = proto.Clone(req).(*assetpb.ListSavedQueriesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*assetpb.SavedQuery, string, error) {
 		resp := &assetpb.ListSavedQueriesResponse{}
@@ -3307,7 +3307,7 @@ func (c *restClient) BatchGetEffectiveIamPolicies(ctx context.Context, req *asse
 // AnalyzeOrgPolicies analyzes organization policies under a scope.
 func (c *restClient) AnalyzeOrgPolicies(ctx context.Context, req *assetpb.AnalyzeOrgPoliciesRequest, opts ...gax.CallOption) *AnalyzeOrgPoliciesResponse_OrgPolicyResultIterator {
 	it := &AnalyzeOrgPoliciesResponse_OrgPolicyResultIterator{}
-	req = proto.Clone(req).(*assetpb.AnalyzeOrgPoliciesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*assetpb.AnalyzeOrgPoliciesResponse_OrgPolicyResult, string, error) {
 		resp := &assetpb.AnalyzeOrgPoliciesResponse{}
@@ -3390,7 +3390,7 @@ func (c *restClient) AnalyzeOrgPolicies(ctx context.Context, req *assetpb.Analyz
 // organization) under a scope.
 func (c *restClient) AnalyzeOrgPolicyGovernedContainers(ctx context.Context, req *assetpb.AnalyzeOrgPolicyGovernedContainersRequest, opts ...gax.CallOption) *AnalyzeOrgPolicyGovernedContainersResponse_GovernedContainerIterator {
 	it := &AnalyzeOrgPolicyGovernedContainersResponse_GovernedContainerIterator{}
-	req = proto.Clone(req).(*assetpb.AnalyzeOrgPolicyGovernedContainersRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*assetpb.AnalyzeOrgPolicyGovernedContainersResponse_GovernedContainer, string, error) {
 		resp := &assetpb.AnalyzeOrgPolicyGovernedContainersResponse{}
@@ -3560,7 +3560,7 @@ func (c *restClient) AnalyzeOrgPolicyGovernedContainers(ctx context.Context, req
 // or IAM policies.
 func (c *restClient) AnalyzeOrgPolicyGovernedAssets(ctx context.Context, req *assetpb.AnalyzeOrgPolicyGovernedAssetsRequest, opts ...gax.CallOption) *AnalyzeOrgPolicyGovernedAssetsResponse_GovernedAssetIterator {
 	it := &AnalyzeOrgPolicyGovernedAssetsResponse_GovernedAssetIterator{}
-	req = proto.Clone(req).(*assetpb.AnalyzeOrgPolicyGovernedAssetsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*assetpb.AnalyzeOrgPolicyGovernedAssetsResponse_GovernedAsset, string, error) {
 		resp := &assetpb.AnalyzeOrgPolicyGovernedAssetsResponse{}

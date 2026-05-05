@@ -541,7 +541,7 @@ func (c *targetPoolsRESTClient) AddInstance(ctx context.Context, req *computepb.
 // returnPartialSuccess parameter to true.
 func (c *targetPoolsRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListTargetPoolsRequest, opts ...gax.CallOption) *TargetPoolsScopedListPairIterator {
 	it := &TargetPoolsScopedListPairIterator{}
-	req = proto.Clone(req).(*computepb.AggregatedListTargetPoolsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]TargetPoolsScopedListPair, string, error) {
 		resp := &computepb.TargetPoolAggregatedList{}
@@ -895,7 +895,7 @@ func (c *targetPoolsRESTClient) Insert(ctx context.Context, req *computepb.Inser
 // project and region.
 func (c *targetPoolsRESTClient) List(ctx context.Context, req *computepb.ListTargetPoolsRequest, opts ...gax.CallOption) *TargetPoolIterator {
 	it := &TargetPoolIterator{}
-	req = proto.Clone(req).(*computepb.ListTargetPoolsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.TargetPool, string, error) {
 		resp := &computepb.TargetPoolList{}

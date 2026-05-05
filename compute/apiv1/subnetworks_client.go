@@ -404,7 +404,7 @@ func (c *subnetworksRESTClient) Connection() *grpc.ClientConn {
 // returnPartialSuccess parameter to true.
 func (c *subnetworksRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListSubnetworksRequest, opts ...gax.CallOption) *SubnetworksScopedListPairIterator {
 	it := &SubnetworksScopedListPairIterator{}
-	req = proto.Clone(req).(*computepb.AggregatedListSubnetworksRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]SubnetworksScopedListPair, string, error) {
 		resp := &computepb.SubnetworkAggregatedList{}
@@ -842,7 +842,7 @@ func (c *subnetworksRESTClient) Insert(ctx context.Context, req *computepb.Inser
 // project.
 func (c *subnetworksRESTClient) List(ctx context.Context, req *computepb.ListSubnetworksRequest, opts ...gax.CallOption) *SubnetworkIterator {
 	it := &SubnetworkIterator{}
-	req = proto.Clone(req).(*computepb.ListSubnetworksRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.Subnetwork, string, error) {
 		resp := &computepb.SubnetworkList{}
@@ -931,7 +931,7 @@ func (c *subnetworksRESTClient) List(ctx context.Context, req *computepb.ListSub
 // ListUsable retrieves an aggregated list of all usable subnetworks in the project.
 func (c *subnetworksRESTClient) ListUsable(ctx context.Context, req *computepb.ListUsableSubnetworksRequest, opts ...gax.CallOption) *UsableSubnetworkIterator {
 	it := &UsableSubnetworkIterator{}
-	req = proto.Clone(req).(*computepb.ListUsableSubnetworksRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.UsableSubnetwork, string, error) {
 		resp := &computepb.UsableSubnetworksAggregatedList{}

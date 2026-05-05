@@ -290,7 +290,7 @@ func (c *interconnectLocationsRESTClient) Get(ctx context.Context, req *computep
 // project.
 func (c *interconnectLocationsRESTClient) List(ctx context.Context, req *computepb.ListInterconnectLocationsRequest, opts ...gax.CallOption) *InterconnectLocationIterator {
 	it := &InterconnectLocationIterator{}
-	req = proto.Clone(req).(*computepb.ListInterconnectLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.InterconnectLocation, string, error) {
 		resp := &computepb.InterconnectLocationList{}

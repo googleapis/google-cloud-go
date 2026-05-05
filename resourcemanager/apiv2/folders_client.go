@@ -602,7 +602,7 @@ func (c *foldersGRPCClient) ListFolders(ctx context.Context, req *resourcemanage
 	}
 	opts = append((*c.CallOptions).ListFolders[0:len((*c.CallOptions).ListFolders):len((*c.CallOptions).ListFolders)], opts...)
 	it := &FolderIterator{}
-	req = proto.Clone(req).(*resourcemanagerpb.ListFoldersRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*resourcemanagerpb.Folder, string, error) {
 		resp := &resourcemanagerpb.ListFoldersResponse{}
 		if pageToken != "" {
@@ -648,7 +648,7 @@ func (c *foldersGRPCClient) SearchFolders(ctx context.Context, req *resourcemana
 	}
 	opts = append((*c.CallOptions).SearchFolders[0:len((*c.CallOptions).SearchFolders):len((*c.CallOptions).SearchFolders)], opts...)
 	it := &FolderIterator{}
-	req = proto.Clone(req).(*resourcemanagerpb.SearchFoldersRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*resourcemanagerpb.Folder, string, error) {
 		resp := &resourcemanagerpb.SearchFoldersResponse{}
 		if pageToken != "" {
@@ -907,7 +907,7 @@ func (c *foldersGRPCClient) TestIamPermissions(ctx context.Context, req *iampb.T
 // identified parent.
 func (c *foldersRESTClient) ListFolders(ctx context.Context, req *resourcemanagerpb.ListFoldersRequest, opts ...gax.CallOption) *FolderIterator {
 	it := &FolderIterator{}
-	req = proto.Clone(req).(*resourcemanagerpb.ListFoldersRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*resourcemanagerpb.Folder, string, error) {
 		resp := &resourcemanagerpb.ListFoldersResponse{}
@@ -994,7 +994,7 @@ func (c *foldersRESTClient) ListFolders(ctx context.Context, req *resourcemanage
 // permission resourcemanager.folders.get.
 func (c *foldersRESTClient) SearchFolders(ctx context.Context, req *resourcemanagerpb.SearchFoldersRequest, opts ...gax.CallOption) *FolderIterator {
 	it := &FolderIterator{}
-	req = proto.Clone(req).(*resourcemanagerpb.SearchFoldersRequest)
+	req = proto.CloneOf(req)
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*resourcemanagerpb.Folder, string, error) {

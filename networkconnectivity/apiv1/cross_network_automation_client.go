@@ -574,7 +574,7 @@ func (c *crossNetworkAutomationGRPCClient) ListServiceConnectionMaps(ctx context
 	}
 	opts = append((*c.CallOptions).ListServiceConnectionMaps[0:len((*c.CallOptions).ListServiceConnectionMaps):len((*c.CallOptions).ListServiceConnectionMaps)], opts...)
 	it := &ServiceConnectionMapIterator{}
-	req = proto.Clone(req).(*networkconnectivitypb.ListServiceConnectionMapsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkconnectivitypb.ServiceConnectionMap, string, error) {
 		resp := &networkconnectivitypb.ListServiceConnectionMapsResponse{}
 		if pageToken != "" {
@@ -725,7 +725,7 @@ func (c *crossNetworkAutomationGRPCClient) ListServiceConnectionPolicies(ctx con
 	}
 	opts = append((*c.CallOptions).ListServiceConnectionPolicies[0:len((*c.CallOptions).ListServiceConnectionPolicies):len((*c.CallOptions).ListServiceConnectionPolicies)], opts...)
 	it := &ServiceConnectionPolicyIterator{}
-	req = proto.Clone(req).(*networkconnectivitypb.ListServiceConnectionPoliciesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkconnectivitypb.ServiceConnectionPolicy, string, error) {
 		resp := &networkconnectivitypb.ListServiceConnectionPoliciesResponse{}
 		if pageToken != "" {
@@ -876,7 +876,7 @@ func (c *crossNetworkAutomationGRPCClient) ListServiceClasses(ctx context.Contex
 	}
 	opts = append((*c.CallOptions).ListServiceClasses[0:len((*c.CallOptions).ListServiceClasses):len((*c.CallOptions).ListServiceClasses)], opts...)
 	it := &ServiceClassIterator{}
-	req = proto.Clone(req).(*networkconnectivitypb.ListServiceClassesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkconnectivitypb.ServiceClass, string, error) {
 		resp := &networkconnectivitypb.ListServiceClassesResponse{}
 		if pageToken != "" {
@@ -1025,7 +1025,7 @@ func (c *crossNetworkAutomationGRPCClient) ListServiceConnectionTokens(ctx conte
 	}
 	opts = append((*c.CallOptions).ListServiceConnectionTokens[0:len((*c.CallOptions).ListServiceConnectionTokens):len((*c.CallOptions).ListServiceConnectionTokens)], opts...)
 	it := &ServiceConnectionTokenIterator{}
-	req = proto.Clone(req).(*networkconnectivitypb.ListServiceConnectionTokensRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkconnectivitypb.ServiceConnectionToken, string, error) {
 		resp := &networkconnectivitypb.ListServiceConnectionTokensResponse{}
 		if pageToken != "" {
@@ -1147,7 +1147,7 @@ func (c *crossNetworkAutomationGRPCClient) ListLocations(ctx context.Context, re
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -1323,7 +1323,7 @@ func (c *crossNetworkAutomationGRPCClient) ListOperations(ctx context.Context, r
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {

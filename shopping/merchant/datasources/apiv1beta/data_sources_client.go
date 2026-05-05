@@ -553,7 +553,7 @@ func (c *gRPCClient) ListDataSources(ctx context.Context, req *datasourcespb.Lis
 	}
 	opts = append((*c.CallOptions).ListDataSources[0:len((*c.CallOptions).ListDataSources):len((*c.CallOptions).ListDataSources)], opts...)
 	it := &DataSourceIterator{}
-	req = proto.Clone(req).(*datasourcespb.ListDataSourcesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datasourcespb.DataSource, string, error) {
 		resp := &datasourcespb.ListDataSourcesResponse{}
 		if pageToken != "" {
@@ -737,7 +737,7 @@ func (c *restClient) GetDataSource(ctx context.Context, req *datasourcespb.GetDa
 // ListDataSources lists the configurations for data sources for the given account.
 func (c *restClient) ListDataSources(ctx context.Context, req *datasourcespb.ListDataSourcesRequest, opts ...gax.CallOption) *DataSourceIterator {
 	it := &DataSourceIterator{}
-	req = proto.Clone(req).(*datasourcespb.ListDataSourcesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datasourcespb.DataSource, string, error) {
 		resp := &datasourcespb.ListDataSourcesResponse{}

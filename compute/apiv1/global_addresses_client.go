@@ -500,7 +500,7 @@ func (c *globalAddressesRESTClient) Insert(ctx context.Context, req *computepb.I
 // List retrieves a list of global addresses.
 func (c *globalAddressesRESTClient) List(ctx context.Context, req *computepb.ListGlobalAddressesRequest, opts ...gax.CallOption) *AddressIterator {
 	it := &AddressIterator{}
-	req = proto.Clone(req).(*computepb.ListGlobalAddressesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.Address, string, error) {
 		resp := &computepb.AddressList{}

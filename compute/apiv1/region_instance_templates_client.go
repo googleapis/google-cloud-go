@@ -472,7 +472,7 @@ func (c *regionInstanceTemplatesRESTClient) Insert(ctx context.Context, req *com
 // specified project and region.
 func (c *regionInstanceTemplatesRESTClient) List(ctx context.Context, req *computepb.ListRegionInstanceTemplatesRequest, opts ...gax.CallOption) *InstanceTemplateIterator {
 	it := &InstanceTemplateIterator{}
-	req = proto.Clone(req).(*computepb.ListRegionInstanceTemplatesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.InstanceTemplate, string, error) {
 		resp := &computepb.InstanceTemplateList{}

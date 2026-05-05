@@ -507,7 +507,7 @@ func (c *firewallsRESTClient) Insert(ctx context.Context, req *computepb.InsertF
 // project.
 func (c *firewallsRESTClient) List(ctx context.Context, req *computepb.ListFirewallsRequest, opts ...gax.CallOption) *FirewallIterator {
 	it := &FirewallIterator{}
-	req = proto.Clone(req).(*computepb.ListFirewallsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.Firewall, string, error) {
 		resp := &computepb.FirewallList{}

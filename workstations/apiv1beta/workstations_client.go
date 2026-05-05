@@ -1017,7 +1017,7 @@ func (c *gRPCClient) ListWorkstationClusters(ctx context.Context, req *workstati
 	}
 	opts = append((*c.CallOptions).ListWorkstationClusters[0:len((*c.CallOptions).ListWorkstationClusters):len((*c.CallOptions).ListWorkstationClusters)], opts...)
 	it := &WorkstationClusterIterator{}
-	req = proto.Clone(req).(*workstationspb.ListWorkstationClustersRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*workstationspb.WorkstationCluster, string, error) {
 		resp := &workstationspb.ListWorkstationClustersResponse{}
 		if pageToken != "" {
@@ -1168,7 +1168,7 @@ func (c *gRPCClient) ListWorkstationConfigs(ctx context.Context, req *workstatio
 	}
 	opts = append((*c.CallOptions).ListWorkstationConfigs[0:len((*c.CallOptions).ListWorkstationConfigs):len((*c.CallOptions).ListWorkstationConfigs)], opts...)
 	it := &WorkstationConfigIterator{}
-	req = proto.Clone(req).(*workstationspb.ListWorkstationConfigsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*workstationspb.WorkstationConfig, string, error) {
 		resp := &workstationspb.ListWorkstationConfigsResponse{}
 		if pageToken != "" {
@@ -1220,7 +1220,7 @@ func (c *gRPCClient) ListUsableWorkstationConfigs(ctx context.Context, req *work
 	}
 	opts = append((*c.CallOptions).ListUsableWorkstationConfigs[0:len((*c.CallOptions).ListUsableWorkstationConfigs):len((*c.CallOptions).ListUsableWorkstationConfigs)], opts...)
 	it := &WorkstationConfigIterator{}
-	req = proto.Clone(req).(*workstationspb.ListUsableWorkstationConfigsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*workstationspb.WorkstationConfig, string, error) {
 		resp := &workstationspb.ListUsableWorkstationConfigsResponse{}
 		if pageToken != "" {
@@ -1371,7 +1371,7 @@ func (c *gRPCClient) ListWorkstations(ctx context.Context, req *workstationspb.L
 	}
 	opts = append((*c.CallOptions).ListWorkstations[0:len((*c.CallOptions).ListWorkstations):len((*c.CallOptions).ListWorkstations)], opts...)
 	it := &WorkstationIterator{}
-	req = proto.Clone(req).(*workstationspb.ListWorkstationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*workstationspb.Workstation, string, error) {
 		resp := &workstationspb.ListWorkstationsResponse{}
 		if pageToken != "" {
@@ -1423,7 +1423,7 @@ func (c *gRPCClient) ListUsableWorkstations(ctx context.Context, req *workstatio
 	}
 	opts = append((*c.CallOptions).ListUsableWorkstations[0:len((*c.CallOptions).ListUsableWorkstations):len((*c.CallOptions).ListUsableWorkstations)], opts...)
 	it := &WorkstationIterator{}
-	req = proto.Clone(req).(*workstationspb.ListUsableWorkstationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*workstationspb.Workstation, string, error) {
 		resp := &workstationspb.ListUsableWorkstationsResponse{}
 		if pageToken != "" {
@@ -1750,7 +1750,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -1849,7 +1849,7 @@ func (c *restClient) GetWorkstationCluster(ctx context.Context, req *workstation
 // ListWorkstationClusters returns all workstation clusters in the specified location.
 func (c *restClient) ListWorkstationClusters(ctx context.Context, req *workstationspb.ListWorkstationClustersRequest, opts ...gax.CallOption) *WorkstationClusterIterator {
 	it := &WorkstationClusterIterator{}
-	req = proto.Clone(req).(*workstationspb.ListWorkstationClustersRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*workstationspb.WorkstationCluster, string, error) {
 		resp := &workstationspb.ListWorkstationClustersResponse{}
@@ -2201,7 +2201,7 @@ func (c *restClient) GetWorkstationConfig(ctx context.Context, req *workstations
 // ListWorkstationConfigs returns all workstation configurations in the specified cluster.
 func (c *restClient) ListWorkstationConfigs(ctx context.Context, req *workstationspb.ListWorkstationConfigsRequest, opts ...gax.CallOption) *WorkstationConfigIterator {
 	it := &WorkstationConfigIterator{}
-	req = proto.Clone(req).(*workstationspb.ListWorkstationConfigsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*workstationspb.WorkstationConfig, string, error) {
 		resp := &workstationspb.ListWorkstationConfigsResponse{}
@@ -2280,7 +2280,7 @@ func (c *restClient) ListWorkstationConfigs(ctx context.Context, req *workstatio
 // the caller has the “workstations.workstation.create” permission.
 func (c *restClient) ListUsableWorkstationConfigs(ctx context.Context, req *workstationspb.ListUsableWorkstationConfigsRequest, opts ...gax.CallOption) *WorkstationConfigIterator {
 	it := &WorkstationConfigIterator{}
-	req = proto.Clone(req).(*workstationspb.ListUsableWorkstationConfigsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*workstationspb.WorkstationConfig, string, error) {
 		resp := &workstationspb.ListUsableWorkstationConfigsResponse{}
@@ -2632,7 +2632,7 @@ func (c *restClient) GetWorkstation(ctx context.Context, req *workstationspb.Get
 // ListWorkstations returns all Workstations using the specified workstation configuration.
 func (c *restClient) ListWorkstations(ctx context.Context, req *workstationspb.ListWorkstationsRequest, opts ...gax.CallOption) *WorkstationIterator {
 	it := &WorkstationIterator{}
-	req = proto.Clone(req).(*workstationspb.ListWorkstationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*workstationspb.Workstation, string, error) {
 		resp := &workstationspb.ListWorkstationsResponse{}
@@ -2711,7 +2711,7 @@ func (c *restClient) ListWorkstations(ctx context.Context, req *workstationspb.L
 // on which the caller has the “workstations.workstations.use” permission.
 func (c *restClient) ListUsableWorkstations(ctx context.Context, req *workstationspb.ListUsableWorkstationsRequest, opts ...gax.CallOption) *WorkstationIterator {
 	it := &WorkstationIterator{}
-	req = proto.Clone(req).(*workstationspb.ListUsableWorkstationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*workstationspb.Workstation, string, error) {
 		resp := &workstationspb.ListUsableWorkstationsResponse{}
@@ -3534,7 +3534,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

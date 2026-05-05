@@ -1182,7 +1182,7 @@ func (c *gRPCClient) ListReservations(ctx context.Context, req *reservationpb.Li
 	}
 	opts = append((*c.CallOptions).ListReservations[0:len((*c.CallOptions).ListReservations):len((*c.CallOptions).ListReservations)], opts...)
 	it := &ReservationIterator{}
-	req = proto.Clone(req).(*reservationpb.ListReservationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*reservationpb.Reservation, string, error) {
 		resp := &reservationpb.ListReservationsResponse{}
 		if pageToken != "" {
@@ -1350,7 +1350,7 @@ func (c *gRPCClient) ListCapacityCommitments(ctx context.Context, req *reservati
 	}
 	opts = append((*c.CallOptions).ListCapacityCommitments[0:len((*c.CallOptions).ListCapacityCommitments):len((*c.CallOptions).ListCapacityCommitments)], opts...)
 	it := &CapacityCommitmentIterator{}
-	req = proto.Clone(req).(*reservationpb.ListCapacityCommitmentsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*reservationpb.CapacityCommitment, string, error) {
 		resp := &reservationpb.ListCapacityCommitmentsResponse{}
 		if pageToken != "" {
@@ -1542,7 +1542,7 @@ func (c *gRPCClient) ListAssignments(ctx context.Context, req *reservationpb.Lis
 	}
 	opts = append((*c.CallOptions).ListAssignments[0:len((*c.CallOptions).ListAssignments):len((*c.CallOptions).ListAssignments)], opts...)
 	it := &AssignmentIterator{}
-	req = proto.Clone(req).(*reservationpb.ListAssignmentsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*reservationpb.Assignment, string, error) {
 		resp := &reservationpb.ListAssignmentsResponse{}
 		if pageToken != "" {
@@ -1614,7 +1614,7 @@ func (c *gRPCClient) SearchAssignments(ctx context.Context, req *reservationpb.S
 	}
 	opts = append((*c.CallOptions).SearchAssignments[0:len((*c.CallOptions).SearchAssignments):len((*c.CallOptions).SearchAssignments)], opts...)
 	it := &AssignmentIterator{}
-	req = proto.Clone(req).(*reservationpb.SearchAssignmentsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*reservationpb.Assignment, string, error) {
 		resp := &reservationpb.SearchAssignmentsResponse{}
 		if pageToken != "" {
@@ -1666,7 +1666,7 @@ func (c *gRPCClient) SearchAllAssignments(ctx context.Context, req *reservationp
 	}
 	opts = append((*c.CallOptions).SearchAllAssignments[0:len((*c.CallOptions).SearchAllAssignments):len((*c.CallOptions).SearchAllAssignments)], opts...)
 	it := &AssignmentIterator{}
-	req = proto.Clone(req).(*reservationpb.SearchAllAssignmentsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*reservationpb.Assignment, string, error) {
 		resp := &reservationpb.SearchAllAssignmentsResponse{}
 		if pageToken != "" {
@@ -1954,7 +1954,7 @@ func (c *gRPCClient) ListReservationGroups(ctx context.Context, req *reservation
 	}
 	opts = append((*c.CallOptions).ListReservationGroups[0:len((*c.CallOptions).ListReservationGroups):len((*c.CallOptions).ListReservationGroups)], opts...)
 	it := &ReservationGroupIterator{}
-	req = proto.Clone(req).(*reservationpb.ListReservationGroupsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*reservationpb.ReservationGroup, string, error) {
 		resp := &reservationpb.ListReservationGroupsResponse{}
 		if pageToken != "" {
@@ -2063,7 +2063,7 @@ func (c *restClient) CreateReservation(ctx context.Context, req *reservationpb.C
 // ListReservations lists all the reservations for the project in the specified location.
 func (c *restClient) ListReservations(ctx context.Context, req *reservationpb.ListReservationsRequest, opts ...gax.CallOption) *ReservationIterator {
 	it := &ReservationIterator{}
-	req = proto.Clone(req).(*reservationpb.ListReservationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*reservationpb.Reservation, string, error) {
 		resp := &reservationpb.ListReservationsResponse{}
@@ -2450,7 +2450,7 @@ func (c *restClient) CreateCapacityCommitment(ctx context.Context, req *reservat
 // ListCapacityCommitments lists all the capacity commitments for the admin project.
 func (c *restClient) ListCapacityCommitments(ctx context.Context, req *reservationpb.ListCapacityCommitmentsRequest, opts ...gax.CallOption) *CapacityCommitmentIterator {
 	it := &CapacityCommitmentIterator{}
-	req = proto.Clone(req).(*reservationpb.ListCapacityCommitmentsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*reservationpb.CapacityCommitment, string, error) {
 		resp := &reservationpb.ListCapacityCommitmentsResponse{}
@@ -2972,7 +2972,7 @@ func (c *restClient) CreateAssignment(ctx context.Context, req *reservationpb.Cr
 // Note "-" cannot be used for projects nor locations.
 func (c *restClient) ListAssignments(ctx context.Context, req *reservationpb.ListAssignmentsRequest, opts ...gax.CallOption) *AssignmentIterator {
 	it := &AssignmentIterator{}
-	req = proto.Clone(req).(*reservationpb.ListAssignmentsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*reservationpb.Assignment, string, error) {
 		resp := &reservationpb.ListAssignmentsResponse{}
@@ -3136,7 +3136,7 @@ func (c *restClient) DeleteAssignment(ctx context.Context, req *reservationpb.De
 // Deprecated: SearchAssignments may be removed in a future version.
 func (c *restClient) SearchAssignments(ctx context.Context, req *reservationpb.SearchAssignmentsRequest, opts ...gax.CallOption) *AssignmentIterator {
 	it := &AssignmentIterator{}
-	req = proto.Clone(req).(*reservationpb.SearchAssignmentsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*reservationpb.Assignment, string, error) {
 		resp := &reservationpb.SearchAssignmentsResponse{}
@@ -3240,7 +3240,7 @@ func (c *restClient) SearchAssignments(ctx context.Context, req *reservationpb.S
 // projects/*/locations/*reservations/*.
 func (c *restClient) SearchAllAssignments(ctx context.Context, req *reservationpb.SearchAllAssignmentsRequest, opts ...gax.CallOption) *AssignmentIterator {
 	it := &AssignmentIterator{}
-	req = proto.Clone(req).(*reservationpb.SearchAllAssignmentsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*reservationpb.Assignment, string, error) {
 		resp := &reservationpb.SearchAllAssignmentsResponse{}
@@ -3982,7 +3982,7 @@ func (c *restClient) DeleteReservationGroup(ctx context.Context, req *reservatio
 // ListReservationGroups lists all the reservation groups for the project in the specified location.
 func (c *restClient) ListReservationGroups(ctx context.Context, req *reservationpb.ListReservationGroupsRequest, opts ...gax.CallOption) *ReservationGroupIterator {
 	it := &ReservationGroupIterator{}
-	req = proto.Clone(req).(*reservationpb.ListReservationGroupsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*reservationpb.ReservationGroup, string, error) {
 		resp := &reservationpb.ListReservationGroupsResponse{}

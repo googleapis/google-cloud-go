@@ -804,7 +804,7 @@ func (c *businessGlossaryGRPCClient) ListGlossaries(ctx context.Context, req *da
 	}
 	opts = append((*c.CallOptions).ListGlossaries[0:len((*c.CallOptions).ListGlossaries):len((*c.CallOptions).ListGlossaries)], opts...)
 	it := &GlossaryIterator{}
-	req = proto.Clone(req).(*dataplexpb.ListGlossariesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.Glossary, string, error) {
 		resp := &dataplexpb.ListGlossariesResponse{}
 		if pageToken != "" {
@@ -945,7 +945,7 @@ func (c *businessGlossaryGRPCClient) ListGlossaryCategories(ctx context.Context,
 	}
 	opts = append((*c.CallOptions).ListGlossaryCategories[0:len((*c.CallOptions).ListGlossaryCategories):len((*c.CallOptions).ListGlossaryCategories)], opts...)
 	it := &GlossaryCategoryIterator{}
-	req = proto.Clone(req).(*dataplexpb.ListGlossaryCategoriesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.GlossaryCategory, string, error) {
 		resp := &dataplexpb.ListGlossaryCategoriesResponse{}
 		if pageToken != "" {
@@ -1086,7 +1086,7 @@ func (c *businessGlossaryGRPCClient) ListGlossaryTerms(ctx context.Context, req 
 	}
 	opts = append((*c.CallOptions).ListGlossaryTerms[0:len((*c.CallOptions).ListGlossaryTerms):len((*c.CallOptions).ListGlossaryTerms)], opts...)
 	it := &GlossaryTermIterator{}
-	req = proto.Clone(req).(*dataplexpb.ListGlossaryTermsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.GlossaryTerm, string, error) {
 		resp := &dataplexpb.ListGlossaryTermsResponse{}
 		if pageToken != "" {
@@ -1156,7 +1156,7 @@ func (c *businessGlossaryGRPCClient) ListLocations(ctx context.Context, req *loc
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -1332,7 +1332,7 @@ func (c *businessGlossaryGRPCClient) ListOperations(ctx context.Context, req *lo
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -1640,7 +1640,7 @@ func (c *businessGlossaryRESTClient) GetGlossary(ctx context.Context, req *datap
 // ListGlossaries lists Glossary resources in a project and location.
 func (c *businessGlossaryRESTClient) ListGlossaries(ctx context.Context, req *dataplexpb.ListGlossariesRequest, opts ...gax.CallOption) *GlossaryIterator {
 	it := &GlossaryIterator{}
-	req = proto.Clone(req).(*dataplexpb.ListGlossariesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.Glossary, string, error) {
 		resp := &dataplexpb.ListGlossariesResponse{}
@@ -1958,7 +1958,7 @@ func (c *businessGlossaryRESTClient) GetGlossaryCategory(ctx context.Context, re
 // ListGlossaryCategories lists GlossaryCategory resources in a Glossary.
 func (c *businessGlossaryRESTClient) ListGlossaryCategories(ctx context.Context, req *dataplexpb.ListGlossaryCategoriesRequest, opts ...gax.CallOption) *GlossaryCategoryIterator {
 	it := &GlossaryCategoryIterator{}
-	req = proto.Clone(req).(*dataplexpb.ListGlossaryCategoriesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.GlossaryCategory, string, error) {
 		resp := &dataplexpb.ListGlossaryCategoriesResponse{}
@@ -2274,7 +2274,7 @@ func (c *businessGlossaryRESTClient) GetGlossaryTerm(ctx context.Context, req *d
 // ListGlossaryTerms lists GlossaryTerm resources in a Glossary.
 func (c *businessGlossaryRESTClient) ListGlossaryTerms(ctx context.Context, req *dataplexpb.ListGlossaryTermsRequest, opts ...gax.CallOption) *GlossaryTermIterator {
 	it := &GlossaryTermIterator{}
-	req = proto.Clone(req).(*dataplexpb.ListGlossaryTermsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.GlossaryTerm, string, error) {
 		resp := &dataplexpb.ListGlossaryTermsResponse{}
@@ -2420,7 +2420,7 @@ func (c *businessGlossaryRESTClient) GetLocation(ctx context.Context, req *locat
 //	to the project.
 func (c *businessGlossaryRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -2836,7 +2836,7 @@ func (c *businessGlossaryRESTClient) GetOperation(ctx context.Context, req *long
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *businessGlossaryRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

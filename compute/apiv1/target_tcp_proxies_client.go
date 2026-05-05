@@ -337,7 +337,7 @@ func (c *targetTcpProxiesRESTClient) Connection() *grpc.ClientConn {
 // returnPartialSuccess parameter to true.
 func (c *targetTcpProxiesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListTargetTcpProxiesRequest, opts ...gax.CallOption) *TargetTcpProxiesScopedListPairIterator {
 	it := &TargetTcpProxiesScopedListPairIterator{}
-	req = proto.Clone(req).(*computepb.AggregatedListTargetTcpProxiesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]TargetTcpProxiesScopedListPair, string, error) {
 		resp := &computepb.TargetTcpProxyAggregatedList{}
@@ -629,7 +629,7 @@ func (c *targetTcpProxiesRESTClient) Insert(ctx context.Context, req *computepb.
 // available to the specified project.
 func (c *targetTcpProxiesRESTClient) List(ctx context.Context, req *computepb.ListTargetTcpProxiesRequest, opts ...gax.CallOption) *TargetTcpProxyIterator {
 	it := &TargetTcpProxyIterator{}
-	req = proto.Clone(req).(*computepb.ListTargetTcpProxiesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.TargetTcpProxy, string, error) {
 		resp := &computepb.TargetTcpProxyList{}

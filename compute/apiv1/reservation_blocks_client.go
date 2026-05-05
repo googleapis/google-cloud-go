@@ -425,7 +425,7 @@ func (c *reservationBlocksRESTClient) GetIamPolicy(ctx context.Context, req *com
 // List retrieves a list of reservation blocks under a single reservation.
 func (c *reservationBlocksRESTClient) List(ctx context.Context, req *computepb.ListReservationBlocksRequest, opts ...gax.CallOption) *ReservationBlockIterator {
 	it := &ReservationBlockIterator{}
-	req = proto.Clone(req).(*computepb.ListReservationBlocksRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.ReservationBlock, string, error) {
 		resp := &computepb.ReservationBlocksListResponse{}

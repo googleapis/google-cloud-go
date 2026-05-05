@@ -466,7 +466,7 @@ func (c *permissionGRPCClient) ListPermissions(ctx context.Context, req *generat
 	}
 	opts = append((*c.CallOptions).ListPermissions[0:len((*c.CallOptions).ListPermissions):len((*c.CallOptions).ListPermissions)], opts...)
 	it := &PermissionIterator{}
-	req = proto.Clone(req).(*generativelanguagepb.ListPermissionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*generativelanguagepb.Permission, string, error) {
 		resp := &generativelanguagepb.ListPermissionsResponse{}
 		if pageToken != "" {
@@ -601,7 +601,7 @@ func (c *permissionGRPCClient) ListOperations(ctx context.Context, req *longrunn
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -764,7 +764,7 @@ func (c *permissionRESTClient) GetPermission(ctx context.Context, req *generativ
 // ListPermissions lists permissions for the specific resource.
 func (c *permissionRESTClient) ListPermissions(ctx context.Context, req *generativelanguagepb.ListPermissionsRequest, opts ...gax.CallOption) *PermissionIterator {
 	it := &PermissionIterator{}
-	req = proto.Clone(req).(*generativelanguagepb.ListPermissionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*generativelanguagepb.Permission, string, error) {
 		resp := &generativelanguagepb.ListPermissionsResponse{}
@@ -1071,7 +1071,7 @@ func (c *permissionRESTClient) GetOperation(ctx context.Context, req *longrunnin
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *permissionRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

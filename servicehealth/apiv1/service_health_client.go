@@ -546,7 +546,7 @@ func (c *gRPCClient) ListEvents(ctx context.Context, req *servicehealthpb.ListEv
 	}
 	opts = append((*c.CallOptions).ListEvents[0:len((*c.CallOptions).ListEvents):len((*c.CallOptions).ListEvents)], opts...)
 	it := &EventIterator{}
-	req = proto.Clone(req).(*servicehealthpb.ListEventsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*servicehealthpb.Event, string, error) {
 		resp := &servicehealthpb.ListEventsResponse{}
 		if pageToken != "" {
@@ -622,7 +622,7 @@ func (c *gRPCClient) ListOrganizationEvents(ctx context.Context, req *servicehea
 	}
 	opts = append((*c.CallOptions).ListOrganizationEvents[0:len((*c.CallOptions).ListOrganizationEvents):len((*c.CallOptions).ListOrganizationEvents)], opts...)
 	it := &OrganizationEventIterator{}
-	req = proto.Clone(req).(*servicehealthpb.ListOrganizationEventsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*servicehealthpb.OrganizationEvent, string, error) {
 		resp := &servicehealthpb.ListOrganizationEventsResponse{}
 		if pageToken != "" {
@@ -698,7 +698,7 @@ func (c *gRPCClient) ListOrganizationImpacts(ctx context.Context, req *servicehe
 	}
 	opts = append((*c.CallOptions).ListOrganizationImpacts[0:len((*c.CallOptions).ListOrganizationImpacts):len((*c.CallOptions).ListOrganizationImpacts)], opts...)
 	it := &OrganizationImpactIterator{}
-	req = proto.Clone(req).(*servicehealthpb.ListOrganizationImpactsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*servicehealthpb.OrganizationImpact, string, error) {
 		resp := &servicehealthpb.ListOrganizationImpactsResponse{}
 		if pageToken != "" {
@@ -792,7 +792,7 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -834,7 +834,7 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 // ListEvents lists events under a given project and location.
 func (c *restClient) ListEvents(ctx context.Context, req *servicehealthpb.ListEventsRequest, opts ...gax.CallOption) *EventIterator {
 	it := &EventIterator{}
-	req = proto.Clone(req).(*servicehealthpb.ListEventsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*servicehealthpb.Event, string, error) {
 		resp := &servicehealthpb.ListEventsResponse{}
@@ -975,7 +975,7 @@ func (c *restClient) GetEvent(ctx context.Context, req *servicehealthpb.GetEvent
 // ListOrganizationEvents lists organization events under a given organization and location.
 func (c *restClient) ListOrganizationEvents(ctx context.Context, req *servicehealthpb.ListOrganizationEventsRequest, opts ...gax.CallOption) *OrganizationEventIterator {
 	it := &OrganizationEventIterator{}
-	req = proto.Clone(req).(*servicehealthpb.ListOrganizationEventsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*servicehealthpb.OrganizationEvent, string, error) {
 		resp := &servicehealthpb.ListOrganizationEventsResponse{}
@@ -1118,7 +1118,7 @@ func (c *restClient) GetOrganizationEvent(ctx context.Context, req *servicehealt
 // location.
 func (c *restClient) ListOrganizationImpacts(ctx context.Context, req *servicehealthpb.ListOrganizationImpactsRequest, opts ...gax.CallOption) *OrganizationImpactIterator {
 	it := &OrganizationImpactIterator{}
-	req = proto.Clone(req).(*servicehealthpb.ListOrganizationImpactsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*servicehealthpb.OrganizationImpact, string, error) {
 		resp := &servicehealthpb.ListOrganizationImpactsResponse{}
@@ -1311,7 +1311,7 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 // ListLocations lists information about the supported locations for this service.
 func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}

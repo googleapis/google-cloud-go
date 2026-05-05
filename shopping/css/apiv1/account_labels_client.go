@@ -403,7 +403,7 @@ func (c *accountLabelsGRPCClient) ListAccountLabels(ctx context.Context, req *cs
 	}
 	opts = append((*c.CallOptions).ListAccountLabels[0:len((*c.CallOptions).ListAccountLabels):len((*c.CallOptions).ListAccountLabels)], opts...)
 	it := &AccountLabelIterator{}
-	req = proto.Clone(req).(*csspb.ListAccountLabelsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*csspb.AccountLabel, string, error) {
 		resp := &csspb.ListAccountLabelsResponse{}
 		if pageToken != "" {
@@ -510,7 +510,7 @@ func (c *accountLabelsGRPCClient) DeleteAccountLabel(ctx context.Context, req *c
 // ListAccountLabels lists the labels owned by an account.
 func (c *accountLabelsRESTClient) ListAccountLabels(ctx context.Context, req *csspb.ListAccountLabelsRequest, opts ...gax.CallOption) *AccountLabelIterator {
 	it := &AccountLabelIterator{}
-	req = proto.Clone(req).(*csspb.ListAccountLabelsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*csspb.AccountLabel, string, error) {
 		resp := &csspb.ListAccountLabelsResponse{}

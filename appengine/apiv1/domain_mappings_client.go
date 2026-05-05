@@ -464,7 +464,7 @@ func (c *domainMappingsGRPCClient) ListDomainMappings(ctx context.Context, req *
 	}
 	opts = append((*c.CallOptions).ListDomainMappings[0:len((*c.CallOptions).ListDomainMappings):len((*c.CallOptions).ListDomainMappings)], opts...)
 	it := &DomainMappingIterator{}
-	req = proto.Clone(req).(*appenginepb.ListDomainMappingsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*appenginepb.DomainMapping, string, error) {
 		resp := &appenginepb.ListDomainMappingsResponse{}
 		if pageToken != "" {
@@ -596,7 +596,7 @@ func (c *domainMappingsGRPCClient) DeleteDomainMapping(ctx context.Context, req 
 // ListDomainMappings lists the domain mappings on an application.
 func (c *domainMappingsRESTClient) ListDomainMappings(ctx context.Context, req *appenginepb.ListDomainMappingsRequest, opts ...gax.CallOption) *DomainMappingIterator {
 	it := &DomainMappingIterator{}
-	req = proto.Clone(req).(*appenginepb.ListDomainMappingsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*appenginepb.DomainMapping, string, error) {
 		resp := &appenginepb.ListDomainMappingsResponse{}

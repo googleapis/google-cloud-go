@@ -1079,7 +1079,7 @@ func (c *organizationSecurityPoliciesRESTClient) Insert(ctx context.Context, req
 // disabled for most organizations. Use firewallPolicies.list instead.
 func (c *organizationSecurityPoliciesRESTClient) List(ctx context.Context, req *computepb.ListOrganizationSecurityPoliciesRequest, opts ...gax.CallOption) *SecurityPolicyIterator {
 	it := &SecurityPolicyIterator{}
-	req = proto.Clone(req).(*computepb.ListOrganizationSecurityPoliciesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.SecurityPolicy, string, error) {
 		resp := &computepb.SecurityPolicyList{}

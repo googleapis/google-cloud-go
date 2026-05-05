@@ -779,7 +779,7 @@ func (c *gRPCClient) ListConfigurations(ctx context.Context, req *licensemanager
 	}
 	opts = append((*c.CallOptions).ListConfigurations[0:len((*c.CallOptions).ListConfigurations):len((*c.CallOptions).ListConfigurations)], opts...)
 	it := &ConfigurationIterator{}
-	req = proto.Clone(req).(*licensemanagerpb.ListConfigurationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*licensemanagerpb.Configuration, string, error) {
 		resp := &licensemanagerpb.ListConfigurationsResponse{}
 		if pageToken != "" {
@@ -930,7 +930,7 @@ func (c *gRPCClient) ListInstances(ctx context.Context, req *licensemanagerpb.Li
 	}
 	opts = append((*c.CallOptions).ListInstances[0:len((*c.CallOptions).ListInstances):len((*c.CallOptions).ListInstances)], opts...)
 	it := &InstanceIterator{}
-	req = proto.Clone(req).(*licensemanagerpb.ListInstancesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*licensemanagerpb.Instance, string, error) {
 		resp := &licensemanagerpb.ListInstancesResponse{}
 		if pageToken != "" {
@@ -1082,7 +1082,7 @@ func (c *gRPCClient) AggregateUsage(ctx context.Context, req *licensemanagerpb.A
 	}
 	opts = append((*c.CallOptions).AggregateUsage[0:len((*c.CallOptions).AggregateUsage):len((*c.CallOptions).AggregateUsage)], opts...)
 	it := &UsageIterator{}
-	req = proto.Clone(req).(*licensemanagerpb.AggregateUsageRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*licensemanagerpb.Usage, string, error) {
 		resp := &licensemanagerpb.AggregateUsageResponse{}
 		if pageToken != "" {
@@ -1134,7 +1134,7 @@ func (c *gRPCClient) ListProducts(ctx context.Context, req *licensemanagerpb.Lis
 	}
 	opts = append((*c.CallOptions).ListProducts[0:len((*c.CallOptions).ListProducts):len((*c.CallOptions).ListProducts)], opts...)
 	it := &ProductIterator{}
-	req = proto.Clone(req).(*licensemanagerpb.ListProductsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*licensemanagerpb.Product, string, error) {
 		resp := &licensemanagerpb.ListProductsResponse{}
 		if pageToken != "" {
@@ -1228,7 +1228,7 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -1332,7 +1332,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -1374,7 +1374,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // ListConfigurations lists Configurations in a given project and location.
 func (c *restClient) ListConfigurations(ctx context.Context, req *licensemanagerpb.ListConfigurationsRequest, opts ...gax.CallOption) *ConfigurationIterator {
 	it := &ConfigurationIterator{}
-	req = proto.Clone(req).(*licensemanagerpb.ListConfigurationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*licensemanagerpb.Configuration, string, error) {
 		resp := &licensemanagerpb.ListConfigurationsResponse{}
@@ -1723,7 +1723,7 @@ func (c *restClient) DeleteConfiguration(ctx context.Context, req *licensemanage
 // ListInstances lists Instances in a given project and location.
 func (c *restClient) ListInstances(ctx context.Context, req *licensemanagerpb.ListInstancesRequest, opts ...gax.CallOption) *InstanceIterator {
 	it := &InstanceIterator{}
-	req = proto.Clone(req).(*licensemanagerpb.ListInstancesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*licensemanagerpb.Instance, string, error) {
 		resp := &licensemanagerpb.ListInstancesResponse{}
@@ -2067,7 +2067,7 @@ func (c *restClient) QueryConfigurationLicenseUsage(ctx context.Context, req *li
 // AggregateUsage aggregates Usage per Instance for a Configuration.
 func (c *restClient) AggregateUsage(ctx context.Context, req *licensemanagerpb.AggregateUsageRequest, opts ...gax.CallOption) *UsageIterator {
 	it := &UsageIterator{}
-	req = proto.Clone(req).(*licensemanagerpb.AggregateUsageRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*licensemanagerpb.Usage, string, error) {
 		resp := &licensemanagerpb.AggregateUsageResponse{}
@@ -2165,7 +2165,7 @@ func (c *restClient) AggregateUsage(ctx context.Context, req *licensemanagerpb.A
 // ListProducts lists Products in a given project and location.
 func (c *restClient) ListProducts(ctx context.Context, req *licensemanagerpb.ListProductsRequest, opts ...gax.CallOption) *ProductIterator {
 	it := &ProductIterator{}
-	req = proto.Clone(req).(*licensemanagerpb.ListProductsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*licensemanagerpb.Product, string, error) {
 		resp := &licensemanagerpb.ListProductsResponse{}
@@ -2360,7 +2360,7 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 // ListLocations lists information about the supported locations for this service.
 func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -2579,7 +2579,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

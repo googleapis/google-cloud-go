@@ -631,7 +631,7 @@ func (c *notificationsApiGRPCClient) ListNotificationSubscriptions(ctx context.C
 	}
 	opts = append((*c.CallOptions).ListNotificationSubscriptions[0:len((*c.CallOptions).ListNotificationSubscriptions):len((*c.CallOptions).ListNotificationSubscriptions)], opts...)
 	it := &NotificationSubscriptionIterator{}
-	req = proto.Clone(req).(*notificationspb.ListNotificationSubscriptionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*notificationspb.NotificationSubscription, string, error) {
 		resp := &notificationspb.ListNotificationSubscriptionsResponse{}
 		if pageToken != "" {
@@ -950,7 +950,7 @@ func (c *notificationsApiRESTClient) DeleteNotificationSubscription(ctx context.
 // ListNotificationSubscriptions gets all the notification subscriptions for a merchant.
 func (c *notificationsApiRESTClient) ListNotificationSubscriptions(ctx context.Context, req *notificationspb.ListNotificationSubscriptionsRequest, opts ...gax.CallOption) *NotificationSubscriptionIterator {
 	it := &NotificationSubscriptionIterator{}
-	req = proto.Clone(req).(*notificationspb.ListNotificationSubscriptionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*notificationspb.NotificationSubscription, string, error) {
 		resp := &notificationspb.ListNotificationSubscriptionsResponse{}

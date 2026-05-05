@@ -1192,7 +1192,7 @@ func (c *aMLGRPCClient) ListInstances(ctx context.Context, req *financialservice
 	}
 	opts = append((*c.CallOptions).ListInstances[0:len((*c.CallOptions).ListInstances):len((*c.CallOptions).ListInstances)], opts...)
 	it := &InstanceIterator{}
-	req = proto.Clone(req).(*financialservicespb.ListInstancesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*financialservicespb.Instance, string, error) {
 		resp := &financialservicespb.ListInstancesResponse{}
 		if pageToken != "" {
@@ -1395,7 +1395,7 @@ func (c *aMLGRPCClient) ListDatasets(ctx context.Context, req *financialservices
 	}
 	opts = append((*c.CallOptions).ListDatasets[0:len((*c.CallOptions).ListDatasets):len((*c.CallOptions).ListDatasets)], opts...)
 	it := &DatasetIterator{}
-	req = proto.Clone(req).(*financialservicespb.ListDatasetsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*financialservicespb.Dataset, string, error) {
 		resp := &financialservicespb.ListDatasetsResponse{}
 		if pageToken != "" {
@@ -1546,7 +1546,7 @@ func (c *aMLGRPCClient) ListModels(ctx context.Context, req *financialservicespb
 	}
 	opts = append((*c.CallOptions).ListModels[0:len((*c.CallOptions).ListModels):len((*c.CallOptions).ListModels)], opts...)
 	it := &ModelIterator{}
-	req = proto.Clone(req).(*financialservicespb.ListModelsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*financialservicespb.Model, string, error) {
 		resp := &financialservicespb.ListModelsResponse{}
 		if pageToken != "" {
@@ -1723,7 +1723,7 @@ func (c *aMLGRPCClient) ListEngineConfigs(ctx context.Context, req *financialser
 	}
 	opts = append((*c.CallOptions).ListEngineConfigs[0:len((*c.CallOptions).ListEngineConfigs):len((*c.CallOptions).ListEngineConfigs)], opts...)
 	it := &EngineConfigIterator{}
-	req = proto.Clone(req).(*financialservicespb.ListEngineConfigsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*financialservicespb.EngineConfig, string, error) {
 		resp := &financialservicespb.ListEngineConfigsResponse{}
 		if pageToken != "" {
@@ -1924,7 +1924,7 @@ func (c *aMLGRPCClient) ListEngineVersions(ctx context.Context, req *financialse
 	}
 	opts = append((*c.CallOptions).ListEngineVersions[0:len((*c.CallOptions).ListEngineVersions):len((*c.CallOptions).ListEngineVersions)], opts...)
 	it := &EngineVersionIterator{}
-	req = proto.Clone(req).(*financialservicespb.ListEngineVersionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*financialservicespb.EngineVersion, string, error) {
 		resp := &financialservicespb.ListEngineVersionsResponse{}
 		if pageToken != "" {
@@ -1976,7 +1976,7 @@ func (c *aMLGRPCClient) ListPredictionResults(ctx context.Context, req *financia
 	}
 	opts = append((*c.CallOptions).ListPredictionResults[0:len((*c.CallOptions).ListPredictionResults):len((*c.CallOptions).ListPredictionResults)], opts...)
 	it := &PredictionResultIterator{}
-	req = proto.Clone(req).(*financialservicespb.ListPredictionResultsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*financialservicespb.PredictionResult, string, error) {
 		resp := &financialservicespb.ListPredictionResultsResponse{}
 		if pageToken != "" {
@@ -2153,7 +2153,7 @@ func (c *aMLGRPCClient) ListBacktestResults(ctx context.Context, req *financials
 	}
 	opts = append((*c.CallOptions).ListBacktestResults[0:len((*c.CallOptions).ListBacktestResults):len((*c.CallOptions).ListBacktestResults)], opts...)
 	it := &BacktestResultIterator{}
-	req = proto.Clone(req).(*financialservicespb.ListBacktestResultsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*financialservicespb.BacktestResult, string, error) {
 		resp := &financialservicespb.ListBacktestResultsResponse{}
 		if pageToken != "" {
@@ -2348,7 +2348,7 @@ func (c *aMLGRPCClient) ListLocations(ctx context.Context, req *locationpb.ListL
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -2452,7 +2452,7 @@ func (c *aMLGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.L
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -2494,7 +2494,7 @@ func (c *aMLGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.L
 // ListInstances lists instances.
 func (c *aMLRESTClient) ListInstances(ctx context.Context, req *financialservicespb.ListInstancesRequest, opts ...gax.CallOption) *InstanceIterator {
 	it := &InstanceIterator{}
-	req = proto.Clone(req).(*financialservicespb.ListInstancesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*financialservicespb.Instance, string, error) {
 		resp := &financialservicespb.ListInstancesResponse{}
@@ -2981,7 +2981,7 @@ func (c *aMLRESTClient) ExportRegisteredParties(ctx context.Context, req *financ
 // ListDatasets lists datasets.
 func (c *aMLRESTClient) ListDatasets(ctx context.Context, req *financialservicespb.ListDatasetsRequest, opts ...gax.CallOption) *DatasetIterator {
 	it := &DatasetIterator{}
-	req = proto.Clone(req).(*financialservicespb.ListDatasetsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*financialservicespb.Dataset, string, error) {
 		resp := &financialservicespb.ListDatasetsResponse{}
@@ -3330,7 +3330,7 @@ func (c *aMLRESTClient) DeleteDataset(ctx context.Context, req *financialservice
 // ListModels lists models.
 func (c *aMLRESTClient) ListModels(ctx context.Context, req *financialservicespb.ListModelsRequest, opts ...gax.CallOption) *ModelIterator {
 	it := &ModelIterator{}
-	req = proto.Clone(req).(*financialservicespb.ListModelsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*financialservicespb.Model, string, error) {
 		resp := &financialservicespb.ListModelsResponse{}
@@ -3748,7 +3748,7 @@ func (c *aMLRESTClient) DeleteModel(ctx context.Context, req *financialservicesp
 // ListEngineConfigs lists engine configs.
 func (c *aMLRESTClient) ListEngineConfigs(ctx context.Context, req *financialservicespb.ListEngineConfigsRequest, opts ...gax.CallOption) *EngineConfigIterator {
 	it := &EngineConfigIterator{}
-	req = proto.Clone(req).(*financialservicespb.ListEngineConfigsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*financialservicespb.EngineConfig, string, error) {
 		resp := &financialservicespb.ListEngineConfigsResponse{}
@@ -4223,7 +4223,7 @@ func (c *aMLRESTClient) GetEngineVersion(ctx context.Context, req *financialserv
 // ListEngineVersions lists EngineVersions for given location.
 func (c *aMLRESTClient) ListEngineVersions(ctx context.Context, req *financialservicespb.ListEngineVersionsRequest, opts ...gax.CallOption) *EngineVersionIterator {
 	it := &EngineVersionIterator{}
-	req = proto.Clone(req).(*financialservicespb.ListEngineVersionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*financialservicespb.EngineVersion, string, error) {
 		resp := &financialservicespb.ListEngineVersionsResponse{}
@@ -4307,7 +4307,7 @@ func (c *aMLRESTClient) ListEngineVersions(ctx context.Context, req *financialse
 // ListPredictionResults list PredictionResults.
 func (c *aMLRESTClient) ListPredictionResults(ctx context.Context, req *financialservicespb.ListPredictionResultsRequest, opts ...gax.CallOption) *PredictionResultIterator {
 	it := &PredictionResultIterator{}
-	req = proto.Clone(req).(*financialservicespb.ListPredictionResultsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*financialservicespb.PredictionResult, string, error) {
 		resp := &financialservicespb.ListPredictionResultsResponse{}
@@ -4725,7 +4725,7 @@ func (c *aMLRESTClient) DeletePredictionResult(ctx context.Context, req *financi
 // ListBacktestResults list BacktestResults.
 func (c *aMLRESTClient) ListBacktestResults(ctx context.Context, req *financialservicespb.ListBacktestResultsRequest, opts ...gax.CallOption) *BacktestResultIterator {
 	it := &BacktestResultIterator{}
-	req = proto.Clone(req).(*financialservicespb.ListBacktestResultsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*financialservicespb.BacktestResult, string, error) {
 		resp := &financialservicespb.ListBacktestResultsResponse{}
@@ -5197,7 +5197,7 @@ func (c *aMLRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLoca
 // ListLocations lists information about the supported locations for this service.
 func (c *aMLRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -5416,7 +5416,7 @@ func (c *aMLRESTClient) GetOperation(ctx context.Context, req *longrunningpb.Get
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *aMLRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

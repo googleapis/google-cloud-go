@@ -1382,7 +1382,7 @@ func (c *catalogGRPCClient) ListEntryTypes(ctx context.Context, req *dataplexpb.
 	}
 	opts = append((*c.CallOptions).ListEntryTypes[0:len((*c.CallOptions).ListEntryTypes):len((*c.CallOptions).ListEntryTypes)], opts...)
 	it := &EntryTypeIterator{}
-	req = proto.Clone(req).(*dataplexpb.ListEntryTypesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.EntryType, string, error) {
 		resp := &dataplexpb.ListEntryTypesResponse{}
 		if pageToken != "" {
@@ -1533,7 +1533,7 @@ func (c *catalogGRPCClient) ListAspectTypes(ctx context.Context, req *dataplexpb
 	}
 	opts = append((*c.CallOptions).ListAspectTypes[0:len((*c.CallOptions).ListAspectTypes):len((*c.CallOptions).ListAspectTypes)], opts...)
 	it := &AspectTypeIterator{}
-	req = proto.Clone(req).(*dataplexpb.ListAspectTypesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.AspectType, string, error) {
 		resp := &dataplexpb.ListAspectTypesResponse{}
 		if pageToken != "" {
@@ -1684,7 +1684,7 @@ func (c *catalogGRPCClient) ListEntryGroups(ctx context.Context, req *dataplexpb
 	}
 	opts = append((*c.CallOptions).ListEntryGroups[0:len((*c.CallOptions).ListEntryGroups):len((*c.CallOptions).ListEntryGroups)], opts...)
 	it := &EntryGroupIterator{}
-	req = proto.Clone(req).(*dataplexpb.ListEntryGroupsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.EntryGroup, string, error) {
 		resp := &dataplexpb.ListEntryGroupsResponse{}
 		if pageToken != "" {
@@ -1829,7 +1829,7 @@ func (c *catalogGRPCClient) ListEntries(ctx context.Context, req *dataplexpb.Lis
 	}
 	opts = append((*c.CallOptions).ListEntries[0:len((*c.CallOptions).ListEntries):len((*c.CallOptions).ListEntries)], opts...)
 	it := &EntryIterator{}
-	req = proto.Clone(req).(*dataplexpb.ListEntriesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.Entry, string, error) {
 		resp := &dataplexpb.ListEntriesResponse{}
 		if pageToken != "" {
@@ -1929,7 +1929,7 @@ func (c *catalogGRPCClient) SearchEntries(ctx context.Context, req *dataplexpb.S
 	}
 	opts = append((*c.CallOptions).SearchEntries[0:len((*c.CallOptions).SearchEntries):len((*c.CallOptions).SearchEntries)], opts...)
 	it := &SearchEntriesResultIterator{}
-	req = proto.Clone(req).(*dataplexpb.SearchEntriesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.SearchEntriesResult, string, error) {
 		resp := &dataplexpb.SearchEntriesResponse{}
 		if pageToken != "" {
@@ -2031,7 +2031,7 @@ func (c *catalogGRPCClient) ListMetadataJobs(ctx context.Context, req *dataplexp
 	}
 	opts = append((*c.CallOptions).ListMetadataJobs[0:len((*c.CallOptions).ListMetadataJobs):len((*c.CallOptions).ListMetadataJobs)], opts...)
 	it := &MetadataJobIterator{}
-	req = proto.Clone(req).(*dataplexpb.ListMetadataJobsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.MetadataJob, string, error) {
 		resp := &dataplexpb.ListMetadataJobsResponse{}
 		if pageToken != "" {
@@ -2172,7 +2172,7 @@ func (c *catalogGRPCClient) LookupEntryLinks(ctx context.Context, req *dataplexp
 	}
 	opts = append((*c.CallOptions).LookupEntryLinks[0:len((*c.CallOptions).LookupEntryLinks):len((*c.CallOptions).LookupEntryLinks)], opts...)
 	it := &EntryLinkIterator{}
-	req = proto.Clone(req).(*dataplexpb.LookupEntryLinksRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.EntryLink, string, error) {
 		resp := &dataplexpb.LookupEntryLinksResponse{}
 		if pageToken != "" {
@@ -2322,7 +2322,7 @@ func (c *catalogGRPCClient) ListMetadataFeeds(ctx context.Context, req *dataplex
 	}
 	opts = append((*c.CallOptions).ListMetadataFeeds[0:len((*c.CallOptions).ListMetadataFeeds):len((*c.CallOptions).ListMetadataFeeds)], opts...)
 	it := &MetadataFeedIterator{}
-	req = proto.Clone(req).(*dataplexpb.ListMetadataFeedsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.MetadataFeed, string, error) {
 		resp := &dataplexpb.ListMetadataFeedsResponse{}
 		if pageToken != "" {
@@ -2441,7 +2441,7 @@ func (c *catalogGRPCClient) ListLocations(ctx context.Context, req *locationpb.L
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -2617,7 +2617,7 @@ func (c *catalogGRPCClient) ListOperations(ctx context.Context, req *longrunning
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -2867,7 +2867,7 @@ func (c *catalogRESTClient) DeleteEntryType(ctx context.Context, req *dataplexpb
 // ListEntryTypes lists EntryType resources in a project and location.
 func (c *catalogRESTClient) ListEntryTypes(ctx context.Context, req *dataplexpb.ListEntryTypesRequest, opts ...gax.CallOption) *EntryTypeIterator {
 	it := &EntryTypeIterator{}
-	req = proto.Clone(req).(*dataplexpb.ListEntryTypesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.EntryType, string, error) {
 		resp := &dataplexpb.ListEntryTypesResponse{}
@@ -3216,7 +3216,7 @@ func (c *catalogRESTClient) DeleteAspectType(ctx context.Context, req *dataplexp
 // ListAspectTypes lists AspectType resources in a project and location.
 func (c *catalogRESTClient) ListAspectTypes(ctx context.Context, req *dataplexpb.ListAspectTypesRequest, opts ...gax.CallOption) *AspectTypeIterator {
 	it := &AspectTypeIterator{}
-	req = proto.Clone(req).(*dataplexpb.ListAspectTypesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.AspectType, string, error) {
 		resp := &dataplexpb.ListAspectTypesResponse{}
@@ -3565,7 +3565,7 @@ func (c *catalogRESTClient) DeleteEntryGroup(ctx context.Context, req *dataplexp
 // ListEntryGroups lists EntryGroup resources in a project and location.
 func (c *catalogRESTClient) ListEntryGroups(ctx context.Context, req *dataplexpb.ListEntryGroupsRequest, opts ...gax.CallOption) *EntryGroupIterator {
 	it := &EntryGroupIterator{}
-	req = proto.Clone(req).(*dataplexpb.ListEntryGroupsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.EntryGroup, string, error) {
 		resp := &dataplexpb.ListEntryGroupsResponse{}
@@ -3907,7 +3907,7 @@ func (c *catalogRESTClient) DeleteEntry(ctx context.Context, req *dataplexpb.Del
 // ListEntries lists Entries within an EntryGroup.
 func (c *catalogRESTClient) ListEntries(ctx context.Context, req *dataplexpb.ListEntriesRequest, opts ...gax.CallOption) *EntryIterator {
 	it := &EntryIterator{}
-	req = proto.Clone(req).(*dataplexpb.ListEntriesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.Entry, string, error) {
 		resp := &dataplexpb.ListEntriesResponse{}
@@ -4129,7 +4129,7 @@ func (c *catalogRESTClient) LookupEntry(ctx context.Context, req *dataplexpb.Loo
 // SearchEntries searches for Entries matching the given query and scope.
 func (c *catalogRESTClient) SearchEntries(ctx context.Context, req *dataplexpb.SearchEntriesRequest, opts ...gax.CallOption) *SearchEntriesResultIterator {
 	it := &SearchEntriesResultIterator{}
-	req = proto.Clone(req).(*dataplexpb.SearchEntriesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.SearchEntriesResult, string, error) {
 		resp := &dataplexpb.SearchEntriesResponse{}
@@ -4348,7 +4348,7 @@ func (c *catalogRESTClient) GetMetadataJob(ctx context.Context, req *dataplexpb.
 // ListMetadataJobs lists metadata jobs.
 func (c *catalogRESTClient) ListMetadataJobs(ctx context.Context, req *dataplexpb.ListMetadataJobsRequest, opts ...gax.CallOption) *MetadataJobIterator {
 	it := &MetadataJobIterator{}
-	req = proto.Clone(req).(*dataplexpb.ListMetadataJobsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.MetadataJob, string, error) {
 		resp := &dataplexpb.ListMetadataJobsResponse{}
@@ -4676,7 +4676,7 @@ func (c *catalogRESTClient) DeleteEntryLink(ctx context.Context, req *dataplexpb
 // LookupEntryLinks looks up Entry Links referencing the specified Entry.
 func (c *catalogRESTClient) LookupEntryLinks(ctx context.Context, req *dataplexpb.LookupEntryLinksRequest, opts ...gax.CallOption) *EntryLinkIterator {
 	it := &EntryLinkIterator{}
-	req = proto.Clone(req).(*dataplexpb.LookupEntryLinksRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.EntryLink, string, error) {
 		resp := &dataplexpb.LookupEntryLinksResponse{}
@@ -5013,7 +5013,7 @@ func (c *catalogRESTClient) GetMetadataFeed(ctx context.Context, req *dataplexpb
 // ListMetadataFeeds retrieve a list of MetadataFeeds.
 func (c *catalogRESTClient) ListMetadataFeeds(ctx context.Context, req *dataplexpb.ListMetadataFeedsRequest, opts ...gax.CallOption) *MetadataFeedIterator {
 	it := &MetadataFeedIterator{}
-	req = proto.Clone(req).(*dataplexpb.ListMetadataFeedsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.MetadataFeed, string, error) {
 		resp := &dataplexpb.ListMetadataFeedsResponse{}
@@ -5293,7 +5293,7 @@ func (c *catalogRESTClient) GetLocation(ctx context.Context, req *locationpb.Get
 //	to the project.
 func (c *catalogRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -5709,7 +5709,7 @@ func (c *catalogRESTClient) GetOperation(ctx context.Context, req *longrunningpb
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *catalogRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

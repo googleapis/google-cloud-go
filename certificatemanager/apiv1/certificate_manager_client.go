@@ -1595,7 +1595,7 @@ func (c *gRPCClient) ListCertificates(ctx context.Context, req *certificatemanag
 	}
 	opts = append((*c.CallOptions).ListCertificates[0:len((*c.CallOptions).ListCertificates):len((*c.CallOptions).ListCertificates)], opts...)
 	it := &CertificateIterator{}
-	req = proto.Clone(req).(*certificatemanagerpb.ListCertificatesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*certificatemanagerpb.Certificate, string, error) {
 		resp := &certificatemanagerpb.ListCertificatesResponse{}
 		if pageToken != "" {
@@ -1746,7 +1746,7 @@ func (c *gRPCClient) ListCertificateMaps(ctx context.Context, req *certificatema
 	}
 	opts = append((*c.CallOptions).ListCertificateMaps[0:len((*c.CallOptions).ListCertificateMaps):len((*c.CallOptions).ListCertificateMaps)], opts...)
 	it := &CertificateMapIterator{}
-	req = proto.Clone(req).(*certificatemanagerpb.ListCertificateMapsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*certificatemanagerpb.CertificateMap, string, error) {
 		resp := &certificatemanagerpb.ListCertificateMapsResponse{}
 		if pageToken != "" {
@@ -1897,7 +1897,7 @@ func (c *gRPCClient) ListCertificateMapEntries(ctx context.Context, req *certifi
 	}
 	opts = append((*c.CallOptions).ListCertificateMapEntries[0:len((*c.CallOptions).ListCertificateMapEntries):len((*c.CallOptions).ListCertificateMapEntries)], opts...)
 	it := &CertificateMapEntryIterator{}
-	req = proto.Clone(req).(*certificatemanagerpb.ListCertificateMapEntriesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*certificatemanagerpb.CertificateMapEntry, string, error) {
 		resp := &certificatemanagerpb.ListCertificateMapEntriesResponse{}
 		if pageToken != "" {
@@ -2048,7 +2048,7 @@ func (c *gRPCClient) ListDnsAuthorizations(ctx context.Context, req *certificate
 	}
 	opts = append((*c.CallOptions).ListDnsAuthorizations[0:len((*c.CallOptions).ListDnsAuthorizations):len((*c.CallOptions).ListDnsAuthorizations)], opts...)
 	it := &DnsAuthorizationIterator{}
-	req = proto.Clone(req).(*certificatemanagerpb.ListDnsAuthorizationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*certificatemanagerpb.DnsAuthorization, string, error) {
 		resp := &certificatemanagerpb.ListDnsAuthorizationsResponse{}
 		if pageToken != "" {
@@ -2199,7 +2199,7 @@ func (c *gRPCClient) ListCertificateIssuanceConfigs(ctx context.Context, req *ce
 	}
 	opts = append((*c.CallOptions).ListCertificateIssuanceConfigs[0:len((*c.CallOptions).ListCertificateIssuanceConfigs):len((*c.CallOptions).ListCertificateIssuanceConfigs)], opts...)
 	it := &CertificateIssuanceConfigIterator{}
-	req = proto.Clone(req).(*certificatemanagerpb.ListCertificateIssuanceConfigsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*certificatemanagerpb.CertificateIssuanceConfig, string, error) {
 		resp := &certificatemanagerpb.ListCertificateIssuanceConfigsResponse{}
 		if pageToken != "" {
@@ -2327,7 +2327,7 @@ func (c *gRPCClient) ListTrustConfigs(ctx context.Context, req *certificatemanag
 	}
 	opts = append((*c.CallOptions).ListTrustConfigs[0:len((*c.CallOptions).ListTrustConfigs):len((*c.CallOptions).ListTrustConfigs)], opts...)
 	it := &TrustConfigIterator{}
-	req = proto.Clone(req).(*certificatemanagerpb.ListTrustConfigsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*certificatemanagerpb.TrustConfig, string, error) {
 		resp := &certificatemanagerpb.ListTrustConfigsResponse{}
 		if pageToken != "" {
@@ -2496,7 +2496,7 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -2600,7 +2600,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -2642,7 +2642,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // ListCertificates lists Certificates in a given project and location.
 func (c *restClient) ListCertificates(ctx context.Context, req *certificatemanagerpb.ListCertificatesRequest, opts ...gax.CallOption) *CertificateIterator {
 	it := &CertificateIterator{}
-	req = proto.Clone(req).(*certificatemanagerpb.ListCertificatesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*certificatemanagerpb.Certificate, string, error) {
 		resp := &certificatemanagerpb.ListCertificatesResponse{}
@@ -2982,7 +2982,7 @@ func (c *restClient) DeleteCertificate(ctx context.Context, req *certificatemana
 // ListCertificateMaps lists CertificateMaps in a given project and location.
 func (c *restClient) ListCertificateMaps(ctx context.Context, req *certificatemanagerpb.ListCertificateMapsRequest, opts ...gax.CallOption) *CertificateMapIterator {
 	it := &CertificateMapIterator{}
-	req = proto.Clone(req).(*certificatemanagerpb.ListCertificateMapsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*certificatemanagerpb.CertificateMap, string, error) {
 		resp := &certificatemanagerpb.ListCertificateMapsResponse{}
@@ -3324,7 +3324,7 @@ func (c *restClient) DeleteCertificateMap(ctx context.Context, req *certificatem
 // ListCertificateMapEntries lists CertificateMapEntries in a given project and location.
 func (c *restClient) ListCertificateMapEntries(ctx context.Context, req *certificatemanagerpb.ListCertificateMapEntriesRequest, opts ...gax.CallOption) *CertificateMapEntryIterator {
 	it := &CertificateMapEntryIterator{}
-	req = proto.Clone(req).(*certificatemanagerpb.ListCertificateMapEntriesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*certificatemanagerpb.CertificateMapEntry, string, error) {
 		resp := &certificatemanagerpb.ListCertificateMapEntriesResponse{}
@@ -3664,7 +3664,7 @@ func (c *restClient) DeleteCertificateMapEntry(ctx context.Context, req *certifi
 // ListDnsAuthorizations lists DnsAuthorizations in a given project and location.
 func (c *restClient) ListDnsAuthorizations(ctx context.Context, req *certificatemanagerpb.ListDnsAuthorizationsRequest, opts ...gax.CallOption) *DnsAuthorizationIterator {
 	it := &DnsAuthorizationIterator{}
-	req = proto.Clone(req).(*certificatemanagerpb.ListDnsAuthorizationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*certificatemanagerpb.DnsAuthorization, string, error) {
 		resp := &certificatemanagerpb.ListDnsAuthorizationsResponse{}
@@ -4004,7 +4004,7 @@ func (c *restClient) DeleteDnsAuthorization(ctx context.Context, req *certificat
 // ListCertificateIssuanceConfigs lists CertificateIssuanceConfigs in a given project and location.
 func (c *restClient) ListCertificateIssuanceConfigs(ctx context.Context, req *certificatemanagerpb.ListCertificateIssuanceConfigsRequest, opts ...gax.CallOption) *CertificateIssuanceConfigIterator {
 	it := &CertificateIssuanceConfigIterator{}
-	req = proto.Clone(req).(*certificatemanagerpb.ListCertificateIssuanceConfigsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*certificatemanagerpb.CertificateIssuanceConfig, string, error) {
 		resp := &certificatemanagerpb.ListCertificateIssuanceConfigsResponse{}
@@ -4273,7 +4273,7 @@ func (c *restClient) DeleteCertificateIssuanceConfig(ctx context.Context, req *c
 // ListTrustConfigs lists TrustConfigs in a given project and location.
 func (c *restClient) ListTrustConfigs(ctx context.Context, req *certificatemanagerpb.ListTrustConfigsRequest, opts ...gax.CallOption) *TrustConfigIterator {
 	it := &TrustConfigIterator{}
-	req = proto.Clone(req).(*certificatemanagerpb.ListTrustConfigsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*certificatemanagerpb.TrustConfig, string, error) {
 		resp := &certificatemanagerpb.ListTrustConfigsResponse{}
@@ -4670,7 +4670,7 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 // ListLocations lists information about the supported locations for this service.
 func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -4889,7 +4889,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

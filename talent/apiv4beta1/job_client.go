@@ -788,7 +788,7 @@ func (c *jobGRPCClient) ListJobs(ctx context.Context, req *talentpb.ListJobsRequ
 	}
 	opts = append((*c.CallOptions).ListJobs[0:len((*c.CallOptions).ListJobs):len((*c.CallOptions).ListJobs)], opts...)
 	it := &JobIterator{}
-	req = proto.Clone(req).(*talentpb.ListJobsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*talentpb.Job, string, error) {
 		resp := &talentpb.ListJobsResponse{}
 		if pageToken != "" {
@@ -864,7 +864,7 @@ func (c *jobGRPCClient) SearchJobsForAlert(ctx context.Context, req *talentpb.Se
 	}
 	opts = append((*c.CallOptions).SearchJobsForAlert[0:len((*c.CallOptions).SearchJobsForAlert):len((*c.CallOptions).SearchJobsForAlert)], opts...)
 	it := &SearchJobsResponse_MatchingJobIterator{}
-	req = proto.Clone(req).(*talentpb.SearchJobsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*talentpb.SearchJobsResponse_MatchingJob, string, error) {
 		resp := &talentpb.SearchJobsResponse{}
 		if pageToken != "" {
@@ -1339,7 +1339,7 @@ func (c *jobRESTClient) BatchDeleteJobs(ctx context.Context, req *talentpb.Batch
 // ListJobs lists jobs by filter.
 func (c *jobRESTClient) ListJobs(ctx context.Context, req *talentpb.ListJobsRequest, opts ...gax.CallOption) *JobIterator {
 	it := &JobIterator{}
-	req = proto.Clone(req).(*talentpb.ListJobsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*talentpb.Job, string, error) {
 		resp := &talentpb.ListJobsResponse{}
@@ -1501,7 +1501,7 @@ func (c *jobRESTClient) SearchJobs(ctx context.Context, req *talentpb.SearchJobs
 // against.
 func (c *jobRESTClient) SearchJobsForAlert(ctx context.Context, req *talentpb.SearchJobsRequest, opts ...gax.CallOption) *SearchJobsResponse_MatchingJobIterator {
 	it := &SearchJobsResponse_MatchingJobIterator{}
-	req = proto.Clone(req).(*talentpb.SearchJobsRequest)
+	req = proto.CloneOf(req)
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*talentpb.SearchJobsResponse_MatchingJob, string, error) {

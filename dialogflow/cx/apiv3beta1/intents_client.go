@@ -713,7 +713,7 @@ func (c *intentsGRPCClient) ListIntents(ctx context.Context, req *cxpb.ListInten
 	}
 	opts = append((*c.CallOptions).ListIntents[0:len((*c.CallOptions).ListIntents):len((*c.CallOptions).ListIntents)], opts...)
 	it := &IntentIterator{}
-	req = proto.Clone(req).(*cxpb.ListIntentsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cxpb.Intent, string, error) {
 		resp := &cxpb.ListIntentsResponse{}
 		if pageToken != "" {
@@ -924,7 +924,7 @@ func (c *intentsGRPCClient) ListLocations(ctx context.Context, req *locationpb.L
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -1011,7 +1011,7 @@ func (c *intentsGRPCClient) ListOperations(ctx context.Context, req *longrunning
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -1053,7 +1053,7 @@ func (c *intentsGRPCClient) ListOperations(ctx context.Context, req *longrunning
 // ListIntents returns the list of all intents in the specified agent.
 func (c *intentsRESTClient) ListIntents(ctx context.Context, req *cxpb.ListIntentsRequest, opts ...gax.CallOption) *IntentIterator {
 	it := &IntentIterator{}
-	req = proto.Clone(req).(*cxpb.ListIntentsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cxpb.Intent, string, error) {
 		resp := &cxpb.ListIntentsResponse{}
@@ -1611,7 +1611,7 @@ func (c *intentsRESTClient) GetLocation(ctx context.Context, req *locationpb.Get
 // implementation and version.
 func (c *intentsRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -1785,7 +1785,7 @@ func (c *intentsRESTClient) GetOperation(ctx context.Context, req *longrunningpb
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *intentsRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

@@ -468,7 +468,7 @@ func (c *accountRelationshipsGRPCClient) ListAccountRelationships(ctx context.Co
 	}
 	opts = append((*c.CallOptions).ListAccountRelationships[0:len((*c.CallOptions).ListAccountRelationships):len((*c.CallOptions).ListAccountRelationships)], opts...)
 	it := &AccountRelationshipIterator{}
-	req = proto.Clone(req).(*accountspb.ListAccountRelationshipsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*accountspb.AccountRelationship, string, error) {
 		resp := &accountspb.ListAccountRelationshipsResponse{}
 		if pageToken != "" {
@@ -636,7 +636,7 @@ func (c *accountRelationshipsRESTClient) UpdateAccountRelationship(ctx context.C
 // ListAccountRelationships list account relationships for the specified account.
 func (c *accountRelationshipsRESTClient) ListAccountRelationships(ctx context.Context, req *accountspb.ListAccountRelationshipsRequest, opts ...gax.CallOption) *AccountRelationshipIterator {
 	it := &AccountRelationshipIterator{}
-	req = proto.Clone(req).(*accountspb.ListAccountRelationshipsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*accountspb.AccountRelationship, string, error) {
 		resp := &accountspb.ListAccountRelationshipsResponse{}

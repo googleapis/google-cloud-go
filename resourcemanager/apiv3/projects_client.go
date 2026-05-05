@@ -769,7 +769,7 @@ func (c *projectsGRPCClient) ListProjects(ctx context.Context, req *resourcemana
 	}
 	opts = append((*c.CallOptions).ListProjects[0:len((*c.CallOptions).ListProjects):len((*c.CallOptions).ListProjects)], opts...)
 	it := &ProjectIterator{}
-	req = proto.Clone(req).(*resourcemanagerpb.ListProjectsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*resourcemanagerpb.Project, string, error) {
 		resp := &resourcemanagerpb.ListProjectsResponse{}
 		if pageToken != "" {
@@ -815,7 +815,7 @@ func (c *projectsGRPCClient) SearchProjects(ctx context.Context, req *resourcema
 	}
 	opts = append((*c.CallOptions).SearchProjects[0:len((*c.CallOptions).SearchProjects):len((*c.CallOptions).SearchProjects)], opts...)
 	it := &ProjectIterator{}
-	req = proto.Clone(req).(*resourcemanagerpb.SearchProjectsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*resourcemanagerpb.Project, string, error) {
 		resp := &resourcemanagerpb.SearchProjectsResponse{}
 		if pageToken != "" {
@@ -1137,7 +1137,7 @@ func (c *projectsRESTClient) GetProject(ctx context.Context, req *resourcemanage
 // permission on the identified parent.
 func (c *projectsRESTClient) ListProjects(ctx context.Context, req *resourcemanagerpb.ListProjectsRequest, opts ...gax.CallOption) *ProjectIterator {
 	it := &ProjectIterator{}
-	req = proto.Clone(req).(*resourcemanagerpb.ListProjectsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*resourcemanagerpb.Project, string, error) {
 		resp := &resourcemanagerpb.ListProjectsResponse{}
@@ -1228,7 +1228,7 @@ func (c *projectsRESTClient) ListProjects(ctx context.Context, req *resourcemana
 // GetProject method.
 func (c *projectsRESTClient) SearchProjects(ctx context.Context, req *resourcemanagerpb.SearchProjectsRequest, opts ...gax.CallOption) *ProjectIterator {
 	it := &ProjectIterator{}
-	req = proto.Clone(req).(*resourcemanagerpb.SearchProjectsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*resourcemanagerpb.Project, string, error) {
 		resp := &resourcemanagerpb.SearchProjectsResponse{}

@@ -406,7 +406,7 @@ func (c *accountsGRPCClient) ListChildAccounts(ctx context.Context, req *csspb.L
 	}
 	opts = append((*c.CallOptions).ListChildAccounts[0:len((*c.CallOptions).ListChildAccounts):len((*c.CallOptions).ListChildAccounts)], opts...)
 	it := &AccountIterator{}
-	req = proto.Clone(req).(*csspb.ListChildAccountsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*csspb.Account, string, error) {
 		resp := &csspb.ListChildAccountsResponse{}
 		if pageToken != "" {
@@ -497,7 +497,7 @@ func (c *accountsGRPCClient) UpdateLabels(ctx context.Context, req *csspb.Update
 // optionally filters by label ID and account name.
 func (c *accountsRESTClient) ListChildAccounts(ctx context.Context, req *csspb.ListChildAccountsRequest, opts ...gax.CallOption) *AccountIterator {
 	it := &AccountIterator{}
-	req = proto.Clone(req).(*csspb.ListChildAccountsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*csspb.Account, string, error) {
 		resp := &csspb.ListChildAccountsResponse{}

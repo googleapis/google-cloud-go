@@ -572,7 +572,7 @@ func (c *gRPCClient) ListTemplates(ctx context.Context, req *modelarmorpb.ListTe
 	}
 	opts = append((*c.CallOptions).ListTemplates[0:len((*c.CallOptions).ListTemplates):len((*c.CallOptions).ListTemplates)], opts...)
 	it := &TemplateIterator{}
-	req = proto.Clone(req).(*modelarmorpb.ListTemplatesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*modelarmorpb.Template, string, error) {
 		resp := &modelarmorpb.ListTemplatesResponse{}
 		if pageToken != "" {
@@ -824,7 +824,7 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -866,7 +866,7 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 // ListTemplates lists Templates in a given project and location.
 func (c *restClient) ListTemplates(ctx context.Context, req *modelarmorpb.ListTemplatesRequest, opts ...gax.CallOption) *TemplateIterator {
 	it := &TemplateIterator{}
-	req = proto.Clone(req).(*modelarmorpb.ListTemplatesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*modelarmorpb.Template, string, error) {
 		resp := &modelarmorpb.ListTemplatesResponse{}
@@ -1496,7 +1496,7 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 // ListLocations lists information about the supported locations for this service.
 func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}

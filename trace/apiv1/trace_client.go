@@ -442,7 +442,7 @@ func (c *gRPCClient) ListTraces(ctx context.Context, req *tracepb.ListTracesRequ
 	}
 	opts = append((*c.CallOptions).ListTraces[0:len((*c.CallOptions).ListTraces):len((*c.CallOptions).ListTraces)], opts...)
 	it := &TraceIterator{}
-	req = proto.Clone(req).(*tracepb.ListTracesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*tracepb.Trace, string, error) {
 		resp := &tracepb.ListTracesResponse{}
 		if pageToken != "" {
@@ -522,7 +522,7 @@ func (c *gRPCClient) PatchTraces(ctx context.Context, req *tracepb.PatchTracesRe
 // ListTraces returns of a list of traces that match the specified filter conditions.
 func (c *restClient) ListTraces(ctx context.Context, req *tracepb.ListTracesRequest, opts ...gax.CallOption) *TraceIterator {
 	it := &TraceIterator{}
-	req = proto.Clone(req).(*tracepb.ListTracesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*tracepb.Trace, string, error) {
 		resp := &tracepb.ListTracesResponse{}

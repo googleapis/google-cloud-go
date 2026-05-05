@@ -406,7 +406,7 @@ func (c *gbpAccountsGRPCClient) ListGbpAccounts(ctx context.Context, req *accoun
 	}
 	opts = append((*c.CallOptions).ListGbpAccounts[0:len((*c.CallOptions).ListGbpAccounts):len((*c.CallOptions).ListGbpAccounts)], opts...)
 	it := &GbpAccountIterator{}
-	req = proto.Clone(req).(*accountspb.ListGbpAccountsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*accountspb.GbpAccount, string, error) {
 		resp := &accountspb.ListGbpAccountsResponse{}
 		if pageToken != "" {
@@ -472,7 +472,7 @@ func (c *gbpAccountsGRPCClient) LinkGbpAccount(ctx context.Context, req *account
 // ListGbpAccounts list the GBP accounts for a given merchant.
 func (c *gbpAccountsRESTClient) ListGbpAccounts(ctx context.Context, req *accountspb.ListGbpAccountsRequest, opts ...gax.CallOption) *GbpAccountIterator {
 	it := &GbpAccountIterator{}
-	req = proto.Clone(req).(*accountspb.ListGbpAccountsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*accountspb.GbpAccount, string, error) {
 		resp := &accountspb.ListGbpAccountsResponse{}

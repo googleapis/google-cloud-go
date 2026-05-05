@@ -836,7 +836,7 @@ func (c *dataPolicyGRPCClient) ListDataPolicies(ctx context.Context, req *datapo
 	}
 	opts = append((*c.CallOptions).ListDataPolicies[0:len((*c.CallOptions).ListDataPolicies):len((*c.CallOptions).ListDataPolicies)], opts...)
 	it := &DataPolicyIterator{}
-	req = proto.Clone(req).(*datapoliciespb.ListDataPoliciesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datapoliciespb.DataPolicy, string, error) {
 		resp := &datapoliciespb.ListDataPoliciesResponse{}
 		if pageToken != "" {
@@ -1318,7 +1318,7 @@ func (c *dataPolicyRESTClient) GetDataPolicy(ctx context.Context, req *datapolic
 // ListDataPolicies list all of the data policies in the specified parent project.
 func (c *dataPolicyRESTClient) ListDataPolicies(ctx context.Context, req *datapoliciespb.ListDataPoliciesRequest, opts ...gax.CallOption) *DataPolicyIterator {
 	it := &DataPolicyIterator{}
-	req = proto.Clone(req).(*datapoliciespb.ListDataPoliciesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datapoliciespb.DataPolicy, string, error) {
 		resp := &datapoliciespb.ListDataPoliciesResponse{}

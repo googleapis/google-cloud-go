@@ -483,7 +483,7 @@ func (c *wireGroupsRESTClient) Insert(ctx context.Context, req *computepb.Insert
 // List lists the wire groups for a project in the given scope.
 func (c *wireGroupsRESTClient) List(ctx context.Context, req *computepb.ListWireGroupsRequest, opts ...gax.CallOption) *WireGroupIterator {
 	it := &WireGroupIterator{}
-	req = proto.Clone(req).(*computepb.ListWireGroupsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.WireGroup, string, error) {
 		resp := &computepb.WireGroupList{}

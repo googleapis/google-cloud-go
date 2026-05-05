@@ -774,7 +774,7 @@ func (c *imagesRESTClient) Insert(ctx context.Context, req *computepb.InsertImag
 // such as debian-cloud or windows-cloud.
 func (c *imagesRESTClient) List(ctx context.Context, req *computepb.ListImagesRequest, opts ...gax.CallOption) *ImageIterator {
 	it := &ImageIterator{}
-	req = proto.Clone(req).(*computepb.ListImagesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.Image, string, error) {
 		resp := &computepb.ImageList{}

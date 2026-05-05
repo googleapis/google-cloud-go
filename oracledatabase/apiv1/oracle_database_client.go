@@ -2101,7 +2101,7 @@ func (c *gRPCClient) ListCloudExadataInfrastructures(ctx context.Context, req *o
 	}
 	opts = append((*c.CallOptions).ListCloudExadataInfrastructures[0:len((*c.CallOptions).ListCloudExadataInfrastructures):len((*c.CallOptions).ListCloudExadataInfrastructures)], opts...)
 	it := &CloudExadataInfrastructureIterator{}
-	req = proto.Clone(req).(*oracledatabasepb.ListCloudExadataInfrastructuresRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.CloudExadataInfrastructure, string, error) {
 		resp := &oracledatabasepb.ListCloudExadataInfrastructuresResponse{}
 		if pageToken != "" {
@@ -2229,7 +2229,7 @@ func (c *gRPCClient) ListCloudVmClusters(ctx context.Context, req *oracledatabas
 	}
 	opts = append((*c.CallOptions).ListCloudVmClusters[0:len((*c.CallOptions).ListCloudVmClusters):len((*c.CallOptions).ListCloudVmClusters)], opts...)
 	it := &CloudVmClusterIterator{}
-	req = proto.Clone(req).(*oracledatabasepb.ListCloudVmClustersRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.CloudVmCluster, string, error) {
 		resp := &oracledatabasepb.ListCloudVmClustersResponse{}
 		if pageToken != "" {
@@ -2357,7 +2357,7 @@ func (c *gRPCClient) ListEntitlements(ctx context.Context, req *oracledatabasepb
 	}
 	opts = append((*c.CallOptions).ListEntitlements[0:len((*c.CallOptions).ListEntitlements):len((*c.CallOptions).ListEntitlements)], opts...)
 	it := &EntitlementIterator{}
-	req = proto.Clone(req).(*oracledatabasepb.ListEntitlementsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.Entitlement, string, error) {
 		resp := &oracledatabasepb.ListEntitlementsResponse{}
 		if pageToken != "" {
@@ -2409,7 +2409,7 @@ func (c *gRPCClient) ListDbServers(ctx context.Context, req *oracledatabasepb.Li
 	}
 	opts = append((*c.CallOptions).ListDbServers[0:len((*c.CallOptions).ListDbServers):len((*c.CallOptions).ListDbServers)], opts...)
 	it := &DbServerIterator{}
-	req = proto.Clone(req).(*oracledatabasepb.ListDbServersRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.DbServer, string, error) {
 		resp := &oracledatabasepb.ListDbServersResponse{}
 		if pageToken != "" {
@@ -2461,7 +2461,7 @@ func (c *gRPCClient) ListDbNodes(ctx context.Context, req *oracledatabasepb.List
 	}
 	opts = append((*c.CallOptions).ListDbNodes[0:len((*c.CallOptions).ListDbNodes):len((*c.CallOptions).ListDbNodes)], opts...)
 	it := &DbNodeIterator{}
-	req = proto.Clone(req).(*oracledatabasepb.ListDbNodesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.DbNode, string, error) {
 		resp := &oracledatabasepb.ListDbNodesResponse{}
 		if pageToken != "" {
@@ -2513,7 +2513,7 @@ func (c *gRPCClient) ListGiVersions(ctx context.Context, req *oracledatabasepb.L
 	}
 	opts = append((*c.CallOptions).ListGiVersions[0:len((*c.CallOptions).ListGiVersions):len((*c.CallOptions).ListGiVersions)], opts...)
 	it := &GiVersionIterator{}
-	req = proto.Clone(req).(*oracledatabasepb.ListGiVersionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.GiVersion, string, error) {
 		resp := &oracledatabasepb.ListGiVersionsResponse{}
 		if pageToken != "" {
@@ -2565,7 +2565,7 @@ func (c *gRPCClient) ListMinorVersions(ctx context.Context, req *oracledatabasep
 	}
 	opts = append((*c.CallOptions).ListMinorVersions[0:len((*c.CallOptions).ListMinorVersions):len((*c.CallOptions).ListMinorVersions)], opts...)
 	it := &MinorVersionIterator{}
-	req = proto.Clone(req).(*oracledatabasepb.ListMinorVersionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.MinorVersion, string, error) {
 		resp := &oracledatabasepb.ListMinorVersionsResponse{}
 		if pageToken != "" {
@@ -2617,7 +2617,7 @@ func (c *gRPCClient) ListDbSystemShapes(ctx context.Context, req *oracledatabase
 	}
 	opts = append((*c.CallOptions).ListDbSystemShapes[0:len((*c.CallOptions).ListDbSystemShapes):len((*c.CallOptions).ListDbSystemShapes)], opts...)
 	it := &DbSystemShapeIterator{}
-	req = proto.Clone(req).(*oracledatabasepb.ListDbSystemShapesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.DbSystemShape, string, error) {
 		resp := &oracledatabasepb.ListDbSystemShapesResponse{}
 		if pageToken != "" {
@@ -2669,7 +2669,7 @@ func (c *gRPCClient) ListAutonomousDatabases(ctx context.Context, req *oracledat
 	}
 	opts = append((*c.CallOptions).ListAutonomousDatabases[0:len((*c.CallOptions).ListAutonomousDatabases):len((*c.CallOptions).ListAutonomousDatabases)], opts...)
 	it := &AutonomousDatabaseIterator{}
-	req = proto.Clone(req).(*oracledatabasepb.ListAutonomousDatabasesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.AutonomousDatabase, string, error) {
 		resp := &oracledatabasepb.ListAutonomousDatabasesResponse{}
 		if pageToken != "" {
@@ -2870,7 +2870,7 @@ func (c *gRPCClient) ListAutonomousDbVersions(ctx context.Context, req *oracleda
 	}
 	opts = append((*c.CallOptions).ListAutonomousDbVersions[0:len((*c.CallOptions).ListAutonomousDbVersions):len((*c.CallOptions).ListAutonomousDbVersions)], opts...)
 	it := &AutonomousDbVersionIterator{}
-	req = proto.Clone(req).(*oracledatabasepb.ListAutonomousDbVersionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.AutonomousDbVersion, string, error) {
 		resp := &oracledatabasepb.ListAutonomousDbVersionsResponse{}
 		if pageToken != "" {
@@ -2922,7 +2922,7 @@ func (c *gRPCClient) ListAutonomousDatabaseCharacterSets(ctx context.Context, re
 	}
 	opts = append((*c.CallOptions).ListAutonomousDatabaseCharacterSets[0:len((*c.CallOptions).ListAutonomousDatabaseCharacterSets):len((*c.CallOptions).ListAutonomousDatabaseCharacterSets)], opts...)
 	it := &AutonomousDatabaseCharacterSetIterator{}
-	req = proto.Clone(req).(*oracledatabasepb.ListAutonomousDatabaseCharacterSetsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.AutonomousDatabaseCharacterSet, string, error) {
 		resp := &oracledatabasepb.ListAutonomousDatabaseCharacterSetsResponse{}
 		if pageToken != "" {
@@ -2974,7 +2974,7 @@ func (c *gRPCClient) ListAutonomousDatabaseBackups(ctx context.Context, req *ora
 	}
 	opts = append((*c.CallOptions).ListAutonomousDatabaseBackups[0:len((*c.CallOptions).ListAutonomousDatabaseBackups):len((*c.CallOptions).ListAutonomousDatabaseBackups)], opts...)
 	it := &AutonomousDatabaseBackupIterator{}
-	req = proto.Clone(req).(*oracledatabasepb.ListAutonomousDatabaseBackupsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.AutonomousDatabaseBackup, string, error) {
 		resp := &oracledatabasepb.ListAutonomousDatabaseBackupsResponse{}
 		if pageToken != "" {
@@ -3156,7 +3156,7 @@ func (c *gRPCClient) ListOdbNetworks(ctx context.Context, req *oracledatabasepb.
 	}
 	opts = append((*c.CallOptions).ListOdbNetworks[0:len((*c.CallOptions).ListOdbNetworks):len((*c.CallOptions).ListOdbNetworks)], opts...)
 	it := &OdbNetworkIterator{}
-	req = proto.Clone(req).(*oracledatabasepb.ListOdbNetworksRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.OdbNetwork, string, error) {
 		resp := &oracledatabasepb.ListOdbNetworksResponse{}
 		if pageToken != "" {
@@ -3284,7 +3284,7 @@ func (c *gRPCClient) ListOdbSubnets(ctx context.Context, req *oracledatabasepb.L
 	}
 	opts = append((*c.CallOptions).ListOdbSubnets[0:len((*c.CallOptions).ListOdbSubnets):len((*c.CallOptions).ListOdbSubnets)], opts...)
 	it := &OdbSubnetIterator{}
-	req = proto.Clone(req).(*oracledatabasepb.ListOdbSubnetsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.OdbSubnet, string, error) {
 		resp := &oracledatabasepb.ListOdbSubnetsResponse{}
 		if pageToken != "" {
@@ -3412,7 +3412,7 @@ func (c *gRPCClient) ListExadbVmClusters(ctx context.Context, req *oracledatabas
 	}
 	opts = append((*c.CallOptions).ListExadbVmClusters[0:len((*c.CallOptions).ListExadbVmClusters):len((*c.CallOptions).ListExadbVmClusters)], opts...)
 	it := &ExadbVmClusterIterator{}
-	req = proto.Clone(req).(*oracledatabasepb.ListExadbVmClustersRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.ExadbVmCluster, string, error) {
 		resp := &oracledatabasepb.ListExadbVmClustersResponse{}
 		if pageToken != "" {
@@ -3589,7 +3589,7 @@ func (c *gRPCClient) ListExascaleDbStorageVaults(ctx context.Context, req *oracl
 	}
 	opts = append((*c.CallOptions).ListExascaleDbStorageVaults[0:len((*c.CallOptions).ListExascaleDbStorageVaults):len((*c.CallOptions).ListExascaleDbStorageVaults)], opts...)
 	it := &ExascaleDbStorageVaultIterator{}
-	req = proto.Clone(req).(*oracledatabasepb.ListExascaleDbStorageVaultsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.ExascaleDbStorageVault, string, error) {
 		resp := &oracledatabasepb.ListExascaleDbStorageVaultsResponse{}
 		if pageToken != "" {
@@ -3717,7 +3717,7 @@ func (c *gRPCClient) ListDbSystemInitialStorageSizes(ctx context.Context, req *o
 	}
 	opts = append((*c.CallOptions).ListDbSystemInitialStorageSizes[0:len((*c.CallOptions).ListDbSystemInitialStorageSizes):len((*c.CallOptions).ListDbSystemInitialStorageSizes)], opts...)
 	it := &DbSystemInitialStorageSizeIterator{}
-	req = proto.Clone(req).(*oracledatabasepb.ListDbSystemInitialStorageSizesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.DbSystemInitialStorageSize, string, error) {
 		resp := &oracledatabasepb.ListDbSystemInitialStorageSizesResponse{}
 		if pageToken != "" {
@@ -3769,7 +3769,7 @@ func (c *gRPCClient) ListDatabases(ctx context.Context, req *oracledatabasepb.Li
 	}
 	opts = append((*c.CallOptions).ListDatabases[0:len((*c.CallOptions).ListDatabases):len((*c.CallOptions).ListDatabases)], opts...)
 	it := &DatabaseIterator{}
-	req = proto.Clone(req).(*oracledatabasepb.ListDatabasesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.Database, string, error) {
 		resp := &oracledatabasepb.ListDatabasesResponse{}
 		if pageToken != "" {
@@ -3845,7 +3845,7 @@ func (c *gRPCClient) ListPluggableDatabases(ctx context.Context, req *oracledata
 	}
 	opts = append((*c.CallOptions).ListPluggableDatabases[0:len((*c.CallOptions).ListPluggableDatabases):len((*c.CallOptions).ListPluggableDatabases)], opts...)
 	it := &PluggableDatabaseIterator{}
-	req = proto.Clone(req).(*oracledatabasepb.ListPluggableDatabasesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.PluggableDatabase, string, error) {
 		resp := &oracledatabasepb.ListPluggableDatabasesResponse{}
 		if pageToken != "" {
@@ -3921,7 +3921,7 @@ func (c *gRPCClient) ListDbSystems(ctx context.Context, req *oracledatabasepb.Li
 	}
 	opts = append((*c.CallOptions).ListDbSystems[0:len((*c.CallOptions).ListDbSystems):len((*c.CallOptions).ListDbSystems)], opts...)
 	it := &DbSystemIterator{}
-	req = proto.Clone(req).(*oracledatabasepb.ListDbSystemsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.DbSystem, string, error) {
 		resp := &oracledatabasepb.ListDbSystemsResponse{}
 		if pageToken != "" {
@@ -4049,7 +4049,7 @@ func (c *gRPCClient) ListDbVersions(ctx context.Context, req *oracledatabasepb.L
 	}
 	opts = append((*c.CallOptions).ListDbVersions[0:len((*c.CallOptions).ListDbVersions):len((*c.CallOptions).ListDbVersions)], opts...)
 	it := &DbVersionIterator{}
-	req = proto.Clone(req).(*oracledatabasepb.ListDbVersionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.DbVersion, string, error) {
 		resp := &oracledatabasepb.ListDbVersionsResponse{}
 		if pageToken != "" {
@@ -4101,7 +4101,7 @@ func (c *gRPCClient) ListDatabaseCharacterSets(ctx context.Context, req *oracled
 	}
 	opts = append((*c.CallOptions).ListDatabaseCharacterSets[0:len((*c.CallOptions).ListDatabaseCharacterSets):len((*c.CallOptions).ListDatabaseCharacterSets)], opts...)
 	it := &DatabaseCharacterSetIterator{}
-	req = proto.Clone(req).(*oracledatabasepb.ListDatabaseCharacterSetsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.DatabaseCharacterSet, string, error) {
 		resp := &oracledatabasepb.ListDatabaseCharacterSetsResponse{}
 		if pageToken != "" {
@@ -4171,7 +4171,7 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -4275,7 +4275,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -4317,7 +4317,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // ListCloudExadataInfrastructures lists Exadata Infrastructures in a given project and location.
 func (c *restClient) ListCloudExadataInfrastructures(ctx context.Context, req *oracledatabasepb.ListCloudExadataInfrastructuresRequest, opts ...gax.CallOption) *CloudExadataInfrastructureIterator {
 	it := &CloudExadataInfrastructureIterator{}
-	req = proto.Clone(req).(*oracledatabasepb.ListCloudExadataInfrastructuresRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.CloudExadataInfrastructure, string, error) {
 		resp := &oracledatabasepb.ListCloudExadataInfrastructuresResponse{}
@@ -4595,7 +4595,7 @@ func (c *restClient) DeleteCloudExadataInfrastructure(ctx context.Context, req *
 // ListCloudVmClusters lists the VM Clusters in a given project and location.
 func (c *restClient) ListCloudVmClusters(ctx context.Context, req *oracledatabasepb.ListCloudVmClustersRequest, opts ...gax.CallOption) *CloudVmClusterIterator {
 	it := &CloudVmClusterIterator{}
-	req = proto.Clone(req).(*oracledatabasepb.ListCloudVmClustersRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.CloudVmCluster, string, error) {
 		resp := &oracledatabasepb.ListCloudVmClustersResponse{}
@@ -4870,7 +4870,7 @@ func (c *restClient) DeleteCloudVmCluster(ctx context.Context, req *oracledataba
 // ListEntitlements lists the entitlements in a given project.
 func (c *restClient) ListEntitlements(ctx context.Context, req *oracledatabasepb.ListEntitlementsRequest, opts ...gax.CallOption) *EntitlementIterator {
 	it := &EntitlementIterator{}
-	req = proto.Clone(req).(*oracledatabasepb.ListEntitlementsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.Entitlement, string, error) {
 		resp := &oracledatabasepb.ListEntitlementsResponse{}
@@ -4948,7 +4948,7 @@ func (c *restClient) ListEntitlements(ctx context.Context, req *oracledatabasepb
 // ListDbServers lists the database servers of an Exadata Infrastructure instance.
 func (c *restClient) ListDbServers(ctx context.Context, req *oracledatabasepb.ListDbServersRequest, opts ...gax.CallOption) *DbServerIterator {
 	it := &DbServerIterator{}
-	req = proto.Clone(req).(*oracledatabasepb.ListDbServersRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.DbServer, string, error) {
 		resp := &oracledatabasepb.ListDbServersResponse{}
@@ -5026,7 +5026,7 @@ func (c *restClient) ListDbServers(ctx context.Context, req *oracledatabasepb.Li
 // ListDbNodes lists the database nodes of a VM Cluster.
 func (c *restClient) ListDbNodes(ctx context.Context, req *oracledatabasepb.ListDbNodesRequest, opts ...gax.CallOption) *DbNodeIterator {
 	it := &DbNodeIterator{}
-	req = proto.Clone(req).(*oracledatabasepb.ListDbNodesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.DbNode, string, error) {
 		resp := &oracledatabasepb.ListDbNodesResponse{}
@@ -5105,7 +5105,7 @@ func (c *restClient) ListDbNodes(ctx context.Context, req *oracledatabasepb.List
 // project and location.
 func (c *restClient) ListGiVersions(ctx context.Context, req *oracledatabasepb.ListGiVersionsRequest, opts ...gax.CallOption) *GiVersionIterator {
 	it := &GiVersionIterator{}
-	req = proto.Clone(req).(*oracledatabasepb.ListGiVersionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.GiVersion, string, error) {
 		resp := &oracledatabasepb.ListGiVersionsResponse{}
@@ -5187,7 +5187,7 @@ func (c *restClient) ListGiVersions(ctx context.Context, req *oracledatabasepb.L
 // project, location, gi version and shape family.
 func (c *restClient) ListMinorVersions(ctx context.Context, req *oracledatabasepb.ListMinorVersionsRequest, opts ...gax.CallOption) *MinorVersionIterator {
 	it := &MinorVersionIterator{}
-	req = proto.Clone(req).(*oracledatabasepb.ListMinorVersionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.MinorVersion, string, error) {
 		resp := &oracledatabasepb.ListMinorVersionsResponse{}
@@ -5268,7 +5268,7 @@ func (c *restClient) ListMinorVersions(ctx context.Context, req *oracledatabasep
 // ListDbSystemShapes lists the database system shapes available for the project and location.
 func (c *restClient) ListDbSystemShapes(ctx context.Context, req *oracledatabasepb.ListDbSystemShapesRequest, opts ...gax.CallOption) *DbSystemShapeIterator {
 	it := &DbSystemShapeIterator{}
-	req = proto.Clone(req).(*oracledatabasepb.ListDbSystemShapesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.DbSystemShape, string, error) {
 		resp := &oracledatabasepb.ListDbSystemShapesResponse{}
@@ -5349,7 +5349,7 @@ func (c *restClient) ListDbSystemShapes(ctx context.Context, req *oracledatabase
 // ListAutonomousDatabases lists the Autonomous Databases in a given project and location.
 func (c *restClient) ListAutonomousDatabases(ctx context.Context, req *oracledatabasepb.ListAutonomousDatabasesRequest, opts ...gax.CallOption) *AutonomousDatabaseIterator {
 	it := &AutonomousDatabaseIterator{}
-	req = proto.Clone(req).(*oracledatabasepb.ListAutonomousDatabasesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.AutonomousDatabase, string, error) {
 		resp := &oracledatabasepb.ListAutonomousDatabasesResponse{}
@@ -5828,7 +5828,7 @@ func (c *restClient) GenerateAutonomousDatabaseWallet(ctx context.Context, req *
 // location.
 func (c *restClient) ListAutonomousDbVersions(ctx context.Context, req *oracledatabasepb.ListAutonomousDbVersionsRequest, opts ...gax.CallOption) *AutonomousDbVersionIterator {
 	it := &AutonomousDbVersionIterator{}
-	req = proto.Clone(req).(*oracledatabasepb.ListAutonomousDbVersionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.AutonomousDbVersion, string, error) {
 		resp := &oracledatabasepb.ListAutonomousDbVersionsResponse{}
@@ -5906,7 +5906,7 @@ func (c *restClient) ListAutonomousDbVersions(ctx context.Context, req *oracleda
 // ListAutonomousDatabaseCharacterSets lists Autonomous Database Character Sets in a given project and location.
 func (c *restClient) ListAutonomousDatabaseCharacterSets(ctx context.Context, req *oracledatabasepb.ListAutonomousDatabaseCharacterSetsRequest, opts ...gax.CallOption) *AutonomousDatabaseCharacterSetIterator {
 	it := &AutonomousDatabaseCharacterSetIterator{}
-	req = proto.Clone(req).(*oracledatabasepb.ListAutonomousDatabaseCharacterSetsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.AutonomousDatabaseCharacterSet, string, error) {
 		resp := &oracledatabasepb.ListAutonomousDatabaseCharacterSetsResponse{}
@@ -5987,7 +5987,7 @@ func (c *restClient) ListAutonomousDatabaseCharacterSets(ctx context.Context, re
 // ListAutonomousDatabaseBackups lists the long-term and automatic backups of an Autonomous Database.
 func (c *restClient) ListAutonomousDatabaseBackups(ctx context.Context, req *oracledatabasepb.ListAutonomousDatabaseBackupsRequest, opts ...gax.CallOption) *AutonomousDatabaseBackupIterator {
 	it := &AutonomousDatabaseBackupIterator{}
-	req = proto.Clone(req).(*oracledatabasepb.ListAutonomousDatabaseBackupsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.AutonomousDatabaseBackup, string, error) {
 		resp := &oracledatabasepb.ListAutonomousDatabaseBackupsResponse{}
@@ -6400,7 +6400,7 @@ func (c *restClient) FailoverAutonomousDatabase(ctx context.Context, req *oracle
 // ListOdbNetworks lists the ODB Networks in a given project and location.
 func (c *restClient) ListOdbNetworks(ctx context.Context, req *oracledatabasepb.ListOdbNetworksRequest, opts ...gax.CallOption) *OdbNetworkIterator {
 	it := &OdbNetworkIterator{}
-	req = proto.Clone(req).(*oracledatabasepb.ListOdbNetworksRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.OdbNetwork, string, error) {
 		resp := &oracledatabasepb.ListOdbNetworksResponse{}
@@ -6675,7 +6675,7 @@ func (c *restClient) DeleteOdbNetwork(ctx context.Context, req *oracledatabasepb
 // ListOdbSubnets lists all the ODB Subnets in a given ODB Network.
 func (c *restClient) ListOdbSubnets(ctx context.Context, req *oracledatabasepb.ListOdbSubnetsRequest, opts ...gax.CallOption) *OdbSubnetIterator {
 	it := &OdbSubnetIterator{}
-	req = proto.Clone(req).(*oracledatabasepb.ListOdbSubnetsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.OdbSubnet, string, error) {
 		resp := &oracledatabasepb.ListOdbSubnetsResponse{}
@@ -6951,7 +6951,7 @@ func (c *restClient) DeleteOdbSubnet(ctx context.Context, req *oracledatabasepb.
 // location.
 func (c *restClient) ListExadbVmClusters(ctx context.Context, req *oracledatabasepb.ListExadbVmClustersRequest, opts ...gax.CallOption) *ExadbVmClusterIterator {
 	it := &ExadbVmClusterIterator{}
-	req = proto.Clone(req).(*oracledatabasepb.ListExadbVmClustersRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.ExadbVmCluster, string, error) {
 		resp := &oracledatabasepb.ListExadbVmClustersResponse{}
@@ -7368,7 +7368,7 @@ func (c *restClient) RemoveVirtualMachineExadbVmCluster(ctx context.Context, req
 // location.
 func (c *restClient) ListExascaleDbStorageVaults(ctx context.Context, req *oracledatabasepb.ListExascaleDbStorageVaultsRequest, opts ...gax.CallOption) *ExascaleDbStorageVaultIterator {
 	it := &ExascaleDbStorageVaultIterator{}
-	req = proto.Clone(req).(*oracledatabasepb.ListExascaleDbStorageVaultsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.ExascaleDbStorageVault, string, error) {
 		resp := &oracledatabasepb.ListExascaleDbStorageVaultsResponse{}
@@ -7644,7 +7644,7 @@ func (c *restClient) DeleteExascaleDbStorageVault(ctx context.Context, req *orac
 // location.
 func (c *restClient) ListDbSystemInitialStorageSizes(ctx context.Context, req *oracledatabasepb.ListDbSystemInitialStorageSizesRequest, opts ...gax.CallOption) *DbSystemInitialStorageSizeIterator {
 	it := &DbSystemInitialStorageSizeIterator{}
-	req = proto.Clone(req).(*oracledatabasepb.ListDbSystemInitialStorageSizesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.DbSystemInitialStorageSize, string, error) {
 		resp := &oracledatabasepb.ListDbSystemInitialStorageSizesResponse{}
@@ -7722,7 +7722,7 @@ func (c *restClient) ListDbSystemInitialStorageSizes(ctx context.Context, req *o
 // ListDatabases lists all the Databases for the given project, location and DbSystem.
 func (c *restClient) ListDatabases(ctx context.Context, req *oracledatabasepb.ListDatabasesRequest, opts ...gax.CallOption) *DatabaseIterator {
 	it := &DatabaseIterator{}
-	req = proto.Clone(req).(*oracledatabasepb.ListDatabasesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.Database, string, error) {
 		resp := &oracledatabasepb.ListDatabasesResponse{}
@@ -7861,7 +7861,7 @@ func (c *restClient) GetDatabase(ctx context.Context, req *oracledatabasepb.GetD
 // Container Database.
 func (c *restClient) ListPluggableDatabases(ctx context.Context, req *oracledatabasepb.ListPluggableDatabasesRequest, opts ...gax.CallOption) *PluggableDatabaseIterator {
 	it := &PluggableDatabaseIterator{}
-	req = proto.Clone(req).(*oracledatabasepb.ListPluggableDatabasesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.PluggableDatabase, string, error) {
 		resp := &oracledatabasepb.ListPluggableDatabasesResponse{}
@@ -7999,7 +7999,7 @@ func (c *restClient) GetPluggableDatabase(ctx context.Context, req *oracledataba
 // ListDbSystems lists all the DbSystems for the given project and location.
 func (c *restClient) ListDbSystems(ctx context.Context, req *oracledatabasepb.ListDbSystemsRequest, opts ...gax.CallOption) *DbSystemIterator {
 	it := &DbSystemIterator{}
-	req = proto.Clone(req).(*oracledatabasepb.ListDbSystemsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.DbSystem, string, error) {
 		resp := &oracledatabasepb.ListDbSystemsResponse{}
@@ -8274,7 +8274,7 @@ func (c *restClient) DeleteDbSystem(ctx context.Context, req *oracledatabasepb.D
 // ListDbVersions list DbVersions for the given project and location.
 func (c *restClient) ListDbVersions(ctx context.Context, req *oracledatabasepb.ListDbVersionsRequest, opts ...gax.CallOption) *DbVersionIterator {
 	it := &DbVersionIterator{}
-	req = proto.Clone(req).(*oracledatabasepb.ListDbVersionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.DbVersion, string, error) {
 		resp := &oracledatabasepb.ListDbVersionsResponse{}
@@ -8355,7 +8355,7 @@ func (c *restClient) ListDbVersions(ctx context.Context, req *oracledatabasepb.L
 // ListDatabaseCharacterSets list DatabaseCharacterSets for the given project and location.
 func (c *restClient) ListDatabaseCharacterSets(ctx context.Context, req *oracledatabasepb.ListDatabaseCharacterSetsRequest, opts ...gax.CallOption) *DatabaseCharacterSetIterator {
 	it := &DatabaseCharacterSetIterator{}
-	req = proto.Clone(req).(*oracledatabasepb.ListDatabaseCharacterSetsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.DatabaseCharacterSet, string, error) {
 		resp := &oracledatabasepb.ListDatabaseCharacterSetsResponse{}
@@ -8490,7 +8490,7 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 // ListLocations lists information about the supported locations for this service.
 func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -8709,7 +8709,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

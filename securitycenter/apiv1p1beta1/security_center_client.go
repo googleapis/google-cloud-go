@@ -1133,7 +1133,7 @@ func (c *gRPCClient) GroupAssets(ctx context.Context, req *securitycenterpb.Grou
 	}
 	opts = append((*c.CallOptions).GroupAssets[0:len((*c.CallOptions).GroupAssets):len((*c.CallOptions).GroupAssets)], opts...)
 	it := &GroupResultIterator{}
-	req = proto.Clone(req).(*securitycenterpb.GroupAssetsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securitycenterpb.GroupResult, string, error) {
 		resp := &securitycenterpb.GroupAssetsResponse{}
 		if pageToken != "" {
@@ -1185,7 +1185,7 @@ func (c *gRPCClient) GroupFindings(ctx context.Context, req *securitycenterpb.Gr
 	}
 	opts = append((*c.CallOptions).GroupFindings[0:len((*c.CallOptions).GroupFindings):len((*c.CallOptions).GroupFindings)], opts...)
 	it := &GroupResultIterator{}
-	req = proto.Clone(req).(*securitycenterpb.GroupFindingsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securitycenterpb.GroupResult, string, error) {
 		resp := &securitycenterpb.GroupFindingsResponse{}
 		if pageToken != "" {
@@ -1237,7 +1237,7 @@ func (c *gRPCClient) ListAssets(ctx context.Context, req *securitycenterpb.ListA
 	}
 	opts = append((*c.CallOptions).ListAssets[0:len((*c.CallOptions).ListAssets):len((*c.CallOptions).ListAssets)], opts...)
 	it := &ListAssetsResponse_ListAssetsResultIterator{}
-	req = proto.Clone(req).(*securitycenterpb.ListAssetsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securitycenterpb.ListAssetsResponse_ListAssetsResult, string, error) {
 		resp := &securitycenterpb.ListAssetsResponse{}
 		if pageToken != "" {
@@ -1289,7 +1289,7 @@ func (c *gRPCClient) ListFindings(ctx context.Context, req *securitycenterpb.Lis
 	}
 	opts = append((*c.CallOptions).ListFindings[0:len((*c.CallOptions).ListFindings):len((*c.CallOptions).ListFindings)], opts...)
 	it := &ListFindingsResponse_ListFindingsResultIterator{}
-	req = proto.Clone(req).(*securitycenterpb.ListFindingsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securitycenterpb.ListFindingsResponse_ListFindingsResult, string, error) {
 		resp := &securitycenterpb.ListFindingsResponse{}
 		if pageToken != "" {
@@ -1341,7 +1341,7 @@ func (c *gRPCClient) ListNotificationConfigs(ctx context.Context, req *securityc
 	}
 	opts = append((*c.CallOptions).ListNotificationConfigs[0:len((*c.CallOptions).ListNotificationConfigs):len((*c.CallOptions).ListNotificationConfigs)], opts...)
 	it := &NotificationConfigIterator{}
-	req = proto.Clone(req).(*securitycenterpb.ListNotificationConfigsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securitycenterpb.NotificationConfig, string, error) {
 		resp := &securitycenterpb.ListNotificationConfigsResponse{}
 		if pageToken != "" {
@@ -1393,7 +1393,7 @@ func (c *gRPCClient) ListSources(ctx context.Context, req *securitycenterpb.List
 	}
 	opts = append((*c.CallOptions).ListSources[0:len((*c.CallOptions).ListSources):len((*c.CallOptions).ListSources)], opts...)
 	it := &SourceIterator{}
-	req = proto.Clone(req).(*securitycenterpb.ListSourcesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securitycenterpb.Source, string, error) {
 		resp := &securitycenterpb.ListSourcesResponse{}
 		if pageToken != "" {
@@ -2110,7 +2110,7 @@ func (c *restClient) GetSource(ctx context.Context, req *securitycenterpb.GetSou
 // properties.
 func (c *restClient) GroupAssets(ctx context.Context, req *securitycenterpb.GroupAssetsRequest, opts ...gax.CallOption) *GroupResultIterator {
 	it := &GroupResultIterator{}
-	req = proto.Clone(req).(*securitycenterpb.GroupAssetsRequest)
+	req = proto.CloneOf(req)
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securitycenterpb.GroupResult, string, error) {
@@ -2194,7 +2194,7 @@ func (c *restClient) GroupAssets(ctx context.Context, req *securitycenterpb.Grou
 // /v1/projects/{project_id}/sources/-/findings
 func (c *restClient) GroupFindings(ctx context.Context, req *securitycenterpb.GroupFindingsRequest, opts ...gax.CallOption) *GroupResultIterator {
 	it := &GroupResultIterator{}
-	req = proto.Clone(req).(*securitycenterpb.GroupFindingsRequest)
+	req = proto.CloneOf(req)
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securitycenterpb.GroupResult, string, error) {
@@ -2272,7 +2272,7 @@ func (c *restClient) GroupFindings(ctx context.Context, req *securitycenterpb.Gr
 // ListAssets lists an organization’s assets.
 func (c *restClient) ListAssets(ctx context.Context, req *securitycenterpb.ListAssetsRequest, opts ...gax.CallOption) *ListAssetsResponse_ListAssetsResultIterator {
 	it := &ListAssetsResponse_ListAssetsResultIterator{}
-	req = proto.Clone(req).(*securitycenterpb.ListAssetsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securitycenterpb.ListAssetsResponse_ListAssetsResult, string, error) {
 		resp := &securitycenterpb.ListAssetsResponse{}
@@ -2380,7 +2380,7 @@ func (c *restClient) ListAssets(ctx context.Context, req *securitycenterpb.ListA
 // Example: /v1p1beta1/organizations/{organization_id}/sources/-/findings
 func (c *restClient) ListFindings(ctx context.Context, req *securitycenterpb.ListFindingsRequest, opts ...gax.CallOption) *ListFindingsResponse_ListFindingsResultIterator {
 	it := &ListFindingsResponse_ListFindingsResultIterator{}
-	req = proto.Clone(req).(*securitycenterpb.ListFindingsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securitycenterpb.ListFindingsResponse_ListFindingsResult, string, error) {
 		resp := &securitycenterpb.ListFindingsResponse{}
@@ -2485,7 +2485,7 @@ func (c *restClient) ListFindings(ctx context.Context, req *securitycenterpb.Lis
 // ListNotificationConfigs lists notification configs.
 func (c *restClient) ListNotificationConfigs(ctx context.Context, req *securitycenterpb.ListNotificationConfigsRequest, opts ...gax.CallOption) *NotificationConfigIterator {
 	it := &NotificationConfigIterator{}
-	req = proto.Clone(req).(*securitycenterpb.ListNotificationConfigsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securitycenterpb.NotificationConfig, string, error) {
 		resp := &securitycenterpb.ListNotificationConfigsResponse{}
@@ -2563,7 +2563,7 @@ func (c *restClient) ListNotificationConfigs(ctx context.Context, req *securityc
 // ListSources lists all sources belonging to an organization.
 func (c *restClient) ListSources(ctx context.Context, req *securitycenterpb.ListSourcesRequest, opts ...gax.CallOption) *SourceIterator {
 	it := &SourceIterator{}
-	req = proto.Clone(req).(*securitycenterpb.ListSourcesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securitycenterpb.Source, string, error) {
 		resp := &securitycenterpb.ListSourcesResponse{}

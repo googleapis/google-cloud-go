@@ -1195,7 +1195,7 @@ func (c *productSearchGRPCClient) ListProductSets(ctx context.Context, req *visi
 	}
 	opts = append((*c.CallOptions).ListProductSets[0:len((*c.CallOptions).ListProductSets):len((*c.CallOptions).ListProductSets)], opts...)
 	it := &ProductSetIterator{}
-	req = proto.Clone(req).(*visionpb.ListProductSetsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*visionpb.ProductSet, string, error) {
 		resp := &visionpb.ListProductSetsResponse{}
 		if pageToken != "" {
@@ -1336,7 +1336,7 @@ func (c *productSearchGRPCClient) ListProducts(ctx context.Context, req *visionp
 	}
 	opts = append((*c.CallOptions).ListProducts[0:len((*c.CallOptions).ListProducts):len((*c.CallOptions).ListProducts)], opts...)
 	it := &ProductIterator{}
-	req = proto.Clone(req).(*visionpb.ListProductsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*visionpb.Product, string, error) {
 		resp := &visionpb.ListProductsResponse{}
 		if pageToken != "" {
@@ -1497,7 +1497,7 @@ func (c *productSearchGRPCClient) ListReferenceImages(ctx context.Context, req *
 	}
 	opts = append((*c.CallOptions).ListReferenceImages[0:len((*c.CallOptions).ListReferenceImages):len((*c.CallOptions).ListReferenceImages)], opts...)
 	it := &ReferenceImageIterator{}
-	req = proto.Clone(req).(*visionpb.ListReferenceImagesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*visionpb.ReferenceImage, string, error) {
 		resp := &visionpb.ListReferenceImagesResponse{}
 		if pageToken != "" {
@@ -1613,7 +1613,7 @@ func (c *productSearchGRPCClient) ListProductsInProductSet(ctx context.Context, 
 	}
 	opts = append((*c.CallOptions).ListProductsInProductSet[0:len((*c.CallOptions).ListProductsInProductSet):len((*c.CallOptions).ListProductsInProductSet)], opts...)
 	it := &ProductIterator{}
-	req = proto.Clone(req).(*visionpb.ListProductsInProductSetRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*visionpb.Product, string, error) {
 		resp := &visionpb.ListProductsInProductSetResponse{}
 		if pageToken != "" {
@@ -1805,7 +1805,7 @@ func (c *productSearchRESTClient) CreateProductSet(ctx context.Context, req *vis
 //	than 1.
 func (c *productSearchRESTClient) ListProductSets(ctx context.Context, req *visionpb.ListProductSetsRequest, opts ...gax.CallOption) *ProductSetIterator {
 	it := &ProductSetIterator{}
-	req = proto.Clone(req).(*visionpb.ListProductSetsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*visionpb.ProductSet, string, error) {
 		resp := &visionpb.ListProductSetsResponse{}
@@ -2145,7 +2145,7 @@ func (c *productSearchRESTClient) CreateProduct(ctx context.Context, req *vision
 //	Returns INVALID_ARGUMENT if page_size is greater than 100 or less than 1.
 func (c *productSearchRESTClient) ListProducts(ctx context.Context, req *visionpb.ListProductsRequest, opts ...gax.CallOption) *ProductIterator {
 	it := &ProductIterator{}
-	req = proto.Clone(req).(*visionpb.ListProductsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*visionpb.Product, string, error) {
 		resp := &visionpb.ListProductsResponse{}
@@ -2558,7 +2558,7 @@ func (c *productSearchRESTClient) DeleteReferenceImage(ctx context.Context, req 
 //	than 1.
 func (c *productSearchRESTClient) ListReferenceImages(ctx context.Context, req *visionpb.ListReferenceImagesRequest, opts ...gax.CallOption) *ReferenceImageIterator {
 	it := &ReferenceImageIterator{}
-	req = proto.Clone(req).(*visionpb.ListReferenceImagesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*visionpb.ReferenceImage, string, error) {
 		resp := &visionpb.ListReferenceImagesResponse{}
@@ -2806,7 +2806,7 @@ func (c *productSearchRESTClient) RemoveProductFromProductSet(ctx context.Contex
 //	Returns INVALID_ARGUMENT if page_size is greater than 100 or less than 1.
 func (c *productSearchRESTClient) ListProductsInProductSet(ctx context.Context, req *visionpb.ListProductsInProductSetRequest, opts ...gax.CallOption) *ProductIterator {
 	it := &ProductIterator{}
-	req = proto.Clone(req).(*visionpb.ListProductsInProductSetRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*visionpb.Product, string, error) {
 		resp := &visionpb.ListProductsInProductSetResponse{}

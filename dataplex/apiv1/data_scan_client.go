@@ -720,7 +720,7 @@ func (c *dataScanGRPCClient) ListDataScans(ctx context.Context, req *dataplexpb.
 	}
 	opts = append((*c.CallOptions).ListDataScans[0:len((*c.CallOptions).ListDataScans):len((*c.CallOptions).ListDataScans)], opts...)
 	it := &DataScanIterator{}
-	req = proto.Clone(req).(*dataplexpb.ListDataScansRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.DataScan, string, error) {
 		resp := &dataplexpb.ListDataScansResponse{}
 		if pageToken != "" {
@@ -820,7 +820,7 @@ func (c *dataScanGRPCClient) ListDataScanJobs(ctx context.Context, req *dataplex
 	}
 	opts = append((*c.CallOptions).ListDataScanJobs[0:len((*c.CallOptions).ListDataScanJobs):len((*c.CallOptions).ListDataScanJobs)], opts...)
 	it := &DataScanJobIterator{}
-	req = proto.Clone(req).(*dataplexpb.ListDataScanJobsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.DataScanJob, string, error) {
 		resp := &dataplexpb.ListDataScanJobsResponse{}
 		if pageToken != "" {
@@ -911,7 +911,7 @@ func (c *dataScanGRPCClient) ListLocations(ctx context.Context, req *locationpb.
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -1087,7 +1087,7 @@ func (c *dataScanGRPCClient) ListOperations(ctx context.Context, req *longrunnin
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -1397,7 +1397,7 @@ func (c *dataScanRESTClient) GetDataScan(ctx context.Context, req *dataplexpb.Ge
 // ListDataScans lists DataScans.
 func (c *dataScanRESTClient) ListDataScans(ctx context.Context, req *dataplexpb.ListDataScansRequest, opts ...gax.CallOption) *DataScanIterator {
 	it := &DataScanIterator{}
-	req = proto.Clone(req).(*dataplexpb.ListDataScansRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.DataScan, string, error) {
 		resp := &dataplexpb.ListDataScansResponse{}
@@ -1604,7 +1604,7 @@ func (c *dataScanRESTClient) GetDataScanJob(ctx context.Context, req *dataplexpb
 // ListDataScanJobs lists DataScanJobs under the given DataScan.
 func (c *dataScanRESTClient) ListDataScanJobs(ctx context.Context, req *dataplexpb.ListDataScanJobsRequest, opts ...gax.CallOption) *DataScanJobIterator {
 	it := &DataScanJobIterator{}
-	req = proto.Clone(req).(*dataplexpb.ListDataScanJobsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.DataScanJob, string, error) {
 		resp := &dataplexpb.ListDataScanJobsResponse{}
@@ -1810,7 +1810,7 @@ func (c *dataScanRESTClient) GetLocation(ctx context.Context, req *locationpb.Ge
 //	to the project.
 func (c *dataScanRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -2226,7 +2226,7 @@ func (c *dataScanRESTClient) GetOperation(ctx context.Context, req *longrunningp
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *dataScanRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

@@ -503,7 +503,7 @@ func (c *backendBucketsRESTClient) AddSignedUrlKey(ctx context.Context, req *com
 // returnPartialSuccess parameter to true.
 func (c *backendBucketsRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListBackendBucketsRequest, opts ...gax.CallOption) *BackendBucketsScopedListPairIterator {
 	it := &BackendBucketsScopedListPairIterator{}
-	req = proto.Clone(req).(*computepb.AggregatedListBackendBucketsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]BackendBucketsScopedListPair, string, error) {
 		resp := &computepb.BackendBucketAggregatedList{}
@@ -923,7 +923,7 @@ func (c *backendBucketsRESTClient) Insert(ctx context.Context, req *computepb.In
 // project.
 func (c *backendBucketsRESTClient) List(ctx context.Context, req *computepb.ListBackendBucketsRequest, opts ...gax.CallOption) *BackendBucketIterator {
 	it := &BackendBucketIterator{}
-	req = proto.Clone(req).(*computepb.ListBackendBucketsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.BackendBucket, string, error) {
 		resp := &computepb.BackendBucketList{}
@@ -1009,7 +1009,7 @@ func (c *backendBucketsRESTClient) List(ctx context.Context, req *computepb.List
 // ListUsable retrieves a list of all usable backend buckets in the specified project.
 func (c *backendBucketsRESTClient) ListUsable(ctx context.Context, req *computepb.ListUsableBackendBucketsRequest, opts ...gax.CallOption) *BackendBucketIterator {
 	it := &BackendBucketIterator{}
-	req = proto.Clone(req).(*computepb.ListUsableBackendBucketsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.BackendBucket, string, error) {
 		resp := &computepb.BackendBucketListUsable{}

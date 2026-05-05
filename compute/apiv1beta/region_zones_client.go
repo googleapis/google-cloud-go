@@ -215,7 +215,7 @@ func (c *regionZonesRESTClient) Connection() *grpc.ClientConn {
 // the specified project.
 func (c *regionZonesRESTClient) List(ctx context.Context, req *computepb.ListRegionZonesRequest, opts ...gax.CallOption) *ZoneIterator {
 	it := &ZoneIterator{}
-	req = proto.Clone(req).(*computepb.ListRegionZonesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.Zone, string, error) {
 		resp := &computepb.ZoneList{}

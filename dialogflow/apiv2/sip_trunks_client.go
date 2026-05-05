@@ -609,7 +609,7 @@ func (c *sipTrunksGRPCClient) ListSipTrunks(ctx context.Context, req *dialogflow
 	}
 	opts = append((*c.CallOptions).ListSipTrunks[0:len((*c.CallOptions).ListSipTrunks):len((*c.CallOptions).ListSipTrunks)], opts...)
 	it := &SipTrunkIterator{}
-	req = proto.Clone(req).(*dialogflowpb.ListSipTrunksRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dialogflowpb.SipTrunk, string, error) {
 		resp := &dialogflowpb.ListSipTrunksResponse{}
 		if pageToken != "" {
@@ -724,7 +724,7 @@ func (c *sipTrunksGRPCClient) ListLocations(ctx context.Context, req *locationpb
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -811,7 +811,7 @@ func (c *sipTrunksGRPCClient) ListOperations(ctx context.Context, req *longrunni
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -959,7 +959,7 @@ func (c *sipTrunksRESTClient) DeleteSipTrunk(ctx context.Context, req *dialogflo
 // ListSipTrunks returns a list of SipTrunks in the specified location.
 func (c *sipTrunksRESTClient) ListSipTrunks(ctx context.Context, req *dialogflowpb.ListSipTrunksRequest, opts ...gax.CallOption) *SipTrunkIterator {
 	it := &SipTrunkIterator{}
-	req = proto.Clone(req).(*dialogflowpb.ListSipTrunksRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dialogflowpb.SipTrunk, string, error) {
 		resp := &dialogflowpb.ListSipTrunksResponse{}
@@ -1232,7 +1232,7 @@ func (c *sipTrunksRESTClient) GetLocation(ctx context.Context, req *locationpb.G
 // implementation and version.
 func (c *sipTrunksRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -1406,7 +1406,7 @@ func (c *sipTrunksRESTClient) GetOperation(ctx context.Context, req *longrunning
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *sipTrunksRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

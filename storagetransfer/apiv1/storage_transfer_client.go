@@ -1022,7 +1022,7 @@ func (c *gRPCClient) ListTransferJobs(ctx context.Context, req *storagetransferp
 	}
 	opts = append((*c.CallOptions).ListTransferJobs[0:len((*c.CallOptions).ListTransferJobs):len((*c.CallOptions).ListTransferJobs)], opts...)
 	it := &TransferJobIterator{}
-	req = proto.Clone(req).(*storagetransferpb.ListTransferJobsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*storagetransferpb.TransferJob, string, error) {
 		resp := &storagetransferpb.ListTransferJobsResponse{}
 		if pageToken != "" {
@@ -1208,7 +1208,7 @@ func (c *gRPCClient) ListAgentPools(ctx context.Context, req *storagetransferpb.
 	}
 	opts = append((*c.CallOptions).ListAgentPools[0:len((*c.CallOptions).ListAgentPools):len((*c.CallOptions).ListAgentPools)], opts...)
 	it := &AgentPoolIterator{}
-	req = proto.Clone(req).(*storagetransferpb.ListAgentPoolsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*storagetransferpb.AgentPool, string, error) {
 		resp := &storagetransferpb.ListAgentPoolsResponse{}
 		if pageToken != "" {
@@ -1312,7 +1312,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -1595,7 +1595,7 @@ func (c *restClient) GetTransferJob(ctx context.Context, req *storagetransferpb.
 // ListTransferJobs lists transfer jobs.
 func (c *restClient) ListTransferJobs(ctx context.Context, req *storagetransferpb.ListTransferJobsRequest, opts ...gax.CallOption) *TransferJobIterator {
 	it := &TransferJobIterator{}
-	req = proto.Clone(req).(*storagetransferpb.ListTransferJobsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*storagetransferpb.TransferJob, string, error) {
 		resp := &storagetransferpb.ListTransferJobsResponse{}
@@ -2055,7 +2055,7 @@ func (c *restClient) GetAgentPool(ctx context.Context, req *storagetransferpb.Ge
 // ListAgentPools lists agent pools.
 func (c *restClient) ListAgentPools(ctx context.Context, req *storagetransferpb.ListAgentPoolsRequest, opts ...gax.CallOption) *AgentPoolIterator {
 	it := &AgentPoolIterator{}
-	req = proto.Clone(req).(*storagetransferpb.ListAgentPoolsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*storagetransferpb.AgentPool, string, error) {
 		resp := &storagetransferpb.ListAgentPoolsResponse{}
@@ -2295,7 +2295,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 // time in reverse chronological order.
 func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

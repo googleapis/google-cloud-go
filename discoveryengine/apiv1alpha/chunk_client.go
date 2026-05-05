@@ -478,7 +478,7 @@ func (c *chunkGRPCClient) ListChunks(ctx context.Context, req *discoveryenginepb
 	}
 	opts = append((*c.CallOptions).ListChunks[0:len((*c.CallOptions).ListChunks):len((*c.CallOptions).ListChunks)], opts...)
 	it := &ChunkIterator{}
-	req = proto.Clone(req).(*discoveryenginepb.ListChunksRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*discoveryenginepb.Chunk, string, error) {
 		resp := &discoveryenginepb.ListChunksResponse{}
 		if pageToken != "" {
@@ -565,7 +565,7 @@ func (c *chunkGRPCClient) ListOperations(ctx context.Context, req *longrunningpb
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -664,7 +664,7 @@ func (c *chunkRESTClient) GetChunk(ctx context.Context, req *discoveryenginepb.G
 // ListChunks gets a list of Chunks.
 func (c *chunkRESTClient) ListChunks(ctx context.Context, req *discoveryenginepb.ListChunksRequest, opts ...gax.CallOption) *ChunkIterator {
 	it := &ChunkIterator{}
-	req = proto.Clone(req).(*discoveryenginepb.ListChunksRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*discoveryenginepb.Chunk, string, error) {
 		resp := &discoveryenginepb.ListChunksResponse{}
@@ -841,7 +841,7 @@ func (c *chunkRESTClient) GetOperation(ctx context.Context, req *longrunningpb.G
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *chunkRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

@@ -679,7 +679,7 @@ func (c *cloudRedisGRPCClient) ListInstances(ctx context.Context, req *redispb.L
 	}
 	opts = append((*c.CallOptions).ListInstances[0:len((*c.CallOptions).ListInstances):len((*c.CallOptions).ListInstances)], opts...)
 	it := &InstanceIterator{}
-	req = proto.Clone(req).(*redispb.ListInstancesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*redispb.Instance, string, error) {
 		resp := &redispb.ListInstancesResponse{}
 		if pageToken != "" {
@@ -976,7 +976,7 @@ func (c *cloudRedisGRPCClient) RescheduleMaintenance(ctx context.Context, req *r
 // available to the project are queried, and the results are aggregated.
 func (c *cloudRedisRESTClient) ListInstances(ctx context.Context, req *redispb.ListInstancesRequest, opts ...gax.CallOption) *InstanceIterator {
 	it := &InstanceIterator{}
-	req = proto.Clone(req).(*redispb.ListInstancesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*redispb.Instance, string, error) {
 		resp := &redispb.ListInstancesResponse{}

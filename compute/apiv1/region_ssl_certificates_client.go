@@ -474,7 +474,7 @@ func (c *regionSslCertificatesRESTClient) Insert(ctx context.Context, req *compu
 // project in the specified region.
 func (c *regionSslCertificatesRESTClient) List(ctx context.Context, req *computepb.ListRegionSslCertificatesRequest, opts ...gax.CallOption) *SslCertificateIterator {
 	it := &SslCertificateIterator{}
-	req = proto.Clone(req).(*computepb.ListRegionSslCertificatesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.SslCertificate, string, error) {
 		resp := &computepb.SslCertificateList{}

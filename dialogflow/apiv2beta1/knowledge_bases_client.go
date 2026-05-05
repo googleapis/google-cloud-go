@@ -583,7 +583,7 @@ func (c *knowledgeBasesGRPCClient) ListKnowledgeBases(ctx context.Context, req *
 	}
 	opts = append((*c.CallOptions).ListKnowledgeBases[0:len((*c.CallOptions).ListKnowledgeBases):len((*c.CallOptions).ListKnowledgeBases)], opts...)
 	it := &KnowledgeBaseIterator{}
-	req = proto.Clone(req).(*dialogflowpb.ListKnowledgeBasesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dialogflowpb.KnowledgeBase, string, error) {
 		resp := &dialogflowpb.ListKnowledgeBasesResponse{}
 		if pageToken != "" {
@@ -742,7 +742,7 @@ func (c *knowledgeBasesGRPCClient) ListLocations(ctx context.Context, req *locat
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -829,7 +829,7 @@ func (c *knowledgeBasesGRPCClient) ListOperations(ctx context.Context, req *long
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -874,7 +874,7 @@ func (c *knowledgeBasesGRPCClient) ListOperations(ctx context.Context, req *long
 // only use projects.knowledgeBases.
 func (c *knowledgeBasesRESTClient) ListKnowledgeBases(ctx context.Context, req *dialogflowpb.ListKnowledgeBasesRequest, opts ...gax.CallOption) *KnowledgeBaseIterator {
 	it := &KnowledgeBaseIterator{}
-	req = proto.Clone(req).(*dialogflowpb.ListKnowledgeBasesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dialogflowpb.KnowledgeBase, string, error) {
 		resp := &dialogflowpb.ListKnowledgeBasesResponse{}
@@ -1271,7 +1271,7 @@ func (c *knowledgeBasesRESTClient) GetLocation(ctx context.Context, req *locatio
 // implementation and version.
 func (c *knowledgeBasesRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -1445,7 +1445,7 @@ func (c *knowledgeBasesRESTClient) GetOperation(ctx context.Context, req *longru
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *knowledgeBasesRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

@@ -669,7 +669,7 @@ func (c *schemaGRPCClient) ListSchemas(ctx context.Context, req *discoveryengine
 	}
 	opts = append((*c.CallOptions).ListSchemas[0:len((*c.CallOptions).ListSchemas):len((*c.CallOptions).ListSchemas)], opts...)
 	it := &SchemaIterator{}
-	req = proto.Clone(req).(*discoveryenginepb.ListSchemasRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*discoveryenginepb.Schema, string, error) {
 		resp := &discoveryenginepb.ListSchemasResponse{}
 		if pageToken != "" {
@@ -831,7 +831,7 @@ func (c *schemaGRPCClient) ListOperations(ctx context.Context, req *longrunningp
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -930,7 +930,7 @@ func (c *schemaRESTClient) GetSchema(ctx context.Context, req *discoveryenginepb
 // ListSchemas gets a list of Schemas.
 func (c *schemaRESTClient) ListSchemas(ctx context.Context, req *discoveryenginepb.ListSchemasRequest, opts ...gax.CallOption) *SchemaIterator {
 	it := &SchemaIterator{}
-	req = proto.Clone(req).(*discoveryenginepb.ListSchemasRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*discoveryenginepb.Schema, string, error) {
 		resp := &discoveryenginepb.ListSchemasResponse{}
@@ -1302,7 +1302,7 @@ func (c *schemaRESTClient) GetOperation(ctx context.Context, req *longrunningpb.
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *schemaRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

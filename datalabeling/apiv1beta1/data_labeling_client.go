@@ -1380,7 +1380,7 @@ func (c *gRPCClient) ListDatasets(ctx context.Context, req *datalabelingpb.ListD
 	}
 	opts = append((*c.CallOptions).ListDatasets[0:len((*c.CallOptions).ListDatasets):len((*c.CallOptions).ListDatasets)], opts...)
 	it := &DatasetIterator{}
-	req = proto.Clone(req).(*datalabelingpb.ListDatasetsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datalabelingpb.Dataset, string, error) {
 		resp := &datalabelingpb.ListDatasetsResponse{}
 		if pageToken != "" {
@@ -1528,7 +1528,7 @@ func (c *gRPCClient) ListDataItems(ctx context.Context, req *datalabelingpb.List
 	}
 	opts = append((*c.CallOptions).ListDataItems[0:len((*c.CallOptions).ListDataItems):len((*c.CallOptions).ListDataItems)], opts...)
 	it := &DataItemIterator{}
-	req = proto.Clone(req).(*datalabelingpb.ListDataItemsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datalabelingpb.DataItem, string, error) {
 		resp := &datalabelingpb.ListDataItemsResponse{}
 		if pageToken != "" {
@@ -1604,7 +1604,7 @@ func (c *gRPCClient) ListAnnotatedDatasets(ctx context.Context, req *datalabelin
 	}
 	opts = append((*c.CallOptions).ListAnnotatedDatasets[0:len((*c.CallOptions).ListAnnotatedDatasets):len((*c.CallOptions).ListAnnotatedDatasets)], opts...)
 	it := &AnnotatedDatasetIterator{}
-	req = proto.Clone(req).(*datalabelingpb.ListAnnotatedDatasetsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datalabelingpb.AnnotatedDataset, string, error) {
 		resp := &datalabelingpb.ListAnnotatedDatasetsResponse{}
 		if pageToken != "" {
@@ -1778,7 +1778,7 @@ func (c *gRPCClient) ListExamples(ctx context.Context, req *datalabelingpb.ListE
 	}
 	opts = append((*c.CallOptions).ListExamples[0:len((*c.CallOptions).ListExamples):len((*c.CallOptions).ListExamples)], opts...)
 	it := &ExampleIterator{}
-	req = proto.Clone(req).(*datalabelingpb.ListExamplesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datalabelingpb.Example, string, error) {
 		resp := &datalabelingpb.ListExamplesResponse{}
 		if pageToken != "" {
@@ -1878,7 +1878,7 @@ func (c *gRPCClient) ListAnnotationSpecSets(ctx context.Context, req *datalabeli
 	}
 	opts = append((*c.CallOptions).ListAnnotationSpecSets[0:len((*c.CallOptions).ListAnnotationSpecSets):len((*c.CallOptions).ListAnnotationSpecSets)], opts...)
 	it := &AnnotationSpecSetIterator{}
-	req = proto.Clone(req).(*datalabelingpb.ListAnnotationSpecSetsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datalabelingpb.AnnotationSpecSet, string, error) {
 		resp := &datalabelingpb.ListAnnotationSpecSetsResponse{}
 		if pageToken != "" {
@@ -2000,7 +2000,7 @@ func (c *gRPCClient) ListInstructions(ctx context.Context, req *datalabelingpb.L
 	}
 	opts = append((*c.CallOptions).ListInstructions[0:len((*c.CallOptions).ListInstructions):len((*c.CallOptions).ListInstructions)], opts...)
 	it := &InstructionIterator{}
-	req = proto.Clone(req).(*datalabelingpb.ListInstructionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datalabelingpb.Instruction, string, error) {
 		resp := &datalabelingpb.ListInstructionsResponse{}
 		if pageToken != "" {
@@ -2096,7 +2096,7 @@ func (c *gRPCClient) SearchEvaluations(ctx context.Context, req *datalabelingpb.
 	}
 	opts = append((*c.CallOptions).SearchEvaluations[0:len((*c.CallOptions).SearchEvaluations):len((*c.CallOptions).SearchEvaluations)], opts...)
 	it := &EvaluationIterator{}
-	req = proto.Clone(req).(*datalabelingpb.SearchEvaluationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datalabelingpb.Evaluation, string, error) {
 		resp := &datalabelingpb.SearchEvaluationsResponse{}
 		if pageToken != "" {
@@ -2148,7 +2148,7 @@ func (c *gRPCClient) SearchExampleComparisons(ctx context.Context, req *datalabe
 	}
 	opts = append((*c.CallOptions).SearchExampleComparisons[0:len((*c.CallOptions).SearchExampleComparisons):len((*c.CallOptions).SearchExampleComparisons)], opts...)
 	it := &SearchExampleComparisonsResponse_ExampleComparisonIterator{}
-	req = proto.Clone(req).(*datalabelingpb.SearchExampleComparisonsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datalabelingpb.SearchExampleComparisonsResponse_ExampleComparison, string, error) {
 		resp := &datalabelingpb.SearchExampleComparisonsResponse{}
 		if pageToken != "" {
@@ -2329,7 +2329,7 @@ func (c *gRPCClient) ListEvaluationJobs(ctx context.Context, req *datalabelingpb
 	}
 	opts = append((*c.CallOptions).ListEvaluationJobs[0:len((*c.CallOptions).ListEvaluationJobs):len((*c.CallOptions).ListEvaluationJobs)], opts...)
 	it := &EvaluationJobIterator{}
-	req = proto.Clone(req).(*datalabelingpb.ListEvaluationJobsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datalabelingpb.EvaluationJob, string, error) {
 		resp := &datalabelingpb.ListEvaluationJobsResponse{}
 		if pageToken != "" {
@@ -2491,7 +2491,7 @@ func (c *restClient) GetDataset(ctx context.Context, req *datalabelingpb.GetData
 // ListDatasets lists datasets under a project. Pagination is supported.
 func (c *restClient) ListDatasets(ctx context.Context, req *datalabelingpb.ListDatasetsRequest, opts ...gax.CallOption) *DatasetIterator {
 	it := &DatasetIterator{}
-	req = proto.Clone(req).(*datalabelingpb.ListDatasetsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datalabelingpb.Dataset, string, error) {
 		resp := &datalabelingpb.ListDatasetsResponse{}
@@ -2809,7 +2809,7 @@ func (c *restClient) GetDataItem(ctx context.Context, req *datalabelingpb.GetDat
 // are imported into dataset. Pagination is supported.
 func (c *restClient) ListDataItems(ctx context.Context, req *datalabelingpb.ListDataItemsRequest, opts ...gax.CallOption) *DataItemIterator {
 	it := &DataItemIterator{}
-	req = proto.Clone(req).(*datalabelingpb.ListDataItemsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datalabelingpb.DataItem, string, error) {
 		resp := &datalabelingpb.ListDataItemsResponse{}
@@ -2947,7 +2947,7 @@ func (c *restClient) GetAnnotatedDataset(ctx context.Context, req *datalabelingp
 // ListAnnotatedDatasets lists annotated datasets for a dataset. Pagination is supported.
 func (c *restClient) ListAnnotatedDatasets(ctx context.Context, req *datalabelingpb.ListAnnotatedDatasetsRequest, opts ...gax.CallOption) *AnnotatedDatasetIterator {
 	it := &AnnotatedDatasetIterator{}
-	req = proto.Clone(req).(*datalabelingpb.ListAnnotatedDatasetsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datalabelingpb.AnnotatedDataset, string, error) {
 		resp := &datalabelingpb.ListAnnotatedDatasetsResponse{}
@@ -3331,7 +3331,7 @@ func (c *restClient) GetExample(ctx context.Context, req *datalabelingpb.GetExam
 // ListExamples lists examples in an annotated dataset. Pagination is supported.
 func (c *restClient) ListExamples(ctx context.Context, req *datalabelingpb.ListExamplesRequest, opts ...gax.CallOption) *ExampleIterator {
 	it := &ExampleIterator{}
-	req = proto.Clone(req).(*datalabelingpb.ListExamplesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datalabelingpb.Example, string, error) {
 		resp := &datalabelingpb.ListExamplesResponse{}
@@ -3532,7 +3532,7 @@ func (c *restClient) GetAnnotationSpecSet(ctx context.Context, req *datalabeling
 // ListAnnotationSpecSets lists annotation spec sets for a project. Pagination is supported.
 func (c *restClient) ListAnnotationSpecSets(ctx context.Context, req *datalabelingpb.ListAnnotationSpecSetsRequest, opts ...gax.CallOption) *AnnotationSpecSetIterator {
 	it := &AnnotationSpecSetIterator{}
-	req = proto.Clone(req).(*datalabelingpb.ListAnnotationSpecSetsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datalabelingpb.AnnotationSpecSet, string, error) {
 		resp := &datalabelingpb.ListAnnotationSpecSetsResponse{}
@@ -3778,7 +3778,7 @@ func (c *restClient) GetInstruction(ctx context.Context, req *datalabelingpb.Get
 // ListInstructions lists instructions for a project. Pagination is supported.
 func (c *restClient) ListInstructions(ctx context.Context, req *datalabelingpb.ListInstructionsRequest, opts ...gax.CallOption) *InstructionIterator {
 	it := &InstructionIterator{}
-	req = proto.Clone(req).(*datalabelingpb.ListInstructionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datalabelingpb.Instruction, string, error) {
 		resp := &datalabelingpb.ListInstructionsResponse{}
@@ -3959,7 +3959,7 @@ func (c *restClient) GetEvaluation(ctx context.Context, req *datalabelingpb.GetE
 // SearchEvaluations searches evaluations within a project.
 func (c *restClient) SearchEvaluations(ctx context.Context, req *datalabelingpb.SearchEvaluationsRequest, opts ...gax.CallOption) *EvaluationIterator {
 	it := &EvaluationIterator{}
-	req = proto.Clone(req).(*datalabelingpb.SearchEvaluationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datalabelingpb.Evaluation, string, error) {
 		resp := &datalabelingpb.SearchEvaluationsResponse{}
@@ -4042,7 +4042,7 @@ func (c *restClient) SearchEvaluations(ctx context.Context, req *datalabelingpb.
 // a single input. Search by providing an evaluation ID.
 func (c *restClient) SearchExampleComparisons(ctx context.Context, req *datalabelingpb.SearchExampleComparisonsRequest, opts ...gax.CallOption) *SearchExampleComparisonsResponse_ExampleComparisonIterator {
 	it := &SearchExampleComparisonsResponse_ExampleComparisonIterator{}
-	req = proto.Clone(req).(*datalabelingpb.SearchExampleComparisonsRequest)
+	req = proto.CloneOf(req)
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datalabelingpb.SearchExampleComparisonsResponse_ExampleComparison, string, error) {
@@ -4454,7 +4454,7 @@ func (c *restClient) DeleteEvaluationJob(ctx context.Context, req *datalabelingp
 // Pagination is supported.
 func (c *restClient) ListEvaluationJobs(ctx context.Context, req *datalabelingpb.ListEvaluationJobsRequest, opts ...gax.CallOption) *EvaluationJobIterator {
 	it := &EvaluationJobIterator{}
-	req = proto.Clone(req).(*datalabelingpb.ListEvaluationJobsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datalabelingpb.EvaluationJob, string, error) {
 		resp := &datalabelingpb.ListEvaluationJobsResponse{}

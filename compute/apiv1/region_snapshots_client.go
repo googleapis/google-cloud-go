@@ -613,7 +613,7 @@ func (c *regionSnapshotsRESTClient) Insert(ctx context.Context, req *computepb.I
 // the specified region.
 func (c *regionSnapshotsRESTClient) List(ctx context.Context, req *computepb.ListRegionSnapshotsRequest, opts ...gax.CallOption) *SnapshotIterator {
 	it := &SnapshotIterator{}
-	req = proto.Clone(req).(*computepb.ListRegionSnapshotsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.Snapshot, string, error) {
 		resp := &computepb.SnapshotList{}

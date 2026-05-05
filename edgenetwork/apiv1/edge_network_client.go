@@ -1146,7 +1146,7 @@ func (c *gRPCClient) ListZones(ctx context.Context, req *edgenetworkpb.ListZones
 	}
 	opts = append((*c.CallOptions).ListZones[0:len((*c.CallOptions).ListZones):len((*c.CallOptions).ListZones)], opts...)
 	it := &ZoneIterator{}
-	req = proto.Clone(req).(*edgenetworkpb.ListZonesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*edgenetworkpb.Zone, string, error) {
 		resp := &edgenetworkpb.ListZonesResponse{}
 		if pageToken != "" {
@@ -1222,7 +1222,7 @@ func (c *gRPCClient) ListNetworks(ctx context.Context, req *edgenetworkpb.ListNe
 	}
 	opts = append((*c.CallOptions).ListNetworks[0:len((*c.CallOptions).ListNetworks):len((*c.CallOptions).ListNetworks)], opts...)
 	it := &NetworkIterator{}
-	req = proto.Clone(req).(*edgenetworkpb.ListNetworksRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*edgenetworkpb.Network, string, error) {
 		resp := &edgenetworkpb.ListNetworksResponse{}
 		if pageToken != "" {
@@ -1374,7 +1374,7 @@ func (c *gRPCClient) ListSubnets(ctx context.Context, req *edgenetworkpb.ListSub
 	}
 	opts = append((*c.CallOptions).ListSubnets[0:len((*c.CallOptions).ListSubnets):len((*c.CallOptions).ListSubnets)], opts...)
 	it := &SubnetIterator{}
-	req = proto.Clone(req).(*edgenetworkpb.ListSubnetsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*edgenetworkpb.Subnet, string, error) {
 		resp := &edgenetworkpb.ListSubnetsResponse{}
 		if pageToken != "" {
@@ -1525,7 +1525,7 @@ func (c *gRPCClient) ListInterconnects(ctx context.Context, req *edgenetworkpb.L
 	}
 	opts = append((*c.CallOptions).ListInterconnects[0:len((*c.CallOptions).ListInterconnects):len((*c.CallOptions).ListInterconnects)], opts...)
 	it := &InterconnectIterator{}
-	req = proto.Clone(req).(*edgenetworkpb.ListInterconnectsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*edgenetworkpb.Interconnect, string, error) {
 		resp := &edgenetworkpb.ListInterconnectsResponse{}
 		if pageToken != "" {
@@ -1625,7 +1625,7 @@ func (c *gRPCClient) ListInterconnectAttachments(ctx context.Context, req *edgen
 	}
 	opts = append((*c.CallOptions).ListInterconnectAttachments[0:len((*c.CallOptions).ListInterconnectAttachments):len((*c.CallOptions).ListInterconnectAttachments)], opts...)
 	it := &InterconnectAttachmentIterator{}
-	req = proto.Clone(req).(*edgenetworkpb.ListInterconnectAttachmentsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*edgenetworkpb.InterconnectAttachment, string, error) {
 		resp := &edgenetworkpb.ListInterconnectAttachmentsResponse{}
 		if pageToken != "" {
@@ -1753,7 +1753,7 @@ func (c *gRPCClient) ListRouters(ctx context.Context, req *edgenetworkpb.ListRou
 	}
 	opts = append((*c.CallOptions).ListRouters[0:len((*c.CallOptions).ListRouters):len((*c.CallOptions).ListRouters)], opts...)
 	it := &RouterIterator{}
-	req = proto.Clone(req).(*edgenetworkpb.ListRoutersRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*edgenetworkpb.Router, string, error) {
 		resp := &edgenetworkpb.ListRoutersResponse{}
 		if pageToken != "" {
@@ -1946,7 +1946,7 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -2050,7 +2050,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -2158,7 +2158,7 @@ func (c *restClient) InitializeZone(ctx context.Context, req *edgenetworkpb.Init
 // Deprecated: ListZones may be removed in a future version.
 func (c *restClient) ListZones(ctx context.Context, req *edgenetworkpb.ListZonesRequest, opts ...gax.CallOption) *ZoneIterator {
 	it := &ZoneIterator{}
-	req = proto.Clone(req).(*edgenetworkpb.ListZonesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*edgenetworkpb.Zone, string, error) {
 		resp := &edgenetworkpb.ListZonesResponse{}
@@ -2302,7 +2302,7 @@ func (c *restClient) GetZone(ctx context.Context, req *edgenetworkpb.GetZoneRequ
 // ListNetworks lists Networks in a given project and location.
 func (c *restClient) ListNetworks(ctx context.Context, req *edgenetworkpb.ListNetworksRequest, opts ...gax.CallOption) *NetworkIterator {
 	it := &NetworkIterator{}
-	req = proto.Clone(req).(*edgenetworkpb.ListNetworksRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*edgenetworkpb.Network, string, error) {
 		resp := &edgenetworkpb.ListNetworksResponse{}
@@ -2634,7 +2634,7 @@ func (c *restClient) DeleteNetwork(ctx context.Context, req *edgenetworkpb.Delet
 // ListSubnets lists Subnets in a given project and location.
 func (c *restClient) ListSubnets(ctx context.Context, req *edgenetworkpb.ListSubnetsRequest, opts ...gax.CallOption) *SubnetIterator {
 	it := &SubnetIterator{}
-	req = proto.Clone(req).(*edgenetworkpb.ListSubnetsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*edgenetworkpb.Subnet, string, error) {
 		resp := &edgenetworkpb.ListSubnetsResponse{}
@@ -2983,7 +2983,7 @@ func (c *restClient) DeleteSubnet(ctx context.Context, req *edgenetworkpb.Delete
 // ListInterconnects lists Interconnects in a given project and location.
 func (c *restClient) ListInterconnects(ctx context.Context, req *edgenetworkpb.ListInterconnectsRequest, opts ...gax.CallOption) *InterconnectIterator {
 	it := &InterconnectIterator{}
-	req = proto.Clone(req).(*edgenetworkpb.ListInterconnectsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*edgenetworkpb.Interconnect, string, error) {
 		resp := &edgenetworkpb.ListInterconnectsResponse{}
@@ -3181,7 +3181,7 @@ func (c *restClient) DiagnoseInterconnect(ctx context.Context, req *edgenetworkp
 // ListInterconnectAttachments lists InterconnectAttachments in a given project and location.
 func (c *restClient) ListInterconnectAttachments(ctx context.Context, req *edgenetworkpb.ListInterconnectAttachmentsRequest, opts ...gax.CallOption) *InterconnectAttachmentIterator {
 	it := &InterconnectAttachmentIterator{}
-	req = proto.Clone(req).(*edgenetworkpb.ListInterconnectAttachmentsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*edgenetworkpb.InterconnectAttachment, string, error) {
 		resp := &edgenetworkpb.ListInterconnectAttachmentsResponse{}
@@ -3456,7 +3456,7 @@ func (c *restClient) DeleteInterconnectAttachment(ctx context.Context, req *edge
 // ListRouters lists Routers in a given project and location.
 func (c *restClient) ListRouters(ctx context.Context, req *edgenetworkpb.ListRoutersRequest, opts ...gax.CallOption) *RouterIterator {
 	it := &RouterIterator{}
-	req = proto.Clone(req).(*edgenetworkpb.ListRoutersRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*edgenetworkpb.Router, string, error) {
 		resp := &edgenetworkpb.ListRoutersResponse{}
@@ -3916,7 +3916,7 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 // ListLocations lists information about the supported locations for this service.
 func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -4135,7 +4135,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

@@ -1092,7 +1092,7 @@ func (c *gRPCClient) ListResourceBundles(ctx context.Context, req *configdeliver
 	}
 	opts = append((*c.CallOptions).ListResourceBundles[0:len((*c.CallOptions).ListResourceBundles):len((*c.CallOptions).ListResourceBundles)], opts...)
 	it := &ResourceBundleIterator{}
-	req = proto.Clone(req).(*configdeliverypb.ListResourceBundlesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*configdeliverypb.ResourceBundle, string, error) {
 		resp := &configdeliverypb.ListResourceBundlesResponse{}
 		if pageToken != "" {
@@ -1243,7 +1243,7 @@ func (c *gRPCClient) ListFleetPackages(ctx context.Context, req *configdeliveryp
 	}
 	opts = append((*c.CallOptions).ListFleetPackages[0:len((*c.CallOptions).ListFleetPackages):len((*c.CallOptions).ListFleetPackages)], opts...)
 	it := &FleetPackageIterator{}
-	req = proto.Clone(req).(*configdeliverypb.ListFleetPackagesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*configdeliverypb.FleetPackage, string, error) {
 		resp := &configdeliverypb.ListFleetPackagesResponse{}
 		if pageToken != "" {
@@ -1394,7 +1394,7 @@ func (c *gRPCClient) ListReleases(ctx context.Context, req *configdeliverypb.Lis
 	}
 	opts = append((*c.CallOptions).ListReleases[0:len((*c.CallOptions).ListReleases):len((*c.CallOptions).ListReleases)], opts...)
 	it := &ReleaseIterator{}
-	req = proto.Clone(req).(*configdeliverypb.ListReleasesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*configdeliverypb.Release, string, error) {
 		resp := &configdeliverypb.ListReleasesResponse{}
 		if pageToken != "" {
@@ -1545,7 +1545,7 @@ func (c *gRPCClient) ListVariants(ctx context.Context, req *configdeliverypb.Lis
 	}
 	opts = append((*c.CallOptions).ListVariants[0:len((*c.CallOptions).ListVariants):len((*c.CallOptions).ListVariants)], opts...)
 	it := &VariantIterator{}
-	req = proto.Clone(req).(*configdeliverypb.ListVariantsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*configdeliverypb.Variant, string, error) {
 		resp := &configdeliverypb.ListVariantsResponse{}
 		if pageToken != "" {
@@ -1696,7 +1696,7 @@ func (c *gRPCClient) ListRollouts(ctx context.Context, req *configdeliverypb.Lis
 	}
 	opts = append((*c.CallOptions).ListRollouts[0:len((*c.CallOptions).ListRollouts):len((*c.CallOptions).ListRollouts)], opts...)
 	it := &RolloutIterator{}
-	req = proto.Clone(req).(*configdeliverypb.ListRolloutsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*configdeliverypb.Rollout, string, error) {
 		resp := &configdeliverypb.ListRolloutsResponse{}
 		if pageToken != "" {
@@ -1868,7 +1868,7 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -1972,7 +1972,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -2014,7 +2014,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // ListResourceBundles lists ResourceBundles in a given project and location.
 func (c *restClient) ListResourceBundles(ctx context.Context, req *configdeliverypb.ListResourceBundlesRequest, opts ...gax.CallOption) *ResourceBundleIterator {
 	it := &ResourceBundleIterator{}
-	req = proto.Clone(req).(*configdeliverypb.ListResourceBundlesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*configdeliverypb.ResourceBundle, string, error) {
 		resp := &configdeliverypb.ListResourceBundlesResponse{}
@@ -2366,7 +2366,7 @@ func (c *restClient) DeleteResourceBundle(ctx context.Context, req *configdelive
 // ListFleetPackages lists FleetPackages in a given project and location.
 func (c *restClient) ListFleetPackages(ctx context.Context, req *configdeliverypb.ListFleetPackagesRequest, opts ...gax.CallOption) *FleetPackageIterator {
 	it := &FleetPackageIterator{}
-	req = proto.Clone(req).(*configdeliverypb.ListFleetPackagesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*configdeliverypb.FleetPackage, string, error) {
 		resp := &configdeliverypb.ListFleetPackagesResponse{}
@@ -2721,7 +2721,7 @@ func (c *restClient) DeleteFleetPackage(ctx context.Context, req *configdelivery
 // ListReleases lists Releases in a given project and location.
 func (c *restClient) ListReleases(ctx context.Context, req *configdeliverypb.ListReleasesRequest, opts ...gax.CallOption) *ReleaseIterator {
 	it := &ReleaseIterator{}
-	req = proto.Clone(req).(*configdeliverypb.ListReleasesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*configdeliverypb.Release, string, error) {
 		resp := &configdeliverypb.ListReleasesResponse{}
@@ -3073,7 +3073,7 @@ func (c *restClient) DeleteRelease(ctx context.Context, req *configdeliverypb.De
 // ListVariants lists Variants in a given project and location.
 func (c *restClient) ListVariants(ctx context.Context, req *configdeliverypb.ListVariantsRequest, opts ...gax.CallOption) *VariantIterator {
 	it := &VariantIterator{}
-	req = proto.Clone(req).(*configdeliverypb.ListVariantsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*configdeliverypb.Variant, string, error) {
 		resp := &configdeliverypb.ListVariantsResponse{}
@@ -3423,7 +3423,7 @@ func (c *restClient) DeleteVariant(ctx context.Context, req *configdeliverypb.De
 // ListRollouts lists Rollouts in a given project, location, and Fleet Package.
 func (c *restClient) ListRollouts(ctx context.Context, req *configdeliverypb.ListRolloutsRequest, opts ...gax.CallOption) *RolloutIterator {
 	it := &RolloutIterator{}
-	req = proto.Clone(req).(*configdeliverypb.ListRolloutsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*configdeliverypb.Rollout, string, error) {
 		resp := &configdeliverypb.ListRolloutsResponse{}
@@ -3816,7 +3816,7 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 // ListLocations lists information about the supported locations for this service.
 func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -4035,7 +4035,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

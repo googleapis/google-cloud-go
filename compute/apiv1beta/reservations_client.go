@@ -381,7 +381,7 @@ func (c *reservationsRESTClient) Connection() *grpc.ClientConn {
 // returnPartialSuccess parameter to true.
 func (c *reservationsRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListReservationsRequest, opts ...gax.CallOption) *ReservationsScopedListPairIterator {
 	it := &ReservationsScopedListPairIterator{}
-	req = proto.Clone(req).(*computepb.AggregatedListReservationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]ReservationsScopedListPair, string, error) {
 		resp := &computepb.ReservationAggregatedList{}
@@ -735,7 +735,7 @@ func (c *reservationsRESTClient) Insert(ctx context.Context, req *computepb.Inse
 // specified project in specified zone.
 func (c *reservationsRESTClient) List(ctx context.Context, req *computepb.ListReservationsRequest, opts ...gax.CallOption) *ReservationIterator {
 	it := &ReservationIterator{}
-	req = proto.Clone(req).(*computepb.ListReservationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.Reservation, string, error) {
 		resp := &computepb.ReservationList{}

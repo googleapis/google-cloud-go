@@ -395,7 +395,7 @@ func (c *cloudControlsPartnerMonitoringGRPCClient) ListViolations(ctx context.Co
 	}
 	opts = append((*c.CallOptions).ListViolations[0:len((*c.CallOptions).ListViolations):len((*c.CallOptions).ListViolations)], opts...)
 	it := &ViolationIterator{}
-	req = proto.Clone(req).(*cloudcontrolspartnerpb.ListViolationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cloudcontrolspartnerpb.Violation, string, error) {
 		resp := &cloudcontrolspartnerpb.ListViolationsResponse{}
 		if pageToken != "" {
@@ -467,7 +467,7 @@ func (c *cloudControlsPartnerMonitoringGRPCClient) GetViolation(ctx context.Cont
 // organizations/{organization}/locations/{location}/customers/{customer}/workloads/{workload}
 func (c *cloudControlsPartnerMonitoringRESTClient) ListViolations(ctx context.Context, req *cloudcontrolspartnerpb.ListViolationsRequest, opts ...gax.CallOption) *ViolationIterator {
 	it := &ViolationIterator{}
-	req = proto.Clone(req).(*cloudcontrolspartnerpb.ListViolationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cloudcontrolspartnerpb.Violation, string, error) {
 		resp := &cloudcontrolspartnerpb.ListViolationsResponse{}

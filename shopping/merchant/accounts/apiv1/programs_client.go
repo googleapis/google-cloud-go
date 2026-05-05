@@ -508,7 +508,7 @@ func (c *programsGRPCClient) ListPrograms(ctx context.Context, req *accountspb.L
 	}
 	opts = append((*c.CallOptions).ListPrograms[0:len((*c.CallOptions).ListPrograms):len((*c.CallOptions).ListPrograms)], opts...)
 	it := &ProgramIterator{}
-	req = proto.Clone(req).(*accountspb.ListProgramsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*accountspb.Program, string, error) {
 		resp := &accountspb.ListProgramsResponse{}
 		if pageToken != "" {
@@ -655,7 +655,7 @@ func (c *programsRESTClient) GetProgram(ctx context.Context, req *accountspb.Get
 // ListPrograms retrieves all programs for the account.
 func (c *programsRESTClient) ListPrograms(ctx context.Context, req *accountspb.ListProgramsRequest, opts ...gax.CallOption) *ProgramIterator {
 	it := &ProgramIterator{}
-	req = proto.Clone(req).(*accountspb.ListProgramsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*accountspb.Program, string, error) {
 		resp := &accountspb.ListProgramsResponse{}

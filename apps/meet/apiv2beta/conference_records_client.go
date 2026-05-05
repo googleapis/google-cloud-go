@@ -746,7 +746,7 @@ func (c *conferenceRecordsGRPCClient) ListConferenceRecords(ctx context.Context,
 	}
 	opts = append((*c.CallOptions).ListConferenceRecords[0:len((*c.CallOptions).ListConferenceRecords):len((*c.CallOptions).ListConferenceRecords)], opts...)
 	it := &ConferenceRecordIterator{}
-	req = proto.Clone(req).(*meetpb.ListConferenceRecordsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*meetpb.ConferenceRecord, string, error) {
 		resp := &meetpb.ListConferenceRecordsResponse{}
 		if pageToken != "" {
@@ -822,7 +822,7 @@ func (c *conferenceRecordsGRPCClient) ListParticipants(ctx context.Context, req 
 	}
 	opts = append((*c.CallOptions).ListParticipants[0:len((*c.CallOptions).ListParticipants):len((*c.CallOptions).ListParticipants)], opts...)
 	it := &ParticipantIterator{}
-	req = proto.Clone(req).(*meetpb.ListParticipantsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*meetpb.Participant, string, error) {
 		resp := &meetpb.ListParticipantsResponse{}
 		if pageToken != "" {
@@ -898,7 +898,7 @@ func (c *conferenceRecordsGRPCClient) ListParticipantSessions(ctx context.Contex
 	}
 	opts = append((*c.CallOptions).ListParticipantSessions[0:len((*c.CallOptions).ListParticipantSessions):len((*c.CallOptions).ListParticipantSessions)], opts...)
 	it := &ParticipantSessionIterator{}
-	req = proto.Clone(req).(*meetpb.ListParticipantSessionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*meetpb.ParticipantSession, string, error) {
 		resp := &meetpb.ListParticipantSessionsResponse{}
 		if pageToken != "" {
@@ -974,7 +974,7 @@ func (c *conferenceRecordsGRPCClient) ListRecordings(ctx context.Context, req *m
 	}
 	opts = append((*c.CallOptions).ListRecordings[0:len((*c.CallOptions).ListRecordings):len((*c.CallOptions).ListRecordings)], opts...)
 	it := &RecordingIterator{}
-	req = proto.Clone(req).(*meetpb.ListRecordingsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*meetpb.Recording, string, error) {
 		resp := &meetpb.ListRecordingsResponse{}
 		if pageToken != "" {
@@ -1050,7 +1050,7 @@ func (c *conferenceRecordsGRPCClient) ListTranscripts(ctx context.Context, req *
 	}
 	opts = append((*c.CallOptions).ListTranscripts[0:len((*c.CallOptions).ListTranscripts):len((*c.CallOptions).ListTranscripts)], opts...)
 	it := &TranscriptIterator{}
-	req = proto.Clone(req).(*meetpb.ListTranscriptsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*meetpb.Transcript, string, error) {
 		resp := &meetpb.ListTranscriptsResponse{}
 		if pageToken != "" {
@@ -1126,7 +1126,7 @@ func (c *conferenceRecordsGRPCClient) ListTranscriptEntries(ctx context.Context,
 	}
 	opts = append((*c.CallOptions).ListTranscriptEntries[0:len((*c.CallOptions).ListTranscriptEntries):len((*c.CallOptions).ListTranscriptEntries)], opts...)
 	it := &TranscriptEntryIterator{}
-	req = proto.Clone(req).(*meetpb.ListTranscriptEntriesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*meetpb.TranscriptEntry, string, error) {
 		resp := &meetpb.ListTranscriptEntriesResponse{}
 		if pageToken != "" {
@@ -1226,7 +1226,7 @@ func (c *conferenceRecordsRESTClient) GetConferenceRecord(ctx context.Context, r
 // descending order.
 func (c *conferenceRecordsRESTClient) ListConferenceRecords(ctx context.Context, req *meetpb.ListConferenceRecordsRequest, opts ...gax.CallOption) *ConferenceRecordIterator {
 	it := &ConferenceRecordIterator{}
-	req = proto.Clone(req).(*meetpb.ListConferenceRecordsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*meetpb.ConferenceRecord, string, error) {
 		resp := &meetpb.ListConferenceRecordsResponse{}
@@ -1367,7 +1367,7 @@ func (c *conferenceRecordsRESTClient) GetParticipant(ctx context.Context, req *m
 // parameter is omitted, this API defaults to 'participants/*, next_page_token'.
 func (c *conferenceRecordsRESTClient) ListParticipants(ctx context.Context, req *meetpb.ListParticipantsRequest, opts ...gax.CallOption) *ParticipantIterator {
 	it := &ParticipantIterator{}
-	req = proto.Clone(req).(*meetpb.ListParticipantsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*meetpb.Participant, string, error) {
 		resp := &meetpb.ListParticipantsResponse{}
@@ -1509,7 +1509,7 @@ func (c *conferenceRecordsRESTClient) GetParticipantSession(ctx context.Context,
 // 'participantsessions/*, next_page_token'.
 func (c *conferenceRecordsRESTClient) ListParticipantSessions(ctx context.Context, req *meetpb.ListParticipantSessionsRequest, opts ...gax.CallOption) *ParticipantSessionIterator {
 	it := &ParticipantSessionIterator{}
-	req = proto.Clone(req).(*meetpb.ListParticipantSessionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*meetpb.ParticipantSession, string, error) {
 		resp := &meetpb.ListParticipantSessionsResponse{}
@@ -1648,7 +1648,7 @@ func (c *conferenceRecordsRESTClient) GetRecording(ctx context.Context, req *mee
 // ordered by start time and in ascending order.
 func (c *conferenceRecordsRESTClient) ListRecordings(ctx context.Context, req *meetpb.ListRecordingsRequest, opts ...gax.CallOption) *RecordingIterator {
 	it := &RecordingIterator{}
-	req = proto.Clone(req).(*meetpb.ListRecordingsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*meetpb.Recording, string, error) {
 		resp := &meetpb.ListRecordingsResponse{}
@@ -1784,7 +1784,7 @@ func (c *conferenceRecordsRESTClient) GetTranscript(ctx context.Context, req *me
 // ordered by start time and in ascending order.
 func (c *conferenceRecordsRESTClient) ListTranscripts(ctx context.Context, req *meetpb.ListTranscriptsRequest, opts ...gax.CallOption) *TranscriptIterator {
 	it := &TranscriptIterator{}
-	req = proto.Clone(req).(*meetpb.ListTranscriptsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*meetpb.Transcript, string, error) {
 		resp := &meetpb.ListTranscriptsResponse{}
@@ -1928,7 +1928,7 @@ func (c *conferenceRecordsRESTClient) GetTranscriptEntry(ctx context.Context, re
 // occur when the Google Docs transcript file is modified after generation.
 func (c *conferenceRecordsRESTClient) ListTranscriptEntries(ctx context.Context, req *meetpb.ListTranscriptEntriesRequest, opts ...gax.CallOption) *TranscriptEntryIterator {
 	it := &TranscriptEntryIterator{}
-	req = proto.Clone(req).(*meetpb.ListTranscriptEntriesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*meetpb.TranscriptEntry, string, error) {
 		resp := &meetpb.ListTranscriptEntriesResponse{}

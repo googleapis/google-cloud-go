@@ -430,7 +430,7 @@ func (c *hostProjectRegistrationRESTClient) GetHostProjectRegistration(ctx conte
 // ListHostProjectRegistrations lists host project registrations.
 func (c *hostProjectRegistrationRESTClient) ListHostProjectRegistrations(ctx context.Context, req *apihubpb.ListHostProjectRegistrationsRequest, opts ...gax.CallOption) *HostProjectRegistrationIterator {
 	it := &HostProjectRegistrationIterator{}
-	req = proto.Clone(req).(*apihubpb.ListHostProjectRegistrationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apihubpb.HostProjectRegistration, string, error) {
 		resp := &apihubpb.ListHostProjectRegistrationsResponse{}
@@ -568,7 +568,7 @@ func (c *hostProjectRegistrationRESTClient) GetLocation(ctx context.Context, req
 // ListLocations lists information about the supported locations for this service.
 func (c *hostProjectRegistrationRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -787,7 +787,7 @@ func (c *hostProjectRegistrationRESTClient) GetOperation(ctx context.Context, re
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *hostProjectRegistrationRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

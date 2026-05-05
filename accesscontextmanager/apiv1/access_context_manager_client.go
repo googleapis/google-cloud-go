@@ -1033,7 +1033,7 @@ func (c *gRPCClient) ListAccessPolicies(ctx context.Context, req *accesscontextm
 	}
 	opts = append((*c.CallOptions).ListAccessPolicies[0:len((*c.CallOptions).ListAccessPolicies):len((*c.CallOptions).ListAccessPolicies)], opts...)
 	it := &AccessPolicyIterator{}
-	req = proto.Clone(req).(*accesscontextmanagerpb.ListAccessPoliciesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*accesscontextmanagerpb.AccessPolicy, string, error) {
 		resp := &accesscontextmanagerpb.ListAccessPoliciesResponse{}
 		if pageToken != "" {
@@ -1178,7 +1178,7 @@ func (c *gRPCClient) ListAccessLevels(ctx context.Context, req *accesscontextman
 	}
 	opts = append((*c.CallOptions).ListAccessLevels[0:len((*c.CallOptions).ListAccessLevels):len((*c.CallOptions).ListAccessLevels)], opts...)
 	it := &AccessLevelIterator{}
-	req = proto.Clone(req).(*accesscontextmanagerpb.ListAccessLevelsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*accesscontextmanagerpb.AccessLevel, string, error) {
 		resp := &accesscontextmanagerpb.ListAccessLevelsResponse{}
 		if pageToken != "" {
@@ -1355,7 +1355,7 @@ func (c *gRPCClient) ListServicePerimeters(ctx context.Context, req *accessconte
 	}
 	opts = append((*c.CallOptions).ListServicePerimeters[0:len((*c.CallOptions).ListServicePerimeters):len((*c.CallOptions).ListServicePerimeters)], opts...)
 	it := &ServicePerimeterIterator{}
-	req = proto.Clone(req).(*accesscontextmanagerpb.ListServicePerimetersRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*accesscontextmanagerpb.ServicePerimeter, string, error) {
 		resp := &accesscontextmanagerpb.ListServicePerimetersResponse{}
 		if pageToken != "" {
@@ -1558,7 +1558,7 @@ func (c *gRPCClient) ListGcpUserAccessBindings(ctx context.Context, req *accessc
 	}
 	opts = append((*c.CallOptions).ListGcpUserAccessBindings[0:len((*c.CallOptions).ListGcpUserAccessBindings):len((*c.CallOptions).ListGcpUserAccessBindings)], opts...)
 	it := &GcpUserAccessBindingIterator{}
-	req = proto.Clone(req).(*accesscontextmanagerpb.ListGcpUserAccessBindingsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*accesscontextmanagerpb.GcpUserAccessBinding, string, error) {
 		resp := &accesscontextmanagerpb.ListGcpUserAccessBindingsResponse{}
 		if pageToken != "" {
@@ -1794,7 +1794,7 @@ func (c *gRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 // organization.
 func (c *restClient) ListAccessPolicies(ctx context.Context, req *accesscontextmanagerpb.ListAccessPoliciesRequest, opts ...gax.CallOption) *AccessPolicyIterator {
 	it := &AccessPolicyIterator{}
-	req = proto.Clone(req).(*accesscontextmanagerpb.ListAccessPoliciesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*accesscontextmanagerpb.AccessPolicy, string, error) {
 		resp := &accesscontextmanagerpb.ListAccessPoliciesResponse{}
@@ -2137,7 +2137,7 @@ func (c *restClient) DeleteAccessPolicy(ctx context.Context, req *accesscontextm
 // policy.
 func (c *restClient) ListAccessLevels(ctx context.Context, req *accesscontextmanagerpb.ListAccessLevelsRequest, opts ...gax.CallOption) *AccessLevelIterator {
 	it := &AccessLevelIterator{}
-	req = proto.Clone(req).(*accesscontextmanagerpb.ListAccessLevelsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*accesscontextmanagerpb.AccessLevel, string, error) {
 		resp := &accesscontextmanagerpb.ListAccessLevelsResponse{}
@@ -2580,7 +2580,7 @@ func (c *restClient) ReplaceAccessLevels(ctx context.Context, req *accesscontext
 // access policy.
 func (c *restClient) ListServicePerimeters(ctx context.Context, req *accesscontextmanagerpb.ListServicePerimetersRequest, opts ...gax.CallOption) *ServicePerimeterIterator {
 	it := &ServicePerimeterIterator{}
-	req = proto.Clone(req).(*accesscontextmanagerpb.ListServicePerimetersRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*accesscontextmanagerpb.ServicePerimeter, string, error) {
 		resp := &accesscontextmanagerpb.ListServicePerimetersResponse{}
@@ -3094,7 +3094,7 @@ func (c *restClient) CommitServicePerimeters(ctx context.Context, req *accesscon
 // Google Cloud organization.
 func (c *restClient) ListGcpUserAccessBindings(ctx context.Context, req *accesscontextmanagerpb.ListGcpUserAccessBindingsRequest, opts ...gax.CallOption) *GcpUserAccessBindingIterator {
 	it := &GcpUserAccessBindingIterator{}
-	req = proto.Clone(req).(*accesscontextmanagerpb.ListGcpUserAccessBindingsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*accesscontextmanagerpb.GcpUserAccessBinding, string, error) {
 		resp := &accesscontextmanagerpb.ListGcpUserAccessBindingsResponse{}

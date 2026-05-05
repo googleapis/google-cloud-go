@@ -918,7 +918,7 @@ func (c *liveVideoAnalyticsGRPCClient) ListPublicOperators(ctx context.Context, 
 	}
 	opts = append((*c.CallOptions).ListPublicOperators[0:len((*c.CallOptions).ListPublicOperators):len((*c.CallOptions).ListPublicOperators)], opts...)
 	it := &OperatorIterator{}
-	req = proto.Clone(req).(*visionaipb.ListPublicOperatorsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*visionaipb.Operator, string, error) {
 		resp := &visionaipb.ListPublicOperatorsResponse{}
 		if pageToken != "" {
@@ -994,7 +994,7 @@ func (c *liveVideoAnalyticsGRPCClient) ListOperators(ctx context.Context, req *v
 	}
 	opts = append((*c.CallOptions).ListOperators[0:len((*c.CallOptions).ListOperators):len((*c.CallOptions).ListOperators)], opts...)
 	it := &OperatorIterator{}
-	req = proto.Clone(req).(*visionaipb.ListOperatorsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*visionaipb.Operator, string, error) {
 		resp := &visionaipb.ListOperatorsResponse{}
 		if pageToken != "" {
@@ -1145,7 +1145,7 @@ func (c *liveVideoAnalyticsGRPCClient) ListAnalyses(ctx context.Context, req *vi
 	}
 	opts = append((*c.CallOptions).ListAnalyses[0:len((*c.CallOptions).ListAnalyses):len((*c.CallOptions).ListAnalyses)], opts...)
 	it := &AnalysisIterator{}
-	req = proto.Clone(req).(*visionaipb.ListAnalysesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*visionaipb.Analysis, string, error) {
 		resp := &visionaipb.ListAnalysesResponse{}
 		if pageToken != "" {
@@ -1296,7 +1296,7 @@ func (c *liveVideoAnalyticsGRPCClient) ListProcesses(ctx context.Context, req *v
 	}
 	opts = append((*c.CallOptions).ListProcesses[0:len((*c.CallOptions).ListProcesses):len((*c.CallOptions).ListProcesses)], opts...)
 	it := &ProcessIterator{}
-	req = proto.Clone(req).(*visionaipb.ListProcessesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*visionaipb.Process, string, error) {
 		resp := &visionaipb.ListProcessesResponse{}
 		if pageToken != "" {
@@ -1491,7 +1491,7 @@ func (c *liveVideoAnalyticsGRPCClient) ListLocations(ctx context.Context, req *l
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -1595,7 +1595,7 @@ func (c *liveVideoAnalyticsGRPCClient) ListOperations(ctx context.Context, req *
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -1637,7 +1637,7 @@ func (c *liveVideoAnalyticsGRPCClient) ListOperations(ctx context.Context, req *
 // ListPublicOperators listPublicOperators returns all the operators in public registry.
 func (c *liveVideoAnalyticsRESTClient) ListPublicOperators(ctx context.Context, req *visionaipb.ListPublicOperatorsRequest, opts ...gax.CallOption) *OperatorIterator {
 	it := &OperatorIterator{}
-	req = proto.Clone(req).(*visionaipb.ListPublicOperatorsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*visionaipb.Operator, string, error) {
 		resp := &visionaipb.ListPublicOperatorsResponse{}
@@ -1784,7 +1784,7 @@ func (c *liveVideoAnalyticsRESTClient) ResolveOperatorInfo(ctx context.Context, 
 // ListOperators lists Operators in a given project and location.
 func (c *liveVideoAnalyticsRESTClient) ListOperators(ctx context.Context, req *visionaipb.ListOperatorsRequest, opts ...gax.CallOption) *OperatorIterator {
 	it := &OperatorIterator{}
-	req = proto.Clone(req).(*visionaipb.ListOperatorsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*visionaipb.Operator, string, error) {
 		resp := &visionaipb.ListOperatorsResponse{}
@@ -2133,7 +2133,7 @@ func (c *liveVideoAnalyticsRESTClient) DeleteOperator(ctx context.Context, req *
 // ListAnalyses lists Analyses in a given project and location.
 func (c *liveVideoAnalyticsRESTClient) ListAnalyses(ctx context.Context, req *visionaipb.ListAnalysesRequest, opts ...gax.CallOption) *AnalysisIterator {
 	it := &AnalysisIterator{}
-	req = proto.Clone(req).(*visionaipb.ListAnalysesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*visionaipb.Analysis, string, error) {
 		resp := &visionaipb.ListAnalysesResponse{}
@@ -2482,7 +2482,7 @@ func (c *liveVideoAnalyticsRESTClient) DeleteAnalysis(ctx context.Context, req *
 // ListProcesses lists Processes in a given project and location.
 func (c *liveVideoAnalyticsRESTClient) ListProcesses(ctx context.Context, req *visionaipb.ListProcessesRequest, opts ...gax.CallOption) *ProcessIterator {
 	it := &ProcessIterator{}
-	req = proto.Clone(req).(*visionaipb.ListProcessesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*visionaipb.Process, string, error) {
 		resp := &visionaipb.ListProcessesResponse{}
@@ -2952,7 +2952,7 @@ func (c *liveVideoAnalyticsRESTClient) GetLocation(ctx context.Context, req *loc
 // ListLocations lists information about the supported locations for this service.
 func (c *liveVideoAnalyticsRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -3171,7 +3171,7 @@ func (c *liveVideoAnalyticsRESTClient) GetOperation(ctx context.Context, req *lo
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *liveVideoAnalyticsRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

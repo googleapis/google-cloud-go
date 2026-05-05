@@ -315,7 +315,7 @@ func (c *previewFeaturesRESTClient) Get(ctx context.Context, req *computepb.GetP
 // List returns the details of the given PreviewFeature.
 func (c *previewFeaturesRESTClient) List(ctx context.Context, req *computepb.ListPreviewFeaturesRequest, opts ...gax.CallOption) *PreviewFeatureIterator {
 	it := &PreviewFeatureIterator{}
-	req = proto.Clone(req).(*computepb.ListPreviewFeaturesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.PreviewFeature, string, error) {
 		resp := &computepb.PreviewFeatureList{}

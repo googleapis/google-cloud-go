@@ -262,7 +262,7 @@ func (c *nodeTypesRESTClient) Connection() *grpc.ClientConn {
 // returnPartialSuccess parameter to true.
 func (c *nodeTypesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListNodeTypesRequest, opts ...gax.CallOption) *NodeTypesScopedListPairIterator {
 	it := &NodeTypesScopedListPairIterator{}
-	req = proto.Clone(req).(*computepb.AggregatedListNodeTypesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]NodeTypesScopedListPair, string, error) {
 		resp := &computepb.NodeTypeAggregatedList{}
@@ -414,7 +414,7 @@ func (c *nodeTypesRESTClient) Get(ctx context.Context, req *computepb.GetNodeTyp
 // project.
 func (c *nodeTypesRESTClient) List(ctx context.Context, req *computepb.ListNodeTypesRequest, opts ...gax.CallOption) *NodeTypeIterator {
 	it := &NodeTypeIterator{}
-	req = proto.Clone(req).(*computepb.ListNodeTypesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.NodeType, string, error) {
 		resp := &computepb.NodeTypeList{}

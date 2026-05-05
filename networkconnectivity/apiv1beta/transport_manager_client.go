@@ -506,7 +506,7 @@ func (c *transportManagerGRPCClient) ListRemoteTransportProfiles(ctx context.Con
 	}
 	opts = append((*c.CallOptions).ListRemoteTransportProfiles[0:len((*c.CallOptions).ListRemoteTransportProfiles):len((*c.CallOptions).ListRemoteTransportProfiles)], opts...)
 	it := &RemoteTransportProfileIterator{}
-	req = proto.Clone(req).(*networkconnectivitypb.ListRemoteTransportProfilesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkconnectivitypb.RemoteTransportProfile, string, error) {
 		resp := &networkconnectivitypb.ListRemoteTransportProfilesResponse{}
 		if pageToken != "" {
@@ -582,7 +582,7 @@ func (c *transportManagerGRPCClient) ListTransports(ctx context.Context, req *ne
 	}
 	opts = append((*c.CallOptions).ListTransports[0:len((*c.CallOptions).ListTransports):len((*c.CallOptions).ListTransports)], opts...)
 	it := &TransportIterator{}
-	req = proto.Clone(req).(*networkconnectivitypb.ListTransportsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkconnectivitypb.Transport, string, error) {
 		resp := &networkconnectivitypb.ListTransportsResponse{}
 		if pageToken != "" {
@@ -775,7 +775,7 @@ func (c *transportManagerGRPCClient) ListLocations(ctx context.Context, req *loc
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -951,7 +951,7 @@ func (c *transportManagerGRPCClient) ListOperations(ctx context.Context, req *lo
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {

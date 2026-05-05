@@ -701,7 +701,7 @@ func (c *networksRESTClient) Insert(ctx context.Context, req *computepb.InsertNe
 // List retrieves the list of networks available to the specified project.
 func (c *networksRESTClient) List(ctx context.Context, req *computepb.ListNetworksRequest, opts ...gax.CallOption) *NetworkIterator {
 	it := &NetworkIterator{}
-	req = proto.Clone(req).(*computepb.ListNetworksRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.Network, string, error) {
 		resp := &computepb.NetworkList{}
@@ -787,7 +787,7 @@ func (c *networksRESTClient) List(ctx context.Context, req *computepb.ListNetwor
 // ListPeeringRoutes lists the peering routes exchanged over peering connection.
 func (c *networksRESTClient) ListPeeringRoutes(ctx context.Context, req *computepb.ListPeeringRoutesNetworksRequest, opts ...gax.CallOption) *ExchangedPeeringRouteIterator {
 	it := &ExchangedPeeringRouteIterator{}
-	req = proto.Clone(req).(*computepb.ListPeeringRoutesNetworksRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.ExchangedPeeringRoute, string, error) {
 		resp := &computepb.ExchangedPeeringRoutesList{}

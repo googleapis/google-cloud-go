@@ -861,7 +861,7 @@ func (c *dataChatGRPCClient) ListConversations(ctx context.Context, req *geminid
 	}
 	opts = append((*c.CallOptions).ListConversations[0:len((*c.CallOptions).ListConversations):len((*c.CallOptions).ListConversations)], opts...)
 	it := &ConversationIterator{}
-	req = proto.Clone(req).(*geminidataanalyticspb.ListConversationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*geminidataanalyticspb.Conversation, string, error) {
 		resp := &geminidataanalyticspb.ListConversationsResponse{}
 		if pageToken != "" {
@@ -913,7 +913,7 @@ func (c *dataChatGRPCClient) ListMessages(ctx context.Context, req *geminidataan
 	}
 	opts = append((*c.CallOptions).ListMessages[0:len((*c.CallOptions).ListMessages):len((*c.CallOptions).ListMessages)], opts...)
 	it := &StorageMessageIterator{}
-	req = proto.Clone(req).(*geminidataanalyticspb.ListMessagesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*geminidataanalyticspb.StorageMessage, string, error) {
 		resp := &geminidataanalyticspb.ListMessagesResponse{}
 		if pageToken != "" {
@@ -1007,7 +1007,7 @@ func (c *dataChatGRPCClient) ListLocations(ctx context.Context, req *locationpb.
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -1111,7 +1111,7 @@ func (c *dataChatGRPCClient) ListOperations(ctx context.Context, req *longrunnin
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -1433,7 +1433,7 @@ func (c *dataChatRESTClient) GetConversation(ctx context.Context, req *geminidat
 // ListConversations lists all conversations for a given parent.
 func (c *dataChatRESTClient) ListConversations(ctx context.Context, req *geminidataanalyticspb.ListConversationsRequest, opts ...gax.CallOption) *ConversationIterator {
 	it := &ConversationIterator{}
-	req = proto.Clone(req).(*geminidataanalyticspb.ListConversationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*geminidataanalyticspb.Conversation, string, error) {
 		resp := &geminidataanalyticspb.ListConversationsResponse{}
@@ -1514,7 +1514,7 @@ func (c *dataChatRESTClient) ListConversations(ctx context.Context, req *geminid
 // ListMessages lists all messages for a given conversation.
 func (c *dataChatRESTClient) ListMessages(ctx context.Context, req *geminidataanalyticspb.ListMessagesRequest, opts ...gax.CallOption) *StorageMessageIterator {
 	it := &StorageMessageIterator{}
-	req = proto.Clone(req).(*geminidataanalyticspb.ListMessagesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*geminidataanalyticspb.StorageMessage, string, error) {
 		resp := &geminidataanalyticspb.ListMessagesResponse{}
@@ -1720,7 +1720,7 @@ func (c *dataChatRESTClient) GetLocation(ctx context.Context, req *locationpb.Ge
 //	to the project.
 func (c *dataChatRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -1939,7 +1939,7 @@ func (c *dataChatRESTClient) GetOperation(ctx context.Context, req *longrunningp
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *dataChatRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

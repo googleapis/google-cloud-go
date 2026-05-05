@@ -1709,7 +1709,7 @@ func (c *clusterManagerGRPCClient) ListUsableSubnetworks(ctx context.Context, re
 	}
 	opts = append((*c.CallOptions).ListUsableSubnetworks[0:len((*c.CallOptions).ListUsableSubnetworks):len((*c.CallOptions).ListUsableSubnetworks)], opts...)
 	it := &UsableSubnetworkIterator{}
-	req = proto.Clone(req).(*containerpb.ListUsableSubnetworksRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*containerpb.UsableSubnetwork, string, error) {
 		resp := &containerpb.ListUsableSubnetworksResponse{}
 		if pageToken != "" {
@@ -3756,7 +3756,7 @@ func (c *clusterManagerRESTClient) SetMaintenancePolicy(ctx context.Context, req
 // ListUsableSubnetworks lists subnetworks that are usable for creating clusters in a project.
 func (c *clusterManagerRESTClient) ListUsableSubnetworks(ctx context.Context, req *containerpb.ListUsableSubnetworksRequest, opts ...gax.CallOption) *UsableSubnetworkIterator {
 	it := &UsableSubnetworkIterator{}
-	req = proto.Clone(req).(*containerpb.ListUsableSubnetworksRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*containerpb.UsableSubnetwork, string, error) {
 		resp := &containerpb.ListUsableSubnetworksResponse{}

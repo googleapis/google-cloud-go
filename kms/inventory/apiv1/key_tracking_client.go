@@ -394,7 +394,7 @@ func (c *keyTrackingGRPCClient) SearchProtectedResources(ctx context.Context, re
 	}
 	opts = append((*c.CallOptions).SearchProtectedResources[0:len((*c.CallOptions).SearchProtectedResources):len((*c.CallOptions).SearchProtectedResources)], opts...)
 	it := &ProtectedResourceIterator{}
-	req = proto.Clone(req).(*inventorypb.SearchProtectedResourcesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*inventorypb.ProtectedResource, string, error) {
 		resp := &inventorypb.SearchProtectedResourcesResponse{}
 		if pageToken != "" {
@@ -508,7 +508,7 @@ func (c *keyTrackingRESTClient) GetProtectedResourcesSummary(ctx context.Context
 // organization/project.
 func (c *keyTrackingRESTClient) SearchProtectedResources(ctx context.Context, req *inventorypb.SearchProtectedResourcesRequest, opts ...gax.CallOption) *ProtectedResourceIterator {
 	it := &ProtectedResourceIterator{}
-	req = proto.Clone(req).(*inventorypb.SearchProtectedResourcesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*inventorypb.ProtectedResource, string, error) {
 		resp := &inventorypb.SearchProtectedResourcesResponse{}

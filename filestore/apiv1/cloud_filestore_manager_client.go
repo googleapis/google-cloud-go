@@ -914,7 +914,7 @@ func (c *cloudFilestoreManagerGRPCClient) ListInstances(ctx context.Context, req
 	}
 	opts = append((*c.CallOptions).ListInstances[0:len((*c.CallOptions).ListInstances):len((*c.CallOptions).ListInstances)], opts...)
 	it := &InstanceIterator{}
-	req = proto.Clone(req).(*filestorepb.ListInstancesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*filestorepb.Instance, string, error) {
 		resp := &filestorepb.ListInstancesResponse{}
 		if pageToken != "" {
@@ -1117,7 +1117,7 @@ func (c *cloudFilestoreManagerGRPCClient) ListSnapshots(ctx context.Context, req
 	}
 	opts = append((*c.CallOptions).ListSnapshots[0:len((*c.CallOptions).ListSnapshots):len((*c.CallOptions).ListSnapshots)], opts...)
 	it := &SnapshotIterator{}
-	req = proto.Clone(req).(*filestorepb.ListSnapshotsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*filestorepb.Snapshot, string, error) {
 		resp := &filestorepb.ListSnapshotsResponse{}
 		if pageToken != "" {
@@ -1268,7 +1268,7 @@ func (c *cloudFilestoreManagerGRPCClient) ListBackups(ctx context.Context, req *
 	}
 	opts = append((*c.CallOptions).ListBackups[0:len((*c.CallOptions).ListBackups):len((*c.CallOptions).ListBackups)], opts...)
 	it := &BackupIterator{}
-	req = proto.Clone(req).(*filestorepb.ListBackupsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*filestorepb.Backup, string, error) {
 		resp := &filestorepb.ListBackupsResponse{}
 		if pageToken != "" {
@@ -1463,7 +1463,7 @@ func (c *cloudFilestoreManagerGRPCClient) ListLocations(ctx context.Context, req
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -1567,7 +1567,7 @@ func (c *cloudFilestoreManagerGRPCClient) ListOperations(ctx context.Context, re
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -1610,7 +1610,7 @@ func (c *cloudFilestoreManagerGRPCClient) ListOperations(ctx context.Context, re
 // or for all locations.
 func (c *cloudFilestoreManagerRESTClient) ListInstances(ctx context.Context, req *filestorepb.ListInstancesRequest, opts ...gax.CallOption) *InstanceIterator {
 	it := &InstanceIterator{}
-	req = proto.Clone(req).(*filestorepb.ListInstancesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*filestorepb.Instance, string, error) {
 		resp := &filestorepb.ListInstancesResponse{}
@@ -2093,7 +2093,7 @@ func (c *cloudFilestoreManagerRESTClient) DeleteInstance(ctx context.Context, re
 // or for all locations.
 func (c *cloudFilestoreManagerRESTClient) ListSnapshots(ctx context.Context, req *filestorepb.ListSnapshotsRequest, opts ...gax.CallOption) *SnapshotIterator {
 	it := &SnapshotIterator{}
-	req = proto.Clone(req).(*filestorepb.ListSnapshotsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*filestorepb.Snapshot, string, error) {
 		resp := &filestorepb.ListSnapshotsResponse{}
@@ -2437,7 +2437,7 @@ func (c *cloudFilestoreManagerRESTClient) UpdateSnapshot(ctx context.Context, re
 // locations.
 func (c *cloudFilestoreManagerRESTClient) ListBackups(ctx context.Context, req *filestorepb.ListBackupsRequest, opts ...gax.CallOption) *BackupIterator {
 	it := &BackupIterator{}
-	req = proto.Clone(req).(*filestorepb.ListBackupsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*filestorepb.Backup, string, error) {
 		resp := &filestorepb.ListBackupsResponse{}
@@ -2897,7 +2897,7 @@ func (c *cloudFilestoreManagerRESTClient) GetLocation(ctx context.Context, req *
 // ListLocations lists information about the supported locations for this service.
 func (c *cloudFilestoreManagerRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -3116,7 +3116,7 @@ func (c *cloudFilestoreManagerRESTClient) GetOperation(ctx context.Context, req 
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *cloudFilestoreManagerRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

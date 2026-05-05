@@ -1186,7 +1186,7 @@ func (c *gRPCClient) ListConnectionProfiles(ctx context.Context, req *datastream
 	}
 	opts = append((*c.CallOptions).ListConnectionProfiles[0:len((*c.CallOptions).ListConnectionProfiles):len((*c.CallOptions).ListConnectionProfiles)], opts...)
 	it := &ConnectionProfileIterator{}
-	req = proto.Clone(req).(*datastreampb.ListConnectionProfilesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datastreampb.ConnectionProfile, string, error) {
 		resp := &datastreampb.ListConnectionProfilesResponse{}
 		if pageToken != "" {
@@ -1361,7 +1361,7 @@ func (c *gRPCClient) ListStreams(ctx context.Context, req *datastreampb.ListStre
 	}
 	opts = append((*c.CallOptions).ListStreams[0:len((*c.CallOptions).ListStreams):len((*c.CallOptions).ListStreams)], opts...)
 	it := &StreamIterator{}
-	req = proto.Clone(req).(*datastreampb.ListStreamsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datastreampb.Stream, string, error) {
 		resp := &datastreampb.ListStreamsResponse{}
 		if pageToken != "" {
@@ -1586,7 +1586,7 @@ func (c *gRPCClient) ListStreamObjects(ctx context.Context, req *datastreampb.Li
 	}
 	opts = append((*c.CallOptions).ListStreamObjects[0:len((*c.CallOptions).ListStreamObjects):len((*c.CallOptions).ListStreamObjects)], opts...)
 	it := &StreamObjectIterator{}
-	req = proto.Clone(req).(*datastreampb.ListStreamObjectsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datastreampb.StreamObject, string, error) {
 		resp := &datastreampb.ListStreamObjectsResponse{}
 		if pageToken != "" {
@@ -1686,7 +1686,7 @@ func (c *gRPCClient) FetchStaticIps(ctx context.Context, req *datastreampb.Fetch
 	}
 	opts = append((*c.CallOptions).FetchStaticIps[0:len((*c.CallOptions).FetchStaticIps):len((*c.CallOptions).FetchStaticIps)], opts...)
 	it := &StringIterator{}
-	req = proto.Clone(req).(*datastreampb.FetchStaticIpsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]string, string, error) {
 		resp := &datastreampb.FetchStaticIpsResponse{}
 		if pageToken != "" {
@@ -1788,7 +1788,7 @@ func (c *gRPCClient) ListPrivateConnections(ctx context.Context, req *datastream
 	}
 	opts = append((*c.CallOptions).ListPrivateConnections[0:len((*c.CallOptions).ListPrivateConnections):len((*c.CallOptions).ListPrivateConnections)], opts...)
 	it := &PrivateConnectionIterator{}
-	req = proto.Clone(req).(*datastreampb.ListPrivateConnectionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datastreampb.PrivateConnection, string, error) {
 		resp := &datastreampb.ListPrivateConnectionsResponse{}
 		if pageToken != "" {
@@ -1916,7 +1916,7 @@ func (c *gRPCClient) ListRoutes(ctx context.Context, req *datastreampb.ListRoute
 	}
 	opts = append((*c.CallOptions).ListRoutes[0:len((*c.CallOptions).ListRoutes):len((*c.CallOptions).ListRoutes)], opts...)
 	it := &RouteIterator{}
-	req = proto.Clone(req).(*datastreampb.ListRoutesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datastreampb.Route, string, error) {
 		resp := &datastreampb.ListRoutesResponse{}
 		if pageToken != "" {
@@ -2012,7 +2012,7 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -2116,7 +2116,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -2159,7 +2159,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // location.
 func (c *restClient) ListConnectionProfiles(ctx context.Context, req *datastreampb.ListConnectionProfilesRequest, opts ...gax.CallOption) *ConnectionProfileIterator {
 	it := &ConnectionProfileIterator{}
-	req = proto.Clone(req).(*datastreampb.ListConnectionProfilesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datastreampb.ConnectionProfile, string, error) {
 		resp := &datastreampb.ListConnectionProfilesResponse{}
@@ -2586,7 +2586,7 @@ func (c *restClient) DiscoverConnectionProfile(ctx context.Context, req *datastr
 // ListStreams use this method to list streams in a project and location.
 func (c *restClient) ListStreams(ctx context.Context, req *datastreampb.ListStreamsRequest, opts ...gax.CallOption) *StreamIterator {
 	it := &StreamIterator{}
-	req = proto.Clone(req).(*datastreampb.ListStreamsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datastreampb.Stream, string, error) {
 		resp := &datastreampb.ListStreamsResponse{}
@@ -3134,7 +3134,7 @@ func (c *restClient) LookupStreamObject(ctx context.Context, req *datastreampb.L
 // ListStreamObjects use this method to list the objects of a specific stream.
 func (c *restClient) ListStreamObjects(ctx context.Context, req *datastreampb.ListStreamObjectsRequest, opts ...gax.CallOption) *StreamObjectIterator {
 	it := &StreamObjectIterator{}
-	req = proto.Clone(req).(*datastreampb.ListStreamObjectsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datastreampb.StreamObject, string, error) {
 		resp := &datastreampb.ListStreamObjectsResponse{}
@@ -3339,7 +3339,7 @@ func (c *restClient) StopBackfillJob(ctx context.Context, req *datastreampb.Stop
 // Datastream.
 func (c *restClient) FetchStaticIps(ctx context.Context, req *datastreampb.FetchStaticIpsRequest, opts ...gax.CallOption) *StringIterator {
 	it := &StringIterator{}
-	req = proto.Clone(req).(*datastreampb.FetchStaticIpsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]string, string, error) {
 		resp := &datastreampb.FetchStaticIpsResponse{}
@@ -3552,7 +3552,7 @@ func (c *restClient) GetPrivateConnection(ctx context.Context, req *datastreampb
 // and location.
 func (c *restClient) ListPrivateConnections(ctx context.Context, req *datastreampb.ListPrivateConnectionsRequest, opts ...gax.CallOption) *PrivateConnectionIterator {
 	it := &PrivateConnectionIterator{}
-	req = proto.Clone(req).(*datastreampb.ListPrivateConnectionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datastreampb.PrivateConnection, string, error) {
 		resp := &datastreampb.ListPrivateConnectionsResponse{}
@@ -3832,7 +3832,7 @@ func (c *restClient) GetRoute(ctx context.Context, req *datastreampb.GetRouteReq
 // configuration in a project and location.
 func (c *restClient) ListRoutes(ctx context.Context, req *datastreampb.ListRoutesRequest, opts ...gax.CallOption) *RouteIterator {
 	it := &RouteIterator{}
-	req = proto.Clone(req).(*datastreampb.ListRoutesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datastreampb.Route, string, error) {
 		resp := &datastreampb.ListRoutesResponse{}
@@ -4033,7 +4033,7 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 // ListLocations lists information about the supported locations for this service.
 func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -4252,7 +4252,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

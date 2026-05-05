@@ -634,7 +634,7 @@ func (c *hubGRPCClient) ListHubs(ctx context.Context, req *networkconnectivitypb
 	}
 	opts = append((*c.CallOptions).ListHubs[0:len((*c.CallOptions).ListHubs):len((*c.CallOptions).ListHubs)], opts...)
 	it := &HubIterator{}
-	req = proto.Clone(req).(*networkconnectivitypb.ListHubsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkconnectivitypb.Hub, string, error) {
 		resp := &networkconnectivitypb.ListHubsResponse{}
 		if pageToken != "" {
@@ -785,7 +785,7 @@ func (c *hubGRPCClient) ListSpokes(ctx context.Context, req *networkconnectivity
 	}
 	opts = append((*c.CallOptions).ListSpokes[0:len((*c.CallOptions).ListSpokes):len((*c.CallOptions).ListSpokes)], opts...)
 	it := &SpokeIterator{}
-	req = proto.Clone(req).(*networkconnectivitypb.ListSpokesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkconnectivitypb.Spoke, string, error) {
 		resp := &networkconnectivitypb.ListSpokesResponse{}
 		if pageToken != "" {
@@ -926,7 +926,7 @@ func (c *hubGRPCClient) DeleteSpoke(ctx context.Context, req *networkconnectivit
 // ListHubs lists Hubs in a given project and location.
 func (c *hubRESTClient) ListHubs(ctx context.Context, req *networkconnectivitypb.ListHubsRequest, opts ...gax.CallOption) *HubIterator {
 	it := &HubIterator{}
-	req = proto.Clone(req).(*networkconnectivitypb.ListHubsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkconnectivitypb.Hub, string, error) {
 		resp := &networkconnectivitypb.ListHubsResponse{}
@@ -1277,7 +1277,7 @@ func (c *hubRESTClient) DeleteHub(ctx context.Context, req *networkconnectivityp
 // ListSpokes lists Spokes in a given project and location.
 func (c *hubRESTClient) ListSpokes(ctx context.Context, req *networkconnectivitypb.ListSpokesRequest, opts ...gax.CallOption) *SpokeIterator {
 	it := &SpokeIterator{}
-	req = proto.Clone(req).(*networkconnectivitypb.ListSpokesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkconnectivitypb.Spoke, string, error) {
 		resp := &networkconnectivitypb.ListSpokesResponse{}

@@ -386,7 +386,7 @@ func (c *storagePoolsRESTClient) Connection() *grpc.ClientConn {
 // returnPartialSuccess parameter to true.
 func (c *storagePoolsRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListStoragePoolsRequest, opts ...gax.CallOption) *StoragePoolsScopedListPairIterator {
 	it := &StoragePoolsScopedListPairIterator{}
-	req = proto.Clone(req).(*computepb.AggregatedListStoragePoolsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]StoragePoolsScopedListPair, string, error) {
 		resp := &computepb.StoragePoolAggregatedList{}
@@ -745,7 +745,7 @@ func (c *storagePoolsRESTClient) Insert(ctx context.Context, req *computepb.Inse
 // the specified zone.
 func (c *storagePoolsRESTClient) List(ctx context.Context, req *computepb.ListStoragePoolsRequest, opts ...gax.CallOption) *StoragePoolIterator {
 	it := &StoragePoolIterator{}
-	req = proto.Clone(req).(*computepb.ListStoragePoolsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.StoragePool, string, error) {
 		resp := &computepb.StoragePoolList{}
@@ -831,7 +831,7 @@ func (c *storagePoolsRESTClient) List(ctx context.Context, req *computepb.ListSt
 // ListDisks lists the disks in a specified storage pool.
 func (c *storagePoolsRESTClient) ListDisks(ctx context.Context, req *computepb.ListDisksStoragePoolsRequest, opts ...gax.CallOption) *StoragePoolDiskIterator {
 	it := &StoragePoolDiskIterator{}
-	req = proto.Clone(req).(*computepb.ListDisksStoragePoolsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.StoragePoolDisk, string, error) {
 		resp := &computepb.StoragePoolListDisks{}

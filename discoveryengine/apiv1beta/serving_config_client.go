@@ -511,7 +511,7 @@ func (c *servingConfigGRPCClient) ListServingConfigs(ctx context.Context, req *d
 	}
 	opts = append((*c.CallOptions).ListServingConfigs[0:len((*c.CallOptions).ListServingConfigs):len((*c.CallOptions).ListServingConfigs)], opts...)
 	it := &ServingConfigIterator{}
-	req = proto.Clone(req).(*discoveryenginepb.ListServingConfigsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*discoveryenginepb.ServingConfig, string, error) {
 		resp := &discoveryenginepb.ListServingConfigsResponse{}
 		if pageToken != "" {
@@ -598,7 +598,7 @@ func (c *servingConfigGRPCClient) ListOperations(ctx context.Context, req *longr
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -769,7 +769,7 @@ func (c *servingConfigRESTClient) GetServingConfig(ctx context.Context, req *dis
 // ListServingConfigs lists all ServingConfigs linked to this dataStore.
 func (c *servingConfigRESTClient) ListServingConfigs(ctx context.Context, req *discoveryenginepb.ListServingConfigsRequest, opts ...gax.CallOption) *ServingConfigIterator {
 	it := &ServingConfigIterator{}
-	req = proto.Clone(req).(*discoveryenginepb.ListServingConfigsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*discoveryenginepb.ServingConfig, string, error) {
 		resp := &discoveryenginepb.ListServingConfigsResponse{}
@@ -946,7 +946,7 @@ func (c *servingConfigRESTClient) GetOperation(ctx context.Context, req *longrun
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *servingConfigRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

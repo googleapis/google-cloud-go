@@ -730,7 +730,7 @@ func (c *gRPCClient) ListAuditReports(ctx context.Context, req *auditmanagerpb.L
 	}
 	opts = append((*c.CallOptions).ListAuditReports[0:len((*c.CallOptions).ListAuditReports):len((*c.CallOptions).ListAuditReports)], opts...)
 	it := &AuditReportIterator{}
-	req = proto.Clone(req).(*auditmanagerpb.ListAuditReportsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*auditmanagerpb.AuditReport, string, error) {
 		resp := &auditmanagerpb.ListAuditReportsResponse{}
 		if pageToken != "" {
@@ -830,7 +830,7 @@ func (c *gRPCClient) ListResourceEnrollmentStatuses(ctx context.Context, req *au
 	}
 	opts = append((*c.CallOptions).ListResourceEnrollmentStatuses[0:len((*c.CallOptions).ListResourceEnrollmentStatuses):len((*c.CallOptions).ListResourceEnrollmentStatuses)], opts...)
 	it := &ResourceEnrollmentStatusIterator{}
-	req = proto.Clone(req).(*auditmanagerpb.ListResourceEnrollmentStatusesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*auditmanagerpb.ResourceEnrollmentStatus, string, error) {
 		resp := &auditmanagerpb.ListResourceEnrollmentStatusesResponse{}
 		if pageToken != "" {
@@ -882,7 +882,7 @@ func (c *gRPCClient) ListControls(ctx context.Context, req *auditmanagerpb.ListC
 	}
 	opts = append((*c.CallOptions).ListControls[0:len((*c.CallOptions).ListControls):len((*c.CallOptions).ListControls)], opts...)
 	it := &ControlIterator{}
-	req = proto.Clone(req).(*auditmanagerpb.ListControlsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*auditmanagerpb.Control, string, error) {
 		resp := &auditmanagerpb.ListControlsResponse{}
 		if pageToken != "" {
@@ -952,7 +952,7 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -1056,7 +1056,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -1288,7 +1288,7 @@ func (c *restClient) GenerateAuditReport(ctx context.Context, req *auditmanagerp
 // ListAuditReports lists audit reports in the selected parent scope
 func (c *restClient) ListAuditReports(ctx context.Context, req *auditmanagerpb.ListAuditReportsRequest, opts ...gax.CallOption) *AuditReportIterator {
 	it := &AuditReportIterator{}
-	req = proto.Clone(req).(*auditmanagerpb.ListAuditReportsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*auditmanagerpb.AuditReport, string, error) {
 		resp := &auditmanagerpb.ListAuditReportsResponse{}
@@ -1480,7 +1480,7 @@ func (c *restClient) GetResourceEnrollmentStatus(ctx context.Context, req *audit
 // ListResourceEnrollmentStatuses fetches all resources under the parent along with their enrollment.
 func (c *restClient) ListResourceEnrollmentStatuses(ctx context.Context, req *auditmanagerpb.ListResourceEnrollmentStatusesRequest, opts ...gax.CallOption) *ResourceEnrollmentStatusIterator {
 	it := &ResourceEnrollmentStatusIterator{}
-	req = proto.Clone(req).(*auditmanagerpb.ListResourceEnrollmentStatusesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*auditmanagerpb.ResourceEnrollmentStatus, string, error) {
 		resp := &auditmanagerpb.ListResourceEnrollmentStatusesResponse{}
@@ -1558,7 +1558,7 @@ func (c *restClient) ListResourceEnrollmentStatuses(ctx context.Context, req *au
 // ListControls gets controls needed to be implemented to be compliant to a standard.
 func (c *restClient) ListControls(ctx context.Context, req *auditmanagerpb.ListControlsRequest, opts ...gax.CallOption) *ControlIterator {
 	it := &ControlIterator{}
-	req = proto.Clone(req).(*auditmanagerpb.ListControlsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*auditmanagerpb.Control, string, error) {
 		resp := &auditmanagerpb.ListControlsResponse{}
@@ -1698,7 +1698,7 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 //	to the project.
 func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -1917,7 +1917,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

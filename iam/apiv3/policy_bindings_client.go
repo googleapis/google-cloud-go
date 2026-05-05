@@ -674,7 +674,7 @@ func (c *policyBindingsGRPCClient) ListPolicyBindings(ctx context.Context, req *
 	}
 	opts = append((*c.CallOptions).ListPolicyBindings[0:len((*c.CallOptions).ListPolicyBindings):len((*c.CallOptions).ListPolicyBindings)], opts...)
 	it := &PolicyBindingIterator{}
-	req = proto.Clone(req).(*iampb.ListPolicyBindingsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*iampb.PolicyBinding, string, error) {
 		resp := &iampb.ListPolicyBindingsResponse{}
 		if pageToken != "" {
@@ -726,7 +726,7 @@ func (c *policyBindingsGRPCClient) SearchTargetPolicyBindings(ctx context.Contex
 	}
 	opts = append((*c.CallOptions).SearchTargetPolicyBindings[0:len((*c.CallOptions).SearchTargetPolicyBindings):len((*c.CallOptions).SearchTargetPolicyBindings)], opts...)
 	it := &PolicyBindingIterator{}
-	req = proto.Clone(req).(*iampb.SearchTargetPolicyBindingsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*iampb.PolicyBinding, string, error) {
 		resp := &iampb.SearchTargetPolicyBindingsResponse{}
 		if pageToken != "" {
@@ -1065,7 +1065,7 @@ func (c *policyBindingsRESTClient) DeletePolicyBinding(ctx context.Context, req 
 // ListPolicyBindings lists policy bindings.
 func (c *policyBindingsRESTClient) ListPolicyBindings(ctx context.Context, req *iampb.ListPolicyBindingsRequest, opts ...gax.CallOption) *PolicyBindingIterator {
 	it := &PolicyBindingIterator{}
-	req = proto.Clone(req).(*iampb.ListPolicyBindingsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*iampb.PolicyBinding, string, error) {
 		resp := &iampb.ListPolicyBindingsResponse{}
@@ -1147,7 +1147,7 @@ func (c *policyBindingsRESTClient) ListPolicyBindings(ctx context.Context, req *
 // directly to target.
 func (c *policyBindingsRESTClient) SearchTargetPolicyBindings(ctx context.Context, req *iampb.SearchTargetPolicyBindingsRequest, opts ...gax.CallOption) *PolicyBindingIterator {
 	it := &PolicyBindingIterator{}
-	req = proto.Clone(req).(*iampb.SearchTargetPolicyBindingsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*iampb.PolicyBinding, string, error) {
 		resp := &iampb.SearchTargetPolicyBindingsResponse{}

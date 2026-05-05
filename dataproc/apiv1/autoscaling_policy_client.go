@@ -630,7 +630,7 @@ func (c *autoscalingPolicyGRPCClient) ListAutoscalingPolicies(ctx context.Contex
 	}
 	opts = append((*c.CallOptions).ListAutoscalingPolicies[0:len((*c.CallOptions).ListAutoscalingPolicies):len((*c.CallOptions).ListAutoscalingPolicies)], opts...)
 	it := &AutoscalingPolicyIterator{}
-	req = proto.Clone(req).(*dataprocpb.ListAutoscalingPoliciesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataprocpb.AutoscalingPolicy, string, error) {
 		resp := &dataprocpb.ListAutoscalingPoliciesResponse{}
 		if pageToken != "" {
@@ -826,7 +826,7 @@ func (c *autoscalingPolicyGRPCClient) ListOperations(ctx context.Context, req *l
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -1053,7 +1053,7 @@ func (c *autoscalingPolicyRESTClient) GetAutoscalingPolicy(ctx context.Context, 
 // ListAutoscalingPolicies lists autoscaling policies in the project.
 func (c *autoscalingPolicyRESTClient) ListAutoscalingPolicies(ctx context.Context, req *dataprocpb.ListAutoscalingPoliciesRequest, opts ...gax.CallOption) *AutoscalingPolicyIterator {
 	it := &AutoscalingPolicyIterator{}
-	req = proto.Clone(req).(*dataprocpb.ListAutoscalingPoliciesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataprocpb.AutoscalingPolicy, string, error) {
 		resp := &dataprocpb.ListAutoscalingPoliciesResponse{}
@@ -1506,7 +1506,7 @@ func (c *autoscalingPolicyRESTClient) GetOperation(ctx context.Context, req *lon
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *autoscalingPolicyRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

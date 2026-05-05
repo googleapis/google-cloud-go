@@ -566,7 +566,7 @@ func (c *insightsConfigGRPCClient) ListInsightsConfigs(ctx context.Context, req 
 	}
 	opts = append((*c.CallOptions).ListInsightsConfigs[0:len((*c.CallOptions).ListInsightsConfigs):len((*c.CallOptions).ListInsightsConfigs)], opts...)
 	it := &InsightsConfigIterator{}
-	req = proto.Clone(req).(*developerconnectpb.ListInsightsConfigsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*developerconnectpb.InsightsConfig, string, error) {
 		resp := &developerconnectpb.ListInsightsConfigsResponse{}
 		if pageToken != "" {
@@ -741,7 +741,7 @@ func (c *insightsConfigGRPCClient) ListDeploymentEvents(ctx context.Context, req
 	}
 	opts = append((*c.CallOptions).ListDeploymentEvents[0:len((*c.CallOptions).ListDeploymentEvents):len((*c.CallOptions).ListDeploymentEvents)], opts...)
 	it := &DeploymentEventIterator{}
-	req = proto.Clone(req).(*developerconnectpb.ListDeploymentEventsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*developerconnectpb.DeploymentEvent, string, error) {
 		resp := &developerconnectpb.ListDeploymentEventsResponse{}
 		if pageToken != "" {
@@ -811,7 +811,7 @@ func (c *insightsConfigGRPCClient) ListLocations(ctx context.Context, req *locat
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -915,7 +915,7 @@ func (c *insightsConfigGRPCClient) ListOperations(ctx context.Context, req *long
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -957,7 +957,7 @@ func (c *insightsConfigGRPCClient) ListOperations(ctx context.Context, req *long
 // ListInsightsConfigs lists InsightsConfigs in a given project and location.
 func (c *insightsConfigRESTClient) ListInsightsConfigs(ctx context.Context, req *developerconnectpb.ListInsightsConfigsRequest, opts ...gax.CallOption) *InsightsConfigIterator {
 	it := &InsightsConfigIterator{}
-	req = proto.Clone(req).(*developerconnectpb.ListInsightsConfigsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*developerconnectpb.InsightsConfig, string, error) {
 		resp := &developerconnectpb.ListInsightsConfigsResponse{}
@@ -1368,7 +1368,7 @@ func (c *insightsConfigRESTClient) GetDeploymentEvent(ctx context.Context, req *
 // ListDeploymentEvents lists Deployment Events in a given insights config.
 func (c *insightsConfigRESTClient) ListDeploymentEvents(ctx context.Context, req *developerconnectpb.ListDeploymentEventsRequest, opts ...gax.CallOption) *DeploymentEventIterator {
 	it := &DeploymentEventIterator{}
-	req = proto.Clone(req).(*developerconnectpb.ListDeploymentEventsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*developerconnectpb.DeploymentEvent, string, error) {
 		resp := &developerconnectpb.ListDeploymentEventsResponse{}
@@ -1511,7 +1511,7 @@ func (c *insightsConfigRESTClient) GetLocation(ctx context.Context, req *locatio
 //	to the project.
 func (c *insightsConfigRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -1730,7 +1730,7 @@ func (c *insightsConfigRESTClient) GetOperation(ctx context.Context, req *longru
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *insightsConfigRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
