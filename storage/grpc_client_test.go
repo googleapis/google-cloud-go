@@ -586,4 +586,3 @@ func TestListObjects_UserProject(t *testing.T) {
 		t.Errorf("Expected x-goog-user-project to be project-id, got %v", got)
 	}
 }
-
