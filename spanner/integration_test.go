@@ -5390,13 +5390,12 @@ func compareErrors(got, want error) bool {
 	if idx := strings.Index(wantStr, "requestID"); idx != -1 {
 		wantStr = wantStr[:idx]
 	}
-	gotStr = strings.ReplaceAll(gotStr, `",`, ``)
-	wantStr = strings.ReplaceAll(wantStr, `",`, ``)
+	gotStr = strings.ReplaceAll(gotStr, `", `, `"`)
+	wantStr = strings.ReplaceAll(wantStr, `", `, `"`)
 	return strings.EqualFold(strings.TrimSpace(gotStr), strings.TrimSpace(wantStr))
 }
 
 func TestIntegration_Foreign_Key_Delete_Cascade_Action(t *testing.T) {
-	t.Skip("flaky - internal b/509563490")
 	skipEmulatorTest(t)
 	skipExperimentalHostTest(t)
 	t.Parallel()
@@ -5595,7 +5594,7 @@ func TestIntegration_Foreign_Key_Delete_Cascade_Action(t *testing.T) {
 			gotErr := tt.test()
 			if gotErr != nil {
 				if !compareErrors(gotErr, tt.wantErr) {
-					t.Errorf(`FKDC error=%v, wantErr: %v`, gotErr, tt.wantErr)
+					t.Errorf("error mismatch\n Got: %v\nWant: %v", gotErr, tt.wantErr)
 				}
 			} else {
 				tt.validate()
