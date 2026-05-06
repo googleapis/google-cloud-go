@@ -26,6 +26,7 @@ import (
 	unsafe "unsafe"
 
 	_ "google.golang.org/genproto/googleapis/api/annotations"
+	status "google.golang.org/genproto/googleapis/rpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
@@ -922,7 +923,9 @@ type SearchResponseMetadata struct {
 	//
 	//	*SearchResponseMetadata_UsedIndex
 	//	*SearchResponseMetadata_UsedKnn
-	IndexType     isSearchResponseMetadata_IndexType `protobuf_oneof:"index_type"`
+	IndexType isSearchResponseMetadata_IndexType `protobuf_oneof:"index_type"`
+	// Output only. Warnings or non-fatal errors that occurred during execution.
+	Warnings      []*status.Status `protobuf:"bytes,3,rep,name=warnings,proto3" json:"warnings,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -980,6 +983,13 @@ func (x *SearchResponseMetadata) GetUsedKnn() bool {
 		}
 	}
 	return false
+}
+
+func (x *SearchResponseMetadata) GetWarnings() []*status.Status {
+	if x != nil {
+		return x.Warnings
+	}
+	return nil
 }
 
 type isSearchResponseMetadata_IndexType interface {
@@ -1403,7 +1413,14 @@ type Ranker struct {
 	// Types that are valid to be assigned to Ranker:
 	//
 	//	*Ranker_Rrf
-	Ranker        isRanker_Ranker `protobuf_oneof:"ranker"`
+	Ranker isRanker_Ranker `protobuf_oneof:"ranker"`
+	// The reranker to use for final ranking of the results combined by the
+	// ranker.
+	//
+	// Types that are valid to be assigned to Reranker:
+	//
+	//	*Ranker_VertexRanker
+	Reranker      isRanker_Reranker `protobuf_oneof:"reranker"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1454,6 +1471,22 @@ func (x *Ranker) GetRrf() *ReciprocalRankFusion {
 	return nil
 }
 
+func (x *Ranker) GetReranker() isRanker_Reranker {
+	if x != nil {
+		return x.Reranker
+	}
+	return nil
+}
+
+func (x *Ranker) GetVertexRanker() *VertexRanker {
+	if x != nil {
+		if x, ok := x.Reranker.(*Ranker_VertexRanker); ok {
+			return x.VertexRanker
+		}
+	}
+	return nil
+}
+
 type isRanker_Ranker interface {
 	isRanker_Ranker()
 }
@@ -1464,6 +1497,17 @@ type Ranker_Rrf struct {
 }
 
 func (*Ranker_Rrf) isRanker_Ranker() {}
+
+type isRanker_Reranker interface {
+	isRanker_Reranker()
+}
+
+type Ranker_VertexRanker struct {
+	// Optional. Vertex AI ranking.
+	VertexRanker *VertexRanker `protobuf:"bytes,2,opt,name=vertex_ranker,json=vertexRanker,proto3,oneof"`
+}
+
+func (*Ranker_VertexRanker) isRanker_Reranker() {}
 
 // Defines the Reciprocal Rank Fusion (RRF) algorithm for result ranking.
 type ReciprocalRankFusion struct {
@@ -1511,6 +1555,100 @@ func (x *ReciprocalRankFusion) GetWeights() []float64 {
 	return nil
 }
 
+// Defines a ranker using the Vertex AI ranking service.
+// See https://cloud.google.com/generative-ai-app-builder/docs/ranking for
+// details.
+type VertexRanker struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The record specification for ranking. At least one record spec must be
+	// set.
+	//
+	// Types that are valid to be assigned to RecordSpec:
+	//
+	//	*VertexRanker_TextRecordSpec_
+	RecordSpec isVertexRanker_RecordSpec `protobuf_oneof:"record_spec"`
+	// Required. The model used for ranking documents. The list of available
+	// models is described in
+	// https://docs.cloud.google.com/generative-ai-app-builder/docs/ranking#models.
+	// Currently, only `semantic-ranker-fast@latest` is supported.
+	Model string `protobuf:"bytes,4,opt,name=model,proto3" json:"model,omitempty"`
+	// Required. The number of documents to be processed for ranking.
+	TopN          int32 `protobuf:"varint,5,opt,name=top_n,json=topN,proto3" json:"top_n,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *VertexRanker) Reset() {
+	*x = VertexRanker{}
+	mi := &file_google_cloud_vectorsearch_v1beta_data_object_search_service_proto_msgTypes[17]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *VertexRanker) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*VertexRanker) ProtoMessage() {}
+
+func (x *VertexRanker) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_vectorsearch_v1beta_data_object_search_service_proto_msgTypes[17]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use VertexRanker.ProtoReflect.Descriptor instead.
+func (*VertexRanker) Descriptor() ([]byte, []int) {
+	return file_google_cloud_vectorsearch_v1beta_data_object_search_service_proto_rawDescGZIP(), []int{17}
+}
+
+func (x *VertexRanker) GetRecordSpec() isVertexRanker_RecordSpec {
+	if x != nil {
+		return x.RecordSpec
+	}
+	return nil
+}
+
+func (x *VertexRanker) GetTextRecordSpec() *VertexRanker_TextRecordSpec {
+	if x != nil {
+		if x, ok := x.RecordSpec.(*VertexRanker_TextRecordSpec_); ok {
+			return x.TextRecordSpec
+		}
+	}
+	return nil
+}
+
+func (x *VertexRanker) GetModel() string {
+	if x != nil {
+		return x.Model
+	}
+	return ""
+}
+
+func (x *VertexRanker) GetTopN() int32 {
+	if x != nil {
+		return x.TopN
+	}
+	return 0
+}
+
+type isVertexRanker_RecordSpec interface {
+	isVertexRanker_RecordSpec()
+}
+
+type VertexRanker_TextRecordSpec_ struct {
+	// The record spec for text search.
+	TextRecordSpec *VertexRanker_TextRecordSpec `protobuf:"bytes,6,opt,name=text_record_spec,json=textRecordSpec,proto3,oneof"`
+}
+
+func (*VertexRanker_TextRecordSpec_) isVertexRanker_RecordSpec() {}
+
 // A response from a batch search operation.
 type BatchSearchDataObjectsResponse struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -1523,7 +1661,7 @@ type BatchSearchDataObjectsResponse struct {
 
 func (x *BatchSearchDataObjectsResponse) Reset() {
 	*x = BatchSearchDataObjectsResponse{}
-	mi := &file_google_cloud_vectorsearch_v1beta_data_object_search_service_proto_msgTypes[17]
+	mi := &file_google_cloud_vectorsearch_v1beta_data_object_search_service_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1535,7 +1673,7 @@ func (x *BatchSearchDataObjectsResponse) String() string {
 func (*BatchSearchDataObjectsResponse) ProtoMessage() {}
 
 func (x *BatchSearchDataObjectsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_vectorsearch_v1beta_data_object_search_service_proto_msgTypes[17]
+	mi := &file_google_cloud_vectorsearch_v1beta_data_object_search_service_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1548,7 +1686,7 @@ func (x *BatchSearchDataObjectsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BatchSearchDataObjectsResponse.ProtoReflect.Descriptor instead.
 func (*BatchSearchDataObjectsResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_vectorsearch_v1beta_data_object_search_service_proto_rawDescGZIP(), []int{17}
+	return file_google_cloud_vectorsearch_v1beta_data_object_search_service_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *BatchSearchDataObjectsResponse) GetResults() []*SearchDataObjectsResponse {
@@ -1578,7 +1716,7 @@ type SearchHint_IndexHint struct {
 
 func (x *SearchHint_IndexHint) Reset() {
 	*x = SearchHint_IndexHint{}
-	mi := &file_google_cloud_vectorsearch_v1beta_data_object_search_service_proto_msgTypes[18]
+	mi := &file_google_cloud_vectorsearch_v1beta_data_object_search_service_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1590,7 +1728,7 @@ func (x *SearchHint_IndexHint) String() string {
 func (*SearchHint_IndexHint) ProtoMessage() {}
 
 func (x *SearchHint_IndexHint) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_vectorsearch_v1beta_data_object_search_service_proto_msgTypes[18]
+	mi := &file_google_cloud_vectorsearch_v1beta_data_object_search_service_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1650,7 +1788,7 @@ type SearchHint_KnnHint struct {
 
 func (x *SearchHint_KnnHint) Reset() {
 	*x = SearchHint_KnnHint{}
-	mi := &file_google_cloud_vectorsearch_v1beta_data_object_search_service_proto_msgTypes[19]
+	mi := &file_google_cloud_vectorsearch_v1beta_data_object_search_service_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1662,7 +1800,7 @@ func (x *SearchHint_KnnHint) String() string {
 func (*SearchHint_KnnHint) ProtoMessage() {}
 
 func (x *SearchHint_KnnHint) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_vectorsearch_v1beta_data_object_search_service_proto_msgTypes[19]
+	mi := &file_google_cloud_vectorsearch_v1beta_data_object_search_service_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1693,7 +1831,7 @@ type SearchHint_IndexHint_DenseScannParams struct {
 
 func (x *SearchHint_IndexHint_DenseScannParams) Reset() {
 	*x = SearchHint_IndexHint_DenseScannParams{}
-	mi := &file_google_cloud_vectorsearch_v1beta_data_object_search_service_proto_msgTypes[20]
+	mi := &file_google_cloud_vectorsearch_v1beta_data_object_search_service_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1705,7 +1843,7 @@ func (x *SearchHint_IndexHint_DenseScannParams) String() string {
 func (*SearchHint_IndexHint_DenseScannParams) ProtoMessage() {}
 
 func (x *SearchHint_IndexHint_DenseScannParams) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_vectorsearch_v1beta_data_object_search_service_proto_msgTypes[20]
+	mi := &file_google_cloud_vectorsearch_v1beta_data_object_search_service_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1748,7 +1886,7 @@ type SearchResponseMetadata_IndexInfo struct {
 
 func (x *SearchResponseMetadata_IndexInfo) Reset() {
 	*x = SearchResponseMetadata_IndexInfo{}
-	mi := &file_google_cloud_vectorsearch_v1beta_data_object_search_service_proto_msgTypes[21]
+	mi := &file_google_cloud_vectorsearch_v1beta_data_object_search_service_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1760,7 +1898,7 @@ func (x *SearchResponseMetadata_IndexInfo) String() string {
 func (*SearchResponseMetadata_IndexInfo) ProtoMessage() {}
 
 func (x *SearchResponseMetadata_IndexInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_vectorsearch_v1beta_data_object_search_service_proto_msgTypes[21]
+	mi := &file_google_cloud_vectorsearch_v1beta_data_object_search_service_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1799,7 +1937,7 @@ type BatchSearchDataObjectsRequest_CombineResultsOptions struct {
 
 func (x *BatchSearchDataObjectsRequest_CombineResultsOptions) Reset() {
 	*x = BatchSearchDataObjectsRequest_CombineResultsOptions{}
-	mi := &file_google_cloud_vectorsearch_v1beta_data_object_search_service_proto_msgTypes[22]
+	mi := &file_google_cloud_vectorsearch_v1beta_data_object_search_service_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1811,7 +1949,7 @@ func (x *BatchSearchDataObjectsRequest_CombineResultsOptions) String() string {
 func (*BatchSearchDataObjectsRequest_CombineResultsOptions) ProtoMessage() {}
 
 func (x *BatchSearchDataObjectsRequest_CombineResultsOptions) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_vectorsearch_v1beta_data_object_search_service_proto_msgTypes[22]
+	mi := &file_google_cloud_vectorsearch_v1beta_data_object_search_service_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1848,11 +1986,75 @@ func (x *BatchSearchDataObjectsRequest_CombineResultsOptions) GetTopK() int32 {
 	return 0
 }
 
+// The record spec for text search.
+type VertexRanker_TextRecordSpec struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The query against which the records are ranked and scored.
+	Query string `protobuf:"bytes,1,opt,name=query,proto3" json:"query,omitempty"`
+	// Optional. The template used to generate the record's title.
+	TitleTemplate string `protobuf:"bytes,2,opt,name=title_template,json=titleTemplate,proto3" json:"title_template,omitempty"`
+	// Optional. The template used to generate the record's content.
+	ContentTemplate string `protobuf:"bytes,3,opt,name=content_template,json=contentTemplate,proto3" json:"content_template,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *VertexRanker_TextRecordSpec) Reset() {
+	*x = VertexRanker_TextRecordSpec{}
+	mi := &file_google_cloud_vectorsearch_v1beta_data_object_search_service_proto_msgTypes[24]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *VertexRanker_TextRecordSpec) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*VertexRanker_TextRecordSpec) ProtoMessage() {}
+
+func (x *VertexRanker_TextRecordSpec) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_vectorsearch_v1beta_data_object_search_service_proto_msgTypes[24]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use VertexRanker_TextRecordSpec.ProtoReflect.Descriptor instead.
+func (*VertexRanker_TextRecordSpec) Descriptor() ([]byte, []int) {
+	return file_google_cloud_vectorsearch_v1beta_data_object_search_service_proto_rawDescGZIP(), []int{17, 0}
+}
+
+func (x *VertexRanker_TextRecordSpec) GetQuery() string {
+	if x != nil {
+		return x.Query
+	}
+	return ""
+}
+
+func (x *VertexRanker_TextRecordSpec) GetTitleTemplate() string {
+	if x != nil {
+		return x.TitleTemplate
+	}
+	return ""
+}
+
+func (x *VertexRanker_TextRecordSpec) GetContentTemplate() string {
+	if x != nil {
+		return x.ContentTemplate
+	}
+	return ""
+}
+
 var File_google_cloud_vectorsearch_v1beta_data_object_search_service_proto protoreflect.FileDescriptor
 
 const file_google_cloud_vectorsearch_v1beta_data_object_search_service_proto_rawDesc = "" +
 	"\n" +
-	"Agoogle/cloud/vectorsearch/v1beta/data_object_search_service.proto\x12 google.cloud.vectorsearch.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a-google/cloud/vectorsearch/v1beta/common.proto\x1a2google/cloud/vectorsearch/v1beta/data_object.proto\x1a7google/cloud/vectorsearch/v1beta/embedding_config.proto\x1a\x1cgoogle/protobuf/struct.proto\"\x8c\x01\n" +
+	"Agoogle/cloud/vectorsearch/v1beta/data_object_search_service.proto\x12 google.cloud.vectorsearch.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a-google/cloud/vectorsearch/v1beta/common.proto\x1a2google/cloud/vectorsearch/v1beta/data_object.proto\x1a7google/cloud/vectorsearch/v1beta/embedding_config.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x17google/rpc/status.proto\"\x8c\x01\n" +
 	"\fOutputFields\x12$\n" +
 	"\vdata_fields\x18\x01 \x03(\tB\x03\xe0A\x01R\n" +
 	"dataFields\x12(\n" +
@@ -1929,11 +2131,12 @@ const file_google_cloud_vectorsearch_v1beta_data_object_search_service_proto_raw
 	"\vdata_object\x18\x01 \x01(\v2,.google.cloud.vectorsearch.v1beta.DataObjectB\x03\xe0A\x03R\n" +
 	"dataObject\x12$\n" +
 	"\bdistance\x18\x02 \x01(\x01B\x03\xe0A\x03H\x00R\bdistance\x88\x01\x01B\v\n" +
-	"\t_distance\"\xf9\x01\n" +
+	"\t_distance\"\xae\x02\n" +
 	"\x16SearchResponseMetadata\x12c\n" +
 	"\n" +
 	"used_index\x18\x01 \x01(\v2B.google.cloud.vectorsearch.v1beta.SearchResponseMetadata.IndexInfoH\x00R\tusedIndex\x12 \n" +
-	"\bused_knn\x18\x02 \x01(\bB\x03\xe0A\x03H\x00R\ausedKnn\x1aJ\n" +
+	"\bused_knn\x18\x02 \x01(\bB\x03\xe0A\x03H\x00R\ausedKnn\x123\n" +
+	"\bwarnings\x18\x03 \x03(\v2\x12.google.rpc.StatusB\x03\xe0A\x03R\bwarnings\x1aJ\n" +
 	"\tIndexInfo\x12=\n" +
 	"\x04name\x18\x01 \x01(\tB)\xe0A\x03\xfaA#\n" +
 	"!vectorsearch.googleapis.com/IndexR\x04nameB\f\n" +
@@ -1969,12 +2172,24 @@ const file_google_cloud_vectorsearch_v1beta_data_object_search_service_proto_raw
 	"\x15CombineResultsOptions\x12E\n" +
 	"\x06ranker\x18\x01 \x01(\v2(.google.cloud.vectorsearch.v1beta.RankerB\x03\xe0A\x02R\x06ranker\x12X\n" +
 	"\routput_fields\x18\x02 \x01(\v2..google.cloud.vectorsearch.v1beta.OutputFieldsB\x03\xe0A\x01R\foutputFields\x12\x18\n" +
-	"\x05top_k\x18\x03 \x01(\x05B\x03\xe0A\x01R\x04topK\"^\n" +
+	"\x05top_k\x18\x03 \x01(\x05B\x03\xe0A\x01R\x04topK\"\xc6\x01\n" +
 	"\x06Ranker\x12J\n" +
-	"\x03rrf\x18\x01 \x01(\v26.google.cloud.vectorsearch.v1beta.ReciprocalRankFusionH\x00R\x03rrfB\b\n" +
-	"\x06ranker\"5\n" +
+	"\x03rrf\x18\x01 \x01(\v26.google.cloud.vectorsearch.v1beta.ReciprocalRankFusionH\x00R\x03rrf\x12Z\n" +
+	"\rvertex_ranker\x18\x02 \x01(\v2..google.cloud.vectorsearch.v1beta.VertexRankerB\x03\xe0A\x01H\x01R\fvertexRankerB\b\n" +
+	"\x06rankerB\n" +
+	"\n" +
+	"\breranker\"5\n" +
 	"\x14ReciprocalRankFusion\x12\x1d\n" +
-	"\aweights\x18\x01 \x03(\x01B\x03\xe0A\x02R\aweights\"|\n" +
+	"\aweights\x18\x01 \x03(\x01B\x03\xe0A\x02R\aweights\"\xc7\x02\n" +
+	"\fVertexRanker\x12i\n" +
+	"\x10text_record_spec\x18\x06 \x01(\v2=.google.cloud.vectorsearch.v1beta.VertexRanker.TextRecordSpecH\x00R\x0etextRecordSpec\x12\x19\n" +
+	"\x05model\x18\x04 \x01(\tB\x03\xe0A\x02R\x05model\x12\x18\n" +
+	"\x05top_n\x18\x05 \x01(\x05B\x03\xe0A\x02R\x04topN\x1a\x87\x01\n" +
+	"\x0eTextRecordSpec\x12\x19\n" +
+	"\x05query\x18\x01 \x01(\tB\x03\xe0A\x02R\x05query\x12*\n" +
+	"\x0etitle_template\x18\x02 \x01(\tB\x03\xe0A\x01R\rtitleTemplate\x12.\n" +
+	"\x10content_template\x18\x03 \x01(\tB\x03\xe0A\x01R\x0fcontentTemplateB\r\n" +
+	"\vrecord_spec\"|\n" +
 	"\x1eBatchSearchDataObjectsResponse\x12Z\n" +
 	"\aresults\x18\x01 \x03(\v2;.google.cloud.vectorsearch.v1beta.SearchDataObjectsResponseB\x03\xe0A\x03R\aresults*B\n" +
 	"\x11AggregationMethod\x12\"\n" +
@@ -2000,7 +2215,7 @@ func file_google_cloud_vectorsearch_v1beta_data_object_search_service_proto_rawD
 }
 
 var file_google_cloud_vectorsearch_v1beta_data_object_search_service_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_google_cloud_vectorsearch_v1beta_data_object_search_service_proto_msgTypes = make([]protoimpl.MessageInfo, 23)
+var file_google_cloud_vectorsearch_v1beta_data_object_search_service_proto_msgTypes = make([]protoimpl.MessageInfo, 25)
 var file_google_cloud_vectorsearch_v1beta_data_object_search_service_proto_goTypes = []any{
 	(AggregationMethod)(0),                                      // 0: google.cloud.vectorsearch.v1beta.AggregationMethod
 	(*OutputFields)(nil),                                        // 1: google.cloud.vectorsearch.v1beta.OutputFields
@@ -2020,71 +2235,77 @@ var file_google_cloud_vectorsearch_v1beta_data_object_search_service_proto_goTyp
 	(*BatchSearchDataObjectsRequest)(nil),                       // 15: google.cloud.vectorsearch.v1beta.BatchSearchDataObjectsRequest
 	(*Ranker)(nil),                                              // 16: google.cloud.vectorsearch.v1beta.Ranker
 	(*ReciprocalRankFusion)(nil),                                // 17: google.cloud.vectorsearch.v1beta.ReciprocalRankFusion
-	(*BatchSearchDataObjectsResponse)(nil),                      // 18: google.cloud.vectorsearch.v1beta.BatchSearchDataObjectsResponse
-	(*SearchHint_IndexHint)(nil),                                // 19: google.cloud.vectorsearch.v1beta.SearchHint.IndexHint
-	(*SearchHint_KnnHint)(nil),                                  // 20: google.cloud.vectorsearch.v1beta.SearchHint.KnnHint
-	(*SearchHint_IndexHint_DenseScannParams)(nil),               // 21: google.cloud.vectorsearch.v1beta.SearchHint.IndexHint.DenseScannParams
-	(*SearchResponseMetadata_IndexInfo)(nil),                    // 22: google.cloud.vectorsearch.v1beta.SearchResponseMetadata.IndexInfo
-	(*BatchSearchDataObjectsRequest_CombineResultsOptions)(nil), // 23: google.cloud.vectorsearch.v1beta.BatchSearchDataObjectsRequest.CombineResultsOptions
-	(*DenseVector)(nil),                                         // 24: google.cloud.vectorsearch.v1beta.DenseVector
-	(*SparseVector)(nil),                                        // 25: google.cloud.vectorsearch.v1beta.SparseVector
-	(*structpb.Struct)(nil),                                     // 26: google.protobuf.Struct
-	(DistanceMetric)(0),                                         // 27: google.cloud.vectorsearch.v1beta.DistanceMetric
-	(EmbeddingTaskType)(0),                                      // 28: google.cloud.vectorsearch.v1beta.EmbeddingTaskType
-	(*DataObject)(nil),                                          // 29: google.cloud.vectorsearch.v1beta.DataObject
+	(*VertexRanker)(nil),                                        // 18: google.cloud.vectorsearch.v1beta.VertexRanker
+	(*BatchSearchDataObjectsResponse)(nil),                      // 19: google.cloud.vectorsearch.v1beta.BatchSearchDataObjectsResponse
+	(*SearchHint_IndexHint)(nil),                                // 20: google.cloud.vectorsearch.v1beta.SearchHint.IndexHint
+	(*SearchHint_KnnHint)(nil),                                  // 21: google.cloud.vectorsearch.v1beta.SearchHint.KnnHint
+	(*SearchHint_IndexHint_DenseScannParams)(nil),               // 22: google.cloud.vectorsearch.v1beta.SearchHint.IndexHint.DenseScannParams
+	(*SearchResponseMetadata_IndexInfo)(nil),                    // 23: google.cloud.vectorsearch.v1beta.SearchResponseMetadata.IndexInfo
+	(*BatchSearchDataObjectsRequest_CombineResultsOptions)(nil), // 24: google.cloud.vectorsearch.v1beta.BatchSearchDataObjectsRequest.CombineResultsOptions
+	(*VertexRanker_TextRecordSpec)(nil),                         // 25: google.cloud.vectorsearch.v1beta.VertexRanker.TextRecordSpec
+	(*DenseVector)(nil),                                         // 26: google.cloud.vectorsearch.v1beta.DenseVector
+	(*SparseVector)(nil),                                        // 27: google.cloud.vectorsearch.v1beta.SparseVector
+	(*structpb.Struct)(nil),                                     // 28: google.protobuf.Struct
+	(DistanceMetric)(0),                                         // 29: google.cloud.vectorsearch.v1beta.DistanceMetric
+	(EmbeddingTaskType)(0),                                      // 30: google.cloud.vectorsearch.v1beta.EmbeddingTaskType
+	(*DataObject)(nil),                                          // 31: google.cloud.vectorsearch.v1beta.DataObject
+	(*status.Status)(nil),                                       // 32: google.rpc.Status
 }
 var file_google_cloud_vectorsearch_v1beta_data_object_search_service_proto_depIdxs = []int32{
-	19, // 0: google.cloud.vectorsearch.v1beta.SearchHint.use_index:type_name -> google.cloud.vectorsearch.v1beta.SearchHint.IndexHint
-	20, // 1: google.cloud.vectorsearch.v1beta.SearchHint.knn_hint:type_name -> google.cloud.vectorsearch.v1beta.SearchHint.KnnHint
-	19, // 2: google.cloud.vectorsearch.v1beta.SearchHint.index_hint:type_name -> google.cloud.vectorsearch.v1beta.SearchHint.IndexHint
+	20, // 0: google.cloud.vectorsearch.v1beta.SearchHint.use_index:type_name -> google.cloud.vectorsearch.v1beta.SearchHint.IndexHint
+	21, // 1: google.cloud.vectorsearch.v1beta.SearchHint.knn_hint:type_name -> google.cloud.vectorsearch.v1beta.SearchHint.KnnHint
+	20, // 2: google.cloud.vectorsearch.v1beta.SearchHint.index_hint:type_name -> google.cloud.vectorsearch.v1beta.SearchHint.IndexHint
 	4,  // 3: google.cloud.vectorsearch.v1beta.Search.vector_search:type_name -> google.cloud.vectorsearch.v1beta.VectorSearch
 	5,  // 4: google.cloud.vectorsearch.v1beta.Search.semantic_search:type_name -> google.cloud.vectorsearch.v1beta.SemanticSearch
 	6,  // 5: google.cloud.vectorsearch.v1beta.Search.text_search:type_name -> google.cloud.vectorsearch.v1beta.TextSearch
-	24, // 6: google.cloud.vectorsearch.v1beta.VectorSearch.vector:type_name -> google.cloud.vectorsearch.v1beta.DenseVector
-	25, // 7: google.cloud.vectorsearch.v1beta.VectorSearch.sparse_vector:type_name -> google.cloud.vectorsearch.v1beta.SparseVector
-	26, // 8: google.cloud.vectorsearch.v1beta.VectorSearch.filter:type_name -> google.protobuf.Struct
+	26, // 6: google.cloud.vectorsearch.v1beta.VectorSearch.vector:type_name -> google.cloud.vectorsearch.v1beta.DenseVector
+	27, // 7: google.cloud.vectorsearch.v1beta.VectorSearch.sparse_vector:type_name -> google.cloud.vectorsearch.v1beta.SparseVector
+	28, // 8: google.cloud.vectorsearch.v1beta.VectorSearch.filter:type_name -> google.protobuf.Struct
 	1,  // 9: google.cloud.vectorsearch.v1beta.VectorSearch.output_fields:type_name -> google.cloud.vectorsearch.v1beta.OutputFields
 	2,  // 10: google.cloud.vectorsearch.v1beta.VectorSearch.search_hint:type_name -> google.cloud.vectorsearch.v1beta.SearchHint
-	27, // 11: google.cloud.vectorsearch.v1beta.VectorSearch.distance_metric:type_name -> google.cloud.vectorsearch.v1beta.DistanceMetric
-	28, // 12: google.cloud.vectorsearch.v1beta.SemanticSearch.task_type:type_name -> google.cloud.vectorsearch.v1beta.EmbeddingTaskType
+	29, // 11: google.cloud.vectorsearch.v1beta.VectorSearch.distance_metric:type_name -> google.cloud.vectorsearch.v1beta.DistanceMetric
+	30, // 12: google.cloud.vectorsearch.v1beta.SemanticSearch.task_type:type_name -> google.cloud.vectorsearch.v1beta.EmbeddingTaskType
 	1,  // 13: google.cloud.vectorsearch.v1beta.SemanticSearch.output_fields:type_name -> google.cloud.vectorsearch.v1beta.OutputFields
-	26, // 14: google.cloud.vectorsearch.v1beta.SemanticSearch.filter:type_name -> google.protobuf.Struct
+	28, // 14: google.cloud.vectorsearch.v1beta.SemanticSearch.filter:type_name -> google.protobuf.Struct
 	2,  // 15: google.cloud.vectorsearch.v1beta.SemanticSearch.search_hint:type_name -> google.cloud.vectorsearch.v1beta.SearchHint
 	1,  // 16: google.cloud.vectorsearch.v1beta.TextSearch.output_fields:type_name -> google.cloud.vectorsearch.v1beta.OutputFields
-	26, // 17: google.cloud.vectorsearch.v1beta.TextSearch.filter:type_name -> google.protobuf.Struct
+	28, // 17: google.cloud.vectorsearch.v1beta.TextSearch.filter:type_name -> google.protobuf.Struct
 	4,  // 18: google.cloud.vectorsearch.v1beta.SearchDataObjectsRequest.vector_search:type_name -> google.cloud.vectorsearch.v1beta.VectorSearch
 	5,  // 19: google.cloud.vectorsearch.v1beta.SearchDataObjectsRequest.semantic_search:type_name -> google.cloud.vectorsearch.v1beta.SemanticSearch
 	6,  // 20: google.cloud.vectorsearch.v1beta.SearchDataObjectsRequest.text_search:type_name -> google.cloud.vectorsearch.v1beta.TextSearch
-	29, // 21: google.cloud.vectorsearch.v1beta.SearchResult.data_object:type_name -> google.cloud.vectorsearch.v1beta.DataObject
-	22, // 22: google.cloud.vectorsearch.v1beta.SearchResponseMetadata.used_index:type_name -> google.cloud.vectorsearch.v1beta.SearchResponseMetadata.IndexInfo
-	8,  // 23: google.cloud.vectorsearch.v1beta.SearchDataObjectsResponse.results:type_name -> google.cloud.vectorsearch.v1beta.SearchResult
-	9,  // 24: google.cloud.vectorsearch.v1beta.SearchDataObjectsResponse.search_response_metadata:type_name -> google.cloud.vectorsearch.v1beta.SearchResponseMetadata
-	26, // 25: google.cloud.vectorsearch.v1beta.AggregateDataObjectsRequest.filter:type_name -> google.protobuf.Struct
-	0,  // 26: google.cloud.vectorsearch.v1beta.AggregateDataObjectsRequest.aggregate:type_name -> google.cloud.vectorsearch.v1beta.AggregationMethod
-	26, // 27: google.cloud.vectorsearch.v1beta.AggregateDataObjectsResponse.aggregate_results:type_name -> google.protobuf.Struct
-	26, // 28: google.cloud.vectorsearch.v1beta.QueryDataObjectsRequest.filter:type_name -> google.protobuf.Struct
-	1,  // 29: google.cloud.vectorsearch.v1beta.QueryDataObjectsRequest.output_fields:type_name -> google.cloud.vectorsearch.v1beta.OutputFields
-	29, // 30: google.cloud.vectorsearch.v1beta.QueryDataObjectsResponse.data_objects:type_name -> google.cloud.vectorsearch.v1beta.DataObject
-	3,  // 31: google.cloud.vectorsearch.v1beta.BatchSearchDataObjectsRequest.searches:type_name -> google.cloud.vectorsearch.v1beta.Search
-	23, // 32: google.cloud.vectorsearch.v1beta.BatchSearchDataObjectsRequest.combine:type_name -> google.cloud.vectorsearch.v1beta.BatchSearchDataObjectsRequest.CombineResultsOptions
-	17, // 33: google.cloud.vectorsearch.v1beta.Ranker.rrf:type_name -> google.cloud.vectorsearch.v1beta.ReciprocalRankFusion
-	10, // 34: google.cloud.vectorsearch.v1beta.BatchSearchDataObjectsResponse.results:type_name -> google.cloud.vectorsearch.v1beta.SearchDataObjectsResponse
-	21, // 35: google.cloud.vectorsearch.v1beta.SearchHint.IndexHint.dense_scann_params:type_name -> google.cloud.vectorsearch.v1beta.SearchHint.IndexHint.DenseScannParams
-	16, // 36: google.cloud.vectorsearch.v1beta.BatchSearchDataObjectsRequest.CombineResultsOptions.ranker:type_name -> google.cloud.vectorsearch.v1beta.Ranker
-	1,  // 37: google.cloud.vectorsearch.v1beta.BatchSearchDataObjectsRequest.CombineResultsOptions.output_fields:type_name -> google.cloud.vectorsearch.v1beta.OutputFields
-	7,  // 38: google.cloud.vectorsearch.v1beta.DataObjectSearchService.SearchDataObjects:input_type -> google.cloud.vectorsearch.v1beta.SearchDataObjectsRequest
-	13, // 39: google.cloud.vectorsearch.v1beta.DataObjectSearchService.QueryDataObjects:input_type -> google.cloud.vectorsearch.v1beta.QueryDataObjectsRequest
-	11, // 40: google.cloud.vectorsearch.v1beta.DataObjectSearchService.AggregateDataObjects:input_type -> google.cloud.vectorsearch.v1beta.AggregateDataObjectsRequest
-	15, // 41: google.cloud.vectorsearch.v1beta.DataObjectSearchService.BatchSearchDataObjects:input_type -> google.cloud.vectorsearch.v1beta.BatchSearchDataObjectsRequest
-	10, // 42: google.cloud.vectorsearch.v1beta.DataObjectSearchService.SearchDataObjects:output_type -> google.cloud.vectorsearch.v1beta.SearchDataObjectsResponse
-	14, // 43: google.cloud.vectorsearch.v1beta.DataObjectSearchService.QueryDataObjects:output_type -> google.cloud.vectorsearch.v1beta.QueryDataObjectsResponse
-	12, // 44: google.cloud.vectorsearch.v1beta.DataObjectSearchService.AggregateDataObjects:output_type -> google.cloud.vectorsearch.v1beta.AggregateDataObjectsResponse
-	18, // 45: google.cloud.vectorsearch.v1beta.DataObjectSearchService.BatchSearchDataObjects:output_type -> google.cloud.vectorsearch.v1beta.BatchSearchDataObjectsResponse
-	42, // [42:46] is the sub-list for method output_type
-	38, // [38:42] is the sub-list for method input_type
-	38, // [38:38] is the sub-list for extension type_name
-	38, // [38:38] is the sub-list for extension extendee
-	0,  // [0:38] is the sub-list for field type_name
+	31, // 21: google.cloud.vectorsearch.v1beta.SearchResult.data_object:type_name -> google.cloud.vectorsearch.v1beta.DataObject
+	23, // 22: google.cloud.vectorsearch.v1beta.SearchResponseMetadata.used_index:type_name -> google.cloud.vectorsearch.v1beta.SearchResponseMetadata.IndexInfo
+	32, // 23: google.cloud.vectorsearch.v1beta.SearchResponseMetadata.warnings:type_name -> google.rpc.Status
+	8,  // 24: google.cloud.vectorsearch.v1beta.SearchDataObjectsResponse.results:type_name -> google.cloud.vectorsearch.v1beta.SearchResult
+	9,  // 25: google.cloud.vectorsearch.v1beta.SearchDataObjectsResponse.search_response_metadata:type_name -> google.cloud.vectorsearch.v1beta.SearchResponseMetadata
+	28, // 26: google.cloud.vectorsearch.v1beta.AggregateDataObjectsRequest.filter:type_name -> google.protobuf.Struct
+	0,  // 27: google.cloud.vectorsearch.v1beta.AggregateDataObjectsRequest.aggregate:type_name -> google.cloud.vectorsearch.v1beta.AggregationMethod
+	28, // 28: google.cloud.vectorsearch.v1beta.AggregateDataObjectsResponse.aggregate_results:type_name -> google.protobuf.Struct
+	28, // 29: google.cloud.vectorsearch.v1beta.QueryDataObjectsRequest.filter:type_name -> google.protobuf.Struct
+	1,  // 30: google.cloud.vectorsearch.v1beta.QueryDataObjectsRequest.output_fields:type_name -> google.cloud.vectorsearch.v1beta.OutputFields
+	31, // 31: google.cloud.vectorsearch.v1beta.QueryDataObjectsResponse.data_objects:type_name -> google.cloud.vectorsearch.v1beta.DataObject
+	3,  // 32: google.cloud.vectorsearch.v1beta.BatchSearchDataObjectsRequest.searches:type_name -> google.cloud.vectorsearch.v1beta.Search
+	24, // 33: google.cloud.vectorsearch.v1beta.BatchSearchDataObjectsRequest.combine:type_name -> google.cloud.vectorsearch.v1beta.BatchSearchDataObjectsRequest.CombineResultsOptions
+	17, // 34: google.cloud.vectorsearch.v1beta.Ranker.rrf:type_name -> google.cloud.vectorsearch.v1beta.ReciprocalRankFusion
+	18, // 35: google.cloud.vectorsearch.v1beta.Ranker.vertex_ranker:type_name -> google.cloud.vectorsearch.v1beta.VertexRanker
+	25, // 36: google.cloud.vectorsearch.v1beta.VertexRanker.text_record_spec:type_name -> google.cloud.vectorsearch.v1beta.VertexRanker.TextRecordSpec
+	10, // 37: google.cloud.vectorsearch.v1beta.BatchSearchDataObjectsResponse.results:type_name -> google.cloud.vectorsearch.v1beta.SearchDataObjectsResponse
+	22, // 38: google.cloud.vectorsearch.v1beta.SearchHint.IndexHint.dense_scann_params:type_name -> google.cloud.vectorsearch.v1beta.SearchHint.IndexHint.DenseScannParams
+	16, // 39: google.cloud.vectorsearch.v1beta.BatchSearchDataObjectsRequest.CombineResultsOptions.ranker:type_name -> google.cloud.vectorsearch.v1beta.Ranker
+	1,  // 40: google.cloud.vectorsearch.v1beta.BatchSearchDataObjectsRequest.CombineResultsOptions.output_fields:type_name -> google.cloud.vectorsearch.v1beta.OutputFields
+	7,  // 41: google.cloud.vectorsearch.v1beta.DataObjectSearchService.SearchDataObjects:input_type -> google.cloud.vectorsearch.v1beta.SearchDataObjectsRequest
+	13, // 42: google.cloud.vectorsearch.v1beta.DataObjectSearchService.QueryDataObjects:input_type -> google.cloud.vectorsearch.v1beta.QueryDataObjectsRequest
+	11, // 43: google.cloud.vectorsearch.v1beta.DataObjectSearchService.AggregateDataObjects:input_type -> google.cloud.vectorsearch.v1beta.AggregateDataObjectsRequest
+	15, // 44: google.cloud.vectorsearch.v1beta.DataObjectSearchService.BatchSearchDataObjects:input_type -> google.cloud.vectorsearch.v1beta.BatchSearchDataObjectsRequest
+	10, // 45: google.cloud.vectorsearch.v1beta.DataObjectSearchService.SearchDataObjects:output_type -> google.cloud.vectorsearch.v1beta.SearchDataObjectsResponse
+	14, // 46: google.cloud.vectorsearch.v1beta.DataObjectSearchService.QueryDataObjects:output_type -> google.cloud.vectorsearch.v1beta.QueryDataObjectsResponse
+	12, // 47: google.cloud.vectorsearch.v1beta.DataObjectSearchService.AggregateDataObjects:output_type -> google.cloud.vectorsearch.v1beta.AggregateDataObjectsResponse
+	19, // 48: google.cloud.vectorsearch.v1beta.DataObjectSearchService.BatchSearchDataObjects:output_type -> google.cloud.vectorsearch.v1beta.BatchSearchDataObjectsResponse
+	45, // [45:49] is the sub-list for method output_type
+	41, // [41:45] is the sub-list for method input_type
+	41, // [41:41] is the sub-list for extension type_name
+	41, // [41:41] is the sub-list for extension extendee
+	0,  // [0:41] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_vectorsearch_v1beta_data_object_search_service_proto_init() }
@@ -2124,8 +2345,12 @@ func file_google_cloud_vectorsearch_v1beta_data_object_search_service_proto_init
 	}
 	file_google_cloud_vectorsearch_v1beta_data_object_search_service_proto_msgTypes[15].OneofWrappers = []any{
 		(*Ranker_Rrf)(nil),
+		(*Ranker_VertexRanker)(nil),
 	}
-	file_google_cloud_vectorsearch_v1beta_data_object_search_service_proto_msgTypes[18].OneofWrappers = []any{
+	file_google_cloud_vectorsearch_v1beta_data_object_search_service_proto_msgTypes[17].OneofWrappers = []any{
+		(*VertexRanker_TextRecordSpec_)(nil),
+	}
+	file_google_cloud_vectorsearch_v1beta_data_object_search_service_proto_msgTypes[19].OneofWrappers = []any{
 		(*SearchHint_IndexHint_DenseScannParams_)(nil),
 	}
 	type x struct{}
@@ -2134,7 +2359,7 @@ func file_google_cloud_vectorsearch_v1beta_data_object_search_service_proto_init
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_vectorsearch_v1beta_data_object_search_service_proto_rawDesc), len(file_google_cloud_vectorsearch_v1beta_data_object_search_service_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   23,
+			NumMessages:   25,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

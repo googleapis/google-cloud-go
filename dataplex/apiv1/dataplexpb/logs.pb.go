@@ -3568,21 +3568,21 @@ func file_google_cloud_dataplex_v1_logs_proto_rawDescGZIP() []byte {
 var file_google_cloud_dataplex_v1_logs_proto_enumTypes = make([]protoimpl.EnumInfo, 21)
 var file_google_cloud_dataplex_v1_logs_proto_msgTypes = make([]protoimpl.MessageInfo, 25)
 var file_google_cloud_dataplex_v1_logs_proto_goTypes = []any{
-	(DiscoveryEvent_EventType)(0),          // 0: google.cloud.dataplex.v1.DiscoveryEvent.EventType
-	(DiscoveryEvent_EntityType)(0),         // 1: google.cloud.dataplex.v1.DiscoveryEvent.EntityType
-	(DiscoveryEvent_TableType)(0),          // 2: google.cloud.dataplex.v1.DiscoveryEvent.TableType
-	(JobEvent_Type)(0),                     // 3: google.cloud.dataplex.v1.JobEvent.Type
-	(JobEvent_State)(0),                    // 4: google.cloud.dataplex.v1.JobEvent.State
-	(JobEvent_Service)(0),                  // 5: google.cloud.dataplex.v1.JobEvent.Service
-	(JobEvent_ExecutionTrigger)(0),         // 6: google.cloud.dataplex.v1.JobEvent.ExecutionTrigger
-	(SessionEvent_EventType)(0),            // 7: google.cloud.dataplex.v1.SessionEvent.EventType
-	(SessionEvent_QueryDetail_Engine)(0),   // 8: google.cloud.dataplex.v1.SessionEvent.QueryDetail.Engine
-	(GovernanceEvent_EventType)(0),         // 9: google.cloud.dataplex.v1.GovernanceEvent.EventType
-	(GovernanceEvent_Entity_EntityType)(0), // 10: google.cloud.dataplex.v1.GovernanceEvent.Entity.EntityType
-	(DataScanEvent_ScanType)(0),            // 11: google.cloud.dataplex.v1.DataScanEvent.ScanType
-	(DataScanEvent_State)(0),               // 12: google.cloud.dataplex.v1.DataScanEvent.State
-	(DataScanEvent_Trigger)(0),             // 13: google.cloud.dataplex.v1.DataScanEvent.Trigger
-	(DataScanEvent_Scope)(0),               // 14: google.cloud.dataplex.v1.DataScanEvent.Scope
+	(DiscoveryEvent_EventType)(0),                                       // 0: google.cloud.dataplex.v1.DiscoveryEvent.EventType
+	(DiscoveryEvent_EntityType)(0),                                      // 1: google.cloud.dataplex.v1.DiscoveryEvent.EntityType
+	(DiscoveryEvent_TableType)(0),                                       // 2: google.cloud.dataplex.v1.DiscoveryEvent.TableType
+	(JobEvent_Type)(0),                                                  // 3: google.cloud.dataplex.v1.JobEvent.Type
+	(JobEvent_State)(0),                                                 // 4: google.cloud.dataplex.v1.JobEvent.State
+	(JobEvent_Service)(0),                                               // 5: google.cloud.dataplex.v1.JobEvent.Service
+	(JobEvent_ExecutionTrigger)(0),                                      // 6: google.cloud.dataplex.v1.JobEvent.ExecutionTrigger
+	(SessionEvent_EventType)(0),                                         // 7: google.cloud.dataplex.v1.SessionEvent.EventType
+	(SessionEvent_QueryDetail_Engine)(0),                                // 8: google.cloud.dataplex.v1.SessionEvent.QueryDetail.Engine
+	(GovernanceEvent_EventType)(0),                                      // 9: google.cloud.dataplex.v1.GovernanceEvent.EventType
+	(GovernanceEvent_Entity_EntityType)(0),                              // 10: google.cloud.dataplex.v1.GovernanceEvent.Entity.EntityType
+	(DataScanEvent_ScanType)(0),                                         // 11: google.cloud.dataplex.v1.DataScanEvent.ScanType
+	(DataScanEvent_State)(0),                                            // 12: google.cloud.dataplex.v1.DataScanEvent.State
+	(DataScanEvent_Trigger)(0),                                          // 13: google.cloud.dataplex.v1.DataScanEvent.Trigger
+	(DataScanEvent_Scope)(0),                                            // 14: google.cloud.dataplex.v1.DataScanEvent.Scope
 	(DataScanEvent_PostScanActionsResult_BigQueryExportResult_State)(0), // 15: google.cloud.dataplex.v1.DataScanEvent.PostScanActionsResult.BigQueryExportResult.State
 	(DataQualityScanRuleResult_RuleType)(0),                             // 16: google.cloud.dataplex.v1.DataQualityScanRuleResult.RuleType
 	(DataQualityScanRuleResult_EvaluationType)(0),                       // 17: google.cloud.dataplex.v1.DataQualityScanRuleResult.EvaluationType

@@ -51,6 +51,7 @@ const (
 	Spanner_PartitionQuery_FullMethodName      = "/google.spanner.v1.Spanner/PartitionQuery"
 	Spanner_PartitionRead_FullMethodName       = "/google.spanner.v1.Spanner/PartitionRead"
 	Spanner_BatchWrite_FullMethodName          = "/google.spanner.v1.Spanner/BatchWrite"
+	Spanner_FetchCacheUpdate_FullMethodName    = "/google.spanner.v1.Spanner/FetchCacheUpdate"
 )
 
 // SpannerClient is the client API for Spanner service.
@@ -227,6 +228,16 @@ type SpannerClient interface {
 	// mutation's table. We recommend structuring your mutation groups to be
 	// idempotent to avoid this issue.
 	BatchWrite(ctx context.Context, in *BatchWriteRequest, opts ...grpc.CallOption) (Spanner_BatchWriteClient, error)
+	// Retrieves a cache update for a given database.
+	//
+	// This RPC can be used to warm up the client cache by fetching key recipes
+	// and server information for a given database. It is recommended to call
+	// this RPC at the beginning of the client's lifecycle, prior to any other
+	// data plane operations.
+	//
+	// The cache update is returned as a stream because the response can be too
+	// large to fit into a single `CacheUpdate` message.
+	FetchCacheUpdate(ctx context.Context, in *FetchCacheUpdateRequest, opts ...grpc.CallOption) (Spanner_FetchCacheUpdateClient, error)
 }
 
 type spannerClient struct {
@@ -450,6 +461,38 @@ func (x *spannerBatchWriteClient) Recv() (*BatchWriteResponse, error) {
 	return m, nil
 }
 
+func (c *spannerClient) FetchCacheUpdate(ctx context.Context, in *FetchCacheUpdateRequest, opts ...grpc.CallOption) (Spanner_FetchCacheUpdateClient, error) {
+	stream, err := c.cc.NewStream(ctx, &Spanner_ServiceDesc.Streams[3], Spanner_FetchCacheUpdate_FullMethodName, opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &spannerFetchCacheUpdateClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type Spanner_FetchCacheUpdateClient interface {
+	Recv() (*CacheUpdate, error)
+	grpc.ClientStream
+}
+
+type spannerFetchCacheUpdateClient struct {
+	grpc.ClientStream
+}
+
+func (x *spannerFetchCacheUpdateClient) Recv() (*CacheUpdate, error) {
+	m := new(CacheUpdate)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 // SpannerServer is the server API for Spanner service.
 // All implementations should embed UnimplementedSpannerServer
 // for forward compatibility
@@ -624,6 +667,16 @@ type SpannerServer interface {
 	// mutation's table. We recommend structuring your mutation groups to be
 	// idempotent to avoid this issue.
 	BatchWrite(*BatchWriteRequest, Spanner_BatchWriteServer) error
+	// Retrieves a cache update for a given database.
+	//
+	// This RPC can be used to warm up the client cache by fetching key recipes
+	// and server information for a given database. It is recommended to call
+	// this RPC at the beginning of the client's lifecycle, prior to any other
+	// data plane operations.
+	//
+	// The cache update is returned as a stream because the response can be too
+	// large to fit into a single `CacheUpdate` message.
+	FetchCacheUpdate(*FetchCacheUpdateRequest, Spanner_FetchCacheUpdateServer) error
 }
 
 // UnimplementedSpannerServer should be embedded to have forward compatible implementations.
@@ -677,6 +730,9 @@ func (UnimplementedSpannerServer) PartitionRead(context.Context, *PartitionReadR
 }
 func (UnimplementedSpannerServer) BatchWrite(*BatchWriteRequest, Spanner_BatchWriteServer) error {
 	return status.Errorf(codes.Unimplemented, "method BatchWrite not implemented")
+}
+func (UnimplementedSpannerServer) FetchCacheUpdate(*FetchCacheUpdateRequest, Spanner_FetchCacheUpdateServer) error {
+	return status.Errorf(codes.Unimplemented, "method FetchCacheUpdate not implemented")
 }
 
 // UnsafeSpannerServer may be embedded to opt out of forward compatibility for this service.
@@ -987,6 +1043,27 @@ func (x *spannerBatchWriteServer) Send(m *BatchWriteResponse) error {
 	return x.ServerStream.SendMsg(m)
 }
 
+func _Spanner_FetchCacheUpdate_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(FetchCacheUpdateRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(SpannerServer).FetchCacheUpdate(m, &spannerFetchCacheUpdateServer{stream})
+}
+
+type Spanner_FetchCacheUpdateServer interface {
+	Send(*CacheUpdate) error
+	grpc.ServerStream
+}
+
+type spannerFetchCacheUpdateServer struct {
+	grpc.ServerStream
+}
+
+func (x *spannerFetchCacheUpdateServer) Send(m *CacheUpdate) error {
+	return x.ServerStream.SendMsg(m)
+}
+
 // Spanner_ServiceDesc is the grpc.ServiceDesc for Spanner service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -1061,6 +1138,11 @@ var Spanner_ServiceDesc = grpc.ServiceDesc{
 		{
 			StreamName:    "BatchWrite",
 			Handler:       _Spanner_BatchWrite_Handler,
+			ServerStreams: true,
+		},
+		{
+			StreamName:    "FetchCacheUpdate",
+			Handler:       _Spanner_FetchCacheUpdate_Handler,
 			ServerStreams: true,
 		},
 	},
