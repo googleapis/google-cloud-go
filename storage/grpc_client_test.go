@@ -566,3 +566,24 @@ func TestPrepareDirectPathMetadata_FeatureTracking(t *testing.T) {
 		})
 	}
 }
+
+// TestListObjects_UserProject verifies that ListObjects correctly applies the
+// withUserProject storageOption to the outgoing context metadata (x-goog-user-project)
+// via setUserProjectMetadata, without initiating actual RPC calls.
+func TestListObjects_UserProject(t *testing.T) {
+	ctx := context.Background()
+	c := &grpcStorageClient{
+		settings: &settings{},
+	}
+	it := c.ListObjects(ctx, "bucket", nil, withUserProject("project-id"))
+
+	md, ok := metadata.FromOutgoingContext(it.ctx)
+	if !ok {
+		t.Fatalf("Expected outgoing metadata in context")
+	}
+
+	if got := md.Get("x-goog-user-project"); len(got) == 0 || got[0] != "project-id" {
+		t.Errorf("Expected x-goog-user-project to be project-id, got %v", got)
+	}
+}
+
