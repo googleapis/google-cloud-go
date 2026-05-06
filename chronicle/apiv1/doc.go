@@ -46,7 +46,7 @@
 //	// - It may require correct/in-range values for request initialization.
 //	// - It may require specifying regional endpoints when creating the service client as shown in:
 //	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-//	c, err := chronicle.NewDataAccessControlClient(ctx)
+//	c, err := chronicle.NewBigQueryExportClient(ctx)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}
@@ -60,11 +60,11 @@
 //
 // The following is an example of making an API call with the newly created client, mentioned above.
 //
-//	req := &chroniclepb.CreateDataAccessLabelRequest{
+//	req := &chroniclepb.GetBigQueryExportRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/chronicle/apiv1/chroniclepb#CreateDataAccessLabelRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/chronicle/apiv1/chroniclepb#GetBigQueryExportRequest.
 //	}
-//	resp, err := c.CreateDataAccessLabel(ctx, req)
+//	resp, err := c.GetBigQueryExport(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}
@@ -73,7 +73,7 @@
 //
 // # Use of Context
 //
-// The ctx passed to NewDataAccessControlClient is used for authentication requests and
+// The ctx passed to NewBigQueryExportClient is used for authentication requests and
 // for creating the underlying connection, but is not used for subsequent calls.
 // Individual methods on the client use the ctx given to them.
 //

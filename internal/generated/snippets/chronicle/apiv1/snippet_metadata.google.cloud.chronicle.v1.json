@@ -14,6 +14,874 @@
     {
       "clientMethod": {
         "client": {
+          "fullName": "google.cloud.chronicle.v1.BigQueryExportClient",
+          "shortName": "BigQueryExportClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.BigQueryExportClient.CancelOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "CancelOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.CancelOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "CancelOperation"
+      },
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "BigQueryExportClient/CancelOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_BigQueryExportService_CancelOperation_sync",
+      "segments": [
+        {
+          "end": 51,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle CancelOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.BigQueryExportClient",
+          "shortName": "BigQueryExportClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.BigQueryExportClient.DeleteOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "DeleteOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.DeleteOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteOperation"
+      },
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "BigQueryExportClient/DeleteOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_BigQueryExportService_DeleteOperation_sync",
+      "segments": [
+        {
+          "end": 51,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle DeleteOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.BigQueryExportClient",
+          "shortName": "BigQueryExportClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.BigQueryExportClient.GetBigQueryExport",
+        "method": {
+          "fullName": "google.cloud.chronicle.v1.BigQueryExportService.GetBigQueryExport",
+          "service": {
+            "fullName": "google.cloud.chronicle.v1.BigQueryExportService",
+            "shortName": "BigQueryExportService"
+          },
+          "shortName": "GetBigQueryExport"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chroniclepb.GetBigQueryExportRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*chroniclepb.BigQueryExport",
+        "shortName": "GetBigQueryExport"
+      },
+      "description": "GetBigQueryExport get the BigQuery export configuration for a Chronicle instance.",
+      "file": "BigQueryExportClient/GetBigQueryExport/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_BigQueryExportService_GetBigQueryExport_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle GetBigQueryExport Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.BigQueryExportClient",
+          "shortName": "BigQueryExportClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.BigQueryExportClient.GetOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "GetOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.GetOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "shortName": "GetOperation"
+      },
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "BigQueryExportClient/GetOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_BigQueryExportService_GetOperation_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle GetOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.BigQueryExportClient",
+          "shortName": "BigQueryExportClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.BigQueryExportClient.ListOperations",
+        "method": {
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "ListOperations"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.ListOperationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "shortName": "ListOperations"
+      },
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "BigQueryExportClient/ListOperations/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_BigQueryExportService_ListOperations_sync",
+      "segments": [
+        {
+          "end": 66,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle ListOperations Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.BigQueryExportClient",
+          "shortName": "BigQueryExportClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.BigQueryExportClient.ProvisionBigQueryExport",
+        "method": {
+          "fullName": "google.cloud.chronicle.v1.BigQueryExportService.ProvisionBigQueryExport",
+          "service": {
+            "fullName": "google.cloud.chronicle.v1.BigQueryExportService",
+            "shortName": "BigQueryExportService"
+          },
+          "shortName": "ProvisionBigQueryExport"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chroniclepb.ProvisionBigQueryExportRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*chroniclepb.BigQueryExport",
+        "shortName": "ProvisionBigQueryExport"
+      },
+      "description": "ProvisionBigQueryExport provision the BigQuery export for a Chronicle instance. This will create\n{{gcp_name}} resources like {{storage_name}} buckets, BigQuery datasets\nand set default export settings for each data source.",
+      "file": "BigQueryExportClient/ProvisionBigQueryExport/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_BigQueryExportService_ProvisionBigQueryExport_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle ProvisionBigQueryExport Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.BigQueryExportClient",
+          "shortName": "BigQueryExportClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.BigQueryExportClient.UpdateBigQueryExport",
+        "method": {
+          "fullName": "google.cloud.chronicle.v1.BigQueryExportService.UpdateBigQueryExport",
+          "service": {
+            "fullName": "google.cloud.chronicle.v1.BigQueryExportService",
+            "shortName": "BigQueryExportService"
+          },
+          "shortName": "UpdateBigQueryExport"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chroniclepb.UpdateBigQueryExportRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*chroniclepb.BigQueryExport",
+        "shortName": "UpdateBigQueryExport"
+      },
+      "description": "UpdateBigQueryExport update the BigQuery export configuration for a Chronicle instance.",
+      "file": "BigQueryExportClient/UpdateBigQueryExport/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_BigQueryExportService_UpdateBigQueryExport_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle UpdateBigQueryExport Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.DashboardChartClient",
+          "shortName": "DashboardChartClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.DashboardChartClient.BatchGetDashboardCharts",
+        "method": {
+          "fullName": "google.cloud.chronicle.v1.DashboardChartService.BatchGetDashboardCharts",
+          "service": {
+            "fullName": "google.cloud.chronicle.v1.DashboardChartService",
+            "shortName": "DashboardChartService"
+          },
+          "shortName": "BatchGetDashboardCharts"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chroniclepb.BatchGetDashboardChartsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*chroniclepb.BatchGetDashboardChartsResponse",
+        "shortName": "BatchGetDashboardCharts"
+      },
+      "description": "BatchGetDashboardCharts get dashboard charts in batches.",
+      "file": "DashboardChartClient/BatchGetDashboardCharts/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_DashboardChartService_BatchGetDashboardCharts_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle BatchGetDashboardCharts Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.DashboardChartClient",
+          "shortName": "DashboardChartClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.DashboardChartClient.CancelOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "CancelOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.CancelOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "CancelOperation"
+      },
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "DashboardChartClient/CancelOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_DashboardChartService_CancelOperation_sync",
+      "segments": [
+        {
+          "end": 51,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle CancelOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.DashboardChartClient",
+          "shortName": "DashboardChartClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.DashboardChartClient.DeleteOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "DeleteOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.DeleteOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteOperation"
+      },
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "DashboardChartClient/DeleteOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_DashboardChartService_DeleteOperation_sync",
+      "segments": [
+        {
+          "end": 51,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle DeleteOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.DashboardChartClient",
+          "shortName": "DashboardChartClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.DashboardChartClient.GetDashboardChart",
+        "method": {
+          "fullName": "google.cloud.chronicle.v1.DashboardChartService.GetDashboardChart",
+          "service": {
+            "fullName": "google.cloud.chronicle.v1.DashboardChartService",
+            "shortName": "DashboardChartService"
+          },
+          "shortName": "GetDashboardChart"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chroniclepb.GetDashboardChartRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*chroniclepb.DashboardChart",
+        "shortName": "GetDashboardChart"
+      },
+      "description": "GetDashboardChart get a dashboard chart.",
+      "file": "DashboardChartClient/GetDashboardChart/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_DashboardChartService_GetDashboardChart_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle GetDashboardChart Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.DashboardChartClient",
+          "shortName": "DashboardChartClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.DashboardChartClient.GetOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "GetOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.GetOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "shortName": "GetOperation"
+      },
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "DashboardChartClient/GetOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_DashboardChartService_GetOperation_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle GetOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.DashboardChartClient",
+          "shortName": "DashboardChartClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.DashboardChartClient.ListOperations",
+        "method": {
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "ListOperations"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.ListOperationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "shortName": "ListOperations"
+      },
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "DashboardChartClient/ListOperations/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_DashboardChartService_ListOperations_sync",
+      "segments": [
+        {
+          "end": 66,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle ListOperations Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.DashboardQueryClient",
+          "shortName": "DashboardQueryClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.DashboardQueryClient.CancelOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "CancelOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.CancelOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "CancelOperation"
+      },
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "DashboardQueryClient/CancelOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_DashboardQueryService_CancelOperation_sync",
+      "segments": [
+        {
+          "end": 51,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle CancelOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.DashboardQueryClient",
+          "shortName": "DashboardQueryClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.DashboardQueryClient.DeleteOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "DeleteOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.DeleteOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteOperation"
+      },
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "DashboardQueryClient/DeleteOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_DashboardQueryService_DeleteOperation_sync",
+      "segments": [
+        {
+          "end": 51,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle DeleteOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.DashboardQueryClient",
+          "shortName": "DashboardQueryClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.DashboardQueryClient.ExecuteDashboardQuery",
+        "method": {
+          "fullName": "google.cloud.chronicle.v1.DashboardQueryService.ExecuteDashboardQuery",
+          "service": {
+            "fullName": "google.cloud.chronicle.v1.DashboardQueryService",
+            "shortName": "DashboardQueryService"
+          },
+          "shortName": "ExecuteDashboardQuery"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chroniclepb.ExecuteDashboardQueryRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*chroniclepb.ExecuteDashboardQueryResponse",
+        "shortName": "ExecuteDashboardQuery"
+      },
+      "description": "ExecuteDashboardQuery execute a query and return the data.",
+      "file": "DashboardQueryClient/ExecuteDashboardQuery/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_DashboardQueryService_ExecuteDashboardQuery_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle ExecuteDashboardQuery Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.DashboardQueryClient",
+          "shortName": "DashboardQueryClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.DashboardQueryClient.GetDashboardQuery",
+        "method": {
+          "fullName": "google.cloud.chronicle.v1.DashboardQueryService.GetDashboardQuery",
+          "service": {
+            "fullName": "google.cloud.chronicle.v1.DashboardQueryService",
+            "shortName": "DashboardQueryService"
+          },
+          "shortName": "GetDashboardQuery"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chroniclepb.GetDashboardQueryRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*chroniclepb.DashboardQuery",
+        "shortName": "GetDashboardQuery"
+      },
+      "description": "GetDashboardQuery get a dashboard query.",
+      "file": "DashboardQueryClient/GetDashboardQuery/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_DashboardQueryService_GetDashboardQuery_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle GetDashboardQuery Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.DashboardQueryClient",
+          "shortName": "DashboardQueryClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.DashboardQueryClient.GetOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "GetOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.GetOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "shortName": "GetOperation"
+      },
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "DashboardQueryClient/GetOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_DashboardQueryService_GetOperation_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle GetOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.DashboardQueryClient",
+          "shortName": "DashboardQueryClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.DashboardQueryClient.ListOperations",
+        "method": {
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "ListOperations"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.ListOperationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "shortName": "ListOperations"
+      },
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "DashboardQueryClient/ListOperations/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_DashboardQueryService_ListOperations_sync",
+      "segments": [
+        {
+          "end": 66,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle ListOperations Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
           "fullName": "google.cloud.chronicle.v1.DataAccessControlClient",
           "shortName": "DataAccessControlClient"
         },
@@ -1935,6 +2803,326 @@
     {
       "clientMethod": {
         "client": {
+          "fullName": "google.cloud.chronicle.v1.FeaturedContentNativeDashboardClient",
+          "shortName": "FeaturedContentNativeDashboardClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.FeaturedContentNativeDashboardClient.CancelOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "CancelOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.CancelOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "CancelOperation"
+      },
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "FeaturedContentNativeDashboardClient/CancelOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_FeaturedContentNativeDashboardService_CancelOperation_sync",
+      "segments": [
+        {
+          "end": 51,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle CancelOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.FeaturedContentNativeDashboardClient",
+          "shortName": "FeaturedContentNativeDashboardClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.FeaturedContentNativeDashboardClient.DeleteOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "DeleteOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.DeleteOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteOperation"
+      },
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "FeaturedContentNativeDashboardClient/DeleteOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_FeaturedContentNativeDashboardService_DeleteOperation_sync",
+      "segments": [
+        {
+          "end": 51,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle DeleteOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.FeaturedContentNativeDashboardClient",
+          "shortName": "FeaturedContentNativeDashboardClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.FeaturedContentNativeDashboardClient.GetFeaturedContentNativeDashboard",
+        "method": {
+          "fullName": "google.cloud.chronicle.v1.FeaturedContentNativeDashboardService.GetFeaturedContentNativeDashboard",
+          "service": {
+            "fullName": "google.cloud.chronicle.v1.FeaturedContentNativeDashboardService",
+            "shortName": "FeaturedContentNativeDashboardService"
+          },
+          "shortName": "GetFeaturedContentNativeDashboard"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chroniclepb.GetFeaturedContentNativeDashboardRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*chroniclepb.FeaturedContentNativeDashboard",
+        "shortName": "GetFeaturedContentNativeDashboard"
+      },
+      "description": "GetFeaturedContentNativeDashboard get a native dashboard featured content.",
+      "file": "FeaturedContentNativeDashboardClient/GetFeaturedContentNativeDashboard/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_FeaturedContentNativeDashboardService_GetFeaturedContentNativeDashboard_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle GetFeaturedContentNativeDashboard Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.FeaturedContentNativeDashboardClient",
+          "shortName": "FeaturedContentNativeDashboardClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.FeaturedContentNativeDashboardClient.GetOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "GetOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.GetOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "shortName": "GetOperation"
+      },
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "FeaturedContentNativeDashboardClient/GetOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_FeaturedContentNativeDashboardService_GetOperation_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle GetOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.FeaturedContentNativeDashboardClient",
+          "shortName": "FeaturedContentNativeDashboardClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.FeaturedContentNativeDashboardClient.InstallFeaturedContentNativeDashboard",
+        "method": {
+          "fullName": "google.cloud.chronicle.v1.FeaturedContentNativeDashboardService.InstallFeaturedContentNativeDashboard",
+          "service": {
+            "fullName": "google.cloud.chronicle.v1.FeaturedContentNativeDashboardService",
+            "shortName": "FeaturedContentNativeDashboardService"
+          },
+          "shortName": "InstallFeaturedContentNativeDashboard"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chroniclepb.InstallFeaturedContentNativeDashboardRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*chroniclepb.InstallFeaturedContentNativeDashboardResponse",
+        "shortName": "InstallFeaturedContentNativeDashboard"
+      },
+      "description": "InstallFeaturedContentNativeDashboard install a native dashboard featured content.",
+      "file": "FeaturedContentNativeDashboardClient/InstallFeaturedContentNativeDashboard/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_FeaturedContentNativeDashboardService_InstallFeaturedContentNativeDashboard_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle InstallFeaturedContentNativeDashboard Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.FeaturedContentNativeDashboardClient",
+          "shortName": "FeaturedContentNativeDashboardClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.FeaturedContentNativeDashboardClient.ListFeaturedContentNativeDashboards",
+        "method": {
+          "fullName": "google.cloud.chronicle.v1.FeaturedContentNativeDashboardService.ListFeaturedContentNativeDashboards",
+          "service": {
+            "fullName": "google.cloud.chronicle.v1.FeaturedContentNativeDashboardService",
+            "shortName": "FeaturedContentNativeDashboardService"
+          },
+          "shortName": "ListFeaturedContentNativeDashboards"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chroniclepb.ListFeaturedContentNativeDashboardsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "FeaturedContentNativeDashboardIterator",
+        "shortName": "ListFeaturedContentNativeDashboards"
+      },
+      "description": "ListFeaturedContentNativeDashboards list all native dashboards featured content.",
+      "file": "FeaturedContentNativeDashboardClient/ListFeaturedContentNativeDashboards/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_FeaturedContentNativeDashboardService_ListFeaturedContentNativeDashboards_sync",
+      "segments": [
+        {
+          "end": 66,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle ListFeaturedContentNativeDashboards Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.FeaturedContentNativeDashboardClient",
+          "shortName": "FeaturedContentNativeDashboardClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.FeaturedContentNativeDashboardClient.ListOperations",
+        "method": {
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "ListOperations"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.ListOperationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "shortName": "ListOperations"
+      },
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "FeaturedContentNativeDashboardClient/ListOperations/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_FeaturedContentNativeDashboardService_ListOperations_sync",
+      "segments": [
+        {
+          "end": 66,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle ListOperations Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
           "fullName": "google.cloud.chronicle.v1.InstanceClient",
           "shortName": "InstanceClient"
         },
@@ -2159,6 +3347,739 @@
         }
       ],
       "title": "chronicle ListOperations Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.NativeDashboardClient",
+          "shortName": "NativeDashboardClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.NativeDashboardClient.AddChart",
+        "method": {
+          "fullName": "google.cloud.chronicle.v1.NativeDashboardService.AddChart",
+          "service": {
+            "fullName": "google.cloud.chronicle.v1.NativeDashboardService",
+            "shortName": "NativeDashboardService"
+          },
+          "shortName": "AddChart"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chroniclepb.AddChartRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*chroniclepb.AddChartResponse",
+        "shortName": "AddChart"
+      },
+      "description": "AddChart add chart in a dashboard.",
+      "file": "NativeDashboardClient/AddChart/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_NativeDashboardService_AddChart_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle AddChart Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.NativeDashboardClient",
+          "shortName": "NativeDashboardClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.NativeDashboardClient.CancelOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "CancelOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.CancelOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "CancelOperation"
+      },
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "NativeDashboardClient/CancelOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_NativeDashboardService_CancelOperation_sync",
+      "segments": [
+        {
+          "end": 51,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle CancelOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.NativeDashboardClient",
+          "shortName": "NativeDashboardClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.NativeDashboardClient.CreateNativeDashboard",
+        "method": {
+          "fullName": "google.cloud.chronicle.v1.NativeDashboardService.CreateNativeDashboard",
+          "service": {
+            "fullName": "google.cloud.chronicle.v1.NativeDashboardService",
+            "shortName": "NativeDashboardService"
+          },
+          "shortName": "CreateNativeDashboard"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chroniclepb.CreateNativeDashboardRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*chroniclepb.NativeDashboard",
+        "shortName": "CreateNativeDashboard"
+      },
+      "description": "CreateNativeDashboard create a dashboard.",
+      "file": "NativeDashboardClient/CreateNativeDashboard/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_NativeDashboardService_CreateNativeDashboard_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle CreateNativeDashboard Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.NativeDashboardClient",
+          "shortName": "NativeDashboardClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.NativeDashboardClient.DeleteNativeDashboard",
+        "method": {
+          "fullName": "google.cloud.chronicle.v1.NativeDashboardService.DeleteNativeDashboard",
+          "service": {
+            "fullName": "google.cloud.chronicle.v1.NativeDashboardService",
+            "shortName": "NativeDashboardService"
+          },
+          "shortName": "DeleteNativeDashboard"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chroniclepb.DeleteNativeDashboardRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteNativeDashboard"
+      },
+      "description": "DeleteNativeDashboard delete a dashboard.",
+      "file": "NativeDashboardClient/DeleteNativeDashboard/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_NativeDashboardService_DeleteNativeDashboard_sync",
+      "segments": [
+        {
+          "end": 51,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle DeleteNativeDashboard Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.NativeDashboardClient",
+          "shortName": "NativeDashboardClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.NativeDashboardClient.DeleteOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "DeleteOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.DeleteOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteOperation"
+      },
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "NativeDashboardClient/DeleteOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_NativeDashboardService_DeleteOperation_sync",
+      "segments": [
+        {
+          "end": 51,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle DeleteOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.NativeDashboardClient",
+          "shortName": "NativeDashboardClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.NativeDashboardClient.DuplicateChart",
+        "method": {
+          "fullName": "google.cloud.chronicle.v1.NativeDashboardService.DuplicateChart",
+          "service": {
+            "fullName": "google.cloud.chronicle.v1.NativeDashboardService",
+            "shortName": "NativeDashboardService"
+          },
+          "shortName": "DuplicateChart"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chroniclepb.DuplicateChartRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*chroniclepb.DuplicateChartResponse",
+        "shortName": "DuplicateChart"
+      },
+      "description": "DuplicateChart duplicate chart in a dashboard.",
+      "file": "NativeDashboardClient/DuplicateChart/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_NativeDashboardService_DuplicateChart_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle DuplicateChart Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.NativeDashboardClient",
+          "shortName": "NativeDashboardClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.NativeDashboardClient.DuplicateNativeDashboard",
+        "method": {
+          "fullName": "google.cloud.chronicle.v1.NativeDashboardService.DuplicateNativeDashboard",
+          "service": {
+            "fullName": "google.cloud.chronicle.v1.NativeDashboardService",
+            "shortName": "NativeDashboardService"
+          },
+          "shortName": "DuplicateNativeDashboard"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chroniclepb.DuplicateNativeDashboardRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*chroniclepb.NativeDashboard",
+        "shortName": "DuplicateNativeDashboard"
+      },
+      "description": "DuplicateNativeDashboard duplicate a dashboard.",
+      "file": "NativeDashboardClient/DuplicateNativeDashboard/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_NativeDashboardService_DuplicateNativeDashboard_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle DuplicateNativeDashboard Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.NativeDashboardClient",
+          "shortName": "NativeDashboardClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.NativeDashboardClient.EditChart",
+        "method": {
+          "fullName": "google.cloud.chronicle.v1.NativeDashboardService.EditChart",
+          "service": {
+            "fullName": "google.cloud.chronicle.v1.NativeDashboardService",
+            "shortName": "NativeDashboardService"
+          },
+          "shortName": "EditChart"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chroniclepb.EditChartRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*chroniclepb.EditChartResponse",
+        "shortName": "EditChart"
+      },
+      "description": "EditChart edit chart in a dashboard.",
+      "file": "NativeDashboardClient/EditChart/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_NativeDashboardService_EditChart_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle EditChart Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.NativeDashboardClient",
+          "shortName": "NativeDashboardClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.NativeDashboardClient.ExportNativeDashboards",
+        "method": {
+          "fullName": "google.cloud.chronicle.v1.NativeDashboardService.ExportNativeDashboards",
+          "service": {
+            "fullName": "google.cloud.chronicle.v1.NativeDashboardService",
+            "shortName": "NativeDashboardService"
+          },
+          "shortName": "ExportNativeDashboards"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chroniclepb.ExportNativeDashboardsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*chroniclepb.ExportNativeDashboardsResponse",
+        "shortName": "ExportNativeDashboards"
+      },
+      "description": "ExportNativeDashboards exports the dashboards.",
+      "file": "NativeDashboardClient/ExportNativeDashboards/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_NativeDashboardService_ExportNativeDashboards_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle ExportNativeDashboards Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.NativeDashboardClient",
+          "shortName": "NativeDashboardClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.NativeDashboardClient.GetNativeDashboard",
+        "method": {
+          "fullName": "google.cloud.chronicle.v1.NativeDashboardService.GetNativeDashboard",
+          "service": {
+            "fullName": "google.cloud.chronicle.v1.NativeDashboardService",
+            "shortName": "NativeDashboardService"
+          },
+          "shortName": "GetNativeDashboard"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chroniclepb.GetNativeDashboardRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*chroniclepb.NativeDashboard",
+        "shortName": "GetNativeDashboard"
+      },
+      "description": "GetNativeDashboard get a dashboard.",
+      "file": "NativeDashboardClient/GetNativeDashboard/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_NativeDashboardService_GetNativeDashboard_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle GetNativeDashboard Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.NativeDashboardClient",
+          "shortName": "NativeDashboardClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.NativeDashboardClient.GetOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "GetOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.GetOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "shortName": "GetOperation"
+      },
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "NativeDashboardClient/GetOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_NativeDashboardService_GetOperation_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle GetOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.NativeDashboardClient",
+          "shortName": "NativeDashboardClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.NativeDashboardClient.ImportNativeDashboards",
+        "method": {
+          "fullName": "google.cloud.chronicle.v1.NativeDashboardService.ImportNativeDashboards",
+          "service": {
+            "fullName": "google.cloud.chronicle.v1.NativeDashboardService",
+            "shortName": "NativeDashboardService"
+          },
+          "shortName": "ImportNativeDashboards"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chroniclepb.ImportNativeDashboardsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*chroniclepb.ImportNativeDashboardsResponse",
+        "shortName": "ImportNativeDashboards"
+      },
+      "description": "ImportNativeDashboards imports the dashboards.",
+      "file": "NativeDashboardClient/ImportNativeDashboards/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_NativeDashboardService_ImportNativeDashboards_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle ImportNativeDashboards Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.NativeDashboardClient",
+          "shortName": "NativeDashboardClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.NativeDashboardClient.ListNativeDashboards",
+        "method": {
+          "fullName": "google.cloud.chronicle.v1.NativeDashboardService.ListNativeDashboards",
+          "service": {
+            "fullName": "google.cloud.chronicle.v1.NativeDashboardService",
+            "shortName": "NativeDashboardService"
+          },
+          "shortName": "ListNativeDashboards"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chroniclepb.ListNativeDashboardsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "NativeDashboardIterator",
+        "shortName": "ListNativeDashboards"
+      },
+      "description": "ListNativeDashboards list all dashboards.",
+      "file": "NativeDashboardClient/ListNativeDashboards/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_NativeDashboardService_ListNativeDashboards_sync",
+      "segments": [
+        {
+          "end": 66,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle ListNativeDashboards Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.NativeDashboardClient",
+          "shortName": "NativeDashboardClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.NativeDashboardClient.ListOperations",
+        "method": {
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "ListOperations"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.ListOperationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "shortName": "ListOperations"
+      },
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "NativeDashboardClient/ListOperations/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_NativeDashboardService_ListOperations_sync",
+      "segments": [
+        {
+          "end": 66,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle ListOperations Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.NativeDashboardClient",
+          "shortName": "NativeDashboardClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.NativeDashboardClient.RemoveChart",
+        "method": {
+          "fullName": "google.cloud.chronicle.v1.NativeDashboardService.RemoveChart",
+          "service": {
+            "fullName": "google.cloud.chronicle.v1.NativeDashboardService",
+            "shortName": "NativeDashboardService"
+          },
+          "shortName": "RemoveChart"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chroniclepb.RemoveChartRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*chroniclepb.NativeDashboard",
+        "shortName": "RemoveChart"
+      },
+      "description": "RemoveChart remove chart from a dashboard.",
+      "file": "NativeDashboardClient/RemoveChart/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_NativeDashboardService_RemoveChart_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle RemoveChart Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.NativeDashboardClient",
+          "shortName": "NativeDashboardClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.NativeDashboardClient.UpdateNativeDashboard",
+        "method": {
+          "fullName": "google.cloud.chronicle.v1.NativeDashboardService.UpdateNativeDashboard",
+          "service": {
+            "fullName": "google.cloud.chronicle.v1.NativeDashboardService",
+            "shortName": "NativeDashboardService"
+          },
+          "shortName": "UpdateNativeDashboard"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chroniclepb.UpdateNativeDashboardRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*chroniclepb.NativeDashboard",
+        "shortName": "UpdateNativeDashboard"
+      },
+      "description": "UpdateNativeDashboard update a dashboard.",
+      "file": "NativeDashboardClient/UpdateNativeDashboard/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_NativeDashboardService_UpdateNativeDashboard_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle UpdateNativeDashboard Sample"
     },
     {
       "clientMethod": {

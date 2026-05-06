@@ -62,6 +62,7 @@ type CallOptions struct {
 	PartitionQuery      []gax.CallOption
 	PartitionRead       []gax.CallOption
 	BatchWrite          []gax.CallOption
+	FetchCacheUpdate    []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
@@ -252,7 +253,8 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		BatchWrite: []gax.CallOption{},
+		BatchWrite:       []gax.CallOption{},
+		FetchCacheUpdate: []gax.CallOption{},
 	}
 }
 
@@ -423,6 +425,7 @@ func defaultRESTCallOptions() *CallOptions {
 		BatchWrite: []gax.CallOption{
 			gax.WithTimeout(3600000 * time.Millisecond),
 		},
+		FetchCacheUpdate: []gax.CallOption{},
 	}
 }
 
@@ -447,6 +450,7 @@ type internalClient interface {
 	PartitionQuery(context.Context, *spannerpb.PartitionQueryRequest, ...gax.CallOption) (*spannerpb.PartitionResponse, error)
 	PartitionRead(context.Context, *spannerpb.PartitionReadRequest, ...gax.CallOption) (*spannerpb.PartitionResponse, error)
 	BatchWrite(context.Context, *spannerpb.BatchWriteRequest, ...gax.CallOption) (spannerpb.Spanner_BatchWriteClient, error)
+	FetchCacheUpdate(context.Context, *spannerpb.FetchCacheUpdateRequest, ...gax.CallOption) (spannerpb.Spanner_FetchCacheUpdateClient, error)
 }
 
 // Client is a client for interacting with Cloud Spanner API.
@@ -705,6 +709,19 @@ func (c *Client) BatchWrite(ctx context.Context, req *spannerpb.BatchWriteReques
 	return c.internalClient.BatchWrite(ctx, req, opts...)
 }
 
+// FetchCacheUpdate retrieves a cache update for a given database.
+//
+// This RPC can be used to warm up the client cache by fetching key recipes
+// and server information for a given database. It is recommended to call
+// this RPC at the beginning of the client’s lifecycle, prior to any other
+// data plane operations.
+//
+// The cache update is returned as a stream because the response can be too
+// large to fit into a single CacheUpdate message.
+func (c *Client) FetchCacheUpdate(ctx context.Context, req *spannerpb.FetchCacheUpdateRequest, opts ...gax.CallOption) (spannerpb.Spanner_FetchCacheUpdateClient, error) {
+	return c.internalClient.FetchCacheUpdate(ctx, req, opts...)
+}
+
 // gRPCClient is a client for interacting with Cloud Spanner API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
@@ -792,6 +809,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.PartitionQuery = append(client.CallOptions.PartitionQuery, gax.WithClientMetrics(metrics))
 		client.CallOptions.PartitionRead = append(client.CallOptions.PartitionRead, gax.WithClientMetrics(metrics))
 		client.CallOptions.BatchWrite = append(client.CallOptions.BatchWrite, gax.WithClientMetrics(metrics))
+		client.CallOptions.FetchCacheUpdate = append(client.CallOptions.FetchCacheUpdate, gax.WithClientMetrics(metrics))
 	}
 
 	client.internalClient = c
@@ -901,6 +919,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.PartitionQuery = append(callOpts.PartitionQuery, gax.WithClientMetrics(metrics))
 		callOpts.PartitionRead = append(callOpts.PartitionRead, gax.WithClientMetrics(metrics))
 		callOpts.BatchWrite = append(callOpts.BatchWrite, gax.WithClientMetrics(metrics))
+		callOpts.FetchCacheUpdate = append(callOpts.FetchCacheUpdate, gax.WithClientMetrics(metrics))
 	}
 
 	return &Client{internalClient: c, CallOptions: callOpts}, nil
@@ -1345,6 +1364,32 @@ func (c *gRPCClient) BatchWrite(ctx context.Context, req *spannerpb.BatchWriteRe
 		c.logger.DebugContext(ctx, "api streaming client request", "serviceName", serviceName, "rpcName", "BatchWrite")
 		resp, err = c.client.BatchWrite(ctx, req, settings.GRPC...)
 		c.logger.DebugContext(ctx, "api streaming client response", "serviceName", serviceName, "rpcName", "BatchWrite")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) FetchCacheUpdate(ctx context.Context, req *spannerpb.FetchCacheUpdateRequest, opts ...gax.CallOption) (spannerpb.Spanner_FetchCacheUpdateClient, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "database", url.QueryEscape(req.GetDatabase()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//spanner.googleapis.com/%v", req.GetDatabase()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.v1.Spanner/FetchCacheUpdate")
+	}
+	opts = append((*c.CallOptions).FetchCacheUpdate[0:len((*c.CallOptions).FetchCacheUpdate):len((*c.CallOptions).FetchCacheUpdate)], opts...)
+	var resp spannerpb.Spanner_FetchCacheUpdateClient
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		c.logger.DebugContext(ctx, "api streaming client request", "serviceName", serviceName, "rpcName", "FetchCacheUpdate")
+		resp, err = c.client.FetchCacheUpdate(ctx, req, settings.GRPC...)
+		c.logger.DebugContext(ctx, "api streaming client response", "serviceName", serviceName, "rpcName", "FetchCacheUpdate")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2609,6 +2654,123 @@ func (c *batchWriteRESTStreamClient) SendMsg(m interface{}) error {
 }
 
 func (c *batchWriteRESTStreamClient) RecvMsg(m interface{}) error {
+	// This is a no-op to fulfill the interface.
+	return errors.New("this method is not implemented, use Recv")
+}
+
+// FetchCacheUpdate retrieves a cache update for a given database.
+//
+// This RPC can be used to warm up the client cache by fetching key recipes
+// and server information for a given database. It is recommended to call
+// this RPC at the beginning of the client’s lifecycle, prior to any other
+// data plane operations.
+//
+// The cache update is returned as a stream because the response can be too
+// large to fit into a single CacheUpdate message.
+func (c *restClient) FetchCacheUpdate(ctx context.Context, req *spannerpb.FetchCacheUpdateRequest, opts ...gax.CallOption) (spannerpb.Spanner_FetchCacheUpdateClient, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:cacheUpdate", req.GetDatabase())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "database", url.QueryEscape(req.GetDatabase()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//spanner.googleapis.com/%v", req.GetDatabase()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.spanner.v1.Spanner/FetchCacheUpdate")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{database=projects/*/instances/*/databases/*}:cacheUpdate")
+	}
+	var streamClient *fetchCacheUpdateRESTStreamClient
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := executeStreamingHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "FetchCacheUpdate")
+		if err != nil {
+			return err
+		}
+
+		streamClient = &fetchCacheUpdateRESTStreamClient{
+			ctx:    ctx,
+			md:     metadata.MD(httpRsp.Header),
+			stream: gax.NewProtoJSONStreamReader(httpRsp.Body, (&spannerpb.CacheUpdate{}).ProtoReflect().Type()),
+		}
+		return nil
+	}, opts...)
+
+	return streamClient, e
+}
+
+// fetchCacheUpdateRESTStreamClient is the stream client used to consume the server stream created by
+// the REST implementation of FetchCacheUpdate.
+type fetchCacheUpdateRESTStreamClient struct {
+	ctx    context.Context
+	md     metadata.MD
+	stream *gax.ProtoJSONStream
+}
+
+func (c *fetchCacheUpdateRESTStreamClient) Recv() (*spannerpb.CacheUpdate, error) {
+	if err := c.ctx.Err(); err != nil {
+		defer c.stream.Close()
+		return nil, err
+	}
+	msg, err := c.stream.Recv()
+	if err != nil {
+		defer c.stream.Close()
+		return nil, err
+	}
+	res := msg.(*spannerpb.CacheUpdate)
+	return res, nil
+}
+
+func (c *fetchCacheUpdateRESTStreamClient) Header() (metadata.MD, error) {
+	return c.md, nil
+}
+
+func (c *fetchCacheUpdateRESTStreamClient) Trailer() metadata.MD {
+	return c.md
+}
+
+func (c *fetchCacheUpdateRESTStreamClient) CloseSend() error {
+	// This is a no-op to fulfill the interface.
+	return errors.New("this method is not implemented for a server-stream")
+}
+
+func (c *fetchCacheUpdateRESTStreamClient) Context() context.Context {
+	return c.ctx
+}
+
+func (c *fetchCacheUpdateRESTStreamClient) SendMsg(m interface{}) error {
+	// This is a no-op to fulfill the interface.
+	return errors.New("this method is not implemented for a server-stream")
+}
+
+func (c *fetchCacheUpdateRESTStreamClient) RecvMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
 	return errors.New("this method is not implemented, use Recv")
 }

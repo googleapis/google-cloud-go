@@ -425,13 +425,13 @@ func file_google_shopping_merchant_accounts_v1beta_termsofserviceagreementstate_
 
 var file_google_shopping_merchant_accounts_v1beta_termsofserviceagreementstate_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_google_shopping_merchant_accounts_v1beta_termsofserviceagreementstate_proto_goTypes = []any{
-	(*TermsOfServiceAgreementState)(nil),           // 0: google.shopping.merchant.accounts.v1beta.TermsOfServiceAgreementState
-	(*Accepted)(nil),                               // 1: google.shopping.merchant.accounts.v1beta.Accepted
-	(*Required)(nil),                               // 2: google.shopping.merchant.accounts.v1beta.Required
-	(*GetTermsOfServiceAgreementStateRequest)(nil), // 3: google.shopping.merchant.accounts.v1beta.GetTermsOfServiceAgreementStateRequest
+	(*TermsOfServiceAgreementState)(nil),                              // 0: google.shopping.merchant.accounts.v1beta.TermsOfServiceAgreementState
+	(*Accepted)(nil),                                                  // 1: google.shopping.merchant.accounts.v1beta.Accepted
+	(*Required)(nil),                                                  // 2: google.shopping.merchant.accounts.v1beta.Required
+	(*GetTermsOfServiceAgreementStateRequest)(nil),                    // 3: google.shopping.merchant.accounts.v1beta.GetTermsOfServiceAgreementStateRequest
 	(*RetrieveForApplicationTermsOfServiceAgreementStateRequest)(nil), // 4: google.shopping.merchant.accounts.v1beta.RetrieveForApplicationTermsOfServiceAgreementStateRequest
-	(TermsOfServiceKind)(0), // 5: google.shopping.merchant.accounts.v1beta.TermsOfServiceKind
-	(*date.Date)(nil),       // 6: google.type.Date
+	(TermsOfServiceKind)(0),                                           // 5: google.shopping.merchant.accounts.v1beta.TermsOfServiceKind
+	(*date.Date)(nil),                                                 // 6: google.type.Date
 }
 var file_google_shopping_merchant_accounts_v1beta_termsofserviceagreementstate_proto_depIdxs = []int32{
 	5, // 0: google.shopping.merchant.accounts.v1beta.TermsOfServiceAgreementState.terms_of_service_kind:type_name -> google.shopping.merchant.accounts.v1beta.TermsOfServiceKind

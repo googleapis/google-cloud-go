@@ -2654,6 +2654,73 @@ func (x *BatchWriteResponse) GetCommitTimestamp() *timestamppb.Timestamp {
 	return nil
 }
 
+// The request for
+// [FetchCacheUpdate][google.spanner.v1.Spanner.FetchCacheUpdate].
+type FetchCacheUpdateRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The database for which to retrieve the cache update.
+	Database string `protobuf:"bytes,1,opt,name=database,proto3" json:"database,omitempty"`
+	// Optional. The maximum number of key recipes to return in the response.
+	// If not set, a default limit of 100 will be used.
+	MaxRecipeCount int32 `protobuf:"varint,2,opt,name=max_recipe_count,json=maxRecipeCount,proto3" json:"max_recipe_count,omitempty"`
+	// Optional. The maximum number of ranges to return in the response.
+	// If not set, a default limit of 10000 will be used.
+	MaxRangeCount int32 `protobuf:"varint,3,opt,name=max_range_count,json=maxRangeCount,proto3" json:"max_range_count,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *FetchCacheUpdateRequest) Reset() {
+	*x = FetchCacheUpdateRequest{}
+	mi := &file_google_spanner_v1_spanner_proto_msgTypes[24]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *FetchCacheUpdateRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*FetchCacheUpdateRequest) ProtoMessage() {}
+
+func (x *FetchCacheUpdateRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_spanner_v1_spanner_proto_msgTypes[24]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use FetchCacheUpdateRequest.ProtoReflect.Descriptor instead.
+func (*FetchCacheUpdateRequest) Descriptor() ([]byte, []int) {
+	return file_google_spanner_v1_spanner_proto_rawDescGZIP(), []int{24}
+}
+
+func (x *FetchCacheUpdateRequest) GetDatabase() string {
+	if x != nil {
+		return x.Database
+	}
+	return ""
+}
+
+func (x *FetchCacheUpdateRequest) GetMaxRecipeCount() int32 {
+	if x != nil {
+		return x.MaxRecipeCount
+	}
+	return 0
+}
+
+func (x *FetchCacheUpdateRequest) GetMaxRangeCount() int32 {
+	if x != nil {
+		return x.MaxRangeCount
+	}
+	return 0
+}
+
 // Container for various pieces of client-owned context attached to a request.
 type RequestOptions_ClientContext struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -2667,7 +2734,7 @@ type RequestOptions_ClientContext struct {
 
 func (x *RequestOptions_ClientContext) Reset() {
 	*x = RequestOptions_ClientContext{}
-	mi := &file_google_spanner_v1_spanner_proto_msgTypes[25]
+	mi := &file_google_spanner_v1_spanner_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2679,7 +2746,7 @@ func (x *RequestOptions_ClientContext) String() string {
 func (*RequestOptions_ClientContext) ProtoMessage() {}
 
 func (x *RequestOptions_ClientContext) ProtoReflect() protoreflect.Message {
-	mi := &file_google_spanner_v1_spanner_proto_msgTypes[25]
+	mi := &file_google_spanner_v1_spanner_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2732,7 +2799,7 @@ type DirectedReadOptions_ReplicaSelection struct {
 
 func (x *DirectedReadOptions_ReplicaSelection) Reset() {
 	*x = DirectedReadOptions_ReplicaSelection{}
-	mi := &file_google_spanner_v1_spanner_proto_msgTypes[27]
+	mi := &file_google_spanner_v1_spanner_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2744,7 +2811,7 @@ func (x *DirectedReadOptions_ReplicaSelection) String() string {
 func (*DirectedReadOptions_ReplicaSelection) ProtoMessage() {}
 
 func (x *DirectedReadOptions_ReplicaSelection) ProtoReflect() protoreflect.Message {
-	mi := &file_google_spanner_v1_spanner_proto_msgTypes[27]
+	mi := &file_google_spanner_v1_spanner_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2790,7 +2857,7 @@ type DirectedReadOptions_IncludeReplicas struct {
 
 func (x *DirectedReadOptions_IncludeReplicas) Reset() {
 	*x = DirectedReadOptions_IncludeReplicas{}
-	mi := &file_google_spanner_v1_spanner_proto_msgTypes[28]
+	mi := &file_google_spanner_v1_spanner_proto_msgTypes[29]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2802,7 +2869,7 @@ func (x *DirectedReadOptions_IncludeReplicas) String() string {
 func (*DirectedReadOptions_IncludeReplicas) ProtoMessage() {}
 
 func (x *DirectedReadOptions_IncludeReplicas) ProtoReflect() protoreflect.Message {
-	mi := &file_google_spanner_v1_spanner_proto_msgTypes[28]
+	mi := &file_google_spanner_v1_spanner_proto_msgTypes[29]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2844,7 +2911,7 @@ type DirectedReadOptions_ExcludeReplicas struct {
 
 func (x *DirectedReadOptions_ExcludeReplicas) Reset() {
 	*x = DirectedReadOptions_ExcludeReplicas{}
-	mi := &file_google_spanner_v1_spanner_proto_msgTypes[29]
+	mi := &file_google_spanner_v1_spanner_proto_msgTypes[30]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2856,7 +2923,7 @@ func (x *DirectedReadOptions_ExcludeReplicas) String() string {
 func (*DirectedReadOptions_ExcludeReplicas) ProtoMessage() {}
 
 func (x *DirectedReadOptions_ExcludeReplicas) ProtoReflect() protoreflect.Message {
-	mi := &file_google_spanner_v1_spanner_proto_msgTypes[29]
+	mi := &file_google_spanner_v1_spanner_proto_msgTypes[30]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2936,7 +3003,7 @@ type ExecuteSqlRequest_QueryOptions struct {
 
 func (x *ExecuteSqlRequest_QueryOptions) Reset() {
 	*x = ExecuteSqlRequest_QueryOptions{}
-	mi := &file_google_spanner_v1_spanner_proto_msgTypes[30]
+	mi := &file_google_spanner_v1_spanner_proto_msgTypes[31]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2948,7 +3015,7 @@ func (x *ExecuteSqlRequest_QueryOptions) String() string {
 func (*ExecuteSqlRequest_QueryOptions) ProtoMessage() {}
 
 func (x *ExecuteSqlRequest_QueryOptions) ProtoReflect() protoreflect.Message {
-	mi := &file_google_spanner_v1_spanner_proto_msgTypes[30]
+	mi := &file_google_spanner_v1_spanner_proto_msgTypes[31]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3013,7 +3080,7 @@ type ExecuteBatchDmlRequest_Statement struct {
 
 func (x *ExecuteBatchDmlRequest_Statement) Reset() {
 	*x = ExecuteBatchDmlRequest_Statement{}
-	mi := &file_google_spanner_v1_spanner_proto_msgTypes[32]
+	mi := &file_google_spanner_v1_spanner_proto_msgTypes[33]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3025,7 +3092,7 @@ func (x *ExecuteBatchDmlRequest_Statement) String() string {
 func (*ExecuteBatchDmlRequest_Statement) ProtoMessage() {}
 
 func (x *ExecuteBatchDmlRequest_Statement) ProtoReflect() protoreflect.Message {
-	mi := &file_google_spanner_v1_spanner_proto_msgTypes[32]
+	mi := &file_google_spanner_v1_spanner_proto_msgTypes[33]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3075,7 +3142,7 @@ type BatchWriteRequest_MutationGroup struct {
 
 func (x *BatchWriteRequest_MutationGroup) Reset() {
 	*x = BatchWriteRequest_MutationGroup{}
-	mi := &file_google_spanner_v1_spanner_proto_msgTypes[35]
+	mi := &file_google_spanner_v1_spanner_proto_msgTypes[36]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3087,7 +3154,7 @@ func (x *BatchWriteRequest_MutationGroup) String() string {
 func (*BatchWriteRequest_MutationGroup) ProtoMessage() {}
 
 func (x *BatchWriteRequest_MutationGroup) ProtoReflect() protoreflect.Message {
-	mi := &file_google_spanner_v1_spanner_proto_msgTypes[35]
+	mi := &file_google_spanner_v1_spanner_proto_msgTypes[36]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3337,7 +3404,12 @@ const file_google_spanner_v1_spanner_proto_rawDesc = "" +
 	"\x12BatchWriteResponse\x12\x18\n" +
 	"\aindexes\x18\x01 \x03(\x05R\aindexes\x12*\n" +
 	"\x06status\x18\x02 \x01(\v2\x12.google.rpc.StatusR\x06status\x12E\n" +
-	"\x10commit_timestamp\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\x0fcommitTimestamp2\x8b\x18\n" +
+	"\x10commit_timestamp\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\x0fcommitTimestamp\"\xba\x01\n" +
+	"\x17FetchCacheUpdateRequest\x12C\n" +
+	"\bdatabase\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
+	"\x1fspanner.googleapis.com/DatabaseR\bdatabase\x12-\n" +
+	"\x10max_recipe_count\x18\x02 \x01(\x05B\x03\xe0A\x01R\x0emaxRecipeCount\x12+\n" +
+	"\x0fmax_range_count\x18\x03 \x01(\x05B\x03\xe0A\x01R\rmaxRangeCount2\xc3\x19\n" +
 	"\aSpanner\x12\xa6\x01\n" +
 	"\rCreateSession\x12'.google.spanner.v1.CreateSessionRequest\x1a\x1a.google.spanner.v1.Session\"P\xdaA\bdatabase\x82\xd3\xe4\x93\x02?:\x01*\":/v1/{database=projects/*/instances/*/databases/*}/sessions\x12\xe0\x01\n" +
 	"\x13BatchCreateSessions\x12-.google.spanner.v1.BatchCreateSessionsRequest\x1a..google.spanner.v1.BatchCreateSessionsResponse\"j\xdaA\x16database,session_count\x82\xd3\xe4\x93\x02K:\x01*\"F/v1/{database=projects/*/instances/*/databases/*}/sessions:batchCreate\x12\x97\x01\n" +
@@ -3357,7 +3429,8 @@ const file_google_spanner_v1_spanner_proto_rawDesc = "" +
 	"\x0ePartitionQuery\x12(.google.spanner.v1.PartitionQueryRequest\x1a$.google.spanner.v1.PartitionResponse\"U\x82\xd3\xe4\x93\x02O:\x01*\"J/v1/{session=projects/*/instances/*/databases/*/sessions/*}:partitionQuery\x12\xb4\x01\n" +
 	"\rPartitionRead\x12'.google.spanner.v1.PartitionReadRequest\x1a$.google.spanner.v1.PartitionResponse\"T\x82\xd3\xe4\x93\x02N:\x01*\"I/v1/{session=projects/*/instances/*/databases/*/sessions/*}:partitionRead\x12\xc8\x01\n" +
 	"\n" +
-	"BatchWrite\x12$.google.spanner.v1.BatchWriteRequest\x1a%.google.spanner.v1.BatchWriteResponse\"k\xdaA\x17session,mutation_groups\x82\xd3\xe4\x93\x02K:\x01*\"F/v1/{session=projects/*/instances/*/databases/*/sessions/*}:batchWrite0\x01\x1aw\xcaA\x16spanner.googleapis.com\xd2A[https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/spanner.dataB\x91\x02\xeaA_\n" +
+	"BatchWrite\x12$.google.spanner.v1.BatchWriteRequest\x1a%.google.spanner.v1.BatchWriteResponse\"k\xdaA\x17session,mutation_groups\x82\xd3\xe4\x93\x02K:\x01*\"F/v1/{session=projects/*/instances/*/databases/*/sessions/*}:batchWrite0\x01\x12\xb5\x01\n" +
+	"\x10FetchCacheUpdate\x12*.google.spanner.v1.FetchCacheUpdateRequest\x1a\x1e.google.spanner.v1.CacheUpdate\"S\xdaA\bdatabase\x82\xd3\xe4\x93\x02B:\x01*\"=/v1/{database=projects/*/instances/*/databases/*}:cacheUpdate0\x01\x1aw\xcaA\x16spanner.googleapis.com\xd2A[https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/spanner.dataB\x91\x02\xeaA_\n" +
 	"\x1fspanner.googleapis.com/Database\x12<projects/{project}/instances/{instance}/databases/{database}\n" +
 	"\x15com.google.spanner.v1B\fSpannerProtoP\x01Z5cloud.google.com/go/spanner/apiv1/spannerpb;spannerpb\xaa\x02\x17Google.Cloud.Spanner.V1\xca\x02\x17Google\\Cloud\\Spanner\\V1\xea\x02\x1aGoogle::Cloud::Spanner::V1P\x00b\x06proto3"
 
@@ -3374,7 +3447,7 @@ func file_google_spanner_v1_spanner_proto_rawDescGZIP() []byte {
 }
 
 var file_google_spanner_v1_spanner_proto_enumTypes = make([]protoimpl.EnumInfo, 5)
-var file_google_spanner_v1_spanner_proto_msgTypes = make([]protoimpl.MessageInfo, 36)
+var file_google_spanner_v1_spanner_proto_msgTypes = make([]protoimpl.MessageInfo, 37)
 var file_google_spanner_v1_spanner_proto_goTypes = []any{
 	(RequestOptions_Priority)(0),                   // 0: google.spanner.v1.RequestOptions.Priority
 	(DirectedReadOptions_ReplicaSelection_Type)(0), // 1: google.spanner.v1.DirectedReadOptions.ReplicaSelection.Type
@@ -3405,103 +3478,105 @@ var file_google_spanner_v1_spanner_proto_goTypes = []any{
 	(*RollbackRequest)(nil),                        // 26: google.spanner.v1.RollbackRequest
 	(*BatchWriteRequest)(nil),                      // 27: google.spanner.v1.BatchWriteRequest
 	(*BatchWriteResponse)(nil),                     // 28: google.spanner.v1.BatchWriteResponse
-	nil,                                            // 29: google.spanner.v1.Session.LabelsEntry
-	(*RequestOptions_ClientContext)(nil),           // 30: google.spanner.v1.RequestOptions.ClientContext
-	nil,                                            // 31: google.spanner.v1.RequestOptions.ClientContext.SecureContextEntry
-	(*DirectedReadOptions_ReplicaSelection)(nil),   // 32: google.spanner.v1.DirectedReadOptions.ReplicaSelection
-	(*DirectedReadOptions_IncludeReplicas)(nil),    // 33: google.spanner.v1.DirectedReadOptions.IncludeReplicas
-	(*DirectedReadOptions_ExcludeReplicas)(nil),    // 34: google.spanner.v1.DirectedReadOptions.ExcludeReplicas
-	(*ExecuteSqlRequest_QueryOptions)(nil),         // 35: google.spanner.v1.ExecuteSqlRequest.QueryOptions
-	nil,                                            // 36: google.spanner.v1.ExecuteSqlRequest.ParamTypesEntry
-	(*ExecuteBatchDmlRequest_Statement)(nil),       // 37: google.spanner.v1.ExecuteBatchDmlRequest.Statement
-	nil,                                            // 38: google.spanner.v1.ExecuteBatchDmlRequest.Statement.ParamTypesEntry
-	nil,                                            // 39: google.spanner.v1.PartitionQueryRequest.ParamTypesEntry
-	(*BatchWriteRequest_MutationGroup)(nil),        // 40: google.spanner.v1.BatchWriteRequest.MutationGroup
-	(*timestamppb.Timestamp)(nil),                  // 41: google.protobuf.Timestamp
-	(*TransactionSelector)(nil),                    // 42: google.spanner.v1.TransactionSelector
-	(*structpb.Struct)(nil),                        // 43: google.protobuf.Struct
-	(*RoutingHint)(nil),                            // 44: google.spanner.v1.RoutingHint
-	(*ResultSet)(nil),                              // 45: google.spanner.v1.ResultSet
-	(*status.Status)(nil),                          // 46: google.rpc.Status
-	(*MultiplexedSessionPrecommitToken)(nil),       // 47: google.spanner.v1.MultiplexedSessionPrecommitToken
-	(*KeySet)(nil),                                 // 48: google.spanner.v1.KeySet
-	(*Transaction)(nil),                            // 49: google.spanner.v1.Transaction
-	(*TransactionOptions)(nil),                     // 50: google.spanner.v1.TransactionOptions
-	(*Mutation)(nil),                               // 51: google.spanner.v1.Mutation
-	(*durationpb.Duration)(nil),                    // 52: google.protobuf.Duration
-	(*structpb.Value)(nil),                         // 53: google.protobuf.Value
-	(*Type)(nil),                                   // 54: google.spanner.v1.Type
-	(*emptypb.Empty)(nil),                          // 55: google.protobuf.Empty
-	(*PartialResultSet)(nil),                       // 56: google.spanner.v1.PartialResultSet
-	(*CommitResponse)(nil),                         // 57: google.spanner.v1.CommitResponse
+	(*FetchCacheUpdateRequest)(nil),                // 29: google.spanner.v1.FetchCacheUpdateRequest
+	nil,                                            // 30: google.spanner.v1.Session.LabelsEntry
+	(*RequestOptions_ClientContext)(nil),           // 31: google.spanner.v1.RequestOptions.ClientContext
+	nil,                                            // 32: google.spanner.v1.RequestOptions.ClientContext.SecureContextEntry
+	(*DirectedReadOptions_ReplicaSelection)(nil),   // 33: google.spanner.v1.DirectedReadOptions.ReplicaSelection
+	(*DirectedReadOptions_IncludeReplicas)(nil),    // 34: google.spanner.v1.DirectedReadOptions.IncludeReplicas
+	(*DirectedReadOptions_ExcludeReplicas)(nil),    // 35: google.spanner.v1.DirectedReadOptions.ExcludeReplicas
+	(*ExecuteSqlRequest_QueryOptions)(nil),         // 36: google.spanner.v1.ExecuteSqlRequest.QueryOptions
+	nil,                                            // 37: google.spanner.v1.ExecuteSqlRequest.ParamTypesEntry
+	(*ExecuteBatchDmlRequest_Statement)(nil),       // 38: google.spanner.v1.ExecuteBatchDmlRequest.Statement
+	nil,                                            // 39: google.spanner.v1.ExecuteBatchDmlRequest.Statement.ParamTypesEntry
+	nil,                                            // 40: google.spanner.v1.PartitionQueryRequest.ParamTypesEntry
+	(*BatchWriteRequest_MutationGroup)(nil),        // 41: google.spanner.v1.BatchWriteRequest.MutationGroup
+	(*timestamppb.Timestamp)(nil),                  // 42: google.protobuf.Timestamp
+	(*TransactionSelector)(nil),                    // 43: google.spanner.v1.TransactionSelector
+	(*structpb.Struct)(nil),                        // 44: google.protobuf.Struct
+	(*RoutingHint)(nil),                            // 45: google.spanner.v1.RoutingHint
+	(*ResultSet)(nil),                              // 46: google.spanner.v1.ResultSet
+	(*status.Status)(nil),                          // 47: google.rpc.Status
+	(*MultiplexedSessionPrecommitToken)(nil),       // 48: google.spanner.v1.MultiplexedSessionPrecommitToken
+	(*KeySet)(nil),                                 // 49: google.spanner.v1.KeySet
+	(*Transaction)(nil),                            // 50: google.spanner.v1.Transaction
+	(*TransactionOptions)(nil),                     // 51: google.spanner.v1.TransactionOptions
+	(*Mutation)(nil),                               // 52: google.spanner.v1.Mutation
+	(*durationpb.Duration)(nil),                    // 53: google.protobuf.Duration
+	(*structpb.Value)(nil),                         // 54: google.protobuf.Value
+	(*Type)(nil),                                   // 55: google.spanner.v1.Type
+	(*emptypb.Empty)(nil),                          // 56: google.protobuf.Empty
+	(*PartialResultSet)(nil),                       // 57: google.spanner.v1.PartialResultSet
+	(*CommitResponse)(nil),                         // 58: google.spanner.v1.CommitResponse
+	(*CacheUpdate)(nil),                            // 59: google.spanner.v1.CacheUpdate
 }
 var file_google_spanner_v1_spanner_proto_depIdxs = []int32{
 	8,  // 0: google.spanner.v1.CreateSessionRequest.session:type_name -> google.spanner.v1.Session
 	8,  // 1: google.spanner.v1.BatchCreateSessionsRequest.session_template:type_name -> google.spanner.v1.Session
 	8,  // 2: google.spanner.v1.BatchCreateSessionsResponse.session:type_name -> google.spanner.v1.Session
-	29, // 3: google.spanner.v1.Session.labels:type_name -> google.spanner.v1.Session.LabelsEntry
-	41, // 4: google.spanner.v1.Session.create_time:type_name -> google.protobuf.Timestamp
-	41, // 5: google.spanner.v1.Session.approximate_last_use_time:type_name -> google.protobuf.Timestamp
+	30, // 3: google.spanner.v1.Session.labels:type_name -> google.spanner.v1.Session.LabelsEntry
+	42, // 4: google.spanner.v1.Session.create_time:type_name -> google.protobuf.Timestamp
+	42, // 5: google.spanner.v1.Session.approximate_last_use_time:type_name -> google.protobuf.Timestamp
 	8,  // 6: google.spanner.v1.ListSessionsResponse.sessions:type_name -> google.spanner.v1.Session
 	0,  // 7: google.spanner.v1.RequestOptions.priority:type_name -> google.spanner.v1.RequestOptions.Priority
-	30, // 8: google.spanner.v1.RequestOptions.client_context:type_name -> google.spanner.v1.RequestOptions.ClientContext
-	33, // 9: google.spanner.v1.DirectedReadOptions.include_replicas:type_name -> google.spanner.v1.DirectedReadOptions.IncludeReplicas
-	34, // 10: google.spanner.v1.DirectedReadOptions.exclude_replicas:type_name -> google.spanner.v1.DirectedReadOptions.ExcludeReplicas
-	42, // 11: google.spanner.v1.ExecuteSqlRequest.transaction:type_name -> google.spanner.v1.TransactionSelector
-	43, // 12: google.spanner.v1.ExecuteSqlRequest.params:type_name -> google.protobuf.Struct
-	36, // 13: google.spanner.v1.ExecuteSqlRequest.param_types:type_name -> google.spanner.v1.ExecuteSqlRequest.ParamTypesEntry
+	31, // 8: google.spanner.v1.RequestOptions.client_context:type_name -> google.spanner.v1.RequestOptions.ClientContext
+	34, // 9: google.spanner.v1.DirectedReadOptions.include_replicas:type_name -> google.spanner.v1.DirectedReadOptions.IncludeReplicas
+	35, // 10: google.spanner.v1.DirectedReadOptions.exclude_replicas:type_name -> google.spanner.v1.DirectedReadOptions.ExcludeReplicas
+	43, // 11: google.spanner.v1.ExecuteSqlRequest.transaction:type_name -> google.spanner.v1.TransactionSelector
+	44, // 12: google.spanner.v1.ExecuteSqlRequest.params:type_name -> google.protobuf.Struct
+	37, // 13: google.spanner.v1.ExecuteSqlRequest.param_types:type_name -> google.spanner.v1.ExecuteSqlRequest.ParamTypesEntry
 	2,  // 14: google.spanner.v1.ExecuteSqlRequest.query_mode:type_name -> google.spanner.v1.ExecuteSqlRequest.QueryMode
-	35, // 15: google.spanner.v1.ExecuteSqlRequest.query_options:type_name -> google.spanner.v1.ExecuteSqlRequest.QueryOptions
+	36, // 15: google.spanner.v1.ExecuteSqlRequest.query_options:type_name -> google.spanner.v1.ExecuteSqlRequest.QueryOptions
 	13, // 16: google.spanner.v1.ExecuteSqlRequest.request_options:type_name -> google.spanner.v1.RequestOptions
 	14, // 17: google.spanner.v1.ExecuteSqlRequest.directed_read_options:type_name -> google.spanner.v1.DirectedReadOptions
-	44, // 18: google.spanner.v1.ExecuteSqlRequest.routing_hint:type_name -> google.spanner.v1.RoutingHint
-	42, // 19: google.spanner.v1.ExecuteBatchDmlRequest.transaction:type_name -> google.spanner.v1.TransactionSelector
-	37, // 20: google.spanner.v1.ExecuteBatchDmlRequest.statements:type_name -> google.spanner.v1.ExecuteBatchDmlRequest.Statement
+	45, // 18: google.spanner.v1.ExecuteSqlRequest.routing_hint:type_name -> google.spanner.v1.RoutingHint
+	43, // 19: google.spanner.v1.ExecuteBatchDmlRequest.transaction:type_name -> google.spanner.v1.TransactionSelector
+	38, // 20: google.spanner.v1.ExecuteBatchDmlRequest.statements:type_name -> google.spanner.v1.ExecuteBatchDmlRequest.Statement
 	13, // 21: google.spanner.v1.ExecuteBatchDmlRequest.request_options:type_name -> google.spanner.v1.RequestOptions
-	45, // 22: google.spanner.v1.ExecuteBatchDmlResponse.result_sets:type_name -> google.spanner.v1.ResultSet
-	46, // 23: google.spanner.v1.ExecuteBatchDmlResponse.status:type_name -> google.rpc.Status
-	47, // 24: google.spanner.v1.ExecuteBatchDmlResponse.precommit_token:type_name -> google.spanner.v1.MultiplexedSessionPrecommitToken
-	42, // 25: google.spanner.v1.PartitionQueryRequest.transaction:type_name -> google.spanner.v1.TransactionSelector
-	43, // 26: google.spanner.v1.PartitionQueryRequest.params:type_name -> google.protobuf.Struct
-	39, // 27: google.spanner.v1.PartitionQueryRequest.param_types:type_name -> google.spanner.v1.PartitionQueryRequest.ParamTypesEntry
+	46, // 22: google.spanner.v1.ExecuteBatchDmlResponse.result_sets:type_name -> google.spanner.v1.ResultSet
+	47, // 23: google.spanner.v1.ExecuteBatchDmlResponse.status:type_name -> google.rpc.Status
+	48, // 24: google.spanner.v1.ExecuteBatchDmlResponse.precommit_token:type_name -> google.spanner.v1.MultiplexedSessionPrecommitToken
+	43, // 25: google.spanner.v1.PartitionQueryRequest.transaction:type_name -> google.spanner.v1.TransactionSelector
+	44, // 26: google.spanner.v1.PartitionQueryRequest.params:type_name -> google.protobuf.Struct
+	40, // 27: google.spanner.v1.PartitionQueryRequest.param_types:type_name -> google.spanner.v1.PartitionQueryRequest.ParamTypesEntry
 	18, // 28: google.spanner.v1.PartitionQueryRequest.partition_options:type_name -> google.spanner.v1.PartitionOptions
-	42, // 29: google.spanner.v1.PartitionReadRequest.transaction:type_name -> google.spanner.v1.TransactionSelector
-	48, // 30: google.spanner.v1.PartitionReadRequest.key_set:type_name -> google.spanner.v1.KeySet
+	43, // 29: google.spanner.v1.PartitionReadRequest.transaction:type_name -> google.spanner.v1.TransactionSelector
+	49, // 30: google.spanner.v1.PartitionReadRequest.key_set:type_name -> google.spanner.v1.KeySet
 	18, // 31: google.spanner.v1.PartitionReadRequest.partition_options:type_name -> google.spanner.v1.PartitionOptions
 	21, // 32: google.spanner.v1.PartitionResponse.partitions:type_name -> google.spanner.v1.Partition
-	49, // 33: google.spanner.v1.PartitionResponse.transaction:type_name -> google.spanner.v1.Transaction
-	42, // 34: google.spanner.v1.ReadRequest.transaction:type_name -> google.spanner.v1.TransactionSelector
-	48, // 35: google.spanner.v1.ReadRequest.key_set:type_name -> google.spanner.v1.KeySet
+	50, // 33: google.spanner.v1.PartitionResponse.transaction:type_name -> google.spanner.v1.Transaction
+	43, // 34: google.spanner.v1.ReadRequest.transaction:type_name -> google.spanner.v1.TransactionSelector
+	49, // 35: google.spanner.v1.ReadRequest.key_set:type_name -> google.spanner.v1.KeySet
 	13, // 36: google.spanner.v1.ReadRequest.request_options:type_name -> google.spanner.v1.RequestOptions
 	14, // 37: google.spanner.v1.ReadRequest.directed_read_options:type_name -> google.spanner.v1.DirectedReadOptions
 	3,  // 38: google.spanner.v1.ReadRequest.order_by:type_name -> google.spanner.v1.ReadRequest.OrderBy
 	4,  // 39: google.spanner.v1.ReadRequest.lock_hint:type_name -> google.spanner.v1.ReadRequest.LockHint
-	44, // 40: google.spanner.v1.ReadRequest.routing_hint:type_name -> google.spanner.v1.RoutingHint
-	50, // 41: google.spanner.v1.BeginTransactionRequest.options:type_name -> google.spanner.v1.TransactionOptions
+	45, // 40: google.spanner.v1.ReadRequest.routing_hint:type_name -> google.spanner.v1.RoutingHint
+	51, // 41: google.spanner.v1.BeginTransactionRequest.options:type_name -> google.spanner.v1.TransactionOptions
 	13, // 42: google.spanner.v1.BeginTransactionRequest.request_options:type_name -> google.spanner.v1.RequestOptions
-	51, // 43: google.spanner.v1.BeginTransactionRequest.mutation_key:type_name -> google.spanner.v1.Mutation
-	44, // 44: google.spanner.v1.BeginTransactionRequest.routing_hint:type_name -> google.spanner.v1.RoutingHint
-	50, // 45: google.spanner.v1.CommitRequest.single_use_transaction:type_name -> google.spanner.v1.TransactionOptions
-	51, // 46: google.spanner.v1.CommitRequest.mutations:type_name -> google.spanner.v1.Mutation
-	52, // 47: google.spanner.v1.CommitRequest.max_commit_delay:type_name -> google.protobuf.Duration
+	52, // 43: google.spanner.v1.BeginTransactionRequest.mutation_key:type_name -> google.spanner.v1.Mutation
+	45, // 44: google.spanner.v1.BeginTransactionRequest.routing_hint:type_name -> google.spanner.v1.RoutingHint
+	51, // 45: google.spanner.v1.CommitRequest.single_use_transaction:type_name -> google.spanner.v1.TransactionOptions
+	52, // 46: google.spanner.v1.CommitRequest.mutations:type_name -> google.spanner.v1.Mutation
+	53, // 47: google.spanner.v1.CommitRequest.max_commit_delay:type_name -> google.protobuf.Duration
 	13, // 48: google.spanner.v1.CommitRequest.request_options:type_name -> google.spanner.v1.RequestOptions
-	47, // 49: google.spanner.v1.CommitRequest.precommit_token:type_name -> google.spanner.v1.MultiplexedSessionPrecommitToken
-	44, // 50: google.spanner.v1.CommitRequest.routing_hint:type_name -> google.spanner.v1.RoutingHint
+	48, // 49: google.spanner.v1.CommitRequest.precommit_token:type_name -> google.spanner.v1.MultiplexedSessionPrecommitToken
+	45, // 50: google.spanner.v1.CommitRequest.routing_hint:type_name -> google.spanner.v1.RoutingHint
 	13, // 51: google.spanner.v1.BatchWriteRequest.request_options:type_name -> google.spanner.v1.RequestOptions
-	40, // 52: google.spanner.v1.BatchWriteRequest.mutation_groups:type_name -> google.spanner.v1.BatchWriteRequest.MutationGroup
-	46, // 53: google.spanner.v1.BatchWriteResponse.status:type_name -> google.rpc.Status
-	41, // 54: google.spanner.v1.BatchWriteResponse.commit_timestamp:type_name -> google.protobuf.Timestamp
-	31, // 55: google.spanner.v1.RequestOptions.ClientContext.secure_context:type_name -> google.spanner.v1.RequestOptions.ClientContext.SecureContextEntry
-	53, // 56: google.spanner.v1.RequestOptions.ClientContext.SecureContextEntry.value:type_name -> google.protobuf.Value
+	41, // 52: google.spanner.v1.BatchWriteRequest.mutation_groups:type_name -> google.spanner.v1.BatchWriteRequest.MutationGroup
+	47, // 53: google.spanner.v1.BatchWriteResponse.status:type_name -> google.rpc.Status
+	42, // 54: google.spanner.v1.BatchWriteResponse.commit_timestamp:type_name -> google.protobuf.Timestamp
+	32, // 55: google.spanner.v1.RequestOptions.ClientContext.secure_context:type_name -> google.spanner.v1.RequestOptions.ClientContext.SecureContextEntry
+	54, // 56: google.spanner.v1.RequestOptions.ClientContext.SecureContextEntry.value:type_name -> google.protobuf.Value
 	1,  // 57: google.spanner.v1.DirectedReadOptions.ReplicaSelection.type:type_name -> google.spanner.v1.DirectedReadOptions.ReplicaSelection.Type
-	32, // 58: google.spanner.v1.DirectedReadOptions.IncludeReplicas.replica_selections:type_name -> google.spanner.v1.DirectedReadOptions.ReplicaSelection
-	32, // 59: google.spanner.v1.DirectedReadOptions.ExcludeReplicas.replica_selections:type_name -> google.spanner.v1.DirectedReadOptions.ReplicaSelection
-	54, // 60: google.spanner.v1.ExecuteSqlRequest.ParamTypesEntry.value:type_name -> google.spanner.v1.Type
-	43, // 61: google.spanner.v1.ExecuteBatchDmlRequest.Statement.params:type_name -> google.protobuf.Struct
-	38, // 62: google.spanner.v1.ExecuteBatchDmlRequest.Statement.param_types:type_name -> google.spanner.v1.ExecuteBatchDmlRequest.Statement.ParamTypesEntry
-	54, // 63: google.spanner.v1.ExecuteBatchDmlRequest.Statement.ParamTypesEntry.value:type_name -> google.spanner.v1.Type
-	54, // 64: google.spanner.v1.PartitionQueryRequest.ParamTypesEntry.value:type_name -> google.spanner.v1.Type
-	51, // 65: google.spanner.v1.BatchWriteRequest.MutationGroup.mutations:type_name -> google.spanner.v1.Mutation
+	33, // 58: google.spanner.v1.DirectedReadOptions.IncludeReplicas.replica_selections:type_name -> google.spanner.v1.DirectedReadOptions.ReplicaSelection
+	33, // 59: google.spanner.v1.DirectedReadOptions.ExcludeReplicas.replica_selections:type_name -> google.spanner.v1.DirectedReadOptions.ReplicaSelection
+	55, // 60: google.spanner.v1.ExecuteSqlRequest.ParamTypesEntry.value:type_name -> google.spanner.v1.Type
+	44, // 61: google.spanner.v1.ExecuteBatchDmlRequest.Statement.params:type_name -> google.protobuf.Struct
+	39, // 62: google.spanner.v1.ExecuteBatchDmlRequest.Statement.param_types:type_name -> google.spanner.v1.ExecuteBatchDmlRequest.Statement.ParamTypesEntry
+	55, // 63: google.spanner.v1.ExecuteBatchDmlRequest.Statement.ParamTypesEntry.value:type_name -> google.spanner.v1.Type
+	55, // 64: google.spanner.v1.PartitionQueryRequest.ParamTypesEntry.value:type_name -> google.spanner.v1.Type
+	52, // 65: google.spanner.v1.BatchWriteRequest.MutationGroup.mutations:type_name -> google.spanner.v1.Mutation
 	5,  // 66: google.spanner.v1.Spanner.CreateSession:input_type -> google.spanner.v1.CreateSessionRequest
 	6,  // 67: google.spanner.v1.Spanner.BatchCreateSessions:input_type -> google.spanner.v1.BatchCreateSessionsRequest
 	9,  // 68: google.spanner.v1.Spanner.GetSession:input_type -> google.spanner.v1.GetSessionRequest
@@ -3518,24 +3593,26 @@ var file_google_spanner_v1_spanner_proto_depIdxs = []int32{
 	19, // 79: google.spanner.v1.Spanner.PartitionQuery:input_type -> google.spanner.v1.PartitionQueryRequest
 	20, // 80: google.spanner.v1.Spanner.PartitionRead:input_type -> google.spanner.v1.PartitionReadRequest
 	27, // 81: google.spanner.v1.Spanner.BatchWrite:input_type -> google.spanner.v1.BatchWriteRequest
-	8,  // 82: google.spanner.v1.Spanner.CreateSession:output_type -> google.spanner.v1.Session
-	7,  // 83: google.spanner.v1.Spanner.BatchCreateSessions:output_type -> google.spanner.v1.BatchCreateSessionsResponse
-	8,  // 84: google.spanner.v1.Spanner.GetSession:output_type -> google.spanner.v1.Session
-	11, // 85: google.spanner.v1.Spanner.ListSessions:output_type -> google.spanner.v1.ListSessionsResponse
-	55, // 86: google.spanner.v1.Spanner.DeleteSession:output_type -> google.protobuf.Empty
-	45, // 87: google.spanner.v1.Spanner.ExecuteSql:output_type -> google.spanner.v1.ResultSet
-	56, // 88: google.spanner.v1.Spanner.ExecuteStreamingSql:output_type -> google.spanner.v1.PartialResultSet
-	17, // 89: google.spanner.v1.Spanner.ExecuteBatchDml:output_type -> google.spanner.v1.ExecuteBatchDmlResponse
-	45, // 90: google.spanner.v1.Spanner.Read:output_type -> google.spanner.v1.ResultSet
-	56, // 91: google.spanner.v1.Spanner.StreamingRead:output_type -> google.spanner.v1.PartialResultSet
-	49, // 92: google.spanner.v1.Spanner.BeginTransaction:output_type -> google.spanner.v1.Transaction
-	57, // 93: google.spanner.v1.Spanner.Commit:output_type -> google.spanner.v1.CommitResponse
-	55, // 94: google.spanner.v1.Spanner.Rollback:output_type -> google.protobuf.Empty
-	22, // 95: google.spanner.v1.Spanner.PartitionQuery:output_type -> google.spanner.v1.PartitionResponse
-	22, // 96: google.spanner.v1.Spanner.PartitionRead:output_type -> google.spanner.v1.PartitionResponse
-	28, // 97: google.spanner.v1.Spanner.BatchWrite:output_type -> google.spanner.v1.BatchWriteResponse
-	82, // [82:98] is the sub-list for method output_type
-	66, // [66:82] is the sub-list for method input_type
+	29, // 82: google.spanner.v1.Spanner.FetchCacheUpdate:input_type -> google.spanner.v1.FetchCacheUpdateRequest
+	8,  // 83: google.spanner.v1.Spanner.CreateSession:output_type -> google.spanner.v1.Session
+	7,  // 84: google.spanner.v1.Spanner.BatchCreateSessions:output_type -> google.spanner.v1.BatchCreateSessionsResponse
+	8,  // 85: google.spanner.v1.Spanner.GetSession:output_type -> google.spanner.v1.Session
+	11, // 86: google.spanner.v1.Spanner.ListSessions:output_type -> google.spanner.v1.ListSessionsResponse
+	56, // 87: google.spanner.v1.Spanner.DeleteSession:output_type -> google.protobuf.Empty
+	46, // 88: google.spanner.v1.Spanner.ExecuteSql:output_type -> google.spanner.v1.ResultSet
+	57, // 89: google.spanner.v1.Spanner.ExecuteStreamingSql:output_type -> google.spanner.v1.PartialResultSet
+	17, // 90: google.spanner.v1.Spanner.ExecuteBatchDml:output_type -> google.spanner.v1.ExecuteBatchDmlResponse
+	46, // 91: google.spanner.v1.Spanner.Read:output_type -> google.spanner.v1.ResultSet
+	57, // 92: google.spanner.v1.Spanner.StreamingRead:output_type -> google.spanner.v1.PartialResultSet
+	50, // 93: google.spanner.v1.Spanner.BeginTransaction:output_type -> google.spanner.v1.Transaction
+	58, // 94: google.spanner.v1.Spanner.Commit:output_type -> google.spanner.v1.CommitResponse
+	56, // 95: google.spanner.v1.Spanner.Rollback:output_type -> google.protobuf.Empty
+	22, // 96: google.spanner.v1.Spanner.PartitionQuery:output_type -> google.spanner.v1.PartitionResponse
+	22, // 97: google.spanner.v1.Spanner.PartitionRead:output_type -> google.spanner.v1.PartitionResponse
+	28, // 98: google.spanner.v1.Spanner.BatchWrite:output_type -> google.spanner.v1.BatchWriteResponse
+	59, // 99: google.spanner.v1.Spanner.FetchCacheUpdate:output_type -> google.spanner.v1.CacheUpdate
+	83, // [83:100] is the sub-list for method output_type
+	66, // [66:83] is the sub-list for method input_type
 	66, // [66:66] is the sub-list for extension type_name
 	66, // [66:66] is the sub-list for extension extendee
 	0,  // [0:66] is the sub-list for field type_name
@@ -3567,7 +3644,7 @@ func file_google_spanner_v1_spanner_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_spanner_v1_spanner_proto_rawDesc), len(file_google_spanner_v1_spanner_proto_rawDesc)),
 			NumEnums:      5,
-			NumMessages:   36,
+			NumMessages:   37,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

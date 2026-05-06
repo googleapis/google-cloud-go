@@ -9304,23 +9304,23 @@ var file_google_cloud_config_v1_config_proto_goTypes = []any{
 	(Deployment_LockState)(0), // 3: google.cloud.config.v1.Deployment.LockState
 	(DeleteDeploymentGroupRequest_DeploymentReferencePolicy)(0), // 4: google.cloud.config.v1.DeleteDeploymentGroupRequest.DeploymentReferencePolicy
 	(DeleteDeploymentRequest_DeletePolicy)(0),                   // 5: google.cloud.config.v1.DeleteDeploymentRequest.DeletePolicy
-	(Revision_Action)(0),                                        // 6: google.cloud.config.v1.Revision.Action
-	(Revision_State)(0),                                         // 7: google.cloud.config.v1.Revision.State
-	(Revision_ErrorCode)(0),                                     // 8: google.cloud.config.v1.Revision.ErrorCode
-	(DeploymentOperationMetadata_DeploymentStep)(0),             // 9: google.cloud.config.v1.DeploymentOperationMetadata.DeploymentStep
-	(Resource_Intent)(0),                                        // 10: google.cloud.config.v1.Resource.Intent
-	(Resource_State)(0),                                         // 11: google.cloud.config.v1.Resource.State
-	(Preview_State)(0),                                          // 12: google.cloud.config.v1.Preview.State
-	(Preview_PreviewMode)(0),                                    // 13: google.cloud.config.v1.Preview.PreviewMode
-	(Preview_ErrorCode)(0),                                      // 14: google.cloud.config.v1.Preview.ErrorCode
-	(PreviewOperationMetadata_PreviewStep)(0),                   // 15: google.cloud.config.v1.PreviewOperationMetadata.PreviewStep
-	(TerraformVersion_State)(0),                                 // 16: google.cloud.config.v1.TerraformVersion.State
-	(ResourceChange_Intent)(0),                                  // 17: google.cloud.config.v1.ResourceChange.Intent
-	(ProviderConfig_ProviderSource)(0),                          // 18: google.cloud.config.v1.ProviderConfig.ProviderSource
-	(DeploymentGroup_State)(0),                                  // 19: google.cloud.config.v1.DeploymentGroup.State
-	(DeploymentGroup_ProvisioningState)(0),                      // 20: google.cloud.config.v1.DeploymentGroup.ProvisioningState
-	(DeploymentUnitProgress_State)(0),                           // 21: google.cloud.config.v1.DeploymentUnitProgress.State
-	(DeploymentUnitProgress_Intent)(0),                          // 22: google.cloud.config.v1.DeploymentUnitProgress.Intent
+	(Revision_Action)(0),                            // 6: google.cloud.config.v1.Revision.Action
+	(Revision_State)(0),                             // 7: google.cloud.config.v1.Revision.State
+	(Revision_ErrorCode)(0),                         // 8: google.cloud.config.v1.Revision.ErrorCode
+	(DeploymentOperationMetadata_DeploymentStep)(0), // 9: google.cloud.config.v1.DeploymentOperationMetadata.DeploymentStep
+	(Resource_Intent)(0),                            // 10: google.cloud.config.v1.Resource.Intent
+	(Resource_State)(0),                             // 11: google.cloud.config.v1.Resource.State
+	(Preview_State)(0),                              // 12: google.cloud.config.v1.Preview.State
+	(Preview_PreviewMode)(0),                        // 13: google.cloud.config.v1.Preview.PreviewMode
+	(Preview_ErrorCode)(0),                          // 14: google.cloud.config.v1.Preview.ErrorCode
+	(PreviewOperationMetadata_PreviewStep)(0),       // 15: google.cloud.config.v1.PreviewOperationMetadata.PreviewStep
+	(TerraformVersion_State)(0),                     // 16: google.cloud.config.v1.TerraformVersion.State
+	(ResourceChange_Intent)(0),                      // 17: google.cloud.config.v1.ResourceChange.Intent
+	(ProviderConfig_ProviderSource)(0),              // 18: google.cloud.config.v1.ProviderConfig.ProviderSource
+	(DeploymentGroup_State)(0),                      // 19: google.cloud.config.v1.DeploymentGroup.State
+	(DeploymentGroup_ProvisioningState)(0),          // 20: google.cloud.config.v1.DeploymentGroup.ProvisioningState
+	(DeploymentUnitProgress_State)(0),               // 21: google.cloud.config.v1.DeploymentUnitProgress.State
+	(DeploymentUnitProgress_Intent)(0),              // 22: google.cloud.config.v1.DeploymentUnitProgress.Intent
 	(ProvisionDeploymentGroupOperationMetadata_ProvisionDeploymentGroupStep)(0), // 23: google.cloud.config.v1.ProvisionDeploymentGroupOperationMetadata.ProvisionDeploymentGroupStep
 	(*Deployment)(nil),                                // 24: google.cloud.config.v1.Deployment
 	(*TerraformBlueprint)(nil),                        // 25: google.cloud.config.v1.TerraformBlueprint
