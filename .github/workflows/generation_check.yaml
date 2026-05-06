@@ -23,7 +23,7 @@ jobs:
           version: "33.2"
       - name: Install tools
         run: |
-          V=$(go run github.com/googleapis/librarian/cmd/librarian@latest config get version)
+          version=$(go run github.com/googleapis/librarian/cmd/librarian@latest config get version)
           go run "github.com/googleapis/librarian/cmd/librarian@${version}" install
       - name: Regenerate
         run: |
