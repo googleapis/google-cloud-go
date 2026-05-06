@@ -23,11 +23,11 @@ jobs:
           version: "33.2"
       - name: Install tools
         run: |
-          version=$(sed -n 's/^version: *//p' librarian.yaml)
+          version=$(go run github.com/googleapis/librarian/cmd/librarian@latest config get version)
           go run "github.com/googleapis/librarian/cmd/librarian@${version}" install
       - name: Regenerate
         run: |
-          version=$(sed -n 's/^version: *//p' librarian.yaml)
+          version=$(go run github.com/googleapis/librarian/cmd/librarian@latest config get version)
           go run "github.com/googleapis/librarian/cmd/librarian@${version}" generate -all
       - name: Create issue on diff
         if: failure()
