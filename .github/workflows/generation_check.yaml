@@ -27,7 +27,7 @@ jobs:
           go run "github.com/googleapis/librarian/cmd/librarian@${version}" install
       - name: Regenerate
         run: |
-          V=$(go run github.com/googleapis/librarian/cmd/librarian@latest config get version)
+          version=$(go run github.com/googleapis/librarian/cmd/librarian@latest config get version)
           go run "github.com/googleapis/librarian/cmd/librarian@${version}" generate -all
       - name: Create issue on diff
         if: failure()
