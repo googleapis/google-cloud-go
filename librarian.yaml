@@ -1333,6 +1333,7 @@ libraries:
   - name: geminidataanalytics
     version: 0.12.0
     apis:
+      - path: google/cloud/geminidataanalytics/v1
       - path: google/cloud/geminidataanalytics/v1beta
     go:
       go_apis:
