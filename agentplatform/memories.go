@@ -374,6 +374,11 @@ func retrieveAgentEngineMemoriesConfigToVertex(fromObject map[string]any, parent
 		genai.InternalSetValueByPath(parentObject, []string{"filterGroups"}, fromFilterGroups)
 	}
 
+	fromMemoryTypes := genai.InternalGetValueByPath(fromObject, []string{"memoryTypes"})
+	if fromMemoryTypes != nil {
+		genai.InternalSetValueByPath(parentObject, []string{"memoryTypes"}, fromMemoryTypes)
+	}
+
 	return toObject, nil
 }
 
@@ -406,6 +411,22 @@ func retrieveAgentEngineMemoriesRequestParametersToVertex(fromObject map[string]
 		if err != nil {
 			return nil, err
 		}
+	}
+
+	return toObject, nil
+}
+
+func retrieveMemoryProfilesRequestParametersToVertex(fromObject map[string]any, parentObject map[string]any, rootObject map[string]any) (toObject map[string]any, err error) {
+	toObject = make(map[string]any)
+
+	fromName := genai.InternalGetValueByPath(fromObject, []string{"name"})
+	if fromName != nil {
+		genai.InternalSetValueByPath(toObject, []string{"_url", "name"}, fromName)
+	}
+
+	fromScope := genai.InternalGetValueByPath(fromObject, []string{"scope"})
+	if fromScope != nil {
+		genai.InternalSetValueByPath(toObject, []string{"scope"}, fromScope)
 	}
 
 	return toObject, nil
@@ -545,7 +566,7 @@ func (m Memories) create(ctx context.Context, name string, fact string, scope ma
 
 	} else {
 
-		return nil, fmt.Errorf("method Create is only supported in the Vertex AI client. You can choose to use Vertex AI by setting ClientConfig.Backend to BackendVertexAI.")
+		return nil, fmt.Errorf("method Create is only supported in the Gemini Enterprise Agent Platform (previously known as Vertex AI) client. You can choose to use Gemini Enterprise Agent Platform by setting ClientConfig.Backend to BackendEnterprise.")
 
 	}
 
@@ -621,7 +642,7 @@ func (m Memories) Delete(ctx context.Context, name string, config *types.DeleteA
 
 	} else {
 
-		return nil, fmt.Errorf("method Delete is only supported in the Vertex AI client. You can choose to use Vertex AI by setting ClientConfig.Backend to BackendVertexAI.")
+		return nil, fmt.Errorf("method Delete is only supported in the Gemini Enterprise Agent Platform (previously known as Vertex AI) client. You can choose to use Gemini Enterprise Agent Platform by setting ClientConfig.Backend to BackendEnterprise.")
 
 	}
 
@@ -697,7 +718,7 @@ func (m Memories) generate(ctx context.Context, name string, vertexSessionSource
 
 	} else {
 
-		return nil, fmt.Errorf("method Generate is only supported in the Vertex AI client. You can choose to use Vertex AI by setting ClientConfig.Backend to BackendVertexAI.")
+		return nil, fmt.Errorf("method Generate is only supported in the Gemini Enterprise Agent Platform (previously known as Vertex AI) client. You can choose to use Gemini Enterprise Agent Platform by setting ClientConfig.Backend to BackendEnterprise.")
 
 	}
 
@@ -773,7 +794,7 @@ func (m Memories) Get(ctx context.Context, name string, config *types.GetAgentEn
 
 	} else {
 
-		return nil, fmt.Errorf("method Get is only supported in the Vertex AI client. You can choose to use Vertex AI by setting ClientConfig.Backend to BackendVertexAI.")
+		return nil, fmt.Errorf("method Get is only supported in the Gemini Enterprise Agent Platform (previously known as Vertex AI) client. You can choose to use Gemini Enterprise Agent Platform by setting ClientConfig.Backend to BackendEnterprise.")
 
 	}
 
@@ -826,7 +847,7 @@ func (m Memories) Get(ctx context.Context, name string, config *types.GetAgentEn
 	return response, nil
 }
 
-func (m Memories) ingestEvents(ctx context.Context, name string, streamId *string, directContentsSource *types.IngestionDirectContentsSource, scope *map[string]string, generationTriggerConfig *types.GenerationTriggerConfig, config *types.IngestEventsConfig) (*types.MemoryBankIngestEventsOperation, error) {
+func (m Memories) ingestEvents(ctx context.Context, name string, streamId *string, directContentsSource *types.IngestionDirectContentsSource, scope *map[string]string, generationTriggerConfig *types.MemoryGenerationTriggerConfig, config *types.IngestEventsConfig) (*types.MemoryBankIngestEventsOperation, error) {
 	parameterMap := make(map[string]any)
 
 	kwargs := map[string]any{"name": name, "streamId": streamId, "directContentsSource": directContentsSource, "scope": scope, "generationTriggerConfig": generationTriggerConfig, "config": config}
@@ -849,7 +870,7 @@ func (m Memories) ingestEvents(ctx context.Context, name string, streamId *strin
 
 	} else {
 
-		return nil, fmt.Errorf("method IngestEvents is only supported in the Vertex AI client. You can choose to use Vertex AI by setting ClientConfig.Backend to BackendVertexAI.")
+		return nil, fmt.Errorf("method IngestEvents is only supported in the Gemini Enterprise Agent Platform (previously known as Vertex AI) client. You can choose to use Gemini Enterprise Agent Platform by setting ClientConfig.Backend to BackendEnterprise.")
 
 	}
 
@@ -925,7 +946,7 @@ func (m Memories) list(ctx context.Context, name string, config *types.ListAgent
 
 	} else {
 
-		return nil, fmt.Errorf("method List is only supported in the Vertex AI client. You can choose to use Vertex AI by setting ClientConfig.Backend to BackendVertexAI.")
+		return nil, fmt.Errorf("method List is only supported in the Gemini Enterprise Agent Platform (previously known as Vertex AI) client. You can choose to use Gemini Enterprise Agent Platform by setting ClientConfig.Backend to BackendEnterprise.")
 
 	}
 
@@ -1001,7 +1022,7 @@ func (m Memories) getMemoryOperation(ctx context.Context, operationName string, 
 
 	} else {
 
-		return nil, fmt.Errorf("method GetMemoryOperation is only supported in the Vertex AI client. You can choose to use Vertex AI by setting ClientConfig.Backend to BackendVertexAI.")
+		return nil, fmt.Errorf("method GetMemoryOperation is only supported in the Gemini Enterprise Agent Platform (previously known as Vertex AI) client. You can choose to use Gemini Enterprise Agent Platform by setting ClientConfig.Backend to BackendEnterprise.")
 
 	}
 
@@ -1077,7 +1098,7 @@ func (m Memories) getGenerateMemoriesOperation(ctx context.Context, operationNam
 
 	} else {
 
-		return nil, fmt.Errorf("method GetGenerateMemoriesOperation is only supported in the Vertex AI client. You can choose to use Vertex AI by setting ClientConfig.Backend to BackendVertexAI.")
+		return nil, fmt.Errorf("method GetGenerateMemoriesOperation is only supported in the Gemini Enterprise Agent Platform (previously known as Vertex AI) client. You can choose to use Gemini Enterprise Agent Platform by setting ClientConfig.Backend to BackendEnterprise.")
 
 	}
 
@@ -1153,7 +1174,7 @@ func (m Memories) retrieve(ctx context.Context, name string, scope map[string]st
 
 	} else {
 
-		return nil, fmt.Errorf("method Retrieve is only supported in the Vertex AI client. You can choose to use Vertex AI by setting ClientConfig.Backend to BackendVertexAI.")
+		return nil, fmt.Errorf("method Retrieve is only supported in the Gemini Enterprise Agent Platform (previously known as Vertex AI) client. You can choose to use Gemini Enterprise Agent Platform by setting ClientConfig.Backend to BackendEnterprise.")
 
 	}
 
@@ -1170,6 +1191,82 @@ func (m Memories) retrieve(ctx context.Context, name string, scope map[string]st
 	}
 	if m.apiClient.ClientConfig().Backend == genai.BackendVertexAI {
 		path, err = genai.InternalFormatMap("{name}/memories:retrieve", urlParams)
+	} else {
+		path, err = genai.InternalFormatMap("None", urlParams)
+	}
+	if err != nil {
+		return nil, fmt.Errorf("invalid url params: %#v.\n%w", urlParams, err)
+	}
+	if _, ok := body["_query"]; ok {
+		query, err := genai.InternalCreateURLQuery(body["_query"].(map[string]any))
+		if err != nil {
+			return nil, err
+		}
+		path += "?" + query
+		delete(body, "_query")
+	}
+	responseMap, err = genai.SendRequest(ctx, m.apiClient, path, http.MethodPost, body, httpOptions)
+	if err != nil {
+		return nil, err
+	}
+	err = genai.InternalMapToStruct(responseMap, response)
+	if err != nil {
+		return nil, err
+	}
+
+	if field, ok := reflect.TypeOf(response).Elem().FieldByName("SDKHTTPResponse"); ok {
+		{
+			if reflect.ValueOf(response).Elem().FieldByName("SDKHTTPResponse").IsValid() {
+				{
+					reflect.ValueOf(response).Elem().FieldByName("SDKHTTPResponse").Set(reflect.Zero(field.Type))
+				}
+			}
+		}
+	}
+
+	return response, nil
+}
+
+func (m Memories) RetrieveProfiles(ctx context.Context, name string, scope map[string]string, config *types.RetrieveMemoryProfilesConfig) (*types.RetrieveProfilesResponse, error) {
+	parameterMap := make(map[string]any)
+
+	kwargs := map[string]any{"name": name, "scope": scope, "config": config}
+	genai.InternalDeepMarshal(kwargs, &parameterMap)
+
+	var httpOptions *genai.HTTPOptions
+	if config == nil || config.HTTPOptions == nil {
+		httpOptions = &genai.HTTPOptions{}
+	} else {
+		httpOptions = config.HTTPOptions
+	}
+	if httpOptions.Headers == nil {
+		httpOptions.Headers = http.Header{}
+	}
+	var response = new(types.RetrieveProfilesResponse)
+	var responseMap map[string]any
+	var toConverter func(map[string]any, map[string]any, map[string]any) (map[string]any, error)
+	if m.apiClient.ClientConfig().Backend == genai.BackendVertexAI {
+		toConverter = retrieveMemoryProfilesRequestParametersToVertex
+
+	} else {
+
+		return nil, fmt.Errorf("method RetrieveProfiles is only supported in the Gemini Enterprise Agent Platform (previously known as Vertex AI) client. You can choose to use Gemini Enterprise Agent Platform by setting ClientConfig.Backend to BackendEnterprise.")
+
+	}
+
+	body, err := toConverter(parameterMap, nil, parameterMap)
+	if err != nil {
+		return nil, err
+	}
+	delete(body, "config")
+	var path string
+	var urlParams map[string]any
+	if _, ok := body["_url"]; ok {
+		urlParams = body["_url"].(map[string]any)
+		delete(body, "_url")
+	}
+	if m.apiClient.ClientConfig().Backend == genai.BackendVertexAI {
+		path, err = genai.InternalFormatMap("{name}/memories:retrieveProfiles", urlParams)
 	} else {
 		path, err = genai.InternalFormatMap("None", urlParams)
 	}
@@ -1229,7 +1326,7 @@ func (m Memories) rollback(ctx context.Context, name string, targetRevisionId st
 
 	} else {
 
-		return nil, fmt.Errorf("method Rollback is only supported in the Vertex AI client. You can choose to use Vertex AI by setting ClientConfig.Backend to BackendVertexAI.")
+		return nil, fmt.Errorf("method Rollback is only supported in the Gemini Enterprise Agent Platform (previously known as Vertex AI) client. You can choose to use Gemini Enterprise Agent Platform by setting ClientConfig.Backend to BackendEnterprise.")
 
 	}
 
@@ -1305,7 +1402,7 @@ func (m Memories) update(ctx context.Context, name string, fact *string, scope *
 
 	} else {
 
-		return nil, fmt.Errorf("method Update is only supported in the Vertex AI client. You can choose to use Vertex AI by setting ClientConfig.Backend to BackendVertexAI.")
+		return nil, fmt.Errorf("method Update is only supported in the Gemini Enterprise Agent Platform (previously known as Vertex AI) client. You can choose to use Gemini Enterprise Agent Platform by setting ClientConfig.Backend to BackendEnterprise.")
 
 	}
 
@@ -1381,7 +1478,7 @@ func (m Memories) purge(ctx context.Context, name string, filter *string, filter
 
 	} else {
 
-		return nil, fmt.Errorf("method Purge is only supported in the Vertex AI client. You can choose to use Vertex AI by setting ClientConfig.Backend to BackendVertexAI.")
+		return nil, fmt.Errorf("method Purge is only supported in the Gemini Enterprise Agent Platform (previously known as Vertex AI) client. You can choose to use Gemini Enterprise Agent Platform by setting ClientConfig.Backend to BackendEnterprise.")
 
 	}
 

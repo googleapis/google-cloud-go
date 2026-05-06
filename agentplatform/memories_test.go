@@ -47,6 +47,7 @@ func TestAgentEngineMemories(t *testing.T) {
 				"my_boolean_key":   {BoolValue: genai.Ptr(true)},
 				"my_timestamp_key": {TimestampValue: timestamp},
 			},
+			MemoryType: types.MemoryTypeNaturalLanguageCollection,
 		}
 		response := createAgentEngineMemoryAndWait(tt, client, re, want)
 		got, err := client.AgentEngines.Memories.Get(tt.Context(), response.Name, nil)
