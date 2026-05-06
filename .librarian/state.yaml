@@ -1351,6 +1351,7 @@ libraries:
     apis:
       - path: google/cloud/geminidataanalytics/v1beta
         service_config: geminidataanalytics_v1beta.yaml
+      - path: google/cloud/geminidataanalytics/v1
     source_roots:
       - geminidataanalytics
       - internal/generated/snippets/geminidataanalytics
