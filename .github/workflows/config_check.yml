@@ -26,7 +26,7 @@ jobs:
       - name: Config check
         if: steps.filter.outputs.librarian == 'true'
         run: |
-          V="$(sed -n 's/^version: *//p' librarian.yaml)"
+          V=$(go run github.com/googleapis/librarian/cmd/librarian@latest config get version)
           go run "github.com/googleapis/librarian/tool/cmd/configcheck@${V}" .
       - name: Update library versions and regenerate
         if: failure()
@@ -35,6 +35,6 @@ jobs:
           Update library configuration in the configs according to the error message and
           regenerate libraries using:
           
-          V=\$(sed -n 's/^version: *//p' librarian.yaml)
+          V=$(go run github.com/googleapis/librarian/cmd/librarian@latest config get version)
           go run github.com/googleapis/librarian/cmd/librarian@\${V} generate --all
           "
