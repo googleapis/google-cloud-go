@@ -1,15 +1,32 @@
+// Copyright 2026 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package bidi
 
 import (
 	"context"
+	"fmt"
 	"math/rand"
+	"net/url"
 	"sync"
 	"time"
 
 	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
+	"google.golang.org/grpc/metadata"
 )
 
-// ConfigManager handles fetching and analyzing client configuration.
+// ConfigManager handles fetching and applying client configuration.
 type ConfigManager struct {
 	client        btpb.BigtableClient
 	mu            sync.RWMutex
@@ -28,6 +45,13 @@ func (m *ConfigManager) GetClientConfiguration(ctx context.Context, instanceName
 		InstanceName: instanceName,
 		AppProfileId: appProfileId,
 	}
+
+	requestParamsMD := metadata.Pairs(requestParamsHeader,
+		fmt.Sprintf("name=%s&app_profile_id=%s", url.QueryEscape(instanceName), url.QueryEscape(appProfileId)))
+
+	originalContextMd, _ := metadata.FromOutgoingContext(ctx)
+	ctx = metadata.NewOutgoingContext(ctx, metadata.Join(originalContextMd, requestParamsMD))
+
 	return m.client.GetClientConfiguration(ctx, req)
 }
 
@@ -53,7 +77,8 @@ func (m *ConfigManager) StartPolling(ctx context.Context, instanceName, appProfi
 	m.mu.Unlock()
 
 	go func() {
-		ticker := time.NewTicker(1 * time.Minute) // Default interval
+
+		ticker := time.NewTicker(1 * time.Hour) // Default interval to poll at beginning
 		defer ticker.Stop()
 
 		for {
@@ -71,8 +96,7 @@ func (m *ConfigManager) StartPolling(ctx context.Context, instanceName, appProfi
 						if p.StopPolling {
 							return
 						}
-					case *btpb.ClientConfiguration_PollingInterval:
-						interval = time.Duration(p.PollingInterval.Seconds) * time.Second
+
 					case *btpb.ClientConfiguration_PollingConfiguration_:
 						if p.PollingConfiguration != nil && p.PollingConfiguration.PollingInterval != nil {
 							interval = time.Duration(p.PollingConfiguration.PollingInterval.Seconds) * time.Second
