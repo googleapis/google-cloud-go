@@ -63,7 +63,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/advisorynotifications/v1
   - name: agentplatform
-    version: 0.0.0
+    version: 0.20.0
     skip_generate: true
     skip_release: true
   - name: ai
