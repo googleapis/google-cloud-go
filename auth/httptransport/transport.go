@@ -535,9 +535,9 @@ func (t *authTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	// re-inject it. If req.Response is set, this call is a redirect; skip
 	// auth injection when the destination host differs from the previous hop.
 	if prev := req.Response; prev != nil && prev.Request != nil {
-		if prev.Request.URL.Host != req.URL.Host {
+		if !strings.EqualFold(prev.Request.URL.Host, req.URL.Host) {
 			reqBodyClosed = true
-			return t.base.RoundTrip(req.Clone(req.Context()))
+			return t.base.RoundTrip(req)
 		}
 	}
 
