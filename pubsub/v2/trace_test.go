@@ -38,6 +38,7 @@ import (
 	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
+	grpccodes "google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
 )
 
@@ -477,6 +478,80 @@ func TestTrace_SubscribeSpans(t *testing.T) {
 	})
 	compareSpans(t, got, expectedSpans)
 }
+
+func TestTrace_ExactlyOnceSubscribeSpansError(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	srv := pstest.NewServer(pstest.WithErrorInjection("Acknowledge", grpccodes.PermissionDenied, "insufficient permission"))
+	defer srv.Close()
+	client, err := NewClientWithConfig(ctx, projName,
+		&ClientConfig{EnableOpenTelemetryTracing: true},
+		option.WithEndpoint(srv.Addr),
+		option.WithoutAuthentication(),
+		option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+		option.WithTelemetryDisabled(),
+	)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer client.Close()
+
+	e := tracetest.NewInMemoryExporter()
+	tp := sdktrace.NewTracerProvider(sdktrace.WithSyncer(e))
+	defer tp.Shutdown(ctx)
+	otel.SetTracerProvider(tp)
+
+	topicName := fmt.Sprintf("projects/%s/topics/t", projName)
+	subName := fmt.Sprintf("projects/%s/subscriptions/s", projName)
+	publisher := mustCreateTopic(t, client, topicName)
+	sub := mustCreateSubConfig(t, client, &pb.Subscription{
+		Name:                      subName,
+		Topic:                     topicName,
+		EnableExactlyOnceDelivery: true,
+	})
+
+	r := publisher.Publish(ctx, &Message{Data: []byte("test")})
+	if _, err := r.Get(ctx); err != nil {
+		t.Fatalf("failed to publish: %v", err)
+	}
+
+	sub.Receive(ctx, func(ctx context.Context, msg *Message) {
+		ar := msg.AckWithResult()
+		_, getErr := ar.Get(context.Background())
+		if getErr == nil {
+			t.Error("expected error from ack")
+		}
+		cancel()
+	})
+
+	spans := getSpans(e)
+	// Find the subscribe span and verify status.
+	var foundSubscribe bool
+	var foundAck bool
+	expectedSubName := fmt.Sprintf("s %s", subscribeSpanName)
+	expectedAckName := fmt.Sprintf("s %s", ackSpanName)
+	for _, s := range spans {
+		if s.Name == expectedSubName {
+			foundSubscribe = true
+			if s.Status.Code != codes.Error {
+				t.Errorf("expected subscribeSpan status to be Error, got %v", s.Status.Code)
+			}
+		}
+		if s.Name == expectedAckName {
+			foundAck = true
+			if s.Status.Code != codes.Error {
+				t.Errorf("expected ackSpan status to be Error, got %v", s.Status.Code)
+			}
+		}
+	}
+	if !foundSubscribe {
+		t.Errorf("subscribeSpan not found")
+	}
+	if !foundAck {
+		t.Errorf("ackSpan not found")
+	}
+}
+
 
 func TestTrace_TracingNotEnabled(t *testing.T) {
 	ctx := context.Background()
