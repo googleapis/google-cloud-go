@@ -12,6 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// Package filter provides a parser that creates an ASTNode
+// from a filter string, which can then be used to evaluate
+// attributes. See comment in [ParseFilter] for example.
 package filter
 
 import (
@@ -306,12 +309,12 @@ func (p *parser) parsePrimary() (ASTNode, error) {
 //
 // Example usage combining parsing and evaluation:
 //
-//   ast, err := ParseFilter(`attributes.name = "com"`)
-//   if err != nil {
-//       // Handle error
-//   }
-//   attrs := map[string]string{"name": "com"}
-//   matched := Evaluate(ast, attrs) // returns true
+//	ast, err := ParseFilter(`attributes.name = "com"`)
+//	if err != nil {
+//	    // Handle error
+//	}
+//	attrs := map[string]string{"name": "com"}
+//	matched := Evaluate(ast, attrs) // returns true
 func ParseFilter(filter string) (ASTNode, error) {
 	l := &lexer{input: filter}
 	p := &parser{lexer: l}
