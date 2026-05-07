@@ -6031,6 +6031,7 @@ func TestIntegration_WithDirectedReadOptions_ReadWriteTransaction_ShouldThrowErr
 }
 
 func TestIntegration_QueueMutations(t *testing.T) {
+	t.Skip("Cloud Queues are not supported yet")
 	// Run in cloud-devel only since this queue feature is not fully enabled yet.
 	onlyRunOnCloudDevel(t)
 	// DDL not fully enabled for PG yet.
