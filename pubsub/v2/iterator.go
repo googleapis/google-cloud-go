@@ -594,6 +594,13 @@ func (it *messageIterator) handleKeepAlives() {
 	it.checkDrained()
 }
 
+// batchDispatch takes a map of AckIDs, groups them into bounded batches, and executes 
+// the provided body callback for each batch concurrently in its own goroutine. 
+// It handles waitgroup tracking and checks for exactly-once delivery shutdown status.
+//
+// The callback 'body' lets callers (like sendAck or sendModAck) manage the entire execution 
+// flow of a batch sequentially within a closure. This includes logic for metrics, trace spans, 
+// and analyzing RPC results, all within the same local context.
 func (it *messageIterator) batchDispatch(m map[string]*AckResult, body func(toSend []string, exactlyOnceDelivery bool)) {
 	ackIDs := make([]string, 0, len(m))
 	for ackID := range m {
