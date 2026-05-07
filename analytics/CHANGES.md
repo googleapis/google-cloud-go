@@ -1,5 +1,7 @@
 # Changes
 
+## [0.35.0](https://github.com/googleapis/google-cloud-go/releases/tag/analytics%2Fv0.35.0) (2026-05-07)
+
 ## [0.34.0](https://github.com/googleapis/google-cloud-go/releases/tag/analytics%2Fv0.34.0) (2026-04-30)
 
 ## [0.33.0](https://github.com/googleapis/google-cloud-go/releases/tag/analytics%2Fv0.33.0) (2026-04-13)

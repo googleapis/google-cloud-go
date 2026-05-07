@@ -1,6 +1,8 @@
 # Changes
 
 
+## [1.10.0](https://github.com/googleapis/google-cloud-go/releases/tag/ids%2Fv1.10.0) (2026-05-07)
+
 ## [1.9.0](https://github.com/googleapis/google-cloud-go/releases/tag/ids%2Fv1.9.0) (2026-04-30)
 
 ## [1.8.0](https://github.com/googleapis/google-cloud-go/releases/tag/ids%2Fv1.8.0) (2026-04-13)

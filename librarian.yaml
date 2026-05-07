@@ -32,7 +32,7 @@ default:
   tag_format: '{name}/v{version}'
 libraries:
   - name: accessapproval
-    version: 1.12.0
+    version: 1.13.0
     apis:
       - path: google/cloud/accessapproval/v1
     go:
@@ -42,7 +42,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/accessapproval/v1
   - name: accesscontextmanager
-    version: 1.13.0
+    version: 1.14.0
     apis:
       - path: google/identity/accesscontextmanager/v1
     go:
@@ -53,7 +53,7 @@ libraries:
           import_path: accesscontextmanager/apiv1
           path: google/identity/accesscontextmanager/v1
   - name: advisorynotifications
-    version: 1.9.0
+    version: 1.10.0
     apis:
       - path: google/cloud/advisorynotifications/v1
     go:
@@ -67,7 +67,7 @@ libraries:
     skip_generate: true
     skip_release: true
   - name: ai
-    version: 0.19.0
+    version: 0.20.0
     apis:
       - path: google/ai/generativelanguage/v1
       - path: google/ai/generativelanguage/v1beta2
@@ -108,7 +108,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/aiplatform/v1beta1
   - name: alloydb
-    version: 1.25.0
+    version: 1.26.0
     apis:
       - path: google/cloud/alloydb/v1
       - path: google/cloud/alloydb/connectors/v1
@@ -146,7 +146,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/alloydb/v1alpha
   - name: analytics
-    version: 0.34.0
+    version: 0.35.0
     apis:
       - path: google/analytics/admin/v1alpha
     go:
@@ -156,7 +156,7 @@ libraries:
             - F_proto_cloneof
           path: google/analytics/admin/v1alpha
   - name: apigateway
-    version: 1.11.0
+    version: 1.12.0
     apis:
       - path: google/cloud/apigateway/v1
     go:
@@ -166,7 +166,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/apigateway/v1
   - name: apigeeconnect
-    version: 1.11.0
+    version: 1.12.0
     apis:
       - path: google/cloud/apigeeconnect/v1
     go:
@@ -176,7 +176,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/apigeeconnect/v1
   - name: apigeeregistry
-    version: 0.14.0
+    version: 0.15.0
     apis:
       - path: google/cloud/apigeeregistry/v1
     go:
@@ -186,7 +186,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/apigeeregistry/v1
   - name: apihub
-    version: 0.6.0
+    version: 0.7.0
     apis:
       - path: google/cloud/apihub/v1
     go:
@@ -196,7 +196,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/apihub/v1
   - name: apikeys
-    version: 1.6.0
+    version: 1.7.0
     apis:
       - path: google/api/apikeys/v2
     go:
@@ -207,7 +207,7 @@ libraries:
           import_path: apikeys/apiv2
           path: google/api/apikeys/v2
   - name: apiregistry
-    version: 0.6.0
+    version: 0.7.0
     apis:
       - path: google/cloud/apiregistry/v1
       - path: google/cloud/apiregistry/v1beta
@@ -222,7 +222,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/apiregistry/v1beta
   - name: appengine
-    version: 1.13.0
+    version: 1.14.0
     apis:
       - path: google/appengine/v1
     go:
@@ -232,7 +232,7 @@ libraries:
             - F_proto_cloneof
           path: google/appengine/v1
   - name: apphub
-    version: 0.8.0
+    version: 0.9.0
     apis:
       - path: google/cloud/apphub/v1
     go:
@@ -242,7 +242,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/apphub/v1
   - name: appoptimize
-    version: 0.3.0
+    version: 0.4.0
     apis:
       - path: google/cloud/appoptimize/v1beta
     copyright_year: "2026"
@@ -253,7 +253,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/appoptimize/v1beta
   - name: apps
-    version: 0.12.0
+    version: 0.13.0
     apis:
       - path: google/apps/meet/v2
       - path: google/apps/events/subscriptions/v1
@@ -278,7 +278,7 @@ libraries:
             - F_proto_cloneof
           path: google/apps/events/subscriptions/v1beta
   - name: area120
-    version: 0.14.0
+    version: 0.15.0
     apis:
       - path: google/area120/tables/v1alpha1
     go:
@@ -289,7 +289,7 @@ libraries:
           no_metadata: true
           path: google/area120/tables/v1alpha1
   - name: artifactregistry
-    version: 1.24.0
+    version: 1.25.0
     apis:
       - path: google/devtools/artifactregistry/v1
       - path: google/devtools/artifactregistry/v1beta2
@@ -306,7 +306,7 @@ libraries:
           import_path: artifactregistry/apiv1beta2
           path: google/devtools/artifactregistry/v1beta2
   - name: asset
-    version: 1.26.0
+    version: 1.27.0
     apis:
       - path: google/cloud/asset/v1
       - path: google/cloud/asset/v1p5beta1
@@ -331,7 +331,7 @@ libraries:
           no_metadata: true
           path: google/cloud/asset/v1p5beta1
   - name: assuredworkloads
-    version: 1.17.0
+    version: 1.18.0
     apis:
       - path: google/cloud/assuredworkloads/v1
       - path: google/cloud/assuredworkloads/v1beta1
@@ -346,7 +346,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/assuredworkloads/v1beta1
   - name: auditmanager
-    version: 0.6.0
+    version: 0.7.0
     apis:
       - path: google/cloud/auditmanager/v1
     go:
@@ -367,7 +367,7 @@ libraries:
       - internal/version.go
     skip_release: true
   - name: automl
-    version: 1.19.0
+    version: 1.20.0
     apis:
       - path: google/cloud/automl/v1
       - path: google/cloud/automl/v1beta1
@@ -382,7 +382,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/automl/v1beta1
   - name: backupdr
-    version: 1.13.0
+    version: 1.14.0
     apis:
       - path: google/cloud/backupdr/v1
     go:
@@ -392,7 +392,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/backupdr/v1
   - name: baremetalsolution
-    version: 1.8.0
+    version: 1.9.0
     apis:
       - path: google/cloud/baremetalsolution/v2
     go:
@@ -402,7 +402,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/baremetalsolution/v2
   - name: batch
-    version: 1.18.0
+    version: 1.19.0
     apis:
       - path: google/cloud/batch/v1
     keep:
@@ -414,7 +414,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/batch/v1
   - name: beyondcorp
-    version: 1.6.0
+    version: 1.7.0
     apis:
       - path: google/cloud/beyondcorp/appconnections/v1
       - path: google/cloud/beyondcorp/appconnectors/v1
@@ -444,7 +444,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/beyondcorp/clientgateways/v1
   - name: biglake
-    version: 0.4.0
+    version: 0.5.0
     apis:
       - path: google/cloud/biglake/v1
       - path: google/cloud/biglake/hive/v1beta
@@ -621,7 +621,7 @@ libraries:
           path: google/bigtable/v2
           proto_only: true
   - name: billing
-    version: 1.25.0
+    version: 1.26.0
     apis:
       - path: google/cloud/billing/v1
       - path: google/cloud/billing/budgets/v1
@@ -641,7 +641,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/billing/budgets/v1beta1
   - name: binaryauthorization
-    version: 1.14.0
+    version: 1.15.0
     apis:
       - path: google/cloud/binaryauthorization/v1
       - path: google/cloud/binaryauthorization/v1beta1
@@ -666,7 +666,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/capacityplanner/v1beta
   - name: certificatemanager
-    version: 1.13.0
+    version: 1.14.0
     apis:
       - path: google/cloud/certificatemanager/v1
     go:
@@ -676,7 +676,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/certificatemanager/v1
   - name: ces
-    version: 0.8.0
+    version: 0.9.0
     apis:
       - path: google/cloud/ces/v1
       - path: google/cloud/ces/v1beta
@@ -691,7 +691,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/ces/v1beta
   - name: channel
-    version: 1.25.0
+    version: 1.26.0
     apis:
       - path: google/cloud/channel/v1
     go:
@@ -701,7 +701,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/channel/v1
   - name: chat
-    version: 0.22.0
+    version: 0.23.0
     apis:
       - path: google/chat/v1
     go:
@@ -711,7 +711,7 @@ libraries:
             - F_proto_cloneof
           path: google/chat/v1
   - name: chronicle
-    version: 0.6.0
+    version: 0.7.0
     apis:
       - path: google/cloud/chronicle/v1
     go:
@@ -721,7 +721,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/chronicle/v1
   - name: cloudbuild
-    version: 1.29.0
+    version: 1.30.0
     apis:
       - path: google/devtools/cloudbuild/v2
       - path: google/devtools/cloudbuild/v1
@@ -738,7 +738,7 @@ libraries:
           import_path: cloudbuild/apiv2
           path: google/devtools/cloudbuild/v2
   - name: cloudcontrolspartner
-    version: 1.9.0
+    version: 1.10.0
     apis:
       - path: google/cloud/cloudcontrolspartner/v1
       - path: google/cloud/cloudcontrolspartner/v1beta
@@ -753,7 +753,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/cloudcontrolspartner/v1beta
   - name: clouddms
-    version: 1.12.0
+    version: 1.13.0
     apis:
       - path: google/cloud/clouddms/v1
     go:
@@ -763,7 +763,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/clouddms/v1
   - name: cloudprofiler
-    version: 0.8.0
+    version: 0.9.0
     apis:
       - path: google/devtools/cloudprofiler/v2
     go:
@@ -774,7 +774,7 @@ libraries:
           import_path: cloudprofiler/apiv2
           path: google/devtools/cloudprofiler/v2
   - name: cloudquotas
-    version: 1.10.0
+    version: 1.11.0
     apis:
       - path: google/api/cloudquotas/v1
       - path: google/api/cloudquotas/v1beta
@@ -791,7 +791,7 @@ libraries:
           import_path: cloudquotas/apiv1beta
           path: google/api/cloudquotas/v1beta
   - name: cloudsecuritycompliance
-    version: 0.5.0
+    version: 0.6.0
     apis:
       - path: google/cloud/cloudsecuritycompliance/v1
     go:
@@ -801,7 +801,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/cloudsecuritycompliance/v1
   - name: cloudtasks
-    version: 1.17.0
+    version: 1.18.0
     apis:
       - path: google/cloud/tasks/v2
       - path: google/cloud/tasks/v2beta3
@@ -830,7 +830,7 @@ libraries:
           import_path: cloudtasks/apiv2beta3
           path: google/cloud/tasks/v2beta3
   - name: commerce
-    version: 1.6.0
+    version: 1.7.0
     apis:
       - path: google/cloud/commerce/consumer/procurement/v1
     go:
@@ -840,7 +840,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/commerce/consumer/procurement/v1
   - name: compute
-    version: 1.61.0
+    version: 1.62.0
     apis:
       - path: google/cloud/compute/v1
       - path: google/cloud/compute/v1beta
@@ -866,7 +866,7 @@ libraries:
       - internal/version.go
     skip_release: true
   - name: confidentialcomputing
-    version: 1.15.0
+    version: 1.16.0
     apis:
       - path: google/cloud/confidentialcomputing/v1
       - path: google/cloud/confidentialcomputing/v1alpha1
@@ -881,7 +881,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/confidentialcomputing/v1alpha1
   - name: config
-    version: 1.10.0
+    version: 1.11.0
     apis:
       - path: google/cloud/config/v1
     go:
@@ -891,7 +891,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/config/v1
   - name: configdelivery
-    version: 0.5.0
+    version: 0.6.0
     apis:
       - path: google/cloud/configdelivery/v1
       - path: google/cloud/configdelivery/v1beta
@@ -906,7 +906,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/configdelivery/v1beta
   - name: contactcenterinsights
-    version: 1.21.0
+    version: 1.22.0
     apis:
       - path: google/cloud/contactcenterinsights/v1
     go:
@@ -916,7 +916,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/contactcenterinsights/v1
   - name: container
-    version: 1.50.0
+    version: 1.51.0
     apis:
       - path: google/container/v1
     go:
@@ -926,7 +926,7 @@ libraries:
             - F_proto_cloneof
           path: google/container/v1
   - name: containeranalysis
-    version: 0.18.0
+    version: 0.19.0
     apis:
       - path: google/devtools/containeranalysis/v1beta1
     keep:
@@ -944,7 +944,7 @@ libraries:
           no_metadata: true
           path: google/devtools/containeranalysis/v1beta1
   - name: datacatalog
-    version: 1.30.0
+    version: 1.31.0
     apis:
       - path: google/cloud/datacatalog/v1
       - path: google/cloud/datacatalog/lineage/v1
@@ -971,7 +971,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/datacatalog/v1beta1
   - name: dataflow
-    version: 0.15.0
+    version: 0.16.0
     apis:
       - path: google/dataflow/v1beta3
     go:
@@ -982,7 +982,7 @@ libraries:
             - F_proto_cloneof
           path: google/dataflow/v1beta3
   - name: dataform
-    version: 0.18.0
+    version: 0.19.0
     apis:
       - path: google/cloud/dataform/v1
       - path: google/cloud/dataform/v1beta1
@@ -997,7 +997,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/dataform/v1beta1
   - name: datafusion
-    version: 1.12.0
+    version: 1.13.0
     apis:
       - path: google/cloud/datafusion/v1
     go:
@@ -1007,7 +1007,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/datafusion/v1
   - name: datalabeling
-    version: 0.13.0
+    version: 0.14.0
     apis:
       - path: google/cloud/datalabeling/v1beta1
     go:
@@ -1017,7 +1017,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/datalabeling/v1beta1
   - name: datamanager
-    version: 0.7.0
+    version: 0.8.0
     apis:
       - path: google/ads/datamanager/v1
     go:
@@ -1028,7 +1028,7 @@ libraries:
           import_path: datamanager/apiv1
           path: google/ads/datamanager/v1
   - name: dataplex
-    version: 1.33.0
+    version: 1.34.0
     apis:
       - path: google/cloud/dataplex/v1
     go:
@@ -1038,7 +1038,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/dataplex/v1
   - name: dataproc
-    version: 2.20.0
+    version: 2.21.0
     apis:
       - path: google/cloud/dataproc/v1
     go:
@@ -1079,7 +1079,7 @@ libraries:
           path: google/datastore/v1
           proto_only: true
   - name: datastream
-    version: 1.19.0
+    version: 1.20.0
     apis:
       - path: google/cloud/datastream/v1
       - path: google/cloud/datastream/v1alpha1
@@ -1096,7 +1096,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/datastream/v1alpha1
   - name: deploy
-    version: 1.31.0
+    version: 1.32.0
     apis:
       - path: google/cloud/deploy/v1
     go:
@@ -1106,7 +1106,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/deploy/v1
   - name: developerconnect
-    version: 0.9.0
+    version: 0.10.0
     apis:
       - path: google/cloud/developerconnect/v1
     go:
@@ -1116,7 +1116,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/developerconnect/v1
   - name: devicestreaming
-    version: 0.5.0
+    version: 0.6.0
     apis:
       - path: google/cloud/devicestreaming/v1
     go:
@@ -1126,7 +1126,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/devicestreaming/v1
   - name: dialogflow
-    version: 1.81.0
+    version: 1.82.0
     apis:
       - path: google/cloud/dialogflow/v2
       - path: google/cloud/dialogflow/cx/v3
@@ -1151,7 +1151,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/dialogflow/v2beta1
   - name: discoveryengine
-    version: 1.28.0
+    version: 1.29.0
     apis:
       - path: google/cloud/discoveryengine/v1
       - path: google/cloud/discoveryengine/v1beta
@@ -1171,7 +1171,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/discoveryengine/v1alpha
   - name: dlp
-    version: 1.33.0
+    version: 1.34.0
     apis:
       - path: google/privacy/dlp/v2
     go:
@@ -1183,7 +1183,7 @@ libraries:
           no_metadata: true
           path: google/privacy/dlp/v2
   - name: documentai
-    version: 1.47.0
+    version: 1.48.0
     apis:
       - path: google/cloud/documentai/v1
       - path: google/cloud/documentai/v1beta3
@@ -1198,7 +1198,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/documentai/v1beta3
   - name: domains
-    version: 0.14.0
+    version: 0.15.0
     apis:
       - path: google/cloud/domains/v1beta1
     go:
@@ -1208,7 +1208,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/domains/v1beta1
   - name: edgecontainer
-    version: 1.8.0
+    version: 1.9.0
     apis:
       - path: google/cloud/edgecontainer/v1
     go:
@@ -1218,7 +1218,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/edgecontainer/v1
   - name: edgenetwork
-    version: 1.7.0
+    version: 1.8.0
     apis:
       - path: google/cloud/edgenetwork/v1
     go:
@@ -1228,7 +1228,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/edgenetwork/v1
   - name: errorreporting
-    version: 0.8.0
+    version: 0.9.0
     apis:
       - path: google/devtools/clouderrorreporting/v1beta1
     go:
@@ -1241,7 +1241,7 @@ libraries:
           import_path: errorreporting/apiv1beta1
           path: google/devtools/clouderrorreporting/v1beta1
   - name: essentialcontacts
-    version: 1.11.0
+    version: 1.12.0
     apis:
       - path: google/cloud/essentialcontacts/v1
     go:
@@ -1252,7 +1252,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/essentialcontacts/v1
   - name: eventarc
-    version: 1.22.0
+    version: 1.23.0
     apis:
       - path: google/cloud/eventarc/v1
       - path: google/cloud/eventarc/publishing/v1
@@ -1267,7 +1267,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/eventarc/publishing/v1
   - name: filestore
-    version: 1.14.0
+    version: 1.15.0
     apis:
       - path: google/cloud/filestore/v1
     go:
@@ -1277,7 +1277,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/filestore/v1
   - name: financialservices
-    version: 0.5.0
+    version: 0.6.0
     apis:
       - path: google/cloud/financialservices/v1
     go:
@@ -1311,7 +1311,7 @@ libraries:
             - F_proto_cloneof
           path: google/firestore/v1
   - name: functions
-    version: 1.23.0
+    version: 1.24.0
     apis:
       - path: google/cloud/functions/v2
       - path: google/cloud/functions/v1
@@ -1331,7 +1331,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/functions/v2beta
   - name: geminidataanalytics
-    version: 0.12.0
+    version: 0.13.0
     apis:
       - path: google/cloud/geminidataanalytics/v1
       - path: google/cloud/geminidataanalytics/v1beta
@@ -1346,7 +1346,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/geminidataanalytics/v1
   - name: gkebackup
-    version: 1.12.0
+    version: 1.13.0
     apis:
       - path: google/cloud/gkebackup/v1
     go:
@@ -1371,7 +1371,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/gkeconnect/gateway/v1beta1
   - name: gkehub
-    version: 0.20.0
+    version: 0.21.0
     apis:
       - path: google/cloud/gkehub/v1beta1
     go:
@@ -1381,7 +1381,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/gkehub/v1beta1
   - name: gkemulticloud
-    version: 1.10.0
+    version: 1.11.0
     apis:
       - path: google/cloud/gkemulticloud/v1
     go:
@@ -1391,7 +1391,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/gkemulticloud/v1
   - name: gkerecommender
-    version: 0.5.0
+    version: 0.6.0
     apis:
       - path: google/cloud/gkerecommender/v1
     go:
@@ -1406,7 +1406,7 @@ libraries:
       - README.md
       - internal/version.go
   - name: gsuiteaddons
-    version: 1.11.0
+    version: 1.12.0
     apis:
       - path: google/cloud/gsuiteaddons/v1
     go:
@@ -1416,7 +1416,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/gsuiteaddons/v1
   - name: hypercomputecluster
-    version: 0.6.0
+    version: 0.7.0
     apis:
       - path: google/cloud/hypercomputecluster/v1
       - path: google/cloud/hypercomputecluster/v1beta
@@ -1431,7 +1431,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/hypercomputecluster/v1beta
   - name: iam
-    version: 1.10.0
+    version: 1.11.0
     apis:
       - path: google/iam/v3
       - path: google/iam/v2
@@ -1468,7 +1468,7 @@ libraries:
           path: google/iam/v3beta
       nested_module: admin
   - name: iap
-    version: 1.16.0
+    version: 1.17.0
     apis:
       - path: google/cloud/iap/v1
     go:
@@ -1488,7 +1488,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/identitytoolkit/v2
   - name: ids
-    version: 1.9.0
+    version: 1.10.0
     apis:
       - path: google/cloud/ids/v1
     go:
@@ -1498,7 +1498,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/ids/v1
   - name: iot
-    version: 1.12.0
+    version: 1.13.0
     apis:
       - path: google/cloud/iot/v1
     go:
@@ -1508,7 +1508,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/iot/v1
   - name: kms
-    version: 1.30.0
+    version: 1.31.0
     apis:
       - path: google/cloud/kms/v1
       - path: google/cloud/kms/inventory/v1
@@ -1545,7 +1545,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/language/v1beta2
   - name: licensemanager
-    version: 0.5.0
+    version: 0.6.0
     apis:
       - path: google/cloud/licensemanager/v1
     go:
@@ -1555,7 +1555,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/licensemanager/v1
   - name: lifesciences
-    version: 0.14.0
+    version: 0.15.0
     apis:
       - path: google/cloud/lifesciences/v2beta
     go:
@@ -1565,7 +1565,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/lifesciences/v2beta
   - name: locationfinder
-    version: 0.5.0
+    version: 0.6.0
     apis:
       - path: google/cloud/locationfinder/v1
     go:
@@ -1575,7 +1575,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/locationfinder/v1
   - name: logging
-    version: 1.17.0
+    version: 1.18.0
     apis:
       - path: google/logging/v2
     go:
@@ -1587,7 +1587,7 @@ libraries:
           path: google/logging/v2
       nested_module: logadmin
   - name: longrunning
-    version: 0.12.0
+    version: 0.13.0
     apis:
       - path: google/longrunning
     go:
@@ -1599,7 +1599,7 @@ libraries:
           import_path: longrunning/autogen
           path: google/longrunning
   - name: lustre
-    version: 0.6.0
+    version: 0.7.0
     apis:
       - path: google/cloud/lustre/v1
     go:
@@ -1609,7 +1609,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/lustre/v1
   - name: maintenance
-    version: 0.7.0
+    version: 0.8.0
     apis:
       - path: google/cloud/maintenance/api/v1
       - path: google/cloud/maintenance/api/v1beta
@@ -1624,7 +1624,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/maintenance/api/v1beta
   - name: managedidentities
-    version: 1.11.0
+    version: 1.12.0
     apis:
       - path: google/cloud/managedidentities/v1
     go:
@@ -1634,7 +1634,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/managedidentities/v1
   - name: managedkafka
-    version: 0.12.0
+    version: 0.13.0
     apis:
       - path: google/cloud/managedkafka/v1
       - path: google/cloud/managedkafka/schemaregistry/v1
@@ -1649,7 +1649,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/managedkafka/schemaregistry/v1
   - name: maps
-    version: 1.34.0
+    version: 1.35.0
     apis:
       - path: google/maps/geocode/v4
       - path: google/maps/routing/v2
@@ -1713,7 +1713,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/mediatranslation/v1beta1
   - name: memcache
-    version: 1.15.0
+    version: 1.16.0
     apis:
       - path: google/cloud/memcache/v1
       - path: google/cloud/memcache/v1beta2
@@ -1728,7 +1728,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/memcache/v1beta2
   - name: memorystore
-    version: 0.8.0
+    version: 0.9.0
     apis:
       - path: google/cloud/memorystore/v1
       - path: google/cloud/memorystore/v1beta
@@ -1743,7 +1743,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/memorystore/v1beta
   - name: metastore
-    version: 1.18.0
+    version: 1.19.0
     apis:
       - path: google/cloud/metastore/v1
       - path: google/cloud/metastore/v1beta
@@ -1763,7 +1763,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/metastore/v1alpha
   - name: migrationcenter
-    version: 1.5.0
+    version: 1.6.0
     apis:
       - path: google/cloud/migrationcenter/v1
     go:
@@ -1773,7 +1773,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/migrationcenter/v1
   - name: modelarmor
-    version: 0.10.0
+    version: 0.11.0
     apis:
       - path: google/cloud/modelarmor/v1
       - path: google/cloud/modelarmor/v1beta
@@ -1788,7 +1788,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/modelarmor/v1beta
   - name: monitoring
-    version: 1.28.0
+    version: 1.29.0
     apis:
       - path: google/monitoring/v3
       - path: google/monitoring/dashboard/v1
@@ -1812,7 +1812,7 @@ libraries:
           import_path: monitoring/apiv3/v2
           path: google/monitoring/v3
   - name: netapp
-    version: 1.16.0
+    version: 1.17.0
     apis:
       - path: google/cloud/netapp/v1
     go:
@@ -1822,7 +1822,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/netapp/v1
   - name: networkconnectivity
-    version: 1.25.0
+    version: 1.26.0
     apis:
       - path: google/cloud/networkconnectivity/v1
       - path: google/cloud/networkconnectivity/v1beta
@@ -1842,7 +1842,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/networkconnectivity/v1alpha1
   - name: networkmanagement
-    version: 1.27.0
+    version: 1.28.0
     apis:
       - path: google/cloud/networkmanagement/v1
     go:
@@ -1852,7 +1852,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/networkmanagement/v1
   - name: networksecurity
-    version: 0.15.0
+    version: 0.16.0
     apis:
       - path: google/cloud/networksecurity/v1beta1
     go:
@@ -1862,7 +1862,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/networksecurity/v1beta1
   - name: networkservices
-    version: 0.10.0
+    version: 0.11.0
     apis:
       - path: google/cloud/networkservices/v1
     go:
@@ -1872,7 +1872,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/networkservices/v1
   - name: notebooks
-    version: 1.16.0
+    version: 1.17.0
     apis:
       - path: google/cloud/notebooks/v2
       - path: google/cloud/notebooks/v1
@@ -1902,7 +1902,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/optimization/v1
   - name: oracledatabase
-    version: 0.10.0
+    version: 0.11.0
     apis:
       - path: google/cloud/oracledatabase/v1
     go:
@@ -1912,7 +1912,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/oracledatabase/v1
   - name: orchestration
-    version: 1.15.0
+    version: 1.16.0
     apis:
       - path: google/cloud/orchestration/airflow/service/v1
     go:
@@ -1922,7 +1922,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/orchestration/airflow/service/v1
   - name: orgpolicy
-    version: 1.19.0
+    version: 1.20.0
     apis:
       - path: google/cloud/orgpolicy/v2
       - path: google/cloud/orgpolicy/v1
@@ -1940,7 +1940,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/orgpolicy/v2
   - name: osconfig
-    version: 1.20.0
+    version: 1.21.0
     apis:
       - path: google/cloud/osconfig/v1
       - path: google/cloud/osconfig/agentendpoint/v1
@@ -1994,7 +1994,7 @@ libraries:
           path: google/cloud/oslogin/common
           proto_only: true
   - name: parallelstore
-    version: 0.16.0
+    version: 0.17.0
     apis:
       - path: google/cloud/parallelstore/v1
       - path: google/cloud/parallelstore/v1beta
@@ -2009,7 +2009,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/parallelstore/v1beta
   - name: parametermanager
-    version: 0.7.0
+    version: 0.8.0
     apis:
       - path: google/cloud/parametermanager/v1
     go:
@@ -2029,7 +2029,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/phishingprotection/v1beta1
   - name: policysimulator
-    version: 0.8.0
+    version: 0.9.0
     apis:
       - path: google/cloud/policysimulator/v1
     go:
@@ -2054,7 +2054,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/policytroubleshooter/iam/v3
   - name: privatecatalog
-    version: 0.14.0
+    version: 0.15.0
     apis:
       - path: google/cloud/privatecatalog/v1beta1
     go:
@@ -2064,7 +2064,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/privatecatalog/v1beta1
   - name: privilegedaccessmanager
-    version: 0.7.0
+    version: 0.8.0
     apis:
       - path: google/cloud/privilegedaccessmanager/v1
     go:
@@ -2114,7 +2114,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/pubsublite/v1
   - name: rapidmigrationassessment
-    version: 1.5.0
+    version: 1.6.0
     apis:
       - path: google/cloud/rapidmigrationassessment/v1
     go:
@@ -2124,7 +2124,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/rapidmigrationassessment/v1
   - name: recaptchaenterprise
-    version: 2.25.0
+    version: 2.26.0
     apis:
       - path: google/cloud/recaptchaenterprise/v1
       - path: google/cloud/recaptchaenterprise/v1beta1
@@ -2142,7 +2142,7 @@ libraries:
           path: google/cloud/recaptchaenterprise/v1beta1
       module_path_version: v2
   - name: recommendationengine
-    version: 0.13.0
+    version: 0.14.0
     apis:
       - path: google/cloud/recommendationengine/v1beta1
     go:
@@ -2152,7 +2152,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/recommendationengine/v1beta1
   - name: recommender
-    version: 1.17.0
+    version: 1.18.0
     apis:
       - path: google/cloud/recommender/v1
       - path: google/cloud/recommender/v1beta1
@@ -2169,7 +2169,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/recommender/v1beta1
   - name: redis
-    version: 1.22.0
+    version: 1.23.0
     apis:
       - path: google/cloud/redis/v1
       - path: google/cloud/redis/cluster/v1
@@ -2189,7 +2189,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/redis/v1beta1
   - name: resourcemanager
-    version: 1.14.0
+    version: 1.15.0
     apis:
       - path: google/cloud/resourcemanager/v3
       - path: google/cloud/resourcemanager/v2
@@ -2206,7 +2206,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/resourcemanager/v3
   - name: retail
-    version: 1.30.0
+    version: 1.31.0
     apis:
       - path: google/cloud/retail/v2
       - path: google/cloud/retail/v2beta
@@ -2233,7 +2233,7 @@ libraries:
     output: .
     skip_release: true
   - name: run
-    version: 1.20.0
+    version: 1.21.0
     apis:
       - path: google/cloud/run/v2
     keep:
@@ -2245,7 +2245,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/run/v2
   - name: saasplatform
-    version: 0.6.0
+    version: 0.7.0
     apis:
       - path: google/cloud/saasplatform/saasservicemgmt/v1beta1
     go:
@@ -2255,7 +2255,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/saasplatform/saasservicemgmt/v1beta1
   - name: scheduler
-    version: 1.15.0
+    version: 1.16.0
     apis:
       - path: google/cloud/scheduler/v1
       - path: google/cloud/scheduler/v1beta1
@@ -2287,7 +2287,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/secretmanager/v1beta2
   - name: securesourcemanager
-    version: 1.8.0
+    version: 1.9.0
     apis:
       - path: google/cloud/securesourcemanager/v1
     go:
@@ -2297,7 +2297,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/securesourcemanager/v1
   - name: security
-    version: 1.23.0
+    version: 1.24.0
     apis:
       - path: google/cloud/security/privateca/v1
       - path: google/cloud/security/publicca/v1
@@ -2317,7 +2317,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/security/publicca/v1beta1
   - name: securitycenter
-    version: 1.43.0
+    version: 1.44.0
     apis:
       - path: google/cloud/securitycenter/v2
       - path: google/cloud/securitycenter/v1
@@ -2347,7 +2347,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/securitycenter/v1beta1
   - name: securitycentermanagement
-    version: 1.5.0
+    version: 1.6.0
     apis:
       - path: google/cloud/securitycentermanagement/v1
     go:
@@ -2357,7 +2357,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/securitycentermanagement/v1
   - name: securityposture
-    version: 0.6.0
+    version: 0.7.0
     apis:
       - path: google/cloud/securityposture/v1
     go:
@@ -2378,7 +2378,7 @@ libraries:
           import_path: servicecontrol/apiv1
           path: google/api/servicecontrol/v1
   - name: servicedirectory
-    version: 1.16.0
+    version: 1.17.0
     apis:
       - path: google/cloud/servicedirectory/v1
       - path: google/cloud/servicedirectory/v1beta1
@@ -2393,7 +2393,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/servicedirectory/v1beta1
   - name: servicehealth
-    version: 1.6.0
+    version: 1.7.0
     apis:
       - path: google/cloud/servicehealth/v1
     go:
@@ -2403,7 +2403,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/servicehealth/v1
   - name: servicemanagement
-    version: 1.14.0
+    version: 1.15.0
     apis:
       - path: google/api/servicemanagement/v1
     go:
@@ -2414,7 +2414,7 @@ libraries:
           import_path: servicemanagement/apiv1
           path: google/api/servicemanagement/v1
   - name: serviceusage
-    version: 1.13.0
+    version: 1.14.0
     apis:
       - path: google/api/serviceusage/v1
     go:
@@ -2435,7 +2435,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/shell/v1
   - name: shopping
-    version: 1.10.0
+    version: 1.11.0
     apis:
       - path: google/shopping/css/v1
       - path: google/shopping/merchant/promotions/v1
@@ -2618,7 +2618,7 @@ libraries:
             - F_proto_cloneof
           path: google/spanner/executor/v1
   - name: speech
-    version: 1.34.0
+    version: 1.35.0
     apis:
       - path: google/cloud/speech/v2
       - path: google/cloud/speech/v1
@@ -2659,7 +2659,7 @@ libraries:
             - F_proto_cloneof
           path: google/storage/control/v2
   - name: storagebatchoperations
-    version: 0.8.0
+    version: 0.9.0
     apis:
       - path: google/cloud/storagebatchoperations/v1
     go:
@@ -2669,7 +2669,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/storagebatchoperations/v1
   - name: storageinsights
-    version: 1.6.0
+    version: 1.7.0
     apis:
       - path: google/cloud/storageinsights/v1
     go:
@@ -2679,7 +2679,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/storageinsights/v1
   - name: storagetransfer
-    version: 1.17.0
+    version: 1.18.0
     apis:
       - path: google/storagetransfer/v1
     go:
@@ -2689,7 +2689,7 @@ libraries:
             - F_proto_cloneof
           path: google/storagetransfer/v1
   - name: streetview
-    version: 0.6.0
+    version: 0.7.0
     apis:
       - path: google/streetview/publish/v1
     go:
@@ -2699,7 +2699,7 @@ libraries:
             - F_proto_cloneof
           path: google/streetview/publish/v1
   - name: support
-    version: 1.9.0
+    version: 1.10.0
     apis:
       - path: google/cloud/support/v2
       - path: google/cloud/support/v2beta
@@ -2714,7 +2714,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/support/v2beta
   - name: talent
-    version: 1.12.0
+    version: 1.13.0
     apis:
       - path: google/cloud/talent/v4
       - path: google/cloud/talent/v4beta1
@@ -2729,7 +2729,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/talent/v4beta1
   - name: telcoautomation
-    version: 1.5.0
+    version: 1.6.0
     apis:
       - path: google/cloud/telcoautomation/v1
     go:
@@ -2739,7 +2739,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/telcoautomation/v1
   - name: texttospeech
-    version: 1.20.0
+    version: 1.21.0
     apis:
       - path: google/cloud/texttospeech/v1
     go:
@@ -2749,7 +2749,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/texttospeech/v1
   - name: tpu
-    version: 1.12.0
+    version: 1.13.0
     apis:
       - path: google/cloud/tpu/v1
     go:
@@ -2759,7 +2759,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/tpu/v1
   - name: trace
-    version: 1.15.0
+    version: 1.16.0
     apis:
       - path: google/devtools/cloudtrace/v2
       - path: google/devtools/cloudtrace/v1
@@ -2781,7 +2781,7 @@ libraries:
           import_path: trace/apiv2
           path: google/devtools/cloudtrace/v2
   - name: translate
-    version: 1.16.0
+    version: 1.17.0
     apis:
       - path: google/cloud/translate/v3
     go:
@@ -2792,7 +2792,7 @@ libraries:
           path: google/cloud/translate/v3
           proto_package: google.cloud.translation.v3
   - name: vectorsearch
-    version: 0.10.0
+    version: 0.11.0
     apis:
       - path: google/cloud/vectorsearch/v1
       - path: google/cloud/vectorsearch/v1beta
@@ -2813,7 +2813,7 @@ libraries:
       - internal/version.go
     skip_release: true
   - name: video
-    version: 1.31.0
+    version: 1.32.0
     apis:
       - path: google/cloud/video/livestream/v1
       - path: google/cloud/video/transcoder/v1
@@ -2853,7 +2853,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/videointelligence/v1beta2
   - name: vision
-    version: 2.13.0
+    version: 2.14.0
     apis:
       - path: google/cloud/vision/v1
       - path: google/cloud/vision/v1p1beta1
@@ -2872,7 +2872,7 @@ libraries:
           path: google/cloud/vision/v1p1beta1
       module_path_version: v2
   - name: visionai
-    version: 0.9.0
+    version: 0.10.0
     apis:
       - path: google/cloud/visionai/v1
     go:
@@ -2882,7 +2882,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/visionai/v1
   - name: vmmigration
-    version: 1.14.0
+    version: 1.15.0
     apis:
       - path: google/cloud/vmmigration/v1
     keep:
@@ -2894,7 +2894,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/vmmigration/v1
   - name: vmwareengine
-    version: 1.7.0
+    version: 1.8.0
     apis:
       - path: google/cloud/vmwareengine/v1
     go:
@@ -2904,7 +2904,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/vmwareengine/v1
   - name: vpcaccess
-    version: 1.12.0
+    version: 1.13.0
     apis:
       - path: google/cloud/vpcaccess/v1
     go:
@@ -2914,7 +2914,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/vpcaccess/v1
   - name: webrisk
-    version: 1.15.0
+    version: 1.16.0
     apis:
       - path: google/cloud/webrisk/v1
       - path: google/cloud/webrisk/v1beta1
@@ -2929,7 +2929,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/webrisk/v1beta1
   - name: websecurityscanner
-    version: 1.11.0
+    version: 1.12.0
     apis:
       - path: google/cloud/websecurityscanner/v1
     go:
@@ -2939,7 +2939,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/websecurityscanner/v1
   - name: workflows
-    version: 1.18.0
+    version: 1.19.0
     apis:
       - path: google/cloud/workflows/v1
       - path: google/cloud/workflows/executions/v1
@@ -2964,7 +2964,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/workflows/v1beta
   - name: workloadmanager
-    version: 0.5.0
+    version: 0.6.0
     apis:
       - path: google/cloud/workloadmanager/v1
     go:
@@ -2974,7 +2974,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/workloadmanager/v1
   - name: workstations
-    version: 1.5.0
+    version: 1.6.0
     apis:
       - path: google/cloud/workstations/v1
       - path: google/cloud/workstations/v1beta
