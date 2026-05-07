@@ -1,6 +1,6 @@
-# Agent Platform Go SDK
+# Gemini Enterprise Agent Platform Go SDK
 
 [!IMPORTANT]
-Thanks for your interest in the Agent Platform SDKs!
+Thanks for your interest in the Gemini Enterprise Agent Platform SDKs!
 
 *More details and information coming soon!*
