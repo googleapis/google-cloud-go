@@ -8,7 +8,7 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/dialogflow/cx/apiv3beta1",
-    "version": "1.81.0"
+    "version": "1.82.0"
   },
   "snippets": [
     {

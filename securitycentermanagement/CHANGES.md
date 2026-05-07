@@ -2,6 +2,8 @@
 
 
 
+## [1.6.0](https://github.com/googleapis/google-cloud-go/releases/tag/securitycentermanagement%2Fv1.6.0) (2026-05-07)
+
 ## [1.5.0](https://github.com/googleapis/google-cloud-go/releases/tag/securitycentermanagement%2Fv1.5.0) (2026-04-30)
 
 ## [1.4.0](https://github.com/googleapis/google-cloud-go/releases/tag/securitycentermanagement%2Fv1.4.0) (2026-04-13)
