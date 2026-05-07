@@ -303,6 +303,15 @@ func (p *parser) parsePrimary() (ASTNode, error) {
 }
 
 // ParseFilter validates a filter string and returns an AST node.
+//
+// Example usage combining parsing and evaluation:
+//
+//   ast, err := ParseFilter(`attributes.name = "com"`)
+//   if err != nil {
+//       // Handle error
+//   }
+//   attrs := map[string]string{"name": "com"}
+//   matched := Evaluate(ast, attrs) // returns true
 func ParseFilter(filter string) (ASTNode, error) {
 	l := &lexer{input: filter}
 	p := &parser{lexer: l}
