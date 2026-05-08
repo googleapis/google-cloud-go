@@ -1916,7 +1916,7 @@ libraries:
       - internal/generated/snippets/networksecurity/
     tag_format: '{id}/v{version}'
   - id: networkservices
-    version: 0.11.0
+    version: 1.0.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/networkservices/v1

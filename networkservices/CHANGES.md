@@ -1,5 +1,7 @@
 # Changes
 
+## [1.0.0](https://github.com/googleapis/google-cloud-go/releases/tag/networkservices%2Fv1.0.0) (2026-05-08)
+
 ## [0.11.0](https://github.com/googleapis/google-cloud-go/releases/tag/networkservices%2Fv0.11.0) (2026-05-07)
 
 ## [0.10.0](https://github.com/googleapis/google-cloud-go/releases/tag/networkservices%2Fv0.10.0) (2026-04-30)

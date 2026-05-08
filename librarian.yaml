@@ -1862,7 +1862,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/networksecurity/v1beta1
   - name: networkservices
-    version: 0.11.0
+    version: 1.0.0
     apis:
       - path: google/cloud/networkservices/v1
     go:
