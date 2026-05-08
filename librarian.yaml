@@ -253,7 +253,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/appoptimize/v1beta
   - name: apps
-    version: 0.13.0
+    version: 1.0.0
     apis:
       - path: google/apps/meet/v2
       - path: google/apps/events/subscriptions/v1

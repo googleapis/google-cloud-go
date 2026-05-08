@@ -266,7 +266,7 @@ libraries:
       - internal/generated/snippets/appoptimize/
     tag_format: '{id}/v{version}'
   - id: apps
-    version: 0.13.0
+    version: 1.0.0
     last_generated_commit: ""
     apis:
       - path: google/apps/events/subscriptions/v1
