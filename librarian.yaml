@@ -346,7 +346,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/assuredworkloads/v1beta1
   - name: auditmanager
-    version: 0.7.0
+    version: 1.0.0
     apis:
       - path: google/cloud/auditmanager/v1
     go:

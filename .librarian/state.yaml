@@ -350,7 +350,7 @@ libraries:
       - internal/generated/snippets/assuredworkloads/
     tag_format: '{id}/v{version}'
   - id: auditmanager
-    version: 0.7.0
+    version: 1.0.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/auditmanager/v1
