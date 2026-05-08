@@ -2357,7 +2357,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/securitycentermanagement/v1
   - name: securityposture
-    version: 0.7.0
+    version: 1.0.0
     apis:
       - path: google/cloud/securityposture/v1
     go:

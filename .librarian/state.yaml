@@ -2467,7 +2467,7 @@ libraries:
       - internal/generated/snippets/securitycentermanagement/
     tag_format: '{id}/v{version}'
   - id: securityposture
-    version: 0.7.0
+    version: 1.0.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/securityposture/v1
