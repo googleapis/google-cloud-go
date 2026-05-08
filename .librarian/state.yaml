@@ -239,7 +239,7 @@ libraries:
       - internal/generated/snippets/appengine/
     tag_format: '{id}/v{version}'
   - id: apphub
-    version: 0.9.0
+    version: 1.0.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/apphub/v1

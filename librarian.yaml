@@ -232,7 +232,7 @@ libraries:
             - F_proto_cloneof
           path: google/appengine/v1
   - name: apphub
-    version: 0.9.0
+    version: 1.0.0
     apis:
       - path: google/cloud/apphub/v1
     go:
