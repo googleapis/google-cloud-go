@@ -105,7 +105,7 @@ func createClient(ctx context.Context) *agentplatform.Client {
 func printJSON(v any) {
 	fullBytes, err := json.MarshalIndent(v, "", "    ")
 	if err != nil {
-		panic(fmt.Sprintf("error marshaling JSON, err: %+v", err))
+		panic(fmt.Sprintf("Error marshaling JSON, err: %+v", err))
 	}
 	fmt.Println(string(fullBytes))
 }
