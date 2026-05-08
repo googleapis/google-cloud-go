@@ -701,7 +701,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/channel/v1
   - name: chat
-    version: 0.23.0
+    version: 1.0.0
     apis:
       - path: google/chat/v1
     go:

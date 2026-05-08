@@ -657,7 +657,7 @@ libraries:
       - internal/generated/snippets/channel/
     tag_format: '{id}/v{version}'
   - id: chat
-    version: 0.23.0
+    version: 1.0.0
     last_generated_commit: ""
     apis:
       - path: google/chat/v1
