@@ -2659,7 +2659,7 @@ libraries:
             - F_proto_cloneof
           path: google/storage/control/v2
   - name: storagebatchoperations
-    version: 0.9.0
+    version: 1.0.0
     apis:
       - path: google/cloud/storagebatchoperations/v1
     go:
