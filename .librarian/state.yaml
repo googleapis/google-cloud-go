@@ -2060,7 +2060,7 @@ libraries:
       - internal/generated/snippets/parallelstore/
     tag_format: '{id}/v{version}'
   - id: parametermanager
-    version: 0.8.0
+    version: 1.0.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/parametermanager/v1
