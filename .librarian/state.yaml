@@ -1612,7 +1612,7 @@ libraries:
       - internal/generated/snippets/lifesciences/
     tag_format: '{id}/v{version}'
   - id: locationfinder
-    version: 0.6.0
+    version: 1.0.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/locationfinder/v1
