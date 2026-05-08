@@ -1599,7 +1599,7 @@ libraries:
           import_path: longrunning/autogen
           path: google/longrunning
   - name: lustre
-    version: 0.7.0
+    version: 1.0.0
     apis:
       - path: google/cloud/lustre/v1
     go:

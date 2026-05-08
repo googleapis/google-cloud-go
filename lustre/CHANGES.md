@@ -1,5 +1,7 @@
 # Changes
 
+## [1.0.0](https://github.com/googleapis/google-cloud-go/releases/tag/lustre%2Fv1.0.0) (2026-05-08)
+
 ## [0.7.0](https://github.com/googleapis/google-cloud-go/releases/tag/lustre%2Fv0.7.0) (2026-05-07)
 
 ## [0.6.0](https://github.com/googleapis/google-cloud-go/releases/tag/lustre%2Fv0.6.0) (2026-04-30)
