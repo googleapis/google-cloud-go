@@ -120,21 +120,21 @@ const (
 )
 
 // The runtime state of the SandboxEnvironment.
-type State string
+type SandboxState string
 
 const (
 	// The default value. This value is unused.
-	StateUnspecified State = "STATE_UNSPECIFIED"
+	SandboxStateUnspecified SandboxState = "STATE_UNSPECIFIED"
 	// Runtime resources are being allocated for the sandbox environment.
-	StateProvisioning State = "STATE_PROVISIONING"
+	SandboxStateProvisioning SandboxState = "STATE_PROVISIONING"
 	// Sandbox runtime is ready for serving.
-	StateRunning State = "STATE_RUNNING"
+	SandboxStateRunning SandboxState = "STATE_RUNNING"
 	// Sandbox runtime is halted, performing tear down tasks.
-	StateDeprovisioning State = "STATE_DEPROVISIONING"
+	SandboxStateDeprovisioning SandboxState = "STATE_DEPROVISIONING"
 	// Sandbox has terminated with underlying runtime failure.
-	StateTerminated State = "STATE_TERMINATED"
+	SandboxStateTerminated SandboxState = "STATE_TERMINATED"
 	// Sandbox runtime has been deleted.
-	StateDeleted State = "STATE_DELETED"
+	SandboxStateDeleted SandboxState = "STATE_DELETED"
 )
 
 // Framework used to build the application.
@@ -147,6 +147,18 @@ const (
 	FrameworkReact Framework = "REACT"
 	// Angular framework.
 	FrameworkAngular Framework = "ANGULAR"
+)
+
+// The state of the revision.
+type State string
+
+const (
+	// The unspecified state.
+	StateUnspecified State = "STATE_UNSPECIFIED"
+	// Is deployed and ready to be used.
+	StateActive State = "ACTIVE"
+	// Is deprecated, may not be used, only preserved for historical purposes.
+	StateDeprecated State = "DEPRECATED"
 )
 
 // The strategy to use when applying metadata to existing memories during consolidation.
@@ -2409,7 +2421,7 @@ type SandboxEnvironment struct {
 	// Optional. The configuration of the SandboxEnvironment.
 	Spec *SandboxEnvironmentSpec `json:"spec,omitempty"`
 	// Output only. The runtime state of the SandboxEnvironment.
-	State State `json:"state,omitempty"`
+	State SandboxState `json:"state,omitempty"`
 	// Optional. Input only. The TTL for the sandbox environment. The expiration time is
 	// computed: now + TTL.
 	TTL time.Duration `json:"ttl,omitempty"`
