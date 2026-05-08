@@ -186,7 +186,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/apigeeregistry/v1
   - name: apihub
-    version: 0.7.0
+    version: 1.0.0
     apis:
       - path: google/cloud/apihub/v1
     go:
