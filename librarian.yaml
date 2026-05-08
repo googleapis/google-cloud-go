@@ -444,7 +444,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/beyondcorp/clientgateways/v1
   - name: biglake
-    version: 0.5.0
+    version: 1.0.0
     apis:
       - path: google/cloud/biglake/v1
       - path: google/cloud/biglake/hive/v1beta

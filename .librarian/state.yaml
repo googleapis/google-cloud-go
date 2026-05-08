@@ -465,7 +465,7 @@ libraries:
       - internal/generated/snippets/beyondcorp/
     tag_format: '{id}/v{version}'
   - id: biglake
-    version: 0.5.0
+    version: 1.0.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/biglake/v1
