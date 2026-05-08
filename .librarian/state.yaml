@@ -863,7 +863,7 @@ libraries:
       - internal/generated/snippets/config/
     tag_format: '{id}/v{version}'
   - id: configdelivery
-    version: 0.6.0
+    version: 1.0.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/configdelivery/v1
