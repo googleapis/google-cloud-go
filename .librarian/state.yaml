@@ -2088,7 +2088,7 @@ libraries:
       - internal/generated/snippets/phishingprotection/
     tag_format: '{id}/v{version}'
   - id: policysimulator
-    version: 0.9.0
+    version: 1.0.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/policysimulator/v1
