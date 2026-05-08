@@ -2741,7 +2741,7 @@ libraries:
       - internal/generated/snippets/storagetransfer/
     tag_format: '{id}/v{version}'
   - id: streetview
-    version: 0.7.0
+    version: 1.0.0
     last_generated_commit: ""
     apis:
       - path: google/streetview/publish/v1
