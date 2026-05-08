@@ -1609,7 +1609,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/lustre/v1
   - name: maintenance
-    version: 0.8.0
+    version: 1.0.0
     apis:
       - path: google/cloud/maintenance/api/v1
       - path: google/cloud/maintenance/api/v1beta
