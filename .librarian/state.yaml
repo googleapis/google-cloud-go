@@ -731,7 +731,7 @@ libraries:
       - internal/generated/snippets/clouddms/
     tag_format: '{id}/v{version}'
   - id: cloudprofiler
-    version: 0.9.0
+    version: 1.0.0
     last_generated_commit: ""
     apis:
       - path: google/devtools/cloudprofiler/v2
