@@ -1277,7 +1277,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/filestore/v1
   - name: financialservices
-    version: 0.6.0
+    version: 1.0.0
     apis:
       - path: google/cloud/financialservices/v1
     go:
