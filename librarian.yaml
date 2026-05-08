@@ -982,7 +982,7 @@ libraries:
             - F_proto_cloneof
           path: google/dataflow/v1beta3
   - name: dataform
-    version: 0.19.0
+    version: 1.0.0
     apis:
       - path: google/cloud/dataform/v1
       - path: google/cloud/dataform/v1beta1
