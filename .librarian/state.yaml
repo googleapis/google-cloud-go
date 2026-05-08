@@ -1698,7 +1698,7 @@ libraries:
       - internal/generated/snippets/managedidentities/
     tag_format: '{id}/v{version}'
   - id: managedkafka
-    version: 0.13.0
+    version: 1.0.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/managedkafka/v1

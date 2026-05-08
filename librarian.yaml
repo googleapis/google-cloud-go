@@ -1634,7 +1634,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/managedidentities/v1
   - name: managedkafka
-    version: 0.13.0
+    version: 1.0.0
     apis:
       - path: google/cloud/managedkafka/v1
       - path: google/cloud/managedkafka/schemaregistry/v1
