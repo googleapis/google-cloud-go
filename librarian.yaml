@@ -1356,7 +1356,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/gkebackup/v1
   - name: gkeconnect
-    version: 0.16.0
+    version: 1.0.0
     apis:
       - path: google/cloud/gkeconnect/gateway/v1
       - path: google/cloud/gkeconnect/gateway/v1beta1

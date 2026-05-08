@@ -1375,7 +1375,7 @@ libraries:
       - internal/generated/snippets/gkebackup/
     tag_format: '{id}/v{version}'
   - id: gkeconnect
-    version: 0.16.0
+    version: 1.0.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/gkeconnect/gateway/v1beta1
