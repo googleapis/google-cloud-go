@@ -65,7 +65,7 @@ libraries:
     remove_regex: []
     tag_format: '{id}/v{version}'
   - id: ai
-    version: 0.20.0
+    version: 1.0.0
     last_generated_commit: ""
     apis:
       - path: google/ai/generativelanguage/v1
