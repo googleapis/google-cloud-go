@@ -671,7 +671,7 @@ libraries:
       - internal/generated/snippets/chat/
     tag_format: '{id}/v{version}'
   - id: chronicle
-    version: 0.7.0
+    version: 1.0.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/chronicle/v1

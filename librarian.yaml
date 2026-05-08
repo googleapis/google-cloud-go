@@ -711,7 +711,7 @@ libraries:
             - F_proto_cloneof
           path: google/chat/v1
   - name: chronicle
-    version: 0.7.0
+    version: 1.0.0
     apis:
       - path: google/cloud/chronicle/v1
     go:
