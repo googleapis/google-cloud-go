@@ -1773,7 +1773,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/migrationcenter/v1
   - name: modelarmor
-    version: 0.11.0
+    version: 1.0.0
     apis:
       - path: google/cloud/modelarmor/v1
       - path: google/cloud/modelarmor/v1beta
