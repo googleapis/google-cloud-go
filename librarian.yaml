@@ -2064,7 +2064,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/privatecatalog/v1beta1
   - name: privilegedaccessmanager
-    version: 0.8.0
+    version: 1.0.0
     apis:
       - path: google/cloud/privilegedaccessmanager/v1
     go:

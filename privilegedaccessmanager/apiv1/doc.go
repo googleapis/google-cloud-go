@@ -31,8 +31,6 @@
 // access for operators for data ingestion and audits, JIT access to service
 // accounts for automated tasks, and more.
 //
-//	NOTE: This package is in beta. It is not stable, and may be subject to changes.
-//
 // # General documentation
 //
 // For information that is relevant for all client libraries please reference
