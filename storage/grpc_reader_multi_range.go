@@ -848,15 +848,20 @@ func (m *multiRangeDownloaderManager) handleWaitCmd(ctx context.Context, cmd *mr
 
 func (m *multiRangeDownloaderManager) handleAddStreamCmd(ctx context.Context, cmd *addStreamCmd) {
 	// Check for any error in stream before adding this stream.
+	var streamErr error
+	if cmd.stream != nil && cmd.stream.session != nil {
+		streamErr = cmd.stream.session.getError()
+	}
+
 	if cmd.stream == nil ||
 		cmd.stream.session == nil ||
-		cmd.stream.session.streamErr != nil {
+		streamErr != nil {
 		m.streamCreating = false
+		if cmd.stream != nil && cmd.stream.session != nil {
+			cmd.stream.session.Shutdown()
+		}
 		if len(m.streams) == 0 {
-			var err error
-			if cmd.stream != nil && cmd.stream.session != nil {
-				err = cmd.stream.session.streamErr
-			}
+			err := streamErr
 			if err == nil {
 				err = errors.New("no streams available: stream creation failed or has error")
 			}
@@ -881,22 +886,25 @@ func (m *multiRangeDownloaderManager) handleReconnectStreamCmd(ctx context.Conte
 		return
 	}
 	stream.reconnecting = false
-
+	var streamErr error
+	if cmd.session != nil {
+		streamErr = cmd.session.getError()
+	}
 	if cmd.err != nil ||
 		cmd.session == nil ||
-		cmd.session.streamErr != nil {
-		streamErr := cmd.err
-		if streamErr == nil && cmd.session == nil {
-			streamErr = errors.New("session nil for reconnected stream")
+		streamErr != nil {
+		finalErr := cmd.err
+		if finalErr == nil && cmd.session == nil {
+			finalErr = errors.New("session nil for reconnected stream")
 		} else if streamErr == nil {
-			streamErr = cmd.session.streamErr
+			finalErr = streamErr
 		}
 		if cmd.session != nil {
 			cmd.session.Shutdown()
 		}
-		m.failStream(stream, streamErr)
+		m.failStream(stream, finalErr)
 		if len(m.streams) == 0 && !m.streamCreating {
-			err := fmt.Errorf("no streams available. Last observed error: %w", streamErr)
+			err := fmt.Errorf("no streams available. Last observed error: %w", finalErr)
 			m.failManager(err)
 		}
 		return
@@ -1065,8 +1073,7 @@ func (m *multiRangeDownloaderManager) handleStreamEnd(result mrdSessionResult, s
 		m.failStream(stream, err)
 		if len(m.streams) == 0 && !m.streamCreating {
 			err := fmt.Errorf("no streams available. Last observed error: %w", err)
-			m.setPermanentError(err)
-			m.failAllPending(m.getPermanentError())
+			m.failManager(err)
 		}
 	}
 }
@@ -1160,6 +1167,7 @@ type bidiReadStreamSession struct {
 
 	errOnce   sync.Once
 	streamErr error
+	mu        sync.Mutex
 }
 
 func newBidiReadStreamSession(ctx context.Context, id int, respC chan<- mrdSessionResult, client *grpcStorageClient, settings *settings, params *newMultiRangeDownloaderParams, readSpec *storagepb.BidiReadObjectSpec) (*bidiReadStreamSession, error) {
@@ -1220,8 +1228,15 @@ func (s *bidiReadStreamSession) Shutdown() {
 }
 func (s *bidiReadStreamSession) setError(err error) {
 	s.errOnce.Do(func() {
+		s.mu.Lock()
+		defer s.mu.Unlock()
 		s.streamErr = err
 	})
+}
+func (s *bidiReadStreamSession) getError() error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	return s.streamErr
 }
 func (s *bidiReadStreamSession) sendLoop() {
 	defer s.wg.Done()
@@ -1297,7 +1312,7 @@ func (s *bidiReadStreamSession) receiveLoop() {
 		case <-s.ctx.Done():
 			// If context is cancelled unexpectedly, make sure to notify
 			// eventLoop before returning
-			err := s.streamErr
+			err := s.getError()
 			if err == nil {
 				err = s.ctx.Err()
 			}
