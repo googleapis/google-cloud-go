@@ -1102,7 +1102,7 @@ libraries:
       - internal/generated/snippets/deploy/
     tag_format: '{id}/v{version}'
   - id: developerconnect
-    version: 0.10.0
+    version: 1.0.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/developerconnect/v1
