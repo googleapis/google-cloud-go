@@ -1391,7 +1391,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/gkemulticloud/v1
   - name: gkerecommender
-    version: 0.6.0
+    version: 1.0.0
     apis:
       - path: google/cloud/gkerecommender/v1
     go:

@@ -1419,7 +1419,7 @@ libraries:
       - internal/generated/snippets/gkemulticloud/
     tag_format: '{id}/v{version}'
   - id: gkerecommender
-    version: 0.6.0
+    version: 1.0.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/gkerecommender/v1
