@@ -67,7 +67,7 @@ libraries:
     skip_generate: true
     skip_release: true
   - name: ai
-    version: 0.20.0
+    version: 1.0.0
     apis:
       - path: google/ai/generativelanguage/v1
       - path: google/ai/generativelanguage/v1beta2
