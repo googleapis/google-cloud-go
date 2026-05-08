@@ -1774,7 +1774,7 @@ libraries:
       - internal/generated/snippets/memcache/
     tag_format: '{id}/v{version}'
   - id: memorystore
-    version: 0.9.0
+    version: 1.0.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/memorystore/v1

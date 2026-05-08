@@ -1728,7 +1728,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/memcache/v1beta2
   - name: memorystore
-    version: 0.9.0
+    version: 1.0.0
     apis:
       - path: google/cloud/memorystore/v1
       - path: google/cloud/memorystore/v1beta
