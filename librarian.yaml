@@ -1116,7 +1116,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/developerconnect/v1
   - name: devicestreaming
-    version: 0.6.0
+    version: 1.0.0
     apis:
       - path: google/cloud/devicestreaming/v1
     go:
