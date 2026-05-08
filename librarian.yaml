@@ -2792,7 +2792,7 @@ libraries:
           path: google/cloud/translate/v3
           proto_package: google.cloud.translation.v3
   - name: vectorsearch
-    version: 0.11.0
+    version: 1.0.0
     apis:
       - path: google/cloud/vectorsearch/v1
       - path: google/cloud/vectorsearch/v1beta
