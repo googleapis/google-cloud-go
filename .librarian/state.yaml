@@ -167,7 +167,7 @@ libraries:
       - internal/generated/snippets/apigeeconnect/
     tag_format: '{id}/v{version}'
   - id: apigeeregistry
-    version: 0.15.0
+    version: 1.0.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/apigeeregistry/v1
