@@ -791,7 +791,7 @@ libraries:
           import_path: cloudquotas/apiv1beta
           path: google/api/cloudquotas/v1beta
   - name: cloudsecuritycompliance
-    version: 0.6.0
+    version: 1.0.0
     apis:
       - path: google/cloud/cloudsecuritycompliance/v1
     go:

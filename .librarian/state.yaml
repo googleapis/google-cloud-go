@@ -761,7 +761,7 @@ libraries:
       - internal/generated/snippets/cloudquotas/
     tag_format: '{id}/v{version}'
   - id: cloudsecuritycompliance
-    version: 0.6.0
+    version: 1.0.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/cloudsecuritycompliance/v1
