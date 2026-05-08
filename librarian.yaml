@@ -207,7 +207,7 @@ libraries:
           import_path: apikeys/apiv2
           path: google/api/apikeys/v2
   - name: apiregistry
-    version: 0.7.0
+    version: 1.0.0
     apis:
       - path: google/cloud/apiregistry/v1
       - path: google/cloud/apiregistry/v1beta
