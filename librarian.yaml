@@ -1545,7 +1545,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/language/v1beta2
   - name: licensemanager
-    version: 0.6.0
+    version: 1.0.0
     apis:
       - path: google/cloud/licensemanager/v1
     go:

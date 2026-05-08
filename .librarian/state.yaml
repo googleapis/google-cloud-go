@@ -1584,7 +1584,7 @@ libraries:
       - internal/generated/snippets/language/
     tag_format: '{id}/v{version}'
   - id: licensemanager
-    version: 0.6.0
+    version: 1.0.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/licensemanager/v1
