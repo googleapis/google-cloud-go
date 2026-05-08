@@ -1640,7 +1640,7 @@ libraries:
       - internal/generated/snippets/logging/
     tag_format: '{id}/v{version}'
   - id: longrunning
-    version: 0.13.0
+    version: 1.0.0
     last_generated_commit: ""
     apis:
       - path: google/longrunning

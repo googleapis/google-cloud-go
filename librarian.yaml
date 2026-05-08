@@ -1587,7 +1587,7 @@ libraries:
           path: google/logging/v2
       nested_module: logadmin
   - name: longrunning
-    version: 0.13.0
+    version: 1.0.0
     apis:
       - path: google/longrunning
     go:
