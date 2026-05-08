@@ -1416,7 +1416,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/gsuiteaddons/v1
   - name: hypercomputecluster
-    version: 0.7.0
+    version: 1.0.0
     apis:
       - path: google/cloud/hypercomputecluster/v1
       - path: google/cloud/hypercomputecluster/v1beta
