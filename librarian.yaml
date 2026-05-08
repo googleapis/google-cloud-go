@@ -1017,7 +1017,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/datalabeling/v1beta1
   - name: datamanager
-    version: 0.8.0
+    version: 1.0.0
     apis:
       - path: google/ads/datamanager/v1
     go:
