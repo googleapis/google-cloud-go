@@ -781,6 +781,9 @@ func (m *multiRangeDownloaderManager) handleAddCmd(ctx context.Context, cmd *mrd
 			return
 		}
 	}
+	if m.attrs != nil && req.length == 0 {
+		req.length = m.attrs.Size - req.offset
+	}
 
 	m.unsentRequests.PushBack(req)
 }
@@ -857,9 +860,6 @@ func (m *multiRangeDownloaderManager) handleAddStreamCmd(ctx context.Context, cm
 		cmd.stream.session == nil ||
 		streamErr != nil {
 		m.streamCreating = false
-		if cmd.stream != nil && cmd.stream.session != nil {
-			cmd.stream.session.Shutdown()
-		}
 		if len(m.streams) == 0 {
 			err := streamErr
 			if err == nil {
@@ -898,9 +898,6 @@ func (m *multiRangeDownloaderManager) handleReconnectStreamCmd(ctx context.Conte
 			finalErr = errors.New("session nil for reconnected stream")
 		} else if streamErr == nil {
 			finalErr = streamErr
-		}
-		if cmd.session != nil {
-			cmd.session.Shutdown()
 		}
 		m.failStream(stream, finalErr)
 		if len(m.streams) == 0 && !m.streamCreating {
@@ -1167,7 +1164,7 @@ type bidiReadStreamSession struct {
 
 	errOnce   sync.Once
 	streamErr error
-	mu        sync.Mutex
+	mu        sync.RWMutex
 }
 
 func newBidiReadStreamSession(ctx context.Context, id int, respC chan<- mrdSessionResult, client *grpcStorageClient, settings *settings, params *newMultiRangeDownloaderParams, readSpec *storagepb.BidiReadObjectSpec) (*bidiReadStreamSession, error) {
@@ -1234,8 +1231,8 @@ func (s *bidiReadStreamSession) setError(err error) {
 	})
 }
 func (s *bidiReadStreamSession) getError() error {
-	s.mu.Lock()
-	defer s.mu.Unlock()
+	s.mu.RLock()
+	defer s.mu.RUnlock()
 	return s.streamErr
 }
 func (s *bidiReadStreamSession) sendLoop() {
