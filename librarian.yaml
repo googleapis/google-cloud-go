@@ -1478,7 +1478,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/iap/v1
   - name: identitytoolkit
-    version: 0.6.0
+    version: 1.0.0
     apis:
       - path: google/cloud/identitytoolkit/v2
     go:

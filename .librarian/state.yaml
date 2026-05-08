@@ -1508,7 +1508,7 @@ libraries:
       - internal/generated/snippets/iap/
     tag_format: '{id}/v{version}'
   - id: identitytoolkit
-    version: 0.6.0
+    version: 1.0.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/identitytoolkit/v2
