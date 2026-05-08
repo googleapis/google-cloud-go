@@ -1346,7 +1346,7 @@ libraries:
       - internal/generated/snippets/functions/
     tag_format: '{id}/v{version}'
   - id: geminidataanalytics
-    version: 0.13.0
+    version: 1.0.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/geminidataanalytics/v1beta

@@ -1331,7 +1331,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/functions/v2beta
   - name: geminidataanalytics
-    version: 0.13.0
+    version: 1.0.0
     apis:
       - path: google/cloud/geminidataanalytics/v1
       - path: google/cloud/geminidataanalytics/v1beta
