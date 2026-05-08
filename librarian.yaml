@@ -1902,7 +1902,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/optimization/v1
   - name: oracledatabase
-    version: 0.11.0
+    version: 1.0.0
     apis:
       - path: google/cloud/oracledatabase/v1
     go:
