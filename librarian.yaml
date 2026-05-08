@@ -2872,7 +2872,7 @@ libraries:
           path: google/cloud/vision/v1p1beta1
       module_path_version: v2
   - name: visionai
-    version: 0.10.0
+    version: 1.0.0
     apis:
       - path: google/cloud/visionai/v1
     go:

@@ -2936,7 +2936,7 @@ libraries:
       - internal/generated/snippets/vision/
     tag_format: '{id}/v{version}'
   - id: visionai
-    version: 0.10.0
+    version: 1.0.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/visionai/v1
