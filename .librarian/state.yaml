@@ -2044,7 +2044,7 @@ libraries:
       - internal/generated/snippets/oslogin/
     tag_format: '{id}/v{version}'
   - id: parallelstore
-    version: 0.17.0
+    version: 1.0.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/parallelstore/v1

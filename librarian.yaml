@@ -1994,7 +1994,7 @@ libraries:
           path: google/cloud/oslogin/common
           proto_only: true
   - name: parallelstore
-    version: 0.17.0
+    version: 1.0.0
     apis:
       - path: google/cloud/parallelstore/v1
       - path: google/cloud/parallelstore/v1beta
