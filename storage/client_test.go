@@ -2041,6 +2041,7 @@ func TestMRDAddAfterCloseEmulated(t *testing.T) {
 		callback := func(x, y int64, err error) {
 			callbackErr = err
 		}
+		log.Printf("Adding command")
 		reader.Add(buf, 10, 3000, callback)
 		reader.Wait()
 		if callbackErr == nil {

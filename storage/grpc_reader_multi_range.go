@@ -459,6 +459,7 @@ func (m *multiRangeDownloaderManager) close(err error) error {
 
 func (m *multiRangeDownloaderManager) wait() {
 	if err := m.ctx.Err(); err != nil {
+		m.callbackWg.Wait()
 		return
 	}
 	doneC := make(chan struct{})
@@ -641,8 +642,6 @@ sessionDrainLoop:
 		close(waiter)
 	}
 	m.attrsOnce.Do(func() { close(m.attrsReady) })
-	m.callbackWg.Wait()
-
 	// Complete any commands leftover in cmds channel.
 cmdDrainLoop:
 	for {
@@ -660,6 +659,8 @@ cmdDrainLoop:
 			break cmdDrainLoop
 		}
 	}
+	// Wait for all callbacks (including any initiated by the drained command) to finish.
+	m.callbackWg.Wait()
 }
 
 func (m *multiRangeDownloaderManager) addNewStream() {
@@ -929,7 +930,7 @@ func (m *multiRangeDownloaderManager) handleReconnectStreamCmd(ctx context.Conte
 		finalErr := cmd.err
 		if finalErr == nil && cmd.session == nil {
 			finalErr = errors.New("session nil for reconnected stream")
-		} else if finalErr == nil && streamErr == nil {
+		} else if finalErr == nil {
 			finalErr = streamErr
 		}
 		m.failStream(stream, finalErr)
