@@ -413,8 +413,8 @@ func TestIntegration_MultiRangeDownloader(t *testing.T) {
 		reader.Add(&res[0].buf, 0, int64(len(content)), callback)
 		// Read from end. We will read the last 10 bytes.
 		reader.Add(&res[1].buf, -10, 0, callback1)
-		// Read from Front. This will read the starting 10 bytes.
-		reader.Add(&res[2].buf, 0, 10, callback2)
+		// Read from Front. This will read the whole object.
+		reader.Add(&res[2].buf, 0, 0, callback2)
 		reader.Wait()
 		for _, k := range res {
 			if k.offset < 0 {
