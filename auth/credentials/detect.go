@@ -27,7 +27,7 @@ import (
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/internal"
 	"cloud.google.com/go/auth/internal/credsfile"
-	"cloud.google.com/go/auth/internal/trustboundary"
+	"cloud.google.com/go/auth/internal/regionalaccessboundary"
 	"cloud.google.com/go/compute/metadata"
 	"github.com/googleapis/gax-go/v2/internallog"
 )
@@ -146,7 +146,7 @@ func DetectDefault(opts *DetectOptions) (*auth.Credentials, error) {
 	if err := opts.validate(); err != nil {
 		return nil, err
 	}
-	trustBoundaryEnabled, err := trustboundary.IsEnabled()
+	regionalAccessBoundaryEnabled, err := regionalaccessboundary.IsEnabled()
 	if err != nil {
 		return nil, err
 	}
@@ -179,12 +179,12 @@ func DetectDefault(opts *DetectOptions) (*auth.Credentials, error) {
 		}
 
 		tp := computeTokenProvider(opts, metadataClient)
-		if trustBoundaryEnabled {
-			gceConfigProvider := trustboundary.NewGCEConfigProvider(gceUniverseDomainProvider)
+		if regionalAccessBoundaryEnabled {
+			gceConfigProvider := regionalaccessboundary.NewGCEConfigProvider(gceUniverseDomainProvider)
 			var err error
-			tp, err = trustboundary.NewProvider(opts.client(), gceConfigProvider, opts.logger(), tp)
+			tp, err = regionalaccessboundary.NewProvider(opts.client(), gceConfigProvider, opts.logger(), tp)
 			if err != nil {
-				return nil, fmt.Errorf("credentials: failed to initialize GCE trust boundary provider: %w", err)
+				return nil, fmt.Errorf("credentials: failed to initialize GCE Regional Access Boundary provider: %w", err)
 			}
 
 		}
