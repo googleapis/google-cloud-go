@@ -257,6 +257,9 @@ func (p *DataProvider) GetHeaderValue(ctx context.Context, reqURL string, access
 	}
 	if u, err := url.Parse(reqURL); err == nil {
 		host := u.Host
+		if host == "" && strings.HasPrefix(u.Path, "/") {
+			host = strings.TrimPrefix(u.Path, "/")
+		}
 		if h, _, err := net.SplitHostPort(host); err == nil {
 			host = h
 		}

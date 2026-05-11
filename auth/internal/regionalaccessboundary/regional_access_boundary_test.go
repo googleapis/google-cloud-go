@@ -633,12 +633,19 @@ type mockConfigProvider struct {
 	endpointErrToReturn error
 	universeToReturn    string
 	universeErrToReturn error
+	endpointCallCh      chan struct{}
 }
 
 func (m *mockConfigProvider) GetRegionalAccessBoundaryEndpoint(ctx context.Context) (string, error) {
 	m.mu.Lock()
 	m.endpointCallCount++
 	m.mu.Unlock()
+	if m.endpointCallCh != nil {
+		select {
+		case m.endpointCallCh <- struct{}{}:
+		default:
+		}
+	}
 	return m.endpointToReturn, m.endpointErrToReturn
 }
 
@@ -734,28 +741,69 @@ func TestDataProvider_GetHeaderValue(t *testing.T) {
 		for _, tt := range tests {
 			t.Run(tt.name, func(t *testing.T) {
 				token := &auth.Token{Value: "base"}
-				mockConfig := &mockConfigProvider{universeToReturn: internal.DefaultUniverseDomain}
+				mockConfig := &mockConfigProvider{
+					universeToReturn: internal.DefaultUniverseDomain,
+					endpointCallCh:   make(chan struct{}, 1),
+				}
 				provider, _ := NewProvider(http.DefaultClient, mockConfig, nil, &mockTokenProvider{TokenToReturn: token})
 
 				_ = provider.GetHeaderValue(ctx, tt.reqURL, token)
 
 				if tt.wantCall {
-					deadline := time.Now().Add(1 * time.Second)
-					var gotCall bool
-					for time.Now().Before(deadline) {
-						if mockConfig.GetEndpointCallCount() > 0 {
-							gotCall = true
-							break
-						}
-						time.Sleep(10 * time.Millisecond)
-					}
-					if !gotCall {
+					select {
+					case <-mockConfig.endpointCallCh:
+						// Success
+					case <-time.After(1 * time.Second):
 						t.Errorf("GetHeaderValue(%q) did not initiate fetch (want fetch)", tt.reqURL)
 					}
 				} else {
-					time.Sleep(50 * time.Millisecond)
-					if mockConfig.GetEndpointCallCount() > 0 {
+					select {
+					case <-mockConfig.endpointCallCh:
 						t.Errorf("GetHeaderValue(%q) initiated fetch unexpectedly", tt.reqURL)
+					case <-time.After(50 * time.Millisecond):
+						// Success
+					}
+				}
+			})
+		}
+	})
+
+	t.Run("Resolver scheme skip", func(t *testing.T) {
+		tests := []struct {
+			name     string
+			reqURL   string
+			wantCall bool
+		}{
+			{"DNS Resolver Scheme IAM", "dns:///iam.googleapis.com", false},
+			{"DNS Resolver Scheme STS", "dns:///sts.googleapis.com", false},
+			{"DNS Resolver Scheme Regional", "dns:///us-central1.rep.googleapis.com", false},
+			{"DNS Resolver Scheme Global", "dns:///pubsub.googleapis.com", true},
+		}
+
+		for _, tt := range tests {
+			t.Run(tt.name, func(t *testing.T) {
+				token := &auth.Token{Value: "base"}
+				mockConfig := &mockConfigProvider{
+					universeToReturn: internal.DefaultUniverseDomain,
+					endpointCallCh:   make(chan struct{}, 1),
+				}
+				provider, _ := NewProvider(http.DefaultClient, mockConfig, nil, &mockTokenProvider{TokenToReturn: token})
+
+				_ = provider.GetHeaderValue(ctx, tt.reqURL, token)
+
+				if tt.wantCall {
+					select {
+					case <-mockConfig.endpointCallCh:
+						// Success
+					case <-time.After(1 * time.Second):
+						t.Errorf("GetHeaderValue(%q) did not initiate fetch (want fetch)", tt.reqURL)
+					}
+				} else {
+					select {
+					case <-mockConfig.endpointCallCh:
+						t.Errorf("GetHeaderValue(%q) initiated fetch unexpectedly", tt.reqURL)
+					case <-time.After(50 * time.Millisecond):
+						// Success
 					}
 				}
 			})
