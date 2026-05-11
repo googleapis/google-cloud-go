@@ -418,8 +418,8 @@ type GCEConfigProvider struct {
 	universeDomainProvider *internal.ComputeUniverseDomainProvider
 
 	// Caching for service account email
-	saMu       sync.Mutex
-	saEmail    string
+	saMu    sync.Mutex
+	saEmail string
 
 	// Caching for universe domain
 	udOnce sync.Once
