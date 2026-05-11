@@ -2389,12 +2389,6 @@ func TestIntegration_AdminCreateInstance(t *testing.T) {
 
 	clusterID := instanceToCreate + "-cluster"
 
-	tagKey := os.Getenv("GCLOUD_TESTS_BIGTABLE_TAG_KEY")
-	tagValue := os.Getenv("GCLOUD_TESTS_BIGTABLE_TAG_VALUE")
-	if tagKey == "" || tagValue == "" {
-		t.Fatal("GCLOUD_TESTS_BIGTABLE_TAG_KEY and GCLOUD_TESTS_BIGTABLE_TAG_VALUE must be set. See CONTRIBUTING.md for details")
-	}
-
 	// Create a development instance
 	conf := &InstanceConf{
 		InstanceId:   instanceToCreate,
@@ -2403,9 +2397,18 @@ func TestIntegration_AdminCreateInstance(t *testing.T) {
 		Zone:         instanceToCreateZone,
 		InstanceType: DEVELOPMENT,
 		Labels:       map[string]string{"test-label-key": "test-label-value"},
-		Tags:         map[string]string{tagKey: tagValue},
 		Edition:      Enterprise,
 	}
+
+	tagKey := os.Getenv("GCLOUD_TESTS_BIGTABLE_TAG_KEY")
+	tagValue := os.Getenv("GCLOUD_TESTS_BIGTABLE_TAG_VALUE")
+	if tagKey == "" || tagValue == "" {
+		t.Log("GCLOUD_TESTS_BIGTABLE_TAG_KEY/VALUE not set; skipping tag in instance creation.")
+	} else {
+		conf.Tags = map[string]string{tagKey: tagValue}
+	}
+
+	
 
 	t.Cleanup(func() {
 		if err := deleteInstance(context.Background(), iAdminClient, instanceToCreate); err != nil {
@@ -2440,10 +2443,14 @@ func TestIntegration_AdminCreateInstance(t *testing.T) {
 		DisplayName:  "new display name",
 		InstanceType: PRODUCTION,
 		Labels:       map[string]string{"new-label-key": "new-label-value"},
-		Tags:         map[string]string{tagKey: tagValue},
 		Clusters: []ClusterConfig{
 			{ClusterID: clusterID, NumNodes: 5},
 		},
+	}
+	if tagKey == "" || tagValue == "" {
+		t.Log("GCLOUD_TESTS_BIGTABLE_TAG_KEY/VALUE not set; skipping tag in instance creation.")
+	} else {
+		confWithClusters.Tags = map[string]string{tagKey: tagValue}
 	}
 
 	if err = iAdminClient.UpdateInstanceWithClusters(ctx, confWithClusters); err != nil {
