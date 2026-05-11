@@ -52,6 +52,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	gax "github.com/googleapis/gax-go/v2"
+	"google.golang.org/api/cloudresourcemanager/v3"
 	"google.golang.org/api/iterator"
 	grpc "google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -1478,6 +1479,10 @@ func TestIntegration_EnableChangeStream(t *testing.T) {
 	}
 	t.Cleanup(cleanup)
 
+	if !testEnv.Config().UseProd {
+		t.Skip("emulator doesn't support change streams")
+	}
+
 	timeout := 2 * time.Second
 	if testEnv.Config().UseProd {
 		timeout = 5 * time.Minute
@@ -2388,6 +2393,19 @@ func TestIntegration_AdminCreateInstance(t *testing.T) {
 	t.Cleanup(func() { iAdminClient.Close() })
 
 	clusterID := instanceToCreate + "-cluster"
+	tagKey := os.Getenv("GCLOUD_TESTS_BIGTABLE_TAG_KEY")
+	tagValue := os.Getenv("GCLOUD_TESTS_BIGTABLE_TAG_VALUE")
+	instanceTags := map[string]string{}
+
+	if tagKey == "" || tagValue == "" {
+		t.Log("GCLOUD_TESTS_BIGTABLE_TAG_KEY/VALUE not set; skipping tag in instance creation.")
+	} else {
+		tagKeyID, tagValueID, err := resolveTagIDs(ctx, testEnv.Config().Project, tagKey, tagValue)
+		if err != nil {
+			t.Fatalf("Failed to resolve tag IDs: %v", err)
+		}
+		instanceTags[tagKeyID] = tagValueID
+	}
 
 	// Create a development instance
 	conf := &InstanceConf{
@@ -2398,17 +2416,8 @@ func TestIntegration_AdminCreateInstance(t *testing.T) {
 		InstanceType: DEVELOPMENT,
 		Labels:       map[string]string{"test-label-key": "test-label-value"},
 		Edition:      Enterprise,
+		Tags:         instanceTags,
 	}
-
-	tagKey := os.Getenv("GCLOUD_TESTS_BIGTABLE_TAG_KEY")
-	tagValue := os.Getenv("GCLOUD_TESTS_BIGTABLE_TAG_VALUE")
-	if tagKey == "" || tagValue == "" {
-		t.Log("GCLOUD_TESTS_BIGTABLE_TAG_KEY/VALUE not set; skipping tag in instance creation.")
-	} else {
-		conf.Tags = map[string]string{tagKey: tagValue}
-	}
-
-	
 
 	t.Cleanup(func() {
 		if err := deleteInstance(context.Background(), iAdminClient, instanceToCreate); err != nil {
@@ -2446,11 +2455,7 @@ func TestIntegration_AdminCreateInstance(t *testing.T) {
 		Clusters: []ClusterConfig{
 			{ClusterID: clusterID, NumNodes: 5},
 		},
-	}
-	if tagKey == "" || tagValue == "" {
-		t.Log("GCLOUD_TESTS_BIGTABLE_TAG_KEY/VALUE not set; skipping tag in instance creation.")
-	} else {
-		confWithClusters.Tags = map[string]string{tagKey: tagValue}
+		Tags: instanceTags,
 	}
 
 	if err = iAdminClient.UpdateInstanceWithClusters(ctx, confWithClusters); err != nil {
@@ -2484,6 +2489,30 @@ func TestIntegration_AdminCreateInstance(t *testing.T) {
 	if cInfo.KMSKeyName != "" {
 		t.Fatalf("KMSKeyName: %v, want: %v", cInfo.KMSKeyName, "")
 	}
+}
+
+func resolveTagIDs(ctx context.Context, projectID, keyDisplayName, valueDisplayName string) (string, string, error) {
+	svc, err := cloudresourcemanager.NewService(ctx)
+	if err != nil {
+		return "", "", fmt.Errorf("failed to create resource manager service: %v", err)
+	}
+
+	// 1. Resolve Tag Key ID
+	keyNamespaced := fmt.Sprintf("%s/%s", projectID, keyDisplayName)
+	key, err := svc.TagKeys.GetNamespaced().Name(keyNamespaced).Do()
+	if err != nil {
+		return "", "", fmt.Errorf("failed to resolve tag key %q: %v", keyNamespaced, err)
+	}
+
+	// 2. Resolve Tag Value ID
+	valueNamespaced := fmt.Sprintf("%s/%s/%s", projectID, keyDisplayName, valueDisplayName)
+	value, err := svc.TagValues.GetNamespaced().Name(valueNamespaced).Do()
+	if err != nil {
+		return "", "", fmt.Errorf("failed to resolve tag value %q: %v", valueNamespaced, err)
+	}
+
+	// key.Name and value.Name contain the numeric IDs (e.g., "tagKeys/123", "tagValues/456")
+	return key.Name, value.Name, nil
 }
 
 func TestIntegration_AdminEncryptionInfo(t *testing.T) {
