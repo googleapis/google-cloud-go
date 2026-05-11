@@ -21,8 +21,6 @@
 // content, and data leakage in generative AI applications by letting you
 // define policies that filter user prompts and model responses.
 //
-//	NOTE: This package is in beta. It is not stable, and may be subject to changes.
-//
 // # General documentation
 //
 // For information that is relevant for all client libraries please reference

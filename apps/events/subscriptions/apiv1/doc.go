@@ -20,8 +20,6 @@
 // The Google Workspace Events API lets you subscribe to events and manage
 // change notifications across Google Workspace applications.
 //
-//	NOTE: This package is in beta. It is not stable, and may be subject to changes.
-//
 // # General documentation
 //
 // For information that is relevant for all client libraries please reference

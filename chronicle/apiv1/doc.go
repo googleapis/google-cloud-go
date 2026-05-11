@@ -21,8 +21,6 @@
 // endpoints that help analysts investigate and mitigate security threats
 // throughout their lifecycle.
 //
-//	NOTE: This package is in beta. It is not stable, and may be subject to changes.
-//
 // # General documentation
 //
 // For information that is relevant for all client libraries please reference

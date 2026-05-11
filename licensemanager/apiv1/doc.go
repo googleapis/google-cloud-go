@@ -20,8 +20,6 @@
 // License Manager is a tool to manage and track third-party licenses on
 // Google Cloud.
 //
-//	NOTE: This package is in beta. It is not stable, and may be subject to changes.
-//
 // # General documentation
 //
 // For information that is relevant for all client libraries please reference

@@ -65,7 +65,7 @@ libraries:
     remove_regex: []
     tag_format: '{id}/v{version}'
   - id: ai
-    version: 0.20.0
+    version: 1.0.0
     last_generated_commit: ""
     apis:
       - path: google/ai/generativelanguage/v1
@@ -167,7 +167,7 @@ libraries:
       - internal/generated/snippets/apigeeconnect/
     tag_format: '{id}/v{version}'
   - id: apigeeregistry
-    version: 0.15.0
+    version: 1.0.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/apigeeregistry/v1
@@ -181,7 +181,7 @@ libraries:
       - internal/generated/snippets/apigeeregistry/
     tag_format: '{id}/v{version}'
   - id: apihub
-    version: 0.7.0
+    version: 1.0.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/apihub/v1
@@ -209,7 +209,7 @@ libraries:
       - internal/generated/snippets/apikeys/
     tag_format: '{id}/v{version}'
   - id: apiregistry
-    version: 0.7.0
+    version: 1.0.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/apiregistry/v1beta
@@ -239,7 +239,7 @@ libraries:
       - internal/generated/snippets/appengine/
     tag_format: '{id}/v{version}'
   - id: apphub
-    version: 0.9.0
+    version: 1.0.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/apphub/v1
@@ -266,7 +266,7 @@ libraries:
       - internal/generated/snippets/appoptimize/
     tag_format: '{id}/v{version}'
   - id: apps
-    version: 0.13.0
+    version: 1.0.0
     last_generated_commit: ""
     apis:
       - path: google/apps/events/subscriptions/v1
@@ -350,7 +350,7 @@ libraries:
       - internal/generated/snippets/assuredworkloads/
     tag_format: '{id}/v{version}'
   - id: auditmanager
-    version: 0.7.0
+    version: 1.0.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/auditmanager/v1
@@ -465,7 +465,7 @@ libraries:
       - internal/generated/snippets/beyondcorp/
     tag_format: '{id}/v{version}'
   - id: biglake
-    version: 0.5.0
+    version: 1.0.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/biglake/v1
@@ -627,7 +627,7 @@ libraries:
       - internal/generated/snippets/certificatemanager/
     tag_format: '{id}/v{version}'
   - id: ces
-    version: 0.9.0
+    version: 1.0.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/ces/v1beta
@@ -657,7 +657,7 @@ libraries:
       - internal/generated/snippets/channel/
     tag_format: '{id}/v{version}'
   - id: chat
-    version: 0.23.0
+    version: 1.0.0
     last_generated_commit: ""
     apis:
       - path: google/chat/v1
@@ -671,7 +671,7 @@ libraries:
       - internal/generated/snippets/chat/
     tag_format: '{id}/v{version}'
   - id: chronicle
-    version: 0.7.0
+    version: 1.0.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/chronicle/v1
@@ -731,7 +731,7 @@ libraries:
       - internal/generated/snippets/clouddms/
     tag_format: '{id}/v{version}'
   - id: cloudprofiler
-    version: 0.9.0
+    version: 1.0.0
     last_generated_commit: ""
     apis:
       - path: google/devtools/cloudprofiler/v2
@@ -761,7 +761,7 @@ libraries:
       - internal/generated/snippets/cloudquotas/
     tag_format: '{id}/v{version}'
   - id: cloudsecuritycompliance
-    version: 0.6.0
+    version: 1.0.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/cloudsecuritycompliance/v1
@@ -863,7 +863,7 @@ libraries:
       - internal/generated/snippets/config/
     tag_format: '{id}/v{version}'
   - id: configdelivery
-    version: 0.6.0
+    version: 1.0.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/configdelivery/v1
@@ -955,7 +955,7 @@ libraries:
       - internal/generated/snippets/dataflow/
     tag_format: '{id}/v{version}'
   - id: dataform
-    version: 0.19.0
+    version: 1.0.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/dataform/v1
@@ -999,7 +999,7 @@ libraries:
       - internal/generated/snippets/datalabeling/
     tag_format: '{id}/v{version}'
   - id: datamanager
-    version: 0.8.0
+    version: 1.0.0
     last_generated_commit: ""
     apis:
       - path: google/ads/datamanager/v1
@@ -1102,7 +1102,7 @@ libraries:
       - internal/generated/snippets/deploy/
     tag_format: '{id}/v{version}'
   - id: developerconnect
-    version: 0.10.0
+    version: 1.0.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/developerconnect/v1
@@ -1116,7 +1116,7 @@ libraries:
       - internal/generated/snippets/developerconnect/
     tag_format: '{id}/v{version}'
   - id: devicestreaming
-    version: 0.6.0
+    version: 1.0.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/devicestreaming/v1
@@ -1298,7 +1298,7 @@ libraries:
       - internal/generated/snippets/filestore/
     tag_format: '{id}/v{version}'
   - id: financialservices
-    version: 0.6.0
+    version: 1.0.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/financialservices/v1
@@ -1346,7 +1346,7 @@ libraries:
       - internal/generated/snippets/functions/
     tag_format: '{id}/v{version}'
   - id: geminidataanalytics
-    version: 0.13.0
+    version: 1.0.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/geminidataanalytics/v1beta
@@ -1375,7 +1375,7 @@ libraries:
       - internal/generated/snippets/gkebackup/
     tag_format: '{id}/v{version}'
   - id: gkeconnect
-    version: 0.16.0
+    version: 1.0.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/gkeconnect/gateway/v1beta1
@@ -1419,7 +1419,7 @@ libraries:
       - internal/generated/snippets/gkemulticloud/
     tag_format: '{id}/v{version}'
   - id: gkerecommender
-    version: 0.6.0
+    version: 1.0.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/gkerecommender/v1
@@ -1456,7 +1456,7 @@ libraries:
       - internal/generated/snippets/gsuiteaddons/
     tag_format: '{id}/v{version}'
   - id: hypercomputecluster
-    version: 0.7.0
+    version: 1.0.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/hypercomputecluster/v1beta
@@ -1508,7 +1508,7 @@ libraries:
       - internal/generated/snippets/iap/
     tag_format: '{id}/v{version}'
   - id: identitytoolkit
-    version: 0.6.0
+    version: 1.0.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/identitytoolkit/v2
@@ -1584,7 +1584,7 @@ libraries:
       - internal/generated/snippets/language/
     tag_format: '{id}/v{version}'
   - id: licensemanager
-    version: 0.6.0
+    version: 1.0.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/licensemanager/v1
@@ -1612,7 +1612,7 @@ libraries:
       - internal/generated/snippets/lifesciences/
     tag_format: '{id}/v{version}'
   - id: locationfinder
-    version: 0.6.0
+    version: 1.0.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/locationfinder/v1
@@ -1640,7 +1640,7 @@ libraries:
       - internal/generated/snippets/logging/
     tag_format: '{id}/v{version}'
   - id: longrunning
-    version: 0.13.0
+    version: 1.0.0
     last_generated_commit: ""
     apis:
       - path: google/longrunning
@@ -1654,7 +1654,7 @@ libraries:
       - internal/generated/snippets/longrunning/
     tag_format: '{id}/v{version}'
   - id: lustre
-    version: 0.7.0
+    version: 1.0.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/lustre/v1
@@ -1668,7 +1668,7 @@ libraries:
       - internal/generated/snippets/lustre/
     tag_format: '{id}/v{version}'
   - id: maintenance
-    version: 0.8.0
+    version: 1.0.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/maintenance/api/v1beta
@@ -1698,7 +1698,7 @@ libraries:
       - internal/generated/snippets/managedidentities/
     tag_format: '{id}/v{version}'
   - id: managedkafka
-    version: 0.13.0
+    version: 1.0.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/managedkafka/v1
@@ -1774,7 +1774,7 @@ libraries:
       - internal/generated/snippets/memcache/
     tag_format: '{id}/v{version}'
   - id: memorystore
-    version: 0.9.0
+    version: 1.0.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/memorystore/v1
@@ -1822,7 +1822,7 @@ libraries:
       - internal/generated/snippets/migrationcenter/
     tag_format: '{id}/v{version}'
   - id: modelarmor
-    version: 0.11.0
+    version: 1.0.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/modelarmor/v1
@@ -1916,7 +1916,7 @@ libraries:
       - internal/generated/snippets/networksecurity/
     tag_format: '{id}/v{version}'
   - id: networkservices
-    version: 0.11.0
+    version: 1.0.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/networkservices/v1
@@ -1962,7 +1962,7 @@ libraries:
       - internal/generated/snippets/optimization/
     tag_format: '{id}/v{version}'
   - id: oracledatabase
-    version: 0.11.0
+    version: 1.0.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/oracledatabase/v1
@@ -2044,7 +2044,7 @@ libraries:
       - internal/generated/snippets/oslogin/
     tag_format: '{id}/v{version}'
   - id: parallelstore
-    version: 0.17.0
+    version: 1.0.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/parallelstore/v1
@@ -2060,7 +2060,7 @@ libraries:
       - internal/generated/snippets/parallelstore/
     tag_format: '{id}/v{version}'
   - id: parametermanager
-    version: 0.8.0
+    version: 1.0.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/parametermanager/v1
@@ -2088,7 +2088,7 @@ libraries:
       - internal/generated/snippets/phishingprotection/
     tag_format: '{id}/v{version}'
   - id: policysimulator
-    version: 0.9.0
+    version: 1.0.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/policysimulator/v1
@@ -2132,7 +2132,7 @@ libraries:
       - internal/generated/snippets/privatecatalog/
     tag_format: '{id}/v{version}'
   - id: privilegedaccessmanager
-    version: 0.8.0
+    version: 1.0.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/privilegedaccessmanager/v1
@@ -2467,7 +2467,7 @@ libraries:
       - internal/generated/snippets/securitycentermanagement/
     tag_format: '{id}/v{version}'
   - id: securityposture
-    version: 0.7.0
+    version: 1.0.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/securityposture/v1
@@ -2699,7 +2699,7 @@ libraries:
       - storage/internal/test
     tag_format: '{id}/v{version}'
   - id: storagebatchoperations
-    version: 0.9.0
+    version: 1.0.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/storagebatchoperations/v1
@@ -2741,7 +2741,7 @@ libraries:
       - internal/generated/snippets/storagetransfer/
     tag_format: '{id}/v{version}'
   - id: streetview
-    version: 0.7.0
+    version: 1.0.0
     last_generated_commit: ""
     apis:
       - path: google/streetview/publish/v1
@@ -2859,7 +2859,7 @@ libraries:
       - internal/generated/snippets/translate/
     tag_format: '{id}/v{version}'
   - id: vectorsearch
-    version: 0.11.0
+    version: 1.0.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/vectorsearch/v1beta
@@ -2936,7 +2936,7 @@ libraries:
       - internal/generated/snippets/vision/
     tag_format: '{id}/v{version}'
   - id: visionai
-    version: 0.10.0
+    version: 1.0.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/visionai/v1
@@ -3043,7 +3043,7 @@ libraries:
       - internal/generated/snippets/workflows/
     tag_format: '{id}/v{version}'
   - id: workloadmanager
-    version: 0.6.0
+    version: 1.0.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/workloadmanager/v1

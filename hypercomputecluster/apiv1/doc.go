@@ -20,8 +20,6 @@
 // The Cluster Director API allows you to deploy, manage, and monitor
 // clusters that run AI, ML, or HPC workloads.
 //
-//	NOTE: This package is in beta. It is not stable, and may be subject to changes.
-//
 // # General documentation
 //
 // For information that is relevant for all client libraries please reference

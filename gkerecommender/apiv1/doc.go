@@ -17,9 +17,7 @@
 // Package gkerecommender is an auto-generated package for the
 // GKE Recommender API.
 //
-// GKE Recommender API
-//
-//	NOTE: This package is in beta. It is not stable, and may be subject to changes.
+// # GKE Recommender API
 //
 // # General documentation
 //
