@@ -486,7 +486,9 @@ func (m *multiRangeDownloaderManager) getHandle() []byte {
 	case <-m.ctx.Done():
 		return nil
 	}
-
+	if err := m.ctx.Err(); err != nil {
+		return nil
+	}
 	respC := make(chan []byte, 1)
 	cmd := &mrdGetHandleCmd{respC: respC}
 	select {
@@ -654,6 +656,18 @@ cmdDrainLoop:
 				close(cmd.doneC)
 			case *mrdAddCmd:
 				m.runCallback(cmd.offset, cmd.length, finalErr, cmd.callback)
+			case *mrdGetHandleCmd:
+				// Non-blocking send of handle if attributes are ready, otherwise close.
+				select {
+				case <-m.attrsReady:
+					select {
+					case cmd.respC <- m.lastReadHandle:
+					default:
+						close(cmd.respC)
+					}
+				default:
+					close(cmd.respC)
+				}
 			}
 		default:
 			break cmdDrainLoop
@@ -1196,10 +1210,12 @@ type bidiReadStreamSession struct {
 	respC chan<- mrdSessionResult
 	wg    sync.WaitGroup
 
+	// To make manualShutdown and streamErr fields thread-safe
+	// as it can be accessed by both event loop and receive loop.
+	mu             sync.RWMutex
 	errOnce        sync.Once
 	streamErr      error
 	manualShutdown bool
-	mu             sync.RWMutex
 }
 
 func newBidiReadStreamSession(ctx context.Context, id int, respC chan<- mrdSessionResult, client *grpcStorageClient, settings *settings, params *newMultiRangeDownloaderParams, readSpec *storagepb.BidiReadObjectSpec) (*bidiReadStreamSession, error) {

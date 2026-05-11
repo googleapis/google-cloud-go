@@ -2052,6 +2052,62 @@ func TestMRDAddAfterCloseEmulated(t *testing.T) {
 	})
 }
 
+func TestMRDGetHandleAfterCloseEmulated(t *testing.T) {
+	transportClientTest(skipHTTP("mrd is implemented for grpc client"), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
+		setBidiReads(t, client)
+		getHandleTimeout := 5 * time.Second
+		content := make([]byte, 5000)
+		rand.New(rand.NewSource(0)).Read(content)
+		// Populate test data.
+		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{
+			Name: bucket,
+		}, nil)
+		if err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		prefix := time.Now().Nanosecond()
+		objectName := fmt.Sprintf("%d-object-%d", prefix, time.Now().Nanosecond())
+		w := veneerClient.Bucket(bucket).Object(objectName).NewWriter(context.Background())
+		if _, err := w.Write(content); err != nil {
+			t.Fatalf("failed to populate test data: %v", err)
+		}
+		if err := w.Close(); err != nil {
+			t.Fatalf("closing object: %v", err)
+		}
+		params := &newMultiRangeDownloaderParams{
+			bucket: bucket,
+			object: objectName,
+			gen:    defaultGen,
+		}
+		reader, err := client.NewMultiRangeDownloader(ctx, params)
+		if err != nil {
+			t.Fatalf("opening reading: %v", err)
+		}
+		err = reader.Close()
+		if err != nil {
+			t.Errorf("Error while closing reader %v", err)
+		}
+		handleCh := make(chan []byte, 1)
+		timer := time.NewTimer(getHandleTimeout)
+		defer timer.Stop()
+		var wg sync.WaitGroup
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			// This call should not block otherwise we fail after getHandleTimeout.
+			handleCh <- reader.GetHandle()
+		}()
+
+		select {
+		case <-handleCh:
+		case <-timer.C:
+			t.Errorf("GetHandle timed out after %v", getHandleTimeout)
+		}
+		reader.Wait()
+		wg.Wait()
+	})
+}
+
 func TestMRDAddSanityCheckEmulated(t *testing.T) {
 	transportClientTest(skipHTTP("mrd is implemented for grpc client"), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
 		setBidiReads(t, client)
