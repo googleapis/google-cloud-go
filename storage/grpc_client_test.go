@@ -21,6 +21,7 @@ import (
 	"fmt"
 	"hash/crc32"
 	"math/rand"
+	"reflect"
 	"strings"
 	"testing"
 	"time"
@@ -593,18 +594,27 @@ func TestNewGRPCStorageClient_NoGlobalTimeout(t *testing.T) {
 
 	// Helper to verify that a list of CallOptions has a timeout of 0s
 	verifyTimeoutIsZero := func(method string, opts []gax.CallOption) {
-		found := false
-		var s gax.CallSettings
+		var cs gax.CallSettings
+		// Apply a dummy non-zero timeout first
+		gax.WithTimeout(1 * time.Hour).Resolve(&cs)
+
+		// Apply all options of interest
 		for _, opt := range opts {
-			if strings.Contains(fmt.Sprintf("%T", opt), "timeoutOpt") {
-				found = true
-			}
-			opt.Resolve(&s)
+			opt.Resolve(&cs)
 		}
-		if !found {
+
+		val := reflect.ValueOf(cs)
+		field := val.FieldByName("timeout")
+		if !field.IsValid() {
+			t.Errorf("method %q: gax.CallSettings structure changed, field 'timeout' not found", method)
+			return
+		}
+
+		timeout := time.Duration(field.Int())
+		if timeout == 1*time.Hour {
 			t.Errorf("method %q: expected explicit WithTimeout(0) to keep streams unbounded, but none was found", method)
-		} else if s.Timeout != 0 {
-			t.Errorf("method %q: expected timeout of 0s, got %v", method, s.Timeout)
+		} else if timeout != 0 {
+			t.Errorf("method %q: expected timeout of 0s, got %v", method, timeout)
 		}
 	}
 
@@ -615,4 +625,5 @@ func TestNewGRPCStorageClient_NoGlobalTimeout(t *testing.T) {
 	verifyTimeoutIsZero("WriteObject", opts.WriteObject)
 	verifyTimeoutIsZero("BidiReadObject", opts.BidiReadObject)
 	verifyTimeoutIsZero("BidiWriteObject", opts.BidiWriteObject)
+	verifyTimeoutIsZero("CancelResumableWrite", opts.CancelResumableWrite)
 }
