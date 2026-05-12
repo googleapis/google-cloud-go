@@ -594,16 +594,17 @@ func TestNewGRPCStorageClient_NoGlobalTimeout(t *testing.T) {
 	// Helper to verify that a list of CallOptions has a timeout of 0s
 	verifyTimeoutIsZero := func(method string, opts []gax.CallOption) {
 		found := false
+		var s gax.CallSettings
 		for _, opt := range opts {
 			if strings.Contains(fmt.Sprintf("%T", opt), "timeoutOpt") {
 				found = true
-				if val := fmt.Sprintf("%+v", opt); !strings.Contains(val, "t:0") {
-					t.Errorf("method %q: expected timeout of 0s, got %+v", method, opt)
-				}
 			}
+			opt.Resolve(&s)
 		}
 		if !found {
 			t.Errorf("method %q: expected explicit WithTimeout(0) to keep streams unbounded, but none was found", method)
+		} else if s.Timeout != 0 {
+			t.Errorf("method %q: expected timeout of 0s, got %v", method, s.Timeout)
 		}
 	}
 
