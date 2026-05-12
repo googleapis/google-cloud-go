@@ -409,6 +409,7 @@ type rangeRequest struct {
 	wantChunkCRC    uint32
 	gotChunkCRC     uint32
 	chunkCRCPresent bool
+	attempts        int // The number of stream connection attempts made for this specific range request. Used to enforce per-range retry limits.
 }
 
 // Methods implementing internalMultiRangeDownloader
@@ -831,6 +832,7 @@ func (m *multiRangeDownloaderManager) handleAddCmd(ctx context.Context, cmd *mrd
 		origLength: cmd.length,
 		callback:   cmd.callback,
 		readID:     m.readIDCounter,
+		attempts:   1,
 	}
 	m.readIDCounter++
 
@@ -1158,7 +1160,42 @@ func (m *multiRangeDownloaderManager) handleStreamEnd(result mrdSessionResult, s
 		m.readSpec.ReadHandle = result.redirect.ReadHandle
 		m.ensureSession(m.ctx, stream)
 	} else if m.settings.retry != nil && m.settings.retry.runShouldRetry(err, nil) {
-		m.ensureSession(m.ctx, stream)
+		// Enforce per-range retry limits to prevent infinite reconnection loops.
+		// Since stream reconnections create fresh request contexts, we must
+		// persistently track attempts on each rangeRequest object individually.
+		if m.settings.retry.maxAttempts != nil {
+			maxAttempts := *m.settings.retry.maxAttempts
+			var failedRanges []*rangeRequest
+			for _, req := range stream.pendingRanges {
+				req.attempts++
+				if req.attempts > maxAttempts {
+					failedRanges = append(failedRanges, req)
+				}
+			}
+			// Permanently fail only the range requests that have exceeded the maxAttempts threshold.
+			for _, req := range failedRanges {
+				m.failRange(stream, req, fmt.Errorf("storage: retry failed after %v attempts; last error: %w", maxAttempts, err))
+			}
+		} else {
+			// If maxAttempts is not set, we still keep track of the attempt count.
+			for _, req := range stream.pendingRanges {
+				req.attempts++
+			}
+		}
+
+		// Only reconnect the stream if there are still pending ranges that need to be downloaded.
+		if len(stream.pendingRanges) > 0 {
+			m.ensureSession(m.ctx, stream)
+		} else {
+			// Clean up this stream. If all streams are terminated and no more streams are active,
+			// terminate the session with a permanent error.
+			delete(m.streams, stream.id)
+			if len(m.streams) == 0 && !m.streamCreating {
+				err := fmt.Errorf("no streams available. Last observed error: %w", err)
+				m.setPermanentError(err)
+				m.failAllPending(m.getPermanentError())
+			}
+		}
 	} else {
 		m.failStream(stream, err)
 		if len(m.streams) == 0 && !m.streamCreating {
