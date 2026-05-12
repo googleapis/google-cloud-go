@@ -609,7 +609,7 @@ func (c *documentGRPCClient) ListDocuments(ctx context.Context, req *documentaip
 	}
 	opts = append((*c.CallOptions).ListDocuments[0:len((*c.CallOptions).ListDocuments):len((*c.CallOptions).ListDocuments)], opts...)
 	it := &DocumentMetadataIterator{}
-	req = proto.Clone(req).(*documentaipb.ListDocumentsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*documentaipb.DocumentMetadata, string, error) {
 		resp := &documentaipb.ListDocumentsResponse{}
 		if pageToken != "" {
@@ -747,7 +747,7 @@ func (c *documentGRPCClient) ListLocations(ctx context.Context, req *locationpb.
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -834,7 +834,7 @@ func (c *documentGRPCClient) ListOperations(ctx context.Context, req *longrunnin
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -1102,7 +1102,7 @@ func (c *documentRESTClient) GetDocument(ctx context.Context, req *documentaipb.
 // ListDocuments returns a list of documents present in the dataset.
 func (c *documentRESTClient) ListDocuments(ctx context.Context, req *documentaipb.ListDocumentsRequest, opts ...gax.CallOption) *DocumentMetadataIterator {
 	it := &DocumentMetadataIterator{}
-	req = proto.Clone(req).(*documentaipb.ListDocumentsRequest)
+	req = proto.CloneOf(req)
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*documentaipb.DocumentMetadata, string, error) {
@@ -1433,7 +1433,7 @@ func (c *documentRESTClient) GetLocation(ctx context.Context, req *locationpb.Ge
 //	to the project.
 func (c *documentRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -1607,7 +1607,7 @@ func (c *documentRESTClient) GetOperation(ctx context.Context, req *longrunningp
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *documentRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

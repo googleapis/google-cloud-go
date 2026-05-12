@@ -508,7 +508,7 @@ func (c *entityGRPCClient) ListWatchlists(ctx context.Context, req *chroniclepb.
 	}
 	opts = append((*c.CallOptions).ListWatchlists[0:len((*c.CallOptions).ListWatchlists):len((*c.CallOptions).ListWatchlists)], opts...)
 	it := &WatchlistIterator{}
-	req = proto.Clone(req).(*chroniclepb.ListWatchlistsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*chroniclepb.Watchlist, string, error) {
 		resp := &chroniclepb.ListWatchlistsResponse{}
 		if pageToken != "" {
@@ -677,7 +677,7 @@ func (c *entityGRPCClient) ListOperations(ctx context.Context, req *longrunningp
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -776,7 +776,7 @@ func (c *entityRESTClient) GetWatchlist(ctx context.Context, req *chroniclepb.Ge
 // ListWatchlists lists all watchlists for the given instance.
 func (c *entityRESTClient) ListWatchlists(ctx context.Context, req *chroniclepb.ListWatchlistsRequest, opts ...gax.CallOption) *WatchlistIterator {
 	it := &WatchlistIterator{}
-	req = proto.Clone(req).(*chroniclepb.ListWatchlistsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*chroniclepb.Watchlist, string, error) {
 		resp := &chroniclepb.ListWatchlistsResponse{}
@@ -1176,7 +1176,7 @@ func (c *entityRESTClient) GetOperation(ctx context.Context, req *longrunningpb.
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *entityRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

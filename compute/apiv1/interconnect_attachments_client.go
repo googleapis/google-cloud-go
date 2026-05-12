@@ -329,7 +329,7 @@ func (c *interconnectAttachmentsRESTClient) Connection() *grpc.ClientConn {
 // returnPartialSuccess parameter to true.
 func (c *interconnectAttachmentsRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListInterconnectAttachmentsRequest, opts ...gax.CallOption) *InterconnectAttachmentsScopedListPairIterator {
 	it := &InterconnectAttachmentsScopedListPairIterator{}
-	req = proto.Clone(req).(*computepb.AggregatedListInterconnectAttachmentsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]InterconnectAttachmentsScopedListPair, string, error) {
 		resp := &computepb.InterconnectAttachmentAggregatedList{}
@@ -626,7 +626,7 @@ func (c *interconnectAttachmentsRESTClient) Insert(ctx context.Context, req *com
 // the specified region.
 func (c *interconnectAttachmentsRESTClient) List(ctx context.Context, req *computepb.ListInterconnectAttachmentsRequest, opts ...gax.CallOption) *InterconnectAttachmentIterator {
 	it := &InterconnectAttachmentIterator{}
-	req = proto.Clone(req).(*computepb.ListInterconnectAttachmentsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.InterconnectAttachment, string, error) {
 		resp := &computepb.InterconnectAttachmentList{}

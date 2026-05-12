@@ -1655,7 +1655,7 @@ func (c *gRPCClient) ListSources(ctx context.Context, req *vmmigrationpb.ListSou
 	}
 	opts = append((*c.CallOptions).ListSources[0:len((*c.CallOptions).ListSources):len((*c.CallOptions).ListSources)], opts...)
 	it := &SourceIterator{}
-	req = proto.Clone(req).(*vmmigrationpb.ListSourcesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*vmmigrationpb.Source, string, error) {
 		resp := &vmmigrationpb.ListSourcesResponse{}
 		if pageToken != "" {
@@ -1830,7 +1830,7 @@ func (c *gRPCClient) FetchStorageInventory(ctx context.Context, req *vmmigration
 	}
 	opts = append((*c.CallOptions).FetchStorageInventory[0:len((*c.CallOptions).FetchStorageInventory):len((*c.CallOptions).FetchStorageInventory)], opts...)
 	it := &SourceStorageResourceIterator{}
-	req = proto.Clone(req).(*vmmigrationpb.FetchStorageInventoryRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*vmmigrationpb.SourceStorageResource, string, error) {
 		resp := &vmmigrationpb.FetchStorageInventoryResponse{}
 		if pageToken != "" {
@@ -1882,7 +1882,7 @@ func (c *gRPCClient) ListUtilizationReports(ctx context.Context, req *vmmigratio
 	}
 	opts = append((*c.CallOptions).ListUtilizationReports[0:len((*c.CallOptions).ListUtilizationReports):len((*c.CallOptions).ListUtilizationReports)], opts...)
 	it := &UtilizationReportIterator{}
-	req = proto.Clone(req).(*vmmigrationpb.ListUtilizationReportsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*vmmigrationpb.UtilizationReport, string, error) {
 		resp := &vmmigrationpb.ListUtilizationReportsResponse{}
 		if pageToken != "" {
@@ -2010,7 +2010,7 @@ func (c *gRPCClient) ListDatacenterConnectors(ctx context.Context, req *vmmigrat
 	}
 	opts = append((*c.CallOptions).ListDatacenterConnectors[0:len((*c.CallOptions).ListDatacenterConnectors):len((*c.CallOptions).ListDatacenterConnectors)], opts...)
 	it := &DatacenterConnectorIterator{}
-	req = proto.Clone(req).(*vmmigrationpb.ListDatacenterConnectorsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*vmmigrationpb.DatacenterConnector, string, error) {
 		resp := &vmmigrationpb.ListDatacenterConnectorsResponse{}
 		if pageToken != "" {
@@ -2190,7 +2190,7 @@ func (c *gRPCClient) ListMigratingVms(ctx context.Context, req *vmmigrationpb.Li
 	}
 	opts = append((*c.CallOptions).ListMigratingVms[0:len((*c.CallOptions).ListMigratingVms):len((*c.CallOptions).ListMigratingVms)], opts...)
 	it := &MigratingVmIterator{}
-	req = proto.Clone(req).(*vmmigrationpb.ListMigratingVmsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*vmmigrationpb.MigratingVm, string, error) {
 		resp := &vmmigrationpb.ListMigratingVmsResponse{}
 		if pageToken != "" {
@@ -2497,7 +2497,7 @@ func (c *gRPCClient) ListCloneJobs(ctx context.Context, req *vmmigrationpb.ListC
 	}
 	opts = append((*c.CallOptions).ListCloneJobs[0:len((*c.CallOptions).ListCloneJobs):len((*c.CallOptions).ListCloneJobs)], opts...)
 	it := &CloneJobIterator{}
-	req = proto.Clone(req).(*vmmigrationpb.ListCloneJobsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*vmmigrationpb.CloneJob, string, error) {
 		resp := &vmmigrationpb.ListCloneJobsResponse{}
 		if pageToken != "" {
@@ -2625,7 +2625,7 @@ func (c *gRPCClient) ListCutoverJobs(ctx context.Context, req *vmmigrationpb.Lis
 	}
 	opts = append((*c.CallOptions).ListCutoverJobs[0:len((*c.CallOptions).ListCutoverJobs):len((*c.CallOptions).ListCutoverJobs)], opts...)
 	it := &CutoverJobIterator{}
-	req = proto.Clone(req).(*vmmigrationpb.ListCutoverJobsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*vmmigrationpb.CutoverJob, string, error) {
 		resp := &vmmigrationpb.ListCutoverJobsResponse{}
 		if pageToken != "" {
@@ -2701,7 +2701,7 @@ func (c *gRPCClient) ListGroups(ctx context.Context, req *vmmigrationpb.ListGrou
 	}
 	opts = append((*c.CallOptions).ListGroups[0:len((*c.CallOptions).ListGroups):len((*c.CallOptions).ListGroups)], opts...)
 	it := &GroupIterator{}
-	req = proto.Clone(req).(*vmmigrationpb.ListGroupsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*vmmigrationpb.Group, string, error) {
 		resp := &vmmigrationpb.ListGroupsResponse{}
 		if pageToken != "" {
@@ -2904,7 +2904,7 @@ func (c *gRPCClient) ListTargetProjects(ctx context.Context, req *vmmigrationpb.
 	}
 	opts = append((*c.CallOptions).ListTargetProjects[0:len((*c.CallOptions).ListTargetProjects):len((*c.CallOptions).ListTargetProjects)], opts...)
 	it := &TargetProjectIterator{}
-	req = proto.Clone(req).(*vmmigrationpb.ListTargetProjectsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*vmmigrationpb.TargetProject, string, error) {
 		resp := &vmmigrationpb.ListTargetProjectsResponse{}
 		if pageToken != "" {
@@ -3055,7 +3055,7 @@ func (c *gRPCClient) ListReplicationCycles(ctx context.Context, req *vmmigration
 	}
 	opts = append((*c.CallOptions).ListReplicationCycles[0:len((*c.CallOptions).ListReplicationCycles):len((*c.CallOptions).ListReplicationCycles)], opts...)
 	it := &ReplicationCycleIterator{}
-	req = proto.Clone(req).(*vmmigrationpb.ListReplicationCyclesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*vmmigrationpb.ReplicationCycle, string, error) {
 		resp := &vmmigrationpb.ListReplicationCyclesResponse{}
 		if pageToken != "" {
@@ -3131,7 +3131,7 @@ func (c *gRPCClient) ListImageImports(ctx context.Context, req *vmmigrationpb.Li
 	}
 	opts = append((*c.CallOptions).ListImageImports[0:len((*c.CallOptions).ListImageImports):len((*c.CallOptions).ListImageImports)], opts...)
 	it := &ImageImportIterator{}
-	req = proto.Clone(req).(*vmmigrationpb.ListImageImportsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*vmmigrationpb.ImageImport, string, error) {
 		resp := &vmmigrationpb.ListImageImportsResponse{}
 		if pageToken != "" {
@@ -3259,7 +3259,7 @@ func (c *gRPCClient) ListImageImportJobs(ctx context.Context, req *vmmigrationpb
 	}
 	opts = append((*c.CallOptions).ListImageImportJobs[0:len((*c.CallOptions).ListImageImportJobs):len((*c.CallOptions).ListImageImportJobs)], opts...)
 	it := &ImageImportJobIterator{}
-	req = proto.Clone(req).(*vmmigrationpb.ListImageImportJobsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*vmmigrationpb.ImageImportJob, string, error) {
 		resp := &vmmigrationpb.ListImageImportJobsResponse{}
 		if pageToken != "" {
@@ -3387,7 +3387,7 @@ func (c *gRPCClient) ListDiskMigrationJobs(ctx context.Context, req *vmmigration
 	}
 	opts = append((*c.CallOptions).ListDiskMigrationJobs[0:len((*c.CallOptions).ListDiskMigrationJobs):len((*c.CallOptions).ListDiskMigrationJobs)], opts...)
 	it := &DiskMigrationJobIterator{}
-	req = proto.Clone(req).(*vmmigrationpb.ListDiskMigrationJobsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*vmmigrationpb.DiskMigrationJob, string, error) {
 		resp := &vmmigrationpb.ListDiskMigrationJobsResponse{}
 		if pageToken != "" {
@@ -3582,7 +3582,7 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -3686,7 +3686,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -3728,7 +3728,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // ListSources lists Sources in a given project and location.
 func (c *restClient) ListSources(ctx context.Context, req *vmmigrationpb.ListSourcesRequest, opts ...gax.CallOption) *SourceIterator {
 	it := &SourceIterator{}
-	req = proto.Clone(req).(*vmmigrationpb.ListSourcesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*vmmigrationpb.Source, string, error) {
 		resp := &vmmigrationpb.ListSourcesResponse{}
@@ -4144,7 +4144,7 @@ func (c *restClient) FetchInventory(ctx context.Context, req *vmmigrationpb.Fetc
 // service.
 func (c *restClient) FetchStorageInventory(ctx context.Context, req *vmmigrationpb.FetchStorageInventoryRequest, opts ...gax.CallOption) *SourceStorageResourceIterator {
 	it := &SourceStorageResourceIterator{}
-	req = proto.Clone(req).(*vmmigrationpb.FetchStorageInventoryRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*vmmigrationpb.SourceStorageResource, string, error) {
 		resp := &vmmigrationpb.FetchStorageInventoryResponse{}
@@ -4226,7 +4226,7 @@ func (c *restClient) FetchStorageInventory(ctx context.Context, req *vmmigration
 // ListUtilizationReports lists Utilization Reports of the given Source.
 func (c *restClient) ListUtilizationReports(ctx context.Context, req *vmmigrationpb.ListUtilizationReportsRequest, opts ...gax.CallOption) *UtilizationReportIterator {
 	it := &UtilizationReportIterator{}
-	req = proto.Clone(req).(*vmmigrationpb.ListUtilizationReportsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*vmmigrationpb.UtilizationReport, string, error) {
 		resp := &vmmigrationpb.ListUtilizationReportsResponse{}
@@ -4505,7 +4505,7 @@ func (c *restClient) DeleteUtilizationReport(ctx context.Context, req *vmmigrati
 // ListDatacenterConnectors lists DatacenterConnectors in a given Source.
 func (c *restClient) ListDatacenterConnectors(ctx context.Context, req *vmmigrationpb.ListDatacenterConnectorsRequest, opts ...gax.CallOption) *DatacenterConnectorIterator {
 	it := &DatacenterConnectorIterator{}
-	req = proto.Clone(req).(*vmmigrationpb.ListDatacenterConnectorsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*vmmigrationpb.DatacenterConnector, string, error) {
 		resp := &vmmigrationpb.ListDatacenterConnectorsResponse{}
@@ -4916,7 +4916,7 @@ func (c *restClient) CreateMigratingVm(ctx context.Context, req *vmmigrationpb.C
 // ListMigratingVms lists MigratingVms in a given Source.
 func (c *restClient) ListMigratingVms(ctx context.Context, req *vmmigrationpb.ListMigratingVmsRequest, opts ...gax.CallOption) *MigratingVmIterator {
 	it := &MigratingVmIterator{}
-	req = proto.Clone(req).(*vmmigrationpb.ListMigratingVmsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*vmmigrationpb.MigratingVm, string, error) {
 		resp := &vmmigrationpb.ListMigratingVmsResponse{}
@@ -5670,7 +5670,7 @@ func (c *restClient) CancelCloneJob(ctx context.Context, req *vmmigrationpb.Canc
 // listed.
 func (c *restClient) ListCloneJobs(ctx context.Context, req *vmmigrationpb.ListCloneJobsRequest, opts ...gax.CallOption) *CloneJobIterator {
 	it := &CloneJobIterator{}
-	req = proto.Clone(req).(*vmmigrationpb.ListCloneJobsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*vmmigrationpb.CloneJob, string, error) {
 		resp := &vmmigrationpb.ListCloneJobsResponse{}
@@ -5949,7 +5949,7 @@ func (c *restClient) CancelCutoverJob(ctx context.Context, req *vmmigrationpb.Ca
 // are listed.
 func (c *restClient) ListCutoverJobs(ctx context.Context, req *vmmigrationpb.ListCutoverJobsRequest, opts ...gax.CallOption) *CutoverJobIterator {
 	it := &CutoverJobIterator{}
-	req = proto.Clone(req).(*vmmigrationpb.ListCutoverJobsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*vmmigrationpb.CutoverJob, string, error) {
 		resp := &vmmigrationpb.ListCutoverJobsResponse{}
@@ -6088,7 +6088,7 @@ func (c *restClient) GetCutoverJob(ctx context.Context, req *vmmigrationpb.GetCu
 // ListGroups lists Groups in a given project and location.
 func (c *restClient) ListGroups(ctx context.Context, req *vmmigrationpb.ListGroupsRequest, opts ...gax.CallOption) *GroupIterator {
 	it := &GroupIterator{}
-	req = proto.Clone(req).(*vmmigrationpb.ListGroupsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*vmmigrationpb.Group, string, error) {
 		resp := &vmmigrationpb.ListGroupsResponse{}
@@ -6570,7 +6570,7 @@ func (c *restClient) RemoveGroupMigration(ctx context.Context, req *vmmigrationp
 // for location is global.
 func (c *restClient) ListTargetProjects(ctx context.Context, req *vmmigrationpb.ListTargetProjectsRequest, opts ...gax.CallOption) *TargetProjectIterator {
 	it := &TargetProjectIterator{}
-	req = proto.Clone(req).(*vmmigrationpb.ListTargetProjectsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*vmmigrationpb.TargetProject, string, error) {
 		resp := &vmmigrationpb.ListTargetProjectsResponse{}
@@ -6929,7 +6929,7 @@ func (c *restClient) DeleteTargetProject(ctx context.Context, req *vmmigrationpb
 // ListReplicationCycles lists ReplicationCycles in a given MigratingVM.
 func (c *restClient) ListReplicationCycles(ctx context.Context, req *vmmigrationpb.ListReplicationCyclesRequest, opts ...gax.CallOption) *ReplicationCycleIterator {
 	it := &ReplicationCycleIterator{}
-	req = proto.Clone(req).(*vmmigrationpb.ListReplicationCyclesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*vmmigrationpb.ReplicationCycle, string, error) {
 		resp := &vmmigrationpb.ListReplicationCyclesResponse{}
@@ -7068,7 +7068,7 @@ func (c *restClient) GetReplicationCycle(ctx context.Context, req *vmmigrationpb
 // ListImageImports lists ImageImports in a given project.
 func (c *restClient) ListImageImports(ctx context.Context, req *vmmigrationpb.ListImageImportsRequest, opts ...gax.CallOption) *ImageImportIterator {
 	it := &ImageImportIterator{}
-	req = proto.Clone(req).(*vmmigrationpb.ListImageImportsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*vmmigrationpb.ImageImport, string, error) {
 		resp := &vmmigrationpb.ListImageImportsResponse{}
@@ -7343,7 +7343,7 @@ func (c *restClient) DeleteImageImport(ctx context.Context, req *vmmigrationpb.D
 // ListImageImportJobs lists ImageImportJobs in a given project.
 func (c *restClient) ListImageImportJobs(ctx context.Context, req *vmmigrationpb.ListImageImportJobsRequest, opts ...gax.CallOption) *ImageImportJobIterator {
 	it := &ImageImportJobIterator{}
-	req = proto.Clone(req).(*vmmigrationpb.ListImageImportJobsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*vmmigrationpb.ImageImportJob, string, error) {
 		resp := &vmmigrationpb.ListImageImportJobsResponse{}
@@ -7621,7 +7621,7 @@ func (c *restClient) CreateDiskMigrationJob(ctx context.Context, req *vmmigratio
 // ListDiskMigrationJobs lists DiskMigrationJobs in a given Source.
 func (c *restClient) ListDiskMigrationJobs(ctx context.Context, req *vmmigrationpb.ListDiskMigrationJobsRequest, opts ...gax.CallOption) *DiskMigrationJobIterator {
 	it := &DiskMigrationJobIterator{}
-	req = proto.Clone(req).(*vmmigrationpb.ListDiskMigrationJobsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*vmmigrationpb.DiskMigrationJob, string, error) {
 		resp := &vmmigrationpb.ListDiskMigrationJobsResponse{}
@@ -8082,7 +8082,7 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 // ListLocations lists information about the supported locations for this service.
 func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -8301,7 +8301,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

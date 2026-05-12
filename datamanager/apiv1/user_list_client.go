@@ -473,7 +473,7 @@ func (c *userListGRPCClient) ListUserLists(ctx context.Context, req *datamanager
 	}
 	opts = append((*c.CallOptions).ListUserLists[0:len((*c.CallOptions).ListUserLists):len((*c.CallOptions).ListUserLists)], opts...)
 	it := &UserListIterator{}
-	req = proto.Clone(req).(*datamanagerpb.ListUserListsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datamanagerpb.UserList, string, error) {
 		resp := &datamanagerpb.ListUserListsResponse{}
 		if pageToken != "" {
@@ -665,7 +665,7 @@ func (c *userListRESTClient) GetUserList(ctx context.Context, req *datamanagerpb
 //	accountTypes/{linkedAccountType}/accounts/{linkedAccountId}
 func (c *userListRESTClient) ListUserLists(ctx context.Context, req *datamanagerpb.ListUserListsRequest, opts ...gax.CallOption) *UserListIterator {
 	it := &UserListIterator{}
-	req = proto.Clone(req).(*datamanagerpb.ListUserListsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datamanagerpb.UserList, string, error) {
 		resp := &datamanagerpb.ListUserListsResponse{}

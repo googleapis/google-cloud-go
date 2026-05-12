@@ -546,7 +546,7 @@ func (c *gRPCClient) ListQuotaInfos(ctx context.Context, req *cloudquotaspb.List
 	}
 	opts = append((*c.CallOptions).ListQuotaInfos[0:len((*c.CallOptions).ListQuotaInfos):len((*c.CallOptions).ListQuotaInfos)], opts...)
 	it := &QuotaInfoIterator{}
-	req = proto.Clone(req).(*cloudquotaspb.ListQuotaInfosRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cloudquotaspb.QuotaInfo, string, error) {
 		resp := &cloudquotaspb.ListQuotaInfosResponse{}
 		if pageToken != "" {
@@ -622,7 +622,7 @@ func (c *gRPCClient) ListQuotaPreferences(ctx context.Context, req *cloudquotasp
 	}
 	opts = append((*c.CallOptions).ListQuotaPreferences[0:len((*c.CallOptions).ListQuotaPreferences):len((*c.CallOptions).ListQuotaPreferences)], opts...)
 	it := &QuotaPreferenceIterator{}
-	req = proto.Clone(req).(*cloudquotaspb.ListQuotaPreferencesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cloudquotaspb.QuotaPreference, string, error) {
 		resp := &cloudquotaspb.ListQuotaPreferencesResponse{}
 		if pageToken != "" {
@@ -733,7 +733,7 @@ func (c *gRPCClient) UpdateQuotaPreference(ctx context.Context, req *cloudquotas
 // ListQuotaInfos lists QuotaInfos of all quotas for a given project, folder or organization.
 func (c *restClient) ListQuotaInfos(ctx context.Context, req *cloudquotaspb.ListQuotaInfosRequest, opts ...gax.CallOption) *QuotaInfoIterator {
 	it := &QuotaInfoIterator{}
-	req = proto.Clone(req).(*cloudquotaspb.ListQuotaInfosRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cloudquotaspb.QuotaInfo, string, error) {
 		resp := &cloudquotaspb.ListQuotaInfosResponse{}
@@ -868,7 +868,7 @@ func (c *restClient) GetQuotaInfo(ctx context.Context, req *cloudquotaspb.GetQuo
 // ListQuotaPreferences lists QuotaPreferences in a given project, folder or organization.
 func (c *restClient) ListQuotaPreferences(ctx context.Context, req *cloudquotaspb.ListQuotaPreferencesRequest, opts ...gax.CallOption) *QuotaPreferenceIterator {
 	it := &QuotaPreferenceIterator{}
-	req = proto.Clone(req).(*cloudquotaspb.ListQuotaPreferencesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cloudquotaspb.QuotaPreference, string, error) {
 		resp := &cloudquotaspb.ListQuotaPreferencesResponse{}

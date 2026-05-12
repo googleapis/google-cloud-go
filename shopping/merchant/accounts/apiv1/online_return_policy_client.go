@@ -487,7 +487,7 @@ func (c *onlineReturnPolicyGRPCClient) ListOnlineReturnPolicies(ctx context.Cont
 	}
 	opts = append((*c.CallOptions).ListOnlineReturnPolicies[0:len((*c.CallOptions).ListOnlineReturnPolicies):len((*c.CallOptions).ListOnlineReturnPolicies)], opts...)
 	it := &OnlineReturnPolicyIterator{}
-	req = proto.Clone(req).(*accountspb.ListOnlineReturnPoliciesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*accountspb.OnlineReturnPolicy, string, error) {
 		resp := &accountspb.ListOnlineReturnPoliciesResponse{}
 		if pageToken != "" {
@@ -630,7 +630,7 @@ func (c *onlineReturnPolicyRESTClient) GetOnlineReturnPolicy(ctx context.Context
 // ListOnlineReturnPolicies lists all existing return policies for a given business.
 func (c *onlineReturnPolicyRESTClient) ListOnlineReturnPolicies(ctx context.Context, req *accountspb.ListOnlineReturnPoliciesRequest, opts ...gax.CallOption) *OnlineReturnPolicyIterator {
 	it := &OnlineReturnPolicyIterator{}
-	req = proto.Clone(req).(*accountspb.ListOnlineReturnPoliciesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*accountspb.OnlineReturnPolicy, string, error) {
 		resp := &accountspb.ListOnlineReturnPoliciesResponse{}

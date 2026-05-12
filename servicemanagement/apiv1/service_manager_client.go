@@ -727,7 +727,7 @@ func (c *serviceManagerGRPCClient) ListServices(ctx context.Context, req *servic
 	}
 	opts = append((*c.CallOptions).ListServices[0:len((*c.CallOptions).ListServices):len((*c.CallOptions).ListServices)], opts...)
 	it := &ManagedServiceIterator{}
-	req = proto.Clone(req).(*servicemanagementpb.ListServicesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*servicemanagementpb.ManagedService, string, error) {
 		resp := &servicemanagementpb.ListServicesResponse{}
 		if pageToken != "" {
@@ -863,7 +863,7 @@ func (c *serviceManagerGRPCClient) ListServiceConfigs(ctx context.Context, req *
 	}
 	opts = append((*c.CallOptions).ListServiceConfigs[0:len((*c.CallOptions).ListServiceConfigs):len((*c.CallOptions).ListServiceConfigs)], opts...)
 	it := &ServiceIterator{}
-	req = proto.Clone(req).(*servicemanagementpb.ListServiceConfigsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*serviceconfigpb.Service, string, error) {
 		resp := &servicemanagementpb.ListServiceConfigsResponse{}
 		if pageToken != "" {
@@ -977,7 +977,7 @@ func (c *serviceManagerGRPCClient) ListServiceRollouts(ctx context.Context, req 
 	}
 	opts = append((*c.CallOptions).ListServiceRollouts[0:len((*c.CallOptions).ListServiceRollouts):len((*c.CallOptions).ListServiceRollouts)], opts...)
 	it := &RolloutIterator{}
-	req = proto.Clone(req).(*servicemanagementpb.ListServiceRolloutsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*servicemanagementpb.Rollout, string, error) {
 		resp := &servicemanagementpb.ListServiceRolloutsResponse{}
 		if pageToken != "" {
@@ -1157,7 +1157,7 @@ func (c *serviceManagerGRPCClient) ListOperations(ctx context.Context, req *long
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -1203,7 +1203,7 @@ func (c *serviceManagerGRPCClient) ListOperations(ctx context.Context, req *long
 // for.
 func (c *serviceManagerRESTClient) ListServices(ctx context.Context, req *servicemanagementpb.ListServicesRequest, opts ...gax.CallOption) *ManagedServiceIterator {
 	it := &ManagedServiceIterator{}
-	req = proto.Clone(req).(*servicemanagementpb.ListServicesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*servicemanagementpb.ManagedService, string, error) {
 		resp := &servicemanagementpb.ListServicesResponse{}
@@ -1540,7 +1540,7 @@ func (c *serviceManagerRESTClient) UndeleteService(ctx context.Context, req *ser
 // from the newest to the oldest.
 func (c *serviceManagerRESTClient) ListServiceConfigs(ctx context.Context, req *servicemanagementpb.ListServiceConfigsRequest, opts ...gax.CallOption) *ServiceIterator {
 	it := &ServiceIterator{}
-	req = proto.Clone(req).(*servicemanagementpb.ListServiceConfigsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*serviceconfigpb.Service, string, error) {
 		resp := &servicemanagementpb.ListServiceConfigsResponse{}
@@ -1820,7 +1820,7 @@ func (c *serviceManagerRESTClient) SubmitConfigSource(ctx context.Context, req *
 // service, from the newest to the oldest.
 func (c *serviceManagerRESTClient) ListServiceRollouts(ctx context.Context, req *servicemanagementpb.ListServiceRolloutsRequest, opts ...gax.CallOption) *RolloutIterator {
 	it := &RolloutIterator{}
-	req = proto.Clone(req).(*servicemanagementpb.ListServiceRolloutsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*servicemanagementpb.Rollout, string, error) {
 		resp := &servicemanagementpb.ListServiceRolloutsResponse{}
@@ -2298,7 +2298,7 @@ func (c *serviceManagerRESTClient) TestIamPermissions(ctx context.Context, req *
 // ListOperations lists service operations that match the specified filter in the request.
 func (c *serviceManagerRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

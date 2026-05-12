@@ -294,7 +294,7 @@ func (c *networkEdgeSecurityServicesRESTClient) Connection() *grpc.ClientConn {
 // returnPartialSuccess parameter to true.
 func (c *networkEdgeSecurityServicesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListNetworkEdgeSecurityServicesRequest, opts ...gax.CallOption) *NetworkEdgeSecurityServicesScopedListPairIterator {
 	it := &NetworkEdgeSecurityServicesScopedListPairIterator{}
-	req = proto.Clone(req).(*computepb.AggregatedListNetworkEdgeSecurityServicesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]NetworkEdgeSecurityServicesScopedListPair, string, error) {
 		resp := &computepb.NetworkEdgeSecurityServiceAggregatedList{}

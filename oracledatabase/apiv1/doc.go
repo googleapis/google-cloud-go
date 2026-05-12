@@ -20,8 +20,6 @@
 // The Oracle Database@Google Cloud API provides a set of APIs to manage
 // Oracle database services, such as Exadata and Autonomous Databases.
 //
-//	NOTE: This package is in beta. It is not stable, and may be subject to changes.
-//
 // # General documentation
 //
 // For information that is relevant for all client libraries please reference

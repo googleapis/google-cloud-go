@@ -837,7 +837,7 @@ func (c *dataTaxonomyGRPCClient) ListDataTaxonomies(ctx context.Context, req *da
 	}
 	opts = append((*c.CallOptions).ListDataTaxonomies[0:len((*c.CallOptions).ListDataTaxonomies):len((*c.CallOptions).ListDataTaxonomies)], opts...)
 	it := &DataTaxonomyIterator{}
-	req = proto.Clone(req).(*dataplexpb.ListDataTaxonomiesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.DataTaxonomy, string, error) {
 		resp := &dataplexpb.ListDataTaxonomiesResponse{}
 		if pageToken != "" {
@@ -988,7 +988,7 @@ func (c *dataTaxonomyGRPCClient) ListDataAttributeBindings(ctx context.Context, 
 	}
 	opts = append((*c.CallOptions).ListDataAttributeBindings[0:len((*c.CallOptions).ListDataAttributeBindings):len((*c.CallOptions).ListDataAttributeBindings)], opts...)
 	it := &DataAttributeBindingIterator{}
-	req = proto.Clone(req).(*dataplexpb.ListDataAttributeBindingsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.DataAttributeBinding, string, error) {
 		resp := &dataplexpb.ListDataAttributeBindingsResponse{}
 		if pageToken != "" {
@@ -1139,7 +1139,7 @@ func (c *dataTaxonomyGRPCClient) ListDataAttributes(ctx context.Context, req *da
 	}
 	opts = append((*c.CallOptions).ListDataAttributes[0:len((*c.CallOptions).ListDataAttributes):len((*c.CallOptions).ListDataAttributes)], opts...)
 	it := &DataAttributeIterator{}
-	req = proto.Clone(req).(*dataplexpb.ListDataAttributesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.DataAttribute, string, error) {
 		resp := &dataplexpb.ListDataAttributesResponse{}
 		if pageToken != "" {
@@ -1233,7 +1233,7 @@ func (c *dataTaxonomyGRPCClient) ListLocations(ctx context.Context, req *locatio
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -1409,7 +1409,7 @@ func (c *dataTaxonomyGRPCClient) ListOperations(ctx context.Context, req *longru
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -1668,7 +1668,7 @@ func (c *dataTaxonomyRESTClient) DeleteDataTaxonomy(ctx context.Context, req *da
 // Deprecated: ListDataTaxonomies may be removed in a future version.
 func (c *dataTaxonomyRESTClient) ListDataTaxonomies(ctx context.Context, req *dataplexpb.ListDataTaxonomiesRequest, opts ...gax.CallOption) *DataTaxonomyIterator {
 	it := &DataTaxonomyIterator{}
-	req = proto.Clone(req).(*dataplexpb.ListDataTaxonomiesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.DataTaxonomy, string, error) {
 		resp := &dataplexpb.ListDataTaxonomiesResponse{}
@@ -2027,7 +2027,7 @@ func (c *dataTaxonomyRESTClient) DeleteDataAttributeBinding(ctx context.Context,
 // Deprecated: ListDataAttributeBindings may be removed in a future version.
 func (c *dataTaxonomyRESTClient) ListDataAttributeBindings(ctx context.Context, req *dataplexpb.ListDataAttributeBindingsRequest, opts ...gax.CallOption) *DataAttributeBindingIterator {
 	it := &DataAttributeBindingIterator{}
-	req = proto.Clone(req).(*dataplexpb.ListDataAttributeBindingsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.DataAttributeBinding, string, error) {
 		resp := &dataplexpb.ListDataAttributeBindingsResponse{}
@@ -2386,7 +2386,7 @@ func (c *dataTaxonomyRESTClient) DeleteDataAttribute(ctx context.Context, req *d
 // Deprecated: ListDataAttributes may be removed in a future version.
 func (c *dataTaxonomyRESTClient) ListDataAttributes(ctx context.Context, req *dataplexpb.ListDataAttributesRequest, opts ...gax.CallOption) *DataAttributeIterator {
 	it := &DataAttributeIterator{}
-	req = proto.Clone(req).(*dataplexpb.ListDataAttributesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.DataAttribute, string, error) {
 		resp := &dataplexpb.ListDataAttributesResponse{}
@@ -2591,7 +2591,7 @@ func (c *dataTaxonomyRESTClient) GetLocation(ctx context.Context, req *locationp
 //	to the project.
 func (c *dataTaxonomyRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -3007,7 +3007,7 @@ func (c *dataTaxonomyRESTClient) GetOperation(ctx context.Context, req *longrunn
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *dataTaxonomyRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

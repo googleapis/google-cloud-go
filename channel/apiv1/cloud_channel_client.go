@@ -3042,7 +3042,7 @@ func (c *cloudChannelGRPCClient) ListCustomers(ctx context.Context, req *channel
 	}
 	opts = append((*c.CallOptions).ListCustomers[0:len((*c.CallOptions).ListCustomers):len((*c.CallOptions).ListCustomers)], opts...)
 	it := &CustomerIterator{}
-	req = proto.Clone(req).(*channelpb.ListCustomersRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*channelpb.Customer, string, error) {
 		resp := &channelpb.ListCustomersResponse{}
 		if pageToken != "" {
@@ -3251,7 +3251,7 @@ func (c *cloudChannelGRPCClient) ListEntitlements(ctx context.Context, req *chan
 	}
 	opts = append((*c.CallOptions).ListEntitlements[0:len((*c.CallOptions).ListEntitlements):len((*c.CallOptions).ListEntitlements)], opts...)
 	it := &EntitlementIterator{}
-	req = proto.Clone(req).(*channelpb.ListEntitlementsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*channelpb.Entitlement, string, error) {
 		resp := &channelpb.ListEntitlementsResponse{}
 		if pageToken != "" {
@@ -3300,7 +3300,7 @@ func (c *cloudChannelGRPCClient) ListTransferableSkus(ctx context.Context, req *
 	}
 	opts = append((*c.CallOptions).ListTransferableSkus[0:len((*c.CallOptions).ListTransferableSkus):len((*c.CallOptions).ListTransferableSkus)], opts...)
 	it := &TransferableSkuIterator{}
-	req = proto.Clone(req).(*channelpb.ListTransferableSkusRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*channelpb.TransferableSku, string, error) {
 		resp := &channelpb.ListTransferableSkusResponse{}
 		if pageToken != "" {
@@ -3349,7 +3349,7 @@ func (c *cloudChannelGRPCClient) ListTransferableOffers(ctx context.Context, req
 	}
 	opts = append((*c.CallOptions).ListTransferableOffers[0:len((*c.CallOptions).ListTransferableOffers):len((*c.CallOptions).ListTransferableOffers)], opts...)
 	it := &TransferableOfferIterator{}
-	req = proto.Clone(req).(*channelpb.ListTransferableOffersRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*channelpb.TransferableOffer, string, error) {
 		resp := &channelpb.ListTransferableOffersResponse{}
 		if pageToken != "" {
@@ -3658,7 +3658,7 @@ func (c *cloudChannelGRPCClient) ListChannelPartnerLinks(ctx context.Context, re
 	}
 	opts = append((*c.CallOptions).ListChannelPartnerLinks[0:len((*c.CallOptions).ListChannelPartnerLinks):len((*c.CallOptions).ListChannelPartnerLinks)], opts...)
 	it := &ChannelPartnerLinkIterator{}
-	req = proto.Clone(req).(*channelpb.ListChannelPartnerLinksRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*channelpb.ChannelPartnerLink, string, error) {
 		resp := &channelpb.ListChannelPartnerLinksResponse{}
 		if pageToken != "" {
@@ -3797,7 +3797,7 @@ func (c *cloudChannelGRPCClient) ListCustomerRepricingConfigs(ctx context.Contex
 	}
 	opts = append((*c.CallOptions).ListCustomerRepricingConfigs[0:len((*c.CallOptions).ListCustomerRepricingConfigs):len((*c.CallOptions).ListCustomerRepricingConfigs)], opts...)
 	it := &CustomerRepricingConfigIterator{}
-	req = proto.Clone(req).(*channelpb.ListCustomerRepricingConfigsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*channelpb.CustomerRepricingConfig, string, error) {
 		resp := &channelpb.ListCustomerRepricingConfigsResponse{}
 		if pageToken != "" {
@@ -3938,7 +3938,7 @@ func (c *cloudChannelGRPCClient) ListChannelPartnerRepricingConfigs(ctx context.
 	}
 	opts = append((*c.CallOptions).ListChannelPartnerRepricingConfigs[0:len((*c.CallOptions).ListChannelPartnerRepricingConfigs):len((*c.CallOptions).ListChannelPartnerRepricingConfigs)], opts...)
 	it := &ChannelPartnerRepricingConfigIterator{}
-	req = proto.Clone(req).(*channelpb.ListChannelPartnerRepricingConfigsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*channelpb.ChannelPartnerRepricingConfig, string, error) {
 		resp := &channelpb.ListChannelPartnerRepricingConfigsResponse{}
 		if pageToken != "" {
@@ -4052,7 +4052,7 @@ func (c *cloudChannelGRPCClient) ListSkuGroups(ctx context.Context, req *channel
 	}
 	opts = append((*c.CallOptions).ListSkuGroups[0:len((*c.CallOptions).ListSkuGroups):len((*c.CallOptions).ListSkuGroups)], opts...)
 	it := &SkuGroupIterator{}
-	req = proto.Clone(req).(*channelpb.ListSkuGroupsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*channelpb.SkuGroup, string, error) {
 		resp := &channelpb.ListSkuGroupsResponse{}
 		if pageToken != "" {
@@ -4104,7 +4104,7 @@ func (c *cloudChannelGRPCClient) ListSkuGroupBillableSkus(ctx context.Context, r
 	}
 	opts = append((*c.CallOptions).ListSkuGroupBillableSkus[0:len((*c.CallOptions).ListSkuGroupBillableSkus):len((*c.CallOptions).ListSkuGroupBillableSkus)], opts...)
 	it := &BillableSkuIterator{}
-	req = proto.Clone(req).(*channelpb.ListSkuGroupBillableSkusRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*channelpb.BillableSku, string, error) {
 		resp := &channelpb.ListSkuGroupBillableSkusResponse{}
 		if pageToken != "" {
@@ -4174,7 +4174,7 @@ func (c *cloudChannelGRPCClient) ListProducts(ctx context.Context, req *channelp
 	}
 	opts = append((*c.CallOptions).ListProducts[0:len((*c.CallOptions).ListProducts):len((*c.CallOptions).ListProducts)], opts...)
 	it := &ProductIterator{}
-	req = proto.Clone(req).(*channelpb.ListProductsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*channelpb.Product, string, error) {
 		resp := &channelpb.ListProductsResponse{}
 		if pageToken != "" {
@@ -4226,7 +4226,7 @@ func (c *cloudChannelGRPCClient) ListSkus(ctx context.Context, req *channelpb.Li
 	}
 	opts = append((*c.CallOptions).ListSkus[0:len((*c.CallOptions).ListSkus):len((*c.CallOptions).ListSkus)], opts...)
 	it := &SkuIterator{}
-	req = proto.Clone(req).(*channelpb.ListSkusRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*channelpb.Sku, string, error) {
 		resp := &channelpb.ListSkusResponse{}
 		if pageToken != "" {
@@ -4275,7 +4275,7 @@ func (c *cloudChannelGRPCClient) ListOffers(ctx context.Context, req *channelpb.
 	}
 	opts = append((*c.CallOptions).ListOffers[0:len((*c.CallOptions).ListOffers):len((*c.CallOptions).ListOffers)], opts...)
 	it := &OfferIterator{}
-	req = proto.Clone(req).(*channelpb.ListOffersRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*channelpb.Offer, string, error) {
 		resp := &channelpb.ListOffersResponse{}
 		if pageToken != "" {
@@ -4327,7 +4327,7 @@ func (c *cloudChannelGRPCClient) ListPurchasableSkus(ctx context.Context, req *c
 	}
 	opts = append((*c.CallOptions).ListPurchasableSkus[0:len((*c.CallOptions).ListPurchasableSkus):len((*c.CallOptions).ListPurchasableSkus)], opts...)
 	it := &PurchasableSkuIterator{}
-	req = proto.Clone(req).(*channelpb.ListPurchasableSkusRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*channelpb.PurchasableSku, string, error) {
 		resp := &channelpb.ListPurchasableSkusResponse{}
 		if pageToken != "" {
@@ -4379,7 +4379,7 @@ func (c *cloudChannelGRPCClient) ListPurchasableOffers(ctx context.Context, req 
 	}
 	opts = append((*c.CallOptions).ListPurchasableOffers[0:len((*c.CallOptions).ListPurchasableOffers):len((*c.CallOptions).ListPurchasableOffers)], opts...)
 	it := &PurchasableOfferIterator{}
-	req = proto.Clone(req).(*channelpb.ListPurchasableOffersRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*channelpb.PurchasableOffer, string, error) {
 		resp := &channelpb.ListPurchasableOffersResponse{}
 		if pageToken != "" {
@@ -4503,7 +4503,7 @@ func (c *cloudChannelGRPCClient) ListSubscribers(ctx context.Context, req *chann
 	}
 	opts = append((*c.CallOptions).ListSubscribers[0:len((*c.CallOptions).ListSubscribers):len((*c.CallOptions).ListSubscribers)], opts...)
 	it := &StringIterator{}
-	req = proto.Clone(req).(*channelpb.ListSubscribersRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]string, string, error) {
 		resp := &channelpb.ListSubscribersResponse{}
 		if pageToken != "" {
@@ -4555,7 +4555,7 @@ func (c *cloudChannelGRPCClient) ListEntitlementChanges(ctx context.Context, req
 	}
 	opts = append((*c.CallOptions).ListEntitlementChanges[0:len((*c.CallOptions).ListEntitlementChanges):len((*c.CallOptions).ListEntitlementChanges)], opts...)
 	it := &EntitlementChangeIterator{}
-	req = proto.Clone(req).(*channelpb.ListEntitlementChangesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*channelpb.EntitlementChange, string, error) {
 		resp := &channelpb.ListEntitlementChangesResponse{}
 		if pageToken != "" {
@@ -4659,7 +4659,7 @@ func (c *cloudChannelGRPCClient) ListOperations(ctx context.Context, req *longru
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -4712,7 +4712,7 @@ func (c *cloudChannelGRPCClient) ListOperations(ctx context.Context, req *longru
 // there are no customers.
 func (c *cloudChannelRESTClient) ListCustomers(ctx context.Context, req *channelpb.ListCustomersRequest, opts ...gax.CallOption) *CustomerIterator {
 	it := &CustomerIterator{}
-	req = proto.Clone(req).(*channelpb.ListCustomersRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*channelpb.Customer, string, error) {
 		resp := &channelpb.ListCustomersResponse{}
@@ -5355,7 +5355,7 @@ func (c *cloudChannelRESTClient) ProvisionCloudIdentity(ctx context.Context, req
 // Entitlements.
 func (c *cloudChannelRESTClient) ListEntitlements(ctx context.Context, req *channelpb.ListEntitlementsRequest, opts ...gax.CallOption) *EntitlementIterator {
 	it := &EntitlementIterator{}
-	req = proto.Clone(req).(*channelpb.ListEntitlementsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*channelpb.Entitlement, string, error) {
 		resp := &channelpb.ListEntitlementsResponse{}
@@ -5455,7 +5455,7 @@ func (c *cloudChannelRESTClient) ListEntitlements(ctx context.Context, req *chan
 // TransferableSku.
 func (c *cloudChannelRESTClient) ListTransferableSkus(ctx context.Context, req *channelpb.ListTransferableSkusRequest, opts ...gax.CallOption) *TransferableSkuIterator {
 	it := &TransferableSkuIterator{}
-	req = proto.Clone(req).(*channelpb.ListTransferableSkusRequest)
+	req = proto.CloneOf(req)
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*channelpb.TransferableSku, string, error) {
@@ -5559,7 +5559,7 @@ func (c *cloudChannelRESTClient) ListTransferableSkus(ctx context.Context, req *
 // the given customer and SKU.
 func (c *cloudChannelRESTClient) ListTransferableOffers(ctx context.Context, req *channelpb.ListTransferableOffersRequest, opts ...gax.CallOption) *TransferableOfferIterator {
 	it := &TransferableOfferIterator{}
-	req = proto.Clone(req).(*channelpb.ListTransferableOffersRequest)
+	req = proto.CloneOf(req)
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*channelpb.TransferableOffer, string, error) {
@@ -6687,7 +6687,7 @@ func (c *cloudChannelRESTClient) TransferEntitlementsToGoogle(ctx context.Contex
 // ChannelPartnerLink resources.
 func (c *cloudChannelRESTClient) ListChannelPartnerLinks(ctx context.Context, req *channelpb.ListChannelPartnerLinksRequest, opts ...gax.CallOption) *ChannelPartnerLinkIterator {
 	it := &ChannelPartnerLinkIterator{}
-	req = proto.Clone(req).(*channelpb.ListChannelPartnerLinksRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*channelpb.ChannelPartnerLink, string, error) {
 		resp := &channelpb.ListChannelPartnerLinksResponse{}
@@ -7121,7 +7121,7 @@ func (c *cloudChannelRESTClient) GetCustomerRepricingConfig(ctx context.Context,
 // If unsuccessful, returns an error.
 func (c *cloudChannelRESTClient) ListCustomerRepricingConfigs(ctx context.Context, req *channelpb.ListCustomerRepricingConfigsRequest, opts ...gax.CallOption) *CustomerRepricingConfigIterator {
 	it := &CustomerRepricingConfigIterator{}
-	req = proto.Clone(req).(*channelpb.ListCustomerRepricingConfigsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*channelpb.CustomerRepricingConfig, string, error) {
 		resp := &channelpb.ListCustomerRepricingConfigsResponse{}
@@ -7571,7 +7571,7 @@ func (c *cloudChannelRESTClient) GetChannelPartnerRepricingConfig(ctx context.Co
 // If unsuccessful, returns an error.
 func (c *cloudChannelRESTClient) ListChannelPartnerRepricingConfigs(ctx context.Context, req *channelpb.ListChannelPartnerRepricingConfigsRequest, opts ...gax.CallOption) *ChannelPartnerRepricingConfigIterator {
 	it := &ChannelPartnerRepricingConfigIterator{}
-	req = proto.Clone(req).(*channelpb.ListChannelPartnerRepricingConfigsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*channelpb.ChannelPartnerRepricingConfig, string, error) {
 		resp := &channelpb.ListChannelPartnerRepricingConfigsResponse{}
@@ -7939,7 +7939,7 @@ func (c *cloudChannelRESTClient) DeleteChannelPartnerRepricingConfig(ctx context
 // If unsuccessful, returns an error.
 func (c *cloudChannelRESTClient) ListSkuGroups(ctx context.Context, req *channelpb.ListSkuGroupsRequest, opts ...gax.CallOption) *SkuGroupIterator {
 	it := &SkuGroupIterator{}
-	req = proto.Clone(req).(*channelpb.ListSkuGroupsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*channelpb.SkuGroup, string, error) {
 		resp := &channelpb.ListSkuGroupsResponse{}
@@ -8036,7 +8036,7 @@ func (c *cloudChannelRESTClient) ListSkuGroups(ctx context.Context, req *channel
 // If unsuccessful, returns an error.
 func (c *cloudChannelRESTClient) ListSkuGroupBillableSkus(ctx context.Context, req *channelpb.ListSkuGroupBillableSkusRequest, opts ...gax.CallOption) *BillableSkuIterator {
 	it := &BillableSkuIterator{}
-	req = proto.Clone(req).(*channelpb.ListSkuGroupBillableSkusRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*channelpb.BillableSku, string, error) {
 		resp := &channelpb.ListSkuGroupBillableSkusResponse{}
@@ -8186,7 +8186,7 @@ func (c *cloudChannelRESTClient) LookupOffer(ctx context.Context, req *channelpb
 //	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 func (c *cloudChannelRESTClient) ListProducts(ctx context.Context, req *channelpb.ListProductsRequest, opts ...gax.CallOption) *ProductIterator {
 	it := &ProductIterator{}
-	req = proto.Clone(req).(*channelpb.ListProductsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*channelpb.Product, string, error) {
 		resp := &channelpb.ListProductsResponse{}
@@ -8272,7 +8272,7 @@ func (c *cloudChannelRESTClient) ListProducts(ctx context.Context, req *channelp
 //	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 func (c *cloudChannelRESTClient) ListSkus(ctx context.Context, req *channelpb.ListSkusRequest, opts ...gax.CallOption) *SkuIterator {
 	it := &SkuIterator{}
-	req = proto.Clone(req).(*channelpb.ListSkusRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*channelpb.Sku, string, error) {
 		resp := &channelpb.ListSkusResponse{}
@@ -8358,7 +8358,7 @@ func (c *cloudChannelRESTClient) ListSkus(ctx context.Context, req *channelpb.Li
 //	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 func (c *cloudChannelRESTClient) ListOffers(ctx context.Context, req *channelpb.ListOffersRequest, opts ...gax.CallOption) *OfferIterator {
 	it := &OfferIterator{}
-	req = proto.Clone(req).(*channelpb.ListOffersRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*channelpb.Offer, string, error) {
 		resp := &channelpb.ListOffersResponse{}
@@ -8455,7 +8455,7 @@ func (c *cloudChannelRESTClient) ListOffers(ctx context.Context, req *channelpb.
 //	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 func (c *cloudChannelRESTClient) ListPurchasableSkus(ctx context.Context, req *channelpb.ListPurchasableSkusRequest, opts ...gax.CallOption) *PurchasableSkuIterator {
 	it := &PurchasableSkuIterator{}
-	req = proto.Clone(req).(*channelpb.ListPurchasableSkusRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*channelpb.PurchasableSku, string, error) {
 		resp := &channelpb.ListPurchasableSkusResponse{}
@@ -8554,7 +8554,7 @@ func (c *cloudChannelRESTClient) ListPurchasableSkus(ctx context.Context, req *c
 //	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 func (c *cloudChannelRESTClient) ListPurchasableOffers(ctx context.Context, req *channelpb.ListPurchasableOffersRequest, opts ...gax.CallOption) *PurchasableOfferIterator {
 	it := &PurchasableOfferIterator{}
-	req = proto.Clone(req).(*channelpb.ListPurchasableOffersRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*channelpb.PurchasableOffer, string, error) {
 		resp := &channelpb.ListPurchasableOffersResponse{}
@@ -8910,7 +8910,7 @@ func (c *cloudChannelRESTClient) UnregisterSubscriber(ctx context.Context, req *
 // A list of service email addresses.
 func (c *cloudChannelRESTClient) ListSubscribers(ctx context.Context, req *channelpb.ListSubscribersRequest, opts ...gax.CallOption) *StringIterator {
 	it := &StringIterator{}
-	req = proto.Clone(req).(*channelpb.ListSubscribersRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]string, string, error) {
 		resp := &channelpb.ListSubscribersResponse{}
@@ -9010,7 +9010,7 @@ func (c *cloudChannelRESTClient) ListSubscribers(ctx context.Context, req *chann
 // List of EntitlementChanges.
 func (c *cloudChannelRESTClient) ListEntitlementChanges(ctx context.Context, req *channelpb.ListEntitlementChangesRequest, opts ...gax.CallOption) *EntitlementChangeIterator {
 	it := &EntitlementChangeIterator{}
-	req = proto.Clone(req).(*channelpb.ListEntitlementChangesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*channelpb.EntitlementChange, string, error) {
 		resp := &channelpb.ListEntitlementChangesResponse{}
@@ -9229,7 +9229,7 @@ func (c *cloudChannelRESTClient) GetOperation(ctx context.Context, req *longrunn
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *cloudChannelRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

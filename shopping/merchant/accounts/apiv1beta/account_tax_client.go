@@ -461,7 +461,7 @@ func (c *accountTaxGRPCClient) ListAccountTax(ctx context.Context, req *accounts
 	}
 	opts = append((*c.CallOptions).ListAccountTax[0:len((*c.CallOptions).ListAccountTax):len((*c.CallOptions).ListAccountTax)], opts...)
 	it := &AccountTaxIterator{}
-	req = proto.Clone(req).(*accountspb.ListAccountTaxRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*accountspb.AccountTax, string, error) {
 		resp := &accountspb.ListAccountTaxResponse{}
 		if pageToken != "" {
@@ -584,7 +584,7 @@ func (c *accountTaxRESTClient) GetAccountTax(ctx context.Context, req *accountsp
 // return an error.
 func (c *accountTaxRESTClient) ListAccountTax(ctx context.Context, req *accountspb.ListAccountTaxRequest, opts ...gax.CallOption) *AccountTaxIterator {
 	it := &AccountTaxIterator{}
-	req = proto.Clone(req).(*accountspb.ListAccountTaxRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*accountspb.AccountTax, string, error) {
 		resp := &accountspb.ListAccountTaxResponse{}

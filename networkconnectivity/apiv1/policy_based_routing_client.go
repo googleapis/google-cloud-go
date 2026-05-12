@@ -422,7 +422,7 @@ func (c *policyBasedRoutingGRPCClient) ListPolicyBasedRoutes(ctx context.Context
 	}
 	opts = append((*c.CallOptions).ListPolicyBasedRoutes[0:len((*c.CallOptions).ListPolicyBasedRoutes):len((*c.CallOptions).ListPolicyBasedRoutes)], opts...)
 	it := &PolicyBasedRouteIterator{}
-	req = proto.Clone(req).(*networkconnectivitypb.ListPolicyBasedRoutesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkconnectivitypb.PolicyBasedRoute, string, error) {
 		resp := &networkconnectivitypb.ListPolicyBasedRoutesResponse{}
 		if pageToken != "" {
@@ -568,7 +568,7 @@ func (c *policyBasedRoutingGRPCClient) ListLocations(ctx context.Context, req *l
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -744,7 +744,7 @@ func (c *policyBasedRoutingGRPCClient) ListOperations(ctx context.Context, req *
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {

@@ -1118,7 +1118,7 @@ func (c *registryGRPCClient) ListApis(ctx context.Context, req *apigeeregistrypb
 	}
 	opts = append((*c.CallOptions).ListApis[0:len((*c.CallOptions).ListApis):len((*c.CallOptions).ListApis)], opts...)
 	it := &ApiIterator{}
-	req = proto.Clone(req).(*apigeeregistrypb.ListApisRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apigeeregistrypb.Api, string, error) {
 		resp := &apigeeregistrypb.ListApisResponse{}
 		if pageToken != "" {
@@ -1259,7 +1259,7 @@ func (c *registryGRPCClient) ListApiVersions(ctx context.Context, req *apigeereg
 	}
 	opts = append((*c.CallOptions).ListApiVersions[0:len((*c.CallOptions).ListApiVersions):len((*c.CallOptions).ListApiVersions)], opts...)
 	it := &ApiVersionIterator{}
-	req = proto.Clone(req).(*apigeeregistrypb.ListApiVersionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apigeeregistrypb.ApiVersion, string, error) {
 		resp := &apigeeregistrypb.ListApiVersionsResponse{}
 		if pageToken != "" {
@@ -1400,7 +1400,7 @@ func (c *registryGRPCClient) ListApiSpecs(ctx context.Context, req *apigeeregist
 	}
 	opts = append((*c.CallOptions).ListApiSpecs[0:len((*c.CallOptions).ListApiSpecs):len((*c.CallOptions).ListApiSpecs)], opts...)
 	it := &ApiSpecIterator{}
-	req = proto.Clone(req).(*apigeeregistrypb.ListApiSpecsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apigeeregistrypb.ApiSpec, string, error) {
 		resp := &apigeeregistrypb.ListApiSpecsResponse{}
 		if pageToken != "" {
@@ -1589,7 +1589,7 @@ func (c *registryGRPCClient) ListApiSpecRevisions(ctx context.Context, req *apig
 	}
 	opts = append((*c.CallOptions).ListApiSpecRevisions[0:len((*c.CallOptions).ListApiSpecRevisions):len((*c.CallOptions).ListApiSpecRevisions)], opts...)
 	it := &ApiSpecIterator{}
-	req = proto.Clone(req).(*apigeeregistrypb.ListApiSpecRevisionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apigeeregistrypb.ApiSpec, string, error) {
 		resp := &apigeeregistrypb.ListApiSpecRevisionsResponse{}
 		if pageToken != "" {
@@ -1689,7 +1689,7 @@ func (c *registryGRPCClient) ListApiDeployments(ctx context.Context, req *apigee
 	}
 	opts = append((*c.CallOptions).ListApiDeployments[0:len((*c.CallOptions).ListApiDeployments):len((*c.CallOptions).ListApiDeployments)], opts...)
 	it := &ApiDeploymentIterator{}
-	req = proto.Clone(req).(*apigeeregistrypb.ListApiDeploymentsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apigeeregistrypb.ApiDeployment, string, error) {
 		resp := &apigeeregistrypb.ListApiDeploymentsResponse{}
 		if pageToken != "" {
@@ -1854,7 +1854,7 @@ func (c *registryGRPCClient) ListApiDeploymentRevisions(ctx context.Context, req
 	}
 	opts = append((*c.CallOptions).ListApiDeploymentRevisions[0:len((*c.CallOptions).ListApiDeploymentRevisions):len((*c.CallOptions).ListApiDeploymentRevisions)], opts...)
 	it := &ApiDeploymentIterator{}
-	req = proto.Clone(req).(*apigeeregistrypb.ListApiDeploymentRevisionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apigeeregistrypb.ApiDeployment, string, error) {
 		resp := &apigeeregistrypb.ListApiDeploymentRevisionsResponse{}
 		if pageToken != "" {
@@ -1954,7 +1954,7 @@ func (c *registryGRPCClient) ListArtifacts(ctx context.Context, req *apigeeregis
 	}
 	opts = append((*c.CallOptions).ListArtifacts[0:len((*c.CallOptions).ListArtifacts):len((*c.CallOptions).ListArtifacts)], opts...)
 	it := &ArtifactIterator{}
-	req = proto.Clone(req).(*apigeeregistrypb.ListArtifactsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apigeeregistrypb.Artifact, string, error) {
 		resp := &apigeeregistrypb.ListArtifactsResponse{}
 		if pageToken != "" {
@@ -2137,7 +2137,7 @@ func (c *registryGRPCClient) ListLocations(ctx context.Context, req *locationpb.
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -2313,7 +2313,7 @@ func (c *registryGRPCClient) ListOperations(ctx context.Context, req *longrunnin
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {

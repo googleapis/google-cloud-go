@@ -1013,7 +1013,7 @@ func (c *gRPCClient) ListQueues(ctx context.Context, req *cloudtaskspb.ListQueue
 	}
 	opts = append((*c.CallOptions).ListQueues[0:len((*c.CallOptions).ListQueues):len((*c.CallOptions).ListQueues)], opts...)
 	it := &QueueIterator{}
-	req = proto.Clone(req).(*cloudtaskspb.ListQueuesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cloudtaskspb.Queue, string, error) {
 		resp := &cloudtaskspb.ListQueuesResponse{}
 		if pageToken != "" {
@@ -1312,7 +1312,7 @@ func (c *gRPCClient) ListTasks(ctx context.Context, req *cloudtaskspb.ListTasksR
 	}
 	opts = append((*c.CallOptions).ListTasks[0:len((*c.CallOptions).ListTasks):len((*c.CallOptions).ListTasks)], opts...)
 	it := &TaskIterator{}
-	req = proto.Clone(req).(*cloudtaskspb.ListTasksRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cloudtaskspb.Task, string, error) {
 		resp := &cloudtaskspb.ListTasksResponse{}
 		if pageToken != "" {
@@ -1566,7 +1566,7 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -1610,7 +1610,7 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 // Queues are returned in lexicographical order.
 func (c *restClient) ListQueues(ctx context.Context, req *cloudtaskspb.ListQueuesRequest, opts ...gax.CallOption) *QueueIterator {
 	it := &QueueIterator{}
-	req = proto.Clone(req).(*cloudtaskspb.ListQueuesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cloudtaskspb.Queue, string, error) {
 		resp := &cloudtaskspb.ListQueuesResponse{}
@@ -2456,7 +2456,7 @@ func (c *restClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 // time.
 func (c *restClient) ListTasks(ctx context.Context, req *cloudtaskspb.ListTasksRequest, opts ...gax.CallOption) *TaskIterator {
 	it := &TaskIterator{}
-	req = proto.Clone(req).(*cloudtaskspb.ListTasksRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cloudtaskspb.Task, string, error) {
 		resp := &cloudtaskspb.ListTasksResponse{}
@@ -3143,7 +3143,7 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 // ListLocations lists information about the supported locations for this service.
 func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}

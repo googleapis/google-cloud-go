@@ -970,7 +970,7 @@ func (c *gRPCClient) ListBuilds(ctx context.Context, req *cloudbuildpb.ListBuild
 	}
 	opts = append((*c.CallOptions).ListBuilds[0:len((*c.CallOptions).ListBuilds):len((*c.CallOptions).ListBuilds)], opts...)
 	it := &BuildIterator{}
-	req = proto.Clone(req).(*cloudbuildpb.ListBuildsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cloudbuildpb.Build, string, error) {
 		resp := &cloudbuildpb.ListBuildsResponse{}
 		if pageToken != "" {
@@ -1197,7 +1197,7 @@ func (c *gRPCClient) ListBuildTriggers(ctx context.Context, req *cloudbuildpb.Li
 	}
 	opts = append((*c.CallOptions).ListBuildTriggers[0:len((*c.CallOptions).ListBuildTriggers):len((*c.CallOptions).ListBuildTriggers)], opts...)
 	it := &BuildTriggerIterator{}
-	req = proto.Clone(req).(*cloudbuildpb.ListBuildTriggersRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cloudbuildpb.BuildTrigger, string, error) {
 		resp := &cloudbuildpb.ListBuildTriggersResponse{}
 		if pageToken != "" {
@@ -1508,7 +1508,7 @@ func (c *gRPCClient) ListWorkerPools(ctx context.Context, req *cloudbuildpb.List
 	}
 	opts = append((*c.CallOptions).ListWorkerPools[0:len((*c.CallOptions).ListWorkerPools):len((*c.CallOptions).ListWorkerPools)], opts...)
 	it := &WorkerPoolIterator{}
-	req = proto.Clone(req).(*cloudbuildpb.ListWorkerPoolsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cloudbuildpb.WorkerPool, string, error) {
 		resp := &cloudbuildpb.ListWorkerPoolsResponse{}
 		if pageToken != "" {
@@ -1741,7 +1741,7 @@ func (c *restClient) GetBuild(ctx context.Context, req *cloudbuildpb.GetBuildReq
 // successfully or unsuccessfully.
 func (c *restClient) ListBuilds(ctx context.Context, req *cloudbuildpb.ListBuildsRequest, opts ...gax.CallOption) *BuildIterator {
 	it := &BuildIterator{}
-	req = proto.Clone(req).(*cloudbuildpb.ListBuildsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cloudbuildpb.Build, string, error) {
 		resp := &cloudbuildpb.ListBuildsResponse{}
@@ -2222,7 +2222,7 @@ func (c *restClient) GetBuildTrigger(ctx context.Context, req *cloudbuildpb.GetB
 // ListBuildTriggers lists existing BuildTriggers.
 func (c *restClient) ListBuildTriggers(ctx context.Context, req *cloudbuildpb.ListBuildTriggersRequest, opts ...gax.CallOption) *BuildTriggerIterator {
 	it := &BuildTriggerIterator{}
-	req = proto.Clone(req).(*cloudbuildpb.ListBuildTriggersRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cloudbuildpb.BuildTrigger, string, error) {
 		resp := &cloudbuildpb.ListBuildTriggersResponse{}
@@ -2894,7 +2894,7 @@ func (c *restClient) UpdateWorkerPool(ctx context.Context, req *cloudbuildpb.Upd
 // ListWorkerPools lists WorkerPools.
 func (c *restClient) ListWorkerPools(ctx context.Context, req *cloudbuildpb.ListWorkerPoolsRequest, opts ...gax.CallOption) *WorkerPoolIterator {
 	it := &WorkerPoolIterator{}
-	req = proto.Clone(req).(*cloudbuildpb.ListWorkerPoolsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cloudbuildpb.WorkerPool, string, error) {
 		resp := &cloudbuildpb.ListWorkerPoolsResponse{}

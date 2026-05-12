@@ -399,7 +399,7 @@ func (c *lfpProvidersGRPCClient) FindLfpProviders(ctx context.Context, req *acco
 	}
 	opts = append((*c.CallOptions).FindLfpProviders[0:len((*c.CallOptions).FindLfpProviders):len((*c.CallOptions).FindLfpProviders)], opts...)
 	it := &LfpProviderIterator{}
-	req = proto.Clone(req).(*accountspb.FindLfpProvidersRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*accountspb.LfpProvider, string, error) {
 		resp := &accountspb.FindLfpProvidersResponse{}
 		if pageToken != "" {
@@ -465,7 +465,7 @@ func (c *lfpProvidersGRPCClient) LinkLfpProvider(ctx context.Context, req *accou
 // FindLfpProviders find the LFP provider candidates in a given country.
 func (c *lfpProvidersRESTClient) FindLfpProviders(ctx context.Context, req *accountspb.FindLfpProvidersRequest, opts ...gax.CallOption) *LfpProviderIterator {
 	it := &LfpProviderIterator{}
-	req = proto.Clone(req).(*accountspb.FindLfpProvidersRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*accountspb.LfpProvider, string, error) {
 		resp := &accountspb.FindLfpProvidersResponse{}

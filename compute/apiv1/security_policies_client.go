@@ -479,7 +479,7 @@ func (c *securityPoliciesRESTClient) AddRule(ctx context.Context, req *computepb
 // returnPartialSuccess parameter to true.
 func (c *securityPoliciesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListSecurityPoliciesRequest, opts ...gax.CallOption) *SecurityPoliciesScopedListPairIterator {
 	it := &SecurityPoliciesScopedListPairIterator{}
-	req = proto.Clone(req).(*computepb.AggregatedListSecurityPoliciesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]SecurityPoliciesScopedListPair, string, error) {
 		resp := &computepb.SecurityPoliciesAggregatedList{}
@@ -832,7 +832,7 @@ func (c *securityPoliciesRESTClient) Insert(ctx context.Context, req *computepb.
 // List list all the policies that have been configured for the specified project.
 func (c *securityPoliciesRESTClient) List(ctx context.Context, req *computepb.ListSecurityPoliciesRequest, opts ...gax.CallOption) *SecurityPolicyIterator {
 	it := &SecurityPolicyIterator{}
-	req = proto.Clone(req).(*computepb.ListSecurityPoliciesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.SecurityPolicy, string, error) {
 		resp := &computepb.SecurityPolicyList{}

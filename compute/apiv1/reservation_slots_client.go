@@ -399,7 +399,7 @@ func (c *reservationSlotsRESTClient) GetVersion(ctx context.Context, req *comput
 // List retrieves a list of reservation slots under a single reservation.
 func (c *reservationSlotsRESTClient) List(ctx context.Context, req *computepb.ListReservationSlotsRequest, opts ...gax.CallOption) *ReservationSlotIterator {
 	it := &ReservationSlotIterator{}
-	req = proto.Clone(req).(*computepb.ListReservationSlotsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.ReservationSlot, string, error) {
 		resp := &computepb.ReservationSlotsListResponse{}

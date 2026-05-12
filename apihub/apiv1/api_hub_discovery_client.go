@@ -291,7 +291,7 @@ func (c *apiHubDiscoveryRESTClient) Connection() *grpc.ClientConn {
 // ListDiscoveredApiObservations lists all the DiscoveredAPIObservations in a given project and location.
 func (c *apiHubDiscoveryRESTClient) ListDiscoveredApiObservations(ctx context.Context, req *apihubpb.ListDiscoveredApiObservationsRequest, opts ...gax.CallOption) *DiscoveredApiObservationIterator {
 	it := &DiscoveredApiObservationIterator{}
-	req = proto.Clone(req).(*apihubpb.ListDiscoveredApiObservationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apihubpb.DiscoveredApiObservation, string, error) {
 		resp := &apihubpb.ListDiscoveredApiObservationsResponse{}
@@ -428,7 +428,7 @@ func (c *apiHubDiscoveryRESTClient) GetDiscoveredApiObservation(ctx context.Cont
 // ApiObservation.
 func (c *apiHubDiscoveryRESTClient) ListDiscoveredApiOperations(ctx context.Context, req *apihubpb.ListDiscoveredApiOperationsRequest, opts ...gax.CallOption) *DiscoveredApiOperationIterator {
 	it := &DiscoveredApiOperationIterator{}
-	req = proto.Clone(req).(*apihubpb.ListDiscoveredApiOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apihubpb.DiscoveredApiOperation, string, error) {
 		resp := &apihubpb.ListDiscoveredApiOperationsResponse{}
@@ -618,7 +618,7 @@ func (c *apiHubDiscoveryRESTClient) GetLocation(ctx context.Context, req *locati
 // ListLocations lists information about the supported locations for this service.
 func (c *apiHubDiscoveryRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -837,7 +837,7 @@ func (c *apiHubDiscoveryRESTClient) GetOperation(ctx context.Context, req *longr
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *apiHubDiscoveryRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

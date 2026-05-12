@@ -23,8 +23,6 @@
 // controls to manage certain maintenance activities, such as maintenance
 // windows, rescheduling, and on-demand updates.
 //
-//	NOTE: This package is in beta. It is not stable, and may be subject to changes.
-//
 // # General documentation
 //
 // For information that is relevant for all client libraries please reference

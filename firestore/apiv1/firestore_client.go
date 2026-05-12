@@ -1037,7 +1037,7 @@ func (c *gRPCClient) ListDocuments(ctx context.Context, req *firestorepb.ListDoc
 	}
 	opts = append((*c.CallOptions).ListDocuments[0:len((*c.CallOptions).ListDocuments):len((*c.CallOptions).ListDocuments)], opts...)
 	it := &DocumentIterator{}
-	req = proto.Clone(req).(*firestorepb.ListDocumentsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*firestorepb.Document, string, error) {
 		resp := &firestorepb.ListDocumentsResponse{}
 		if pageToken != "" {
@@ -1292,7 +1292,7 @@ func (c *gRPCClient) PartitionQuery(ctx context.Context, req *firestorepb.Partit
 	}
 	opts = append((*c.CallOptions).PartitionQuery[0:len((*c.CallOptions).PartitionQuery):len((*c.CallOptions).PartitionQuery)], opts...)
 	it := &CursorIterator{}
-	req = proto.Clone(req).(*firestorepb.PartitionQueryRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*firestorepb.Cursor, string, error) {
 		resp := &firestorepb.PartitionQueryResponse{}
 		if pageToken != "" {
@@ -1381,7 +1381,7 @@ func (c *gRPCClient) ListCollectionIds(ctx context.Context, req *firestorepb.Lis
 	}
 	opts = append((*c.CallOptions).ListCollectionIds[0:len((*c.CallOptions).ListCollectionIds):len((*c.CallOptions).ListCollectionIds)], opts...)
 	it := &StringIterator{}
-	req = proto.Clone(req).(*firestorepb.ListCollectionIdsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]string, string, error) {
 		resp := &firestorepb.ListCollectionIdsResponse{}
 		if pageToken != "" {
@@ -1527,7 +1527,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -1638,7 +1638,7 @@ func (c *restClient) GetDocument(ctx context.Context, req *firestorepb.GetDocume
 // ListDocuments lists documents.
 func (c *restClient) ListDocuments(ctx context.Context, req *firestorepb.ListDocumentsRequest, opts ...gax.CallOption) *DocumentIterator {
 	it := &DocumentIterator{}
-	req = proto.Clone(req).(*firestorepb.ListDocumentsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*firestorepb.Document, string, error) {
 		resp := &firestorepb.ListDocumentsResponse{}
@@ -2485,7 +2485,7 @@ func (c *runAggregationQueryRESTStreamClient) RecvMsg(m interface{}) error {
 // can be used by RunQuery as starting/end points for the query results.
 func (c *restClient) PartitionQuery(ctx context.Context, req *firestorepb.PartitionQueryRequest, opts ...gax.CallOption) *CursorIterator {
 	it := &CursorIterator{}
-	req = proto.Clone(req).(*firestorepb.PartitionQueryRequest)
+	req = proto.CloneOf(req)
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*firestorepb.Cursor, string, error) {
@@ -2579,7 +2579,7 @@ func (c *restClient) Listen(ctx context.Context, opts ...gax.CallOption) (firest
 // ListCollectionIds lists all the collection IDs underneath a document.
 func (c *restClient) ListCollectionIds(ctx context.Context, req *firestorepb.ListCollectionIdsRequest, opts ...gax.CallOption) *StringIterator {
 	it := &StringIterator{}
-	req = proto.Clone(req).(*firestorepb.ListCollectionIdsRequest)
+	req = proto.CloneOf(req)
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]string, string, error) {
@@ -2933,7 +2933,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

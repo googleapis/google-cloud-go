@@ -579,7 +579,7 @@ func (c *attachedClustersGRPCClient) ListAttachedClusters(ctx context.Context, r
 	}
 	opts = append((*c.CallOptions).ListAttachedClusters[0:len((*c.CallOptions).ListAttachedClusters):len((*c.CallOptions).ListAttachedClusters)], opts...)
 	it := &AttachedClusterIterator{}
-	req = proto.Clone(req).(*gkemulticloudpb.ListAttachedClustersRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*gkemulticloudpb.AttachedCluster, string, error) {
 		resp := &gkemulticloudpb.ListAttachedClustersResponse{}
 		if pageToken != "" {
@@ -781,7 +781,7 @@ func (c *attachedClustersGRPCClient) ListOperations(ctx context.Context, req *lo
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {

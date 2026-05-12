@@ -477,7 +477,7 @@ func (c *routesRESTClient) Insert(ctx context.Context, req *computepb.InsertRout
 // List retrieves the list of Route resources available to the specified project.
 func (c *routesRESTClient) List(ctx context.Context, req *computepb.ListRoutesRequest, opts ...gax.CallOption) *RouteIterator {
 	it := &RouteIterator{}
-	req = proto.Clone(req).(*computepb.ListRoutesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.Route, string, error) {
 		resp := &computepb.RouteList{}

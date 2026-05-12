@@ -557,7 +557,7 @@ func (c *backendServicesRESTClient) AddSignedUrlKey(ctx context.Context, req *co
 // returnPartialSuccess parameter to true.
 func (c *backendServicesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListBackendServicesRequest, opts ...gax.CallOption) *BackendServicesScopedListPairIterator {
 	it := &BackendServicesScopedListPairIterator{}
-	req = proto.Clone(req).(*computepb.AggregatedListBackendServicesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]BackendServicesScopedListPair, string, error) {
 		resp := &computepb.BackendServiceAggregatedList{}
@@ -1096,7 +1096,7 @@ func (c *backendServicesRESTClient) Insert(ctx context.Context, req *computepb.I
 // project.
 func (c *backendServicesRESTClient) List(ctx context.Context, req *computepb.ListBackendServicesRequest, opts ...gax.CallOption) *BackendServiceIterator {
 	it := &BackendServiceIterator{}
-	req = proto.Clone(req).(*computepb.ListBackendServicesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.BackendService, string, error) {
 		resp := &computepb.BackendServiceList{}
@@ -1182,7 +1182,7 @@ func (c *backendServicesRESTClient) List(ctx context.Context, req *computepb.Lis
 // ListUsable retrieves a list of all usable backend services in the specified project.
 func (c *backendServicesRESTClient) ListUsable(ctx context.Context, req *computepb.ListUsableBackendServicesRequest, opts ...gax.CallOption) *BackendServiceIterator {
 	it := &BackendServiceIterator{}
-	req = proto.Clone(req).(*computepb.ListUsableBackendServicesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.BackendService, string, error) {
 		resp := &computepb.BackendServiceListUsable{}

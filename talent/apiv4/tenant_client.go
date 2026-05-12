@@ -562,7 +562,7 @@ func (c *tenantGRPCClient) ListTenants(ctx context.Context, req *talentpb.ListTe
 	}
 	opts = append((*c.CallOptions).ListTenants[0:len((*c.CallOptions).ListTenants):len((*c.CallOptions).ListTenants)], opts...)
 	it := &TenantIterator{}
-	req = proto.Clone(req).(*talentpb.ListTenantsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*talentpb.Tenant, string, error) {
 		resp := &talentpb.ListTenantsResponse{}
 		if pageToken != "" {
@@ -856,7 +856,7 @@ func (c *tenantRESTClient) DeleteTenant(ctx context.Context, req *talentpb.Delet
 // ListTenants lists all tenants associated with the project.
 func (c *tenantRESTClient) ListTenants(ctx context.Context, req *talentpb.ListTenantsRequest, opts ...gax.CallOption) *TenantIterator {
 	it := &TenantIterator{}
-	req = proto.Clone(req).(*talentpb.ListTenantsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*talentpb.Tenant, string, error) {
 		resp := &talentpb.ListTenantsResponse{}

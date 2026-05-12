@@ -1298,7 +1298,7 @@ func (c *translationGRPCClient) ListGlossaries(ctx context.Context, req *transla
 	}
 	opts = append((*c.CallOptions).ListGlossaries[0:len((*c.CallOptions).ListGlossaries):len((*c.CallOptions).ListGlossaries)], opts...)
 	it := &GlossaryIterator{}
-	req = proto.Clone(req).(*translatepb.ListGlossariesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*translatepb.Glossary, string, error) {
 		resp := &translatepb.ListGlossariesResponse{}
 		if pageToken != "" {
@@ -1424,7 +1424,7 @@ func (c *translationGRPCClient) ListGlossaryEntries(ctx context.Context, req *tr
 	}
 	opts = append((*c.CallOptions).ListGlossaryEntries[0:len((*c.CallOptions).ListGlossaryEntries):len((*c.CallOptions).ListGlossaryEntries)], opts...)
 	it := &GlossaryEntryIterator{}
-	req = proto.Clone(req).(*translatepb.ListGlossaryEntriesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*translatepb.GlossaryEntry, string, error) {
 		resp := &translatepb.ListGlossaryEntriesResponse{}
 		if pageToken != "" {
@@ -1591,7 +1591,7 @@ func (c *translationGRPCClient) ListDatasets(ctx context.Context, req *translate
 	}
 	opts = append((*c.CallOptions).ListDatasets[0:len((*c.CallOptions).ListDatasets):len((*c.CallOptions).ListDatasets)], opts...)
 	it := &DatasetIterator{}
-	req = proto.Clone(req).(*translatepb.ListDatasetsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*translatepb.Dataset, string, error) {
 		resp := &translatepb.ListDatasetsResponse{}
 		if pageToken != "" {
@@ -1737,7 +1737,7 @@ func (c *translationGRPCClient) ListAdaptiveMtDatasets(ctx context.Context, req 
 	}
 	opts = append((*c.CallOptions).ListAdaptiveMtDatasets[0:len((*c.CallOptions).ListAdaptiveMtDatasets):len((*c.CallOptions).ListAdaptiveMtDatasets)], opts...)
 	it := &AdaptiveMtDatasetIterator{}
-	req = proto.Clone(req).(*translatepb.ListAdaptiveMtDatasetsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*translatepb.AdaptiveMtDataset, string, error) {
 		resp := &translatepb.ListAdaptiveMtDatasetsResponse{}
 		if pageToken != "" {
@@ -1881,7 +1881,7 @@ func (c *translationGRPCClient) ListAdaptiveMtFiles(ctx context.Context, req *tr
 	}
 	opts = append((*c.CallOptions).ListAdaptiveMtFiles[0:len((*c.CallOptions).ListAdaptiveMtFiles):len((*c.CallOptions).ListAdaptiveMtFiles)], opts...)
 	it := &AdaptiveMtFileIterator{}
-	req = proto.Clone(req).(*translatepb.ListAdaptiveMtFilesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*translatepb.AdaptiveMtFile, string, error) {
 		resp := &translatepb.ListAdaptiveMtFilesResponse{}
 		if pageToken != "" {
@@ -1933,7 +1933,7 @@ func (c *translationGRPCClient) ListAdaptiveMtSentences(ctx context.Context, req
 	}
 	opts = append((*c.CallOptions).ListAdaptiveMtSentences[0:len((*c.CallOptions).ListAdaptiveMtSentences):len((*c.CallOptions).ListAdaptiveMtSentences)], opts...)
 	it := &AdaptiveMtSentenceIterator{}
-	req = proto.Clone(req).(*translatepb.ListAdaptiveMtSentencesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*translatepb.AdaptiveMtSentence, string, error) {
 		resp := &translatepb.ListAdaptiveMtSentencesResponse{}
 		if pageToken != "" {
@@ -2031,7 +2031,7 @@ func (c *translationGRPCClient) ListExamples(ctx context.Context, req *translate
 	}
 	opts = append((*c.CallOptions).ListExamples[0:len((*c.CallOptions).ListExamples):len((*c.CallOptions).ListExamples)], opts...)
 	it := &ExampleIterator{}
-	req = proto.Clone(req).(*translatepb.ListExamplesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*translatepb.Example, string, error) {
 		resp := &translatepb.ListExamplesResponse{}
 		if pageToken != "" {
@@ -2109,7 +2109,7 @@ func (c *translationGRPCClient) ListModels(ctx context.Context, req *translatepb
 	}
 	opts = append((*c.CallOptions).ListModels[0:len((*c.CallOptions).ListModels):len((*c.CallOptions).ListModels)], opts...)
 	it := &ModelIterator{}
-	req = proto.Clone(req).(*translatepb.ListModelsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*translatepb.Model, string, error) {
 		resp := &translatepb.ListModelsResponse{}
 		if pageToken != "" {
@@ -2229,7 +2229,7 @@ func (c *translationGRPCClient) ListLocations(ctx context.Context, req *location
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -2333,7 +2333,7 @@ func (c *translationGRPCClient) ListOperations(ctx context.Context, req *longrun
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -2993,7 +2993,7 @@ func (c *translationRESTClient) UpdateGlossary(ctx context.Context, req *transla
 // exist.
 func (c *translationRESTClient) ListGlossaries(ctx context.Context, req *translatepb.ListGlossariesRequest, opts ...gax.CallOption) *GlossaryIterator {
 	it := &GlossaryIterator{}
-	req = proto.Clone(req).(*translatepb.ListGlossariesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*translatepb.Glossary, string, error) {
 		resp := &translatepb.ListGlossariesResponse{}
@@ -3251,7 +3251,7 @@ func (c *translationRESTClient) GetGlossaryEntry(ctx context.Context, req *trans
 // ListGlossaryEntries list the entries for the glossary.
 func (c *translationRESTClient) ListGlossaryEntries(ctx context.Context, req *translatepb.ListGlossaryEntriesRequest, opts ...gax.CallOption) *GlossaryEntryIterator {
 	it := &GlossaryEntryIterator{}
-	req = proto.Clone(req).(*translatepb.ListGlossaryEntriesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*translatepb.GlossaryEntry, string, error) {
 		resp := &translatepb.ListGlossaryEntriesResponse{}
@@ -3620,7 +3620,7 @@ func (c *translationRESTClient) GetDataset(ctx context.Context, req *translatepb
 // ListDatasets lists datasets.
 func (c *translationRESTClient) ListDatasets(ctx context.Context, req *translatepb.ListDatasetsRequest, opts ...gax.CallOption) *DatasetIterator {
 	it := &DatasetIterator{}
-	req = proto.Clone(req).(*translatepb.ListDatasetsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*translatepb.Dataset, string, error) {
 		resp := &translatepb.ListDatasetsResponse{}
@@ -3922,7 +3922,7 @@ func (c *translationRESTClient) GetAdaptiveMtDataset(ctx context.Context, req *t
 // ListAdaptiveMtDatasets lists all Adaptive MT datasets for which the caller has read permission.
 func (c *translationRESTClient) ListAdaptiveMtDatasets(ctx context.Context, req *translatepb.ListAdaptiveMtDatasetsRequest, opts ...gax.CallOption) *AdaptiveMtDatasetIterator {
 	it := &AdaptiveMtDatasetIterator{}
-	req = proto.Clone(req).(*translatepb.ListAdaptiveMtDatasetsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*translatepb.AdaptiveMtDataset, string, error) {
 		resp := &translatepb.ListAdaptiveMtDatasetsResponse{}
@@ -4229,7 +4229,7 @@ func (c *translationRESTClient) ImportAdaptiveMtFile(ctx context.Context, req *t
 // ListAdaptiveMtFiles lists all AdaptiveMtFiles associated to an AdaptiveMtDataset.
 func (c *translationRESTClient) ListAdaptiveMtFiles(ctx context.Context, req *translatepb.ListAdaptiveMtFilesRequest, opts ...gax.CallOption) *AdaptiveMtFileIterator {
 	it := &AdaptiveMtFileIterator{}
-	req = proto.Clone(req).(*translatepb.ListAdaptiveMtFilesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*translatepb.AdaptiveMtFile, string, error) {
 		resp := &translatepb.ListAdaptiveMtFilesResponse{}
@@ -4307,7 +4307,7 @@ func (c *translationRESTClient) ListAdaptiveMtFiles(ctx context.Context, req *tr
 // ListAdaptiveMtSentences lists all AdaptiveMtSentences under a given file/dataset.
 func (c *translationRESTClient) ListAdaptiveMtSentences(ctx context.Context, req *translatepb.ListAdaptiveMtSentencesRequest, opts ...gax.CallOption) *AdaptiveMtSentenceIterator {
 	it := &AdaptiveMtSentenceIterator{}
-	req = proto.Clone(req).(*translatepb.ListAdaptiveMtSentencesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*translatepb.AdaptiveMtSentence, string, error) {
 		resp := &translatepb.ListAdaptiveMtSentencesResponse{}
@@ -4511,7 +4511,7 @@ func (c *translationRESTClient) ExportData(ctx context.Context, req *translatepb
 // ListExamples lists sentence pairs in the dataset.
 func (c *translationRESTClient) ListExamples(ctx context.Context, req *translatepb.ListExamplesRequest, opts ...gax.CallOption) *ExampleIterator {
 	it := &ExampleIterator{}
-	req = proto.Clone(req).(*translatepb.ListExamplesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*translatepb.Example, string, error) {
 		resp := &translatepb.ListExamplesResponse{}
@@ -4659,7 +4659,7 @@ func (c *translationRESTClient) CreateModel(ctx context.Context, req *translatep
 // ListModels lists models.
 func (c *translationRESTClient) ListModels(ctx context.Context, req *translatepb.ListModelsRequest, opts ...gax.CallOption) *ModelIterator {
 	it := &ModelIterator{}
-	req = proto.Clone(req).(*translatepb.ListModelsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*translatepb.Model, string, error) {
 		resp := &translatepb.ListModelsResponse{}
@@ -4911,7 +4911,7 @@ func (c *translationRESTClient) GetLocation(ctx context.Context, req *locationpb
 // ListLocations lists information about the supported locations for this service.
 func (c *translationRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -5130,7 +5130,7 @@ func (c *translationRESTClient) GetOperation(ctx context.Context, req *longrunni
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *translationRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

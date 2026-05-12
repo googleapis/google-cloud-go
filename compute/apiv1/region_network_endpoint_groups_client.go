@@ -657,7 +657,7 @@ func (c *regionNetworkEndpointGroupsRESTClient) Insert(ctx context.Context, req 
 // specified project in the given region.
 func (c *regionNetworkEndpointGroupsRESTClient) List(ctx context.Context, req *computepb.ListRegionNetworkEndpointGroupsRequest, opts ...gax.CallOption) *NetworkEndpointGroupIterator {
 	it := &NetworkEndpointGroupIterator{}
-	req = proto.Clone(req).(*computepb.ListRegionNetworkEndpointGroupsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.NetworkEndpointGroup, string, error) {
 		resp := &computepb.NetworkEndpointGroupList{}
@@ -743,7 +743,7 @@ func (c *regionNetworkEndpointGroupsRESTClient) List(ctx context.Context, req *c
 // ListNetworkEndpoints lists the network endpoints in the specified network endpoint group.
 func (c *regionNetworkEndpointGroupsRESTClient) ListNetworkEndpoints(ctx context.Context, req *computepb.ListNetworkEndpointsRegionNetworkEndpointGroupsRequest, opts ...gax.CallOption) *NetworkEndpointWithHealthStatusIterator {
 	it := &NetworkEndpointWithHealthStatusIterator{}
-	req = proto.Clone(req).(*computepb.ListNetworkEndpointsRegionNetworkEndpointGroupsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.NetworkEndpointWithHealthStatus, string, error) {
 		resp := &computepb.NetworkEndpointGroupsListNetworkEndpoints{}

@@ -668,7 +668,7 @@ func (c *reachabilityGRPCClient) ListConnectivityTests(ctx context.Context, req 
 	}
 	opts = append((*c.CallOptions).ListConnectivityTests[0:len((*c.CallOptions).ListConnectivityTests):len((*c.CallOptions).ListConnectivityTests)], opts...)
 	it := &ConnectivityTestIterator{}
-	req = proto.Clone(req).(*networkmanagementpb.ListConnectivityTestsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkmanagementpb.ConnectivityTest, string, error) {
 		resp := &networkmanagementpb.ListConnectivityTestsResponse{}
 		if pageToken != "" {
@@ -863,7 +863,7 @@ func (c *reachabilityGRPCClient) ListLocations(ctx context.Context, req *locatio
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -1039,7 +1039,7 @@ func (c *reachabilityGRPCClient) ListOperations(ctx context.Context, req *longru
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -1081,7 +1081,7 @@ func (c *reachabilityGRPCClient) ListOperations(ctx context.Context, req *longru
 // ListConnectivityTests lists all Connectivity Tests owned by a project.
 func (c *reachabilityRESTClient) ListConnectivityTests(ctx context.Context, req *networkmanagementpb.ListConnectivityTestsRequest, opts ...gax.CallOption) *ConnectivityTestIterator {
 	it := &ConnectivityTestIterator{}
-	req = proto.Clone(req).(*networkmanagementpb.ListConnectivityTestsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkmanagementpb.ConnectivityTest, string, error) {
 		resp := &networkmanagementpb.ListConnectivityTestsResponse{}
@@ -1585,7 +1585,7 @@ func (c *reachabilityRESTClient) GetLocation(ctx context.Context, req *locationp
 //	to the project.
 func (c *reachabilityRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -2001,7 +2001,7 @@ func (c *reachabilityRESTClient) GetOperation(ctx context.Context, req *longrunn
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *reachabilityRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

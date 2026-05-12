@@ -32,6 +32,7 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/keepalive"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -41,6 +42,27 @@ const (
 	prodMtlsAddr         = "datastore.mtls.googleapis.com:443"
 	userAgent            = "gcloud-golang-datastore/20160401"
 )
+
+// retryPolicy is based on https://github.com/googleapis/googleapis/blob/master/google/datastore/v1/datastore_grpc_service_config.json
+// but updated to include INTERNAL and RESOURCE_EXHAUSTED for the data plane.
+const retryPolicy = `{
+  "methodConfig": [{
+    "name": [
+      {"service": "google.datastore.v1.Datastore", "method": "Lookup"},
+      {"service": "google.datastore.v1.Datastore", "method": "RunQuery"},
+      {"service": "google.datastore.v1.Datastore", "method": "RunAggregationQuery"},
+      {"service": "google.datastore.v1.Datastore", "method": "ReserveIds"}
+    ],
+    "timeout": "60s",
+    "retryPolicy": {
+      "maxAttempts": 5,
+      "initialBackoff": "0.100s",
+      "maxBackoff": "60s",
+      "backoffMultiplier": 1.3,
+      "retryableStatusCodes": ["UNAVAILABLE", "DEADLINE_EXCEEDED", "INTERNAL", "RESOURCE_EXHAUSTED"]
+    }
+  }]
+}`
 
 // ScopeDatastore grants permissions to view and/or manage datastore entities
 const ScopeDatastore = "https://www.googleapis.com/auth/datastore"
@@ -128,6 +150,14 @@ func NewClientWithDatabase(ctx context.Context, projectID, databaseID string, op
 			internaloption.EnableNewAuthLibrary(),
 			option.WithScopes(ScopeDatastore),
 			option.WithUserAgent(userAgent),
+			// Add the Service Config for retries
+			option.WithGRPCDialOption(grpc.WithDefaultServiceConfig(retryPolicy)),
+			// Add Keepalives to prune zombie connections
+			option.WithGRPCDialOption(grpc.WithKeepaliveParams(keepalive.ClientParameters{
+				Time:                1 * time.Minute,
+				Timeout:             20 * time.Second,
+				PermitWithoutStream: true,
+			})),
 		}
 	}
 	// Warn if we see the legacy emulator environment variables.

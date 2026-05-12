@@ -1163,7 +1163,7 @@ func (c *gRPCClient) ListDatasets(ctx context.Context, req *automlpb.ListDataset
 	}
 	opts = append((*c.CallOptions).ListDatasets[0:len((*c.CallOptions).ListDatasets):len((*c.CallOptions).ListDatasets)], opts...)
 	it := &DatasetIterator{}
-	req = proto.Clone(req).(*automlpb.ListDatasetsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*automlpb.Dataset, string, error) {
 		resp := &automlpb.ListDatasetsResponse{}
 		if pageToken != "" {
@@ -1362,7 +1362,7 @@ func (c *gRPCClient) ListTableSpecs(ctx context.Context, req *automlpb.ListTable
 	}
 	opts = append((*c.CallOptions).ListTableSpecs[0:len((*c.CallOptions).ListTableSpecs):len((*c.CallOptions).ListTableSpecs)], opts...)
 	it := &TableSpecIterator{}
-	req = proto.Clone(req).(*automlpb.ListTableSpecsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*automlpb.TableSpec, string, error) {
 		resp := &automlpb.ListTableSpecsResponse{}
 		if pageToken != "" {
@@ -1459,7 +1459,7 @@ func (c *gRPCClient) ListColumnSpecs(ctx context.Context, req *automlpb.ListColu
 	}
 	opts = append((*c.CallOptions).ListColumnSpecs[0:len((*c.CallOptions).ListColumnSpecs):len((*c.CallOptions).ListColumnSpecs)], opts...)
 	it := &ColumnSpecIterator{}
-	req = proto.Clone(req).(*automlpb.ListColumnSpecsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*automlpb.ColumnSpec, string, error) {
 		resp := &automlpb.ListColumnSpecsResponse{}
 		if pageToken != "" {
@@ -1582,7 +1582,7 @@ func (c *gRPCClient) ListModels(ctx context.Context, req *automlpb.ListModelsReq
 	}
 	opts = append((*c.CallOptions).ListModels[0:len((*c.CallOptions).ListModels):len((*c.CallOptions).ListModels)], opts...)
 	it := &ModelIterator{}
-	req = proto.Clone(req).(*automlpb.ListModelsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*automlpb.Model, string, error) {
 		resp := &automlpb.ListModelsResponse{}
 		if pageToken != "" {
@@ -1788,7 +1788,7 @@ func (c *gRPCClient) ListModelEvaluations(ctx context.Context, req *automlpb.Lis
 	}
 	opts = append((*c.CallOptions).ListModelEvaluations[0:len((*c.CallOptions).ListModelEvaluations):len((*c.CallOptions).ListModelEvaluations)], opts...)
 	it := &ModelEvaluationIterator{}
-	req = proto.Clone(req).(*automlpb.ListModelEvaluationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*automlpb.ModelEvaluation, string, error) {
 		resp := &automlpb.ListModelEvaluationsResponse{}
 		if pageToken != "" {
@@ -1951,7 +1951,7 @@ func (c *restClient) GetDataset(ctx context.Context, req *automlpb.GetDatasetReq
 // ListDatasets lists datasets in a project.
 func (c *restClient) ListDatasets(ctx context.Context, req *automlpb.ListDatasetsRequest, opts ...gax.CallOption) *DatasetIterator {
 	it := &DatasetIterator{}
-	req = proto.Clone(req).(*automlpb.ListDatasetsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*automlpb.Dataset, string, error) {
 		resp := &automlpb.ListDatasetsResponse{}
@@ -2428,7 +2428,7 @@ func (c *restClient) GetTableSpec(ctx context.Context, req *automlpb.GetTableSpe
 // ListTableSpecs lists table specs in a dataset.
 func (c *restClient) ListTableSpecs(ctx context.Context, req *automlpb.ListTableSpecsRequest, opts ...gax.CallOption) *TableSpecIterator {
 	it := &TableSpecIterator{}
-	req = proto.Clone(req).(*automlpb.ListTableSpecsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*automlpb.TableSpec, string, error) {
 		resp := &automlpb.ListTableSpecsResponse{}
@@ -2648,7 +2648,7 @@ func (c *restClient) GetColumnSpec(ctx context.Context, req *automlpb.GetColumnS
 // ListColumnSpecs lists column specs in a table spec.
 func (c *restClient) ListColumnSpecs(ctx context.Context, req *automlpb.ListColumnSpecsRequest, opts ...gax.CallOption) *ColumnSpecIterator {
 	it := &ColumnSpecIterator{}
-	req = proto.Clone(req).(*automlpb.ListColumnSpecsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*automlpb.ColumnSpec, string, error) {
 		resp := &automlpb.ListColumnSpecsResponse{}
@@ -2932,7 +2932,7 @@ func (c *restClient) GetModel(ctx context.Context, req *automlpb.GetModelRequest
 // ListModels lists models.
 func (c *restClient) ListModels(ctx context.Context, req *automlpb.ListModelsRequest, opts ...gax.CallOption) *ModelIterator {
 	it := &ModelIterator{}
-	req = proto.Clone(req).(*automlpb.ListModelsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*automlpb.Model, string, error) {
 		resp := &automlpb.ListModelsResponse{}
@@ -3435,7 +3435,7 @@ func (c *restClient) GetModelEvaluation(ctx context.Context, req *automlpb.GetMo
 // ListModelEvaluations lists model evaluations.
 func (c *restClient) ListModelEvaluations(ctx context.Context, req *automlpb.ListModelEvaluationsRequest, opts ...gax.CallOption) *ModelEvaluationIterator {
 	it := &ModelEvaluationIterator{}
-	req = proto.Clone(req).(*automlpb.ListModelEvaluationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*automlpb.ModelEvaluation, string, error) {
 		resp := &automlpb.ListModelEvaluationsResponse{}

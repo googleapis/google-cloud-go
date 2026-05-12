@@ -1666,7 +1666,7 @@ func (c *keyManagementGRPCClient) ListKeyRings(ctx context.Context, req *kmspb.L
 	}
 	opts = append((*c.CallOptions).ListKeyRings[0:len((*c.CallOptions).ListKeyRings):len((*c.CallOptions).ListKeyRings)], opts...)
 	it := &KeyRingIterator{}
-	req = proto.Clone(req).(*kmspb.ListKeyRingsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*kmspb.KeyRing, string, error) {
 		resp := &kmspb.ListKeyRingsResponse{}
 		if pageToken != "" {
@@ -1718,7 +1718,7 @@ func (c *keyManagementGRPCClient) ListCryptoKeys(ctx context.Context, req *kmspb
 	}
 	opts = append((*c.CallOptions).ListCryptoKeys[0:len((*c.CallOptions).ListCryptoKeys):len((*c.CallOptions).ListCryptoKeys)], opts...)
 	it := &CryptoKeyIterator{}
-	req = proto.Clone(req).(*kmspb.ListCryptoKeysRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*kmspb.CryptoKey, string, error) {
 		resp := &kmspb.ListCryptoKeysResponse{}
 		if pageToken != "" {
@@ -1770,7 +1770,7 @@ func (c *keyManagementGRPCClient) ListCryptoKeyVersions(ctx context.Context, req
 	}
 	opts = append((*c.CallOptions).ListCryptoKeyVersions[0:len((*c.CallOptions).ListCryptoKeyVersions):len((*c.CallOptions).ListCryptoKeyVersions)], opts...)
 	it := &CryptoKeyVersionIterator{}
-	req = proto.Clone(req).(*kmspb.ListCryptoKeyVersionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*kmspb.CryptoKeyVersion, string, error) {
 		resp := &kmspb.ListCryptoKeyVersionsResponse{}
 		if pageToken != "" {
@@ -1822,7 +1822,7 @@ func (c *keyManagementGRPCClient) ListImportJobs(ctx context.Context, req *kmspb
 	}
 	opts = append((*c.CallOptions).ListImportJobs[0:len((*c.CallOptions).ListImportJobs):len((*c.CallOptions).ListImportJobs)], opts...)
 	it := &ImportJobIterator{}
-	req = proto.Clone(req).(*kmspb.ListImportJobsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*kmspb.ImportJob, string, error) {
 		resp := &kmspb.ListImportJobsResponse{}
 		if pageToken != "" {
@@ -1874,7 +1874,7 @@ func (c *keyManagementGRPCClient) ListRetiredResources(ctx context.Context, req 
 	}
 	opts = append((*c.CallOptions).ListRetiredResources[0:len((*c.CallOptions).ListRetiredResources):len((*c.CallOptions).ListRetiredResources)], opts...)
 	it := &RetiredResourceIterator{}
-	req = proto.Clone(req).(*kmspb.ListRetiredResourcesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*kmspb.RetiredResource, string, error) {
 		resp := &kmspb.ListRetiredResourcesResponse{}
 		if pageToken != "" {
@@ -2605,7 +2605,7 @@ func (c *keyManagementGRPCClient) ListLocations(ctx context.Context, req *locati
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -2740,7 +2740,7 @@ func (c *keyManagementGRPCClient) GetOperation(ctx context.Context, req *longrun
 // ListKeyRings lists KeyRings.
 func (c *keyManagementRESTClient) ListKeyRings(ctx context.Context, req *kmspb.ListKeyRingsRequest, opts ...gax.CallOption) *KeyRingIterator {
 	it := &KeyRingIterator{}
-	req = proto.Clone(req).(*kmspb.ListKeyRingsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*kmspb.KeyRing, string, error) {
 		resp := &kmspb.ListKeyRingsResponse{}
@@ -2824,7 +2824,7 @@ func (c *keyManagementRESTClient) ListKeyRings(ctx context.Context, req *kmspb.L
 // ListCryptoKeys lists CryptoKeys.
 func (c *keyManagementRESTClient) ListCryptoKeys(ctx context.Context, req *kmspb.ListCryptoKeysRequest, opts ...gax.CallOption) *CryptoKeyIterator {
 	it := &CryptoKeyIterator{}
-	req = proto.Clone(req).(*kmspb.ListCryptoKeysRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*kmspb.CryptoKey, string, error) {
 		resp := &kmspb.ListCryptoKeysResponse{}
@@ -2911,7 +2911,7 @@ func (c *keyManagementRESTClient) ListCryptoKeys(ctx context.Context, req *kmspb
 // ListCryptoKeyVersions lists CryptoKeyVersions.
 func (c *keyManagementRESTClient) ListCryptoKeyVersions(ctx context.Context, req *kmspb.ListCryptoKeyVersionsRequest, opts ...gax.CallOption) *CryptoKeyVersionIterator {
 	it := &CryptoKeyVersionIterator{}
-	req = proto.Clone(req).(*kmspb.ListCryptoKeyVersionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*kmspb.CryptoKeyVersion, string, error) {
 		resp := &kmspb.ListCryptoKeyVersionsResponse{}
@@ -2998,7 +2998,7 @@ func (c *keyManagementRESTClient) ListCryptoKeyVersions(ctx context.Context, req
 // ListImportJobs lists ImportJobs.
 func (c *keyManagementRESTClient) ListImportJobs(ctx context.Context, req *kmspb.ListImportJobsRequest, opts ...gax.CallOption) *ImportJobIterator {
 	it := &ImportJobIterator{}
-	req = proto.Clone(req).(*kmspb.ListImportJobsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*kmspb.ImportJob, string, error) {
 		resp := &kmspb.ListImportJobsResponse{}
@@ -3084,7 +3084,7 @@ func (c *keyManagementRESTClient) ListImportJobs(ctx context.Context, req *kmspb
 // RetiredResources prevent the reuse of these resource names after deletion.
 func (c *keyManagementRESTClient) ListRetiredResources(ctx context.Context, req *kmspb.ListRetiredResourcesRequest, opts ...gax.CallOption) *RetiredResourceIterator {
 	it := &RetiredResourceIterator{}
-	req = proto.Clone(req).(*kmspb.ListRetiredResourcesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*kmspb.RetiredResource, string, error) {
 		resp := &kmspb.ListRetiredResourcesResponse{}
@@ -5091,7 +5091,7 @@ func (c *keyManagementRESTClient) GetLocation(ctx context.Context, req *location
 // implementation and version.
 func (c *keyManagementRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}

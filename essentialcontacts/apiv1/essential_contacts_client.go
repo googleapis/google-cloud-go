@@ -515,7 +515,7 @@ func (c *gRPCClient) ListContacts(ctx context.Context, req *essentialcontactspb.
 	}
 	opts = append((*c.CallOptions).ListContacts[0:len((*c.CallOptions).ListContacts):len((*c.CallOptions).ListContacts)], opts...)
 	it := &ContactIterator{}
-	req = proto.Clone(req).(*essentialcontactspb.ListContactsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*essentialcontactspb.Contact, string, error) {
 		resp := &essentialcontactspb.ListContactsResponse{}
 		if pageToken != "" {
@@ -611,7 +611,7 @@ func (c *gRPCClient) ComputeContacts(ctx context.Context, req *essentialcontacts
 	}
 	opts = append((*c.CallOptions).ComputeContacts[0:len((*c.CallOptions).ComputeContacts):len((*c.CallOptions).ComputeContacts)], opts...)
 	it := &ContactIterator{}
-	req = proto.Clone(req).(*essentialcontactspb.ComputeContactsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*essentialcontactspb.Contact, string, error) {
 		resp := &essentialcontactspb.ComputeContactsResponse{}
 		if pageToken != "" {
@@ -806,7 +806,7 @@ func (c *restClient) UpdateContact(ctx context.Context, req *essentialcontactspb
 // ListContacts lists the contacts that have been set on a resource.
 func (c *restClient) ListContacts(ctx context.Context, req *essentialcontactspb.ListContactsRequest, opts ...gax.CallOption) *ContactIterator {
 	it := &ContactIterator{}
-	req = proto.Clone(req).(*essentialcontactspb.ListContactsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*essentialcontactspb.Contact, string, error) {
 		resp := &essentialcontactspb.ListContactsResponse{}
@@ -985,7 +985,7 @@ func (c *restClient) DeleteContact(ctx context.Context, req *essentialcontactspb
 // any parent resources.
 func (c *restClient) ComputeContacts(ctx context.Context, req *essentialcontactspb.ComputeContactsRequest, opts ...gax.CallOption) *ContactIterator {
 	it := &ContactIterator{}
-	req = proto.Clone(req).(*essentialcontactspb.ComputeContactsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*essentialcontactspb.Contact, string, error) {
 		resp := &essentialcontactspb.ComputeContactsResponse{}

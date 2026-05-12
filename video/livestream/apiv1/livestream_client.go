@@ -1339,7 +1339,7 @@ func (c *gRPCClient) ListChannels(ctx context.Context, req *livestreampb.ListCha
 	}
 	opts = append((*c.CallOptions).ListChannels[0:len((*c.CallOptions).ListChannels):len((*c.CallOptions).ListChannels)], opts...)
 	it := &ChannelIterator{}
-	req = proto.Clone(req).(*livestreampb.ListChannelsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*livestreampb.Channel, string, error) {
 		resp := &livestreampb.ListChannelsResponse{}
 		if pageToken != "" {
@@ -1594,7 +1594,7 @@ func (c *gRPCClient) ListInputs(ctx context.Context, req *livestreampb.ListInput
 	}
 	opts = append((*c.CallOptions).ListInputs[0:len((*c.CallOptions).ListInputs):len((*c.CallOptions).ListInputs)], opts...)
 	it := &InputIterator{}
-	req = proto.Clone(req).(*livestreampb.ListInputsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*livestreampb.Input, string, error) {
 		resp := &livestreampb.ListInputsResponse{}
 		if pageToken != "" {
@@ -1767,7 +1767,7 @@ func (c *gRPCClient) ListEvents(ctx context.Context, req *livestreampb.ListEvent
 	}
 	opts = append((*c.CallOptions).ListEvents[0:len((*c.CallOptions).ListEvents):len((*c.CallOptions).ListEvents)], opts...)
 	it := &EventIterator{}
-	req = proto.Clone(req).(*livestreampb.ListEventsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*livestreampb.Event, string, error) {
 		resp := &livestreampb.ListEventsResponse{}
 		if pageToken != "" {
@@ -1863,7 +1863,7 @@ func (c *gRPCClient) ListClips(ctx context.Context, req *livestreampb.ListClipsR
 	}
 	opts = append((*c.CallOptions).ListClips[0:len((*c.CallOptions).ListClips):len((*c.CallOptions).ListClips)], opts...)
 	it := &ClipIterator{}
-	req = proto.Clone(req).(*livestreampb.ListClipsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*livestreampb.Clip, string, error) {
 		resp := &livestreampb.ListClipsResponse{}
 		if pageToken != "" {
@@ -2017,7 +2017,7 @@ func (c *gRPCClient) ListDvrSessions(ctx context.Context, req *livestreampb.List
 	}
 	opts = append((*c.CallOptions).ListDvrSessions[0:len((*c.CallOptions).ListDvrSessions):len((*c.CallOptions).ListDvrSessions)], opts...)
 	it := &DvrSessionIterator{}
-	req = proto.Clone(req).(*livestreampb.ListDvrSessionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*livestreampb.DvrSession, string, error) {
 		resp := &livestreampb.ListDvrSessionsResponse{}
 		if pageToken != "" {
@@ -2218,7 +2218,7 @@ func (c *gRPCClient) ListAssets(ctx context.Context, req *livestreampb.ListAsset
 	}
 	opts = append((*c.CallOptions).ListAssets[0:len((*c.CallOptions).ListAssets):len((*c.CallOptions).ListAssets)], opts...)
 	it := &AssetIterator{}
-	req = proto.Clone(req).(*livestreampb.ListAssetsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*livestreampb.Asset, string, error) {
 		resp := &livestreampb.ListAssetsResponse{}
 		if pageToken != "" {
@@ -2335,7 +2335,7 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -2439,7 +2439,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -2553,7 +2553,7 @@ func (c *restClient) CreateChannel(ctx context.Context, req *livestreampb.Create
 // ListChannels returns a list of all channels in the specified region.
 func (c *restClient) ListChannels(ctx context.Context, req *livestreampb.ListChannelsRequest, opts ...gax.CallOption) *ChannelIterator {
 	it := &ChannelIterator{}
-	req = proto.Clone(req).(*livestreampb.ListChannelsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*livestreampb.Channel, string, error) {
 		resp := &livestreampb.ListChannelsResponse{}
@@ -3172,7 +3172,7 @@ func (c *restClient) CreateInput(ctx context.Context, req *livestreampb.CreateIn
 // ListInputs returns a list of all inputs in the specified region.
 func (c *restClient) ListInputs(ctx context.Context, req *livestreampb.ListInputsRequest, opts ...gax.CallOption) *InputIterator {
 	it := &InputIterator{}
-	req = proto.Clone(req).(*livestreampb.ListInputsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*livestreampb.Input, string, error) {
 		resp := &livestreampb.ListInputsResponse{}
@@ -3581,7 +3581,7 @@ func (c *restClient) CreateEvent(ctx context.Context, req *livestreampb.CreateEv
 // ListEvents returns a list of all events in the specified channel.
 func (c *restClient) ListEvents(ctx context.Context, req *livestreampb.ListEventsRequest, opts ...gax.CallOption) *EventIterator {
 	it := &EventIterator{}
-	req = proto.Clone(req).(*livestreampb.ListEventsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*livestreampb.Event, string, error) {
 		resp := &livestreampb.ListEventsResponse{}
@@ -3767,7 +3767,7 @@ func (c *restClient) DeleteEvent(ctx context.Context, req *livestreampb.DeleteEv
 // ListClips returns a list of all clips in the specified channel.
 func (c *restClient) ListClips(ctx context.Context, req *livestreampb.ListClipsRequest, opts ...gax.CallOption) *ClipIterator {
 	it := &ClipIterator{}
-	req = proto.Clone(req).(*livestreampb.ListClipsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*livestreampb.Clip, string, error) {
 		resp := &livestreampb.ListClipsResponse{}
@@ -4114,7 +4114,7 @@ func (c *restClient) CreateDvrSession(ctx context.Context, req *livestreampb.Cre
 // ListDvrSessions returns a list of all DVR sessions in the specified channel.
 func (c *restClient) ListDvrSessions(ctx context.Context, req *livestreampb.ListDvrSessionsRequest, opts ...gax.CallOption) *DvrSessionIterator {
 	it := &DvrSessionIterator{}
-	req = proto.Clone(req).(*livestreampb.ListDvrSessionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*livestreampb.DvrSession, string, error) {
 		resp := &livestreampb.ListDvrSessionsResponse{}
@@ -4584,7 +4584,7 @@ func (c *restClient) GetAsset(ctx context.Context, req *livestreampb.GetAssetReq
 // ListAssets returns a list of all assets in the specified region.
 func (c *restClient) ListAssets(ctx context.Context, req *livestreampb.ListAssetsRequest, opts ...gax.CallOption) *AssetIterator {
 	it := &AssetIterator{}
-	req = proto.Clone(req).(*livestreampb.ListAssetsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*livestreampb.Asset, string, error) {
 		resp := &livestreampb.ListAssetsResponse{}
@@ -4853,7 +4853,7 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 // ListLocations lists information about the supported locations for this service.
 func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -5072,7 +5072,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

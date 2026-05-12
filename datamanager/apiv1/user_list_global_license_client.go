@@ -470,7 +470,7 @@ func (c *userListGlobalLicenseGRPCClient) ListUserListGlobalLicenses(ctx context
 	}
 	opts = append((*c.CallOptions).ListUserListGlobalLicenses[0:len((*c.CallOptions).ListUserListGlobalLicenses):len((*c.CallOptions).ListUserListGlobalLicenses)], opts...)
 	it := &UserListGlobalLicenseIterator{}
-	req = proto.Clone(req).(*datamanagerpb.ListUserListGlobalLicensesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datamanagerpb.UserListGlobalLicense, string, error) {
 		resp := &datamanagerpb.ListUserListGlobalLicensesResponse{}
 		if pageToken != "" {
@@ -522,7 +522,7 @@ func (c *userListGlobalLicenseGRPCClient) ListUserListGlobalLicenseCustomerInfos
 	}
 	opts = append((*c.CallOptions).ListUserListGlobalLicenseCustomerInfos[0:len((*c.CallOptions).ListUserListGlobalLicenseCustomerInfos):len((*c.CallOptions).ListUserListGlobalLicenseCustomerInfos)], opts...)
 	it := &UserListGlobalLicenseCustomerInfoIterator{}
-	req = proto.Clone(req).(*datamanagerpb.ListUserListGlobalLicenseCustomerInfosRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datamanagerpb.UserListGlobalLicenseCustomerInfo, string, error) {
 		resp := &datamanagerpb.ListUserListGlobalLicenseCustomerInfosResponse{}
 		if pageToken != "" {
@@ -761,7 +761,7 @@ func (c *userListGlobalLicenseRESTClient) GetUserListGlobalLicense(ctx context.C
 // This feature is only available to data partners.
 func (c *userListGlobalLicenseRESTClient) ListUserListGlobalLicenses(ctx context.Context, req *datamanagerpb.ListUserListGlobalLicensesRequest, opts ...gax.CallOption) *UserListGlobalLicenseIterator {
 	it := &UserListGlobalLicenseIterator{}
-	req = proto.Clone(req).(*datamanagerpb.ListUserListGlobalLicensesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datamanagerpb.UserListGlobalLicense, string, error) {
 		resp := &datamanagerpb.ListUserListGlobalLicensesResponse{}
@@ -844,7 +844,7 @@ func (c *userListGlobalLicenseRESTClient) ListUserListGlobalLicenses(ctx context
 // This feature is only available to data partners.
 func (c *userListGlobalLicenseRESTClient) ListUserListGlobalLicenseCustomerInfos(ctx context.Context, req *datamanagerpb.ListUserListGlobalLicenseCustomerInfosRequest, opts ...gax.CallOption) *UserListGlobalLicenseCustomerInfoIterator {
 	it := &UserListGlobalLicenseCustomerInfoIterator{}
-	req = proto.Clone(req).(*datamanagerpb.ListUserListGlobalLicenseCustomerInfosRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datamanagerpb.UserListGlobalLicenseCustomerInfo, string, error) {
 		resp := &datamanagerpb.ListUserListGlobalLicenseCustomerInfosResponse{}

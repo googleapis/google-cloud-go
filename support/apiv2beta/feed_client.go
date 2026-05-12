@@ -358,7 +358,7 @@ func (c *feedGRPCClient) ShowFeed(ctx context.Context, req *supportpb.ShowFeedRe
 	}
 	opts = append((*c.CallOptions).ShowFeed[0:len((*c.CallOptions).ShowFeed):len((*c.CallOptions).ShowFeed)], opts...)
 	it := &FeedItemIterator{}
-	req = proto.Clone(req).(*supportpb.ShowFeedRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*supportpb.FeedItem, string, error) {
 		resp := &supportpb.ShowFeedResponse{}
 		if pageToken != "" {
@@ -401,7 +401,7 @@ func (c *feedGRPCClient) ShowFeed(ctx context.Context, req *supportpb.ShowFeedRe
 // attachments, and comments.
 func (c *feedRESTClient) ShowFeed(ctx context.Context, req *supportpb.ShowFeedRequest, opts ...gax.CallOption) *FeedItemIterator {
 	it := &FeedItemIterator{}
-	req = proto.Clone(req).(*supportpb.ShowFeedRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*supportpb.FeedItem, string, error) {
 		resp := &supportpb.ShowFeedResponse{}

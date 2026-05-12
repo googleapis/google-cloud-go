@@ -1,6 +1,8 @@
 # Changes
 
 
+## [1.125.0](https://github.com/googleapis/google-cloud-go/releases/tag/aiplatform%2Fv1.125.0) (2026-04-30)
+
 ## [1.124.0](https://github.com/googleapis/google-cloud-go/releases/tag/aiplatform%2Fv1.124.0) (2026-04-13)
 
 ## [1.123.0](https://github.com/googleapis/google-cloud-go/releases/tag/aiplatform%2Fv1.123.0) (2026-04-09)

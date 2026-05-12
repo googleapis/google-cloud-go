@@ -953,7 +953,7 @@ func (c *gRPCClient) ListConnectionProfiles(ctx context.Context, req *datastream
 	}
 	opts = append((*c.CallOptions).ListConnectionProfiles[0:len((*c.CallOptions).ListConnectionProfiles):len((*c.CallOptions).ListConnectionProfiles)], opts...)
 	it := &ConnectionProfileIterator{}
-	req = proto.Clone(req).(*datastreampb.ListConnectionProfilesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datastreampb.ConnectionProfile, string, error) {
 		resp := &datastreampb.ListConnectionProfilesResponse{}
 		if pageToken != "" {
@@ -1128,7 +1128,7 @@ func (c *gRPCClient) ListStreams(ctx context.Context, req *datastreampb.ListStre
 	}
 	opts = append((*c.CallOptions).ListStreams[0:len((*c.CallOptions).ListStreams):len((*c.CallOptions).ListStreams)], opts...)
 	it := &StreamIterator{}
-	req = proto.Clone(req).(*datastreampb.ListStreamsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datastreampb.Stream, string, error) {
 		resp := &datastreampb.ListStreamsResponse{}
 		if pageToken != "" {
@@ -1305,7 +1305,7 @@ func (c *gRPCClient) FetchStaticIps(ctx context.Context, req *datastreampb.Fetch
 	}
 	opts = append((*c.CallOptions).FetchStaticIps[0:len((*c.CallOptions).FetchStaticIps):len((*c.CallOptions).FetchStaticIps)], opts...)
 	it := &StringIterator{}
-	req = proto.Clone(req).(*datastreampb.FetchStaticIpsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]string, string, error) {
 		resp := &datastreampb.FetchStaticIpsResponse{}
 		if pageToken != "" {
@@ -1407,7 +1407,7 @@ func (c *gRPCClient) ListPrivateConnections(ctx context.Context, req *datastream
 	}
 	opts = append((*c.CallOptions).ListPrivateConnections[0:len((*c.CallOptions).ListPrivateConnections):len((*c.CallOptions).ListPrivateConnections)], opts...)
 	it := &PrivateConnectionIterator{}
-	req = proto.Clone(req).(*datastreampb.ListPrivateConnectionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datastreampb.PrivateConnection, string, error) {
 		resp := &datastreampb.ListPrivateConnectionsResponse{}
 		if pageToken != "" {
@@ -1535,7 +1535,7 @@ func (c *gRPCClient) ListRoutes(ctx context.Context, req *datastreampb.ListRoute
 	}
 	opts = append((*c.CallOptions).ListRoutes[0:len((*c.CallOptions).ListRoutes):len((*c.CallOptions).ListRoutes)], opts...)
 	it := &RouteIterator{}
-	req = proto.Clone(req).(*datastreampb.ListRoutesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datastreampb.Route, string, error) {
 		resp := &datastreampb.ListRoutesResponse{}
 		if pageToken != "" {
@@ -1604,7 +1604,7 @@ func (c *gRPCClient) DeleteRoute(ctx context.Context, req *datastreampb.DeleteRo
 // location.
 func (c *restClient) ListConnectionProfiles(ctx context.Context, req *datastreampb.ListConnectionProfilesRequest, opts ...gax.CallOption) *ConnectionProfileIterator {
 	it := &ConnectionProfileIterator{}
-	req = proto.Clone(req).(*datastreampb.ListConnectionProfilesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datastreampb.ConnectionProfile, string, error) {
 		resp := &datastreampb.ListConnectionProfilesResponse{}
@@ -2019,7 +2019,7 @@ func (c *restClient) DiscoverConnectionProfile(ctx context.Context, req *datastr
 // ListStreams use this method to list streams in a project and location.
 func (c *restClient) ListStreams(ctx context.Context, req *datastreampb.ListStreamsRequest, opts ...gax.CallOption) *StreamIterator {
 	it := &StreamIterator{}
-	req = proto.Clone(req).(*datastreampb.ListStreamsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datastreampb.Stream, string, error) {
 		resp := &datastreampb.ListStreamsResponse{}
@@ -2448,7 +2448,7 @@ func (c *restClient) FetchErrors(ctx context.Context, req *datastreampb.FetchErr
 // a parent data object that’s optionally supplied in the request.
 func (c *restClient) FetchStaticIps(ctx context.Context, req *datastreampb.FetchStaticIpsRequest, opts ...gax.CallOption) *StringIterator {
 	it := &StringIterator{}
-	req = proto.Clone(req).(*datastreampb.FetchStaticIpsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]string, string, error) {
 		resp := &datastreampb.FetchStaticIpsResponse{}
@@ -2655,7 +2655,7 @@ func (c *restClient) GetPrivateConnection(ctx context.Context, req *datastreampb
 // and location.
 func (c *restClient) ListPrivateConnections(ctx context.Context, req *datastreampb.ListPrivateConnectionsRequest, opts ...gax.CallOption) *PrivateConnectionIterator {
 	it := &PrivateConnectionIterator{}
-	req = proto.Clone(req).(*datastreampb.ListPrivateConnectionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datastreampb.PrivateConnection, string, error) {
 		resp := &datastreampb.ListPrivateConnectionsResponse{}
@@ -2935,7 +2935,7 @@ func (c *restClient) GetRoute(ctx context.Context, req *datastreampb.GetRouteReq
 // project and location.
 func (c *restClient) ListRoutes(ctx context.Context, req *datastreampb.ListRoutesRequest, opts ...gax.CallOption) *RouteIterator {
 	it := &RouteIterator{}
-	req = proto.Clone(req).(*datastreampb.ListRoutesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datastreampb.Route, string, error) {
 		resp := &datastreampb.ListRoutesResponse{}

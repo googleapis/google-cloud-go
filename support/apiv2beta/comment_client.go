@@ -386,7 +386,7 @@ func (c *commentGRPCClient) ListComments(ctx context.Context, req *supportpb.Lis
 	}
 	opts = append((*c.CallOptions).ListComments[0:len((*c.CallOptions).ListComments):len((*c.CallOptions).ListComments)], opts...)
 	it := &CommentIterator{}
-	req = proto.Clone(req).(*supportpb.ListCommentsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*supportpb.Comment, string, error) {
 		resp := &supportpb.ListCommentsResponse{}
 		if pageToken != "" {
@@ -476,7 +476,7 @@ func (c *commentGRPCClient) GetComment(ctx context.Context, req *supportpb.GetCo
 // ListComments list all the comments associated with a case.
 func (c *commentRESTClient) ListComments(ctx context.Context, req *supportpb.ListCommentsRequest, opts ...gax.CallOption) *CommentIterator {
 	it := &CommentIterator{}
-	req = proto.Clone(req).(*supportpb.ListCommentsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*supportpb.Comment, string, error) {
 		resp := &supportpb.ListCommentsResponse{}

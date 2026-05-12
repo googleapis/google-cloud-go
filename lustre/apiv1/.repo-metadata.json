@@ -6,5 +6,5 @@
     "distribution_name": "cloud.google.com/go/lustre/apiv1",
     "language": "go",
     "library_type": "GAPIC_AUTO",
-    "release_level": "preview"
+    "release_level": "stable"
 }

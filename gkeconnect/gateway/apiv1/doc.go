@@ -20,8 +20,6 @@
 // The Connect Gateway service allows connectivity from external parties to
 // connected Kubernetes clusters.
 //
-//	NOTE: This package is in beta. It is not stable, and may be subject to changes.
-//
 // # General documentation
 //
 // For information that is relevant for all client libraries please reference
@@ -45,7 +43,7 @@
 //	// - It may require correct/in-range values for request initialization.
 //	// - It may require specifying regional endpoints when creating the service client as shown in:
 //	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-//	c, err := gateway.NewGatewayControlClient(ctx)
+//	c, err := gateway.NewGatewayControlRESTClient(ctx)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}
@@ -72,7 +70,7 @@
 //
 // # Use of Context
 //
-// The ctx passed to NewGatewayControlClient is used for authentication requests and
+// The ctx passed to NewGatewayControlRESTClient is used for authentication requests and
 // for creating the underlying connection, but is not used for subsequent calls.
 // Individual methods on the client use the ctx given to them.
 //

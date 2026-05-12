@@ -113,6 +113,7 @@ func testStreamingPullIteration(t *testing.T, client *Client, server *mockServer
 			t.Errorf("%d: got\n%#v\nwant\n%#v", i, got, want)
 		}
 	}
+	server.stop()
 	server.wait()
 	server.mu.Lock()
 	defer server.mu.Unlock()
@@ -245,6 +246,7 @@ func TestStreamingPullRetry(t *testing.T) {
 			t.Errorf("%d: got\n%#v\nwant\n%#v", i, got, want)
 		}
 	}
+	server.stop()
 	server.wait()
 	for i := 0; i < len(testMessages); i++ {
 		id := testMessages[i].AckId

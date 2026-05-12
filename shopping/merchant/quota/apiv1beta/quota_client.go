@@ -358,7 +358,7 @@ func (c *gRPCClient) ListQuotaGroups(ctx context.Context, req *quotapb.ListQuota
 	}
 	opts = append((*c.CallOptions).ListQuotaGroups[0:len((*c.CallOptions).ListQuotaGroups):len((*c.CallOptions).ListQuotaGroups)], opts...)
 	it := &QuotaGroupIterator{}
-	req = proto.Clone(req).(*quotapb.ListQuotaGroupsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*quotapb.QuotaGroup, string, error) {
 		resp := &quotapb.ListQuotaGroupsResponse{}
 		if pageToken != "" {
@@ -401,7 +401,7 @@ func (c *gRPCClient) ListQuotaGroups(ctx context.Context, req *quotapb.ListQuota
 // Center account.
 func (c *restClient) ListQuotaGroups(ctx context.Context, req *quotapb.ListQuotaGroupsRequest, opts ...gax.CallOption) *QuotaGroupIterator {
 	it := &QuotaGroupIterator{}
-	req = proto.Clone(req).(*quotapb.ListQuotaGroupsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*quotapb.QuotaGroup, string, error) {
 		resp := &quotapb.ListQuotaGroupsResponse{}

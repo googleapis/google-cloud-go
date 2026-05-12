@@ -1254,7 +1254,7 @@ func (c *gRPCClient) ListServiceProjectAttachments(ctx context.Context, req *app
 	}
 	opts = append((*c.CallOptions).ListServiceProjectAttachments[0:len((*c.CallOptions).ListServiceProjectAttachments):len((*c.CallOptions).ListServiceProjectAttachments)], opts...)
 	it := &ServiceProjectAttachmentIterator{}
-	req = proto.Clone(req).(*apphubpb.ListServiceProjectAttachmentsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apphubpb.ServiceProjectAttachment, string, error) {
 		resp := &apphubpb.ListServiceProjectAttachmentsResponse{}
 		if pageToken != "" {
@@ -1406,7 +1406,7 @@ func (c *gRPCClient) ListDiscoveredServices(ctx context.Context, req *apphubpb.L
 	}
 	opts = append((*c.CallOptions).ListDiscoveredServices[0:len((*c.CallOptions).ListDiscoveredServices):len((*c.CallOptions).ListDiscoveredServices)], opts...)
 	it := &DiscoveredServiceIterator{}
-	req = proto.Clone(req).(*apphubpb.ListDiscoveredServicesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apphubpb.DiscoveredService, string, error) {
 		resp := &apphubpb.ListDiscoveredServicesResponse{}
 		if pageToken != "" {
@@ -1506,7 +1506,7 @@ func (c *gRPCClient) ListServices(ctx context.Context, req *apphubpb.ListService
 	}
 	opts = append((*c.CallOptions).ListServices[0:len((*c.CallOptions).ListServices):len((*c.CallOptions).ListServices)], opts...)
 	it := &ServiceIterator{}
-	req = proto.Clone(req).(*apphubpb.ListServicesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apphubpb.Service, string, error) {
 		resp := &apphubpb.ListServicesResponse{}
 		if pageToken != "" {
@@ -1657,7 +1657,7 @@ func (c *gRPCClient) ListDiscoveredWorkloads(ctx context.Context, req *apphubpb.
 	}
 	opts = append((*c.CallOptions).ListDiscoveredWorkloads[0:len((*c.CallOptions).ListDiscoveredWorkloads):len((*c.CallOptions).ListDiscoveredWorkloads)], opts...)
 	it := &DiscoveredWorkloadIterator{}
-	req = proto.Clone(req).(*apphubpb.ListDiscoveredWorkloadsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apphubpb.DiscoveredWorkload, string, error) {
 		resp := &apphubpb.ListDiscoveredWorkloadsResponse{}
 		if pageToken != "" {
@@ -1757,7 +1757,7 @@ func (c *gRPCClient) ListWorkloads(ctx context.Context, req *apphubpb.ListWorklo
 	}
 	opts = append((*c.CallOptions).ListWorkloads[0:len((*c.CallOptions).ListWorkloads):len((*c.CallOptions).ListWorkloads)], opts...)
 	it := &WorkloadIterator{}
-	req = proto.Clone(req).(*apphubpb.ListWorkloadsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apphubpb.Workload, string, error) {
 		resp := &apphubpb.ListWorkloadsResponse{}
 		if pageToken != "" {
@@ -1908,7 +1908,7 @@ func (c *gRPCClient) ListApplications(ctx context.Context, req *apphubpb.ListApp
 	}
 	opts = append((*c.CallOptions).ListApplications[0:len((*c.CallOptions).ListApplications):len((*c.CallOptions).ListApplications)], opts...)
 	it := &ApplicationIterator{}
-	req = proto.Clone(req).(*apphubpb.ListApplicationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apphubpb.Application, string, error) {
 		resp := &apphubpb.ListApplicationsResponse{}
 		if pageToken != "" {
@@ -2077,7 +2077,7 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -2253,7 +2253,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -2353,7 +2353,7 @@ func (c *restClient) LookupServiceProjectAttachment(ctx context.Context, req *ap
 // ListServiceProjectAttachments lists service projects attached to the host project.
 func (c *restClient) ListServiceProjectAttachments(ctx context.Context, req *apphubpb.ListServiceProjectAttachmentsRequest, opts ...gax.CallOption) *ServiceProjectAttachmentIterator {
 	it := &ServiceProjectAttachmentIterator{}
-	req = proto.Clone(req).(*apphubpb.ListServiceProjectAttachmentsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apphubpb.ServiceProjectAttachment, string, error) {
 		resp := &apphubpb.ListServiceProjectAttachmentsResponse{}
@@ -2694,7 +2694,7 @@ func (c *restClient) DetachServiceProjectAttachment(ctx context.Context, req *ap
 // project and location.
 func (c *restClient) ListDiscoveredServices(ctx context.Context, req *apphubpb.ListDiscoveredServicesRequest, opts ...gax.CallOption) *DiscoveredServiceIterator {
 	it := &DiscoveredServiceIterator{}
-	req = proto.Clone(req).(*apphubpb.ListDiscoveredServicesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apphubpb.DiscoveredService, string, error) {
 		resp := &apphubpb.ListDiscoveredServicesResponse{}
@@ -2894,7 +2894,7 @@ func (c *restClient) LookupDiscoveredService(ctx context.Context, req *apphubpb.
 // ListServices lists Services in an Application.
 func (c *restClient) ListServices(ctx context.Context, req *apphubpb.ListServicesRequest, opts ...gax.CallOption) *ServiceIterator {
 	it := &ServiceIterator{}
-	req = proto.Clone(req).(*apphubpb.ListServicesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apphubpb.Service, string, error) {
 		resp := &apphubpb.ListServicesResponse{}
@@ -3244,7 +3244,7 @@ func (c *restClient) DeleteService(ctx context.Context, req *apphubpb.DeleteServ
 // project and location.
 func (c *restClient) ListDiscoveredWorkloads(ctx context.Context, req *apphubpb.ListDiscoveredWorkloadsRequest, opts ...gax.CallOption) *DiscoveredWorkloadIterator {
 	it := &DiscoveredWorkloadIterator{}
-	req = proto.Clone(req).(*apphubpb.ListDiscoveredWorkloadsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apphubpb.DiscoveredWorkload, string, error) {
 		resp := &apphubpb.ListDiscoveredWorkloadsResponse{}
@@ -3444,7 +3444,7 @@ func (c *restClient) LookupDiscoveredWorkload(ctx context.Context, req *apphubpb
 // ListWorkloads lists Workloads in an Application.
 func (c *restClient) ListWorkloads(ctx context.Context, req *apphubpb.ListWorkloadsRequest, opts ...gax.CallOption) *WorkloadIterator {
 	it := &WorkloadIterator{}
-	req = proto.Clone(req).(*apphubpb.ListWorkloadsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apphubpb.Workload, string, error) {
 		resp := &apphubpb.ListWorkloadsResponse{}
@@ -3793,7 +3793,7 @@ func (c *restClient) DeleteWorkload(ctx context.Context, req *apphubpb.DeleteWor
 // ListApplications lists Applications in a host project and location.
 func (c *restClient) ListApplications(ctx context.Context, req *apphubpb.ListApplicationsRequest, opts ...gax.CallOption) *ApplicationIterator {
 	it := &ApplicationIterator{}
-	req = proto.Clone(req).(*apphubpb.ListApplicationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apphubpb.Application, string, error) {
 		resp := &apphubpb.ListApplicationsResponse{}
@@ -4196,7 +4196,7 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 // ListLocations lists information about the supported locations for this service.
 func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -4612,7 +4612,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

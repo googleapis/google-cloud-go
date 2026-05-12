@@ -660,7 +660,7 @@ func (c *interconnectAttachmentGroupsRESTClient) Insert(ctx context.Context, req
 // List lists the InterconnectAttachmentGroups for a project in the given scope.
 func (c *interconnectAttachmentGroupsRESTClient) List(ctx context.Context, req *computepb.ListInterconnectAttachmentGroupsRequest, opts ...gax.CallOption) *InterconnectAttachmentGroupIterator {
 	it := &InterconnectAttachmentGroupIterator{}
-	req = proto.Clone(req).(*computepb.ListInterconnectAttachmentGroupsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.InterconnectAttachmentGroup, string, error) {
 		resp := &computepb.InterconnectAttachmentGroupsListResponse{}

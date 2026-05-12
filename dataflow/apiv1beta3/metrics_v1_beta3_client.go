@@ -399,7 +399,7 @@ func (c *metricsV1Beta3GRPCClient) GetJobExecutionDetails(ctx context.Context, r
 	}
 	opts = append((*c.CallOptions).GetJobExecutionDetails[0:len((*c.CallOptions).GetJobExecutionDetails):len((*c.CallOptions).GetJobExecutionDetails)], opts...)
 	it := &StageSummaryIterator{}
-	req = proto.Clone(req).(*dataflowpb.GetJobExecutionDetailsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataflowpb.StageSummary, string, error) {
 		resp := &dataflowpb.JobExecutionDetails{}
 		if pageToken != "" {
@@ -448,7 +448,7 @@ func (c *metricsV1Beta3GRPCClient) GetStageExecutionDetails(ctx context.Context,
 	}
 	opts = append((*c.CallOptions).GetStageExecutionDetails[0:len((*c.CallOptions).GetStageExecutionDetails):len((*c.CallOptions).GetStageExecutionDetails)], opts...)
 	it := &WorkerDetailsIterator{}
-	req = proto.Clone(req).(*dataflowpb.GetStageExecutionDetailsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataflowpb.WorkerDetails, string, error) {
 		resp := &dataflowpb.StageExecutionDetails{}
 		if pageToken != "" {
@@ -559,7 +559,7 @@ func (c *metricsV1Beta3RESTClient) GetJobMetrics(ctx context.Context, req *dataf
 // EXPERIMENTAL.  This API is subject to change or removal without notice.
 func (c *metricsV1Beta3RESTClient) GetJobExecutionDetails(ctx context.Context, req *dataflowpb.GetJobExecutionDetailsRequest, opts ...gax.CallOption) *StageSummaryIterator {
 	it := &StageSummaryIterator{}
-	req = proto.Clone(req).(*dataflowpb.GetJobExecutionDetailsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataflowpb.StageSummary, string, error) {
 		resp := &dataflowpb.JobExecutionDetails{}
@@ -640,7 +640,7 @@ func (c *metricsV1Beta3RESTClient) GetJobExecutionDetails(ctx context.Context, r
 // EXPERIMENTAL.  This API is subject to change or removal without notice.
 func (c *metricsV1Beta3RESTClient) GetStageExecutionDetails(ctx context.Context, req *dataflowpb.GetStageExecutionDetailsRequest, opts ...gax.CallOption) *WorkerDetailsIterator {
 	it := &WorkerDetailsIterator{}
-	req = proto.Clone(req).(*dataflowpb.GetStageExecutionDetailsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataflowpb.WorkerDetails, string, error) {
 		resp := &dataflowpb.StageExecutionDetails{}

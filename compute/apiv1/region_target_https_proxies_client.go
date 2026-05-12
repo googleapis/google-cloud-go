@@ -506,7 +506,7 @@ func (c *regionTargetHttpsProxiesRESTClient) Insert(ctx context.Context, req *co
 // to the specified project in the specified region.
 func (c *regionTargetHttpsProxiesRESTClient) List(ctx context.Context, req *computepb.ListRegionTargetHttpsProxiesRequest, opts ...gax.CallOption) *TargetHttpsProxyIterator {
 	it := &TargetHttpsProxyIterator{}
-	req = proto.Clone(req).(*computepb.ListRegionTargetHttpsProxiesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.TargetHttpsProxy, string, error) {
 		resp := &computepb.TargetHttpsProxyList{}

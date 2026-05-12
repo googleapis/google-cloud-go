@@ -568,7 +568,7 @@ func (c *publicAdvertisedPrefixesRESTClient) Insert(ctx context.Context, req *co
 // List lists the PublicAdvertisedPrefixes for a project.
 func (c *publicAdvertisedPrefixesRESTClient) List(ctx context.Context, req *computepb.ListPublicAdvertisedPrefixesRequest, opts ...gax.CallOption) *PublicAdvertisedPrefixIterator {
 	it := &PublicAdvertisedPrefixIterator{}
-	req = proto.Clone(req).(*computepb.ListPublicAdvertisedPrefixesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.PublicAdvertisedPrefix, string, error) {
 		resp := &computepb.PublicAdvertisedPrefixList{}

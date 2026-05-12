@@ -3,6 +3,8 @@
 
 
 
+## [1.77.0](https://github.com/googleapis/google-cloud-go/releases/tag/bigquery%2Fv1.77.0) (2026-05-04)
+
 ## [1.76.0](https://github.com/googleapis/google-cloud-go/releases/tag/bigquery%2Fv1.76.0) (2026-04-09)
 
 ## [1.75.0](https://github.com/googleapis/google-cloud-go/releases/tag/bigquery%2Fv1.75.0) (2026-03-30)

@@ -947,7 +947,7 @@ func (c *documentProcessorGRPCClient) ListProcessorTypes(ctx context.Context, re
 	}
 	opts = append((*c.CallOptions).ListProcessorTypes[0:len((*c.CallOptions).ListProcessorTypes):len((*c.CallOptions).ListProcessorTypes)], opts...)
 	it := &ProcessorTypeIterator{}
-	req = proto.Clone(req).(*documentaipb.ListProcessorTypesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*documentaipb.ProcessorType, string, error) {
 		resp := &documentaipb.ListProcessorTypesResponse{}
 		if pageToken != "" {
@@ -1023,7 +1023,7 @@ func (c *documentProcessorGRPCClient) ListProcessors(ctx context.Context, req *d
 	}
 	opts = append((*c.CallOptions).ListProcessors[0:len((*c.CallOptions).ListProcessors):len((*c.CallOptions).ListProcessors)], opts...)
 	it := &ProcessorIterator{}
-	req = proto.Clone(req).(*documentaipb.ListProcessorsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*documentaipb.Processor, string, error) {
 		resp := &documentaipb.ListProcessorsResponse{}
 		if pageToken != "" {
@@ -1149,7 +1149,7 @@ func (c *documentProcessorGRPCClient) ListProcessorVersions(ctx context.Context,
 	}
 	opts = append((*c.CallOptions).ListProcessorVersions[0:len((*c.CallOptions).ListProcessorVersions):len((*c.CallOptions).ListProcessorVersions)], opts...)
 	it := &ProcessorVersionIterator{}
-	req = proto.Clone(req).(*documentaipb.ListProcessorVersionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*documentaipb.ProcessorVersion, string, error) {
 		resp := &documentaipb.ListProcessorVersionsResponse{}
 		if pageToken != "" {
@@ -1483,7 +1483,7 @@ func (c *documentProcessorGRPCClient) ListEvaluations(ctx context.Context, req *
 	}
 	opts = append((*c.CallOptions).ListEvaluations[0:len((*c.CallOptions).ListEvaluations):len((*c.CallOptions).ListEvaluations)], opts...)
 	it := &EvaluationIterator{}
-	req = proto.Clone(req).(*documentaipb.ListEvaluationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*documentaipb.Evaluation, string, error) {
 		resp := &documentaipb.ListEvaluationsResponse{}
 		if pageToken != "" {
@@ -1579,7 +1579,7 @@ func (c *documentProcessorGRPCClient) ListLocations(ctx context.Context, req *lo
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -1666,7 +1666,7 @@ func (c *documentProcessorGRPCClient) ListOperations(ctx context.Context, req *l
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -1897,7 +1897,7 @@ func (c *documentProcessorRESTClient) FetchProcessorTypes(ctx context.Context, r
 // ListProcessorTypes lists the processor types that exist.
 func (c *documentProcessorRESTClient) ListProcessorTypes(ctx context.Context, req *documentaipb.ListProcessorTypesRequest, opts ...gax.CallOption) *ProcessorTypeIterator {
 	it := &ProcessorTypeIterator{}
-	req = proto.Clone(req).(*documentaipb.ListProcessorTypesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*documentaipb.ProcessorType, string, error) {
 		resp := &documentaipb.ListProcessorTypesResponse{}
@@ -2032,7 +2032,7 @@ func (c *documentProcessorRESTClient) GetProcessorType(ctx context.Context, req 
 // ListProcessors lists all processors which belong to this project.
 func (c *documentProcessorRESTClient) ListProcessors(ctx context.Context, req *documentaipb.ListProcessorsRequest, opts ...gax.CallOption) *ProcessorIterator {
 	it := &ProcessorIterator{}
-	req = proto.Clone(req).(*documentaipb.ListProcessorsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*documentaipb.Processor, string, error) {
 		resp := &documentaipb.ListProcessorsResponse{}
@@ -2292,7 +2292,7 @@ func (c *documentProcessorRESTClient) GetProcessorVersion(ctx context.Context, r
 // ListProcessorVersions lists all versions of a processor.
 func (c *documentProcessorRESTClient) ListProcessorVersions(ctx context.Context, req *documentaipb.ListProcessorVersionsRequest, opts ...gax.CallOption) *ProcessorVersionIterator {
 	it := &ProcessorVersionIterator{}
-	req = proto.Clone(req).(*documentaipb.ListProcessorVersionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*documentaipb.ProcessorVersion, string, error) {
 		resp := &documentaipb.ListProcessorVersionsResponse{}
@@ -3089,7 +3089,7 @@ func (c *documentProcessorRESTClient) GetEvaluation(ctx context.Context, req *do
 // ListEvaluations retrieves a set of evaluations for a given processor version.
 func (c *documentProcessorRESTClient) ListEvaluations(ctx context.Context, req *documentaipb.ListEvaluationsRequest, opts ...gax.CallOption) *EvaluationIterator {
 	it := &EvaluationIterator{}
-	req = proto.Clone(req).(*documentaipb.ListEvaluationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*documentaipb.Evaluation, string, error) {
 		resp := &documentaipb.ListEvaluationsResponse{}
@@ -3295,7 +3295,7 @@ func (c *documentProcessorRESTClient) GetLocation(ctx context.Context, req *loca
 //	to the project.
 func (c *documentProcessorRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -3469,7 +3469,7 @@ func (c *documentProcessorRESTClient) GetOperation(ctx context.Context, req *lon
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *documentProcessorRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

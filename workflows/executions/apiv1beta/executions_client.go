@@ -374,7 +374,7 @@ func (c *gRPCClient) ListExecutions(ctx context.Context, req *executionspb.ListE
 	}
 	opts = append((*c.CallOptions).ListExecutions[0:len((*c.CallOptions).ListExecutions):len((*c.CallOptions).ListExecutions)], opts...)
 	it := &ExecutionIterator{}
-	req = proto.Clone(req).(*executionspb.ListExecutionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*executionspb.Execution, string, error) {
 		resp := &executionspb.ListExecutionsResponse{}
 		if pageToken != "" {
@@ -491,7 +491,7 @@ func (c *gRPCClient) CancelExecution(ctx context.Context, req *executionspb.Canc
 // first).
 func (c *restClient) ListExecutions(ctx context.Context, req *executionspb.ListExecutionsRequest, opts ...gax.CallOption) *ExecutionIterator {
 	it := &ExecutionIterator{}
-	req = proto.Clone(req).(*executionspb.ListExecutionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*executionspb.Execution, string, error) {
 		resp := &executionspb.ListExecutionsResponse{}

@@ -647,7 +647,7 @@ func (c *retrieverGRPCClient) ListCorpora(ctx context.Context, req *generativela
 	}
 	opts = append((*c.CallOptions).ListCorpora[0:len((*c.CallOptions).ListCorpora):len((*c.CallOptions).ListCorpora)], opts...)
 	it := &CorpusIterator{}
-	req = proto.Clone(req).(*generativelanguagepb.ListCorporaRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*generativelanguagepb.Corpus, string, error) {
 		resp := &generativelanguagepb.ListCorporaResponse{}
 		if pageToken != "" {
@@ -812,7 +812,7 @@ func (c *retrieverGRPCClient) ListDocuments(ctx context.Context, req *generative
 	}
 	opts = append((*c.CallOptions).ListDocuments[0:len((*c.CallOptions).ListDocuments):len((*c.CallOptions).ListDocuments)], opts...)
 	it := &DocumentIterator{}
-	req = proto.Clone(req).(*generativelanguagepb.ListDocumentsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*generativelanguagepb.Document, string, error) {
 		resp := &generativelanguagepb.ListDocumentsResponse{}
 		if pageToken != "" {
@@ -1045,7 +1045,7 @@ func (c *retrieverGRPCClient) ListChunks(ctx context.Context, req *generativelan
 	}
 	opts = append((*c.CallOptions).ListChunks[0:len((*c.CallOptions).ListChunks):len((*c.CallOptions).ListChunks)], opts...)
 	it := &ChunkIterator{}
-	req = proto.Clone(req).(*generativelanguagepb.ListChunksRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*generativelanguagepb.Chunk, string, error) {
 		resp := &generativelanguagepb.ListChunksResponse{}
 		if pageToken != "" {
@@ -1115,7 +1115,7 @@ func (c *retrieverGRPCClient) ListOperations(ctx context.Context, req *longrunni
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -1385,7 +1385,7 @@ func (c *retrieverRESTClient) DeleteCorpus(ctx context.Context, req *generativel
 // ListCorpora lists all Corpora owned by the user.
 func (c *retrieverRESTClient) ListCorpora(ctx context.Context, req *generativelanguagepb.ListCorporaRequest, opts ...gax.CallOption) *CorpusIterator {
 	it := &CorpusIterator{}
-	req = proto.Clone(req).(*generativelanguagepb.ListCorporaRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*generativelanguagepb.Corpus, string, error) {
 		resp := &generativelanguagepb.ListCorporaResponse{}
@@ -1760,7 +1760,7 @@ func (c *retrieverRESTClient) DeleteDocument(ctx context.Context, req *generativ
 // ListDocuments lists all Documents in a Corpus.
 func (c *retrieverRESTClient) ListDocuments(ctx context.Context, req *generativelanguagepb.ListDocumentsRequest, opts ...gax.CallOption) *DocumentIterator {
 	it := &DocumentIterator{}
-	req = proto.Clone(req).(*generativelanguagepb.ListDocumentsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*generativelanguagepb.Document, string, error) {
 		resp := &generativelanguagepb.ListDocumentsResponse{}
@@ -2306,7 +2306,7 @@ func (c *retrieverRESTClient) BatchDeleteChunks(ctx context.Context, req *genera
 // ListChunks lists all Chunks in a Document.
 func (c *retrieverRESTClient) ListChunks(ctx context.Context, req *generativelanguagepb.ListChunksRequest, opts ...gax.CallOption) *ChunkIterator {
 	it := &ChunkIterator{}
-	req = proto.Clone(req).(*generativelanguagepb.ListChunksRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*generativelanguagepb.Chunk, string, error) {
 		resp := &generativelanguagepb.ListChunksResponse{}
@@ -2438,7 +2438,7 @@ func (c *retrieverRESTClient) GetOperation(ctx context.Context, req *longrunning
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *retrieverRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

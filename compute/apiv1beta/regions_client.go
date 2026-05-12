@@ -356,7 +356,7 @@ func (c *regionsRESTClient) Get(ctx context.Context, req *computepb.GetRegionReq
 // behaviour for this method.
 func (c *regionsRESTClient) List(ctx context.Context, req *computepb.ListRegionsRequest, opts ...gax.CallOption) *RegionIterator {
 	it := &RegionIterator{}
-	req = proto.Clone(req).(*computepb.ListRegionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.Region, string, error) {
 		resp := &computepb.RegionList{}

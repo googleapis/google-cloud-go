@@ -5390,8 +5390,8 @@ func compareErrors(got, want error) bool {
 	if idx := strings.Index(wantStr, "requestID"); idx != -1 {
 		wantStr = wantStr[:idx]
 	}
-	gotStr = strings.ReplaceAll(gotStr, `",`, ``)
-	wantStr = strings.ReplaceAll(gotStr, `",`, ``)
+	gotStr = strings.ReplaceAll(gotStr, `", `, `"`)
+	wantStr = strings.ReplaceAll(wantStr, `", `, `"`)
 	return strings.EqualFold(strings.TrimSpace(gotStr), strings.TrimSpace(wantStr))
 }
 
@@ -5594,7 +5594,7 @@ func TestIntegration_Foreign_Key_Delete_Cascade_Action(t *testing.T) {
 			gotErr := tt.test()
 			if gotErr != nil {
 				if !compareErrors(gotErr, tt.wantErr) {
-					t.Errorf(`FKDC error=%v, wantErr: %v`, gotErr, tt.wantErr)
+					t.Errorf("error mismatch\n Got: %v\nWant: %v", gotErr, tt.wantErr)
 				}
 			} else {
 				tt.validate()
@@ -6031,6 +6031,8 @@ func TestIntegration_WithDirectedReadOptions_ReadWriteTransaction_ShouldThrowErr
 }
 
 func TestIntegration_QueueMutations(t *testing.T) {
+	// TODO: Re-enable once Cloud Queues are supported.
+	t.Skip("Cloud Queues are not supported yet")
 	// Run in cloud-devel only since this queue feature is not fully enabled yet.
 	onlyRunOnCloudDevel(t)
 	// DDL not fully enabled for PG yet.

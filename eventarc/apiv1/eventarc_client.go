@@ -1582,7 +1582,7 @@ func (c *gRPCClient) ListTriggers(ctx context.Context, req *eventarcpb.ListTrigg
 	}
 	opts = append((*c.CallOptions).ListTriggers[0:len((*c.CallOptions).ListTriggers):len((*c.CallOptions).ListTriggers)], opts...)
 	it := &TriggerIterator{}
-	req = proto.Clone(req).(*eventarcpb.ListTriggersRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*eventarcpb.Trigger, string, error) {
 		resp := &eventarcpb.ListTriggersResponse{}
 		if pageToken != "" {
@@ -1733,7 +1733,7 @@ func (c *gRPCClient) ListChannels(ctx context.Context, req *eventarcpb.ListChann
 	}
 	opts = append((*c.CallOptions).ListChannels[0:len((*c.CallOptions).ListChannels):len((*c.CallOptions).ListChannels)], opts...)
 	it := &ChannelIterator{}
-	req = proto.Clone(req).(*eventarcpb.ListChannelsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*eventarcpb.Channel, string, error) {
 		resp := &eventarcpb.ListChannelsResponse{}
 		if pageToken != "" {
@@ -1884,7 +1884,7 @@ func (c *gRPCClient) ListProviders(ctx context.Context, req *eventarcpb.ListProv
 	}
 	opts = append((*c.CallOptions).ListProviders[0:len((*c.CallOptions).ListProviders):len((*c.CallOptions).ListProviders)], opts...)
 	it := &ProviderIterator{}
-	req = proto.Clone(req).(*eventarcpb.ListProvidersRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*eventarcpb.Provider, string, error) {
 		resp := &eventarcpb.ListProvidersResponse{}
 		if pageToken != "" {
@@ -1960,7 +1960,7 @@ func (c *gRPCClient) ListChannelConnections(ctx context.Context, req *eventarcpb
 	}
 	opts = append((*c.CallOptions).ListChannelConnections[0:len((*c.CallOptions).ListChannelConnections):len((*c.CallOptions).ListChannelConnections)], opts...)
 	it := &ChannelConnectionIterator{}
-	req = proto.Clone(req).(*eventarcpb.ListChannelConnectionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*eventarcpb.ChannelConnection, string, error) {
 		resp := &eventarcpb.ListChannelConnectionsResponse{}
 		if pageToken != "" {
@@ -2133,7 +2133,7 @@ func (c *gRPCClient) ListMessageBuses(ctx context.Context, req *eventarcpb.ListM
 	}
 	opts = append((*c.CallOptions).ListMessageBuses[0:len((*c.CallOptions).ListMessageBuses):len((*c.CallOptions).ListMessageBuses)], opts...)
 	it := &MessageBusIterator{}
-	req = proto.Clone(req).(*eventarcpb.ListMessageBusesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*eventarcpb.MessageBus, string, error) {
 		resp := &eventarcpb.ListMessageBusesResponse{}
 		if pageToken != "" {
@@ -2185,7 +2185,7 @@ func (c *gRPCClient) ListMessageBusEnrollments(ctx context.Context, req *eventar
 	}
 	opts = append((*c.CallOptions).ListMessageBusEnrollments[0:len((*c.CallOptions).ListMessageBusEnrollments):len((*c.CallOptions).ListMessageBusEnrollments)], opts...)
 	it := &StringIterator{}
-	req = proto.Clone(req).(*eventarcpb.ListMessageBusEnrollmentsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]string, string, error) {
 		resp := &eventarcpb.ListMessageBusEnrollmentsResponse{}
 		if pageToken != "" {
@@ -2336,7 +2336,7 @@ func (c *gRPCClient) ListEnrollments(ctx context.Context, req *eventarcpb.ListEn
 	}
 	opts = append((*c.CallOptions).ListEnrollments[0:len((*c.CallOptions).ListEnrollments):len((*c.CallOptions).ListEnrollments)], opts...)
 	it := &EnrollmentIterator{}
-	req = proto.Clone(req).(*eventarcpb.ListEnrollmentsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*eventarcpb.Enrollment, string, error) {
 		resp := &eventarcpb.ListEnrollmentsResponse{}
 		if pageToken != "" {
@@ -2487,7 +2487,7 @@ func (c *gRPCClient) ListPipelines(ctx context.Context, req *eventarcpb.ListPipe
 	}
 	opts = append((*c.CallOptions).ListPipelines[0:len((*c.CallOptions).ListPipelines):len((*c.CallOptions).ListPipelines)], opts...)
 	it := &PipelineIterator{}
-	req = proto.Clone(req).(*eventarcpb.ListPipelinesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*eventarcpb.Pipeline, string, error) {
 		resp := &eventarcpb.ListPipelinesResponse{}
 		if pageToken != "" {
@@ -2638,7 +2638,7 @@ func (c *gRPCClient) ListGoogleApiSources(ctx context.Context, req *eventarcpb.L
 	}
 	opts = append((*c.CallOptions).ListGoogleApiSources[0:len((*c.CallOptions).ListGoogleApiSources):len((*c.CallOptions).ListGoogleApiSources)], opts...)
 	it := &GoogleApiSourceIterator{}
-	req = proto.Clone(req).(*eventarcpb.ListGoogleApiSourcesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*eventarcpb.GoogleApiSource, string, error) {
 		resp := &eventarcpb.ListGoogleApiSourcesResponse{}
 		if pageToken != "" {
@@ -2783,7 +2783,7 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -2959,7 +2959,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -3058,7 +3058,7 @@ func (c *restClient) GetTrigger(ctx context.Context, req *eventarcpb.GetTriggerR
 // ListTriggers list triggers.
 func (c *restClient) ListTriggers(ctx context.Context, req *eventarcpb.ListTriggersRequest, opts ...gax.CallOption) *TriggerIterator {
 	it := &TriggerIterator{}
-	req = proto.Clone(req).(*eventarcpb.ListTriggersRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*eventarcpb.Trigger, string, error) {
 		resp := &eventarcpb.ListTriggersResponse{}
@@ -3416,7 +3416,7 @@ func (c *restClient) GetChannel(ctx context.Context, req *eventarcpb.GetChannelR
 // ListChannels list channels.
 func (c *restClient) ListChannels(ctx context.Context, req *eventarcpb.ListChannelsRequest, opts ...gax.CallOption) *ChannelIterator {
 	it := &ChannelIterator{}
-	req = proto.Clone(req).(*eventarcpb.ListChannelsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*eventarcpb.Channel, string, error) {
 		resp := &eventarcpb.ListChannelsResponse{}
@@ -3762,7 +3762,7 @@ func (c *restClient) GetProvider(ctx context.Context, req *eventarcpb.GetProvide
 // ListProviders list providers.
 func (c *restClient) ListProviders(ctx context.Context, req *eventarcpb.ListProvidersRequest, opts ...gax.CallOption) *ProviderIterator {
 	it := &ProviderIterator{}
-	req = proto.Clone(req).(*eventarcpb.ListProvidersRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*eventarcpb.Provider, string, error) {
 		resp := &eventarcpb.ListProvidersResponse{}
@@ -3903,7 +3903,7 @@ func (c *restClient) GetChannelConnection(ctx context.Context, req *eventarcpb.G
 // ListChannelConnections list channel connections.
 func (c *restClient) ListChannelConnections(ctx context.Context, req *eventarcpb.ListChannelConnectionsRequest, opts ...gax.CallOption) *ChannelConnectionIterator {
 	it := &ChannelConnectionIterator{}
-	req = proto.Clone(req).(*eventarcpb.ListChannelConnectionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*eventarcpb.ChannelConnection, string, error) {
 		resp := &eventarcpb.ListChannelConnectionsResponse{}
@@ -4293,7 +4293,7 @@ func (c *restClient) GetMessageBus(ctx context.Context, req *eventarcpb.GetMessa
 // ListMessageBuses list message buses.
 func (c *restClient) ListMessageBuses(ctx context.Context, req *eventarcpb.ListMessageBusesRequest, opts ...gax.CallOption) *MessageBusIterator {
 	it := &MessageBusIterator{}
-	req = proto.Clone(req).(*eventarcpb.ListMessageBusesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*eventarcpb.MessageBus, string, error) {
 		resp := &eventarcpb.ListMessageBusesResponse{}
@@ -4377,7 +4377,7 @@ func (c *restClient) ListMessageBuses(ctx context.Context, req *eventarcpb.ListM
 // ListMessageBusEnrollments list message bus enrollments.
 func (c *restClient) ListMessageBusEnrollments(ctx context.Context, req *eventarcpb.ListMessageBusEnrollmentsRequest, opts ...gax.CallOption) *StringIterator {
 	it := &StringIterator{}
-	req = proto.Clone(req).(*eventarcpb.ListMessageBusEnrollmentsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]string, string, error) {
 		resp := &eventarcpb.ListMessageBusEnrollmentsResponse{}
@@ -4729,7 +4729,7 @@ func (c *restClient) GetEnrollment(ctx context.Context, req *eventarcpb.GetEnrol
 // ListEnrollments list Enrollments.
 func (c *restClient) ListEnrollments(ctx context.Context, req *eventarcpb.ListEnrollmentsRequest, opts ...gax.CallOption) *EnrollmentIterator {
 	it := &EnrollmentIterator{}
-	req = proto.Clone(req).(*eventarcpb.ListEnrollmentsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*eventarcpb.Enrollment, string, error) {
 		resp := &eventarcpb.ListEnrollmentsResponse{}
@@ -5087,7 +5087,7 @@ func (c *restClient) GetPipeline(ctx context.Context, req *eventarcpb.GetPipelin
 // ListPipelines list pipelines.
 func (c *restClient) ListPipelines(ctx context.Context, req *eventarcpb.ListPipelinesRequest, opts ...gax.CallOption) *PipelineIterator {
 	it := &PipelineIterator{}
-	req = proto.Clone(req).(*eventarcpb.ListPipelinesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*eventarcpb.Pipeline, string, error) {
 		resp := &eventarcpb.ListPipelinesResponse{}
@@ -5445,7 +5445,7 @@ func (c *restClient) GetGoogleApiSource(ctx context.Context, req *eventarcpb.Get
 // ListGoogleApiSources list GoogleApiSources.
 func (c *restClient) ListGoogleApiSources(ctx context.Context, req *eventarcpb.ListGoogleApiSourcesRequest, opts ...gax.CallOption) *GoogleApiSourceIterator {
 	it := &GoogleApiSourceIterator{}
-	req = proto.Clone(req).(*eventarcpb.ListGoogleApiSourcesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*eventarcpb.GoogleApiSource, string, error) {
 		resp := &eventarcpb.ListGoogleApiSourcesResponse{}
@@ -5800,7 +5800,7 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 // ListLocations lists information about the supported locations for this service.
 func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -6216,7 +6216,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

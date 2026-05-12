@@ -318,7 +318,7 @@ func (c *globalVmExtensionPoliciesRESTClient) Connection() *grpc.ClientConn {
 // returnPartialSuccess parameter to true.
 func (c *globalVmExtensionPoliciesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListGlobalVmExtensionPoliciesRequest, opts ...gax.CallOption) *VmExtensionPoliciesScopedListPairIterator {
 	it := &VmExtensionPoliciesScopedListPairIterator{}
-	req = proto.Clone(req).(*computepb.AggregatedListGlobalVmExtensionPoliciesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]VmExtensionPoliciesScopedListPair, string, error) {
 		resp := &computepb.VmExtensionPolicyAggregatedListResponse{}
@@ -620,7 +620,7 @@ func (c *globalVmExtensionPoliciesRESTClient) Insert(ctx context.Context, req *c
 // List lists global VM extension policies.
 func (c *globalVmExtensionPoliciesRESTClient) List(ctx context.Context, req *computepb.ListGlobalVmExtensionPoliciesRequest, opts ...gax.CallOption) *GlobalVmExtensionPolicyIterator {
 	it := &GlobalVmExtensionPolicyIterator{}
-	req = proto.Clone(req).(*computepb.ListGlobalVmExtensionPoliciesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.GlobalVmExtensionPolicy, string, error) {
 		resp := &computepb.GlobalVmExtensionPolicyList{}

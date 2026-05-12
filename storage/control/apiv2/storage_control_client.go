@@ -1466,7 +1466,7 @@ func (c *storageControlGRPCClient) ListFolders(ctx context.Context, req *control
 	}
 	opts = append((*c.CallOptions).ListFolders[0:len((*c.CallOptions).ListFolders):len((*c.CallOptions).ListFolders)], opts...)
 	it := &FolderIterator{}
-	req = proto.Clone(req).(*controlpb.ListFoldersRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*controlpb.Folder, string, error) {
 		resp := &controlpb.ListFoldersResponse{}
 		if pageToken != "" {
@@ -1743,7 +1743,7 @@ func (c *storageControlGRPCClient) ListManagedFolders(ctx context.Context, req *
 	}
 	opts = append((*c.CallOptions).ListManagedFolders[0:len((*c.CallOptions).ListManagedFolders):len((*c.CallOptions).ListManagedFolders)], opts...)
 	it := &ManagedFolderIterator{}
-	req = proto.Clone(req).(*controlpb.ListManagedFoldersRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*controlpb.ManagedFolder, string, error) {
 		resp := &controlpb.ListManagedFoldersResponse{}
 		if pageToken != "" {
@@ -2021,7 +2021,7 @@ func (c *storageControlGRPCClient) ListAnywhereCaches(ctx context.Context, req *
 	}
 	opts = append((*c.CallOptions).ListAnywhereCaches[0:len((*c.CallOptions).ListAnywhereCaches):len((*c.CallOptions).ListAnywhereCaches)], opts...)
 	it := &AnywhereCacheIterator{}
-	req = proto.Clone(req).(*controlpb.ListAnywhereCachesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*controlpb.AnywhereCache, string, error) {
 		resp := &controlpb.ListAnywhereCachesResponse{}
 		if pageToken != "" {
@@ -2553,7 +2553,7 @@ func (c *storageControlRESTClient) GetFolder(ctx context.Context, req *controlpb
 // hierarchical namespace enabled bucket.
 func (c *storageControlRESTClient) ListFolders(ctx context.Context, req *controlpb.ListFoldersRequest, opts ...gax.CallOption) *FolderIterator {
 	it := &FolderIterator{}
-	req = proto.Clone(req).(*controlpb.ListFoldersRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*controlpb.Folder, string, error) {
 		resp := &controlpb.ListFoldersResponse{}
@@ -3126,7 +3126,7 @@ func (c *storageControlRESTClient) GetManagedFolder(ctx context.Context, req *co
 // ListManagedFolders retrieves a list of managed folders for a given bucket.
 func (c *storageControlRESTClient) ListManagedFolders(ctx context.Context, req *controlpb.ListManagedFoldersRequest, opts ...gax.CallOption) *ManagedFolderIterator {
 	it := &ManagedFolderIterator{}
-	req = proto.Clone(req).(*controlpb.ListManagedFoldersRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*controlpb.ManagedFolder, string, error) {
 		resp := &controlpb.ListManagedFoldersResponse{}
@@ -3728,7 +3728,7 @@ func (c *storageControlRESTClient) GetAnywhereCache(ctx context.Context, req *co
 // ListAnywhereCaches lists Anywhere Cache instances for a given bucket.
 func (c *storageControlRESTClient) ListAnywhereCaches(ctx context.Context, req *controlpb.ListAnywhereCachesRequest, opts ...gax.CallOption) *AnywhereCacheIterator {
 	it := &AnywhereCacheIterator{}
-	req = proto.Clone(req).(*controlpb.ListAnywhereCachesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*controlpb.AnywhereCache, string, error) {
 		resp := &controlpb.ListAnywhereCachesResponse{}

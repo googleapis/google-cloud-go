@@ -796,7 +796,7 @@ func (c *streamsGRPCClient) ListClusters(ctx context.Context, req *visionaipb.Li
 	}
 	opts = append((*c.CallOptions).ListClusters[0:len((*c.CallOptions).ListClusters):len((*c.CallOptions).ListClusters)], opts...)
 	it := &ClusterIterator{}
-	req = proto.Clone(req).(*visionaipb.ListClustersRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*visionaipb.Cluster, string, error) {
 		resp := &visionaipb.ListClustersResponse{}
 		if pageToken != "" {
@@ -947,7 +947,7 @@ func (c *streamsGRPCClient) ListStreams(ctx context.Context, req *visionaipb.Lis
 	}
 	opts = append((*c.CallOptions).ListStreams[0:len((*c.CallOptions).ListStreams):len((*c.CallOptions).ListStreams)], opts...)
 	it := &StreamIterator{}
-	req = proto.Clone(req).(*visionaipb.ListStreamsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*visionaipb.Stream, string, error) {
 		resp := &visionaipb.ListStreamsResponse{}
 		if pageToken != "" {
@@ -1142,7 +1142,7 @@ func (c *streamsGRPCClient) ListEvents(ctx context.Context, req *visionaipb.List
 	}
 	opts = append((*c.CallOptions).ListEvents[0:len((*c.CallOptions).ListEvents):len((*c.CallOptions).ListEvents)], opts...)
 	it := &EventIterator{}
-	req = proto.Clone(req).(*visionaipb.ListEventsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*visionaipb.Event, string, error) {
 		resp := &visionaipb.ListEventsResponse{}
 		if pageToken != "" {
@@ -1293,7 +1293,7 @@ func (c *streamsGRPCClient) ListSeries(ctx context.Context, req *visionaipb.List
 	}
 	opts = append((*c.CallOptions).ListSeries[0:len((*c.CallOptions).ListSeries):len((*c.CallOptions).ListSeries)], opts...)
 	it := &SeriesIterator{}
-	req = proto.Clone(req).(*visionaipb.ListSeriesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*visionaipb.Series, string, error) {
 		resp := &visionaipb.ListSeriesResponse{}
 		if pageToken != "" {
@@ -1488,7 +1488,7 @@ func (c *streamsGRPCClient) ListLocations(ctx context.Context, req *locationpb.L
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -1592,7 +1592,7 @@ func (c *streamsGRPCClient) ListOperations(ctx context.Context, req *longrunning
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -1634,7 +1634,7 @@ func (c *streamsGRPCClient) ListOperations(ctx context.Context, req *longrunning
 // ListClusters lists Clusters in a given project and location.
 func (c *streamsRESTClient) ListClusters(ctx context.Context, req *visionaipb.ListClustersRequest, opts ...gax.CallOption) *ClusterIterator {
 	it := &ClusterIterator{}
-	req = proto.Clone(req).(*visionaipb.ListClustersRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*visionaipb.Cluster, string, error) {
 		resp := &visionaipb.ListClustersResponse{}
@@ -1983,7 +1983,7 @@ func (c *streamsRESTClient) DeleteCluster(ctx context.Context, req *visionaipb.D
 // ListStreams lists Streams in a given project and location.
 func (c *streamsRESTClient) ListStreams(ctx context.Context, req *visionaipb.ListStreamsRequest, opts ...gax.CallOption) *StreamIterator {
 	it := &StreamIterator{}
-	req = proto.Clone(req).(*visionaipb.ListStreamsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*visionaipb.Stream, string, error) {
 		resp := &visionaipb.ListStreamsResponse{}
@@ -2455,7 +2455,7 @@ func (c *streamsRESTClient) GenerateStreamHlsToken(ctx context.Context, req *vis
 // ListEvents lists Events in a given project and location.
 func (c *streamsRESTClient) ListEvents(ctx context.Context, req *visionaipb.ListEventsRequest, opts ...gax.CallOption) *EventIterator {
 	it := &EventIterator{}
-	req = proto.Clone(req).(*visionaipb.ListEventsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*visionaipb.Event, string, error) {
 		resp := &visionaipb.ListEventsResponse{}
@@ -2804,7 +2804,7 @@ func (c *streamsRESTClient) DeleteEvent(ctx context.Context, req *visionaipb.Del
 // ListSeries lists Series in a given project and location.
 func (c *streamsRESTClient) ListSeries(ctx context.Context, req *visionaipb.ListSeriesRequest, opts ...gax.CallOption) *SeriesIterator {
 	it := &SeriesIterator{}
-	req = proto.Clone(req).(*visionaipb.ListSeriesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*visionaipb.Series, string, error) {
 		resp := &visionaipb.ListSeriesResponse{}
@@ -3278,7 +3278,7 @@ func (c *streamsRESTClient) GetLocation(ctx context.Context, req *locationpb.Get
 // ListLocations lists information about the supported locations for this service.
 func (c *streamsRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -3497,7 +3497,7 @@ func (c *streamsRESTClient) GetOperation(ctx context.Context, req *longrunningpb
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *streamsRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

@@ -456,7 +456,7 @@ func (c *instancesGRPCClient) ListInstances(ctx context.Context, req *appenginep
 	}
 	opts = append((*c.CallOptions).ListInstances[0:len((*c.CallOptions).ListInstances):len((*c.CallOptions).ListInstances)], opts...)
 	it := &InstanceIterator{}
-	req = proto.Clone(req).(*appenginepb.ListInstancesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*appenginepb.Instance, string, error) {
 		resp := &appenginepb.ListInstancesResponse{}
 		if pageToken != "" {
@@ -568,7 +568,7 @@ func (c *instancesGRPCClient) DebugInstance(ctx context.Context, req *appenginep
 // Stackdriver Monitoring API (at https://cloud.google.com/monitoring/api/ref_v3/rest/v3/projects.timeSeries/list).
 func (c *instancesRESTClient) ListInstances(ctx context.Context, req *appenginepb.ListInstancesRequest, opts ...gax.CallOption) *InstanceIterator {
 	it := &InstanceIterator{}
-	req = proto.Clone(req).(*appenginepb.ListInstancesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*appenginepb.Instance, string, error) {
 		resp := &appenginepb.ListInstancesResponse{}

@@ -21,8 +21,6 @@
 // with Google Chat and manage Chat resources such as spaces, members, and
 // messages.
 //
-//	NOTE: This package is in beta. It is not stable, and may be subject to changes.
-//
 // # General documentation
 //
 // For information that is relevant for all client libraries please reference

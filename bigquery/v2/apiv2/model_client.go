@@ -472,7 +472,7 @@ func (c *modelGRPCClient) ListModels(ctx context.Context, req *bigquerypb.ListMo
 	}
 	opts = append((*c.CallOptions).ListModels[0:len((*c.CallOptions).ListModels):len((*c.CallOptions).ListModels)], opts...)
 	it := &ModelIterator{}
-	req = proto.Clone(req).(*bigquerypb.ListModelsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*bigquerypb.Model, string, error) {
 		resp := &bigquerypb.ListModelsResponse{}
 		if pageToken != "" {
@@ -614,7 +614,7 @@ func (c *modelRESTClient) GetModel(ctx context.Context, req *bigquerypb.GetModel
 // particular model by calling the models.get method.
 func (c *modelRESTClient) ListModels(ctx context.Context, req *bigquerypb.ListModelsRequest, opts ...gax.CallOption) *ModelIterator {
 	it := &ModelIterator{}
-	req = proto.Clone(req).(*bigquerypb.ListModelsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*bigquerypb.Model, string, error) {
 		resp := &bigquerypb.ListModelsResponse{}

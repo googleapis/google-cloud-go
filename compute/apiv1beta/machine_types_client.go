@@ -262,7 +262,7 @@ func (c *machineTypesRESTClient) Connection() *grpc.ClientConn {
 // returnPartialSuccess parameter to true.
 func (c *machineTypesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListMachineTypesRequest, opts ...gax.CallOption) *MachineTypesScopedListPairIterator {
 	it := &MachineTypesScopedListPairIterator{}
-	req = proto.Clone(req).(*computepb.AggregatedListMachineTypesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]MachineTypesScopedListPair, string, error) {
 		resp := &computepb.MachineTypeAggregatedList{}
@@ -414,7 +414,7 @@ func (c *machineTypesRESTClient) Get(ctx context.Context, req *computepb.GetMach
 // project.
 func (c *machineTypesRESTClient) List(ctx context.Context, req *computepb.ListMachineTypesRequest, opts ...gax.CallOption) *MachineTypeIterator {
 	it := &MachineTypeIterator{}
-	req = proto.Clone(req).(*computepb.ListMachineTypesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.MachineType, string, error) {
 		resp := &computepb.MachineTypeList{}

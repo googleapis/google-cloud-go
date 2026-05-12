@@ -969,7 +969,7 @@ func (c *hubGRPCClient) ListHubs(ctx context.Context, req *networkconnectivitypb
 	}
 	opts = append((*c.CallOptions).ListHubs[0:len((*c.CallOptions).ListHubs):len((*c.CallOptions).ListHubs)], opts...)
 	it := &HubIterator{}
-	req = proto.Clone(req).(*networkconnectivitypb.ListHubsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkconnectivitypb.Hub, string, error) {
 		resp := &networkconnectivitypb.ListHubsResponse{}
 		if pageToken != "" {
@@ -1120,7 +1120,7 @@ func (c *hubGRPCClient) ListHubSpokes(ctx context.Context, req *networkconnectiv
 	}
 	opts = append((*c.CallOptions).ListHubSpokes[0:len((*c.CallOptions).ListHubSpokes):len((*c.CallOptions).ListHubSpokes)], opts...)
 	it := &SpokeIterator{}
-	req = proto.Clone(req).(*networkconnectivitypb.ListHubSpokesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkconnectivitypb.Spoke, string, error) {
 		resp := &networkconnectivitypb.ListHubSpokesResponse{}
 		if pageToken != "" {
@@ -1172,7 +1172,7 @@ func (c *hubGRPCClient) QueryHubStatus(ctx context.Context, req *networkconnecti
 	}
 	opts = append((*c.CallOptions).QueryHubStatus[0:len((*c.CallOptions).QueryHubStatus):len((*c.CallOptions).QueryHubStatus)], opts...)
 	it := &HubStatusEntryIterator{}
-	req = proto.Clone(req).(*networkconnectivitypb.QueryHubStatusRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkconnectivitypb.HubStatusEntry, string, error) {
 		resp := &networkconnectivitypb.QueryHubStatusResponse{}
 		if pageToken != "" {
@@ -1224,7 +1224,7 @@ func (c *hubGRPCClient) ListSpokes(ctx context.Context, req *networkconnectivity
 	}
 	opts = append((*c.CallOptions).ListSpokes[0:len((*c.CallOptions).ListSpokes):len((*c.CallOptions).ListSpokes)], opts...)
 	it := &SpokeIterator{}
-	req = proto.Clone(req).(*networkconnectivitypb.ListSpokesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkconnectivitypb.Spoke, string, error) {
 		resp := &networkconnectivitypb.ListSpokesResponse{}
 		if pageToken != "" {
@@ -1527,7 +1527,7 @@ func (c *hubGRPCClient) ListRoutes(ctx context.Context, req *networkconnectivity
 	}
 	opts = append((*c.CallOptions).ListRoutes[0:len((*c.CallOptions).ListRoutes):len((*c.CallOptions).ListRoutes)], opts...)
 	it := &RouteIterator{}
-	req = proto.Clone(req).(*networkconnectivitypb.ListRoutesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkconnectivitypb.Route, string, error) {
 		resp := &networkconnectivitypb.ListRoutesResponse{}
 		if pageToken != "" {
@@ -1579,7 +1579,7 @@ func (c *hubGRPCClient) ListRouteTables(ctx context.Context, req *networkconnect
 	}
 	opts = append((*c.CallOptions).ListRouteTables[0:len((*c.CallOptions).ListRouteTables):len((*c.CallOptions).ListRouteTables)], opts...)
 	it := &RouteTableIterator{}
-	req = proto.Clone(req).(*networkconnectivitypb.ListRouteTablesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkconnectivitypb.RouteTable, string, error) {
 		resp := &networkconnectivitypb.ListRouteTablesResponse{}
 		if pageToken != "" {
@@ -1655,7 +1655,7 @@ func (c *hubGRPCClient) ListGroups(ctx context.Context, req *networkconnectivity
 	}
 	opts = append((*c.CallOptions).ListGroups[0:len((*c.CallOptions).ListGroups):len((*c.CallOptions).ListGroups)], opts...)
 	it := &GroupIterator{}
-	req = proto.Clone(req).(*networkconnectivitypb.ListGroupsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkconnectivitypb.Group, string, error) {
 		resp := &networkconnectivitypb.ListGroupsResponse{}
 		if pageToken != "" {
@@ -1780,7 +1780,7 @@ func (c *hubGRPCClient) ListGatewayAdvertisedRoutes(ctx context.Context, req *ne
 	}
 	opts = append((*c.CallOptions).ListGatewayAdvertisedRoutes[0:len((*c.CallOptions).ListGatewayAdvertisedRoutes):len((*c.CallOptions).ListGatewayAdvertisedRoutes)], opts...)
 	it := &GatewayAdvertisedRouteIterator{}
-	req = proto.Clone(req).(*networkconnectivitypb.ListGatewayAdvertisedRoutesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkconnectivitypb.GatewayAdvertisedRoute, string, error) {
 		resp := &networkconnectivitypb.ListGatewayAdvertisedRoutesResponse{}
 		if pageToken != "" {
@@ -1899,7 +1899,7 @@ func (c *hubGRPCClient) ListLocations(ctx context.Context, req *locationpb.ListL
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -2075,7 +2075,7 @@ func (c *hubGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.L
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {

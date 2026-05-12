@@ -326,7 +326,7 @@ func (c *targetInstancesRESTClient) Connection() *grpc.ClientConn {
 // returnPartialSuccess parameter to true.
 func (c *targetInstancesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListTargetInstancesRequest, opts ...gax.CallOption) *TargetInstancesScopedListPairIterator {
 	it := &TargetInstancesScopedListPairIterator{}
-	req = proto.Clone(req).(*computepb.AggregatedListTargetInstancesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]TargetInstancesScopedListPair, string, error) {
 		resp := &computepb.TargetInstanceAggregatedList{}
@@ -620,7 +620,7 @@ func (c *targetInstancesRESTClient) Insert(ctx context.Context, req *computepb.I
 // project and zone.
 func (c *targetInstancesRESTClient) List(ctx context.Context, req *computepb.ListTargetInstancesRequest, opts ...gax.CallOption) *TargetInstanceIterator {
 	it := &TargetInstanceIterator{}
-	req = proto.Clone(req).(*computepb.ListTargetInstancesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.TargetInstance, string, error) {
 		resp := &computepb.TargetInstanceList{}

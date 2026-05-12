@@ -608,7 +608,7 @@ func (c *dataprocMetastoreFederationGRPCClient) ListFederations(ctx context.Cont
 	}
 	opts = append((*c.CallOptions).ListFederations[0:len((*c.CallOptions).ListFederations):len((*c.CallOptions).ListFederations)], opts...)
 	it := &FederationIterator{}
-	req = proto.Clone(req).(*metastorepb.ListFederationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*metastorepb.Federation, string, error) {
 		resp := &metastorepb.ListFederationsResponse{}
 		if pageToken != "" {
@@ -777,7 +777,7 @@ func (c *dataprocMetastoreFederationGRPCClient) ListLocations(ctx context.Contex
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -953,7 +953,7 @@ func (c *dataprocMetastoreFederationGRPCClient) ListOperations(ctx context.Conte
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -995,7 +995,7 @@ func (c *dataprocMetastoreFederationGRPCClient) ListOperations(ctx context.Conte
 // ListFederations lists federations in a project and location.
 func (c *dataprocMetastoreFederationRESTClient) ListFederations(ctx context.Context, req *metastorepb.ListFederationsRequest, opts ...gax.CallOption) *FederationIterator {
 	it := &FederationIterator{}
-	req = proto.Clone(req).(*metastorepb.ListFederationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*metastorepb.Federation, string, error) {
 		resp := &metastorepb.ListFederationsResponse{}
@@ -1398,7 +1398,7 @@ func (c *dataprocMetastoreFederationRESTClient) GetLocation(ctx context.Context,
 // ListLocations lists information about the supported locations for this service.
 func (c *dataprocMetastoreFederationRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -1814,7 +1814,7 @@ func (c *dataprocMetastoreFederationRESTClient) GetOperation(ctx context.Context
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *dataprocMetastoreFederationRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

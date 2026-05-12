@@ -892,7 +892,7 @@ func (c *playbooksGRPCClient) ListPlaybooks(ctx context.Context, req *cxpb.ListP
 	}
 	opts = append((*c.CallOptions).ListPlaybooks[0:len((*c.CallOptions).ListPlaybooks):len((*c.CallOptions).ListPlaybooks)], opts...)
 	it := &PlaybookIterator{}
-	req = proto.Clone(req).(*cxpb.ListPlaybooksRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cxpb.Playbook, string, error) {
 		resp := &cxpb.ListPlaybooksResponse{}
 		if pageToken != "" {
@@ -1113,7 +1113,7 @@ func (c *playbooksGRPCClient) ListPlaybookVersions(ctx context.Context, req *cxp
 	}
 	opts = append((*c.CallOptions).ListPlaybookVersions[0:len((*c.CallOptions).ListPlaybookVersions):len((*c.CallOptions).ListPlaybookVersions)], opts...)
 	it := &PlaybookVersionIterator{}
-	req = proto.Clone(req).(*cxpb.ListPlaybookVersionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cxpb.PlaybookVersion, string, error) {
 		resp := &cxpb.ListPlaybookVersionsResponse{}
 		if pageToken != "" {
@@ -1203,7 +1203,7 @@ func (c *playbooksGRPCClient) ListLocations(ctx context.Context, req *locationpb
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -1290,7 +1290,7 @@ func (c *playbooksGRPCClient) ListOperations(ctx context.Context, req *longrunni
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -1438,7 +1438,7 @@ func (c *playbooksRESTClient) DeletePlaybook(ctx context.Context, req *cxpb.Dele
 // ListPlaybooks returns a list of playbooks in the specified agent.
 func (c *playbooksRESTClient) ListPlaybooks(ctx context.Context, req *cxpb.ListPlaybooksRequest, opts ...gax.CallOption) *PlaybookIterator {
 	it := &PlaybookIterator{}
-	req = proto.Clone(req).(*cxpb.ListPlaybooksRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cxpb.Playbook, string, error) {
 		resp := &cxpb.ListPlaybooksResponse{}
@@ -1961,7 +1961,7 @@ func (c *playbooksRESTClient) RestorePlaybookVersion(ctx context.Context, req *c
 // ListPlaybookVersions lists versions for the specified Playbook.
 func (c *playbooksRESTClient) ListPlaybookVersions(ctx context.Context, req *cxpb.ListPlaybookVersionsRequest, opts ...gax.CallOption) *PlaybookVersionIterator {
 	it := &PlaybookVersionIterator{}
-	req = proto.Clone(req).(*cxpb.ListPlaybookVersionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cxpb.PlaybookVersion, string, error) {
 		resp := &cxpb.ListPlaybookVersionsResponse{}
@@ -2151,7 +2151,7 @@ func (c *playbooksRESTClient) GetLocation(ctx context.Context, req *locationpb.G
 // implementation and version.
 func (c *playbooksRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -2325,7 +2325,7 @@ func (c *playbooksRESTClient) GetOperation(ctx context.Context, req *longrunning
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *playbooksRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

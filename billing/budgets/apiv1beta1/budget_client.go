@@ -565,7 +565,7 @@ func (c *budgetGRPCClient) ListBudgets(ctx context.Context, req *budgetspb.ListB
 	}
 	opts = append((*c.CallOptions).ListBudgets[0:len((*c.CallOptions).ListBudgets):len((*c.CallOptions).ListBudgets)], opts...)
 	it := &BudgetIterator{}
-	req = proto.Clone(req).(*budgetspb.ListBudgetsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*budgetspb.Budget, string, error) {
 		resp := &budgetspb.ListBudgetsResponse{}
 		if pageToken != "" {
@@ -823,7 +823,7 @@ func (c *budgetRESTClient) GetBudget(ctx context.Context, req *budgetspb.GetBudg
 // in the Cloud Console.
 func (c *budgetRESTClient) ListBudgets(ctx context.Context, req *budgetspb.ListBudgetsRequest, opts ...gax.CallOption) *BudgetIterator {
 	it := &BudgetIterator{}
-	req = proto.Clone(req).(*budgetspb.ListBudgetsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*budgetspb.Budget, string, error) {
 		resp := &budgetspb.ListBudgetsResponse{}

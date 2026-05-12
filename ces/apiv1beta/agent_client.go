@@ -2242,7 +2242,7 @@ func (c *agentGRPCClient) ListApps(ctx context.Context, req *cespb.ListAppsReque
 	}
 	opts = append((*c.CallOptions).ListApps[0:len((*c.CallOptions).ListApps):len((*c.CallOptions).ListApps)], opts...)
 	it := &AppIterator{}
-	req = proto.Clone(req).(*cespb.ListAppsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cespb.App, string, error) {
 		resp := &cespb.ListAppsResponse{}
 		if pageToken != "" {
@@ -2488,7 +2488,7 @@ func (c *agentGRPCClient) ListAgents(ctx context.Context, req *cespb.ListAgentsR
 	}
 	opts = append((*c.CallOptions).ListAgents[0:len((*c.CallOptions).ListAgents):len((*c.CallOptions).ListAgents)], opts...)
 	it := &AgentIterator{}
-	req = proto.Clone(req).(*cespb.ListAgentsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cespb.Agent, string, error) {
 		resp := &cespb.ListAgentsResponse{}
 		if pageToken != "" {
@@ -2629,7 +2629,7 @@ func (c *agentGRPCClient) ListExamples(ctx context.Context, req *cespb.ListExamp
 	}
 	opts = append((*c.CallOptions).ListExamples[0:len((*c.CallOptions).ListExamples):len((*c.CallOptions).ListExamples)], opts...)
 	it := &ExampleIterator{}
-	req = proto.Clone(req).(*cespb.ListExamplesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cespb.Example, string, error) {
 		resp := &cespb.ListExamplesResponse{}
 		if pageToken != "" {
@@ -2770,7 +2770,7 @@ func (c *agentGRPCClient) ListTools(ctx context.Context, req *cespb.ListToolsReq
 	}
 	opts = append((*c.CallOptions).ListTools[0:len((*c.CallOptions).ListTools):len((*c.CallOptions).ListTools)], opts...)
 	it := &ToolIterator{}
-	req = proto.Clone(req).(*cespb.ListToolsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cespb.Tool, string, error) {
 		resp := &cespb.ListToolsResponse{}
 		if pageToken != "" {
@@ -2846,7 +2846,7 @@ func (c *agentGRPCClient) ListConversations(ctx context.Context, req *cespb.List
 	}
 	opts = append((*c.CallOptions).ListConversations[0:len((*c.CallOptions).ListConversations):len((*c.CallOptions).ListConversations)], opts...)
 	it := &ConversationIterator{}
-	req = proto.Clone(req).(*cespb.ListConversationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cespb.Conversation, string, error) {
 		resp := &cespb.ListConversationsResponse{}
 		if pageToken != "" {
@@ -3033,7 +3033,7 @@ func (c *agentGRPCClient) ListGuardrails(ctx context.Context, req *cespb.ListGua
 	}
 	opts = append((*c.CallOptions).ListGuardrails[0:len((*c.CallOptions).ListGuardrails):len((*c.CallOptions).ListGuardrails)], opts...)
 	it := &GuardrailIterator{}
-	req = proto.Clone(req).(*cespb.ListGuardrailsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cespb.Guardrail, string, error) {
 		resp := &cespb.ListGuardrailsResponse{}
 		if pageToken != "" {
@@ -3174,7 +3174,7 @@ func (c *agentGRPCClient) ListDeployments(ctx context.Context, req *cespb.ListDe
 	}
 	opts = append((*c.CallOptions).ListDeployments[0:len((*c.CallOptions).ListDeployments):len((*c.CallOptions).ListDeployments)], opts...)
 	it := &DeploymentIterator{}
-	req = proto.Clone(req).(*cespb.ListDeploymentsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cespb.Deployment, string, error) {
 		resp := &cespb.ListDeploymentsResponse{}
 		if pageToken != "" {
@@ -3315,7 +3315,7 @@ func (c *agentGRPCClient) ListToolsets(ctx context.Context, req *cespb.ListTools
 	}
 	opts = append((*c.CallOptions).ListToolsets[0:len((*c.CallOptions).ListToolsets):len((*c.CallOptions).ListToolsets)], opts...)
 	it := &ToolsetIterator{}
-	req = proto.Clone(req).(*cespb.ListToolsetsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cespb.Toolset, string, error) {
 		resp := &cespb.ListToolsetsResponse{}
 		if pageToken != "" {
@@ -3456,7 +3456,7 @@ func (c *agentGRPCClient) ListAppVersions(ctx context.Context, req *cespb.ListAp
 	}
 	opts = append((*c.CallOptions).ListAppVersions[0:len((*c.CallOptions).ListAppVersions):len((*c.CallOptions).ListAppVersions)], opts...)
 	it := &AppVersionIterator{}
-	req = proto.Clone(req).(*cespb.ListAppVersionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cespb.AppVersion, string, error) {
 		resp := &cespb.ListAppVersionsResponse{}
 		if pageToken != "" {
@@ -3628,7 +3628,7 @@ func (c *agentGRPCClient) ListChangelogs(ctx context.Context, req *cespb.ListCha
 	}
 	opts = append((*c.CallOptions).ListChangelogs[0:len((*c.CallOptions).ListChangelogs):len((*c.CallOptions).ListChangelogs)], opts...)
 	it := &ChangelogIterator{}
-	req = proto.Clone(req).(*cespb.ListChangelogsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cespb.Changelog, string, error) {
 		resp := &cespb.ListChangelogsResponse{}
 		if pageToken != "" {
@@ -3722,7 +3722,7 @@ func (c *agentGRPCClient) ListLocations(ctx context.Context, req *locationpb.Lis
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -3826,7 +3826,7 @@ func (c *agentGRPCClient) ListOperations(ctx context.Context, req *longrunningpb
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -3868,7 +3868,7 @@ func (c *agentGRPCClient) ListOperations(ctx context.Context, req *longrunningpb
 // ListApps lists apps in the given project and location.
 func (c *agentRESTClient) ListApps(ctx context.Context, req *cespb.ListAppsRequest, opts ...gax.CallOption) *AppIterator {
 	it := &AppIterator{}
-	req = proto.Clone(req).(*cespb.ListAppsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cespb.App, string, error) {
 		resp := &cespb.ListAppsResponse{}
@@ -4467,7 +4467,7 @@ func (c *agentRESTClient) UpdateSecuritySettings(ctx context.Context, req *cespb
 // ListAgents lists agents in the given app.
 func (c *agentRESTClient) ListAgents(ctx context.Context, req *cespb.ListAgentsRequest, opts ...gax.CallOption) *AgentIterator {
 	it := &AgentIterator{}
-	req = proto.Clone(req).(*cespb.ListAgentsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cespb.Agent, string, error) {
 		resp := &cespb.ListAgentsResponse{}
@@ -4791,7 +4791,7 @@ func (c *agentRESTClient) DeleteAgent(ctx context.Context, req *cespb.DeleteAgen
 // ListExamples lists examples in the given app.
 func (c *agentRESTClient) ListExamples(ctx context.Context, req *cespb.ListExamplesRequest, opts ...gax.CallOption) *ExampleIterator {
 	it := &ExampleIterator{}
-	req = proto.Clone(req).(*cespb.ListExamplesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cespb.Example, string, error) {
 		resp := &cespb.ListExamplesResponse{}
@@ -5112,7 +5112,7 @@ func (c *agentRESTClient) DeleteExample(ctx context.Context, req *cespb.DeleteEx
 // ListTools lists tools in the given app.
 func (c *agentRESTClient) ListTools(ctx context.Context, req *cespb.ListToolsRequest, opts ...gax.CallOption) *ToolIterator {
 	it := &ToolIterator{}
-	req = proto.Clone(req).(*cespb.ListToolsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cespb.Tool, string, error) {
 		resp := &cespb.ListToolsResponse{}
@@ -5253,7 +5253,7 @@ func (c *agentRESTClient) GetTool(ctx context.Context, req *cespb.GetToolRequest
 // ListConversations lists conversations in the given app.
 func (c *agentRESTClient) ListConversations(ctx context.Context, req *cespb.ListConversationsRequest, opts ...gax.CallOption) *ConversationIterator {
 	it := &ConversationIterator{}
-	req = proto.Clone(req).(*cespb.ListConversationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cespb.Conversation, string, error) {
 		resp := &cespb.ListConversationsResponse{}
@@ -5696,7 +5696,7 @@ func (c *agentRESTClient) DeleteTool(ctx context.Context, req *cespb.DeleteToolR
 // ListGuardrails lists guardrails in the given app.
 func (c *agentRESTClient) ListGuardrails(ctx context.Context, req *cespb.ListGuardrailsRequest, opts ...gax.CallOption) *GuardrailIterator {
 	it := &GuardrailIterator{}
-	req = proto.Clone(req).(*cespb.ListGuardrailsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cespb.Guardrail, string, error) {
 		resp := &cespb.ListGuardrailsResponse{}
@@ -6020,7 +6020,7 @@ func (c *agentRESTClient) DeleteGuardrail(ctx context.Context, req *cespb.Delete
 // ListDeployments lists deployments in the given app.
 func (c *agentRESTClient) ListDeployments(ctx context.Context, req *cespb.ListDeploymentsRequest, opts ...gax.CallOption) *DeploymentIterator {
 	it := &DeploymentIterator{}
-	req = proto.Clone(req).(*cespb.ListDeploymentsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cespb.Deployment, string, error) {
 		resp := &cespb.ListDeploymentsResponse{}
@@ -6338,7 +6338,7 @@ func (c *agentRESTClient) DeleteDeployment(ctx context.Context, req *cespb.Delet
 // ListToolsets lists toolsets in the given app.
 func (c *agentRESTClient) ListToolsets(ctx context.Context, req *cespb.ListToolsetsRequest, opts ...gax.CallOption) *ToolsetIterator {
 	it := &ToolsetIterator{}
-	req = proto.Clone(req).(*cespb.ListToolsetsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cespb.Toolset, string, error) {
 		resp := &cespb.ListToolsetsResponse{}
@@ -6662,7 +6662,7 @@ func (c *agentRESTClient) DeleteToolset(ctx context.Context, req *cespb.DeleteTo
 // ListAppVersions lists all app versions in the given app.
 func (c *agentRESTClient) ListAppVersions(ctx context.Context, req *cespb.ListAppVersionsRequest, opts ...gax.CallOption) *AppVersionIterator {
 	it := &AppVersionIterator{}
-	req = proto.Clone(req).(*cespb.ListAppVersionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cespb.AppVersion, string, error) {
 		resp := &cespb.ListAppVersionsResponse{}
@@ -7049,7 +7049,7 @@ func (c *agentRESTClient) GenerateAppResource(ctx context.Context, req *cespb.Ge
 // ListChangelogs lists the changelogs of the specified app.
 func (c *agentRESTClient) ListChangelogs(ctx context.Context, req *cespb.ListChangelogsRequest, opts ...gax.CallOption) *ChangelogIterator {
 	it := &ChangelogIterator{}
-	req = proto.Clone(req).(*cespb.ListChangelogsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cespb.Changelog, string, error) {
 		resp := &cespb.ListChangelogsResponse{}
@@ -7260,7 +7260,7 @@ func (c *agentRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLo
 // implementation and version.
 func (c *agentRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -7479,7 +7479,7 @@ func (c *agentRESTClient) GetOperation(ctx context.Context, req *longrunningpb.G
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *agentRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

@@ -612,7 +612,7 @@ func (c *regionBackendBucketsRESTClient) Insert(ctx context.Context, req *comput
 // project in the given region.
 func (c *regionBackendBucketsRESTClient) List(ctx context.Context, req *computepb.ListRegionBackendBucketsRequest, opts ...gax.CallOption) *BackendBucketIterator {
 	it := &BackendBucketIterator{}
-	req = proto.Clone(req).(*computepb.ListRegionBackendBucketsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.BackendBucket, string, error) {
 		resp := &computepb.BackendBucketList{}
@@ -699,7 +699,7 @@ func (c *regionBackendBucketsRESTClient) List(ctx context.Context, req *computep
 // the given region.
 func (c *regionBackendBucketsRESTClient) ListUsable(ctx context.Context, req *computepb.ListUsableRegionBackendBucketsRequest, opts ...gax.CallOption) *BackendBucketIterator {
 	it := &BackendBucketIterator{}
-	req = proto.Clone(req).(*computepb.ListUsableRegionBackendBucketsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.BackendBucket, string, error) {
 		resp := &computepb.BackendBucketListUsable{}

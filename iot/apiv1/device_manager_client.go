@@ -918,7 +918,7 @@ func (c *deviceManagerGRPCClient) ListDeviceRegistries(ctx context.Context, req 
 	}
 	opts = append((*c.CallOptions).ListDeviceRegistries[0:len((*c.CallOptions).ListDeviceRegistries):len((*c.CallOptions).ListDeviceRegistries)], opts...)
 	it := &DeviceRegistryIterator{}
-	req = proto.Clone(req).(*iotpb.ListDeviceRegistriesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*iotpb.DeviceRegistry, string, error) {
 		resp := &iotpb.ListDeviceRegistriesResponse{}
 		if pageToken != "" {
@@ -1059,7 +1059,7 @@ func (c *deviceManagerGRPCClient) ListDevices(ctx context.Context, req *iotpb.Li
 	}
 	opts = append((*c.CallOptions).ListDevices[0:len((*c.CallOptions).ListDevices):len((*c.CallOptions).ListDevices)], opts...)
 	it := &DeviceIterator{}
-	req = proto.Clone(req).(*iotpb.ListDevicesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*iotpb.Device, string, error) {
 		resp := &iotpb.ListDevicesResponse{}
 		if pageToken != "" {
@@ -1548,7 +1548,7 @@ func (c *deviceManagerRESTClient) DeleteDeviceRegistry(ctx context.Context, req 
 // ListDeviceRegistries lists device registries.
 func (c *deviceManagerRESTClient) ListDeviceRegistries(ctx context.Context, req *iotpb.ListDeviceRegistriesRequest, opts ...gax.CallOption) *DeviceRegistryIterator {
 	it := &DeviceRegistryIterator{}
-	req = proto.Clone(req).(*iotpb.ListDeviceRegistriesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*iotpb.DeviceRegistry, string, error) {
 		resp := &iotpb.ListDeviceRegistriesResponse{}
@@ -1864,7 +1864,7 @@ func (c *deviceManagerRESTClient) DeleteDevice(ctx context.Context, req *iotpb.D
 // ListDevices list devices in a device registry.
 func (c *deviceManagerRESTClient) ListDevices(ctx context.Context, req *iotpb.ListDevicesRequest, opts ...gax.CallOption) *DeviceIterator {
 	it := &DeviceIterator{}
-	req = proto.Clone(req).(*iotpb.ListDevicesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*iotpb.Device, string, error) {
 		resp := &iotpb.ListDevicesResponse{}

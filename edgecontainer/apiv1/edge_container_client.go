@@ -991,7 +991,7 @@ func (c *gRPCClient) ListClusters(ctx context.Context, req *edgecontainerpb.List
 	}
 	opts = append((*c.CallOptions).ListClusters[0:len((*c.CallOptions).ListClusters):len((*c.CallOptions).ListClusters)], opts...)
 	it := &ClusterIterator{}
-	req = proto.Clone(req).(*edgecontainerpb.ListClustersRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*edgecontainerpb.Cluster, string, error) {
 		resp := &edgecontainerpb.ListClustersResponse{}
 		if pageToken != "" {
@@ -1216,7 +1216,7 @@ func (c *gRPCClient) ListNodePools(ctx context.Context, req *edgecontainerpb.Lis
 	}
 	opts = append((*c.CallOptions).ListNodePools[0:len((*c.CallOptions).ListNodePools):len((*c.CallOptions).ListNodePools)], opts...)
 	it := &NodePoolIterator{}
-	req = proto.Clone(req).(*edgecontainerpb.ListNodePoolsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*edgecontainerpb.NodePool, string, error) {
 		resp := &edgecontainerpb.ListNodePoolsResponse{}
 		if pageToken != "" {
@@ -1367,7 +1367,7 @@ func (c *gRPCClient) ListMachines(ctx context.Context, req *edgecontainerpb.List
 	}
 	opts = append((*c.CallOptions).ListMachines[0:len((*c.CallOptions).ListMachines):len((*c.CallOptions).ListMachines)], opts...)
 	it := &MachineIterator{}
-	req = proto.Clone(req).(*edgecontainerpb.ListMachinesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*edgecontainerpb.Machine, string, error) {
 		resp := &edgecontainerpb.ListMachinesResponse{}
 		if pageToken != "" {
@@ -1443,7 +1443,7 @@ func (c *gRPCClient) ListVpnConnections(ctx context.Context, req *edgecontainerp
 	}
 	opts = append((*c.CallOptions).ListVpnConnections[0:len((*c.CallOptions).ListVpnConnections):len((*c.CallOptions).ListVpnConnections)], opts...)
 	it := &VpnConnectionIterator{}
-	req = proto.Clone(req).(*edgecontainerpb.ListVpnConnectionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*edgecontainerpb.VpnConnection, string, error) {
 		resp := &edgecontainerpb.ListVpnConnectionsResponse{}
 		if pageToken != "" {
@@ -1613,7 +1613,7 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -1717,7 +1717,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -1759,7 +1759,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // ListClusters lists Clusters in a given project and location.
 func (c *restClient) ListClusters(ctx context.Context, req *edgecontainerpb.ListClustersRequest, opts ...gax.CallOption) *ClusterIterator {
 	it := &ClusterIterator{}
-	req = proto.Clone(req).(*edgecontainerpb.ListClustersRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*edgecontainerpb.Cluster, string, error) {
 		resp := &edgecontainerpb.ListClustersResponse{}
@@ -2288,7 +2288,7 @@ func (c *restClient) GenerateOfflineCredential(ctx context.Context, req *edgecon
 // ListNodePools lists NodePools in a given project and location.
 func (c *restClient) ListNodePools(ctx context.Context, req *edgecontainerpb.ListNodePoolsRequest, opts ...gax.CallOption) *NodePoolIterator {
 	it := &NodePoolIterator{}
-	req = proto.Clone(req).(*edgecontainerpb.ListNodePoolsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*edgecontainerpb.NodePool, string, error) {
 		resp := &edgecontainerpb.ListNodePoolsResponse{}
@@ -2637,7 +2637,7 @@ func (c *restClient) DeleteNodePool(ctx context.Context, req *edgecontainerpb.De
 // ListMachines lists Machines in a given project and location.
 func (c *restClient) ListMachines(ctx context.Context, req *edgecontainerpb.ListMachinesRequest, opts ...gax.CallOption) *MachineIterator {
 	it := &MachineIterator{}
-	req = proto.Clone(req).(*edgecontainerpb.ListMachinesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*edgecontainerpb.Machine, string, error) {
 		resp := &edgecontainerpb.ListMachinesResponse{}
@@ -2778,7 +2778,7 @@ func (c *restClient) GetMachine(ctx context.Context, req *edgecontainerpb.GetMac
 // ListVpnConnections lists VPN connections in a given project and location.
 func (c *restClient) ListVpnConnections(ctx context.Context, req *edgecontainerpb.ListVpnConnectionsRequest, opts ...gax.CallOption) *VpnConnectionIterator {
 	it := &VpnConnectionIterator{}
-	req = proto.Clone(req).(*edgecontainerpb.ListVpnConnectionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*edgecontainerpb.VpnConnection, string, error) {
 		resp := &edgecontainerpb.ListVpnConnectionsResponse{}
@@ -3164,7 +3164,7 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 // ListLocations lists information about the supported locations for this service.
 func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -3383,7 +3383,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

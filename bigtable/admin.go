@@ -1370,6 +1370,18 @@ const (
 	DEVELOPMENT              = InstanceType(btapb.Instance_DEVELOPMENT)
 )
 
+// Edition is the edition of the instance.
+type Edition int32
+
+const (
+	// EditionUnspecified defaults to ENTERPRISE
+	EditionUnspecified Edition = Edition(btapb.Instance_EDITION_UNSPECIFIED)
+	// Enterprise edition is the default edition.
+	Enterprise Edition = Edition(btapb.Instance_ENTERPRISE)
+	// EnterprisePlus edition is the edition with higher limits and more features than Enterprise edition.
+	EnterprisePlus Edition = Edition(btapb.Instance_ENTERPRISE_PLUS)
+)
+
 // InstanceInfo represents information about an instance
 type InstanceInfo struct {
 	Name          string // name of the instance
@@ -1377,6 +1389,7 @@ type InstanceInfo struct {
 	InstanceState InstanceState
 	InstanceType  InstanceType
 	Labels        map[string]string
+	Edition       Edition
 }
 
 // InstanceConf contains the information necessary to create an Instance
@@ -1387,6 +1400,7 @@ type InstanceConf struct {
 	StorageType  StorageType
 	InstanceType InstanceType
 	Labels       map[string]string
+	Edition      Edition
 
 	// AutoscalingConfig configures the autoscaling properties on the cluster
 	// created with the instance. It is optional.
@@ -1409,6 +1423,7 @@ type InstanceWithClustersConfig struct {
 	Clusters                []ClusterConfig
 	InstanceType            InstanceType
 	Labels                  map[string]string
+	Edition                 Edition
 	// Tags maps TagKey resource names (e.g., "tagKeys/123") to TagValue
 	// resource names (e.g., "tagValues/456") to be associated with the instance.
 	Tags map[string]string
@@ -1426,6 +1441,7 @@ func (iac *InstanceAdminClient) CreateInstance(ctx context.Context, conf *Instan
 		InstanceType: conf.InstanceType,
 		Labels:       conf.Labels,
 		Tags:         conf.Tags,
+		Edition:      conf.Edition,
 		Clusters: []ClusterConfig{
 			{
 				InstanceID:        conf.InstanceId,
@@ -1458,6 +1474,7 @@ func (iac *InstanceAdminClient) CreateInstanceWithClusters(ctx context.Context, 
 			Type:        btapb.Instance_Type(conf.InstanceType),
 			Labels:      conf.Labels,
 			Tags:        conf.Tags,
+			Edition:     btapb.Instance_Edition(conf.Edition),
 		},
 		Clusters: clusters,
 	}
@@ -1492,6 +1509,10 @@ func (iac *InstanceAdminClient) updateInstance(ctx context.Context, conf *Instan
 	if btapb.Instance_Type(conf.InstanceType) != btapb.Instance_TYPE_UNSPECIFIED {
 		ireq.Instance.Type = btapb.Instance_Type(conf.InstanceType)
 		mask.Paths = append(mask.Paths, "type")
+	}
+	if conf.Edition != EditionUnspecified {
+		ireq.Instance.Edition = btapb.Instance_Edition(conf.Edition)
+		mask.Paths = append(mask.Paths, "edition")
 	}
 	if conf.Labels != nil {
 		ireq.Instance.Labels = conf.Labels
@@ -1601,6 +1622,7 @@ func (iac *InstanceAdminClient) Instances(ctx context.Context) ([]*InstanceInfo,
 			InstanceState: InstanceState(i.State),
 			InstanceType:  InstanceType(i.Type),
 			Labels:        i.Labels,
+			Edition:       Edition(i.Edition),
 		})
 	}
 	if len(res.FailedLocations) > 0 {
@@ -1637,6 +1659,7 @@ func (iac *InstanceAdminClient) InstanceInfo(ctx context.Context, instanceID str
 		InstanceState: InstanceState(res.State),
 		InstanceType:  InstanceType(res.Type),
 		Labels:        res.Labels,
+		Edition:       Edition(res.Edition),
 	}, nil
 }
 

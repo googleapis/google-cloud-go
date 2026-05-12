@@ -424,7 +424,7 @@ func (c *cssProductsGRPCClient) ListCssProducts(ctx context.Context, req *csspb.
 	}
 	opts = append((*c.CallOptions).ListCssProducts[0:len((*c.CallOptions).ListCssProducts):len((*c.CallOptions).ListCssProducts)], opts...)
 	it := &CssProductIterator{}
-	req = proto.Clone(req).(*csspb.ListCssProductsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*csspb.CssProduct, string, error) {
 		resp := &csspb.ListCssProductsResponse{}
 		if pageToken != "" {
@@ -531,7 +531,7 @@ func (c *cssProductsRESTClient) GetCssProduct(ctx context.Context, req *csspb.Ge
 // retrieved.
 func (c *cssProductsRESTClient) ListCssProducts(ctx context.Context, req *csspb.ListCssProductsRequest, opts ...gax.CallOption) *CssProductIterator {
 	it := &CssProductIterator{}
-	req = proto.Clone(req).(*csspb.ListCssProductsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*csspb.CssProduct, string, error) {
 		resp := &csspb.ListCssProductsResponse{}

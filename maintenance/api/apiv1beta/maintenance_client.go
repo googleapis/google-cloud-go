@@ -382,7 +382,7 @@ func (c *maintenanceGRPCClient) SummarizeMaintenances(ctx context.Context, req *
 	}
 	opts = append((*c.CallOptions).SummarizeMaintenances[0:len((*c.CallOptions).SummarizeMaintenances):len((*c.CallOptions).SummarizeMaintenances)], opts...)
 	it := &MaintenanceSummaryIterator{}
-	req = proto.Clone(req).(*apipb.SummarizeMaintenancesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apipb.MaintenanceSummary, string, error) {
 		resp := &apipb.SummarizeMaintenancesResponse{}
 		if pageToken != "" {
@@ -434,7 +434,7 @@ func (c *maintenanceGRPCClient) ListResourceMaintenances(ctx context.Context, re
 	}
 	opts = append((*c.CallOptions).ListResourceMaintenances[0:len((*c.CallOptions).ListResourceMaintenances):len((*c.CallOptions).ListResourceMaintenances)], opts...)
 	it := &ResourceMaintenanceIterator{}
-	req = proto.Clone(req).(*apipb.ListResourceMaintenancesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apipb.ResourceMaintenance, string, error) {
 		resp := &apipb.ListResourceMaintenancesResponse{}
 		if pageToken != "" {
@@ -528,7 +528,7 @@ func (c *maintenanceGRPCClient) ListLocations(ctx context.Context, req *location
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -570,7 +570,7 @@ func (c *maintenanceGRPCClient) ListLocations(ctx context.Context, req *location
 // SummarizeMaintenances retrieves the statistics of a specific maintenance.
 func (c *maintenanceRESTClient) SummarizeMaintenances(ctx context.Context, req *apipb.SummarizeMaintenancesRequest, opts ...gax.CallOption) *MaintenanceSummaryIterator {
 	it := &MaintenanceSummaryIterator{}
-	req = proto.Clone(req).(*apipb.SummarizeMaintenancesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apipb.MaintenanceSummary, string, error) {
 		resp := &apipb.SummarizeMaintenancesResponse{}
@@ -654,7 +654,7 @@ func (c *maintenanceRESTClient) SummarizeMaintenances(ctx context.Context, req *
 // ListResourceMaintenances retrieve a collection of resource maintenances.
 func (c *maintenanceRESTClient) ListResourceMaintenances(ctx context.Context, req *apipb.ListResourceMaintenancesRequest, opts ...gax.CallOption) *ResourceMaintenanceIterator {
 	it := &ResourceMaintenanceIterator{}
-	req = proto.Clone(req).(*apipb.ListResourceMaintenancesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apipb.ResourceMaintenance, string, error) {
 		resp := &apipb.ListResourceMaintenancesResponse{}
@@ -849,7 +849,7 @@ func (c *maintenanceRESTClient) GetLocation(ctx context.Context, req *locationpb
 // ListLocations lists information about the supported locations for this service.
 func (c *maintenanceRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}

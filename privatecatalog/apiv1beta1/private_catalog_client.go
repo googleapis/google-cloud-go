@@ -416,7 +416,7 @@ func (c *gRPCClient) SearchCatalogs(ctx context.Context, req *privatecatalogpb.S
 	}
 	opts = append((*c.CallOptions).SearchCatalogs[0:len((*c.CallOptions).SearchCatalogs):len((*c.CallOptions).SearchCatalogs)], opts...)
 	it := &CatalogIterator{}
-	req = proto.Clone(req).(*privatecatalogpb.SearchCatalogsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*privatecatalogpb.Catalog, string, error) {
 		resp := &privatecatalogpb.SearchCatalogsResponse{}
 		if pageToken != "" {
@@ -465,7 +465,7 @@ func (c *gRPCClient) SearchProducts(ctx context.Context, req *privatecatalogpb.S
 	}
 	opts = append((*c.CallOptions).SearchProducts[0:len((*c.CallOptions).SearchProducts):len((*c.CallOptions).SearchProducts)], opts...)
 	it := &ProductIterator{}
-	req = proto.Clone(req).(*privatecatalogpb.SearchProductsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*privatecatalogpb.Product, string, error) {
 		resp := &privatecatalogpb.SearchProductsResponse{}
 		if pageToken != "" {
@@ -514,7 +514,7 @@ func (c *gRPCClient) SearchVersions(ctx context.Context, req *privatecatalogpb.S
 	}
 	opts = append((*c.CallOptions).SearchVersions[0:len((*c.CallOptions).SearchVersions):len((*c.CallOptions).SearchVersions)], opts...)
 	it := &VersionIterator{}
-	req = proto.Clone(req).(*privatecatalogpb.SearchVersionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*privatecatalogpb.Version, string, error) {
 		resp := &privatecatalogpb.SearchVersionsResponse{}
 		if pageToken != "" {
@@ -557,7 +557,7 @@ func (c *gRPCClient) SearchVersions(ctx context.Context, req *privatecatalogpb.S
 // scope of the consumer cloud resource hierarchy context.
 func (c *restClient) SearchCatalogs(ctx context.Context, req *privatecatalogpb.SearchCatalogsRequest, opts ...gax.CallOption) *CatalogIterator {
 	it := &CatalogIterator{}
-	req = proto.Clone(req).(*privatecatalogpb.SearchCatalogsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*privatecatalogpb.Catalog, string, error) {
 		resp := &privatecatalogpb.SearchCatalogsResponse{}
@@ -639,7 +639,7 @@ func (c *restClient) SearchCatalogs(ctx context.Context, req *privatecatalogpb.S
 // scope of the consumer cloud resource hierarchy context.
 func (c *restClient) SearchProducts(ctx context.Context, req *privatecatalogpb.SearchProductsRequest, opts ...gax.CallOption) *ProductIterator {
 	it := &ProductIterator{}
-	req = proto.Clone(req).(*privatecatalogpb.SearchProductsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*privatecatalogpb.Product, string, error) {
 		resp := &privatecatalogpb.SearchProductsResponse{}
@@ -721,7 +721,7 @@ func (c *restClient) SearchProducts(ctx context.Context, req *privatecatalogpb.S
 // scope of the consumer cloud resource hierarchy context.
 func (c *restClient) SearchVersions(ctx context.Context, req *privatecatalogpb.SearchVersionsRequest, opts ...gax.CallOption) *VersionIterator {
 	it := &VersionIterator{}
-	req = proto.Clone(req).(*privatecatalogpb.SearchVersionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*privatecatalogpb.Version, string, error) {
 		resp := &privatecatalogpb.SearchVersionsResponse{}

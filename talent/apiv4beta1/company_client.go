@@ -563,7 +563,7 @@ func (c *companyGRPCClient) ListCompanies(ctx context.Context, req *talentpb.Lis
 	}
 	opts = append((*c.CallOptions).ListCompanies[0:len((*c.CallOptions).ListCompanies):len((*c.CallOptions).ListCompanies)], opts...)
 	it := &CompanyIterator{}
-	req = proto.Clone(req).(*talentpb.ListCompaniesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*talentpb.Company, string, error) {
 		resp := &talentpb.ListCompaniesResponse{}
 		if pageToken != "" {
@@ -849,7 +849,7 @@ func (c *companyRESTClient) DeleteCompany(ctx context.Context, req *talentpb.Del
 // ListCompanies lists all companies associated with the project.
 func (c *companyRESTClient) ListCompanies(ctx context.Context, req *talentpb.ListCompaniesRequest, opts ...gax.CallOption) *CompanyIterator {
 	it := &CompanyIterator{}
-	req = proto.Clone(req).(*talentpb.ListCompaniesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*talentpb.Company, string, error) {
 		resp := &talentpb.ListCompaniesResponse{}

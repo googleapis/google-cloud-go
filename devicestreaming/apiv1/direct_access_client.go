@@ -529,7 +529,7 @@ func (c *directAccessGRPCClient) ListDeviceSessions(ctx context.Context, req *de
 	}
 	opts = append((*c.CallOptions).ListDeviceSessions[0:len((*c.CallOptions).ListDeviceSessions):len((*c.CallOptions).ListDeviceSessions)], opts...)
 	it := &DeviceSessionIterator{}
-	req = proto.Clone(req).(*devicestreamingpb.ListDeviceSessionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*devicestreamingpb.DeviceSession, string, error) {
 		resp := &devicestreamingpb.ListDeviceSessionsResponse{}
 		if pageToken != "" {
@@ -723,7 +723,7 @@ func (c *directAccessRESTClient) CreateDeviceSession(ctx context.Context, req *d
 // ListDeviceSessions lists DeviceSessions owned by the project user.
 func (c *directAccessRESTClient) ListDeviceSessions(ctx context.Context, req *devicestreamingpb.ListDeviceSessionsRequest, opts ...gax.CallOption) *DeviceSessionIterator {
 	it := &DeviceSessionIterator{}
-	req = proto.Clone(req).(*devicestreamingpb.ListDeviceSessionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*devicestreamingpb.DeviceSession, string, error) {
 		resp := &devicestreamingpb.ListDeviceSessionsResponse{}

@@ -2558,7 +2558,7 @@ func (c *gRPCClient) ListPrivateClouds(ctx context.Context, req *vmwareenginepb.
 	}
 	opts = append((*c.CallOptions).ListPrivateClouds[0:len((*c.CallOptions).ListPrivateClouds):len((*c.CallOptions).ListPrivateClouds)], opts...)
 	it := &PrivateCloudIterator{}
-	req = proto.Clone(req).(*vmwareenginepb.ListPrivateCloudsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*vmwareenginepb.PrivateCloud, string, error) {
 		resp := &vmwareenginepb.ListPrivateCloudsResponse{}
 		if pageToken != "" {
@@ -2735,7 +2735,7 @@ func (c *gRPCClient) ListClusters(ctx context.Context, req *vmwareenginepb.ListC
 	}
 	opts = append((*c.CallOptions).ListClusters[0:len((*c.CallOptions).ListClusters):len((*c.CallOptions).ListClusters)], opts...)
 	it := &ClusterIterator{}
-	req = proto.Clone(req).(*vmwareenginepb.ListClustersRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*vmwareenginepb.Cluster, string, error) {
 		resp := &vmwareenginepb.ListClustersResponse{}
 		if pageToken != "" {
@@ -2886,7 +2886,7 @@ func (c *gRPCClient) ListNodes(ctx context.Context, req *vmwareenginepb.ListNode
 	}
 	opts = append((*c.CallOptions).ListNodes[0:len((*c.CallOptions).ListNodes):len((*c.CallOptions).ListNodes)], opts...)
 	it := &NodeIterator{}
-	req = proto.Clone(req).(*vmwareenginepb.ListNodesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*vmwareenginepb.Node, string, error) {
 		resp := &vmwareenginepb.ListNodesResponse{}
 		if pageToken != "" {
@@ -2962,7 +2962,7 @@ func (c *gRPCClient) ListExternalAddresses(ctx context.Context, req *vmwareengin
 	}
 	opts = append((*c.CallOptions).ListExternalAddresses[0:len((*c.CallOptions).ListExternalAddresses):len((*c.CallOptions).ListExternalAddresses)], opts...)
 	it := &ExternalAddressIterator{}
-	req = proto.Clone(req).(*vmwareenginepb.ListExternalAddressesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*vmwareenginepb.ExternalAddress, string, error) {
 		resp := &vmwareenginepb.ListExternalAddressesResponse{}
 		if pageToken != "" {
@@ -3014,7 +3014,7 @@ func (c *gRPCClient) FetchNetworkPolicyExternalAddresses(ctx context.Context, re
 	}
 	opts = append((*c.CallOptions).FetchNetworkPolicyExternalAddresses[0:len((*c.CallOptions).FetchNetworkPolicyExternalAddresses):len((*c.CallOptions).FetchNetworkPolicyExternalAddresses)], opts...)
 	it := &ExternalAddressIterator{}
-	req = proto.Clone(req).(*vmwareenginepb.FetchNetworkPolicyExternalAddressesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*vmwareenginepb.ExternalAddress, string, error) {
 		resp := &vmwareenginepb.FetchNetworkPolicyExternalAddressesResponse{}
 		if pageToken != "" {
@@ -3165,7 +3165,7 @@ func (c *gRPCClient) ListSubnets(ctx context.Context, req *vmwareenginepb.ListSu
 	}
 	opts = append((*c.CallOptions).ListSubnets[0:len((*c.CallOptions).ListSubnets):len((*c.CallOptions).ListSubnets)], opts...)
 	it := &SubnetIterator{}
-	req = proto.Clone(req).(*vmwareenginepb.ListSubnetsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*vmwareenginepb.Subnet, string, error) {
 		resp := &vmwareenginepb.ListSubnetsResponse{}
 		if pageToken != "" {
@@ -3264,7 +3264,7 @@ func (c *gRPCClient) ListExternalAccessRules(ctx context.Context, req *vmwareeng
 	}
 	opts = append((*c.CallOptions).ListExternalAccessRules[0:len((*c.CallOptions).ListExternalAccessRules):len((*c.CallOptions).ListExternalAccessRules)], opts...)
 	it := &ExternalAccessRuleIterator{}
-	req = proto.Clone(req).(*vmwareenginepb.ListExternalAccessRulesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*vmwareenginepb.ExternalAccessRule, string, error) {
 		resp := &vmwareenginepb.ListExternalAccessRulesResponse{}
 		if pageToken != "" {
@@ -3415,7 +3415,7 @@ func (c *gRPCClient) ListLoggingServers(ctx context.Context, req *vmwareenginepb
 	}
 	opts = append((*c.CallOptions).ListLoggingServers[0:len((*c.CallOptions).ListLoggingServers):len((*c.CallOptions).ListLoggingServers)], opts...)
 	it := &LoggingServerIterator{}
-	req = proto.Clone(req).(*vmwareenginepb.ListLoggingServersRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*vmwareenginepb.LoggingServer, string, error) {
 		resp := &vmwareenginepb.ListLoggingServersResponse{}
 		if pageToken != "" {
@@ -3566,7 +3566,7 @@ func (c *gRPCClient) ListNodeTypes(ctx context.Context, req *vmwareenginepb.List
 	}
 	opts = append((*c.CallOptions).ListNodeTypes[0:len((*c.CallOptions).ListNodeTypes):len((*c.CallOptions).ListNodeTypes)], opts...)
 	it := &NodeTypeIterator{}
-	req = proto.Clone(req).(*vmwareenginepb.ListNodeTypesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*vmwareenginepb.NodeType, string, error) {
 		resp := &vmwareenginepb.ListNodeTypesResponse{}
 		if pageToken != "" {
@@ -3813,7 +3813,7 @@ func (c *gRPCClient) ListNetworkPeerings(ctx context.Context, req *vmwareenginep
 	}
 	opts = append((*c.CallOptions).ListNetworkPeerings[0:len((*c.CallOptions).ListNetworkPeerings):len((*c.CallOptions).ListNetworkPeerings)], opts...)
 	it := &NetworkPeeringIterator{}
-	req = proto.Clone(req).(*vmwareenginepb.ListNetworkPeeringsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*vmwareenginepb.NetworkPeering, string, error) {
 		resp := &vmwareenginepb.ListNetworkPeeringsResponse{}
 		if pageToken != "" {
@@ -3940,7 +3940,7 @@ func (c *gRPCClient) ListPeeringRoutes(ctx context.Context, req *vmwareenginepb.
 	}
 	opts = append((*c.CallOptions).ListPeeringRoutes[0:len((*c.CallOptions).ListPeeringRoutes):len((*c.CallOptions).ListPeeringRoutes)], opts...)
 	it := &PeeringRouteIterator{}
-	req = proto.Clone(req).(*vmwareenginepb.ListPeeringRoutesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*vmwareenginepb.PeeringRoute, string, error) {
 		resp := &vmwareenginepb.ListPeeringRoutesResponse{}
 		if pageToken != "" {
@@ -4018,7 +4018,7 @@ func (c *gRPCClient) ListHcxActivationKeys(ctx context.Context, req *vmwareengin
 	}
 	opts = append((*c.CallOptions).ListHcxActivationKeys[0:len((*c.CallOptions).ListHcxActivationKeys):len((*c.CallOptions).ListHcxActivationKeys)], opts...)
 	it := &HcxActivationKeyIterator{}
-	req = proto.Clone(req).(*vmwareenginepb.ListHcxActivationKeysRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*vmwareenginepb.HcxActivationKey, string, error) {
 		resp := &vmwareenginepb.ListHcxActivationKeysResponse{}
 		if pageToken != "" {
@@ -4118,7 +4118,7 @@ func (c *gRPCClient) ListNetworkPolicies(ctx context.Context, req *vmwareenginep
 	}
 	opts = append((*c.CallOptions).ListNetworkPolicies[0:len((*c.CallOptions).ListNetworkPolicies):len((*c.CallOptions).ListNetworkPolicies)], opts...)
 	it := &NetworkPolicyIterator{}
-	req = proto.Clone(req).(*vmwareenginepb.ListNetworkPoliciesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*vmwareenginepb.NetworkPolicy, string, error) {
 		resp := &vmwareenginepb.ListNetworkPoliciesResponse{}
 		if pageToken != "" {
@@ -4245,7 +4245,7 @@ func (c *gRPCClient) ListManagementDnsZoneBindings(ctx context.Context, req *vmw
 	}
 	opts = append((*c.CallOptions).ListManagementDnsZoneBindings[0:len((*c.CallOptions).ListManagementDnsZoneBindings):len((*c.CallOptions).ListManagementDnsZoneBindings)], opts...)
 	it := &ManagementDnsZoneBindingIterator{}
-	req = proto.Clone(req).(*vmwareenginepb.ListManagementDnsZoneBindingsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*vmwareenginepb.ManagementDnsZoneBinding, string, error) {
 		resp := &vmwareenginepb.ListManagementDnsZoneBindingsResponse{}
 		if pageToken != "" {
@@ -4521,7 +4521,7 @@ func (c *gRPCClient) ListVmwareEngineNetworks(ctx context.Context, req *vmwareen
 	}
 	opts = append((*c.CallOptions).ListVmwareEngineNetworks[0:len((*c.CallOptions).ListVmwareEngineNetworks):len((*c.CallOptions).ListVmwareEngineNetworks)], opts...)
 	it := &VmwareEngineNetworkIterator{}
-	req = proto.Clone(req).(*vmwareenginepb.ListVmwareEngineNetworksRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*vmwareenginepb.VmwareEngineNetwork, string, error) {
 		resp := &vmwareenginepb.ListVmwareEngineNetworksResponse{}
 		if pageToken != "" {
@@ -4623,7 +4623,7 @@ func (c *gRPCClient) ListPrivateConnections(ctx context.Context, req *vmwareengi
 	}
 	opts = append((*c.CallOptions).ListPrivateConnections[0:len((*c.CallOptions).ListPrivateConnections):len((*c.CallOptions).ListPrivateConnections)], opts...)
 	it := &PrivateConnectionIterator{}
-	req = proto.Clone(req).(*vmwareenginepb.ListPrivateConnectionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*vmwareenginepb.PrivateConnection, string, error) {
 		resp := &vmwareenginepb.ListPrivateConnectionsResponse{}
 		if pageToken != "" {
@@ -4724,7 +4724,7 @@ func (c *gRPCClient) ListPrivateConnectionPeeringRoutes(ctx context.Context, req
 	}
 	opts = append((*c.CallOptions).ListPrivateConnectionPeeringRoutes[0:len((*c.CallOptions).ListPrivateConnectionPeeringRoutes):len((*c.CallOptions).ListPrivateConnectionPeeringRoutes)], opts...)
 	it := &PeeringRouteIterator{}
-	req = proto.Clone(req).(*vmwareenginepb.ListPrivateConnectionPeeringRoutesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*vmwareenginepb.PeeringRoute, string, error) {
 		resp := &vmwareenginepb.ListPrivateConnectionPeeringRoutesResponse{}
 		if pageToken != "" {
@@ -4870,7 +4870,7 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -5029,7 +5029,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -5071,7 +5071,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // ListPrivateClouds lists PrivateCloud resources in a given project and location.
 func (c *restClient) ListPrivateClouds(ctx context.Context, req *vmwareenginepb.ListPrivateCloudsRequest, opts ...gax.CallOption) *PrivateCloudIterator {
 	it := &PrivateCloudIterator{}
-	req = proto.Clone(req).(*vmwareenginepb.ListPrivateCloudsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*vmwareenginepb.PrivateCloud, string, error) {
 		resp := &vmwareenginepb.ListPrivateCloudsResponse{}
@@ -5525,7 +5525,7 @@ func (c *restClient) UndeletePrivateCloud(ctx context.Context, req *vmwareengine
 // ListClusters lists Cluster resources in a given private cloud.
 func (c *restClient) ListClusters(ctx context.Context, req *vmwareenginepb.ListClustersRequest, opts ...gax.CallOption) *ClusterIterator {
 	it := &ClusterIterator{}
-	req = proto.Clone(req).(*vmwareenginepb.ListClustersRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*vmwareenginepb.Cluster, string, error) {
 		resp := &vmwareenginepb.ListClustersResponse{}
@@ -5892,7 +5892,7 @@ func (c *restClient) DeleteCluster(ctx context.Context, req *vmwareenginepb.Dele
 // ListNodes lists nodes in a given cluster.
 func (c *restClient) ListNodes(ctx context.Context, req *vmwareenginepb.ListNodesRequest, opts ...gax.CallOption) *NodeIterator {
 	it := &NodeIterator{}
-	req = proto.Clone(req).(*vmwareenginepb.ListNodesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*vmwareenginepb.Node, string, error) {
 		resp := &vmwareenginepb.ListNodesResponse{}
@@ -6028,7 +6028,7 @@ func (c *restClient) GetNode(ctx context.Context, req *vmwareenginepb.GetNodeReq
 // private cloud.
 func (c *restClient) ListExternalAddresses(ctx context.Context, req *vmwareenginepb.ListExternalAddressesRequest, opts ...gax.CallOption) *ExternalAddressIterator {
 	it := &ExternalAddressIterator{}
-	req = proto.Clone(req).(*vmwareenginepb.ListExternalAddressesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*vmwareenginepb.ExternalAddress, string, error) {
 		resp := &vmwareenginepb.ListExternalAddressesResponse{}
@@ -6113,7 +6113,7 @@ func (c *restClient) ListExternalAddresses(ctx context.Context, req *vmwareengin
 // scope of the given network policy.
 func (c *restClient) FetchNetworkPolicyExternalAddresses(ctx context.Context, req *vmwareenginepb.FetchNetworkPolicyExternalAddressesRequest, opts ...gax.CallOption) *ExternalAddressIterator {
 	it := &ExternalAddressIterator{}
-	req = proto.Clone(req).(*vmwareenginepb.FetchNetworkPolicyExternalAddressesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*vmwareenginepb.ExternalAddress, string, error) {
 		resp := &vmwareenginepb.FetchNetworkPolicyExternalAddressesResponse{}
@@ -6466,7 +6466,7 @@ func (c *restClient) DeleteExternalAddress(ctx context.Context, req *vmwareengin
 // ListSubnets lists subnets in a given private cloud.
 func (c *restClient) ListSubnets(ctx context.Context, req *vmwareenginepb.ListSubnetsRequest, opts ...gax.CallOption) *SubnetIterator {
 	it := &SubnetIterator{}
-	req = proto.Clone(req).(*vmwareenginepb.ListSubnetsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*vmwareenginepb.Subnet, string, error) {
 		resp := &vmwareenginepb.ListSubnetsResponse{}
@@ -6677,7 +6677,7 @@ func (c *restClient) UpdateSubnet(ctx context.Context, req *vmwareenginepb.Updat
 // ListExternalAccessRules lists ExternalAccessRule resources in the specified network policy.
 func (c *restClient) ListExternalAccessRules(ctx context.Context, req *vmwareenginepb.ListExternalAccessRulesRequest, opts ...gax.CallOption) *ExternalAccessRuleIterator {
 	it := &ExternalAccessRuleIterator{}
-	req = proto.Clone(req).(*vmwareenginepb.ListExternalAccessRulesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*vmwareenginepb.ExternalAccessRule, string, error) {
 		resp := &vmwareenginepb.ListExternalAccessRulesResponse{}
@@ -7028,7 +7028,7 @@ func (c *restClient) DeleteExternalAccessRule(ctx context.Context, req *vmwareen
 // cloud.
 func (c *restClient) ListLoggingServers(ctx context.Context, req *vmwareenginepb.ListLoggingServersRequest, opts ...gax.CallOption) *LoggingServerIterator {
 	it := &LoggingServerIterator{}
-	req = proto.Clone(req).(*vmwareenginepb.ListLoggingServersRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*vmwareenginepb.LoggingServer, string, error) {
 		resp := &vmwareenginepb.ListLoggingServersResponse{}
@@ -7378,7 +7378,7 @@ func (c *restClient) DeleteLoggingServer(ctx context.Context, req *vmwareenginep
 // ListNodeTypes lists node types
 func (c *restClient) ListNodeTypes(ctx context.Context, req *vmwareenginepb.ListNodeTypesRequest, opts ...gax.CallOption) *NodeTypeIterator {
 	it := &NodeTypeIterator{}
-	req = proto.Clone(req).(*vmwareenginepb.ListNodeTypesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*vmwareenginepb.NodeType, string, error) {
 		resp := &vmwareenginepb.ListNodeTypesResponse{}
@@ -7958,7 +7958,7 @@ func (c *restClient) GetNetworkPeering(ctx context.Context, req *vmwareenginepb.
 // global resource and location can only be global.
 func (c *restClient) ListNetworkPeerings(ctx context.Context, req *vmwareenginepb.ListNetworkPeeringsRequest, opts ...gax.CallOption) *NetworkPeeringIterator {
 	it := &NetworkPeeringIterator{}
-	req = proto.Clone(req).(*vmwareenginepb.ListNetworkPeeringsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*vmwareenginepb.NetworkPeering, string, error) {
 		resp := &vmwareenginepb.ListNetworkPeeringsResponse{}
@@ -8258,7 +8258,7 @@ func (c *restClient) UpdateNetworkPeering(ctx context.Context, req *vmwareengine
 // NetworkPeering is a global resource and location can only be global.
 func (c *restClient) ListPeeringRoutes(ctx context.Context, req *vmwareenginepb.ListPeeringRoutesRequest, opts ...gax.CallOption) *PeeringRouteIterator {
 	it := &PeeringRouteIterator{}
-	req = proto.Clone(req).(*vmwareenginepb.ListPeeringRoutesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*vmwareenginepb.PeeringRoute, string, error) {
 		resp := &vmwareenginepb.ListPeeringRoutesResponse{}
@@ -8410,7 +8410,7 @@ func (c *restClient) CreateHcxActivationKey(ctx context.Context, req *vmwareengi
 // ListHcxActivationKeys lists HcxActivationKey resources in a given private cloud.
 func (c *restClient) ListHcxActivationKeys(ctx context.Context, req *vmwareenginepb.ListHcxActivationKeysRequest, opts ...gax.CallOption) *HcxActivationKeyIterator {
 	it := &HcxActivationKeyIterator{}
-	req = proto.Clone(req).(*vmwareenginepb.ListHcxActivationKeysRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*vmwareenginepb.HcxActivationKey, string, error) {
 		resp := &vmwareenginepb.ListHcxActivationKeysResponse{}
@@ -8602,7 +8602,7 @@ func (c *restClient) GetNetworkPolicy(ctx context.Context, req *vmwareenginepb.G
 // ListNetworkPolicies lists NetworkPolicy resources in a specified project and location.
 func (c *restClient) ListNetworkPolicies(ctx context.Context, req *vmwareenginepb.ListNetworkPoliciesRequest, opts ...gax.CallOption) *NetworkPolicyIterator {
 	it := &NetworkPolicyIterator{}
-	req = proto.Clone(req).(*vmwareenginepb.ListNetworkPoliciesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*vmwareenginepb.NetworkPolicy, string, error) {
 		resp := &vmwareenginepb.ListNetworkPoliciesResponse{}
@@ -8909,7 +8909,7 @@ func (c *restClient) DeleteNetworkPolicy(ctx context.Context, req *vmwareenginep
 // ListManagementDnsZoneBindings lists Consumer VPCs bound to Management DNS Zone of a given private cloud.
 func (c *restClient) ListManagementDnsZoneBindings(ctx context.Context, req *vmwareenginepb.ListManagementDnsZoneBindingsRequest, opts ...gax.CallOption) *ManagementDnsZoneBindingIterator {
 	it := &ManagementDnsZoneBindingIterator{}
-	req = proto.Clone(req).(*vmwareenginepb.ListManagementDnsZoneBindingsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*vmwareenginepb.ManagementDnsZoneBinding, string, error) {
 		resp := &vmwareenginepb.ListManagementDnsZoneBindingsResponse{}
@@ -9610,7 +9610,7 @@ func (c *restClient) GetVmwareEngineNetwork(ctx context.Context, req *vmwareengi
 // ListVmwareEngineNetworks lists VmwareEngineNetwork resources in a given project and location.
 func (c *restClient) ListVmwareEngineNetworks(ctx context.Context, req *vmwareenginepb.ListVmwareEngineNetworksRequest, opts ...gax.CallOption) *VmwareEngineNetworkIterator {
 	it := &VmwareEngineNetworkIterator{}
-	req = proto.Clone(req).(*vmwareenginepb.ListVmwareEngineNetworksRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*vmwareenginepb.VmwareEngineNetwork, string, error) {
 		resp := &vmwareenginepb.ListVmwareEngineNetworksResponse{}
@@ -9825,7 +9825,7 @@ func (c *restClient) GetPrivateConnection(ctx context.Context, req *vmwareengine
 // ListPrivateConnections lists PrivateConnection resources in a given project and location.
 func (c *restClient) ListPrivateConnections(ctx context.Context, req *vmwareenginepb.ListPrivateConnectionsRequest, opts ...gax.CallOption) *PrivateConnectionIterator {
 	it := &PrivateConnectionIterator{}
-	req = proto.Clone(req).(*vmwareenginepb.ListPrivateConnectionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*vmwareenginepb.PrivateConnection, string, error) {
 		resp := &vmwareenginepb.ListPrivateConnectionsResponse{}
@@ -10050,7 +10050,7 @@ func (c *restClient) DeletePrivateConnection(ctx context.Context, req *vmwareeng
 // ListPrivateConnectionPeeringRoutes lists the private connection routes exchanged over a peering connection.
 func (c *restClient) ListPrivateConnectionPeeringRoutes(ctx context.Context, req *vmwareenginepb.ListPrivateConnectionPeeringRoutesRequest, opts ...gax.CallOption) *PeeringRouteIterator {
 	it := &PeeringRouteIterator{}
-	req = proto.Clone(req).(*vmwareenginepb.ListPrivateConnectionPeeringRoutesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*vmwareenginepb.PeeringRoute, string, error) {
 		resp := &vmwareenginepb.ListPrivateConnectionPeeringRoutesResponse{}
@@ -10378,7 +10378,7 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 // ListLocations lists information about the supported locations for this service.
 func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -10749,7 +10749,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

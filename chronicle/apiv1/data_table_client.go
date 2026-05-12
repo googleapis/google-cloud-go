@@ -725,7 +725,7 @@ func (c *dataTableGRPCClient) ListDataTables(ctx context.Context, req *chronicle
 	}
 	opts = append((*c.CallOptions).ListDataTables[0:len((*c.CallOptions).ListDataTables):len((*c.CallOptions).ListDataTables)], opts...)
 	it := &DataTableIterator{}
-	req = proto.Clone(req).(*chroniclepb.ListDataTablesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*chroniclepb.DataTable, string, error) {
 		resp := &chroniclepb.ListDataTablesResponse{}
 		if pageToken != "" {
@@ -887,7 +887,7 @@ func (c *dataTableGRPCClient) ListDataTableRows(ctx context.Context, req *chroni
 	}
 	opts = append((*c.CallOptions).ListDataTableRows[0:len((*c.CallOptions).ListDataTableRows):len((*c.CallOptions).ListDataTableRows)], opts...)
 	it := &DataTableRowIterator{}
-	req = proto.Clone(req).(*chroniclepb.ListDataTableRowsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*chroniclepb.DataTableRow, string, error) {
 		resp := &chroniclepb.ListDataTableRowsResponse{}
 		if pageToken != "" {
@@ -1155,7 +1155,7 @@ func (c *dataTableGRPCClient) ListOperations(ctx context.Context, req *longrunni
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -1262,7 +1262,7 @@ func (c *dataTableRESTClient) CreateDataTable(ctx context.Context, req *chronicl
 // ListDataTables list data tables.
 func (c *dataTableRESTClient) ListDataTables(ctx context.Context, req *chroniclepb.ListDataTablesRequest, opts ...gax.CallOption) *DataTableIterator {
 	it := &DataTableIterator{}
-	req = proto.Clone(req).(*chroniclepb.ListDataTablesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*chroniclepb.DataTable, string, error) {
 		resp := &chroniclepb.ListDataTablesResponse{}
@@ -1645,7 +1645,7 @@ func (c *dataTableRESTClient) UpdateDataTableRow(ctx context.Context, req *chron
 // ListDataTableRows list data table rows.
 func (c *dataTableRESTClient) ListDataTableRows(ctx context.Context, req *chroniclepb.ListDataTableRowsRequest, opts ...gax.CallOption) *DataTableRowIterator {
 	it := &DataTableRowIterator{}
-	req = proto.Clone(req).(*chroniclepb.ListDataTableRowsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*chroniclepb.DataTableRow, string, error) {
 		resp := &chroniclepb.ListDataTableRowsResponse{}
@@ -2275,7 +2275,7 @@ func (c *dataTableRESTClient) GetOperation(ctx context.Context, req *longrunning
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *dataTableRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

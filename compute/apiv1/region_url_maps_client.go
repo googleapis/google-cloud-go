@@ -509,7 +509,7 @@ func (c *regionUrlMapsRESTClient) Insert(ctx context.Context, req *computepb.Ins
 // project in the specified region.
 func (c *regionUrlMapsRESTClient) List(ctx context.Context, req *computepb.ListRegionUrlMapsRequest, opts ...gax.CallOption) *UrlMapIterator {
 	it := &UrlMapIterator{}
-	req = proto.Clone(req).(*computepb.ListRegionUrlMapsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.UrlMap, string, error) {
 		resp := &computepb.UrlMapList{}

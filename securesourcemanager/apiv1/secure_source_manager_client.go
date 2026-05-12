@@ -1416,7 +1416,7 @@ func (c *gRPCClient) ListInstances(ctx context.Context, req *securesourcemanager
 	}
 	opts = append((*c.CallOptions).ListInstances[0:len((*c.CallOptions).ListInstances):len((*c.CallOptions).ListInstances)], opts...)
 	it := &InstanceIterator{}
-	req = proto.Clone(req).(*securesourcemanagerpb.ListInstancesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securesourcemanagerpb.Instance, string, error) {
 		resp := &securesourcemanagerpb.ListInstancesResponse{}
 		if pageToken != "" {
@@ -1544,7 +1544,7 @@ func (c *gRPCClient) ListRepositories(ctx context.Context, req *securesourcemana
 	}
 	opts = append((*c.CallOptions).ListRepositories[0:len((*c.CallOptions).ListRepositories):len((*c.CallOptions).ListRepositories)], opts...)
 	it := &RepositoryIterator{}
-	req = proto.Clone(req).(*securesourcemanagerpb.ListRepositoriesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securesourcemanagerpb.Repository, string, error) {
 		resp := &securesourcemanagerpb.ListRepositoriesResponse{}
 		if pageToken != "" {
@@ -1695,7 +1695,7 @@ func (c *gRPCClient) ListHooks(ctx context.Context, req *securesourcemanagerpb.L
 	}
 	opts = append((*c.CallOptions).ListHooks[0:len((*c.CallOptions).ListHooks):len((*c.CallOptions).ListHooks)], opts...)
 	it := &HookIterator{}
-	req = proto.Clone(req).(*securesourcemanagerpb.ListHooksRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securesourcemanagerpb.Hook, string, error) {
 		resp := &securesourcemanagerpb.ListHooksResponse{}
 		if pageToken != "" {
@@ -1944,7 +1944,7 @@ func (c *gRPCClient) ListBranchRules(ctx context.Context, req *securesourcemanag
 	}
 	opts = append((*c.CallOptions).ListBranchRules[0:len((*c.CallOptions).ListBranchRules):len((*c.CallOptions).ListBranchRules)], opts...)
 	it := &BranchRuleIterator{}
-	req = proto.Clone(req).(*securesourcemanagerpb.ListBranchRulesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securesourcemanagerpb.BranchRule, string, error) {
 		resp := &securesourcemanagerpb.ListBranchRulesResponse{}
 		if pageToken != "" {
@@ -2119,7 +2119,7 @@ func (c *gRPCClient) ListPullRequests(ctx context.Context, req *securesourcemana
 	}
 	opts = append((*c.CallOptions).ListPullRequests[0:len((*c.CallOptions).ListPullRequests):len((*c.CallOptions).ListPullRequests)], opts...)
 	it := &PullRequestIterator{}
-	req = proto.Clone(req).(*securesourcemanagerpb.ListPullRequestsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securesourcemanagerpb.PullRequest, string, error) {
 		resp := &securesourcemanagerpb.ListPullRequestsResponse{}
 		if pageToken != "" {
@@ -2272,7 +2272,7 @@ func (c *gRPCClient) ListPullRequestFileDiffs(ctx context.Context, req *secureso
 	}
 	opts = append((*c.CallOptions).ListPullRequestFileDiffs[0:len((*c.CallOptions).ListPullRequestFileDiffs):len((*c.CallOptions).ListPullRequestFileDiffs)], opts...)
 	it := &FileDiffIterator{}
-	req = proto.Clone(req).(*securesourcemanagerpb.ListPullRequestFileDiffsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securesourcemanagerpb.FileDiff, string, error) {
 		resp := &securesourcemanagerpb.ListPullRequestFileDiffsResponse{}
 		if pageToken != "" {
@@ -2324,7 +2324,7 @@ func (c *gRPCClient) FetchTree(ctx context.Context, req *securesourcemanagerpb.F
 	}
 	opts = append((*c.CallOptions).FetchTree[0:len((*c.CallOptions).FetchTree):len((*c.CallOptions).FetchTree)], opts...)
 	it := &TreeEntryIterator{}
-	req = proto.Clone(req).(*securesourcemanagerpb.FetchTreeRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securesourcemanagerpb.TreeEntry, string, error) {
 		resp := &securesourcemanagerpb.FetchTreeResponse{}
 		if pageToken != "" {
@@ -2450,7 +2450,7 @@ func (c *gRPCClient) ListIssues(ctx context.Context, req *securesourcemanagerpb.
 	}
 	opts = append((*c.CallOptions).ListIssues[0:len((*c.CallOptions).ListIssues):len((*c.CallOptions).ListIssues)], opts...)
 	it := &IssueIterator{}
-	req = proto.Clone(req).(*securesourcemanagerpb.ListIssuesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securesourcemanagerpb.Issue, string, error) {
 		resp := &securesourcemanagerpb.ListIssuesResponse{}
 		if pageToken != "" {
@@ -2627,7 +2627,7 @@ func (c *gRPCClient) ListPullRequestComments(ctx context.Context, req *securesou
 	}
 	opts = append((*c.CallOptions).ListPullRequestComments[0:len((*c.CallOptions).ListPullRequestComments):len((*c.CallOptions).ListPullRequestComments)], opts...)
 	it := &PullRequestCommentIterator{}
-	req = proto.Clone(req).(*securesourcemanagerpb.ListPullRequestCommentsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securesourcemanagerpb.PullRequestComment, string, error) {
 		resp := &securesourcemanagerpb.ListPullRequestCommentsResponse{}
 		if pageToken != "" {
@@ -2882,7 +2882,7 @@ func (c *gRPCClient) ListIssueComments(ctx context.Context, req *securesourceman
 	}
 	opts = append((*c.CallOptions).ListIssueComments[0:len((*c.CallOptions).ListIssueComments):len((*c.CallOptions).ListIssueComments)], opts...)
 	it := &IssueCommentIterator{}
-	req = proto.Clone(req).(*securesourcemanagerpb.ListIssueCommentsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securesourcemanagerpb.IssueComment, string, error) {
 		resp := &securesourcemanagerpb.ListIssueCommentsResponse{}
 		if pageToken != "" {
@@ -3001,7 +3001,7 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -3177,7 +3177,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -3219,7 +3219,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // ListInstances lists Instances in a given project and location.
 func (c *restClient) ListInstances(ctx context.Context, req *securesourcemanagerpb.ListInstancesRequest, opts ...gax.CallOption) *InstanceIterator {
 	it := &InstanceIterator{}
-	req = proto.Clone(req).(*securesourcemanagerpb.ListInstancesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securesourcemanagerpb.Instance, string, error) {
 		resp := &securesourcemanagerpb.ListInstancesResponse{}
@@ -3500,7 +3500,7 @@ func (c *restClient) DeleteInstance(ctx context.Context, req *securesourcemanage
 // the securesourcemanager.googleapis.com (at http://securesourcemanager.googleapis.com) endpoint.
 func (c *restClient) ListRepositories(ctx context.Context, req *securesourcemanagerpb.ListRepositoriesRequest, opts ...gax.CallOption) *RepositoryIterator {
 	it := &RepositoryIterator{}
-	req = proto.Clone(req).(*securesourcemanagerpb.ListRepositoriesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securesourcemanagerpb.Repository, string, error) {
 		resp := &securesourcemanagerpb.ListRepositoriesResponse{}
@@ -3849,7 +3849,7 @@ func (c *restClient) DeleteRepository(ctx context.Context, req *securesourcemana
 // ListHooks lists hooks in a given repository.
 func (c *restClient) ListHooks(ctx context.Context, req *securesourcemanagerpb.ListHooksRequest, opts ...gax.CallOption) *HookIterator {
 	it := &HookIterator{}
-	req = proto.Clone(req).(*securesourcemanagerpb.ListHooksRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securesourcemanagerpb.Hook, string, error) {
 		resp := &securesourcemanagerpb.ListHooksResponse{}
@@ -4438,7 +4438,7 @@ func (c *restClient) CreateBranchRule(ctx context.Context, req *securesourcemana
 // ListBranchRules listBranchRules lists branch rules in a given repository.
 func (c *restClient) ListBranchRules(ctx context.Context, req *securesourcemanagerpb.ListBranchRulesRequest, opts ...gax.CallOption) *BranchRuleIterator {
 	it := &BranchRuleIterator{}
-	req = proto.Clone(req).(*securesourcemanagerpb.ListBranchRulesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securesourcemanagerpb.BranchRule, string, error) {
 		resp := &securesourcemanagerpb.ListBranchRulesResponse{}
@@ -4834,7 +4834,7 @@ func (c *restClient) GetPullRequest(ctx context.Context, req *securesourcemanage
 // ListPullRequests lists pull requests in a repository.
 func (c *restClient) ListPullRequests(ctx context.Context, req *securesourcemanagerpb.ListPullRequestsRequest, opts ...gax.CallOption) *PullRequestIterator {
 	it := &PullRequestIterator{}
-	req = proto.Clone(req).(*securesourcemanagerpb.ListPullRequestsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securesourcemanagerpb.PullRequest, string, error) {
 		resp := &securesourcemanagerpb.ListPullRequestsResponse{}
@@ -5181,7 +5181,7 @@ func (c *restClient) ClosePullRequest(ctx context.Context, req *securesourcemana
 // ListPullRequestFileDiffs lists a pull request’s file diffs.
 func (c *restClient) ListPullRequestFileDiffs(ctx context.Context, req *securesourcemanagerpb.ListPullRequestFileDiffsRequest, opts ...gax.CallOption) *FileDiffIterator {
 	it := &FileDiffIterator{}
-	req = proto.Clone(req).(*securesourcemanagerpb.ListPullRequestFileDiffsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securesourcemanagerpb.FileDiff, string, error) {
 		resp := &securesourcemanagerpb.ListPullRequestFileDiffsResponse{}
@@ -5259,7 +5259,7 @@ func (c *restClient) ListPullRequestFileDiffs(ctx context.Context, req *secureso
 // FetchTree fetches a tree from a repository.
 func (c *restClient) FetchTree(ctx context.Context, req *securesourcemanagerpb.FetchTreeRequest, opts ...gax.CallOption) *TreeEntryIterator {
 	it := &TreeEntryIterator{}
-	req = proto.Clone(req).(*securesourcemanagerpb.FetchTreeRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securesourcemanagerpb.TreeEntry, string, error) {
 		resp := &securesourcemanagerpb.FetchTreeResponse{}
@@ -5525,7 +5525,7 @@ func (c *restClient) GetIssue(ctx context.Context, req *securesourcemanagerpb.Ge
 // ListIssues lists issues in a repository.
 func (c *restClient) ListIssues(ctx context.Context, req *securesourcemanagerpb.ListIssuesRequest, opts ...gax.CallOption) *IssueIterator {
 	it := &IssueIterator{}
-	req = proto.Clone(req).(*securesourcemanagerpb.ListIssuesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securesourcemanagerpb.Issue, string, error) {
 		resp := &securesourcemanagerpb.ListIssuesResponse{}
@@ -5929,7 +5929,7 @@ func (c *restClient) GetPullRequestComment(ctx context.Context, req *securesourc
 // ListPullRequestComments lists pull request comments.
 func (c *restClient) ListPullRequestComments(ctx context.Context, req *securesourcemanagerpb.ListPullRequestCommentsRequest, opts ...gax.CallOption) *PullRequestCommentIterator {
 	it := &PullRequestCommentIterator{}
-	req = proto.Clone(req).(*securesourcemanagerpb.ListPullRequestCommentsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securesourcemanagerpb.PullRequestComment, string, error) {
 		resp := &securesourcemanagerpb.ListPullRequestCommentsResponse{}
@@ -6541,7 +6541,7 @@ func (c *restClient) GetIssueComment(ctx context.Context, req *securesourcemanag
 // ListIssueComments lists comments in an issue.
 func (c *restClient) ListIssueComments(ctx context.Context, req *securesourcemanagerpb.ListIssueCommentsRequest, opts ...gax.CallOption) *IssueCommentIterator {
 	it := &IssueCommentIterator{}
-	req = proto.Clone(req).(*securesourcemanagerpb.ListIssueCommentsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securesourcemanagerpb.IssueComment, string, error) {
 		resp := &securesourcemanagerpb.ListIssueCommentsResponse{}
@@ -6820,7 +6820,7 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 // implementation and version.
 func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -7236,7 +7236,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

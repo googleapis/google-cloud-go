@@ -466,7 +466,7 @@ func (c *regionMultiMigsRESTClient) Insert(ctx context.Context, req *computepb.I
 // List retrieves a list of multi-MIGs in a project and region.
 func (c *regionMultiMigsRESTClient) List(ctx context.Context, req *computepb.ListRegionMultiMigsRequest, opts ...gax.CallOption) *MultiMigIterator {
 	it := &MultiMigIterator{}
-	req = proto.Clone(req).(*computepb.ListRegionMultiMigsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.MultiMig, string, error) {
 		resp := &computepb.MultiMigsList{}

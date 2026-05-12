@@ -737,7 +737,7 @@ func (c *awsClustersGRPCClient) ListAwsClusters(ctx context.Context, req *gkemul
 	}
 	opts = append((*c.CallOptions).ListAwsClusters[0:len((*c.CallOptions).ListAwsClusters):len((*c.CallOptions).ListAwsClusters)], opts...)
 	it := &AwsClusterIterator{}
-	req = proto.Clone(req).(*gkemulticloudpb.ListAwsClustersRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*gkemulticloudpb.AwsCluster, string, error) {
 		resp := &gkemulticloudpb.ListAwsClustersResponse{}
 		if pageToken != "" {
@@ -962,7 +962,7 @@ func (c *awsClustersGRPCClient) ListAwsNodePools(ctx context.Context, req *gkemu
 	}
 	opts = append((*c.CallOptions).ListAwsNodePools[0:len((*c.CallOptions).ListAwsNodePools):len((*c.CallOptions).ListAwsNodePools)], opts...)
 	it := &AwsNodePoolIterator{}
-	req = proto.Clone(req).(*gkemulticloudpb.ListAwsNodePoolsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*gkemulticloudpb.AwsNodePool, string, error) {
 		resp := &gkemulticloudpb.ListAwsNodePoolsResponse{}
 		if pageToken != "" {
@@ -1164,7 +1164,7 @@ func (c *awsClustersGRPCClient) ListOperations(ctx context.Context, req *longrun
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {

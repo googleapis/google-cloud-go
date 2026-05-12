@@ -209,21 +209,29 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 			for _, gotCreateTSCall := range gotCreateTSCalls {
 				gotMetricTypesPerMethod := make(map[string][]string)
 				for _, ts := range gotCreateTSCall.TimeSeries {
-					gotMetricTypesPerMethod[ts.Metric.GetLabels()["method"]] = append(gotMetricTypesPerMethod[ts.Metric.GetLabels()["method"]], ts.Metric.Type)
-					if _, ok := gotOTELCountValues[ts.Metric.GetLabels()["method"]]; !ok {
-						gotOTELCountValues[ts.Metric.GetLabels()["method"]] = make(map[string]int64)
-						gotOTELLatencyValues[ts.Metric.GetLabels()["method"]] = make(map[string]float64)
-						gotExpectedMethods = append(gotExpectedMethods, ts.Metric.GetLabels()["method"])
+					method := ts.Metric.GetLabels()["method"]
+					if method == "" {
+						continue
 					}
-					if ts.MetricKind == metric.MetricDescriptor_CUMULATIVE && ts.GetValueType() == metric.MetricDescriptor_INT64 {
-						gotOTELCountValues[ts.Metric.GetLabels()["method"]][ts.Metric.Type] = ts.Points[0].Value.GetInt64Value()
+					gotMetricTypesPerMethod[method] = append(gotMetricTypesPerMethod[method], ts.Metric.Type)
+					if _, ok := gotOTELCountValues[method]; !ok {
+						gotOTELCountValues[method] = make(map[string]int64)
+						gotOTELLatencyValues[method] = make(map[string]float64)
+						gotExpectedMethods = append(gotExpectedMethods, method)
+					}
+					if ts.MetricKind == metric.MetricDescriptor_CUMULATIVE && ts.GetValueType() == metric.MetricDescriptor_INT64 && len(ts.Points) > 0 {
+						gotOTELCountValues[method][ts.Metric.Type] = ts.Points[0].GetValue().GetInt64Value()
 					} else {
 						for _, p := range ts.Points {
-							if _, ok := gotOTELCountValues[ts.Metric.GetLabels()["method"]][ts.Metric.Type]; !ok {
-								gotOTELLatencyValues[ts.Metric.GetLabels()["method"]][ts.Metric.Type] = p.Value.GetDistributionValue().Mean
+							if _, ok := gotOTELLatencyValues[method][ts.Metric.Type]; !ok {
+								if dist := p.GetValue().GetDistributionValue(); dist != nil {
+									gotOTELLatencyValues[method][ts.Metric.Type] = dist.Mean
+								}
 							} else {
 								// sum up all attempt latencies
-								gotOTELLatencyValues[ts.Metric.GetLabels()["method"]][ts.Metric.Type] += p.Value.GetDistributionValue().Mean
+								if dist := p.GetValue().GetDistributionValue(); dist != nil {
+									gotOTELLatencyValues[method][ts.Metric.Type] += dist.Mean
+								}
 							}
 						}
 					}

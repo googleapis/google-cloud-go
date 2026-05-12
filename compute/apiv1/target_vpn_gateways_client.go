@@ -314,7 +314,7 @@ func (c *targetVpnGatewaysRESTClient) Connection() *grpc.ClientConn {
 // returnPartialSuccess parameter to true.
 func (c *targetVpnGatewaysRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListTargetVpnGatewaysRequest, opts ...gax.CallOption) *TargetVpnGatewaysScopedListPairIterator {
 	it := &TargetVpnGatewaysScopedListPairIterator{}
-	req = proto.Clone(req).(*computepb.AggregatedListTargetVpnGatewaysRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]TargetVpnGatewaysScopedListPair, string, error) {
 		resp := &computepb.TargetVpnGatewayAggregatedList{}
@@ -608,7 +608,7 @@ func (c *targetVpnGatewaysRESTClient) Insert(ctx context.Context, req *computepb
 // project and region.
 func (c *targetVpnGatewaysRESTClient) List(ctx context.Context, req *computepb.ListTargetVpnGatewaysRequest, opts ...gax.CallOption) *TargetVpnGatewayIterator {
 	it := &TargetVpnGatewayIterator{}
-	req = proto.Clone(req).(*computepb.ListTargetVpnGatewaysRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.TargetVpnGateway, string, error) {
 		resp := &computepb.TargetVpnGatewayList{}

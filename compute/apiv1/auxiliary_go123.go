@@ -69,6 +69,12 @@ func (it *BackendBucketIterator) All() iter.Seq2[*computepb.BackendBucket, error
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *BackendBucketsScopedListPairIterator) All() iter.Seq2[BackendBucketsScopedListPair, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *BackendServiceIterator) All() iter.Seq2[*computepb.BackendService, error] {
 	return iterator.RangeAdapter(it.Next)
 }
@@ -310,6 +316,12 @@ func (it *InstanceWithNamedPortsIterator) All() iter.Seq2[*computepb.InstanceWit
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
 func (it *InstancesScopedListPairIterator) All() iter.Seq2[InstancesScopedListPair, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *InstantSnapshotGroupIterator) All() iter.Seq2[*computepb.InstantSnapshotGroup, error] {
 	return iterator.RangeAdapter(it.Next)
 }
 
@@ -838,6 +850,12 @@ func (it *UsableSubnetworkIterator) All() iter.Seq2[*computepb.UsableSubnetwork,
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
 func (it *VmEndpointNatMappingsIterator) All() iter.Seq2[*computepb.VmEndpointNatMappings, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *VmExtensionPolicyIterator) All() iter.Seq2[*computepb.VmExtensionPolicy, error] {
 	return iterator.RangeAdapter(it.Next)
 }
 

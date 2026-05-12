@@ -578,7 +578,7 @@ func (c *userGRPCClient) ListUsers(ctx context.Context, req *accountspb.ListUser
 	}
 	opts = append((*c.CallOptions).ListUsers[0:len((*c.CallOptions).ListUsers):len((*c.CallOptions).ListUsers)], opts...)
 	it := &UserIterator{}
-	req = proto.Clone(req).(*accountspb.ListUsersRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*accountspb.User, string, error) {
 		resp := &accountspb.ListUsersResponse{}
 		if pageToken != "" {
@@ -855,7 +855,7 @@ func (c *userRESTClient) UpdateUser(ctx context.Context, req *accountspb.UpdateU
 // ListUsers lists all users of a Merchant Center account.
 func (c *userRESTClient) ListUsers(ctx context.Context, req *accountspb.ListUsersRequest, opts ...gax.CallOption) *UserIterator {
 	it := &UserIterator{}
-	req = proto.Clone(req).(*accountspb.ListUsersRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*accountspb.User, string, error) {
 		resp := &accountspb.ListUsersResponse{}

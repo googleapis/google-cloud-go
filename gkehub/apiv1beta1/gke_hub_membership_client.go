@@ -813,7 +813,7 @@ func (c *gkeHubMembershipGRPCClient) ListMemberships(ctx context.Context, req *g
 	}
 	opts = append((*c.CallOptions).ListMemberships[0:len((*c.CallOptions).ListMemberships):len((*c.CallOptions).ListMemberships)], opts...)
 	it := &MembershipIterator{}
-	req = proto.Clone(req).(*gkehubpb.ListMembershipsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*gkehubpb.Membership, string, error) {
 		resp := &gkehubpb.ListMembershipsResponse{}
 		if pageToken != "" {
@@ -1057,7 +1057,7 @@ func (c *gkeHubMembershipGRPCClient) ListLocations(ctx context.Context, req *loc
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -1233,7 +1233,7 @@ func (c *gkeHubMembershipGRPCClient) ListOperations(ctx context.Context, req *lo
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -1275,7 +1275,7 @@ func (c *gkeHubMembershipGRPCClient) ListOperations(ctx context.Context, req *lo
 // ListMemberships lists Memberships in a given project and location.
 func (c *gkeHubMembershipRESTClient) ListMemberships(ctx context.Context, req *gkehubpb.ListMembershipsRequest, opts ...gax.CallOption) *MembershipIterator {
 	it := &MembershipIterator{}
-	req = proto.Clone(req).(*gkehubpb.ListMembershipsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*gkehubpb.Membership, string, error) {
 		resp := &gkehubpb.ListMembershipsResponse{}
@@ -1909,7 +1909,7 @@ func (c *gkeHubMembershipRESTClient) GetLocation(ctx context.Context, req *locat
 // ListLocations lists information about the supported locations for this service.
 func (c *gkeHubMembershipRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -2325,7 +2325,7 @@ func (c *gkeHubMembershipRESTClient) GetOperation(ctx context.Context, req *long
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *gkeHubMembershipRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

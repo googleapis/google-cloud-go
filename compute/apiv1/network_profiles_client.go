@@ -288,7 +288,7 @@ func (c *networkProfilesRESTClient) Get(ctx context.Context, req *computepb.GetN
 // project.
 func (c *networkProfilesRESTClient) List(ctx context.Context, req *computepb.ListNetworkProfilesRequest, opts ...gax.CallOption) *NetworkProfileIterator {
 	it := &NetworkProfileIterator{}
-	req = proto.Clone(req).(*computepb.ListNetworkProfilesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.NetworkProfile, string, error) {
 		resp := &computepb.NetworkProfilesListResponse{}

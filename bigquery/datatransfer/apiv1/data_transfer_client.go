@@ -818,7 +818,7 @@ func (c *gRPCClient) ListDataSources(ctx context.Context, req *datatransferpb.Li
 	}
 	opts = append((*c.CallOptions).ListDataSources[0:len((*c.CallOptions).ListDataSources):len((*c.CallOptions).ListDataSources)], opts...)
 	it := &DataSourceIterator{}
-	req = proto.Clone(req).(*datatransferpb.ListDataSourcesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datatransferpb.DataSource, string, error) {
 		resp := &datatransferpb.ListDataSourcesResponse{}
 		if pageToken != "" {
@@ -962,7 +962,7 @@ func (c *gRPCClient) ListTransferConfigs(ctx context.Context, req *datatransferp
 	}
 	opts = append((*c.CallOptions).ListTransferConfigs[0:len((*c.CallOptions).ListTransferConfigs):len((*c.CallOptions).ListTransferConfigs)], opts...)
 	it := &TransferConfigIterator{}
-	req = proto.Clone(req).(*datatransferpb.ListTransferConfigsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datatransferpb.TransferConfig, string, error) {
 		resp := &datatransferpb.ListTransferConfigsResponse{}
 		if pageToken != "" {
@@ -1106,7 +1106,7 @@ func (c *gRPCClient) ListTransferRuns(ctx context.Context, req *datatransferpb.L
 	}
 	opts = append((*c.CallOptions).ListTransferRuns[0:len((*c.CallOptions).ListTransferRuns):len((*c.CallOptions).ListTransferRuns)], opts...)
 	it := &TransferRunIterator{}
-	req = proto.Clone(req).(*datatransferpb.ListTransferRunsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datatransferpb.TransferRun, string, error) {
 		resp := &datatransferpb.ListTransferRunsResponse{}
 		if pageToken != "" {
@@ -1158,7 +1158,7 @@ func (c *gRPCClient) ListTransferLogs(ctx context.Context, req *datatransferpb.L
 	}
 	opts = append((*c.CallOptions).ListTransferLogs[0:len((*c.CallOptions).ListTransferLogs):len((*c.CallOptions).ListTransferLogs)], opts...)
 	it := &TransferMessageIterator{}
-	req = proto.Clone(req).(*datatransferpb.ListTransferLogsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datatransferpb.TransferMessage, string, error) {
 		resp := &datatransferpb.ListTransferLogsResponse{}
 		if pageToken != "" {
@@ -1298,7 +1298,7 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -1397,7 +1397,7 @@ func (c *restClient) GetDataSource(ctx context.Context, req *datatransferpb.GetD
 // ListDataSources lists supported data sources and returns their settings.
 func (c *restClient) ListDataSources(ctx context.Context, req *datatransferpb.ListDataSourcesRequest, opts ...gax.CallOption) *DataSourceIterator {
 	it := &DataSourceIterator{}
-	req = proto.Clone(req).(*datatransferpb.ListDataSourcesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datatransferpb.DataSource, string, error) {
 		resp := &datatransferpb.ListDataSourcesResponse{}
@@ -1730,7 +1730,7 @@ func (c *restClient) GetTransferConfig(ctx context.Context, req *datatransferpb.
 // specified location.
 func (c *restClient) ListTransferConfigs(ctx context.Context, req *datatransferpb.ListTransferConfigsRequest, opts ...gax.CallOption) *TransferConfigIterator {
 	it := &TransferConfigIterator{}
-	req = proto.Clone(req).(*datatransferpb.ListTransferConfigsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datatransferpb.TransferConfig, string, error) {
 		resp := &datatransferpb.ListTransferConfigsResponse{}
@@ -2047,7 +2047,7 @@ func (c *restClient) DeleteTransferRun(ctx context.Context, req *datatransferpb.
 // ListTransferRuns returns information about running and completed transfer runs.
 func (c *restClient) ListTransferRuns(ctx context.Context, req *datatransferpb.ListTransferRunsRequest, opts ...gax.CallOption) *TransferRunIterator {
 	it := &TransferRunIterator{}
-	req = proto.Clone(req).(*datatransferpb.ListTransferRunsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datatransferpb.TransferRun, string, error) {
 		resp := &datatransferpb.ListTransferRunsResponse{}
@@ -2133,7 +2133,7 @@ func (c *restClient) ListTransferRuns(ctx context.Context, req *datatransferpb.L
 // ListTransferLogs returns log messages for the transfer run.
 func (c *restClient) ListTransferLogs(ctx context.Context, req *datatransferpb.ListTransferLogsRequest, opts ...gax.CallOption) *TransferMessageIterator {
 	it := &TransferMessageIterator{}
-	req = proto.Clone(req).(*datatransferpb.ListTransferLogsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datatransferpb.TransferMessage, string, error) {
 		resp := &datatransferpb.ListTransferLogsResponse{}
@@ -2444,7 +2444,7 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 // ListLocations lists information about the supported locations for this service.
 func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}

@@ -630,7 +630,7 @@ func (c *catalogGRPCClient) ListCatalogItems(ctx context.Context, req *recommend
 	}
 	opts = append((*c.CallOptions).ListCatalogItems[0:len((*c.CallOptions).ListCatalogItems):len((*c.CallOptions).ListCatalogItems)], opts...)
 	it := &CatalogItemIterator{}
-	req = proto.Clone(req).(*recommendationenginepb.ListCatalogItemsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*recommendationenginepb.CatalogItem, string, error) {
 		resp := &recommendationenginepb.ListCatalogItemsResponse{}
 		if pageToken != "" {
@@ -863,7 +863,7 @@ func (c *catalogRESTClient) GetCatalogItem(ctx context.Context, req *recommendat
 // ListCatalogItems gets a list of catalog items.
 func (c *catalogRESTClient) ListCatalogItems(ctx context.Context, req *recommendationenginepb.ListCatalogItemsRequest, opts ...gax.CallOption) *CatalogItemIterator {
 	it := &CatalogItemIterator{}
-	req = proto.Clone(req).(*recommendationenginepb.ListCatalogItemsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*recommendationenginepb.CatalogItem, string, error) {
 		resp := &recommendationenginepb.ListCatalogItemsResponse{}

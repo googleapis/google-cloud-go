@@ -473,7 +473,7 @@ func (c *gRPCClient) ListEndpoints(ctx context.Context, req *idspb.ListEndpoints
 	}
 	opts = append((*c.CallOptions).ListEndpoints[0:len((*c.CallOptions).ListEndpoints):len((*c.CallOptions).ListEndpoints)], opts...)
 	it := &EndpointIterator{}
-	req = proto.Clone(req).(*idspb.ListEndpointsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*idspb.Endpoint, string, error) {
 		resp := &idspb.ListEndpointsResponse{}
 		if pageToken != "" {
@@ -591,7 +591,7 @@ func (c *gRPCClient) DeleteEndpoint(ctx context.Context, req *idspb.DeleteEndpoi
 // ListEndpoints lists Endpoints in a given project and location.
 func (c *restClient) ListEndpoints(ctx context.Context, req *idspb.ListEndpointsRequest, opts ...gax.CallOption) *EndpointIterator {
 	it := &EndpointIterator{}
-	req = proto.Clone(req).(*idspb.ListEndpointsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*idspb.Endpoint, string, error) {
 		resp := &idspb.ListEndpointsResponse{}

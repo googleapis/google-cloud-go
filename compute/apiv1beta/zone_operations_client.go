@@ -368,7 +368,7 @@ func (c *zoneOperationsRESTClient) Get(ctx context.Context, req *computepb.GetZo
 // the specified zone.
 func (c *zoneOperationsRESTClient) List(ctx context.Context, req *computepb.ListZoneOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*computepb.ListZoneOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.Operation, string, error) {
 		resp := &computepb.OperationList{}

@@ -1124,7 +1124,7 @@ func (c *saasDeploymentsGRPCClient) ListSaas(ctx context.Context, req *saasservi
 	}
 	opts = append((*c.CallOptions).ListSaas[0:len((*c.CallOptions).ListSaas):len((*c.CallOptions).ListSaas)], opts...)
 	it := &SaasIterator{}
-	req = proto.Clone(req).(*saasservicemgmtpb.ListSaasRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*saasservicemgmtpb.Saas, string, error) {
 		resp := &saasservicemgmtpb.ListSaasResponse{}
 		if pageToken != "" {
@@ -1265,7 +1265,7 @@ func (c *saasDeploymentsGRPCClient) ListTenants(ctx context.Context, req *saasse
 	}
 	opts = append((*c.CallOptions).ListTenants[0:len((*c.CallOptions).ListTenants):len((*c.CallOptions).ListTenants)], opts...)
 	it := &TenantIterator{}
-	req = proto.Clone(req).(*saasservicemgmtpb.ListTenantsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*saasservicemgmtpb.Tenant, string, error) {
 		resp := &saasservicemgmtpb.ListTenantsResponse{}
 		if pageToken != "" {
@@ -1406,7 +1406,7 @@ func (c *saasDeploymentsGRPCClient) ListUnitKinds(ctx context.Context, req *saas
 	}
 	opts = append((*c.CallOptions).ListUnitKinds[0:len((*c.CallOptions).ListUnitKinds):len((*c.CallOptions).ListUnitKinds)], opts...)
 	it := &UnitKindIterator{}
-	req = proto.Clone(req).(*saasservicemgmtpb.ListUnitKindsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*saasservicemgmtpb.UnitKind, string, error) {
 		resp := &saasservicemgmtpb.ListUnitKindsResponse{}
 		if pageToken != "" {
@@ -1547,7 +1547,7 @@ func (c *saasDeploymentsGRPCClient) ListUnits(ctx context.Context, req *saasserv
 	}
 	opts = append((*c.CallOptions).ListUnits[0:len((*c.CallOptions).ListUnits):len((*c.CallOptions).ListUnits)], opts...)
 	it := &UnitIterator{}
-	req = proto.Clone(req).(*saasservicemgmtpb.ListUnitsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*saasservicemgmtpb.Unit, string, error) {
 		resp := &saasservicemgmtpb.ListUnitsResponse{}
 		if pageToken != "" {
@@ -1688,7 +1688,7 @@ func (c *saasDeploymentsGRPCClient) ListUnitOperations(ctx context.Context, req 
 	}
 	opts = append((*c.CallOptions).ListUnitOperations[0:len((*c.CallOptions).ListUnitOperations):len((*c.CallOptions).ListUnitOperations)], opts...)
 	it := &UnitOperationIterator{}
-	req = proto.Clone(req).(*saasservicemgmtpb.ListUnitOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*saasservicemgmtpb.UnitOperation, string, error) {
 		resp := &saasservicemgmtpb.ListUnitOperationsResponse{}
 		if pageToken != "" {
@@ -1829,7 +1829,7 @@ func (c *saasDeploymentsGRPCClient) ListReleases(ctx context.Context, req *saass
 	}
 	opts = append((*c.CallOptions).ListReleases[0:len((*c.CallOptions).ListReleases):len((*c.CallOptions).ListReleases)], opts...)
 	it := &ReleaseIterator{}
-	req = proto.Clone(req).(*saasservicemgmtpb.ListReleasesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*saasservicemgmtpb.Release, string, error) {
 		resp := &saasservicemgmtpb.ListReleasesResponse{}
 		if pageToken != "" {
@@ -1988,7 +1988,7 @@ func (c *saasDeploymentsGRPCClient) ListLocations(ctx context.Context, req *loca
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -2030,7 +2030,7 @@ func (c *saasDeploymentsGRPCClient) ListLocations(ctx context.Context, req *loca
 // ListSaas retrieve a collection of saas.
 func (c *saasDeploymentsRESTClient) ListSaas(ctx context.Context, req *saasservicemgmtpb.ListSaasRequest, opts ...gax.CallOption) *SaasIterator {
 	it := &SaasIterator{}
-	req = proto.Clone(req).(*saasservicemgmtpb.ListSaasRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*saasservicemgmtpb.Saas, string, error) {
 		resp := &saasservicemgmtpb.ListSaasResponse{}
@@ -2367,7 +2367,7 @@ func (c *saasDeploymentsRESTClient) DeleteSaas(ctx context.Context, req *saasser
 // ListTenants retrieve a collection of tenants.
 func (c *saasDeploymentsRESTClient) ListTenants(ctx context.Context, req *saasservicemgmtpb.ListTenantsRequest, opts ...gax.CallOption) *TenantIterator {
 	it := &TenantIterator{}
-	req = proto.Clone(req).(*saasservicemgmtpb.ListTenantsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*saasservicemgmtpb.Tenant, string, error) {
 		resp := &saasservicemgmtpb.ListTenantsResponse{}
@@ -2704,7 +2704,7 @@ func (c *saasDeploymentsRESTClient) DeleteTenant(ctx context.Context, req *saass
 // ListUnitKinds retrieve a collection of unit kinds.
 func (c *saasDeploymentsRESTClient) ListUnitKinds(ctx context.Context, req *saasservicemgmtpb.ListUnitKindsRequest, opts ...gax.CallOption) *UnitKindIterator {
 	it := &UnitKindIterator{}
-	req = proto.Clone(req).(*saasservicemgmtpb.ListUnitKindsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*saasservicemgmtpb.UnitKind, string, error) {
 		resp := &saasservicemgmtpb.ListUnitKindsResponse{}
@@ -3041,7 +3041,7 @@ func (c *saasDeploymentsRESTClient) DeleteUnitKind(ctx context.Context, req *saa
 // ListUnits retrieve a collection of units.
 func (c *saasDeploymentsRESTClient) ListUnits(ctx context.Context, req *saasservicemgmtpb.ListUnitsRequest, opts ...gax.CallOption) *UnitIterator {
 	it := &UnitIterator{}
-	req = proto.Clone(req).(*saasservicemgmtpb.ListUnitsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*saasservicemgmtpb.Unit, string, error) {
 		resp := &saasservicemgmtpb.ListUnitsResponse{}
@@ -3378,7 +3378,7 @@ func (c *saasDeploymentsRESTClient) DeleteUnit(ctx context.Context, req *saasser
 // ListUnitOperations retrieve a collection of unit operations.
 func (c *saasDeploymentsRESTClient) ListUnitOperations(ctx context.Context, req *saasservicemgmtpb.ListUnitOperationsRequest, opts ...gax.CallOption) *UnitOperationIterator {
 	it := &UnitOperationIterator{}
-	req = proto.Clone(req).(*saasservicemgmtpb.ListUnitOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*saasservicemgmtpb.UnitOperation, string, error) {
 		resp := &saasservicemgmtpb.ListUnitOperationsResponse{}
@@ -3715,7 +3715,7 @@ func (c *saasDeploymentsRESTClient) DeleteUnitOperation(ctx context.Context, req
 // ListReleases retrieve a collection of releases.
 func (c *saasDeploymentsRESTClient) ListReleases(ctx context.Context, req *saasservicemgmtpb.ListReleasesRequest, opts ...gax.CallOption) *ReleaseIterator {
 	it := &ReleaseIterator{}
-	req = proto.Clone(req).(*saasservicemgmtpb.ListReleasesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*saasservicemgmtpb.Release, string, error) {
 		resp := &saasservicemgmtpb.ListReleasesResponse{}
@@ -4122,7 +4122,7 @@ func (c *saasDeploymentsRESTClient) GetLocation(ctx context.Context, req *locati
 // implementation and version.
 func (c *saasDeploymentsRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}

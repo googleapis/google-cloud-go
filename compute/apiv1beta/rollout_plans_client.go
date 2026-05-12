@@ -464,7 +464,7 @@ func (c *rolloutPlansRESTClient) Insert(ctx context.Context, req *computepb.Inse
 // List lists RolloutPlans in a given project and location.
 func (c *rolloutPlansRESTClient) List(ctx context.Context, req *computepb.ListRolloutPlansRequest, opts ...gax.CallOption) *RolloutPlanIterator {
 	it := &RolloutPlanIterator{}
-	req = proto.Clone(req).(*computepb.ListRolloutPlansRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.RolloutPlan, string, error) {
 		resp := &computepb.RolloutPlansListResponse{}

@@ -530,7 +530,7 @@ func (c *lfpStoreGRPCClient) ListLfpStores(ctx context.Context, req *lfppb.ListL
 	}
 	opts = append((*c.CallOptions).ListLfpStores[0:len((*c.CallOptions).ListLfpStores):len((*c.CallOptions).ListLfpStores)], opts...)
 	it := &LfpStoreIterator{}
-	req = proto.Clone(req).(*lfppb.ListLfpStoresRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*lfppb.LfpStore, string, error) {
 		resp := &lfppb.ListLfpStoresResponse{}
 		if pageToken != "" {
@@ -737,7 +737,7 @@ func (c *lfpStoreRESTClient) DeleteLfpStore(ctx context.Context, req *lfppb.Dele
 // ListLfpStoresRequest.
 func (c *lfpStoreRESTClient) ListLfpStores(ctx context.Context, req *lfppb.ListLfpStoresRequest, opts ...gax.CallOption) *LfpStoreIterator {
 	it := &LfpStoreIterator{}
-	req = proto.Clone(req).(*lfppb.ListLfpStoresRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*lfppb.LfpStore, string, error) {
 		resp := &lfppb.ListLfpStoresResponse{}

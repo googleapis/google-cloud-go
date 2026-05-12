@@ -1954,7 +1954,7 @@ func (c *evaluationGRPCClient) ListEvaluations(ctx context.Context, req *cespb.L
 	}
 	opts = append((*c.CallOptions).ListEvaluations[0:len((*c.CallOptions).ListEvaluations):len((*c.CallOptions).ListEvaluations)], opts...)
 	it := &EvaluationIterator{}
-	req = proto.Clone(req).(*cespb.ListEvaluationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cespb.Evaluation, string, error) {
 		resp := &cespb.ListEvaluationsResponse{}
 		if pageToken != "" {
@@ -2006,7 +2006,7 @@ func (c *evaluationGRPCClient) ListEvaluationResults(ctx context.Context, req *c
 	}
 	opts = append((*c.CallOptions).ListEvaluationResults[0:len((*c.CallOptions).ListEvaluationResults):len((*c.CallOptions).ListEvaluationResults)], opts...)
 	it := &EvaluationResultIterator{}
-	req = proto.Clone(req).(*cespb.ListEvaluationResultsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cespb.EvaluationResult, string, error) {
 		resp := &cespb.ListEvaluationResultsResponse{}
 		if pageToken != "" {
@@ -2058,7 +2058,7 @@ func (c *evaluationGRPCClient) ListEvaluationDatasets(ctx context.Context, req *
 	}
 	opts = append((*c.CallOptions).ListEvaluationDatasets[0:len((*c.CallOptions).ListEvaluationDatasets):len((*c.CallOptions).ListEvaluationDatasets)], opts...)
 	it := &EvaluationDatasetIterator{}
-	req = proto.Clone(req).(*cespb.ListEvaluationDatasetsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cespb.EvaluationDataset, string, error) {
 		resp := &cespb.ListEvaluationDatasetsResponse{}
 		if pageToken != "" {
@@ -2110,7 +2110,7 @@ func (c *evaluationGRPCClient) ListEvaluationRuns(ctx context.Context, req *cesp
 	}
 	opts = append((*c.CallOptions).ListEvaluationRuns[0:len((*c.CallOptions).ListEvaluationRuns):len((*c.CallOptions).ListEvaluationRuns)], opts...)
 	it := &EvaluationRunIterator{}
-	req = proto.Clone(req).(*cespb.ListEvaluationRunsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cespb.EvaluationRun, string, error) {
 		resp := &cespb.ListEvaluationRunsResponse{}
 		if pageToken != "" {
@@ -2162,7 +2162,7 @@ func (c *evaluationGRPCClient) ListEvaluationExpectations(ctx context.Context, r
 	}
 	opts = append((*c.CallOptions).ListEvaluationExpectations[0:len((*c.CallOptions).ListEvaluationExpectations):len((*c.CallOptions).ListEvaluationExpectations)], opts...)
 	it := &EvaluationExpectationIterator{}
-	req = proto.Clone(req).(*cespb.ListEvaluationExpectationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cespb.EvaluationExpectation, string, error) {
 		resp := &cespb.ListEvaluationExpectationsResponse{}
 		if pageToken != "" {
@@ -2351,7 +2351,7 @@ func (c *evaluationGRPCClient) ListScheduledEvaluationRuns(ctx context.Context, 
 	}
 	opts = append((*c.CallOptions).ListScheduledEvaluationRuns[0:len((*c.CallOptions).ListScheduledEvaluationRuns):len((*c.CallOptions).ListScheduledEvaluationRuns)], opts...)
 	it := &ScheduledEvaluationRunIterator{}
-	req = proto.Clone(req).(*cespb.ListScheduledEvaluationRunsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cespb.ScheduledEvaluationRun, string, error) {
 		resp := &cespb.ListScheduledEvaluationRunsResponse{}
 		if pageToken != "" {
@@ -2512,7 +2512,7 @@ func (c *evaluationGRPCClient) ListLocations(ctx context.Context, req *locationp
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -2616,7 +2616,7 @@ func (c *evaluationGRPCClient) ListOperations(ctx context.Context, req *longrunn
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -3615,7 +3615,7 @@ func (c *evaluationRESTClient) GetEvaluationRun(ctx context.Context, req *cespb.
 // ListEvaluations lists all evaluations in the given app.
 func (c *evaluationRESTClient) ListEvaluations(ctx context.Context, req *cespb.ListEvaluationsRequest, opts ...gax.CallOption) *EvaluationIterator {
 	it := &EvaluationIterator{}
-	req = proto.Clone(req).(*cespb.ListEvaluationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cespb.Evaluation, string, error) {
 		resp := &cespb.ListEvaluationsResponse{}
@@ -3708,7 +3708,7 @@ func (c *evaluationRESTClient) ListEvaluations(ctx context.Context, req *cespb.L
 // ListEvaluationResults lists all evaluation results for a given evaluation.
 func (c *evaluationRESTClient) ListEvaluationResults(ctx context.Context, req *cespb.ListEvaluationResultsRequest, opts ...gax.CallOption) *EvaluationResultIterator {
 	it := &EvaluationResultIterator{}
-	req = proto.Clone(req).(*cespb.ListEvaluationResultsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cespb.EvaluationResult, string, error) {
 		resp := &cespb.ListEvaluationResultsResponse{}
@@ -3792,7 +3792,7 @@ func (c *evaluationRESTClient) ListEvaluationResults(ctx context.Context, req *c
 // ListEvaluationDatasets lists all evaluation datasets in the given app.
 func (c *evaluationRESTClient) ListEvaluationDatasets(ctx context.Context, req *cespb.ListEvaluationDatasetsRequest, opts ...gax.CallOption) *EvaluationDatasetIterator {
 	it := &EvaluationDatasetIterator{}
-	req = proto.Clone(req).(*cespb.ListEvaluationDatasetsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cespb.EvaluationDataset, string, error) {
 		resp := &cespb.ListEvaluationDatasetsResponse{}
@@ -3876,7 +3876,7 @@ func (c *evaluationRESTClient) ListEvaluationDatasets(ctx context.Context, req *
 // ListEvaluationRuns lists all evaluation runs in the given app.
 func (c *evaluationRESTClient) ListEvaluationRuns(ctx context.Context, req *cespb.ListEvaluationRunsRequest, opts ...gax.CallOption) *EvaluationRunIterator {
 	it := &EvaluationRunIterator{}
-	req = proto.Clone(req).(*cespb.ListEvaluationRunsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cespb.EvaluationRun, string, error) {
 		resp := &cespb.ListEvaluationRunsResponse{}
@@ -3960,7 +3960,7 @@ func (c *evaluationRESTClient) ListEvaluationRuns(ctx context.Context, req *cesp
 // ListEvaluationExpectations lists all evaluation expectations in the given app.
 func (c *evaluationRESTClient) ListEvaluationExpectations(ctx context.Context, req *cespb.ListEvaluationExpectationsRequest, opts ...gax.CallOption) *EvaluationExpectationIterator {
 	it := &EvaluationExpectationIterator{}
-	req = proto.Clone(req).(*cespb.ListEvaluationExpectationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cespb.EvaluationExpectation, string, error) {
 		resp := &cespb.ListEvaluationExpectationsResponse{}
@@ -4405,7 +4405,7 @@ func (c *evaluationRESTClient) GetScheduledEvaluationRun(ctx context.Context, re
 // ListScheduledEvaluationRuns lists all scheduled evaluation runs in the given app.
 func (c *evaluationRESTClient) ListScheduledEvaluationRuns(ctx context.Context, req *cespb.ListScheduledEvaluationRunsRequest, opts ...gax.CallOption) *ScheduledEvaluationRunIterator {
 	it := &ScheduledEvaluationRunIterator{}
-	req = proto.Clone(req).(*cespb.ListScheduledEvaluationRunsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cespb.ScheduledEvaluationRun, string, error) {
 		resp := &cespb.ListScheduledEvaluationRunsResponse{}
@@ -4801,7 +4801,7 @@ func (c *evaluationRESTClient) GetLocation(ctx context.Context, req *locationpb.
 // implementation and version.
 func (c *evaluationRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -5020,7 +5020,7 @@ func (c *evaluationRESTClient) GetOperation(ctx context.Context, req *longrunnin
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *evaluationRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

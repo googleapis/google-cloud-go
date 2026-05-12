@@ -20,8 +20,6 @@
 // A unified ingestion API for data partners, agencies and advertisers to
 // connect first-party data across Google advertising products.
 //
-//	NOTE: This package is in beta. It is not stable, and may be subject to changes.
-//
 // # General documentation
 //
 // For information that is relevant for all client libraries please reference

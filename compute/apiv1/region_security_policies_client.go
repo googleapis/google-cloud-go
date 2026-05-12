@@ -688,7 +688,7 @@ func (c *regionSecurityPoliciesRESTClient) Insert(ctx context.Context, req *comp
 // and region.
 func (c *regionSecurityPoliciesRESTClient) List(ctx context.Context, req *computepb.ListRegionSecurityPoliciesRequest, opts ...gax.CallOption) *SecurityPolicyIterator {
 	it := &SecurityPolicyIterator{}
-	req = proto.Clone(req).(*computepb.ListRegionSecurityPoliciesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.SecurityPolicy, string, error) {
 		resp := &computepb.SecurityPolicyList{}

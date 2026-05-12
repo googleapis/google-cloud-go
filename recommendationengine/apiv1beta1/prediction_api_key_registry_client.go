@@ -464,7 +464,7 @@ func (c *predictionApiKeyRegistryGRPCClient) ListPredictionApiKeyRegistrations(c
 	}
 	opts = append((*c.CallOptions).ListPredictionApiKeyRegistrations[0:len((*c.CallOptions).ListPredictionApiKeyRegistrations):len((*c.CallOptions).ListPredictionApiKeyRegistrations)], opts...)
 	it := &PredictionApiKeyRegistrationIterator{}
-	req = proto.Clone(req).(*recommendationenginepb.ListPredictionApiKeyRegistrationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*recommendationenginepb.PredictionApiKeyRegistration, string, error) {
 		resp := &recommendationenginepb.ListPredictionApiKeyRegistrationsResponse{}
 		if pageToken != "" {
@@ -589,7 +589,7 @@ func (c *predictionApiKeyRegistryRESTClient) CreatePredictionApiKeyRegistration(
 // ListPredictionApiKeyRegistrations list the registered apiKeys for use with predict method.
 func (c *predictionApiKeyRegistryRESTClient) ListPredictionApiKeyRegistrations(ctx context.Context, req *recommendationenginepb.ListPredictionApiKeyRegistrationsRequest, opts ...gax.CallOption) *PredictionApiKeyRegistrationIterator {
 	it := &PredictionApiKeyRegistrationIterator{}
-	req = proto.Clone(req).(*recommendationenginepb.ListPredictionApiKeyRegistrationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*recommendationenginepb.PredictionApiKeyRegistration, string, error) {
 		resp := &recommendationenginepb.ListPredictionApiKeyRegistrationsResponse{}

@@ -526,7 +526,7 @@ func (c *gRPCClient) ListDomains(ctx context.Context, req *managedidentitiespb.L
 	}
 	opts = append((*c.CallOptions).ListDomains[0:len((*c.CallOptions).ListDomains):len((*c.CallOptions).ListDomains)], opts...)
 	it := &DomainIterator{}
-	req = proto.Clone(req).(*managedidentitiespb.ListDomainsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*managedidentitiespb.Domain, string, error) {
 		resp := &managedidentitiespb.ListDomainsResponse{}
 		if pageToken != "" {

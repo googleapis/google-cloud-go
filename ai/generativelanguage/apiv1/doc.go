@@ -25,8 +25,6 @@
 // like reasoning across text and images, content generation, dialogue
 // agents, summarization and classification systems, and more.
 //
-//	NOTE: This package is in beta. It is not stable, and may be subject to changes.
-//
 // # General documentation
 //
 // For information that is relevant for all client libraries please reference

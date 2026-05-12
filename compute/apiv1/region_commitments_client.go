@@ -304,7 +304,7 @@ func (c *regionCommitmentsRESTClient) Connection() *grpc.ClientConn {
 // returnPartialSuccess parameter to true.
 func (c *regionCommitmentsRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListRegionCommitmentsRequest, opts ...gax.CallOption) *CommitmentsScopedListPairIterator {
 	it := &CommitmentsScopedListPairIterator{}
-	req = proto.Clone(req).(*computepb.AggregatedListRegionCommitmentsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]CommitmentsScopedListPair, string, error) {
 		resp := &computepb.CommitmentAggregatedList{}
@@ -531,7 +531,7 @@ func (c *regionCommitmentsRESTClient) Insert(ctx context.Context, req *computepb
 // the specified region.
 func (c *regionCommitmentsRESTClient) List(ctx context.Context, req *computepb.ListRegionCommitmentsRequest, opts ...gax.CallOption) *CommitmentIterator {
 	it := &CommitmentIterator{}
-	req = proto.Clone(req).(*computepb.ListRegionCommitmentsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.Commitment, string, error) {
 		resp := &computepb.CommitmentList{}

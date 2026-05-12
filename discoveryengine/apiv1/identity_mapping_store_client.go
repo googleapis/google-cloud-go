@@ -689,7 +689,7 @@ func (c *identityMappingStoreGRPCClient) ListIdentityMappings(ctx context.Contex
 	}
 	opts = append((*c.CallOptions).ListIdentityMappings[0:len((*c.CallOptions).ListIdentityMappings):len((*c.CallOptions).ListIdentityMappings)], opts...)
 	it := &IdentityMappingEntryIterator{}
-	req = proto.Clone(req).(*discoveryenginepb.ListIdentityMappingsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*discoveryenginepb.IdentityMappingEntry, string, error) {
 		resp := &discoveryenginepb.ListIdentityMappingsResponse{}
 		if pageToken != "" {
@@ -741,7 +741,7 @@ func (c *identityMappingStoreGRPCClient) ListIdentityMappingStores(ctx context.C
 	}
 	opts = append((*c.CallOptions).ListIdentityMappingStores[0:len((*c.CallOptions).ListIdentityMappingStores):len((*c.CallOptions).ListIdentityMappingStores)], opts...)
 	it := &IdentityMappingStoreIterator{}
-	req = proto.Clone(req).(*discoveryenginepb.ListIdentityMappingStoresRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*discoveryenginepb.IdentityMappingStore, string, error) {
 		resp := &discoveryenginepb.ListIdentityMappingStoresResponse{}
 		if pageToken != "" {
@@ -828,7 +828,7 @@ func (c *identityMappingStoreGRPCClient) ListOperations(ctx context.Context, req
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -1191,7 +1191,7 @@ func (c *identityMappingStoreRESTClient) PurgeIdentityMappings(ctx context.Conte
 // ListIdentityMappings lists Identity Mappings in an Identity Mapping Store.
 func (c *identityMappingStoreRESTClient) ListIdentityMappings(ctx context.Context, req *discoveryenginepb.ListIdentityMappingsRequest, opts ...gax.CallOption) *IdentityMappingEntryIterator {
 	it := &IdentityMappingEntryIterator{}
-	req = proto.Clone(req).(*discoveryenginepb.ListIdentityMappingsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*discoveryenginepb.IdentityMappingEntry, string, error) {
 		resp := &discoveryenginepb.ListIdentityMappingsResponse{}
@@ -1269,7 +1269,7 @@ func (c *identityMappingStoreRESTClient) ListIdentityMappings(ctx context.Contex
 // ListIdentityMappingStores lists all Identity Mapping Stores.
 func (c *identityMappingStoreRESTClient) ListIdentityMappingStores(ctx context.Context, req *discoveryenginepb.ListIdentityMappingStoresRequest, opts ...gax.CallOption) *IdentityMappingStoreIterator {
 	it := &IdentityMappingStoreIterator{}
-	req = proto.Clone(req).(*discoveryenginepb.ListIdentityMappingStoresRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*discoveryenginepb.IdentityMappingStore, string, error) {
 		resp := &discoveryenginepb.ListIdentityMappingStoresResponse{}
@@ -1446,7 +1446,7 @@ func (c *identityMappingStoreRESTClient) GetOperation(ctx context.Context, req *
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *identityMappingStoreRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

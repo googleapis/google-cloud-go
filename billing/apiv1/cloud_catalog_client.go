@@ -354,7 +354,7 @@ func (c *cloudCatalogGRPCClient) ListServices(ctx context.Context, req *billingp
 	}
 	opts = append((*c.CallOptions).ListServices[0:len((*c.CallOptions).ListServices):len((*c.CallOptions).ListServices)], opts...)
 	it := &ServiceIterator{}
-	req = proto.Clone(req).(*billingpb.ListServicesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*billingpb.Service, string, error) {
 		resp := &billingpb.ListServicesResponse{}
 		if pageToken != "" {
@@ -406,7 +406,7 @@ func (c *cloudCatalogGRPCClient) ListSkus(ctx context.Context, req *billingpb.Li
 	}
 	opts = append((*c.CallOptions).ListSkus[0:len((*c.CallOptions).ListSkus):len((*c.CallOptions).ListSkus)], opts...)
 	it := &SkuIterator{}
-	req = proto.Clone(req).(*billingpb.ListSkusRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*billingpb.Sku, string, error) {
 		resp := &billingpb.ListSkusResponse{}
 		if pageToken != "" {
@@ -448,7 +448,7 @@ func (c *cloudCatalogGRPCClient) ListSkus(ctx context.Context, req *billingpb.Li
 // ListServices lists all public cloud services.
 func (c *cloudCatalogRESTClient) ListServices(ctx context.Context, req *billingpb.ListServicesRequest, opts ...gax.CallOption) *ServiceIterator {
 	it := &ServiceIterator{}
-	req = proto.Clone(req).(*billingpb.ListServicesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*billingpb.Service, string, error) {
 		resp := &billingpb.ListServicesResponse{}
@@ -526,7 +526,7 @@ func (c *cloudCatalogRESTClient) ListServices(ctx context.Context, req *billingp
 // ListSkus lists all publicly available SKUs for a given cloud service.
 func (c *cloudCatalogRESTClient) ListSkus(ctx context.Context, req *billingpb.ListSkusRequest, opts ...gax.CallOption) *SkuIterator {
 	it := &SkuIterator{}
-	req = proto.Clone(req).(*billingpb.ListSkusRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*billingpb.Sku, string, error) {
 		resp := &billingpb.ListSkusResponse{}

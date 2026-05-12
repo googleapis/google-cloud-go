@@ -572,7 +572,7 @@ func (c *apiHubDependenciesRESTClient) DeleteDependency(ctx context.Context, req
 // ListDependencies list dependencies based on the provided filter and pagination parameters.
 func (c *apiHubDependenciesRESTClient) ListDependencies(ctx context.Context, req *apihubpb.ListDependenciesRequest, opts ...gax.CallOption) *DependencyIterator {
 	it := &DependencyIterator{}
-	req = proto.Clone(req).(*apihubpb.ListDependenciesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apihubpb.Dependency, string, error) {
 		resp := &apihubpb.ListDependenciesResponse{}
@@ -707,7 +707,7 @@ func (c *apiHubDependenciesRESTClient) GetLocation(ctx context.Context, req *loc
 // ListLocations lists information about the supported locations for this service.
 func (c *apiHubDependenciesRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -926,7 +926,7 @@ func (c *apiHubDependenciesRESTClient) GetOperation(ctx context.Context, req *lo
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *apiHubDependenciesRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

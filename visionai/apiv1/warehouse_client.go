@@ -2722,7 +2722,7 @@ func (c *warehouseGRPCClient) ListAssets(ctx context.Context, req *visionaipb.Li
 	}
 	opts = append((*c.CallOptions).ListAssets[0:len((*c.CallOptions).ListAssets):len((*c.CallOptions).ListAssets)], opts...)
 	it := &AssetIterator{}
-	req = proto.Clone(req).(*visionaipb.ListAssetsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*visionaipb.Asset, string, error) {
 		resp := &visionaipb.ListAssetsResponse{}
 		if pageToken != "" {
@@ -2928,7 +2928,7 @@ func (c *warehouseGRPCClient) ViewIndexedAssets(ctx context.Context, req *vision
 	}
 	opts = append((*c.CallOptions).ViewIndexedAssets[0:len((*c.CallOptions).ViewIndexedAssets):len((*c.CallOptions).ViewIndexedAssets)], opts...)
 	it := &IndexedAssetIterator{}
-	req = proto.Clone(req).(*visionaipb.ViewIndexedAssetsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*visionaipb.IndexedAsset, string, error) {
 		resp := &visionaipb.ViewIndexedAssetsResponse{}
 		if pageToken != "" {
@@ -3053,7 +3053,7 @@ func (c *warehouseGRPCClient) ListIndexes(ctx context.Context, req *visionaipb.L
 	}
 	opts = append((*c.CallOptions).ListIndexes[0:len((*c.CallOptions).ListIndexes):len((*c.CallOptions).ListIndexes)], opts...)
 	it := &IndexIterator{}
-	req = proto.Clone(req).(*visionaipb.ListIndexesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*visionaipb.Index, string, error) {
 		resp := &visionaipb.ListIndexesResponse{}
 		if pageToken != "" {
@@ -3196,7 +3196,7 @@ func (c *warehouseGRPCClient) ListCorpora(ctx context.Context, req *visionaipb.L
 	}
 	opts = append((*c.CallOptions).ListCorpora[0:len((*c.CallOptions).ListCorpora):len((*c.CallOptions).ListCorpora)], opts...)
 	it := &CorpusIterator{}
-	req = proto.Clone(req).(*visionaipb.ListCorporaRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*visionaipb.Corpus, string, error) {
 		resp := &visionaipb.ListCorporaResponse{}
 		if pageToken != "" {
@@ -3383,7 +3383,7 @@ func (c *warehouseGRPCClient) ListDataSchemas(ctx context.Context, req *visionai
 	}
 	opts = append((*c.CallOptions).ListDataSchemas[0:len((*c.CallOptions).ListDataSchemas):len((*c.CallOptions).ListDataSchemas)], opts...)
 	it := &DataSchemaIterator{}
-	req = proto.Clone(req).(*visionaipb.ListDataSchemasRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*visionaipb.DataSchema, string, error) {
 		resp := &visionaipb.ListDataSchemasResponse{}
 		if pageToken != "" {
@@ -3483,7 +3483,7 @@ func (c *warehouseGRPCClient) ListAnnotations(ctx context.Context, req *visionai
 	}
 	opts = append((*c.CallOptions).ListAnnotations[0:len((*c.CallOptions).ListAnnotations):len((*c.CallOptions).ListAnnotations)], opts...)
 	it := &AnnotationIterator{}
-	req = proto.Clone(req).(*visionaipb.ListAnnotationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*visionaipb.Annotation, string, error) {
 		resp := &visionaipb.ListAnnotationsResponse{}
 		if pageToken != "" {
@@ -3759,7 +3759,7 @@ func (c *warehouseGRPCClient) ListSearchConfigs(ctx context.Context, req *vision
 	}
 	opts = append((*c.CallOptions).ListSearchConfigs[0:len((*c.CallOptions).ListSearchConfigs):len((*c.CallOptions).ListSearchConfigs)], opts...)
 	it := &SearchConfigIterator{}
-	req = proto.Clone(req).(*visionaipb.ListSearchConfigsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*visionaipb.SearchConfig, string, error) {
 		resp := &visionaipb.ListSearchConfigsResponse{}
 		if pageToken != "" {
@@ -3900,7 +3900,7 @@ func (c *warehouseGRPCClient) ListSearchHypernyms(ctx context.Context, req *visi
 	}
 	opts = append((*c.CallOptions).ListSearchHypernyms[0:len((*c.CallOptions).ListSearchHypernyms):len((*c.CallOptions).ListSearchHypernyms)], opts...)
 	it := &SearchHypernymIterator{}
-	req = proto.Clone(req).(*visionaipb.ListSearchHypernymsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*visionaipb.SearchHypernym, string, error) {
 		resp := &visionaipb.ListSearchHypernymsResponse{}
 		if pageToken != "" {
@@ -3952,7 +3952,7 @@ func (c *warehouseGRPCClient) SearchAssets(ctx context.Context, req *visionaipb.
 	}
 	opts = append((*c.CallOptions).SearchAssets[0:len((*c.CallOptions).SearchAssets):len((*c.CallOptions).SearchAssets)], opts...)
 	it := &SearchResultItemIterator{}
-	req = proto.Clone(req).(*visionaipb.SearchAssetsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*visionaipb.SearchResultItem, string, error) {
 		resp := &visionaipb.SearchAssetsResponse{}
 		if pageToken != "" {
@@ -4004,7 +4004,7 @@ func (c *warehouseGRPCClient) SearchIndexEndpoint(ctx context.Context, req *visi
 	}
 	opts = append((*c.CallOptions).SearchIndexEndpoint[0:len((*c.CallOptions).SearchIndexEndpoint):len((*c.CallOptions).SearchIndexEndpoint)], opts...)
 	it := &SearchResultItemIterator{}
-	req = proto.Clone(req).(*visionaipb.SearchIndexEndpointRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*visionaipb.SearchResultItem, string, error) {
 		resp := &visionaipb.SearchIndexEndpointResponse{}
 		if pageToken != "" {
@@ -4106,7 +4106,7 @@ func (c *warehouseGRPCClient) ListIndexEndpoints(ctx context.Context, req *visio
 	}
 	opts = append((*c.CallOptions).ListIndexEndpoints[0:len((*c.CallOptions).ListIndexEndpoints):len((*c.CallOptions).ListIndexEndpoints)], opts...)
 	it := &IndexEndpointIterator{}
-	req = proto.Clone(req).(*visionaipb.ListIndexEndpointsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*visionaipb.IndexEndpoint, string, error) {
 		resp := &visionaipb.ListIndexEndpointsResponse{}
 		if pageToken != "" {
@@ -4356,7 +4356,7 @@ func (c *warehouseGRPCClient) ListCollections(ctx context.Context, req *visionai
 	}
 	opts = append((*c.CallOptions).ListCollections[0:len((*c.CallOptions).ListCollections):len((*c.CallOptions).ListCollections)], opts...)
 	it := &CollectionIterator{}
-	req = proto.Clone(req).(*visionaipb.ListCollectionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*visionaipb.Collection, string, error) {
 		resp := &visionaipb.ListCollectionsResponse{}
 		if pageToken != "" {
@@ -4450,7 +4450,7 @@ func (c *warehouseGRPCClient) ViewCollectionItems(ctx context.Context, req *visi
 	}
 	opts = append((*c.CallOptions).ViewCollectionItems[0:len((*c.CallOptions).ViewCollectionItems):len((*c.CallOptions).ViewCollectionItems)], opts...)
 	it := &CollectionItemIterator{}
-	req = proto.Clone(req).(*visionaipb.ViewCollectionItemsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*visionaipb.CollectionItem, string, error) {
 		resp := &visionaipb.ViewCollectionItemsResponse{}
 		if pageToken != "" {
@@ -4520,7 +4520,7 @@ func (c *warehouseGRPCClient) ListLocations(ctx context.Context, req *locationpb
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -4624,7 +4624,7 @@ func (c *warehouseGRPCClient) ListOperations(ctx context.Context, req *longrunni
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -4858,7 +4858,7 @@ func (c *warehouseRESTClient) GetAsset(ctx context.Context, req *visionaipb.GetA
 // ListAssets lists an list of assets inside corpus.
 func (c *warehouseRESTClient) ListAssets(ctx context.Context, req *visionaipb.ListAssetsRequest, opts ...gax.CallOption) *AssetIterator {
 	it := &AssetIterator{}
-	req = proto.Clone(req).(*visionaipb.ListAssetsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*visionaipb.Asset, string, error) {
 		resp := &visionaipb.ListAssetsResponse{}
@@ -5339,7 +5339,7 @@ func (c *warehouseRESTClient) RemoveIndexAsset(ctx context.Context, req *visiona
 // ViewIndexedAssets lists assets inside an index.
 func (c *warehouseRESTClient) ViewIndexedAssets(ctx context.Context, req *visionaipb.ViewIndexedAssetsRequest, opts ...gax.CallOption) *IndexedAssetIterator {
 	it := &IndexedAssetIterator{}
-	req = proto.Clone(req).(*visionaipb.ViewIndexedAssetsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*visionaipb.IndexedAsset, string, error) {
 		resp := &visionaipb.ViewIndexedAssetsResponse{}
@@ -5620,7 +5620,7 @@ func (c *warehouseRESTClient) GetIndex(ctx context.Context, req *visionaipb.GetI
 // ListIndexes list all Indexes in a given Corpus.
 func (c *warehouseRESTClient) ListIndexes(ctx context.Context, req *visionaipb.ListIndexesRequest, opts ...gax.CallOption) *IndexIterator {
 	it := &IndexIterator{}
-	req = proto.Clone(req).(*visionaipb.ListIndexesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*visionaipb.Index, string, error) {
 		resp := &visionaipb.ListIndexesResponse{}
@@ -5948,7 +5948,7 @@ func (c *warehouseRESTClient) UpdateCorpus(ctx context.Context, req *visionaipb.
 // ListCorpora lists all corpora in a project.
 func (c *warehouseRESTClient) ListCorpora(ctx context.Context, req *visionaipb.ListCorporaRequest, opts ...gax.CallOption) *CorpusIterator {
 	it := &CorpusIterator{}
-	req = proto.Clone(req).(*visionaipb.ListCorporaRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*visionaipb.Corpus, string, error) {
 		resp := &visionaipb.ListCorporaResponse{}
@@ -6369,7 +6369,7 @@ func (c *warehouseRESTClient) DeleteDataSchema(ctx context.Context, req *visiona
 // ListDataSchemas lists a list of data schemas inside corpus.
 func (c *warehouseRESTClient) ListDataSchemas(ctx context.Context, req *visionaipb.ListDataSchemasRequest, opts ...gax.CallOption) *DataSchemaIterator {
 	it := &DataSchemaIterator{}
-	req = proto.Clone(req).(*visionaipb.ListDataSchemasRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*visionaipb.DataSchema, string, error) {
 		resp := &visionaipb.ListDataSchemasResponse{}
@@ -6571,7 +6571,7 @@ func (c *warehouseRESTClient) GetAnnotation(ctx context.Context, req *visionaipb
 // ListAnnotations lists a list of annotations inside asset.
 func (c *warehouseRESTClient) ListAnnotations(ctx context.Context, req *visionaipb.ListAnnotationsRequest, opts ...gax.CallOption) *AnnotationIterator {
 	it := &AnnotationIterator{}
-	req = proto.Clone(req).(*visionaipb.ListAnnotationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*visionaipb.Annotation, string, error) {
 		resp := &visionaipb.ListAnnotationsResponse{}
@@ -7247,7 +7247,7 @@ func (c *warehouseRESTClient) DeleteSearchConfig(ctx context.Context, req *visio
 // ListSearchConfigs lists all search configurations inside a corpus.
 func (c *warehouseRESTClient) ListSearchConfigs(ctx context.Context, req *visionaipb.ListSearchConfigsRequest, opts ...gax.CallOption) *SearchConfigIterator {
 	it := &SearchConfigIterator{}
-	req = proto.Clone(req).(*visionaipb.ListSearchConfigsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*visionaipb.SearchConfig, string, error) {
 		resp := &visionaipb.ListSearchConfigsResponse{}
@@ -7559,7 +7559,7 @@ func (c *warehouseRESTClient) DeleteSearchHypernym(ctx context.Context, req *vis
 // ListSearchHypernyms lists SearchHypernyms inside a corpus.
 func (c *warehouseRESTClient) ListSearchHypernyms(ctx context.Context, req *visionaipb.ListSearchHypernymsRequest, opts ...gax.CallOption) *SearchHypernymIterator {
 	it := &SearchHypernymIterator{}
-	req = proto.Clone(req).(*visionaipb.ListSearchHypernymsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*visionaipb.SearchHypernym, string, error) {
 		resp := &visionaipb.ListSearchHypernymsResponse{}
@@ -7637,7 +7637,7 @@ func (c *warehouseRESTClient) ListSearchHypernyms(ctx context.Context, req *visi
 // SearchAssets search media asset.
 func (c *warehouseRESTClient) SearchAssets(ctx context.Context, req *visionaipb.SearchAssetsRequest, opts ...gax.CallOption) *SearchResultItemIterator {
 	it := &SearchResultItemIterator{}
-	req = proto.Clone(req).(*visionaipb.SearchAssetsRequest)
+	req = proto.CloneOf(req)
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*visionaipb.SearchResultItem, string, error) {
@@ -7715,7 +7715,7 @@ func (c *warehouseRESTClient) SearchAssets(ctx context.Context, req *visionaipb.
 // SearchIndexEndpoint search a deployed index endpoint (IMAGE corpus type only).
 func (c *warehouseRESTClient) SearchIndexEndpoint(ctx context.Context, req *visionaipb.SearchIndexEndpointRequest, opts ...gax.CallOption) *SearchResultItemIterator {
 	it := &SearchResultItemIterator{}
-	req = proto.Clone(req).(*visionaipb.SearchIndexEndpointRequest)
+	req = proto.CloneOf(req)
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*visionaipb.SearchResultItem, string, error) {
@@ -7920,7 +7920,7 @@ func (c *warehouseRESTClient) GetIndexEndpoint(ctx context.Context, req *visiona
 // ListIndexEndpoints lists all IndexEndpoints in a project.
 func (c *warehouseRESTClient) ListIndexEndpoints(ctx context.Context, req *visionaipb.ListIndexEndpointsRequest, opts ...gax.CallOption) *IndexEndpointIterator {
 	it := &IndexEndpointIterator{}
-	req = proto.Clone(req).(*visionaipb.ListIndexEndpointsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*visionaipb.IndexEndpoint, string, error) {
 		resp := &visionaipb.ListIndexEndpointsResponse{}
@@ -8519,7 +8519,7 @@ func (c *warehouseRESTClient) UpdateCollection(ctx context.Context, req *visiona
 // ListCollections lists collections inside a corpus.
 func (c *warehouseRESTClient) ListCollections(ctx context.Context, req *visionaipb.ListCollectionsRequest, opts ...gax.CallOption) *CollectionIterator {
 	it := &CollectionIterator{}
-	req = proto.Clone(req).(*visionaipb.ListCollectionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*visionaipb.Collection, string, error) {
 		resp := &visionaipb.ListCollectionsResponse{}
@@ -8717,7 +8717,7 @@ func (c *warehouseRESTClient) RemoveCollectionItem(ctx context.Context, req *vis
 // ViewCollectionItems view items inside a collection.
 func (c *warehouseRESTClient) ViewCollectionItems(ctx context.Context, req *visionaipb.ViewCollectionItemsRequest, opts ...gax.CallOption) *CollectionItemIterator {
 	it := &CollectionItemIterator{}
-	req = proto.Clone(req).(*visionaipb.ViewCollectionItemsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*visionaipb.CollectionItem, string, error) {
 		resp := &visionaipb.ViewCollectionItemsResponse{}
@@ -8849,7 +8849,7 @@ func (c *warehouseRESTClient) GetLocation(ctx context.Context, req *locationpb.G
 // ListLocations lists information about the supported locations for this service.
 func (c *warehouseRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -9068,7 +9068,7 @@ func (c *warehouseRESTClient) GetOperation(ctx context.Context, req *longrunning
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *warehouseRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

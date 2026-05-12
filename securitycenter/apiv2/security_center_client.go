@@ -1395,7 +1395,7 @@ func (c *gRPCClient) GroupFindings(ctx context.Context, req *securitycenterpb.Gr
 	}
 	opts = append((*c.CallOptions).GroupFindings[0:len((*c.CallOptions).GroupFindings):len((*c.CallOptions).GroupFindings)], opts...)
 	it := &GroupResultIterator{}
-	req = proto.Clone(req).(*securitycenterpb.GroupFindingsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securitycenterpb.GroupResult, string, error) {
 		resp := &securitycenterpb.GroupFindingsResponse{}
 		if pageToken != "" {
@@ -1447,7 +1447,7 @@ func (c *gRPCClient) ListAttackPaths(ctx context.Context, req *securitycenterpb.
 	}
 	opts = append((*c.CallOptions).ListAttackPaths[0:len((*c.CallOptions).ListAttackPaths):len((*c.CallOptions).ListAttackPaths)], opts...)
 	it := &AttackPathIterator{}
-	req = proto.Clone(req).(*securitycenterpb.ListAttackPathsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securitycenterpb.AttackPath, string, error) {
 		resp := &securitycenterpb.ListAttackPathsResponse{}
 		if pageToken != "" {
@@ -1499,7 +1499,7 @@ func (c *gRPCClient) ListBigQueryExports(ctx context.Context, req *securitycente
 	}
 	opts = append((*c.CallOptions).ListBigQueryExports[0:len((*c.CallOptions).ListBigQueryExports):len((*c.CallOptions).ListBigQueryExports)], opts...)
 	it := &BigQueryExportIterator{}
-	req = proto.Clone(req).(*securitycenterpb.ListBigQueryExportsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securitycenterpb.BigQueryExport, string, error) {
 		resp := &securitycenterpb.ListBigQueryExportsResponse{}
 		if pageToken != "" {
@@ -1551,7 +1551,7 @@ func (c *gRPCClient) ListFindings(ctx context.Context, req *securitycenterpb.Lis
 	}
 	opts = append((*c.CallOptions).ListFindings[0:len((*c.CallOptions).ListFindings):len((*c.CallOptions).ListFindings)], opts...)
 	it := &ListFindingsResponse_ListFindingsResultIterator{}
-	req = proto.Clone(req).(*securitycenterpb.ListFindingsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securitycenterpb.ListFindingsResponse_ListFindingsResult, string, error) {
 		resp := &securitycenterpb.ListFindingsResponse{}
 		if pageToken != "" {
@@ -1618,7 +1618,7 @@ func (c *gRPCClient) ListMuteConfigs(ctx context.Context, req *securitycenterpb.
 	}
 	opts = append((*c.CallOptions).ListMuteConfigs[0:len((*c.CallOptions).ListMuteConfigs):len((*c.CallOptions).ListMuteConfigs)], opts...)
 	it := &MuteConfigIterator{}
-	req = proto.Clone(req).(*securitycenterpb.ListMuteConfigsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securitycenterpb.MuteConfig, string, error) {
 		resp := &securitycenterpb.ListMuteConfigsResponse{}
 		if pageToken != "" {
@@ -1670,7 +1670,7 @@ func (c *gRPCClient) ListNotificationConfigs(ctx context.Context, req *securityc
 	}
 	opts = append((*c.CallOptions).ListNotificationConfigs[0:len((*c.CallOptions).ListNotificationConfigs):len((*c.CallOptions).ListNotificationConfigs)], opts...)
 	it := &NotificationConfigIterator{}
-	req = proto.Clone(req).(*securitycenterpb.ListNotificationConfigsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securitycenterpb.NotificationConfig, string, error) {
 		resp := &securitycenterpb.ListNotificationConfigsResponse{}
 		if pageToken != "" {
@@ -1722,7 +1722,7 @@ func (c *gRPCClient) ListResourceValueConfigs(ctx context.Context, req *security
 	}
 	opts = append((*c.CallOptions).ListResourceValueConfigs[0:len((*c.CallOptions).ListResourceValueConfigs):len((*c.CallOptions).ListResourceValueConfigs)], opts...)
 	it := &ResourceValueConfigIterator{}
-	req = proto.Clone(req).(*securitycenterpb.ListResourceValueConfigsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securitycenterpb.ResourceValueConfig, string, error) {
 		resp := &securitycenterpb.ListResourceValueConfigsResponse{}
 		if pageToken != "" {
@@ -1774,7 +1774,7 @@ func (c *gRPCClient) ListSources(ctx context.Context, req *securitycenterpb.List
 	}
 	opts = append((*c.CallOptions).ListSources[0:len((*c.CallOptions).ListSources):len((*c.CallOptions).ListSources)], opts...)
 	it := &SourceIterator{}
-	req = proto.Clone(req).(*securitycenterpb.ListSourcesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securitycenterpb.Source, string, error) {
 		resp := &securitycenterpb.ListSourcesResponse{}
 		if pageToken != "" {
@@ -1826,7 +1826,7 @@ func (c *gRPCClient) ListValuedResources(ctx context.Context, req *securitycente
 	}
 	opts = append((*c.CallOptions).ListValuedResources[0:len((*c.CallOptions).ListValuedResources):len((*c.CallOptions).ListValuedResources)], opts...)
 	it := &ValuedResourceIterator{}
-	req = proto.Clone(req).(*securitycenterpb.ListValuedResourcesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securitycenterpb.ValuedResource, string, error) {
 		resp := &securitycenterpb.ListValuedResourcesResponse{}
 		if pageToken != "" {
@@ -2209,7 +2209,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -3404,7 +3404,7 @@ func (c *restClient) GetSource(ctx context.Context, req *securitycenterpb.GetSou
 //	/v2/projects/{project_id}/sources/-/locations/{location_id}/findings
 func (c *restClient) GroupFindings(ctx context.Context, req *securitycenterpb.GroupFindingsRequest, opts ...gax.CallOption) *GroupResultIterator {
 	it := &GroupResultIterator{}
-	req = proto.Clone(req).(*securitycenterpb.GroupFindingsRequest)
+	req = proto.CloneOf(req)
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securitycenterpb.GroupResult, string, error) {
@@ -3483,7 +3483,7 @@ func (c *restClient) GroupFindings(ctx context.Context, req *securitycenterpb.Gr
 // and filter.
 func (c *restClient) ListAttackPaths(ctx context.Context, req *securitycenterpb.ListAttackPathsRequest, opts ...gax.CallOption) *AttackPathIterator {
 	it := &AttackPathIterator{}
-	req = proto.Clone(req).(*securitycenterpb.ListAttackPathsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securitycenterpb.AttackPath, string, error) {
 		resp := &securitycenterpb.ListAttackPathsResponse{}
@@ -3568,7 +3568,7 @@ func (c *restClient) ListAttackPaths(ctx context.Context, req *securitycenterpb.
 // within the folder are returned.
 func (c *restClient) ListBigQueryExports(ctx context.Context, req *securitycenterpb.ListBigQueryExportsRequest, opts ...gax.CallOption) *BigQueryExportIterator {
 	it := &BigQueryExportIterator{}
-	req = proto.Clone(req).(*securitycenterpb.ListBigQueryExportsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securitycenterpb.BigQueryExport, string, error) {
 		resp := &securitycenterpb.ListBigQueryExportsResponse{}
@@ -3654,7 +3654,7 @@ func (c *restClient) ListBigQueryExports(ctx context.Context, req *securitycente
 //	/v2/organizations/{organization_id}/sources/-/locations/{location_id}/findings
 func (c *restClient) ListFindings(ctx context.Context, req *securitycenterpb.ListFindingsRequest, opts ...gax.CallOption) *ListFindingsResponse_ListFindingsResultIterator {
 	it := &ListFindingsResponse_ListFindingsResultIterator{}
-	req = proto.Clone(req).(*securitycenterpb.ListFindingsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securitycenterpb.ListFindingsResponse_ListFindingsResult, string, error) {
 		resp := &securitycenterpb.ListFindingsResponse{}
@@ -3746,7 +3746,7 @@ func (c *restClient) ListFindings(ctx context.Context, req *securitycenterpb.Lis
 // global.
 func (c *restClient) ListMuteConfigs(ctx context.Context, req *securitycenterpb.ListMuteConfigsRequest, opts ...gax.CallOption) *MuteConfigIterator {
 	it := &MuteConfigIterator{}
-	req = proto.Clone(req).(*securitycenterpb.ListMuteConfigsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securitycenterpb.MuteConfig, string, error) {
 		resp := &securitycenterpb.ListMuteConfigsResponse{}
@@ -3824,7 +3824,7 @@ func (c *restClient) ListMuteConfigs(ctx context.Context, req *securitycenterpb.
 // ListNotificationConfigs lists notification configs.
 func (c *restClient) ListNotificationConfigs(ctx context.Context, req *securitycenterpb.ListNotificationConfigsRequest, opts ...gax.CallOption) *NotificationConfigIterator {
 	it := &NotificationConfigIterator{}
-	req = proto.Clone(req).(*securitycenterpb.ListNotificationConfigsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securitycenterpb.NotificationConfig, string, error) {
 		resp := &securitycenterpb.ListNotificationConfigsResponse{}
@@ -3902,7 +3902,7 @@ func (c *restClient) ListNotificationConfigs(ctx context.Context, req *securityc
 // ListResourceValueConfigs lists all ResourceValueConfigs.
 func (c *restClient) ListResourceValueConfigs(ctx context.Context, req *securitycenterpb.ListResourceValueConfigsRequest, opts ...gax.CallOption) *ResourceValueConfigIterator {
 	it := &ResourceValueConfigIterator{}
-	req = proto.Clone(req).(*securitycenterpb.ListResourceValueConfigsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securitycenterpb.ResourceValueConfig, string, error) {
 		resp := &securitycenterpb.ListResourceValueConfigsResponse{}
@@ -3980,7 +3980,7 @@ func (c *restClient) ListResourceValueConfigs(ctx context.Context, req *security
 // ListSources lists all sources belonging to an organization.
 func (c *restClient) ListSources(ctx context.Context, req *securitycenterpb.ListSourcesRequest, opts ...gax.CallOption) *SourceIterator {
 	it := &SourceIterator{}
-	req = proto.Clone(req).(*securitycenterpb.ListSourcesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securitycenterpb.Source, string, error) {
 		resp := &securitycenterpb.ListSourcesResponse{}
@@ -4058,7 +4058,7 @@ func (c *restClient) ListSources(ctx context.Context, req *securitycenterpb.List
 // ListValuedResources lists the valued resources for a set of simulation results and filter.
 func (c *restClient) ListValuedResources(ctx context.Context, req *securitycenterpb.ListValuedResourcesRequest, opts ...gax.CallOption) *ValuedResourceIterator {
 	it := &ValuedResourceIterator{}
-	req = proto.Clone(req).(*securitycenterpb.ListValuedResourcesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securitycenterpb.ValuedResource, string, error) {
 		resp := &securitycenterpb.ListValuedResourcesResponse{}
@@ -5094,7 +5094,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

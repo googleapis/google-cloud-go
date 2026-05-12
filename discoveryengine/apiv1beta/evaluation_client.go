@@ -614,7 +614,7 @@ func (c *evaluationGRPCClient) ListEvaluations(ctx context.Context, req *discove
 	}
 	opts = append((*c.CallOptions).ListEvaluations[0:len((*c.CallOptions).ListEvaluations):len((*c.CallOptions).ListEvaluations)], opts...)
 	it := &EvaluationIterator{}
-	req = proto.Clone(req).(*discoveryenginepb.ListEvaluationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*discoveryenginepb.Evaluation, string, error) {
 		resp := &discoveryenginepb.ListEvaluationsResponse{}
 		if pageToken != "" {
@@ -692,7 +692,7 @@ func (c *evaluationGRPCClient) ListEvaluationResults(ctx context.Context, req *d
 	}
 	opts = append((*c.CallOptions).ListEvaluationResults[0:len((*c.CallOptions).ListEvaluationResults):len((*c.CallOptions).ListEvaluationResults)], opts...)
 	it := &ListEvaluationResultsResponse_EvaluationResultIterator{}
-	req = proto.Clone(req).(*discoveryenginepb.ListEvaluationResultsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*discoveryenginepb.ListEvaluationResultsResponse_EvaluationResult, string, error) {
 		resp := &discoveryenginepb.ListEvaluationResultsResponse{}
 		if pageToken != "" {
@@ -779,7 +779,7 @@ func (c *evaluationGRPCClient) ListOperations(ctx context.Context, req *longrunn
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -879,7 +879,7 @@ func (c *evaluationRESTClient) GetEvaluation(ctx context.Context, req *discovery
 // Evaluations.
 func (c *evaluationRESTClient) ListEvaluations(ctx context.Context, req *discoveryenginepb.ListEvaluationsRequest, opts ...gax.CallOption) *EvaluationIterator {
 	it := &EvaluationIterator{}
-	req = proto.Clone(req).(*discoveryenginepb.ListEvaluationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*discoveryenginepb.Evaluation, string, error) {
 		resp := &discoveryenginepb.ListEvaluationsResponse{}
@@ -1028,7 +1028,7 @@ func (c *evaluationRESTClient) CreateEvaluation(ctx context.Context, req *discov
 // Evaluation.
 func (c *evaluationRESTClient) ListEvaluationResults(ctx context.Context, req *discoveryenginepb.ListEvaluationResultsRequest, opts ...gax.CallOption) *ListEvaluationResultsResponse_EvaluationResultIterator {
 	it := &ListEvaluationResultsResponse_EvaluationResultIterator{}
-	req = proto.Clone(req).(*discoveryenginepb.ListEvaluationResultsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*discoveryenginepb.ListEvaluationResultsResponse_EvaluationResult, string, error) {
 		resp := &discoveryenginepb.ListEvaluationResultsResponse{}
@@ -1205,7 +1205,7 @@ func (c *evaluationRESTClient) GetOperation(ctx context.Context, req *longrunnin
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *evaluationRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

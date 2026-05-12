@@ -872,7 +872,7 @@ func (c *depGRPCClient) ListLbTrafficExtensions(ctx context.Context, req *networ
 	}
 	opts = append((*c.CallOptions).ListLbTrafficExtensions[0:len((*c.CallOptions).ListLbTrafficExtensions):len((*c.CallOptions).ListLbTrafficExtensions)], opts...)
 	it := &LbTrafficExtensionIterator{}
-	req = proto.Clone(req).(*networkservicespb.ListLbTrafficExtensionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkservicespb.LbTrafficExtension, string, error) {
 		resp := &networkservicespb.ListLbTrafficExtensionsResponse{}
 		if pageToken != "" {
@@ -1023,7 +1023,7 @@ func (c *depGRPCClient) ListLbRouteExtensions(ctx context.Context, req *networks
 	}
 	opts = append((*c.CallOptions).ListLbRouteExtensions[0:len((*c.CallOptions).ListLbRouteExtensions):len((*c.CallOptions).ListLbRouteExtensions)], opts...)
 	it := &LbRouteExtensionIterator{}
-	req = proto.Clone(req).(*networkservicespb.ListLbRouteExtensionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkservicespb.LbRouteExtension, string, error) {
 		resp := &networkservicespb.ListLbRouteExtensionsResponse{}
 		if pageToken != "" {
@@ -1174,7 +1174,7 @@ func (c *depGRPCClient) ListLbEdgeExtensions(ctx context.Context, req *networkse
 	}
 	opts = append((*c.CallOptions).ListLbEdgeExtensions[0:len((*c.CallOptions).ListLbEdgeExtensions):len((*c.CallOptions).ListLbEdgeExtensions)], opts...)
 	it := &LbEdgeExtensionIterator{}
-	req = proto.Clone(req).(*networkservicespb.ListLbEdgeExtensionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkservicespb.LbEdgeExtension, string, error) {
 		resp := &networkservicespb.ListLbEdgeExtensionsResponse{}
 		if pageToken != "" {
@@ -1325,7 +1325,7 @@ func (c *depGRPCClient) ListAuthzExtensions(ctx context.Context, req *networkser
 	}
 	opts = append((*c.CallOptions).ListAuthzExtensions[0:len((*c.CallOptions).ListAuthzExtensions):len((*c.CallOptions).ListAuthzExtensions)], opts...)
 	it := &AuthzExtensionIterator{}
-	req = proto.Clone(req).(*networkservicespb.ListAuthzExtensionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkservicespb.AuthzExtension, string, error) {
 		resp := &networkservicespb.ListAuthzExtensionsResponse{}
 		if pageToken != "" {
@@ -1494,7 +1494,7 @@ func (c *depGRPCClient) ListLocations(ctx context.Context, req *locationpb.ListL
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -1670,7 +1670,7 @@ func (c *depGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.L
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -1712,7 +1712,7 @@ func (c *depGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.L
 // ListLbTrafficExtensions lists LbTrafficExtension resources in a given project and location.
 func (c *depRESTClient) ListLbTrafficExtensions(ctx context.Context, req *networkservicespb.ListLbTrafficExtensionsRequest, opts ...gax.CallOption) *LbTrafficExtensionIterator {
 	it := &LbTrafficExtensionIterator{}
-	req = proto.Clone(req).(*networkservicespb.ListLbTrafficExtensionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkservicespb.LbTrafficExtension, string, error) {
 		resp := &networkservicespb.ListLbTrafficExtensionsResponse{}
@@ -2062,7 +2062,7 @@ func (c *depRESTClient) DeleteLbTrafficExtension(ctx context.Context, req *netwo
 // ListLbRouteExtensions lists LbRouteExtension resources in a given project and location.
 func (c *depRESTClient) ListLbRouteExtensions(ctx context.Context, req *networkservicespb.ListLbRouteExtensionsRequest, opts ...gax.CallOption) *LbRouteExtensionIterator {
 	it := &LbRouteExtensionIterator{}
-	req = proto.Clone(req).(*networkservicespb.ListLbRouteExtensionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkservicespb.LbRouteExtension, string, error) {
 		resp := &networkservicespb.ListLbRouteExtensionsResponse{}
@@ -2411,7 +2411,7 @@ func (c *depRESTClient) DeleteLbRouteExtension(ctx context.Context, req *network
 // ListLbEdgeExtensions lists LbEdgeExtension resources in a given project and location.
 func (c *depRESTClient) ListLbEdgeExtensions(ctx context.Context, req *networkservicespb.ListLbEdgeExtensionsRequest, opts ...gax.CallOption) *LbEdgeExtensionIterator {
 	it := &LbEdgeExtensionIterator{}
-	req = proto.Clone(req).(*networkservicespb.ListLbEdgeExtensionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkservicespb.LbEdgeExtension, string, error) {
 		resp := &networkservicespb.ListLbEdgeExtensionsResponse{}
@@ -2760,7 +2760,7 @@ func (c *depRESTClient) DeleteLbEdgeExtension(ctx context.Context, req *networks
 // ListAuthzExtensions lists AuthzExtension resources in a given project and location.
 func (c *depRESTClient) ListAuthzExtensions(ctx context.Context, req *networkservicespb.ListAuthzExtensionsRequest, opts ...gax.CallOption) *AuthzExtensionIterator {
 	it := &AuthzExtensionIterator{}
-	req = proto.Clone(req).(*networkservicespb.ListAuthzExtensionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkservicespb.AuthzExtension, string, error) {
 		resp := &networkservicespb.ListAuthzExtensionsResponse{}
@@ -3165,7 +3165,7 @@ func (c *depRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLoca
 // ListLocations lists information about the supported locations for this service.
 func (c *depRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -3581,7 +3581,7 @@ func (c *depRESTClient) GetOperation(ctx context.Context, req *longrunningpb.Get
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *depRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

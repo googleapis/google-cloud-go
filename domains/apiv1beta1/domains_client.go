@@ -791,7 +791,7 @@ func (c *gRPCClient) ListRegistrations(ctx context.Context, req *domainspb.ListR
 	}
 	opts = append((*c.CallOptions).ListRegistrations[0:len((*c.CallOptions).ListRegistrations):len((*c.CallOptions).ListRegistrations)], opts...)
 	it := &RegistrationIterator{}
-	req = proto.Clone(req).(*domainspb.ListRegistrationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*domainspb.Registration, string, error) {
 		resp := &domainspb.ListRegistrationsResponse{}
 		if pageToken != "" {
@@ -1404,7 +1404,7 @@ func (c *restClient) TransferDomain(ctx context.Context, req *domainspb.Transfer
 // ListRegistrations lists the Registration resources in a project.
 func (c *restClient) ListRegistrations(ctx context.Context, req *domainspb.ListRegistrationsRequest, opts ...gax.CallOption) *RegistrationIterator {
 	it := &RegistrationIterator{}
-	req = proto.Clone(req).(*domainspb.ListRegistrationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*domainspb.Registration, string, error) {
 		resp := &domainspb.ListRegistrationsResponse{}

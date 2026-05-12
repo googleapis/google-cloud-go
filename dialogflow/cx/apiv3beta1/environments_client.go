@@ -808,7 +808,7 @@ func (c *environmentsGRPCClient) ListEnvironments(ctx context.Context, req *cxpb
 	}
 	opts = append((*c.CallOptions).ListEnvironments[0:len((*c.CallOptions).ListEnvironments):len((*c.CallOptions).ListEnvironments)], opts...)
 	it := &EnvironmentIterator{}
-	req = proto.Clone(req).(*cxpb.ListEnvironmentsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cxpb.Environment, string, error) {
 		resp := &cxpb.ListEnvironmentsResponse{}
 		if pageToken != "" {
@@ -953,7 +953,7 @@ func (c *environmentsGRPCClient) LookupEnvironmentHistory(ctx context.Context, r
 	}
 	opts = append((*c.CallOptions).LookupEnvironmentHistory[0:len((*c.CallOptions).LookupEnvironmentHistory):len((*c.CallOptions).LookupEnvironmentHistory)], opts...)
 	it := &EnvironmentIterator{}
-	req = proto.Clone(req).(*cxpb.LookupEnvironmentHistoryRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cxpb.Environment, string, error) {
 		resp := &cxpb.LookupEnvironmentHistoryResponse{}
 		if pageToken != "" {
@@ -1031,7 +1031,7 @@ func (c *environmentsGRPCClient) ListContinuousTestResults(ctx context.Context, 
 	}
 	opts = append((*c.CallOptions).ListContinuousTestResults[0:len((*c.CallOptions).ListContinuousTestResults):len((*c.CallOptions).ListContinuousTestResults)], opts...)
 	it := &ContinuousTestResultIterator{}
-	req = proto.Clone(req).(*cxpb.ListContinuousTestResultsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cxpb.ContinuousTestResult, string, error) {
 		resp := &cxpb.ListContinuousTestResultsResponse{}
 		if pageToken != "" {
@@ -1127,7 +1127,7 @@ func (c *environmentsGRPCClient) ListLocations(ctx context.Context, req *locatio
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -1214,7 +1214,7 @@ func (c *environmentsGRPCClient) ListOperations(ctx context.Context, req *longru
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -1257,7 +1257,7 @@ func (c *environmentsGRPCClient) ListOperations(ctx context.Context, req *longru
 // Agent.
 func (c *environmentsRESTClient) ListEnvironments(ctx context.Context, req *cxpb.ListEnvironmentsRequest, opts ...gax.CallOption) *EnvironmentIterator {
 	it := &EnvironmentIterator{}
-	req = proto.Clone(req).(*cxpb.ListEnvironmentsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cxpb.Environment, string, error) {
 		resp := &cxpb.ListEnvironmentsResponse{}
@@ -1595,7 +1595,7 @@ func (c *environmentsRESTClient) DeleteEnvironment(ctx context.Context, req *cxp
 // Environment.
 func (c *environmentsRESTClient) LookupEnvironmentHistory(ctx context.Context, req *cxpb.LookupEnvironmentHistoryRequest, opts ...gax.CallOption) *EnvironmentIterator {
 	it := &EnvironmentIterator{}
-	req = proto.Clone(req).(*cxpb.LookupEnvironmentHistoryRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cxpb.Environment, string, error) {
 		resp := &cxpb.LookupEnvironmentHistoryResponse{}
@@ -1750,7 +1750,7 @@ func (c *environmentsRESTClient) RunContinuousTest(ctx context.Context, req *cxp
 // ListContinuousTestResults fetches a list of continuous test results for a given environment.
 func (c *environmentsRESTClient) ListContinuousTestResults(ctx context.Context, req *cxpb.ListContinuousTestResultsRequest, opts ...gax.CallOption) *ContinuousTestResultIterator {
 	it := &ContinuousTestResultIterator{}
-	req = proto.Clone(req).(*cxpb.ListContinuousTestResultsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cxpb.ContinuousTestResult, string, error) {
 		resp := &cxpb.ListContinuousTestResultsResponse{}
@@ -1975,7 +1975,7 @@ func (c *environmentsRESTClient) GetLocation(ctx context.Context, req *locationp
 // implementation and version.
 func (c *environmentsRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -2149,7 +2149,7 @@ func (c *environmentsRESTClient) GetOperation(ctx context.Context, req *longrunn
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *environmentsRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

@@ -561,7 +561,7 @@ func (c *caseGRPCClient) ListCases(ctx context.Context, req *supportpb.ListCases
 	}
 	opts = append((*c.CallOptions).ListCases[0:len((*c.CallOptions).ListCases):len((*c.CallOptions).ListCases)], opts...)
 	it := &CaseIterator{}
-	req = proto.Clone(req).(*supportpb.ListCasesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*supportpb.Case, string, error) {
 		resp := &supportpb.ListCasesResponse{}
 		if pageToken != "" {
@@ -610,7 +610,7 @@ func (c *caseGRPCClient) SearchCases(ctx context.Context, req *supportpb.SearchC
 	}
 	opts = append((*c.CallOptions).SearchCases[0:len((*c.CallOptions).SearchCases):len((*c.CallOptions).SearchCases)], opts...)
 	it := &CaseIterator{}
-	req = proto.Clone(req).(*supportpb.SearchCasesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*supportpb.Case, string, error) {
 		resp := &supportpb.SearchCasesResponse{}
 		if pageToken != "" {
@@ -749,7 +749,7 @@ func (c *caseGRPCClient) SearchCaseClassifications(ctx context.Context, req *sup
 	}
 	opts = append((*c.CallOptions).SearchCaseClassifications[0:len((*c.CallOptions).SearchCaseClassifications):len((*c.CallOptions).SearchCaseClassifications)], opts...)
 	it := &CaseClassificationIterator{}
-	req = proto.Clone(req).(*supportpb.SearchCaseClassificationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*supportpb.CaseClassification, string, error) {
 		resp := &supportpb.SearchCaseClassificationsResponse{}
 		if pageToken != "" {
@@ -852,7 +852,7 @@ func (c *caseRESTClient) GetCase(ctx context.Context, req *supportpb.GetCaseRequ
 // under an organization and its projects, use cases.search.
 func (c *caseRESTClient) ListCases(ctx context.Context, req *supportpb.ListCasesRequest, opts ...gax.CallOption) *CaseIterator {
 	it := &CaseIterator{}
-	req = proto.Clone(req).(*supportpb.ListCasesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*supportpb.Case, string, error) {
 		resp := &supportpb.ListCasesResponse{}
@@ -933,7 +933,7 @@ func (c *caseRESTClient) ListCases(ctx context.Context, req *supportpb.ListCases
 // SearchCases search for cases using a query.
 func (c *caseRESTClient) SearchCases(ctx context.Context, req *supportpb.SearchCasesRequest, opts ...gax.CallOption) *CaseIterator {
 	it := &CaseIterator{}
-	req = proto.Clone(req).(*supportpb.SearchCasesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*supportpb.Case, string, error) {
 		resp := &supportpb.SearchCasesResponse{}
@@ -1291,7 +1291,7 @@ func (c *caseRESTClient) CloseCase(ctx context.Context, req *supportpb.CloseCase
 // classification will fail.
 func (c *caseRESTClient) SearchCaseClassifications(ctx context.Context, req *supportpb.SearchCaseClassificationsRequest, opts ...gax.CallOption) *CaseClassificationIterator {
 	it := &CaseClassificationIterator{}
-	req = proto.Clone(req).(*supportpb.SearchCaseClassificationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*supportpb.CaseClassification, string, error) {
 		resp := &supportpb.SearchCaseClassificationsResponse{}

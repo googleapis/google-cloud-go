@@ -287,6 +287,10 @@ func setVal(v reflect.Value, p Property) (s string) {
 	case reflect.String:
 		x, ok := pValue.(string)
 		if !ok && pValue != nil {
+			if b, ok := pValue.([]byte); ok {
+				v.SetString(string(b))
+				return ""
+			}
 			return typeMismatchReason(p, v)
 		}
 		v.SetString(x)
@@ -348,20 +352,56 @@ func setVal(v reflect.Value, p Property) (s string) {
 				return err.Error()
 			}
 		case int64:
+			if v.Elem().Type() == typeOfTime {
+				s := x / 1e6
+				ns := (x % 1e6) * 1e3
+				v.Elem().Set(reflect.ValueOf(time.Unix(s, ns).In(time.UTC)))
+				return ""
+			}
+			if v.Elem().Kind() < reflect.Int || v.Elem().Kind() > reflect.Int64 {
+				return typeMismatchReason(p, v)
+			}
 			if v.Elem().OverflowInt(x) {
 				return overflowReason(x, v.Elem())
 			}
 			v.Elem().SetInt(x)
 		case float64:
+			if v.Elem().Kind() != reflect.Float32 && v.Elem().Kind() != reflect.Float64 {
+				return typeMismatchReason(p, v)
+			}
 			if v.Elem().OverflowFloat(x) {
 				return overflowReason(x, v.Elem())
 			}
 			v.Elem().SetFloat(x)
 		case bool:
+			if v.Elem().Kind() != reflect.Bool {
+				return typeMismatchReason(p, v)
+			}
 			v.Elem().SetBool(x)
 		case string:
-			v.Elem().SetString(x)
+			if v.Elem().Kind() == reflect.String {
+				v.Elem().SetString(x)
+				return ""
+			}
+			if v.Elem().Kind() == reflect.Slice && v.Elem().Type().Elem().Kind() == reflect.Uint8 {
+				v.Elem().SetBytes([]byte(x))
+				return ""
+			}
+			return typeMismatchReason(p, v)
+		case []byte:
+			if v.Elem().Kind() == reflect.String {
+				v.Elem().SetString(string(x))
+				return ""
+			}
+			if v.Elem().Kind() == reflect.Slice && v.Elem().Type().Elem().Kind() == reflect.Uint8 {
+				v.Elem().SetBytes(x)
+				return ""
+			}
+			return typeMismatchReason(p, v)
 		case GeoPoint, time.Time:
+			if v.Elem().Type() != reflect.TypeOf(x) {
+				return typeMismatchReason(p, v)
+			}
 			v.Elem().Set(reflect.ValueOf(x))
 		default:
 			return typeMismatchReason(p, v)
@@ -377,7 +417,7 @@ func setVal(v reflect.Value, p Property) (s string) {
 			micros, ok := pValue.(int64)
 			if ok {
 				s := micros / 1e6
-				ns := micros % 1e6
+				ns := (micros % 1e6) * 1e3
 				v.Set(reflect.ValueOf(time.Unix(s, ns).In(time.UTC)))
 				break
 			}
@@ -412,11 +452,15 @@ func setVal(v reflect.Value, p Property) (s string) {
 			}
 		}
 	case reflect.Slice:
-		x, ok := pValue.([]byte)
-		if !ok && pValue != nil {
+		if v.Type().Elem().Kind() != reflect.Uint8 {
 			return typeMismatchReason(p, v)
 		}
-		if v.Type().Elem().Kind() != reflect.Uint8 {
+		x, ok := pValue.([]byte)
+		if !ok && pValue != nil {
+			if s, ok := pValue.(string); ok {
+				v.SetBytes([]byte(s))
+				return ""
+			}
 			return typeMismatchReason(p, v)
 		}
 		v.SetBytes(x)

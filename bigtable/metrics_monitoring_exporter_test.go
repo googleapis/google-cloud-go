@@ -246,7 +246,7 @@ func TestExportMetrics(t *testing.T) {
 
 	// Reduce sampling period to reduce test run time
 	origSamplePeriod := defaultSamplePeriod
-	defaultSamplePeriod = 5 * time.Second
+	defaultSamplePeriod = 500 * time.Millisecond
 	defer func() {
 		defaultSamplePeriod = origSamplePeriod
 	}()

@@ -854,7 +854,7 @@ func (c *conversationModelsGRPCClient) ListConversationModels(ctx context.Contex
 	}
 	opts = append((*c.CallOptions).ListConversationModels[0:len((*c.CallOptions).ListConversationModels):len((*c.CallOptions).ListConversationModels)], opts...)
 	it := &ConversationModelIterator{}
-	req = proto.Clone(req).(*dialogflowpb.ListConversationModelsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dialogflowpb.ConversationModel, string, error) {
 		resp := &dialogflowpb.ListConversationModelsResponse{}
 		if pageToken != "" {
@@ -993,7 +993,7 @@ func (c *conversationModelsGRPCClient) ListConversationModelEvaluations(ctx cont
 	}
 	opts = append((*c.CallOptions).ListConversationModelEvaluations[0:len((*c.CallOptions).ListConversationModelEvaluations):len((*c.CallOptions).ListConversationModelEvaluations)], opts...)
 	it := &ConversationModelEvaluationIterator{}
-	req = proto.Clone(req).(*dialogflowpb.ListConversationModelEvaluationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dialogflowpb.ConversationModelEvaluation, string, error) {
 		resp := &dialogflowpb.ListConversationModelEvaluationsResponse{}
 		if pageToken != "" {
@@ -1089,7 +1089,7 @@ func (c *conversationModelsGRPCClient) ListLocations(ctx context.Context, req *l
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -1176,7 +1176,7 @@ func (c *conversationModelsGRPCClient) ListOperations(ctx context.Context, req *
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -1346,7 +1346,7 @@ func (c *conversationModelsRESTClient) GetConversationModel(ctx context.Context,
 // ListConversationModels lists conversation models.
 func (c *conversationModelsRESTClient) ListConversationModels(ctx context.Context, req *dialogflowpb.ListConversationModelsRequest, opts ...gax.CallOption) *ConversationModelIterator {
 	it := &ConversationModelIterator{}
-	req = proto.Clone(req).(*dialogflowpb.ListConversationModelsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dialogflowpb.ConversationModel, string, error) {
 		resp := &dialogflowpb.ListConversationModelsResponse{}
@@ -1698,7 +1698,7 @@ func (c *conversationModelsRESTClient) GetConversationModelEvaluation(ctx contex
 // ListConversationModelEvaluations lists evaluations of a conversation model.
 func (c *conversationModelsRESTClient) ListConversationModelEvaluations(ctx context.Context, req *dialogflowpb.ListConversationModelEvaluationsRequest, opts ...gax.CallOption) *ConversationModelEvaluationIterator {
 	it := &ConversationModelEvaluationIterator{}
-	req = proto.Clone(req).(*dialogflowpb.ListConversationModelEvaluationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dialogflowpb.ConversationModelEvaluation, string, error) {
 		resp := &dialogflowpb.ListConversationModelEvaluationsResponse{}
@@ -1912,7 +1912,7 @@ func (c *conversationModelsRESTClient) GetLocation(ctx context.Context, req *loc
 // implementation and version.
 func (c *conversationModelsRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -2086,7 +2086,7 @@ func (c *conversationModelsRESTClient) GetOperation(ctx context.Context, req *lo
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *conversationModelsRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

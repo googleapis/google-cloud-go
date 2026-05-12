@@ -367,7 +367,7 @@ func (c *globalOrganizationOperationsRESTClient) Get(ctx context.Context, req *c
 // organization.
 func (c *globalOrganizationOperationsRESTClient) List(ctx context.Context, req *computepb.ListGlobalOrganizationOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*computepb.ListGlobalOrganizationOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.Operation, string, error) {
 		resp := &computepb.OperationList{}

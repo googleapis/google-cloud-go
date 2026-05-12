@@ -447,7 +447,7 @@ func (c *tripGRPCClient) SearchTrips(ctx context.Context, req *fleetenginepb.Sea
 	}
 	opts = append((*c.CallOptions).SearchTrips[0:len((*c.CallOptions).SearchTrips):len((*c.CallOptions).SearchTrips)], opts...)
 	it := &TripIterator{}
-	req = proto.Clone(req).(*fleetenginepb.SearchTripsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*fleetenginepb.Trip, string, error) {
 		resp := &fleetenginepb.SearchTripsResponse{}
 		if pageToken != "" {

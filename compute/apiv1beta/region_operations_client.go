@@ -369,7 +369,7 @@ func (c *regionOperationsRESTClient) Get(ctx context.Context, req *computepb.Get
 // the specified region.
 func (c *regionOperationsRESTClient) List(ctx context.Context, req *computepb.ListRegionOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*computepb.ListRegionOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.Operation, string, error) {
 		resp := &computepb.OperationList{}

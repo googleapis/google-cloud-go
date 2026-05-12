@@ -1240,6 +1240,58 @@ func TestInstanceAdmin_CreateInstance_WithAutoscaling(t *testing.T) {
 	}
 }
 
+func TestInstanceAdmin_CreateInstance_WithEdition(t *testing.T) {
+	mock := &mockAdminClock{}
+	c := setupClient(t, mock)
+
+	err := c.CreateInstance(context.Background(), &InstanceConf{
+		InstanceId:   "myinst",
+		DisplayName:  "myinst",
+		InstanceType: PRODUCTION,
+		ClusterId:    "mycluster",
+		Zone:         "us-central1-a",
+		StorageType:  SSD,
+		Edition:      EnterprisePlus,
+	})
+	if err != nil {
+		t.Fatalf("CreateInstance failed: %v", err)
+	}
+
+	got := mock.createInstanceReq.Instance.Edition
+	want := btapb.Instance_ENTERPRISE_PLUS
+	if got != want {
+		t.Errorf("got edition %v, want %v", got, want)
+	}
+}
+
+func TestInstanceAdmin_CreateInstanceWithClusters_WithEdition(t *testing.T) {
+	mock := &mockAdminClock{}
+	c := setupClient(t, mock)
+
+	err := c.CreateInstanceWithClusters(context.Background(), &InstanceWithClustersConfig{
+		InstanceID:   "myinst",
+		DisplayName:  "myinst",
+		InstanceType: PRODUCTION,
+		Edition:      EnterprisePlus,
+		Clusters: []ClusterConfig{
+			{
+				ClusterID:   "mycluster",
+				Zone:        "us-central1-a",
+				StorageType: SSD,
+			},
+		},
+	})
+	if err != nil {
+		t.Fatalf("CreateInstanceWithClusters failed: %v", err)
+	}
+
+	got := mock.createInstanceReq.Instance.Edition
+	want := btapb.Instance_ENTERPRISE_PLUS
+	if got != want {
+		t.Errorf("got edition %v, want %v", got, want)
+	}
+}
+
 // Test that CreateInstance with a tags argument completes without error.
 // We cannot verify tag creation itself, as tags are not stored in the Instance metadata
 // and thus are not observable here.
