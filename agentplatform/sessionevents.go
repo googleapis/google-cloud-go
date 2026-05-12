@@ -164,7 +164,7 @@ func (m SessionEvents) Append(ctx context.Context, name string, author string, i
 
 	} else {
 
-		return nil, fmt.Errorf("method Append is only supported in the Gemini Enterprise Agent Platform (previously known as Vertex AI) client. You can choose to use Gemini Enterprise Agent Platform by setting ClientConfig.Backend to BackendEnterprise.")
+		return nil, fmt.Errorf("method Append is only supported in Gemini Enterprise Agent Platform mode, not in Gemini Developer API mode. You can choose to use Gemini Enterprise Agent Platform by setting ClientConfig.Backend to BackendEnterprise.")
 
 	}
 
@@ -240,7 +240,7 @@ func (m SessionEvents) list(ctx context.Context, name string, config *types.List
 
 	} else {
 
-		return nil, fmt.Errorf("method List is only supported in the Gemini Enterprise Agent Platform (previously known as Vertex AI) client. You can choose to use Gemini Enterprise Agent Platform by setting ClientConfig.Backend to BackendEnterprise.")
+		return nil, fmt.Errorf("method List is only supported in Gemini Enterprise Agent Platform mode, not in Gemini Developer API mode. You can choose to use Gemini Enterprise Agent Platform by setting ClientConfig.Backend to BackendEnterprise.")
 
 	}
 

@@ -104,7 +104,7 @@ func (m MemoryRevisions) Get(ctx context.Context, name string, config *types.Get
 
 	} else {
 
-		return nil, fmt.Errorf("method Get is only supported in the Gemini Enterprise Agent Platform (previously known as Vertex AI) client. You can choose to use Gemini Enterprise Agent Platform by setting ClientConfig.Backend to BackendEnterprise.")
+		return nil, fmt.Errorf("method Get is only supported in Gemini Enterprise Agent Platform mode, not in Gemini Developer API mode. You can choose to use Gemini Enterprise Agent Platform by setting ClientConfig.Backend to BackendEnterprise.")
 
 	}
 
@@ -180,7 +180,7 @@ func (m MemoryRevisions) list(ctx context.Context, name string, config *types.Li
 
 	} else {
 
-		return nil, fmt.Errorf("method List is only supported in the Gemini Enterprise Agent Platform (previously known as Vertex AI) client. You can choose to use Gemini Enterprise Agent Platform by setting ClientConfig.Backend to BackendEnterprise.")
+		return nil, fmt.Errorf("method List is only supported in Gemini Enterprise Agent Platform mode, not in Gemini Developer API mode. You can choose to use Gemini Enterprise Agent Platform by setting ClientConfig.Backend to BackendEnterprise.")
 
 	}
 

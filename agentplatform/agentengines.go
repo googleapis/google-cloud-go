@@ -696,7 +696,7 @@ func (m AgentEngines) create(ctx context.Context, config *types.CreateAgentEngin
 		fromConverter = agentEngineOperationFromVertex
 	} else {
 
-		return nil, fmt.Errorf("method Create is only supported in the Gemini Enterprise Agent Platform (previously known as Vertex AI) client. You can choose to use Gemini Enterprise Agent Platform by setting ClientConfig.Backend to BackendEnterprise.")
+		return nil, fmt.Errorf("method Create is only supported in Gemini Enterprise Agent Platform mode, not in Gemini Developer API mode. You can choose to use Gemini Enterprise Agent Platform by setting ClientConfig.Backend to BackendEnterprise.")
 
 	}
 
@@ -778,7 +778,7 @@ func (m AgentEngines) delete(ctx context.Context, name string, force *bool, conf
 
 	} else {
 
-		return nil, fmt.Errorf("method Delete is only supported in the Gemini Enterprise Agent Platform (previously known as Vertex AI) client. You can choose to use Gemini Enterprise Agent Platform by setting ClientConfig.Backend to BackendEnterprise.")
+		return nil, fmt.Errorf("method Delete is only supported in Gemini Enterprise Agent Platform mode, not in Gemini Developer API mode. You can choose to use Gemini Enterprise Agent Platform by setting ClientConfig.Backend to BackendEnterprise.")
 
 	}
 
@@ -855,7 +855,7 @@ func (m AgentEngines) get(ctx context.Context, name string, config *types.GetAge
 		fromConverter = reasoningEngineFromVertex
 	} else {
 
-		return nil, fmt.Errorf("method Get is only supported in the Gemini Enterprise Agent Platform (previously known as Vertex AI) client. You can choose to use Gemini Enterprise Agent Platform by setting ClientConfig.Backend to BackendEnterprise.")
+		return nil, fmt.Errorf("method Get is only supported in Gemini Enterprise Agent Platform mode, not in Gemini Developer API mode. You can choose to use Gemini Enterprise Agent Platform by setting ClientConfig.Backend to BackendEnterprise.")
 
 	}
 
@@ -938,7 +938,7 @@ func (m AgentEngines) list(ctx context.Context, config *types.ListAgentEngineCon
 		fromConverter = listReasoningEnginesResponseFromVertex
 	} else {
 
-		return nil, fmt.Errorf("method List is only supported in the Gemini Enterprise Agent Platform (previously known as Vertex AI) client. You can choose to use Gemini Enterprise Agent Platform by setting ClientConfig.Backend to BackendEnterprise.")
+		return nil, fmt.Errorf("method List is only supported in Gemini Enterprise Agent Platform mode, not in Gemini Developer API mode. You can choose to use Gemini Enterprise Agent Platform by setting ClientConfig.Backend to BackendEnterprise.")
 
 	}
 
@@ -1021,7 +1021,7 @@ func (m AgentEngines) getAgentOperation(ctx context.Context, operationName strin
 		fromConverter = agentEngineOperationFromVertex
 	} else {
 
-		return nil, fmt.Errorf("method GetAgentOperation is only supported in the Gemini Enterprise Agent Platform (previously known as Vertex AI) client. You can choose to use Gemini Enterprise Agent Platform by setting ClientConfig.Backend to BackendEnterprise.")
+		return nil, fmt.Errorf("method GetAgentOperation is only supported in Gemini Enterprise Agent Platform mode, not in Gemini Developer API mode. You can choose to use Gemini Enterprise Agent Platform by setting ClientConfig.Backend to BackendEnterprise.")
 
 	}
 
@@ -1103,7 +1103,7 @@ func (m AgentEngines) query(ctx context.Context, name string, config *types.Quer
 
 	} else {
 
-		return nil, fmt.Errorf("method Query is only supported in the Gemini Enterprise Agent Platform (previously known as Vertex AI) client. You can choose to use Gemini Enterprise Agent Platform by setting ClientConfig.Backend to BackendEnterprise.")
+		return nil, fmt.Errorf("method Query is only supported in Gemini Enterprise Agent Platform mode, not in Gemini Developer API mode. You can choose to use Gemini Enterprise Agent Platform by setting ClientConfig.Backend to BackendEnterprise.")
 
 	}
 
@@ -1180,7 +1180,7 @@ func (m AgentEngines) update(ctx context.Context, name string, config *types.Upd
 		fromConverter = agentEngineOperationFromVertex
 	} else {
 
-		return nil, fmt.Errorf("method Update is only supported in the Gemini Enterprise Agent Platform (previously known as Vertex AI) client. You can choose to use Gemini Enterprise Agent Platform by setting ClientConfig.Backend to BackendEnterprise.")
+		return nil, fmt.Errorf("method Update is only supported in Gemini Enterprise Agent Platform mode, not in Gemini Developer API mode. You can choose to use Gemini Enterprise Agent Platform by setting ClientConfig.Backend to BackendEnterprise.")
 
 	}
 
