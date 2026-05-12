@@ -589,6 +589,7 @@ func TestListObjects_UserProject(t *testing.T) {
 	if got := md.Get("x-goog-user-project"); len(got) == 0 || got[0] != "project-id" {
 		t.Errorf("Expected x-goog-user-project to be project-id, got %v", got)
 	}
+}
 
 func TestNewGRPCStorageClient_NoGlobalTimeout(t *testing.T) {
 	ctx := context.Background()
