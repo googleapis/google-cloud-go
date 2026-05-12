@@ -21,14 +21,18 @@ import (
 	"fmt"
 	"hash/crc32"
 	"math/rand"
+	"reflect"
 	"strings"
 	"testing"
 	"time"
 
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	"github.com/google/go-cmp/cmp"
+	gax "github.com/googleapis/gax-go/v2"
+	"google.golang.org/api/option"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/mem"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
@@ -565,4 +569,61 @@ func TestPrepareDirectPathMetadata_FeatureTracking(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestNewGRPCStorageClient_NoGlobalTimeout(t *testing.T) {
+	ctx := context.Background()
+	client, err := newGRPCStorageClient(ctx,
+		withClientOptions(
+			option.WithoutAuthentication(),
+			option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+		),
+	)
+	if err != nil {
+		t.Fatalf("newGRPCStorageClient: %v", err)
+	}
+	defer client.Close()
+
+	// Verify that default/global settings do NOT contain any timeout override,
+	// preventing indefinite hangs on metadata operations.
+	for _, opt := range client.settings.gax {
+		if strings.Contains(fmt.Sprintf("%T", opt), "timeoutOpt") {
+			t.Errorf("expected default/global settings to not contain a timeout option, but found: %T (%v)", opt, opt)
+		}
+	}
+
+	// Helper to verify that a list of CallOptions has a timeout of 0s
+	verifyTimeoutIsZero := func(method string, opts []gax.CallOption) {
+		var cs gax.CallSettings
+		// Apply a dummy non-zero timeout first
+		gax.WithTimeout(1 * time.Hour).Resolve(&cs)
+
+		// Apply all options of interest
+		for _, opt := range opts {
+			opt.Resolve(&cs)
+		}
+
+		val := reflect.ValueOf(cs)
+		field := val.FieldByName("timeout")
+		if !field.IsValid() {
+			t.Errorf("method %q: gax.CallSettings structure changed, field 'timeout' not found", method)
+			return
+		}
+
+		timeout := time.Duration(field.Int())
+		if timeout == 1*time.Hour {
+			t.Errorf("method %q: expected explicit WithTimeout(0) to keep streams unbounded, but none was found", method)
+		} else if timeout != 0 {
+			t.Errorf("method %q: expected timeout of 0s, got %v", method, timeout)
+		}
+	}
+
+	// Verify that all generated streaming CallOptions explicitly contain WithTimeout(0)
+	// to keep payload streams (Reads/Writes) completely timeout-free.
+	opts := client.raw.CallOptions
+	verifyTimeoutIsZero("ReadObject", opts.ReadObject)
+	verifyTimeoutIsZero("WriteObject", opts.WriteObject)
+	verifyTimeoutIsZero("BidiReadObject", opts.BidiReadObject)
+	verifyTimeoutIsZero("BidiWriteObject", opts.BidiWriteObject)
+	verifyTimeoutIsZero("CancelResumableWrite", opts.CancelResumableWrite)
 }
