@@ -2499,8 +2499,7 @@ type SandboxEnvironment struct {
 	// this SandboxEnvironment. Format: `projects/{project}/locations/{location}/reasoningEngines/{reasoning_engine}/sandboxEnvironmentSnapshots/{sandbox_environment_snapshot}`
 	SandboxEnvironmentSnapshot string `json:"sandboxEnvironmentSnapshot,omitempty"`
 	// Optional. The name of the SandboxEnvironmentTemplate specified in the parent Agent
-	// Engine resource that this SandboxEnvironment is created from. Only one of `sandbox_environment_template`
-	// and `spec` should be set.
+	// Engine resource that this SandboxEnvironment is created from.
 	SandboxEnvironmentTemplate string `json:"sandboxEnvironmentTemplate,omitempty"`
 }
 
