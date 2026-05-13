@@ -55,9 +55,9 @@ func TestTransactionTracingContextPropagation(t *testing.T) {
 		},
 	}, &pb.LookupResponse{Found: []*pb.EntityResult{{Entity: mockEntity}}})
 	srv.addRPC(&pb.CommitRequest{
-		ProjectId: mockProjectID,
+		ProjectId:           mockProjectID,
 		TransactionSelector: &pb.CommitRequest_Transaction{Transaction: mockTxnID},
-		Mode: pb.CommitRequest_TRANSACTIONAL,
+		Mode:                pb.CommitRequest_TRANSACTIONAL,
 	}, &pb.CommitResponse{})
 
 	tx, err := client.NewTransaction(ctx)
