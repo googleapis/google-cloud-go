@@ -179,9 +179,16 @@ func (c *Client) NewTransaction(ctx context.Context, opts ...TransactionOption) 
 	return c.newTransaction(ctx, newTransactionSettings(opts))
 }
 
+// parseTransactionOptions returns the protobuf TransactionOptions and the span name
+// to be used for tracing the transaction.
 func (t *Transaction) parseTransactionOptions() (*pb.TransactionOptions, string) {
+	const (
+		defaultSpanName   = "cloud.google.com/go/datastore.Transaction.BeginTransaction"
+		readOnlySpanName  = "cloud.google.com/go/datastore.Transaction.ReadOnlyTransaction"
+		readWriteSpanName = "cloud.google.com/go/datastore.Transaction.ReadWriteTransaction"
+	)
 	if t.settings == nil {
-		return nil, ""
+		return nil, defaultSpanName
 	}
 
 	if t.settings.readOnly {
@@ -192,7 +199,7 @@ func (t *Transaction) parseTransactionOptions() (*pb.TransactionOptions, string)
 
 		return &pb.TransactionOptions{
 			Mode: &pb.TransactionOptions_ReadOnly_{ReadOnly: ro},
-		}, "cloud.google.com/go/datastore.Transaction.ReadOnlyTransaction"
+		}, readOnlySpanName
 	}
 
 	if t.settings.prevID != nil {
@@ -200,9 +207,9 @@ func (t *Transaction) parseTransactionOptions() (*pb.TransactionOptions, string)
 			Mode: &pb.TransactionOptions_ReadWrite_{ReadWrite: &pb.TransactionOptions_ReadWrite{
 				PreviousTransaction: t.settings.prevID,
 			}},
-		}, "cloud.google.com/go/datastore.Transaction.ReadWriteTransaction"
+		}, readWriteSpanName
 	}
-	return nil, ""
+	return nil, defaultSpanName
 }
 
 // beginTransaction makes BeginTransaction rpc
@@ -214,13 +221,14 @@ func (t *Transaction) beginTransaction() (txnID []byte, err error) {
 	}
 
 	txOptionsPb, spanName := t.parseTransactionOptions()
+	ctx := trace.StartSpan(t.ctx, spanName)
+	defer func() { trace.EndSpan(ctx, err) }()
+
 	if txOptionsPb != nil {
-		t.ctx = trace.StartSpan(t.ctx, spanName)
-		defer func() { trace.EndSpan(t.ctx, err) }()
 		req.TransactionOptions = txOptionsPb
 	}
 
-	resp, err := t.client.client.BeginTransaction(t.ctx, req)
+	resp, err := t.client.client.BeginTransaction(ctx, req)
 	if err != nil {
 		return nil, err
 	}
@@ -412,8 +420,8 @@ func grpcStatusCode(err error) (codes.Code, error) {
 
 // Commit applies the enqueued operations atomically.
 func (t *Transaction) Commit() (c *Commit, err error) {
-	t.ctx = trace.StartSpan(t.ctx, "cloud.google.com/go/datastore.Transaction.Commit")
-	defer func() { trace.EndSpan(t.ctx, err) }()
+	ctx := trace.StartSpan(t.ctx, "cloud.google.com/go/datastore.Transaction.Commit")
+	defer func() { trace.EndSpan(ctx, err) }()
 
 	t.stateLock.Lock()
 	if t.state == transactionStateExpired {
@@ -434,7 +442,7 @@ func (t *Transaction) Commit() (c *Commit, err error) {
 		Mutations:           t.mutations,
 		Mode:                pb.CommitRequest_TRANSACTIONAL,
 	}
-	resp, err := t.client.client.Commit(t.ctx, req)
+	resp, err := t.client.client.Commit(ctx, req)
 	if status.Code(err) == codes.Aborted {
 		return nil, ErrConcurrentTransaction
 	}
@@ -484,8 +492,8 @@ func (t *Transaction) rollbackWithRetry() error {
 
 // Rollback abandons a pending transaction.
 func (t *Transaction) Rollback() (err error) {
-	t.ctx = trace.StartSpan(t.ctx, "cloud.google.com/go/datastore.Transaction.Rollback")
-	defer func() { trace.EndSpan(t.ctx, err) }()
+	ctx := trace.StartSpan(t.ctx, "cloud.google.com/go/datastore.Transaction.Rollback")
+	defer func() { trace.EndSpan(ctx, err) }()
 
 	if t.state == transactionStateExpired {
 		return errExpiredTransaction
@@ -501,7 +509,7 @@ func (t *Transaction) Rollback() (err error) {
 		return err
 	}
 
-	_, err = t.client.client.Rollback(t.ctx, &pb.RollbackRequest{
+	_, err = t.client.client.Rollback(ctx, &pb.RollbackRequest{
 		ProjectId:   t.client.dataset,
 		DatabaseId:  t.client.databaseID,
 		Transaction: t.id,
@@ -542,15 +550,15 @@ func (t *Transaction) parseReadOptions() (*pb.ReadOptions, error) {
 }
 
 func (t *Transaction) get(spanName string, keys []*Key, dst interface{}) (err error) {
-	t.ctx = trace.StartSpan(t.ctx, spanName)
-	defer func() { trace.EndSpan(t.ctx, err) }()
+	ctx := trace.StartSpan(t.ctx, spanName)
+	defer func() { trace.EndSpan(ctx, err) }()
 
 	opts, err := t.parseReadOptions()
 	if err != nil {
 		return err
 	}
 
-	txnID, err := t.client.get(t.ctx, keys, dst, opts)
+	txnID, err := t.client.get(ctx, keys, dst, opts)
 
 	if txnID != nil {
 		t.stateLock.Lock()
