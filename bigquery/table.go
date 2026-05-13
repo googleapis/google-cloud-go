@@ -1144,6 +1144,13 @@ func (tm *TableMetadataToUpdate) toBQ() (*bq.Table, error) {
 
 	if tm.Clustering != nil {
 		t.Clustering = tm.Clustering.toBQ()
+		if t.Clustering != nil && len(t.Clustering.Fields) == 0 {
+			// Special logic for clearing fields.  The service rejects the empty list of fields,
+			// so we alter the payload to clear the message and leverage NullFields to send the
+			// default value.
+			t.Clustering = nil
+			t.NullFields = append(t.NullFields, "Clustering")
+		}
 	}
 
 	if !validExpiration(tm.ExpirationTime) {
