@@ -77,6 +77,10 @@ func (it *mockRowIterator) Do(f func(r *Row) error) error {
 	}
 }
 
+func (it *mockRowIterator) DoWithReuse(f func(r *Row) error) error {
+	return it.Do(f)
+}
+
 func (it *mockRowIterator) Stop() {
 	if it.stopCalled {
 		panic("Stop has already been called")

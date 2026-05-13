@@ -281,3 +281,53 @@ func benchmarkClientBurstReadAndWriteParallel(b *testing.B) {
 		}
 	}
 }
+
+func Benchmark_Client_ReadLargeResultSet(b *testing.B) {
+	server, client, teardown := createBenchmarkServer()
+	defer teardown()
+
+	server.TestSpanner.PutStatementResult(SelectSingerIDAlbumIDAlbumTitleFromAlbums, server.CreateSingersResults(100000, true))
+
+	b.ResetTimer()
+	for n := 0; n < b.N; n++ {
+		iter := client.Single().Query(context.Background(), NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
+		var singerID, albumID int64
+		var albumTitle string
+		for {
+			row, err := iter.Next()
+			if err == iterator.Done {
+				break
+			}
+			if err != nil {
+				b.Fatal(err)
+			}
+			_ = row.Column(0, &singerID)
+			_ = row.Column(1, &albumID)
+			_ = row.Column(2, &albumTitle)
+		}
+		iter.Stop()
+	}
+}
+
+func Benchmark_Client_ReadLargeResultSet_Reuse(b *testing.B) {
+	server, client, teardown := createBenchmarkServer()
+	defer teardown()
+
+	server.TestSpanner.PutStatementResult(SelectSingerIDAlbumIDAlbumTitleFromAlbums, server.CreateSingersResults(100000, true))
+
+	b.ResetTimer()
+	for n := 0; n < b.N; n++ {
+		iter := client.Single().Query(context.Background(), NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
+		var singerID, albumID int64
+		var albumTitle string
+		err := iter.DoWithReuse(func(row *Row) error {
+			_ = row.Column(0, &singerID)
+			_ = row.Column(1, &albumID)
+			_ = row.Column(2, &albumTitle)
+			return nil
+		})
+		if err != nil {
+			b.Fatal(err)
+		}
+	}
+}

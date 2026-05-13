@@ -127,6 +127,7 @@ func streamWithTransactionCallbacks(
 type rowIterator interface {
 	Next() (*Row, error)
 	Do(f func(r *Row) error) error
+	DoWithReuse(f func(r *Row) error) error
 	Stop()
 }
 
@@ -289,6 +290,38 @@ func (r *RowIterator) Do(f func(r *Row) error) error {
 		case nil:
 			if err = f(row); err != nil {
 				return err
+			}
+		default:
+			return err
+		}
+	}
+}
+
+// DoWithReuse calls the provided function once in sequence for each row in the
+// iteration. The Row pointer passed to the function is reused across calls,
+// meaning its contents are only valid during the execution of the provided
+// function.
+//
+// If the function returns a non-nil error, DoWithReuse immediately returns
+// that error.
+//
+// If there are no rows in the iterator, DoWithReuse will return nil without
+// calling the provided function.
+//
+// DoWithReuse always calls Stop on the iterator.
+func (r *RowIterator) DoWithReuse(f func(r *Row) error) error {
+	defer r.Stop()
+	for {
+		row, err := r.Next()
+		switch err {
+		case iterator.Done:
+			return nil
+		case nil:
+			if err = f(row); err != nil {
+				return err
+			}
+			if r.rowd != nil {
+				r.rowd.rowPool = append(r.rowd.rowPool, row)
 			}
 		default:
 			return err
@@ -775,7 +808,8 @@ type partialResultSetDecoder struct {
 	tx      *sppb.Transaction
 	chunked bool // if true, next value should be merged with last values
 	// entry.
-	ts time.Time // read timestamp
+	ts      time.Time // read timestamp
+	rowPool []*Row
 }
 
 // yield checks we have a complete row, and if so returns it.  A row is not
@@ -794,13 +828,25 @@ func (p *partialResultSetDecoder) yield(chunked, last bool) *Row {
 		// Use a fresh Row to simplify clients that want to use yielded results
 		// after the next row is retrieved. Note that fields is never changed
 		// so it doesn't need to be copied.
-		fresh := Row{
-			fields: p.row.fields,
-			vals:   make([]*proto3.Value, len(p.row.vals)),
+		var fresh *Row
+		if len(p.rowPool) > 0 {
+			fresh = p.rowPool[len(p.rowPool)-1]
+			p.rowPool = p.rowPool[:len(p.rowPool)-1]
+			fresh.fields = p.row.fields
+			if cap(fresh.vals) >= len(p.row.vals) {
+				fresh.vals = fresh.vals[:len(p.row.vals)]
+			} else {
+				fresh.vals = make([]*proto3.Value, len(p.row.vals))
+			}
+		} else {
+			fresh = &Row{
+				fields: p.row.fields,
+				vals:   make([]*proto3.Value, len(p.row.vals)),
+			}
 		}
 		copy(fresh.vals, p.row.vals)
 		p.row.vals = p.row.vals[:0] // empty and reuse slice
-		return &fresh
+		return fresh
 	}
 	return nil
 }

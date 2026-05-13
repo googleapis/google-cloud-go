@@ -472,3 +472,7 @@ func (i *mockIteratorImpl) Do(f func(*Row) error) error {
 	}
 	return nil
 }
+
+func (i *mockIteratorImpl) DoWithReuse(f func(*Row) error) error {
+	return i.Do(f)
+}
