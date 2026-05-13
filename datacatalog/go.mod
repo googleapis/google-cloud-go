@@ -5,6 +5,7 @@ go 1.25.0
 require (
 	cloud.google.com/go/iam v1.7.0
 	cloud.google.com/go/longrunning v0.9.0
+	github.com/google/uuid v1.6.0
 	github.com/googleapis/gax-go/v2 v2.21.0
 	google.golang.org/api v0.274.0
 	google.golang.org/genproto v0.0.0-20260319201613-d00831a3d3e7

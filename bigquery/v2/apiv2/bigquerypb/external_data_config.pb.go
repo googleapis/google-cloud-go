@@ -1150,7 +1150,7 @@ type ExternalDataConfiguration struct {
 	// of TIMESTAMP types that are allowed to the destination table for
 	// autodetection mode.
 	//
-	// Available for the formats: CSV, PARQUET, and AVRO.
+	// Available for the formats: CSV, PARQUET, AVRO, and Iceberg External Table.
 	//
 	// Possible values include:
 	// Not Specified, [], or [6]: timestamp(6) for all auto detected TIMESTAMP

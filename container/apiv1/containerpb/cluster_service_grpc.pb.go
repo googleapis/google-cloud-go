@@ -181,7 +181,7 @@ type ClusterManagerClient interface {
 	CheckAutopilotCompatibility(ctx context.Context, in *CheckAutopilotCompatibilityRequest, opts ...grpc.CallOption) (*CheckAutopilotCompatibilityResponse, error)
 	// Fetch upgrade information of a specific cluster.
 	FetchClusterUpgradeInfo(ctx context.Context, in *FetchClusterUpgradeInfoRequest, opts ...grpc.CallOption) (*ClusterUpgradeInfo, error)
-	// Fetch upgrade information of a specific nodepool.
+	// Fetch upgrade information of a specific node pool.
 	FetchNodePoolUpgradeInfo(ctx context.Context, in *FetchNodePoolUpgradeInfoRequest, opts ...grpc.CallOption) (*NodePoolUpgradeInfo, error)
 }
 
@@ -626,7 +626,7 @@ type ClusterManagerServer interface {
 	CheckAutopilotCompatibility(context.Context, *CheckAutopilotCompatibilityRequest) (*CheckAutopilotCompatibilityResponse, error)
 	// Fetch upgrade information of a specific cluster.
 	FetchClusterUpgradeInfo(context.Context, *FetchClusterUpgradeInfoRequest) (*ClusterUpgradeInfo, error)
-	// Fetch upgrade information of a specific nodepool.
+	// Fetch upgrade information of a specific node pool.
 	FetchNodePoolUpgradeInfo(context.Context, *FetchNodePoolUpgradeInfoRequest) (*NodePoolUpgradeInfo, error)
 }
 

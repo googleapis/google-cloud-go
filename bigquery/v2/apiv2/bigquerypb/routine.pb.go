@@ -891,8 +891,11 @@ type ExternalRuntimeOptions struct {
 	MaxBatchingRows int64 `protobuf:"varint,4,opt,name=max_batching_rows,json=maxBatchingRows,proto3" json:"max_batching_rows,omitempty"`
 	// Optional. Language runtime version. Example: `python-3.11`.
 	RuntimeVersion string `protobuf:"bytes,5,opt,name=runtime_version,json=runtimeVersion,proto3" json:"runtime_version,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	// Optional. Maximum number of requests that a Cloud Run instance can handle
+	// concurrently. If absent or if `0`, a default concurrency is used.
+	ContainerRequestConcurrency int64 `protobuf:"varint,6,opt,name=container_request_concurrency,json=containerRequestConcurrency,proto3" json:"container_request_concurrency,omitempty"`
+	unknownFields               protoimpl.UnknownFields
+	sizeCache                   protoimpl.SizeCache
 }
 
 func (x *ExternalRuntimeOptions) Reset() {
@@ -958,6 +961,13 @@ func (x *ExternalRuntimeOptions) GetRuntimeVersion() string {
 		return x.RuntimeVersion
 	}
 	return ""
+}
+
+func (x *ExternalRuntimeOptions) GetContainerRequestConcurrency() int64 {
+	if x != nil {
+		return x.ContainerRequestConcurrency
+	}
+	return 0
 }
 
 // Options for a user-defined Spark routine.
@@ -1856,13 +1866,14 @@ const file_google_cloud_bigquery_v2_routine_proto_rawDesc = "" +
 	"\rPythonOptions\x12$\n" +
 	"\ventry_point\x18\x01 \x01(\tB\x03\xe0A\x02R\n" +
 	"entryPoint\x12\x1f\n" +
-	"\bpackages\x18\x02 \x03(\tB\x03\xe0A\x01R\bpackages\"\x85\x02\n" +
+	"\bpackages\x18\x02 \x03(\tB\x03\xe0A\x01R\bpackages\"\xce\x02\n" +
 	"\x16ExternalRuntimeOptions\x12.\n" +
 	"\x10container_memory\x18\x01 \x01(\tB\x03\xe0A\x01R\x0fcontainerMemory\x12(\n" +
 	"\rcontainer_cpu\x18\x02 \x01(\x01B\x03\xe0A\x01R\fcontainerCpu\x122\n" +
 	"\x12runtime_connection\x18\x03 \x01(\tB\x03\xe0A\x01R\x11runtimeConnection\x12/\n" +
 	"\x11max_batching_rows\x18\x04 \x01(\x03B\x03\xe0A\x01R\x0fmaxBatchingRows\x12,\n" +
-	"\x0fruntime_version\x18\x05 \x01(\tB\x03\xe0A\x01R\x0eruntimeVersion\"\xd7\x03\n" +
+	"\x0fruntime_version\x18\x05 \x01(\tB\x03\xe0A\x01R\x0eruntimeVersion\x12G\n" +
+	"\x1dcontainer_request_concurrency\x18\x06 \x01(\x03B\x03\xe0A\x01R\x1bcontainerRequestConcurrency\"\xd7\x03\n" +
 	"\fSparkOptions\x12\x1e\n" +
 	"\n" +
 	"connection\x18\x01 \x01(\tR\n" +

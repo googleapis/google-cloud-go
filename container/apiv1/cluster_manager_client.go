@@ -758,7 +758,7 @@ func (c *ClusterManagerClient) FetchClusterUpgradeInfo(ctx context.Context, req 
 	return c.internalClient.FetchClusterUpgradeInfo(ctx, req, opts...)
 }
 
-// FetchNodePoolUpgradeInfo fetch upgrade information of a specific nodepool.
+// FetchNodePoolUpgradeInfo fetch upgrade information of a specific node pool.
 func (c *ClusterManagerClient) FetchNodePoolUpgradeInfo(ctx context.Context, req *containerpb.FetchNodePoolUpgradeInfoRequest, opts ...gax.CallOption) (*containerpb.NodePoolUpgradeInfo, error) {
 	return c.internalClient.FetchNodePoolUpgradeInfo(ctx, req, opts...)
 }
@@ -3946,7 +3946,7 @@ func (c *clusterManagerRESTClient) FetchClusterUpgradeInfo(ctx context.Context, 
 	return resp, nil
 }
 
-// FetchNodePoolUpgradeInfo fetch upgrade information of a specific nodepool.
+// FetchNodePoolUpgradeInfo fetch upgrade information of a specific node pool.
 func (c *clusterManagerRESTClient) FetchNodePoolUpgradeInfo(ctx context.Context, req *containerpb.FetchNodePoolUpgradeInfoRequest, opts ...gax.CallOption) (*containerpb.NodePoolUpgradeInfo, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
