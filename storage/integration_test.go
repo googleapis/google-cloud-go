@@ -413,8 +413,8 @@ func TestIntegration_MultiRangeDownloader(t *testing.T) {
 		reader.Add(&res[0].buf, 0, int64(len(content)), callback)
 		// Read from end. We will read the last 10 bytes.
 		reader.Add(&res[1].buf, -10, 0, callback1)
-		// Read from Front. This will read the starting 10 bytes.
-		reader.Add(&res[2].buf, 0, 10, callback2)
+		// Read from Front. This will read the whole object.
+		reader.Add(&res[2].buf, 0, 0, callback2)
 		reader.Wait()
 		for _, k := range res {
 			if k.offset < 0 {
@@ -931,6 +931,67 @@ func TestIntegration_ReadSameFileConcurrentlyUsingMultiRangeDownloader(t *testin
 	})
 }
 
+func TestIntegration_MRDNoNewStreamsAfterPermanentError(t *testing.T) {
+	multiTransportTest(skipAllButZonal(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		content := make([]byte, 5<<20)
+		rand.New(rand.NewSource(0)).Read(content)
+		objName := "mrdnonretry"
+		// Upload test data.
+		obj := client.Bucket(bucket).Object(objName)
+		if err := writeObject(ctx, obj, "text/plain", content); err != nil {
+			t.Fatal(err)
+		}
+		defer func() {
+			// Try delete again if test fails to delete the object and ignore the error.
+			_ = obj.Delete(ctx)
+		}()
+		reader, err := obj.NewMultiRangeDownloader(ctx)
+		if err != nil {
+			t.Fatalf("NewMultiRangeDownloader: %v", err)
+		}
+		manager := reader.impl.(*multiRangeDownloaderManager)
+		res := make([]multiRangeDownloaderOutput, 2)
+		callback := func(x, y int64, err error) {
+			res[0].offset = x
+			res[0].limit = y
+			res[0].err = err
+		}
+		callback1 := func(x, y int64, err error) {
+			res[1].offset = x
+			res[1].limit = y
+			res[1].err = err
+		}
+		// Read All At Once.
+		reader.Add(&res[0].buf, 0, 0, callback)
+		// Manually delete the object so MRD receives permanent error.
+		err = obj.Delete(ctx)
+		if err != nil {
+			t.Fatalf("Could not delete object during MRD download: %v", err)
+		}
+		// More permanent errors.
+		reader.Add(&res[1].buf, int64(2*len(content)), 0, callback1)
+		reader.Wait()
+		for i, k := range res {
+			// if we get nil error for any callback other than first, that should be an error.
+			if i == 0 && k.err == nil && !bytes.Equal(content, k.buf.Bytes()) {
+				t.Errorf("Error in read range offset %v, limit %v, got: %v; want: %v",
+					k.offset, k.limit, len(k.buf.Bytes()), len(content))
+			}
+			if k.err == nil && i != 0 {
+				t.Errorf("read range %v to %v want err: nil, got: %v", k.offset, k.limit, k.err)
+			}
+		}
+		// Simulate wait so we can check if new streams have been created
+		time.Sleep(5 * time.Second)
+		if manager.streamIDCounter > 1 {
+			t.Fatalf("Manager has tried to create more streams after a permanent error. manager.streamIDCounter: %v", manager.streamIDCounter)
+		}
+		if err = reader.Close(); err == nil {
+			t.Fatalf("Expected error while closing reader, got nil")
+		}
+	})
+}
+
 func TestIntegration_MRDWithNonRetriableError(t *testing.T) {
 	multiTransportTest(skipAllButZonal(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 		content := make([]byte, 5<<20)
@@ -985,6 +1046,7 @@ func TestIntegration_MRDWithNonRetriableError(t *testing.T) {
 				t.Errorf("read range %v to %v want err: nil, got: %v", k.offset, k.limit, k.err)
 			}
 		}
+		time.Sleep(10 * time.Second)
 		if err = reader.Close(); err == nil {
 			t.Fatalf("Expected error while closing reader, got nil")
 		}
