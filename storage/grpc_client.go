@@ -549,6 +549,9 @@ func (c *grpcStorageClient) LockBucketRetentionPolicy(ctx context.Context, bucke
 }
 func (c *grpcStorageClient) ListObjects(ctx context.Context, bucket string, q *Query, opts ...storageOption) *ObjectIterator {
 	s := callSettings(c.settings, opts...)
+	if s.userProject != "" {
+		ctx = setUserProjectMetadata(ctx, s.userProject)
+	}
 	it := &ObjectIterator{
 		ctx: ctx,
 	}
@@ -569,9 +572,6 @@ func (c *grpcStorageClient) ListObjects(ctx context.Context, bucket string, q *Q
 		IncludeFoldersAsPrefixes: it.query.IncludeFoldersAsPrefixes,
 		Filter:                   it.query.Filter,
 	}
-	if s.userProject != "" {
-		ctx = setUserProjectMetadata(ctx, s.userProject)
-	}
 	fetch := func(pageSize int, pageToken string) (token string, err error) {
 		// Add trace span around List API call within the fetch.
 		ctx, _ = startSpan(ctx, "grpcStorageClient.ObjectsListCall")
@@ -580,7 +580,6 @@ func (c *grpcStorageClient) ListObjects(ctx context.Context, bucket string, q *Q
 		var gitr *gapic.ObjectIterator
 		err = run(it.ctx, func(ctx context.Context) error {
 			gitr = c.raw.ListObjects(ctx, req, s.gax...)
-			it.ctx = ctx
 			objects, token, err = gitr.InternalFetch(pageSize, pageToken)
 			return err
 		}, s.retry, s.idempotent)
