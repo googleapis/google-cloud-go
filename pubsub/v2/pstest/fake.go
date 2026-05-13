@@ -1002,7 +1002,10 @@ func (s *GServer) ModifyAckDeadline(_ context.Context, req *pb.ModifyAckDeadline
 	}
 	now := time.Now()
 	for _, id := range req.AckIds {
-		s.msgsByID[id].modacks = append(s.msgsByID[id].modacks, Modack{AckID: id, AckDeadline: req.AckDeadlineSeconds, ReceivedAt: now})
+		msgID := parseAckID(id)
+		if m := s.msgsByID[msgID]; m != nil {
+			m.modacks = append(m.modacks, Modack{AckID: id, AckDeadline: req.AckDeadlineSeconds, ReceivedAt: now})
+		}
 	}
 	dur := secsToDur(req.AckDeadlineSeconds)
 	for _, id := range req.AckIds {
@@ -1163,6 +1166,7 @@ func (s *subscription) pull(max int) []*pb.ReceivedMessage {
 		if s.proto.DeadLetterPolicy != nil {
 			m.proto.DeliveryAttempt = int32(*m.deliveries)
 		}
+		m.proto.AckId = fmt.Sprintf("%s:%d", m.proto.Message.MessageId, *m.deliveries)
 		m.ackDeadline = now.Add(s.ackTimeout)
 		msgs = append(msgs, m.proto)
 		if len(msgs) >= max {
@@ -1263,6 +1267,13 @@ func (s *subscription) tryDeliverMessage(m *message, start int, now time.Time) (
 	if s.proto.DeadLetterPolicy != nil {
 		m.proto.DeliveryAttempt = int32(*m.deliveries) + 1
 	}
+	var oldAckID string
+	if m.proto != nil {
+		oldAckID = m.proto.AckId
+		if m.proto.Message != nil {
+			m.proto.AckId = fmt.Sprintf("%s:%d", m.proto.Message.MessageId, *m.deliveries+1)
+		}
+	}
 
 	for i := 0; i < len(s.streams); i++ {
 		idx := (i + start) % len(s.streams)
@@ -1284,6 +1295,9 @@ func (s *subscription) tryDeliverMessage(m *message, start int, now time.Time) (
 	// Restore the correct value of DeliveryAttempt if we were not able to deliver the message.
 	if s.proto.DeadLetterPolicy != nil {
 		m.proto.DeliveryAttempt = int32(*m.deliveries)
+	}
+	if m.proto != nil {
+		m.proto.AckId = oldAckID
 	}
 	return 0, false
 }
@@ -1495,22 +1509,31 @@ func (s *subscription) handleStreamingPullRequest(st *stream, req *pb.StreamingP
 }
 
 // Must be called with the lock held.
-func (s *subscription) ack(id string) {
-	m := s.msgs[id]
+func (s *subscription) ack(ackID string) {
+	msgID := parseAckID(ackID)
+	m := s.msgs[msgID]
 	if m != nil {
+		if m.proto.AckId != ackID {
+			return // ignore old ack
+		}
 		(*m.acks)++
-		delete(s.msgs, id)
+		delete(s.msgs, msgID)
 	}
 }
 
 // Must be called with the lock held.
-func (s *subscription) modifyAckDeadline(id string, d time.Duration) {
-	m := s.msgs[id]
+func (s *subscription) modifyAckDeadline(ackID string, d time.Duration) {
+	msgID := parseAckID(ackID)
+	m := s.msgs[msgID]
 	if m == nil { // already acked: ignore.
 		return
 	}
+	if m.proto.AckId != ackID {
+		return // ignore old modack
+	}
 	if d == 0 { // nack
 		m.makeAvailable()
+		m.proto.AckId = "" // Ensure subsequent modacks for this same AckId fail
 	} else { // extend the deadline by d
 		m.ackDeadline = s.timeNowFunc().Add(d)
 	}
@@ -1518,6 +1541,13 @@ func (s *subscription) modifyAckDeadline(id string, d time.Duration) {
 
 func secsToDur(secs int32) time.Duration {
 	return time.Duration(secs) * time.Second
+}
+
+func parseAckID(ackID string) string {
+	if i := strings.LastIndex(ackID, ":"); i >= 0 {
+		return ackID[:i]
+	}
+	return ackID
 }
 
 // runReactor looks up the reactors for a function, then launches them until handled=true
