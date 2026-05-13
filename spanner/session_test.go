@@ -98,7 +98,9 @@ func TestMultiplexSessionWorker(t *testing.T) {
 	server.TestSpanner.Unfreeze()
 
 	waitFor(t, func() error {
-		if server.TestSpanner.TotalSessionsCreated() != 2 {
+		sp.mu.Lock()
+		defer sp.mu.Unlock()
+		if server.TestSpanner.TotalSessionsCreated() != 2 || sp.multiplexedSession.id == oldMultiplexedSession {
 			return errInvalidSession
 		}
 		return nil
