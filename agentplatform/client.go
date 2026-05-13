@@ -22,7 +22,9 @@ package agentplatform
 import (
 	"context"
 	"fmt"
+	"net/http"
 
+	"cloud.google.com/go/agentplatform/internal"
 	"google.golang.org/genai"
 )
 
@@ -57,6 +59,12 @@ func NewClient(ctx context.Context, cc *genai.ClientConfig) (*Client, error) {
 	if config.Backend == genai.BackendUnspecified {
 		config.Backend = genai.BackendVertexAI
 	}
+	if config.HTTPOptions.Headers == nil {
+		config.HTTPOptions.Headers = http.Header{}
+	}
+	userAgent := fmt.Sprintf("vertex-genai-modules/%s", internal.Version)
+	config.HTTPOptions.Headers["user-agent"] = append(config.HTTPOptions.Headers["user-agent"], userAgent)
+
 	ac, err := genai.NewInternalAPIClient(ctx, &config)
 	if err != nil {
 		return nil, err

@@ -4,7 +4,7 @@ go 1.25.0
 
 require (
 	github.com/google/go-cmp v0.7.0
-	google.golang.org/genai v1.56.0
+	google.golang.org/genai v1.57.0
 )
 
 require (

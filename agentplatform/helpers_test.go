@@ -26,8 +26,9 @@ import (
 )
 
 const (
-	apiMode  = "api"  // API mode runs the tests in any environment where the tests can hit the actual service.
-	unitMode = "unit" // Unit mode runs the test in the github actions using the mocked service (this is the default).
+	apiMode    = "api"    // API mode runs the tests in any environment where the tests can hit the actual service.
+	replayMode = "replay" // Replay mode runs the tests in any environment using the recorded service.
+	unitMode   = "unit"   // Unit mode runs the test in the github actions using the mocked service (this is the default).
 )
 
 var mode = flag.String("mode", unitMode, "Test mode")
