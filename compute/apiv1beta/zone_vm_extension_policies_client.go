@@ -134,12 +134,12 @@ func (c *ZoneVmExtensionPoliciesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// Delete deletes a specified zone VM extension policy.
+// Delete deletes a specified zone VM extension policy within a project.
 func (c *ZoneVmExtensionPoliciesClient) Delete(ctx context.Context, req *computepb.DeleteZoneVmExtensionPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
-// Get retrieves details of a specific zone VM extension policy.
+// Get retrieves details of a specific zone VM extension policy within a project.
 func (c *ZoneVmExtensionPoliciesClient) Get(ctx context.Context, req *computepb.GetZoneVmExtensionPolicyRequest, opts ...gax.CallOption) (*computepb.VmExtensionPolicy, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
@@ -154,7 +154,7 @@ func (c *ZoneVmExtensionPoliciesClient) List(ctx context.Context, req *computepb
 	return c.internalClient.List(ctx, req, opts...)
 }
 
-// Update modifies an existing zone VM extension policy.
+// Update modifies an existing zone VM extension policy within a project.
 func (c *ZoneVmExtensionPoliciesClient) Update(ctx context.Context, req *computepb.UpdateZoneVmExtensionPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Update(ctx, req, opts...)
 }
@@ -281,7 +281,7 @@ func (c *zoneVmExtensionPoliciesRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// Delete deletes a specified zone VM extension policy.
+// Delete deletes a specified zone VM extension policy within a project.
 func (c *zoneVmExtensionPoliciesRESTClient) Delete(ctx context.Context, req *computepb.DeleteZoneVmExtensionPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -348,7 +348,7 @@ func (c *zoneVmExtensionPoliciesRESTClient) Delete(ctx context.Context, req *com
 	return op, nil
 }
 
-// Get retrieves details of a specific zone VM extension policy.
+// Get retrieves details of a specific zone VM extension policy within a project.
 func (c *zoneVmExtensionPoliciesRESTClient) Get(ctx context.Context, req *computepb.GetZoneVmExtensionPolicyRequest, opts ...gax.CallOption) (*computepb.VmExtensionPolicy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -560,7 +560,7 @@ func (c *zoneVmExtensionPoliciesRESTClient) List(ctx context.Context, req *compu
 	return it
 }
 
-// Update modifies an existing zone VM extension policy.
+// Update modifies an existing zone VM extension policy within a project.
 func (c *zoneVmExtensionPoliciesRESTClient) Update(ctx context.Context, req *computepb.UpdateZoneVmExtensionPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetVmExtensionPolicyResource()

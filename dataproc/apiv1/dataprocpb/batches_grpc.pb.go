@@ -52,8 +52,10 @@ type BatchControllerClient interface {
 	GetBatch(ctx context.Context, in *GetBatchRequest, opts ...grpc.CallOption) (*Batch, error)
 	// Lists batch workloads.
 	ListBatches(ctx context.Context, in *ListBatchesRequest, opts ...grpc.CallOption) (*ListBatchesResponse, error)
-	// Deletes the batch workload resource. If the batch is not in terminal state,
-	// the delete fails and the response returns `FAILED_PRECONDITION`.
+	// Deletes the batch workload resource. If the batch is not in a
+	// `CANCELLED`, `SUCCEEDED` or `FAILED`
+	// [`State`][google.cloud.dataproc.v1.Batch.State], the delete operation fails
+	// and the response returns `FAILED_PRECONDITION`.
 	DeleteBatch(ctx context.Context, in *DeleteBatchRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
@@ -111,8 +113,10 @@ type BatchControllerServer interface {
 	GetBatch(context.Context, *GetBatchRequest) (*Batch, error)
 	// Lists batch workloads.
 	ListBatches(context.Context, *ListBatchesRequest) (*ListBatchesResponse, error)
-	// Deletes the batch workload resource. If the batch is not in terminal state,
-	// the delete fails and the response returns `FAILED_PRECONDITION`.
+	// Deletes the batch workload resource. If the batch is not in a
+	// `CANCELLED`, `SUCCEEDED` or `FAILED`
+	// [`State`][google.cloud.dataproc.v1.Batch.State], the delete operation fails
+	// and the response returns `FAILED_PRECONDITION`.
 	DeleteBatch(context.Context, *DeleteBatchRequest) (*emptypb.Empty, error)
 }
 

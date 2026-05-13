@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -567,7 +567,7 @@ func (x *DeleteSessionRequest) GetRequestId() string {
 // A representation of a session.
 type Session struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. The resource name of the session.
+	// Identifier. The resource name of the session.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Output only. A session UUID (Unique Universal Identifier). The service
 	// generates this value when it creates the session.
@@ -786,7 +786,7 @@ type Session_JupyterSession struct {
 }
 
 type Session_SparkConnectSession struct {
-	// Optional. Spark Connect session config.
+	// Optional. Spark connect session config.
 	SparkConnectSession *SparkConnectConfig `protobuf:"bytes,17,opt,name=spark_connect_session,json=sparkConnectSession,proto3,oneof"`
 }
 
@@ -849,7 +849,7 @@ func (x *JupyterConfig) GetDisplayName() string {
 	return ""
 }
 
-// Spark Connect configuration for an interactive session.
+// Spark connect configuration for an interactive session.
 type SparkConnectConfig struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -987,7 +987,7 @@ const file_google_cloud_dataproc_v1_sessions_proto_rawDesc = "" +
 	"\n" +
 	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\"\x9a\f\n" +
 	"\aSession\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12\x17\n" +
+	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x17\n" +
 	"\x04uuid\x18\x02 \x01(\tB\x03\xe0A\x03R\x04uuid\x12@\n" +
 	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
 	"createTime\x12W\n" +
@@ -1034,7 +1034,7 @@ const file_google_cloud_dataproc_v1_sessions_proto_rawDesc = "" +
 	"\n" +
 	"\x06PYTHON\x10\x01\x12\t\n" +
 	"\x05SCALA\x10\x02\"\x14\n" +
-	"\x12SparkConnectConfig2\xf5\b\n" +
+	"\x12SparkConnectConfig2\xd3\t\n" +
 	"\x11SessionController\x12\xf9\x01\n" +
 	"\rCreateSession\x12..google.cloud.dataproc.v1.CreateSessionRequest\x1a\x1d.google.longrunning.Operation\"\x98\x01\xcaA<\n" +
 	"\aSession\x121google.cloud.dataproc.v1.SessionOperationMetadata\xdaA\x19parent,session,session_id\x82\xd3\xe4\x93\x027:\asession\",/v1/{parent=projects/*/locations/*}/sessions\x12\x99\x01\n" +
@@ -1044,7 +1044,7 @@ const file_google_cloud_dataproc_v1_sessions_proto_rawDesc = "" +
 	"\x10TerminateSession\x121.google.cloud.dataproc.v1.TerminateSessionRequest\x1a\x1d.google.longrunning.Operation\"\x87\x01\xcaA<\n" +
 	"\aSession\x121google.cloud.dataproc.v1.SessionOperationMetadata\xdaA\x04name\x82\xd3\xe4\x93\x02;:\x01*\"6/v1/{name=projects/*/locations/*/sessions/*}:terminate\x12\xda\x01\n" +
 	"\rDeleteSession\x12..google.cloud.dataproc.v1.DeleteSessionRequest\x1a\x1d.google.longrunning.Operation\"z\xcaA<\n" +
-	"\aSession\x121google.cloud.dataproc.v1.SessionOperationMetadata\xdaA\x04name\x82\xd3\xe4\x93\x02.*,/v1/{name=projects/*/locations/*/sessions/*}\x1aK\xcaA\x17dataproc.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformBl\n" +
+	"\aSession\x121google.cloud.dataproc.v1.SessionOperationMetadata\xdaA\x04name\x82\xd3\xe4\x93\x02.*,/v1/{name=projects/*/locations/*/sessions/*}\x1a\xa8\x01\xcaA\x17dataproc.googleapis.com\xd2A\x8a\x01https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/dataproc,https://www.googleapis.com/auth/dataproc.read-onlyBl\n" +
 	"\x1ccom.google.cloud.dataproc.v1B\rSessionsProtoP\x01Z;cloud.google.com/go/dataproc/v2/apiv1/dataprocpb;dataprocpbb\x06proto3"
 
 var (

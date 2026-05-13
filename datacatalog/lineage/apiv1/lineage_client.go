@@ -19,6 +19,7 @@ package lineage
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"log/slog"
 	"math"
@@ -30,6 +31,7 @@ import (
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	"github.com/google/uuid"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
@@ -39,6 +41,7 @@ import (
 	httptransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
@@ -64,6 +67,7 @@ type CallOptions struct {
 	DeleteLineageEvent         []gax.CallOption
 	SearchLinks                []gax.CallOption
 	BatchSearchLinkProcesses   []gax.CallOption
+	SearchLineageStreaming     []gax.CallOption
 	CancelOperation            []gax.CallOption
 	DeleteOperation            []gax.CallOption
 	GetOperation               []gax.CallOption
@@ -291,6 +295,17 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
+		SearchLineageStreaming: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		CancelOperation: []gax.CallOption{},
 		DeleteOperation: []gax.CallOption{},
 		GetOperation:    []gax.CallOption{},
@@ -487,6 +502,17 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		SearchLineageStreaming: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		CancelOperation: []gax.CallOption{},
 		DeleteOperation: []gax.CallOption{},
 		GetOperation:    []gax.CallOption{},
@@ -518,6 +544,7 @@ type internalClient interface {
 	DeleteLineageEvent(context.Context, *lineagepb.DeleteLineageEventRequest, ...gax.CallOption) error
 	SearchLinks(context.Context, *lineagepb.SearchLinksRequest, ...gax.CallOption) *LinkIterator
 	BatchSearchLinkProcesses(context.Context, *lineagepb.BatchSearchLinkProcessesRequest, ...gax.CallOption) *ProcessLinksIterator
+	SearchLineageStreaming(context.Context, *lineagepb.SearchLineageStreamingRequest, ...gax.CallOption) (lineagepb.Lineage_SearchLineageStreamingClient, error)
 	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
 	DeleteOperation(context.Context, *longrunningpb.DeleteOperationRequest, ...gax.CallOption) error
 	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
@@ -691,6 +718,38 @@ func (c *Client) BatchSearchLinkProcesses(ctx context.Context, req *lineagepb.Ba
 	return c.internalClient.BatchSearchLinkProcesses(ctx, req, opts...)
 }
 
+// SearchLineageStreaming retrieves a streaming response of lineage links connected to the requested
+// assets by performing a breadth-first search in the given direction. Links
+// represent the data flow between source (upstream) and target
+// (downstream) assets in transformation pipelines. Links are stored in the
+// same project as the Lineage Events that create them. This method retrieves
+// links from all valid locations provided in the request. This method
+// supports Column-Level Lineage (CLL) along with wildcard support to retrieve
+// all CLL for an Entity FQN.
+//
+// Following permissions are required to retrieve links:
+//
+//	datalineage.events.get permission for the project where the link is
+//	stored for entity-level lineage.
+//
+//	datalineage.events.getFields permission for the project where the link
+//	is stored for column-level lineage.
+//
+// This method also returns processes that created the links if explicitly
+// requested by setting
+// max_process_per_link (at google.cloud.datacatalog.lineage.v1.SearchLineageStreamingRequest.limits.max_process_per_link)
+// is non-zero and full process details are requested via
+// links.processes.process in the
+// FieldMask (at https://developers.google.com/workspace/docs/api/how-tos/field-masks#read_with_a_field_mask).
+//
+// Permission required to retrieve processes:
+//
+//	datalineage.processes.get permission for the project where the process
+//	is stored.
+func (c *Client) SearchLineageStreaming(ctx context.Context, req *lineagepb.SearchLineageStreamingRequest, opts ...gax.CallOption) (lineagepb.Lineage_SearchLineageStreamingClient, error) {
+	return c.internalClient.SearchLineageStreaming(ctx, req, opts...)
+}
+
 // CancelOperation is a utility method from google.longrunning.Operations.
 func (c *Client) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
 	return c.internalClient.CancelOperation(ctx, req, opts...)
@@ -807,6 +866,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.DeleteLineageEvent = append(client.CallOptions.DeleteLineageEvent, gax.WithClientMetrics(metrics))
 		client.CallOptions.SearchLinks = append(client.CallOptions.SearchLinks, gax.WithClientMetrics(metrics))
 		client.CallOptions.BatchSearchLinkProcesses = append(client.CallOptions.BatchSearchLinkProcesses, gax.WithClientMetrics(metrics))
+		client.CallOptions.SearchLineageStreaming = append(client.CallOptions.SearchLineageStreaming, gax.WithClientMetrics(metrics))
 		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
@@ -937,6 +997,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.DeleteLineageEvent = append(callOpts.DeleteLineageEvent, gax.WithClientMetrics(metrics))
 		callOpts.SearchLinks = append(callOpts.SearchLinks, gax.WithClientMetrics(metrics))
 		callOpts.BatchSearchLinkProcesses = append(callOpts.BatchSearchLinkProcesses, gax.WithClientMetrics(metrics))
+		callOpts.SearchLineageStreaming = append(callOpts.SearchLineageStreaming, gax.WithClientMetrics(metrics))
 		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientMetrics(metrics))
 		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientMetrics(metrics))
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
@@ -1001,6 +1062,9 @@ func (c *gRPCClient) ProcessOpenLineageRunEvent(ctx context.Context, req *lineag
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datacatalog.lineage.v1.Lineage/ProcessOpenLineageRunEvent")
 	}
+	if req != nil && req.GetRequestId() == "" {
+		req.RequestId = uuid.NewString()
+	}
 	opts = append((*c.CallOptions).ProcessOpenLineageRunEvent[0:len((*c.CallOptions).ProcessOpenLineageRunEvent):len((*c.CallOptions).ProcessOpenLineageRunEvent)], opts...)
 	var resp *lineagepb.ProcessOpenLineageRunEventResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1025,6 +1089,9 @@ func (c *gRPCClient) CreateProcess(ctx context.Context, req *lineagepb.CreatePro
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datacatalog.lineage.v1.Lineage/CreateProcess")
 	}
+	if req != nil && req.GetRequestId() == "" {
+		req.RequestId = uuid.NewString()
+	}
 	opts = append((*c.CallOptions).CreateProcess[0:len((*c.CallOptions).CreateProcess):len((*c.CallOptions).CreateProcess)], opts...)
 	var resp *lineagepb.Process
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1045,6 +1112,9 @@ func (c *gRPCClient) UpdateProcess(ctx context.Context, req *lineagepb.UpdatePro
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datacatalog.lineage.v1.Lineage/UpdateProcess")
+	}
+	if req != nil && req.GetRequestId() == "" {
+		req.RequestId = uuid.NewString()
 	}
 	opts = append((*c.CallOptions).UpdateProcess[0:len((*c.CallOptions).UpdateProcess):len((*c.CallOptions).UpdateProcess)], opts...)
 	var resp *lineagepb.Process
@@ -1171,6 +1241,9 @@ func (c *gRPCClient) CreateRun(ctx context.Context, req *lineagepb.CreateRunRequ
 	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datacatalog.lineage.v1.Lineage/CreateRun")
+	}
+	if req != nil && req.GetRequestId() == "" {
+		req.RequestId = uuid.NewString()
 	}
 	opts = append((*c.CallOptions).CreateRun[0:len((*c.CallOptions).CreateRun):len((*c.CallOptions).CreateRun)], opts...)
 	var resp *lineagepb.Run
@@ -1318,6 +1391,9 @@ func (c *gRPCClient) CreateLineageEvent(ctx context.Context, req *lineagepb.Crea
 	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datacatalog.lineage.v1.Lineage/CreateLineageEvent")
+	}
+	if req != nil && req.GetRequestId() == "" {
+		req.RequestId = uuid.NewString()
 	}
 	opts = append((*c.CallOptions).CreateLineageEvent[0:len((*c.CallOptions).CreateLineageEvent):len((*c.CallOptions).CreateLineageEvent)], opts...)
 	var resp *lineagepb.LineageEvent
@@ -1532,6 +1608,32 @@ func (c *gRPCClient) BatchSearchLinkProcesses(ctx context.Context, req *lineagep
 	return it
 }
 
+func (c *gRPCClient) SearchLineageStreaming(ctx context.Context, req *lineagepb.SearchLineageStreamingRequest, opts ...gax.CallOption) (lineagepb.Lineage_SearchLineageStreamingClient, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalineage.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datacatalog.lineage.v1.Lineage/SearchLineageStreaming")
+	}
+	opts = append((*c.CallOptions).SearchLineageStreaming[0:len((*c.CallOptions).SearchLineageStreaming):len((*c.CallOptions).SearchLineageStreaming)], opts...)
+	var resp lineagepb.Lineage_SearchLineageStreamingClient
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		c.logger.DebugContext(ctx, "api streaming client request", "serviceName", serviceName, "rpcName", "SearchLineageStreaming")
+		resp, err = c.client.SearchLineageStreaming(ctx, req, settings.GRPC...)
+		c.logger.DebugContext(ctx, "api streaming client response", "serviceName", serviceName, "rpcName", "SearchLineageStreaming")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 func (c *gRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -1641,6 +1743,9 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // Mapped from Open Lineage specification:
 // https://github.com/OpenLineage/OpenLineage/blob/main/spec/OpenLineage.json (at https://github.com/OpenLineage/OpenLineage/blob/main/spec/OpenLineage.json).
 func (c *restClient) ProcessOpenLineageRunEvent(ctx context.Context, req *lineagepb.ProcessOpenLineageRunEventRequest, opts ...gax.CallOption) (*lineagepb.ProcessOpenLineageRunEventResponse, error) {
+	if req != nil && req.GetRequestId() == "" {
+		req.RequestId = uuid.NewString()
+	}
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetOpenLineage()
 	jsonReq, err := m.Marshal(body)
@@ -1705,6 +1810,9 @@ func (c *restClient) ProcessOpenLineageRunEvent(ctx context.Context, req *lineag
 
 // CreateProcess creates a new process.
 func (c *restClient) CreateProcess(ctx context.Context, req *lineagepb.CreateProcessRequest, opts ...gax.CallOption) (*lineagepb.Process, error) {
+	if req != nil && req.GetRequestId() == "" {
+		req.RequestId = uuid.NewString()
+	}
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetProcess()
 	jsonReq, err := m.Marshal(body)
@@ -1772,6 +1880,9 @@ func (c *restClient) CreateProcess(ctx context.Context, req *lineagepb.CreatePro
 
 // UpdateProcess updates a process.
 func (c *restClient) UpdateProcess(ctx context.Context, req *lineagepb.UpdateProcessRequest, opts ...gax.CallOption) (*lineagepb.Process, error) {
+	if req != nil && req.GetRequestId() == "" {
+		req.RequestId = uuid.NewString()
+	}
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetProcess()
 	jsonReq, err := m.Marshal(body)
@@ -1789,6 +1900,9 @@ func (c *restClient) UpdateProcess(ctx context.Context, req *lineagepb.UpdatePro
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetAllowMissing() {
 		params.Add("allowMissing", fmt.Sprintf("%v", req.GetAllowMissing()))
+	}
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
 	if req.GetUpdateMask() != nil {
 		field, err := protojson.Marshal(req.GetUpdateMask())
@@ -2042,6 +2156,9 @@ func (c *restClient) DeleteProcess(ctx context.Context, req *lineagepb.DeletePro
 
 // CreateRun creates a new run.
 func (c *restClient) CreateRun(ctx context.Context, req *lineagepb.CreateRunRequest, opts ...gax.CallOption) (*lineagepb.Run, error) {
+	if req != nil && req.GetRequestId() == "" {
+		req.RequestId = uuid.NewString()
+	}
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetRun()
 	jsonReq, err := m.Marshal(body)
@@ -2379,6 +2496,9 @@ func (c *restClient) DeleteRun(ctx context.Context, req *lineagepb.DeleteRunRequ
 
 // CreateLineageEvent creates a new lineage event.
 func (c *restClient) CreateLineageEvent(ctx context.Context, req *lineagepb.CreateLineageEventRequest, opts ...gax.CallOption) (*lineagepb.LineageEvent, error) {
+	if req != nil && req.GetRequestId() == "" {
+		req.RequestId = uuid.NewString()
+	}
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetLineageEvent()
 	jsonReq, err := m.Marshal(body)
@@ -2800,6 +2920,142 @@ func (c *restClient) BatchSearchLinkProcesses(ctx context.Context, req *lineagep
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+// SearchLineageStreaming retrieves a streaming response of lineage links connected to the requested
+// assets by performing a breadth-first search in the given direction. Links
+// represent the data flow between source (upstream) and target
+// (downstream) assets in transformation pipelines. Links are stored in the
+// same project as the Lineage Events that create them. This method retrieves
+// links from all valid locations provided in the request. This method
+// supports Column-Level Lineage (CLL) along with wildcard support to retrieve
+// all CLL for an Entity FQN.
+//
+// Following permissions are required to retrieve links:
+//
+//	datalineage.events.get permission for the project where the link is
+//	stored for entity-level lineage.
+//
+//	datalineage.events.getFields permission for the project where the link
+//	is stored for column-level lineage.
+//
+// This method also returns processes that created the links if explicitly
+// requested by setting
+// max_process_per_link (at google.cloud.datacatalog.lineage.v1.SearchLineageStreamingRequest.limits.max_process_per_link)
+// is non-zero and full process details are requested via
+// links.processes.process in the
+// FieldMask (at https://developers.google.com/workspace/docs/api/how-tos/field-masks#read_with_a_field_mask).
+//
+// Permission required to retrieve processes:
+//
+//	datalineage.processes.get permission for the project where the process
+//	is stored.
+func (c *restClient) SearchLineageStreaming(ctx context.Context, req *lineagepb.SearchLineageStreamingRequest, opts ...gax.CallOption) (lineagepb.Lineage_SearchLineageStreamingClient, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:searchLineageStreaming", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datalineage.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datacatalog.lineage.v1.Lineage/SearchLineageStreaming")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}:searchLineageStreaming")
+	}
+	var streamClient *searchLineageStreamingRESTStreamClient
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := executeStreamingHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SearchLineageStreaming")
+		if err != nil {
+			return err
+		}
+
+		streamClient = &searchLineageStreamingRESTStreamClient{
+			ctx:    ctx,
+			md:     metadata.MD(httpRsp.Header),
+			stream: gax.NewProtoJSONStreamReader(httpRsp.Body, (&lineagepb.SearchLineageStreamingResponse{}).ProtoReflect().Type()),
+		}
+		return nil
+	}, opts...)
+
+	return streamClient, e
+}
+
+// searchLineageStreamingRESTStreamClient is the stream client used to consume the server stream created by
+// the REST implementation of SearchLineageStreaming.
+type searchLineageStreamingRESTStreamClient struct {
+	ctx    context.Context
+	md     metadata.MD
+	stream *gax.ProtoJSONStream
+}
+
+func (c *searchLineageStreamingRESTStreamClient) Recv() (*lineagepb.SearchLineageStreamingResponse, error) {
+	if err := c.ctx.Err(); err != nil {
+		defer c.stream.Close()
+		return nil, err
+	}
+	msg, err := c.stream.Recv()
+	if err != nil {
+		defer c.stream.Close()
+		return nil, err
+	}
+	res := msg.(*lineagepb.SearchLineageStreamingResponse)
+	return res, nil
+}
+
+func (c *searchLineageStreamingRESTStreamClient) Header() (metadata.MD, error) {
+	return c.md, nil
+}
+
+func (c *searchLineageStreamingRESTStreamClient) Trailer() metadata.MD {
+	return c.md
+}
+
+func (c *searchLineageStreamingRESTStreamClient) CloseSend() error {
+	// This is a no-op to fulfill the interface.
+	return errors.New("this method is not implemented for a server-stream")
+}
+
+func (c *searchLineageStreamingRESTStreamClient) Context() context.Context {
+	return c.ctx
+}
+
+func (c *searchLineageStreamingRESTStreamClient) SendMsg(m interface{}) error {
+	// This is a no-op to fulfill the interface.
+	return errors.New("this method is not implemented for a server-stream")
+}
+
+func (c *searchLineageStreamingRESTStreamClient) RecvMsg(m interface{}) error {
+	// This is a no-op to fulfill the interface.
+	return errors.New("this method is not implemented, use Recv")
 }
 
 // CancelOperation is a utility method from google.longrunning.Operations.

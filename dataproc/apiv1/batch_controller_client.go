@@ -186,8 +186,10 @@ func (c *BatchControllerClient) ListBatches(ctx context.Context, req *dataprocpb
 	return c.internalClient.ListBatches(ctx, req, opts...)
 }
 
-// DeleteBatch deletes the batch workload resource. If the batch is not in terminal state,
-// the delete fails and the response returns FAILED_PRECONDITION.
+// DeleteBatch deletes the batch workload resource. If the batch is not in a
+// CANCELLED, SUCCEEDED or FAILED
+// [State][google.cloud.dataproc.v1.Batch.State], the delete operation fails
+// and the response returns FAILED_PRECONDITION.
 func (c *BatchControllerClient) DeleteBatch(ctx context.Context, req *dataprocpb.DeleteBatchRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteBatch(ctx, req, opts...)
 }
@@ -1009,8 +1011,10 @@ func (c *batchControllerRESTClient) ListBatches(ctx context.Context, req *datapr
 	return it
 }
 
-// DeleteBatch deletes the batch workload resource. If the batch is not in terminal state,
-// the delete fails and the response returns FAILED_PRECONDITION.
+// DeleteBatch deletes the batch workload resource. If the batch is not in a
+// CANCELLED, SUCCEEDED or FAILED
+// [State][google.cloud.dataproc.v1.Batch.State], the delete operation fails
+// and the response returns FAILED_PRECONDITION.
 func (c *batchControllerRESTClient) DeleteBatch(ctx context.Context, req *dataprocpb.DeleteBatchRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {

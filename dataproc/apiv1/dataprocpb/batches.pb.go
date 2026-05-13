@@ -123,10 +123,9 @@ type CreateBatchRequest struct {
 	BatchId string `protobuf:"bytes,3,opt,name=batch_id,json=batchId,proto3" json:"batch_id,omitempty"`
 	// Optional. A unique ID used to identify the request. If the service
 	// receives two
-	// [CreateBatchRequest](https://cloud.google.com/dataproc/docs/reference/rpc/google.cloud.dataproc.v1#google.cloud.dataproc.v1.CreateBatchRequest)s
-	// with the same request_id, the second request is ignored and the
-	// Operation that corresponds to the first Batch created and stored
-	// in the backend is returned.
+	// `CreateBatchRequests` with the same `request_id`, the second request is
+	// ignored and the operation that corresponds to the first Batch created and
+	// stored in the backend is returned.
 	//
 	// Recommendation: Set this value to a
 	// [UUID](https://en.wikipedia.org/wiki/Universally_unique_identifier).
@@ -261,10 +260,13 @@ type ListBatchesRequest struct {
 	// A filter is a logical expression constraining the values of various fields
 	// in each batch resource. Filters are case sensitive, and may contain
 	// multiple clauses combined with logical operators (AND/OR).
-	// Supported fields are `batch_id`, `batch_uuid`, `state`, and `create_time`.
+	// Supported fields are `batch_id`, `batch_uuid`, `state`, `create_time`, and
+	// `labels`.
 	//
 	// e.g. `state = RUNNING and create_time < "2023-01-01T00:00:00Z"`
-	// filters for batches in state RUNNING that were created before 2023-01-01
+	// filters for batches in state RUNNING that were created before 2023-01-01.
+	// `state = RUNNING and labels.environment=production` filters for batches in
+	// state in a RUNNING state that have a production environment label.
 	//
 	// See https://google.aip.dev/assets/misc/ebnf-filtering.txt for a detailed
 	// description of the filter syntax and a list of supported comparisons.
@@ -348,7 +350,7 @@ func (x *ListBatchesRequest) GetOrderBy() string {
 // A list of batch workloads.
 type ListBatchesResponse struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// The batches from the specified collection.
+	// Output only. The batches from the specified collection.
 	Batches []*Batch `protobuf:"bytes,1,rep,name=batches,proto3" json:"batches,omitempty"`
 	// A token, which can be sent as `page_token` to retrieve the next page.
 	// If this field is omitted, there are no subsequent pages.
@@ -1287,9 +1289,9 @@ const file_google_cloud_dataproc_v1_batches_proto_rawDesc = "" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
 	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\x9f\x01\n" +
-	"\x13ListBatchesResponse\x129\n" +
-	"\abatches\x18\x01 \x03(\v2\x1f.google.cloud.dataproc.v1.BatchR\abatches\x12&\n" +
+	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xa4\x01\n" +
+	"\x13ListBatchesResponse\x12>\n" +
+	"\abatches\x18\x01 \x03(\v2\x1f.google.cloud.dataproc.v1.BatchB\x03\xe0A\x03R\abatches\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12%\n" +
 	"\vunreachable\x18\x03 \x03(\tB\x03\xe0A\x03R\vunreachable\"O\n" +
 	"\x12DeleteBatchRequest\x129\n" +
@@ -1375,13 +1377,13 @@ const file_google_cloud_dataproc_v1_batches_proto_rawDesc = "" +
 	"\farchive_uris\x18\x06 \x03(\tB\x03\xe0A\x01R\varchiveUris\x1a9\n" +
 	"\vParamsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x012\x9d\x06\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x012\xfb\x06\n" +
 	"\x0fBatchController\x12\xea\x01\n" +
 	"\vCreateBatch\x12,.google.cloud.dataproc.v1.CreateBatchRequest\x1a\x1d.google.longrunning.Operation\"\x8d\x01\xcaA8\n" +
 	"\x05Batch\x12/google.cloud.dataproc.v1.BatchOperationMetadata\xdaA\x15parent,batch,batch_id\x82\xd3\xe4\x93\x024:\x05batch\"+/v1/{parent=projects/*/locations/*}/batches\x12\x92\x01\n" +
 	"\bGetBatch\x12).google.cloud.dataproc.v1.GetBatchRequest\x1a\x1f.google.cloud.dataproc.v1.Batch\":\xdaA\x04name\x82\xd3\xe4\x93\x02-\x12+/v1/{name=projects/*/locations/*/batches/*}\x12\xa8\x01\n" +
 	"\vListBatches\x12,.google.cloud.dataproc.v1.ListBatchesRequest\x1a-.google.cloud.dataproc.v1.ListBatchesResponse\"<\xdaA\x06parent\x82\xd3\xe4\x93\x02-\x12+/v1/{parent=projects/*/locations/*}/batches\x12\x8f\x01\n" +
-	"\vDeleteBatch\x12,.google.cloud.dataproc.v1.DeleteBatchRequest\x1a\x16.google.protobuf.Empty\":\xdaA\x04name\x82\xd3\xe4\x93\x02-*+/v1/{name=projects/*/locations/*/batches/*}\x1aK\xcaA\x17dataproc.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformBk\n" +
+	"\vDeleteBatch\x12,.google.cloud.dataproc.v1.DeleteBatchRequest\x1a\x16.google.protobuf.Empty\":\xdaA\x04name\x82\xd3\xe4\x93\x02-*+/v1/{name=projects/*/locations/*/batches/*}\x1a\xa8\x01\xcaA\x17dataproc.googleapis.com\xd2A\x8a\x01https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/dataproc,https://www.googleapis.com/auth/dataproc.read-onlyBk\n" +
 	"\x1ccom.google.cloud.dataproc.v1B\fBatchesProtoP\x01Z;cloud.google.com/go/dataproc/v2/apiv1/dataprocpb;dataprocpbb\x06proto3"
 
 var (

@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -69,8 +69,6 @@ const (
 	Component_ICEBERG Component = 19
 	// The Jupyter Notebook.
 	Component_JUPYTER Component = 1
-	// The Jupyter Kernel Gateway.
-	Component_JUPYTER_KERNEL_GATEWAY Component = 22
 	// The Pig component.
 	Component_PIG Component = 21
 	// The Presto query engine.
@@ -85,6 +83,8 @@ const (
 	Component_ZEPPELIN Component = 4
 	// The Zookeeper service.
 	Component_ZOOKEEPER Component = 8
+	// The Jupyter Kernel Gateway.
+	Component_JUPYTER_KERNEL_GATEWAY Component = 22
 )
 
 // Enum value maps for Component.
@@ -101,7 +101,6 @@ var (
 		18: "HUDI",
 		19: "ICEBERG",
 		1:  "JUPYTER",
-		22: "JUPYTER_KERNEL_GATEWAY",
 		21: "PIG",
 		6:  "PRESTO",
 		17: "TRINO",
@@ -109,6 +108,7 @@ var (
 		10: "SOLR",
 		4:  "ZEPPELIN",
 		8:  "ZOOKEEPER",
+		22: "JUPYTER_KERNEL_GATEWAY",
 	}
 	Component_value = map[string]int32{
 		"COMPONENT_UNSPECIFIED":  0,
@@ -122,7 +122,6 @@ var (
 		"HUDI":                   18,
 		"ICEBERG":                19,
 		"JUPYTER":                1,
-		"JUPYTER_KERNEL_GATEWAY": 22,
 		"PIG":                    21,
 		"PRESTO":                 6,
 		"TRINO":                  17,
@@ -130,6 +129,7 @@ var (
 		"SOLR":                   10,
 		"ZEPPELIN":               4,
 		"ZOOKEEPER":              8,
+		"JUPYTER_KERNEL_GATEWAY": 22,
 	}
 )
 
@@ -421,8 +421,8 @@ type RuntimeConfig struct {
 	RepositoryConfig *RepositoryConfig `protobuf:"bytes,5,opt,name=repository_config,json=repositoryConfig,proto3" json:"repository_config,omitempty"`
 	// Optional. Autotuning configuration of the workload.
 	AutotuningConfig *AutotuningConfig `protobuf:"bytes,6,opt,name=autotuning_config,json=autotuningConfig,proto3" json:"autotuning_config,omitempty"`
-	// Optional. Cohort identifier. Identifies families of the workloads having
-	// the same shape, e.g. daily ETL jobs.
+	// Optional. Cohort identifier. Identifies families of the workloads that have
+	// the same shape, for example, daily ETL jobs.
 	Cohort        string `protobuf:"bytes,7,opt,name=cohort,proto3" json:"cohort,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -611,8 +611,15 @@ type ExecutionConfig struct {
 	// (service account or user) that will be used by workloads to access
 	// resources on the project(s).
 	AuthenticationConfig *AuthenticationConfig `protobuf:"bytes,11,opt,name=authentication_config,json=authenticationConfig,proto3" json:"authentication_config,omitempty"`
-	unknownFields        protoimpl.UnknownFields
-	sizeCache            protoimpl.SizeCache
+	// Optional. Associates Resource Manager tags with the workload nodes.
+	// There is a max limit of 30 tags.
+	// Keys and values can be either in numeric format, such as
+	// `tagKeys/{tag_key_id}` and `tagValues/{tag_value_id}`, or in namespaced
+	// format, such as `{org_id|project_id}/{tag_key_short_name}` and
+	// `{tag_value_short_name}`.
+	ResourceManagerTags map[string]string `protobuf:"bytes,12,rep,name=resource_manager_tags,json=resourceManagerTags,proto3" json:"resource_manager_tags,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
 }
 
 func (x *ExecutionConfig) Reset() {
@@ -715,6 +722,13 @@ func (x *ExecutionConfig) GetStagingBucket() string {
 func (x *ExecutionConfig) GetAuthenticationConfig() *AuthenticationConfig {
 	if x != nil {
 		return x.AuthenticationConfig
+	}
+	return nil
+}
+
+func (x *ExecutionConfig) GetResourceManagerTags() map[string]string {
+	if x != nil {
+		return x.ResourceManagerTags
 	}
 	return nil
 }
@@ -952,14 +966,16 @@ type UsageMetrics struct {
 	// [Dataproc Serverless pricing]
 	// (https://cloud.google.com/dataproc-serverless/pricing)).
 	ShuffleStorageGbSeconds int64 `protobuf:"varint,2,opt,name=shuffle_storage_gb_seconds,json=shuffleStorageGbSeconds,proto3" json:"shuffle_storage_gb_seconds,omitempty"`
-	// Optional. Accelerator usage in (`milliAccelerator` x `seconds`) (see
-	// [Dataproc Serverless pricing]
+	// Optional. [DEPRECATED] Accelerator usage in (`milliAccelerator` x
+	// `seconds`) (see [Dataproc Serverless pricing]
 	// (https://cloud.google.com/dataproc-serverless/pricing)).
 	MilliAcceleratorSeconds int64 `protobuf:"varint,3,opt,name=milli_accelerator_seconds,json=milliAcceleratorSeconds,proto3" json:"milli_accelerator_seconds,omitempty"`
-	// Optional. Accelerator type being used, if any
+	// Optional. [DEPRECATED] Accelerator type being used, if any
 	AcceleratorType string `protobuf:"bytes,4,opt,name=accelerator_type,json=acceleratorType,proto3" json:"accelerator_type,omitempty"`
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
+	// Optional. The timestamp of the usage metrics.
+	UpdateTime    *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *UsageMetrics) Reset() {
@@ -1018,6 +1034,13 @@ func (x *UsageMetrics) GetAcceleratorType() string {
 		return x.AcceleratorType
 	}
 	return ""
+}
+
+func (x *UsageMetrics) GetUpdateTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.UpdateTime
+	}
+	return nil
 }
 
 // The usage snapshot represents the resources consumed by a workload at a
@@ -1646,7 +1669,8 @@ func (x *RepositoryConfig) GetPypiRepositoryConfig() *PyPiRepositoryConfig {
 // Configuration for PyPi repository
 type PyPiRepositoryConfig struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Optional. PyPi repository address
+	// Optional. The PyPi repository address. **Note: This field is not available
+	// for batch workloads.**
 	PypiRepository string `protobuf:"bytes,1,opt,name=pypi_repository,json=pypiRepository,proto3" json:"pypi_repository,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
@@ -1724,7 +1748,7 @@ type GkeNodePoolConfig_GkeNodeConfig struct {
 	// (https://cloud.google.com/kubernetes-engine/docs/how-to/using-cmek)
 	// used to encrypt the boot disk attached to each node in the node pool.
 	// Specify the key using the following format:
-	// <code>projects/<var>KEY_PROJECT_ID</var>/locations/<var>LOCATION</var>/keyRings/<var>RING_NAME</var>/cryptoKeys/<var>KEY_NAME</var></code>.
+	// `projects/{project}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{crypto_key}`
 	BootDiskKmsKey string `protobuf:"bytes,23,opt,name=boot_disk_kms_key,json=bootDiskKmsKey,proto3" json:"boot_disk_kms_key,omitempty"`
 	// Optional. Whether the nodes are created as [Spot VM instances]
 	// (https://cloud.google.com/compute/docs/instances/spot).
@@ -1743,7 +1767,7 @@ type GkeNodePoolConfig_GkeNodeConfig struct {
 
 func (x *GkeNodePoolConfig_GkeNodeConfig) Reset() {
 	*x = GkeNodePoolConfig_GkeNodeConfig{}
-	mi := &file_google_cloud_dataproc_v1_shared_proto_msgTypes[21]
+	mi := &file_google_cloud_dataproc_v1_shared_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1755,7 +1779,7 @@ func (x *GkeNodePoolConfig_GkeNodeConfig) String() string {
 func (*GkeNodePoolConfig_GkeNodeConfig) ProtoMessage() {}
 
 func (x *GkeNodePoolConfig_GkeNodeConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataproc_v1_shared_proto_msgTypes[21]
+	mi := &file_google_cloud_dataproc_v1_shared_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1838,7 +1862,7 @@ type GkeNodePoolConfig_GkeNodePoolAcceleratorConfig struct {
 
 func (x *GkeNodePoolConfig_GkeNodePoolAcceleratorConfig) Reset() {
 	*x = GkeNodePoolConfig_GkeNodePoolAcceleratorConfig{}
-	mi := &file_google_cloud_dataproc_v1_shared_proto_msgTypes[22]
+	mi := &file_google_cloud_dataproc_v1_shared_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1850,7 +1874,7 @@ func (x *GkeNodePoolConfig_GkeNodePoolAcceleratorConfig) String() string {
 func (*GkeNodePoolConfig_GkeNodePoolAcceleratorConfig) ProtoMessage() {}
 
 func (x *GkeNodePoolConfig_GkeNodePoolAcceleratorConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataproc_v1_shared_proto_msgTypes[22]
+	mi := &file_google_cloud_dataproc_v1_shared_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1904,7 +1928,7 @@ type GkeNodePoolConfig_GkeNodePoolAutoscalingConfig struct {
 
 func (x *GkeNodePoolConfig_GkeNodePoolAutoscalingConfig) Reset() {
 	*x = GkeNodePoolConfig_GkeNodePoolAutoscalingConfig{}
-	mi := &file_google_cloud_dataproc_v1_shared_proto_msgTypes[23]
+	mi := &file_google_cloud_dataproc_v1_shared_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1916,7 +1940,7 @@ func (x *GkeNodePoolConfig_GkeNodePoolAutoscalingConfig) String() string {
 func (*GkeNodePoolConfig_GkeNodePoolAutoscalingConfig) ProtoMessage() {}
 
 func (x *GkeNodePoolConfig_GkeNodePoolAutoscalingConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataproc_v1_shared_proto_msgTypes[23]
+	mi := &file_google_cloud_dataproc_v1_shared_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1965,19 +1989,24 @@ const file_google_cloud_dataproc_v1_shared_proto_rawDesc = "" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xcf\x01\n" +
 	"\x11EnvironmentConfig\x12Y\n" +
 	"\x10execution_config\x18\x01 \x01(\v2).google.cloud.dataproc.v1.ExecutionConfigB\x03\xe0A\x01R\x0fexecutionConfig\x12_\n" +
-	"\x12peripherals_config\x18\x02 \x01(\v2+.google.cloud.dataproc.v1.PeripheralsConfigB\x03\xe0A\x01R\x11peripheralsConfig\"\xe9\x03\n" +
+	"\x12peripherals_config\x18\x02 \x01(\v2+.google.cloud.dataproc.v1.PeripheralsConfigB\x03\xe0A\x01R\x11peripheralsConfig\"\xd4\x05\n" +
 	"\x0fExecutionConfig\x12,\n" +
 	"\x0fservice_account\x18\x02 \x01(\tB\x03\xe0A\x01R\x0eserviceAccount\x12&\n" +
 	"\vnetwork_uri\x18\x04 \x01(\tB\x03\xe0A\x01H\x00R\n" +
 	"networkUri\x12,\n" +
 	"\x0esubnetwork_uri\x18\x05 \x01(\tB\x03\xe0A\x01H\x00R\rsubnetworkUri\x12&\n" +
-	"\fnetwork_tags\x18\x06 \x03(\tB\x03\xe0A\x01R\vnetworkTags\x12\x1c\n" +
-	"\akms_key\x18\a \x01(\tB\x03\xe0A\x01R\x06kmsKey\x129\n" +
+	"\fnetwork_tags\x18\x06 \x03(\tB\x03\xe0A\x01R\vnetworkTags\x12B\n" +
+	"\akms_key\x18\a \x01(\tB)\xe0A\x01\xfaA#\n" +
+	"!cloudkms.googleapis.com/CryptoKeyR\x06kmsKey\x129\n" +
 	"\bidle_ttl\x18\b \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\aidleTtl\x120\n" +
 	"\x03ttl\x18\t \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\x03ttl\x12*\n" +
 	"\x0estaging_bucket\x18\n" +
 	" \x01(\tB\x03\xe0A\x01R\rstagingBucket\x12h\n" +
-	"\x15authentication_config\x18\v \x01(\v2..google.cloud.dataproc.v1.AuthenticationConfigB\x03\xe0A\x01R\x14authenticationConfigB\t\n" +
+	"\x15authentication_config\x18\v \x01(\v2..google.cloud.dataproc.v1.AuthenticationConfigB\x03\xe0A\x01R\x14authenticationConfig\x12{\n" +
+	"\x15resource_manager_tags\x18\f \x03(\v2B.google.cloud.dataproc.v1.ExecutionConfig.ResourceManagerTagsEntryB\x03\xe0A\x01R\x13resourceManagerTags\x1aF\n" +
+	"\x18ResourceManagerTagsEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B\t\n" +
 	"\anetwork\"J\n" +
 	"\x18SparkHistoryServerConfig\x12.\n" +
 	"\x10dataproc_cluster\x18\x01 \x01(\tB\x03\xe0A\x01R\x0fdataprocCluster\"\xe2\x01\n" +
@@ -1994,12 +2023,14 @@ const file_google_cloud_dataproc_v1_shared_proto_rawDesc = "" +
 	"\rcurrent_usage\x18\a \x01(\v2'.google.cloud.dataproc.v1.UsageSnapshotB\x03\xe0A\x03R\fcurrentUsage\x1a<\n" +
 	"\x0eEndpointsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xf2\x01\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xb4\x02\n" +
 	"\fUsageMetrics\x12/\n" +
 	"\x11milli_dcu_seconds\x18\x01 \x01(\x03B\x03\xe0A\x01R\x0fmilliDcuSeconds\x12@\n" +
 	"\x1ashuffle_storage_gb_seconds\x18\x02 \x01(\x03B\x03\xe0A\x01R\x17shuffleStorageGbSeconds\x12?\n" +
 	"\x19milli_accelerator_seconds\x18\x03 \x01(\x03B\x03\xe0A\x01R\x17milliAcceleratorSeconds\x12.\n" +
-	"\x10accelerator_type\x18\x04 \x01(\tB\x03\xe0A\x01R\x0facceleratorType\"\xff\x02\n" +
+	"\x10accelerator_type\x18\x04 \x01(\tB\x03\xe0A\x01R\x0facceleratorType\x12@\n" +
+	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\n" +
+	"updateTime\"\xff\x02\n" +
 	"\rUsageSnapshot\x12 \n" +
 	"\tmilli_dcu\x18\x01 \x01(\x03B\x03\xe0A\x01R\bmilliDcu\x121\n" +
 	"\x12shuffle_storage_gb\x18\x02 \x01(\x03B\x03\xe0A\x01R\x10shuffleStorageGb\x12/\n" +
@@ -2038,19 +2069,20 @@ const file_google_cloud_dataproc_v1_shared_proto_rawDesc = "" +
 	"\n" +
 	"CONTROLLER\x10\x02\x12\x10\n" +
 	"\fSPARK_DRIVER\x10\x03\x12\x12\n" +
-	"\x0eSPARK_EXECUTOR\x10\x04\"\x8b\a\n" +
+	"\x0eSPARK_EXECUTOR\x10\x04\"\xb1\a\n" +
 	"\x11GkeNodePoolConfig\x12V\n" +
 	"\x06config\x18\x02 \x01(\v29.google.cloud.dataproc.v1.GkeNodePoolConfig.GkeNodeConfigB\x03\xe0A\x01R\x06config\x12!\n" +
 	"\tlocations\x18\r \x03(\tB\x03\xe0A\x01R\tlocations\x12o\n" +
-	"\vautoscaling\x18\x04 \x01(\v2H.google.cloud.dataproc.v1.GkeNodePoolConfig.GkeNodePoolAutoscalingConfigB\x03\xe0A\x01R\vautoscaling\x1a\xf6\x02\n" +
+	"\vautoscaling\x18\x04 \x01(\v2H.google.cloud.dataproc.v1.GkeNodePoolConfig.GkeNodePoolAutoscalingConfigB\x03\xe0A\x01R\vautoscaling\x1a\x9c\x03\n" +
 	"\rGkeNodeConfig\x12&\n" +
 	"\fmachine_type\x18\x01 \x01(\tB\x03\xe0A\x01R\vmachineType\x12+\n" +
 	"\x0flocal_ssd_count\x18\a \x01(\x05B\x03\xe0A\x01R\rlocalSsdCount\x12%\n" +
 	"\vpreemptible\x18\n" +
 	" \x01(\bB\x03\xe0A\x01R\vpreemptible\x12q\n" +
 	"\faccelerators\x18\v \x03(\v2H.google.cloud.dataproc.v1.GkeNodePoolConfig.GkeNodePoolAcceleratorConfigB\x03\xe0A\x01R\faccelerators\x12-\n" +
-	"\x10min_cpu_platform\x18\r \x01(\tB\x03\xe0A\x01R\x0eminCpuPlatform\x12.\n" +
-	"\x11boot_disk_kms_key\x18\x17 \x01(\tB\x03\xe0A\x01R\x0ebootDiskKmsKey\x12\x17\n" +
+	"\x10min_cpu_platform\x18\r \x01(\tB\x03\xe0A\x01R\x0eminCpuPlatform\x12T\n" +
+	"\x11boot_disk_kms_key\x18\x17 \x01(\tB)\xe0A\x01\xfaA#\n" +
+	"!cloudkms.googleapis.com/CryptoKeyR\x0ebootDiskKmsKey\x12\x17\n" +
 	"\x04spot\x18  \x01(\bB\x03\xe0A\x01R\x04spot\x1a\xa4\x01\n" +
 	"\x1cGkeNodePoolAcceleratorConfig\x12+\n" +
 	"\x11accelerator_count\x18\x01 \x01(\x03R\x10acceleratorCount\x12)\n" +
@@ -2091,8 +2123,7 @@ const file_google_cloud_dataproc_v1_shared_proto_rawDesc = "" +
 	"\fHIVE_WEBHCAT\x10\x03\x12\b\n" +
 	"\x04HUDI\x10\x12\x12\v\n" +
 	"\aICEBERG\x10\x13\x12\v\n" +
-	"\aJUPYTER\x10\x01\x12\x1a\n" +
-	"\x16JUPYTER_KERNEL_GATEWAY\x10\x16\x12\a\n" +
+	"\aJUPYTER\x10\x01\x12\a\n" +
 	"\x03PIG\x10\x15\x12\n" +
 	"\n" +
 	"\x06PRESTO\x10\x06\x12\t\n" +
@@ -2102,7 +2133,8 @@ const file_google_cloud_dataproc_v1_shared_proto_rawDesc = "" +
 	"\x04SOLR\x10\n" +
 	"\x12\f\n" +
 	"\bZEPPELIN\x10\x04\x12\r\n" +
-	"\tZOOKEEPER\x10\b*J\n" +
+	"\tZOOKEEPER\x10\b\x12\x1a\n" +
+	"\x16JUPYTER_KERNEL_GATEWAY\x10\x16*J\n" +
 	"\rFailureAction\x12\x1e\n" +
 	"\x1aFAILURE_ACTION_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tNO_ACTION\x10\x01\x12\n" +
@@ -2126,7 +2158,7 @@ func file_google_cloud_dataproc_v1_shared_proto_rawDescGZIP() []byte {
 }
 
 var file_google_cloud_dataproc_v1_shared_proto_enumTypes = make([]protoimpl.EnumInfo, 5)
-var file_google_cloud_dataproc_v1_shared_proto_msgTypes = make([]protoimpl.MessageInfo, 24)
+var file_google_cloud_dataproc_v1_shared_proto_msgTypes = make([]protoimpl.MessageInfo, 25)
 var file_google_cloud_dataproc_v1_shared_proto_goTypes = []any{
 	(Component)(0),                               // 0: google.cloud.dataproc.v1.Component
 	(FailureAction)(0),                           // 1: google.cloud.dataproc.v1.FailureAction
@@ -2151,14 +2183,15 @@ var file_google_cloud_dataproc_v1_shared_proto_goTypes = []any{
 	(*RepositoryConfig)(nil),                     // 20: google.cloud.dataproc.v1.RepositoryConfig
 	(*PyPiRepositoryConfig)(nil),                 // 21: google.cloud.dataproc.v1.PyPiRepositoryConfig
 	nil,                                          // 22: google.cloud.dataproc.v1.RuntimeConfig.PropertiesEntry
-	nil,                                          // 23: google.cloud.dataproc.v1.RuntimeInfo.EndpointsEntry
-	nil,                                          // 24: google.cloud.dataproc.v1.KubernetesSoftwareConfig.ComponentVersionEntry
-	nil,                                          // 25: google.cloud.dataproc.v1.KubernetesSoftwareConfig.PropertiesEntry
-	(*GkeNodePoolConfig_GkeNodeConfig)(nil),      // 26: google.cloud.dataproc.v1.GkeNodePoolConfig.GkeNodeConfig
-	(*GkeNodePoolConfig_GkeNodePoolAcceleratorConfig)(nil), // 27: google.cloud.dataproc.v1.GkeNodePoolConfig.GkeNodePoolAcceleratorConfig
-	(*GkeNodePoolConfig_GkeNodePoolAutoscalingConfig)(nil), // 28: google.cloud.dataproc.v1.GkeNodePoolConfig.GkeNodePoolAutoscalingConfig
-	(*durationpb.Duration)(nil),                            // 29: google.protobuf.Duration
-	(*timestamppb.Timestamp)(nil),                          // 30: google.protobuf.Timestamp
+	nil,                                          // 23: google.cloud.dataproc.v1.ExecutionConfig.ResourceManagerTagsEntry
+	nil,                                          // 24: google.cloud.dataproc.v1.RuntimeInfo.EndpointsEntry
+	nil,                                          // 25: google.cloud.dataproc.v1.KubernetesSoftwareConfig.ComponentVersionEntry
+	nil,                                          // 26: google.cloud.dataproc.v1.KubernetesSoftwareConfig.PropertiesEntry
+	(*GkeNodePoolConfig_GkeNodeConfig)(nil),      // 27: google.cloud.dataproc.v1.GkeNodePoolConfig.GkeNodeConfig
+	(*GkeNodePoolConfig_GkeNodePoolAcceleratorConfig)(nil), // 28: google.cloud.dataproc.v1.GkeNodePoolConfig.GkeNodePoolAcceleratorConfig
+	(*GkeNodePoolConfig_GkeNodePoolAutoscalingConfig)(nil), // 29: google.cloud.dataproc.v1.GkeNodePoolConfig.GkeNodePoolAutoscalingConfig
+	(*durationpb.Duration)(nil),                            // 30: google.protobuf.Duration
+	(*timestamppb.Timestamp)(nil),                          // 31: google.protobuf.Timestamp
 }
 var file_google_cloud_dataproc_v1_shared_proto_depIdxs = []int32{
 	22, // 0: google.cloud.dataproc.v1.RuntimeConfig.properties:type_name -> google.cloud.dataproc.v1.RuntimeConfig.PropertiesEntry
@@ -2166,32 +2199,34 @@ var file_google_cloud_dataproc_v1_shared_proto_depIdxs = []int32{
 	19, // 2: google.cloud.dataproc.v1.RuntimeConfig.autotuning_config:type_name -> google.cloud.dataproc.v1.AutotuningConfig
 	7,  // 3: google.cloud.dataproc.v1.EnvironmentConfig.execution_config:type_name -> google.cloud.dataproc.v1.ExecutionConfig
 	9,  // 4: google.cloud.dataproc.v1.EnvironmentConfig.peripherals_config:type_name -> google.cloud.dataproc.v1.PeripheralsConfig
-	29, // 5: google.cloud.dataproc.v1.ExecutionConfig.idle_ttl:type_name -> google.protobuf.Duration
-	29, // 6: google.cloud.dataproc.v1.ExecutionConfig.ttl:type_name -> google.protobuf.Duration
+	30, // 5: google.cloud.dataproc.v1.ExecutionConfig.idle_ttl:type_name -> google.protobuf.Duration
+	30, // 6: google.cloud.dataproc.v1.ExecutionConfig.ttl:type_name -> google.protobuf.Duration
 	18, // 7: google.cloud.dataproc.v1.ExecutionConfig.authentication_config:type_name -> google.cloud.dataproc.v1.AuthenticationConfig
-	8,  // 8: google.cloud.dataproc.v1.PeripheralsConfig.spark_history_server_config:type_name -> google.cloud.dataproc.v1.SparkHistoryServerConfig
-	23, // 9: google.cloud.dataproc.v1.RuntimeInfo.endpoints:type_name -> google.cloud.dataproc.v1.RuntimeInfo.EndpointsEntry
-	11, // 10: google.cloud.dataproc.v1.RuntimeInfo.approximate_usage:type_name -> google.cloud.dataproc.v1.UsageMetrics
-	12, // 11: google.cloud.dataproc.v1.RuntimeInfo.current_usage:type_name -> google.cloud.dataproc.v1.UsageSnapshot
-	30, // 12: google.cloud.dataproc.v1.UsageSnapshot.snapshot_time:type_name -> google.protobuf.Timestamp
-	16, // 13: google.cloud.dataproc.v1.GkeClusterConfig.node_pool_target:type_name -> google.cloud.dataproc.v1.GkeNodePoolTarget
-	13, // 14: google.cloud.dataproc.v1.KubernetesClusterConfig.gke_cluster_config:type_name -> google.cloud.dataproc.v1.GkeClusterConfig
-	15, // 15: google.cloud.dataproc.v1.KubernetesClusterConfig.kubernetes_software_config:type_name -> google.cloud.dataproc.v1.KubernetesSoftwareConfig
-	24, // 16: google.cloud.dataproc.v1.KubernetesSoftwareConfig.component_version:type_name -> google.cloud.dataproc.v1.KubernetesSoftwareConfig.ComponentVersionEntry
-	25, // 17: google.cloud.dataproc.v1.KubernetesSoftwareConfig.properties:type_name -> google.cloud.dataproc.v1.KubernetesSoftwareConfig.PropertiesEntry
-	2,  // 18: google.cloud.dataproc.v1.GkeNodePoolTarget.roles:type_name -> google.cloud.dataproc.v1.GkeNodePoolTarget.Role
-	17, // 19: google.cloud.dataproc.v1.GkeNodePoolTarget.node_pool_config:type_name -> google.cloud.dataproc.v1.GkeNodePoolConfig
-	26, // 20: google.cloud.dataproc.v1.GkeNodePoolConfig.config:type_name -> google.cloud.dataproc.v1.GkeNodePoolConfig.GkeNodeConfig
-	28, // 21: google.cloud.dataproc.v1.GkeNodePoolConfig.autoscaling:type_name -> google.cloud.dataproc.v1.GkeNodePoolConfig.GkeNodePoolAutoscalingConfig
-	3,  // 22: google.cloud.dataproc.v1.AuthenticationConfig.user_workload_authentication_type:type_name -> google.cloud.dataproc.v1.AuthenticationConfig.AuthenticationType
-	4,  // 23: google.cloud.dataproc.v1.AutotuningConfig.scenarios:type_name -> google.cloud.dataproc.v1.AutotuningConfig.Scenario
-	21, // 24: google.cloud.dataproc.v1.RepositoryConfig.pypi_repository_config:type_name -> google.cloud.dataproc.v1.PyPiRepositoryConfig
-	27, // 25: google.cloud.dataproc.v1.GkeNodePoolConfig.GkeNodeConfig.accelerators:type_name -> google.cloud.dataproc.v1.GkeNodePoolConfig.GkeNodePoolAcceleratorConfig
-	26, // [26:26] is the sub-list for method output_type
-	26, // [26:26] is the sub-list for method input_type
-	26, // [26:26] is the sub-list for extension type_name
-	26, // [26:26] is the sub-list for extension extendee
-	0,  // [0:26] is the sub-list for field type_name
+	23, // 8: google.cloud.dataproc.v1.ExecutionConfig.resource_manager_tags:type_name -> google.cloud.dataproc.v1.ExecutionConfig.ResourceManagerTagsEntry
+	8,  // 9: google.cloud.dataproc.v1.PeripheralsConfig.spark_history_server_config:type_name -> google.cloud.dataproc.v1.SparkHistoryServerConfig
+	24, // 10: google.cloud.dataproc.v1.RuntimeInfo.endpoints:type_name -> google.cloud.dataproc.v1.RuntimeInfo.EndpointsEntry
+	11, // 11: google.cloud.dataproc.v1.RuntimeInfo.approximate_usage:type_name -> google.cloud.dataproc.v1.UsageMetrics
+	12, // 12: google.cloud.dataproc.v1.RuntimeInfo.current_usage:type_name -> google.cloud.dataproc.v1.UsageSnapshot
+	31, // 13: google.cloud.dataproc.v1.UsageMetrics.update_time:type_name -> google.protobuf.Timestamp
+	31, // 14: google.cloud.dataproc.v1.UsageSnapshot.snapshot_time:type_name -> google.protobuf.Timestamp
+	16, // 15: google.cloud.dataproc.v1.GkeClusterConfig.node_pool_target:type_name -> google.cloud.dataproc.v1.GkeNodePoolTarget
+	13, // 16: google.cloud.dataproc.v1.KubernetesClusterConfig.gke_cluster_config:type_name -> google.cloud.dataproc.v1.GkeClusterConfig
+	15, // 17: google.cloud.dataproc.v1.KubernetesClusterConfig.kubernetes_software_config:type_name -> google.cloud.dataproc.v1.KubernetesSoftwareConfig
+	25, // 18: google.cloud.dataproc.v1.KubernetesSoftwareConfig.component_version:type_name -> google.cloud.dataproc.v1.KubernetesSoftwareConfig.ComponentVersionEntry
+	26, // 19: google.cloud.dataproc.v1.KubernetesSoftwareConfig.properties:type_name -> google.cloud.dataproc.v1.KubernetesSoftwareConfig.PropertiesEntry
+	2,  // 20: google.cloud.dataproc.v1.GkeNodePoolTarget.roles:type_name -> google.cloud.dataproc.v1.GkeNodePoolTarget.Role
+	17, // 21: google.cloud.dataproc.v1.GkeNodePoolTarget.node_pool_config:type_name -> google.cloud.dataproc.v1.GkeNodePoolConfig
+	27, // 22: google.cloud.dataproc.v1.GkeNodePoolConfig.config:type_name -> google.cloud.dataproc.v1.GkeNodePoolConfig.GkeNodeConfig
+	29, // 23: google.cloud.dataproc.v1.GkeNodePoolConfig.autoscaling:type_name -> google.cloud.dataproc.v1.GkeNodePoolConfig.GkeNodePoolAutoscalingConfig
+	3,  // 24: google.cloud.dataproc.v1.AuthenticationConfig.user_workload_authentication_type:type_name -> google.cloud.dataproc.v1.AuthenticationConfig.AuthenticationType
+	4,  // 25: google.cloud.dataproc.v1.AutotuningConfig.scenarios:type_name -> google.cloud.dataproc.v1.AutotuningConfig.Scenario
+	21, // 26: google.cloud.dataproc.v1.RepositoryConfig.pypi_repository_config:type_name -> google.cloud.dataproc.v1.PyPiRepositoryConfig
+	28, // 27: google.cloud.dataproc.v1.GkeNodePoolConfig.GkeNodeConfig.accelerators:type_name -> google.cloud.dataproc.v1.GkeNodePoolConfig.GkeNodePoolAcceleratorConfig
+	28, // [28:28] is the sub-list for method output_type
+	28, // [28:28] is the sub-list for method input_type
+	28, // [28:28] is the sub-list for extension type_name
+	28, // [28:28] is the sub-list for extension extendee
+	0,  // [0:28] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_dataproc_v1_shared_proto_init() }
@@ -2212,7 +2247,7 @@ func file_google_cloud_dataproc_v1_shared_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_dataproc_v1_shared_proto_rawDesc), len(file_google_cloud_dataproc_v1_shared_proto_rawDesc)),
 			NumEnums:      5,
-			NumMessages:   24,
+			NumMessages:   25,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

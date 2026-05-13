@@ -566,6 +566,98 @@
     {
       "clientMethod": {
         "client": {
+          "fullName": "google.cloud.compute.v1beta.AdviceClient",
+          "shortName": "AdviceClient"
+        },
+        "fullName": "google.cloud.compute.v1beta.AdviceClient.Capacity",
+        "method": {
+          "fullName": "google.cloud.compute.v1beta.Advice.Capacity",
+          "service": {
+            "fullName": "google.cloud.compute.v1beta.Advice",
+            "shortName": "Advice"
+          },
+          "shortName": "Capacity"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.CapacityAdviceRpcRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*computepb.CapacityAdviceResponse",
+        "shortName": "Capacity"
+      },
+      "description": "Capacity advice on making real-time decisions (such as choosing zone or\nmachine types) during deployment to maximize your chances of obtaining\ncapacity.",
+      "file": "AdviceClient/Capacity/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1beta_generated_Advice_Capacity_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute Capacity Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1beta.AdviceClient",
+          "shortName": "AdviceClient"
+        },
+        "fullName": "google.cloud.compute.v1beta.AdviceClient.CapacityHistory",
+        "method": {
+          "fullName": "google.cloud.compute.v1beta.Advice.CapacityHistory",
+          "service": {
+            "fullName": "google.cloud.compute.v1beta.Advice",
+            "shortName": "Advice"
+          },
+          "shortName": "CapacityHistory"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.CapacityHistoryAdviceRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*computepb.CapacityHistoryResponse",
+        "shortName": "CapacityHistory"
+      },
+      "description": "CapacityHistory gets the capacity history.",
+      "file": "AdviceClient/CapacityHistory/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1beta_generated_Advice_CapacityHistory_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute CapacityHistory Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
           "fullName": "google.cloud.compute.v1beta.AutoscalersClient",
           "shortName": "AutoscalersClient"
         },
@@ -16616,6 +16708,98 @@
         }
       ],
       "title": "compute Get Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1beta.LicenseCodesClient",
+          "shortName": "LicenseCodesClient"
+        },
+        "fullName": "google.cloud.compute.v1beta.LicenseCodesClient.GetIamPolicy",
+        "method": {
+          "fullName": "google.cloud.compute.v1beta.LicenseCodes.GetIamPolicy",
+          "service": {
+            "fullName": "google.cloud.compute.v1beta.LicenseCodes",
+            "shortName": "LicenseCodes"
+          },
+          "shortName": "GetIamPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.GetIamPolicyLicenseCodeRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*computepb.Policy",
+        "shortName": "GetIamPolicy"
+      },
+      "description": "GetIamPolicy gets the access control policy for a resource. May be empty if no such\npolicy or resource exists.\n*Caution* This resource is intended\nfor use only by third-party partners who are creatingCloud Marketplace\nimages.",
+      "file": "LicenseCodesClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1beta_generated_LicenseCodes_GetIamPolicy_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute GetIamPolicy Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1beta.LicenseCodesClient",
+          "shortName": "LicenseCodesClient"
+        },
+        "fullName": "google.cloud.compute.v1beta.LicenseCodesClient.SetIamPolicy",
+        "method": {
+          "fullName": "google.cloud.compute.v1beta.LicenseCodes.SetIamPolicy",
+          "service": {
+            "fullName": "google.cloud.compute.v1beta.LicenseCodes",
+            "shortName": "LicenseCodes"
+          },
+          "shortName": "SetIamPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.SetIamPolicyLicenseCodeRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*computepb.Policy",
+        "shortName": "SetIamPolicy"
+      },
+      "description": "SetIamPolicy sets the access control policy on the specified resource.\nReplaces any existing policy.\n*Caution* This resource is intended\nfor use only by third-party partners who are creatingCloud Marketplace\nimages.",
+      "file": "LicenseCodesClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1beta_generated_LicenseCodes_SetIamPolicy_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute SetIamPolicy Sample"
     },
     {
       "clientMethod": {
@@ -48435,7 +48619,7 @@
         "resultType": "*Operation",
         "shortName": "Delete"
       },
-      "description": "Delete deletes a specified zone VM extension policy.",
+      "description": "Delete deletes a specified zone VM extension policy within a project.",
       "file": "ZoneVmExtensionPoliciesClient/Delete/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -48481,7 +48665,7 @@
         "resultType": "*computepb.VmExtensionPolicy",
         "shortName": "Get"
       },
-      "description": "Get retrieves details of a specific zone VM extension policy.",
+      "description": "Get retrieves details of a specific zone VM extension policy within a project.",
       "file": "ZoneVmExtensionPoliciesClient/Get/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -48619,7 +48803,7 @@
         "resultType": "*Operation",
         "shortName": "Update"
       },
-      "description": "Update modifies an existing zone VM extension policy.",
+      "description": "Update modifies an existing zone VM extension policy within a project.",
       "file": "ZoneVmExtensionPoliciesClient/Update/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",

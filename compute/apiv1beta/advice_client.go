@@ -39,12 +39,20 @@ var newAdviceClientHook clientHook
 
 // AdviceCallOptions contains the retry settings for each method of AdviceClient.
 type AdviceCallOptions struct {
-	CalendarMode []gax.CallOption
+	CalendarMode    []gax.CallOption
+	Capacity        []gax.CallOption
+	CapacityHistory []gax.CallOption
 }
 
 func defaultAdviceRESTCallOptions() *AdviceCallOptions {
 	return &AdviceCallOptions{
 		CalendarMode: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		Capacity: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		CapacityHistory: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
 	}
@@ -56,6 +64,8 @@ type internalAdviceClient interface {
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
 	CalendarMode(context.Context, *computepb.CalendarModeAdviceRpcRequest, ...gax.CallOption) (*computepb.CalendarModeAdviceResponse, error)
+	Capacity(context.Context, *computepb.CapacityAdviceRpcRequest, ...gax.CallOption) (*computepb.CapacityAdviceResponse, error)
+	CapacityHistory(context.Context, *computepb.CapacityHistoryAdviceRequest, ...gax.CallOption) (*computepb.CapacityHistoryResponse, error)
 }
 
 // AdviceClient is a client for interacting with Google Compute Engine API.
@@ -99,6 +109,18 @@ func (c *AdviceClient) Connection() *grpc.ClientConn {
 // resources.
 func (c *AdviceClient) CalendarMode(ctx context.Context, req *computepb.CalendarModeAdviceRpcRequest, opts ...gax.CallOption) (*computepb.CalendarModeAdviceResponse, error) {
 	return c.internalClient.CalendarMode(ctx, req, opts...)
+}
+
+// Capacity advice on making real-time decisions (such as choosing zone or
+// machine types) during deployment to maximize your chances of obtaining
+// capacity.
+func (c *AdviceClient) Capacity(ctx context.Context, req *computepb.CapacityAdviceRpcRequest, opts ...gax.CallOption) (*computepb.CapacityAdviceResponse, error) {
+	return c.internalClient.Capacity(ctx, req, opts...)
+}
+
+// CapacityHistory gets the capacity history.
+func (c *AdviceClient) CapacityHistory(ctx context.Context, req *computepb.CapacityHistoryAdviceRequest, opts ...gax.CallOption) (*computepb.CapacityHistoryResponse, error) {
+	return c.internalClient.CapacityHistory(ctx, req, opts...)
 }
 
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
@@ -160,6 +182,8 @@ func NewAdviceRESTClient(ctx context.Context, opts ...option.ClientOption) (*Adv
 		)
 
 		callOpts.CalendarMode = append(callOpts.CalendarMode, gax.WithClientMetrics(metrics))
+		callOpts.Capacity = append(callOpts.Capacity, gax.WithClientMetrics(metrics))
+		callOpts.CapacityHistory = append(callOpts.CapacityHistory, gax.WithClientMetrics(metrics))
 	}
 
 	return &AdviceClient{internalClient: c, CallOptions: callOpts}, nil
@@ -249,6 +273,126 @@ func (c *adviceRESTClient) CalendarMode(ctx context.Context, req *computepb.Cale
 		httpReq.Header = headers
 
 		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CalendarMode")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// Capacity advice on making real-time decisions (such as choosing zone or
+// machine types) during deployment to maximize your chances of obtaining
+// capacity.
+func (c *adviceRESTClient) Capacity(ctx context.Context, req *computepb.CapacityAdviceRpcRequest, opts ...gax.CallOption) (*computepb.CapacityAdviceResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
+	body := req.GetCapacityAdviceRequestResource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/advice/capacity", req.GetProject(), req.GetRegion())
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/projects/%v/regions/%v", req.GetProject(), req.GetRegion()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.Advice/Capacity")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/regions/{region}/advice/capacity")
+	}
+	opts = append((*c.CallOptions).Capacity[0:len((*c.CallOptions).Capacity):len((*c.CallOptions).Capacity)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.CapacityAdviceResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "Capacity")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CapacityHistory gets the capacity history.
+func (c *adviceRESTClient) CapacityHistory(ctx context.Context, req *computepb.CapacityHistoryAdviceRequest, opts ...gax.CallOption) (*computepb.CapacityHistoryResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
+	body := req.GetCapacityHistoryRequestResource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/advice/capacityHistory", req.GetProject(), req.GetRegion())
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/projects/%v/regions/%v", req.GetProject(), req.GetRegion()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.Advice/CapacityHistory")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/regions/{region}/advice/capacityHistory")
+	}
+	opts = append((*c.CallOptions).CapacityHistory[0:len((*c.CallOptions).CapacityHistory):len((*c.CallOptions).CapacityHistory)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.CapacityHistoryResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CapacityHistory")
 		if err != nil {
 			return err
 		}

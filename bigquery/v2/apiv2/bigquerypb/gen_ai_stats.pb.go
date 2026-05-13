@@ -147,6 +147,52 @@ func (x *GenAiFunctionCostOptimizationStats) GetMessage() string {
 	return ""
 }
 
+// Provides cache statistics for a GenAi function call.
+type GenAiFunctionCacheStats struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Number of rows served from cache.
+	NumCacheHitRows *int64 `protobuf:"varint,1,opt,name=num_cache_hit_rows,json=numCacheHitRows,proto3,oneof" json:"num_cache_hit_rows,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *GenAiFunctionCacheStats) Reset() {
+	*x = GenAiFunctionCacheStats{}
+	mi := &file_google_cloud_bigquery_v2_gen_ai_stats_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GenAiFunctionCacheStats) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GenAiFunctionCacheStats) ProtoMessage() {}
+
+func (x *GenAiFunctionCacheStats) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_bigquery_v2_gen_ai_stats_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GenAiFunctionCacheStats.ProtoReflect.Descriptor instead.
+func (*GenAiFunctionCacheStats) Descriptor() ([]byte, []int) {
+	return file_google_cloud_bigquery_v2_gen_ai_stats_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *GenAiFunctionCacheStats) GetNumCacheHitRows() int64 {
+	if x != nil && x.NumCacheHitRows != nil {
+		return *x.NumCacheHitRows
+	}
+	return 0
+}
+
 // Provides statistics for each Ai function call within a query.
 type GenAiFunctionStats struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -161,13 +207,15 @@ type GenAiFunctionStats struct {
 	ErrorStats *GenAiFunctionErrorStats `protobuf:"bytes,4,opt,name=error_stats,json=errorStats,proto3,oneof" json:"error_stats,omitempty"`
 	// Cost optimization stats if applied on the rows processed by the function.
 	CostOptimizationStats *GenAiFunctionCostOptimizationStats `protobuf:"bytes,5,opt,name=cost_optimization_stats,json=costOptimizationStats,proto3,oneof" json:"cost_optimization_stats,omitempty"`
-	unknownFields         protoimpl.UnknownFields
-	sizeCache             protoimpl.SizeCache
+	// Cache stats for the function.
+	CacheStats    *GenAiFunctionCacheStats `protobuf:"bytes,6,opt,name=cache_stats,json=cacheStats,proto3,oneof" json:"cache_stats,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *GenAiFunctionStats) Reset() {
 	*x = GenAiFunctionStats{}
-	mi := &file_google_cloud_bigquery_v2_gen_ai_stats_proto_msgTypes[2]
+	mi := &file_google_cloud_bigquery_v2_gen_ai_stats_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -179,7 +227,7 @@ func (x *GenAiFunctionStats) String() string {
 func (*GenAiFunctionStats) ProtoMessage() {}
 
 func (x *GenAiFunctionStats) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_bigquery_v2_gen_ai_stats_proto_msgTypes[2]
+	mi := &file_google_cloud_bigquery_v2_gen_ai_stats_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -192,7 +240,7 @@ func (x *GenAiFunctionStats) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GenAiFunctionStats.ProtoReflect.Descriptor instead.
 func (*GenAiFunctionStats) Descriptor() ([]byte, []int) {
-	return file_google_cloud_bigquery_v2_gen_ai_stats_proto_rawDescGZIP(), []int{2}
+	return file_google_cloud_bigquery_v2_gen_ai_stats_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *GenAiFunctionStats) GetFunctionName() string {
@@ -230,6 +278,13 @@ func (x *GenAiFunctionStats) GetCostOptimizationStats() *GenAiFunctionCostOptimi
 	return nil
 }
 
+func (x *GenAiFunctionStats) GetCacheStats() *GenAiFunctionCacheStats {
+	if x != nil {
+		return x.CacheStats
+	}
+	return nil
+}
+
 // Provides error statistics for the query job across all AI function calls.
 type GenAiErrorStats struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -241,7 +296,7 @@ type GenAiErrorStats struct {
 
 func (x *GenAiErrorStats) Reset() {
 	*x = GenAiErrorStats{}
-	mi := &file_google_cloud_bigquery_v2_gen_ai_stats_proto_msgTypes[3]
+	mi := &file_google_cloud_bigquery_v2_gen_ai_stats_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -253,7 +308,7 @@ func (x *GenAiErrorStats) String() string {
 func (*GenAiErrorStats) ProtoMessage() {}
 
 func (x *GenAiErrorStats) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_bigquery_v2_gen_ai_stats_proto_msgTypes[3]
+	mi := &file_google_cloud_bigquery_v2_gen_ai_stats_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -266,7 +321,7 @@ func (x *GenAiErrorStats) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GenAiErrorStats.ProtoReflect.Descriptor instead.
 func (*GenAiErrorStats) Descriptor() ([]byte, []int) {
-	return file_google_cloud_bigquery_v2_gen_ai_stats_proto_rawDescGZIP(), []int{3}
+	return file_google_cloud_bigquery_v2_gen_ai_stats_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *GenAiErrorStats) GetErrors() []string {
@@ -290,7 +345,7 @@ type GenAiStats struct {
 
 func (x *GenAiStats) Reset() {
 	*x = GenAiStats{}
-	mi := &file_google_cloud_bigquery_v2_gen_ai_stats_proto_msgTypes[4]
+	mi := &file_google_cloud_bigquery_v2_gen_ai_stats_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -302,7 +357,7 @@ func (x *GenAiStats) String() string {
 func (*GenAiStats) ProtoMessage() {}
 
 func (x *GenAiStats) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_bigquery_v2_gen_ai_stats_proto_msgTypes[4]
+	mi := &file_google_cloud_bigquery_v2_gen_ai_stats_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -315,7 +370,7 @@ func (x *GenAiStats) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GenAiStats.ProtoReflect.Descriptor instead.
 func (*GenAiStats) Descriptor() ([]byte, []int) {
-	return file_google_cloud_bigquery_v2_gen_ai_stats_proto_rawDescGZIP(), []int{4}
+	return file_google_cloud_bigquery_v2_gen_ai_stats_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *GenAiStats) GetErrorStats() *GenAiErrorStats {
@@ -345,19 +400,25 @@ const file_google_cloud_bigquery_v2_gen_ai_stats_proto_rawDesc = "" +
 	"\amessage\x18\x02 \x01(\tH\x01R\amessage\x88\x01\x01B\x1a\n" +
 	"\x18_num_cost_optimized_rowsB\n" +
 	"\n" +
-	"\b_message\"\xc2\x03\n" +
+	"\b_message\"b\n" +
+	"\x17GenAiFunctionCacheStats\x120\n" +
+	"\x12num_cache_hit_rows\x18\x01 \x01(\x03H\x00R\x0fnumCacheHitRows\x88\x01\x01B\x15\n" +
+	"\x13_num_cache_hit_rows\"\xab\x04\n" +
 	"\x12GenAiFunctionStats\x12(\n" +
 	"\rfunction_name\x18\x01 \x01(\tH\x00R\ffunctionName\x88\x01\x01\x12\x1b\n" +
 	"\x06prompt\x18\x02 \x01(\tH\x01R\x06prompt\x88\x01\x01\x121\n" +
 	"\x12num_processed_rows\x18\x03 \x01(\x03H\x02R\x10numProcessedRows\x88\x01\x01\x12W\n" +
 	"\verror_stats\x18\x04 \x01(\v21.google.cloud.bigquery.v2.GenAiFunctionErrorStatsH\x03R\n" +
 	"errorStats\x88\x01\x01\x12y\n" +
-	"\x17cost_optimization_stats\x18\x05 \x01(\v2<.google.cloud.bigquery.v2.GenAiFunctionCostOptimizationStatsH\x04R\x15costOptimizationStats\x88\x01\x01B\x10\n" +
+	"\x17cost_optimization_stats\x18\x05 \x01(\v2<.google.cloud.bigquery.v2.GenAiFunctionCostOptimizationStatsH\x04R\x15costOptimizationStats\x88\x01\x01\x12W\n" +
+	"\vcache_stats\x18\x06 \x01(\v21.google.cloud.bigquery.v2.GenAiFunctionCacheStatsH\x05R\n" +
+	"cacheStats\x88\x01\x01B\x10\n" +
 	"\x0e_function_nameB\t\n" +
 	"\a_promptB\x15\n" +
 	"\x13_num_processed_rowsB\x0e\n" +
 	"\f_error_statsB\x1a\n" +
-	"\x18_cost_optimization_stats\")\n" +
+	"\x18_cost_optimization_statsB\x0e\n" +
+	"\f_cache_stats\")\n" +
 	"\x0fGenAiErrorStats\x12\x16\n" +
 	"\x06errors\x18\x01 \x03(\tR\x06errors\"\xc2\x01\n" +
 	"\n" +
@@ -380,24 +441,26 @@ func file_google_cloud_bigquery_v2_gen_ai_stats_proto_rawDescGZIP() []byte {
 	return file_google_cloud_bigquery_v2_gen_ai_stats_proto_rawDescData
 }
 
-var file_google_cloud_bigquery_v2_gen_ai_stats_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
+var file_google_cloud_bigquery_v2_gen_ai_stats_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_google_cloud_bigquery_v2_gen_ai_stats_proto_goTypes = []any{
 	(*GenAiFunctionErrorStats)(nil),            // 0: google.cloud.bigquery.v2.GenAiFunctionErrorStats
 	(*GenAiFunctionCostOptimizationStats)(nil), // 1: google.cloud.bigquery.v2.GenAiFunctionCostOptimizationStats
-	(*GenAiFunctionStats)(nil),                 // 2: google.cloud.bigquery.v2.GenAiFunctionStats
-	(*GenAiErrorStats)(nil),                    // 3: google.cloud.bigquery.v2.GenAiErrorStats
-	(*GenAiStats)(nil),                         // 4: google.cloud.bigquery.v2.GenAiStats
+	(*GenAiFunctionCacheStats)(nil),            // 2: google.cloud.bigquery.v2.GenAiFunctionCacheStats
+	(*GenAiFunctionStats)(nil),                 // 3: google.cloud.bigquery.v2.GenAiFunctionStats
+	(*GenAiErrorStats)(nil),                    // 4: google.cloud.bigquery.v2.GenAiErrorStats
+	(*GenAiStats)(nil),                         // 5: google.cloud.bigquery.v2.GenAiStats
 }
 var file_google_cloud_bigquery_v2_gen_ai_stats_proto_depIdxs = []int32{
 	0, // 0: google.cloud.bigquery.v2.GenAiFunctionStats.error_stats:type_name -> google.cloud.bigquery.v2.GenAiFunctionErrorStats
 	1, // 1: google.cloud.bigquery.v2.GenAiFunctionStats.cost_optimization_stats:type_name -> google.cloud.bigquery.v2.GenAiFunctionCostOptimizationStats
-	3, // 2: google.cloud.bigquery.v2.GenAiStats.error_stats:type_name -> google.cloud.bigquery.v2.GenAiErrorStats
-	2, // 3: google.cloud.bigquery.v2.GenAiStats.function_stats:type_name -> google.cloud.bigquery.v2.GenAiFunctionStats
-	4, // [4:4] is the sub-list for method output_type
-	4, // [4:4] is the sub-list for method input_type
-	4, // [4:4] is the sub-list for extension type_name
-	4, // [4:4] is the sub-list for extension extendee
-	0, // [0:4] is the sub-list for field type_name
+	2, // 2: google.cloud.bigquery.v2.GenAiFunctionStats.cache_stats:type_name -> google.cloud.bigquery.v2.GenAiFunctionCacheStats
+	4, // 3: google.cloud.bigquery.v2.GenAiStats.error_stats:type_name -> google.cloud.bigquery.v2.GenAiErrorStats
+	3, // 4: google.cloud.bigquery.v2.GenAiStats.function_stats:type_name -> google.cloud.bigquery.v2.GenAiFunctionStats
+	5, // [5:5] is the sub-list for method output_type
+	5, // [5:5] is the sub-list for method input_type
+	5, // [5:5] is the sub-list for extension type_name
+	5, // [5:5] is the sub-list for extension extendee
+	0, // [0:5] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_bigquery_v2_gen_ai_stats_proto_init() }
@@ -407,14 +470,15 @@ func file_google_cloud_bigquery_v2_gen_ai_stats_proto_init() {
 	}
 	file_google_cloud_bigquery_v2_gen_ai_stats_proto_msgTypes[1].OneofWrappers = []any{}
 	file_google_cloud_bigquery_v2_gen_ai_stats_proto_msgTypes[2].OneofWrappers = []any{}
-	file_google_cloud_bigquery_v2_gen_ai_stats_proto_msgTypes[4].OneofWrappers = []any{}
+	file_google_cloud_bigquery_v2_gen_ai_stats_proto_msgTypes[3].OneofWrappers = []any{}
+	file_google_cloud_bigquery_v2_gen_ai_stats_proto_msgTypes[5].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_bigquery_v2_gen_ai_stats_proto_rawDesc), len(file_google_cloud_bigquery_v2_gen_ai_stats_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   5,
+			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

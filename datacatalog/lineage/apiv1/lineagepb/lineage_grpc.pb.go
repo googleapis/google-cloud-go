@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -53,6 +53,7 @@ const (
 	Lineage_DeleteLineageEvent_FullMethodName         = "/google.cloud.datacatalog.lineage.v1.Lineage/DeleteLineageEvent"
 	Lineage_SearchLinks_FullMethodName                = "/google.cloud.datacatalog.lineage.v1.Lineage/SearchLinks"
 	Lineage_BatchSearchLinkProcesses_FullMethodName   = "/google.cloud.datacatalog.lineage.v1.Lineage/BatchSearchLinkProcesses"
+	Lineage_SearchLineageStreaming_FullMethodName     = "/google.cloud.datacatalog.lineage.v1.Lineage/SearchLineageStreaming"
 )
 
 // LineageClient is the client API for Lineage service.
@@ -120,6 +121,32 @@ type LineageClient interface {
 	// have the `datalineage.events.get` permission. The project provided in the
 	// URL is used for Billing and Quota.
 	BatchSearchLinkProcesses(ctx context.Context, in *BatchSearchLinkProcessesRequest, opts ...grpc.CallOption) (*BatchSearchLinkProcessesResponse, error)
+	// Retrieves a streaming response of lineage links connected to the requested
+	// assets by performing a breadth-first search in the given direction. Links
+	// represent the data flow between **source** (upstream) and **target**
+	// (downstream) assets in transformation pipelines. Links are stored in the
+	// same project as the Lineage Events that create them. This method retrieves
+	// links from all valid locations provided in the request. This method
+	// supports Column-Level Lineage (CLL) along with wildcard support to retrieve
+	// all CLL for an Entity FQN.
+	//
+	// Following permissions are required to retrieve links:
+	// * `datalineage.events.get` permission for the project where the link is
+	// stored for entity-level lineage.
+	// * `datalineage.events.getFields` permission for the project where the link
+	// is stored for column-level lineage.
+	//
+	// This method also returns processes that created the links if explicitly
+	// requested by setting
+	// [max_process_per_link](google.cloud.datacatalog.lineage.v1.SearchLineageStreamingRequest.limits.max_process_per_link)
+	// is non-zero and full process details are requested via
+	// `links.processes.process` in the
+	// [FieldMask](https://developers.google.com/workspace/docs/api/how-tos/field-masks#read_with_a_field_mask).
+	//
+	// Permission required to retrieve processes:
+	// * `datalineage.processes.get` permission for the project where the process
+	// is stored.
+	SearchLineageStreaming(ctx context.Context, in *SearchLineageStreamingRequest, opts ...grpc.CallOption) (Lineage_SearchLineageStreamingClient, error)
 }
 
 type lineageClient struct {
@@ -283,6 +310,38 @@ func (c *lineageClient) BatchSearchLinkProcesses(ctx context.Context, in *BatchS
 	return out, nil
 }
 
+func (c *lineageClient) SearchLineageStreaming(ctx context.Context, in *SearchLineageStreamingRequest, opts ...grpc.CallOption) (Lineage_SearchLineageStreamingClient, error) {
+	stream, err := c.cc.NewStream(ctx, &Lineage_ServiceDesc.Streams[0], Lineage_SearchLineageStreaming_FullMethodName, opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &lineageSearchLineageStreamingClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type Lineage_SearchLineageStreamingClient interface {
+	Recv() (*SearchLineageStreamingResponse, error)
+	grpc.ClientStream
+}
+
+type lineageSearchLineageStreamingClient struct {
+	grpc.ClientStream
+}
+
+func (x *lineageSearchLineageStreamingClient) Recv() (*SearchLineageStreamingResponse, error) {
+	m := new(SearchLineageStreamingResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 // LineageServer is the server API for Lineage service.
 // All implementations should embed UnimplementedLineageServer
 // for forward compatibility
@@ -348,6 +407,32 @@ type LineageServer interface {
 	// have the `datalineage.events.get` permission. The project provided in the
 	// URL is used for Billing and Quota.
 	BatchSearchLinkProcesses(context.Context, *BatchSearchLinkProcessesRequest) (*BatchSearchLinkProcessesResponse, error)
+	// Retrieves a streaming response of lineage links connected to the requested
+	// assets by performing a breadth-first search in the given direction. Links
+	// represent the data flow between **source** (upstream) and **target**
+	// (downstream) assets in transformation pipelines. Links are stored in the
+	// same project as the Lineage Events that create them. This method retrieves
+	// links from all valid locations provided in the request. This method
+	// supports Column-Level Lineage (CLL) along with wildcard support to retrieve
+	// all CLL for an Entity FQN.
+	//
+	// Following permissions are required to retrieve links:
+	// * `datalineage.events.get` permission for the project where the link is
+	// stored for entity-level lineage.
+	// * `datalineage.events.getFields` permission for the project where the link
+	// is stored for column-level lineage.
+	//
+	// This method also returns processes that created the links if explicitly
+	// requested by setting
+	// [max_process_per_link](google.cloud.datacatalog.lineage.v1.SearchLineageStreamingRequest.limits.max_process_per_link)
+	// is non-zero and full process details are requested via
+	// `links.processes.process` in the
+	// [FieldMask](https://developers.google.com/workspace/docs/api/how-tos/field-masks#read_with_a_field_mask).
+	//
+	// Permission required to retrieve processes:
+	// * `datalineage.processes.get` permission for the project where the process
+	// is stored.
+	SearchLineageStreaming(*SearchLineageStreamingRequest, Lineage_SearchLineageStreamingServer) error
 }
 
 // UnimplementedLineageServer should be embedded to have forward compatible implementations.
@@ -404,6 +489,9 @@ func (UnimplementedLineageServer) SearchLinks(context.Context, *SearchLinksReque
 }
 func (UnimplementedLineageServer) BatchSearchLinkProcesses(context.Context, *BatchSearchLinkProcessesRequest) (*BatchSearchLinkProcessesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BatchSearchLinkProcesses not implemented")
+}
+func (UnimplementedLineageServer) SearchLineageStreaming(*SearchLineageStreamingRequest, Lineage_SearchLineageStreamingServer) error {
+	return status.Errorf(codes.Unimplemented, "method SearchLineageStreaming not implemented")
 }
 
 // UnsafeLineageServer may be embedded to opt out of forward compatibility for this service.
@@ -723,6 +811,27 @@ func _Lineage_BatchSearchLinkProcesses_Handler(srv interface{}, ctx context.Cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Lineage_SearchLineageStreaming_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(SearchLineageStreamingRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(LineageServer).SearchLineageStreaming(m, &lineageSearchLineageStreamingServer{stream})
+}
+
+type Lineage_SearchLineageStreamingServer interface {
+	Send(*SearchLineageStreamingResponse) error
+	grpc.ServerStream
+}
+
+type lineageSearchLineageStreamingServer struct {
+	grpc.ServerStream
+}
+
+func (x *lineageSearchLineageStreamingServer) Send(m *SearchLineageStreamingResponse) error {
+	return x.ServerStream.SendMsg(m)
+}
+
 // Lineage_ServiceDesc is the grpc.ServiceDesc for Lineage service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -799,6 +908,12 @@ var Lineage_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Lineage_BatchSearchLinkProcesses_Handler,
 		},
 	},
-	Streams:  []grpc.StreamDesc{},
+	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "SearchLineageStreaming",
+			Handler:       _Lineage_SearchLineageStreaming_Handler,
+			ServerStreams: true,
+		},
+	},
 	Metadata: "google/cloud/datacatalog/lineage/v1/lineage.proto",
 }

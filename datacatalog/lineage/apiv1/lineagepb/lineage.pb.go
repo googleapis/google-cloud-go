@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import (
 
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
+	interval "google.golang.org/genproto/googleapis/type/interval"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
@@ -41,6 +42,59 @@ const (
 	// Verify that runtime/protoimpl is sufficiently up-to-date.
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
+
+// Type of dependency between entities.
+type DependencyType int32
+
+const (
+	// Dependency type unspecified.
+	DependencyType_DEPENDENCY_TYPE_UNSPECIFIED DependencyType = 0
+	// Exact data copy without any change.
+	DependencyType_EXACT_COPY DependencyType = 1
+	// Other types of dependencies like filtering or grouping.
+	DependencyType_OTHER DependencyType = 3
+)
+
+// Enum value maps for DependencyType.
+var (
+	DependencyType_name = map[int32]string{
+		0: "DEPENDENCY_TYPE_UNSPECIFIED",
+		1: "EXACT_COPY",
+		3: "OTHER",
+	}
+	DependencyType_value = map[string]int32{
+		"DEPENDENCY_TYPE_UNSPECIFIED": 0,
+		"EXACT_COPY":                  1,
+		"OTHER":                       3,
+	}
+)
+
+func (x DependencyType) Enum() *DependencyType {
+	p := new(DependencyType)
+	*p = x
+	return p
+}
+
+func (x DependencyType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (DependencyType) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_enumTypes[0].Descriptor()
+}
+
+func (DependencyType) Type() protoreflect.EnumType {
+	return &file_google_cloud_datacatalog_lineage_v1_lineage_proto_enumTypes[0]
+}
+
+func (x DependencyType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use DependencyType.Descriptor instead.
+func (DependencyType) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{0}
+}
 
 // The current state of the run.
 type Run_State int32
@@ -88,11 +142,11 @@ func (x Run_State) String() string {
 }
 
 func (Run_State) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_enumTypes[0].Descriptor()
+	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_enumTypes[1].Descriptor()
 }
 
 func (Run_State) Type() protoreflect.EnumType {
-	return &file_google_cloud_datacatalog_lineage_v1_lineage_proto_enumTypes[0]
+	return &file_google_cloud_datacatalog_lineage_v1_lineage_proto_enumTypes[1]
 }
 
 func (x Run_State) Number() protoreflect.EnumNumber {
@@ -149,11 +203,11 @@ func (x OperationMetadata_State) String() string {
 }
 
 func (OperationMetadata_State) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_enumTypes[1].Descriptor()
+	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_enumTypes[2].Descriptor()
 }
 
 func (OperationMetadata_State) Type() protoreflect.EnumType {
-	return &file_google_cloud_datacatalog_lineage_v1_lineage_proto_enumTypes[1]
+	return &file_google_cloud_datacatalog_lineage_v1_lineage_proto_enumTypes[2]
 }
 
 func (x OperationMetadata_State) Number() protoreflect.EnumNumber {
@@ -162,7 +216,7 @@ func (x OperationMetadata_State) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use OperationMetadata_State.Descriptor instead.
 func (OperationMetadata_State) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{5, 0}
+	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{6, 0}
 }
 
 // Type of the long running operation.
@@ -202,11 +256,11 @@ func (x OperationMetadata_Type) String() string {
 }
 
 func (OperationMetadata_Type) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_enumTypes[2].Descriptor()
+	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_enumTypes[3].Descriptor()
 }
 
 func (OperationMetadata_Type) Type() protoreflect.EnumType {
-	return &file_google_cloud_datacatalog_lineage_v1_lineage_proto_enumTypes[2]
+	return &file_google_cloud_datacatalog_lineage_v1_lineage_proto_enumTypes[3]
 }
 
 func (x OperationMetadata_Type) Number() protoreflect.EnumNumber {
@@ -215,7 +269,7 @@ func (x OperationMetadata_Type) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use OperationMetadata_Type.Descriptor instead.
 func (OperationMetadata_Type) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{5, 1}
+	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{6, 1}
 }
 
 // Type of the source of a process.
@@ -236,6 +290,12 @@ const (
 	Origin_LOOKER_STUDIO Origin_SourceType = 5
 	// Dataproc
 	Origin_DATAPROC Origin_SourceType = 6
+	// Vertex AI
+	Origin_VERTEX_AI Origin_SourceType = 7
+	// Dataflow
+	Origin_DATAFLOW Origin_SourceType = 8
+	// Looker Core
+	Origin_LOOKER_CORE Origin_SourceType = 9
 )
 
 // Enum value maps for Origin_SourceType.
@@ -248,6 +308,9 @@ var (
 		4: "COMPOSER",
 		5: "LOOKER_STUDIO",
 		6: "DATAPROC",
+		7: "VERTEX_AI",
+		8: "DATAFLOW",
+		9: "LOOKER_CORE",
 	}
 	Origin_SourceType_value = map[string]int32{
 		"SOURCE_TYPE_UNSPECIFIED": 0,
@@ -257,6 +320,9 @@ var (
 		"COMPOSER":                4,
 		"LOOKER_STUDIO":           5,
 		"DATAPROC":                6,
+		"VERTEX_AI":               7,
+		"DATAFLOW":                8,
+		"LOOKER_CORE":             9,
 	}
 )
 
@@ -271,11 +337,11 @@ func (x Origin_SourceType) String() string {
 }
 
 func (Origin_SourceType) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_enumTypes[3].Descriptor()
+	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_enumTypes[4].Descriptor()
 }
 
 func (Origin_SourceType) Type() protoreflect.EnumType {
-	return &file_google_cloud_datacatalog_lineage_v1_lineage_proto_enumTypes[3]
+	return &file_google_cloud_datacatalog_lineage_v1_lineage_proto_enumTypes[4]
 }
 
 func (x Origin_SourceType) Number() protoreflect.EnumNumber {
@@ -284,7 +350,110 @@ func (x Origin_SourceType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Origin_SourceType.Descriptor instead.
 func (Origin_SourceType) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{32, 0}
+	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{34, 0}
+}
+
+// Direction of the search.
+type SearchLineageStreamingRequest_SearchDirection int32
+
+const (
+	// Direction is unspecified.
+	SearchLineageStreamingRequest_SEARCH_DIRECTION_UNSPECIFIED SearchLineageStreamingRequest_SearchDirection = 0
+	// Retrieve links that lead from the specified asset to downstream assets.
+	SearchLineageStreamingRequest_DOWNSTREAM SearchLineageStreamingRequest_SearchDirection = 1
+	// Retrieve links that lead from upstream assets to the specified asset.
+	SearchLineageStreamingRequest_UPSTREAM SearchLineageStreamingRequest_SearchDirection = 2
+)
+
+// Enum value maps for SearchLineageStreamingRequest_SearchDirection.
+var (
+	SearchLineageStreamingRequest_SearchDirection_name = map[int32]string{
+		0: "SEARCH_DIRECTION_UNSPECIFIED",
+		1: "DOWNSTREAM",
+		2: "UPSTREAM",
+	}
+	SearchLineageStreamingRequest_SearchDirection_value = map[string]int32{
+		"SEARCH_DIRECTION_UNSPECIFIED": 0,
+		"DOWNSTREAM":                   1,
+		"UPSTREAM":                     2,
+	}
+)
+
+func (x SearchLineageStreamingRequest_SearchDirection) Enum() *SearchLineageStreamingRequest_SearchDirection {
+	p := new(SearchLineageStreamingRequest_SearchDirection)
+	*p = x
+	return p
+}
+
+func (x SearchLineageStreamingRequest_SearchDirection) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (SearchLineageStreamingRequest_SearchDirection) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_enumTypes[5].Descriptor()
+}
+
+func (SearchLineageStreamingRequest_SearchDirection) Type() protoreflect.EnumType {
+	return &file_google_cloud_datacatalog_lineage_v1_lineage_proto_enumTypes[5]
+}
+
+func (x SearchLineageStreamingRequest_SearchDirection) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use SearchLineageStreamingRequest_SearchDirection.Descriptor instead.
+func (SearchLineageStreamingRequest_SearchDirection) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{36, 0}
+}
+
+// Entity set restriction.
+type SearchLineageStreamingRequest_EntitySet int32
+
+const (
+	// The entity set is unspecified. Returns all the data.
+	SearchLineageStreamingRequest_ENTITY_SET_UNSPECIFIED SearchLineageStreamingRequest_EntitySet = 0
+	// Returns entities with only FQN specified. For example, entities with the
+	// `field` field set are not returned.
+	SearchLineageStreamingRequest_ENTITIES SearchLineageStreamingRequest_EntitySet = 1
+)
+
+// Enum value maps for SearchLineageStreamingRequest_EntitySet.
+var (
+	SearchLineageStreamingRequest_EntitySet_name = map[int32]string{
+		0: "ENTITY_SET_UNSPECIFIED",
+		1: "ENTITIES",
+	}
+	SearchLineageStreamingRequest_EntitySet_value = map[string]int32{
+		"ENTITY_SET_UNSPECIFIED": 0,
+		"ENTITIES":               1,
+	}
+)
+
+func (x SearchLineageStreamingRequest_EntitySet) Enum() *SearchLineageStreamingRequest_EntitySet {
+	p := new(SearchLineageStreamingRequest_EntitySet)
+	*p = x
+	return p
+}
+
+func (x SearchLineageStreamingRequest_EntitySet) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (SearchLineageStreamingRequest_EntitySet) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_enumTypes[6].Descriptor()
+}
+
+func (SearchLineageStreamingRequest_EntitySet) Type() protoreflect.EnumType {
+	return &file_google_cloud_datacatalog_lineage_v1_lineage_proto_enumTypes[6]
+}
+
+func (x SearchLineageStreamingRequest_EntitySet) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use SearchLineageStreamingRequest_EntitySet.Descriptor instead.
+func (SearchLineageStreamingRequest_EntitySet) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{36, 1}
 }
 
 // A process is the definition of a data transformation operation.
@@ -381,7 +550,7 @@ type Run struct {
 	// contain characters in a set: `a-zA-Z0-9_-:.`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Optional. A human-readable name you can set to display in a user interface.
-	// Must be not longer than 1024 characters and only contain UTF-8 letters
+	// Must be not longer than 200 characters and only contain UTF-8 letters
 	// or numbers, spaces or characters like `_-:&.`
 	DisplayName string `protobuf:"bytes,2,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
 	// Optional. The attributes of the run. Should only be used for the purpose of
@@ -560,9 +729,11 @@ type EventLink struct {
 	// Required. Reference to the source entity
 	Source *EntityReference `protobuf:"bytes,1,opt,name=source,proto3" json:"source,omitempty"`
 	// Required. Reference to the target entity
-	Target        *EntityReference `protobuf:"bytes,2,opt,name=target,proto3" json:"target,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	Target *EntityReference `protobuf:"bytes,2,opt,name=target,proto3" json:"target,omitempty"`
+	// Optional. Describes how the target depends on the source.
+	DependencyInfo *DependencyInfo `protobuf:"bytes,3,opt,name=dependency_info,json=dependencyInfo,proto3" json:"dependency_info,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *EventLink) Reset() {
@@ -609,20 +780,84 @@ func (x *EventLink) GetTarget() *EntityReference {
 	return nil
 }
 
+func (x *EventLink) GetDependencyInfo() *DependencyInfo {
+	if x != nil {
+		return x.DependencyInfo
+	}
+	return nil
+}
+
+// Dependency info describes how one entity depends on another.
+type DependencyInfo struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. Type of dependency.
+	DependencyType DependencyType `protobuf:"varint,1,opt,name=dependency_type,json=dependencyType,proto3,enum=google.cloud.datacatalog.lineage.v1.DependencyType" json:"dependency_type,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *DependencyInfo) Reset() {
+	*x = DependencyInfo{}
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DependencyInfo) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DependencyInfo) ProtoMessage() {}
+
+func (x *DependencyInfo) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DependencyInfo.ProtoReflect.Descriptor instead.
+func (*DependencyInfo) Descriptor() ([]byte, []int) {
+	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *DependencyInfo) GetDependencyType() DependencyType {
+	if x != nil {
+		return x.DependencyType
+	}
+	return DependencyType_DEPENDENCY_TYPE_UNSPECIFIED
+}
+
 // The soft reference to everything you can attach a lineage event to.
 type EntityReference struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. [Fully Qualified Name
-	// (FQN)](https://cloud.google.com/data-catalog/docs/fully-qualified-names)
+	// (FQN)](https://cloud.google.com/dataplex/docs/fully-qualified-names)
 	// of the entity.
 	FullyQualifiedName string `protobuf:"bytes,1,opt,name=fully_qualified_name,json=fullyQualifiedName,proto3" json:"fully_qualified_name,omitempty"`
-	unknownFields      protoimpl.UnknownFields
-	sizeCache          protoimpl.SizeCache
+	// Optional. Field path within the entity. Each nesting level should be a
+	// separate value in the repeated field. The order matters. Must be empty for
+	// asset level lineage
+	//
+	// For example to address "salary.net" subfield where "salary" is a column and
+	// "net" is a proto field two values in the `field` should be reported,
+	// the first is "salary" and the second is "net".
+	//
+	// Each field length is limited to 500 characters.
+	// Maximum supported nesting level is 20.
+	Field         []string `protobuf:"bytes,3,rep,name=field,proto3" json:"field,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *EntityReference) Reset() {
 	*x = EntityReference{}
-	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[4]
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -634,7 +869,7 @@ func (x *EntityReference) String() string {
 func (*EntityReference) ProtoMessage() {}
 
 func (x *EntityReference) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[4]
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -647,7 +882,7 @@ func (x *EntityReference) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use EntityReference.ProtoReflect.Descriptor instead.
 func (*EntityReference) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{4}
+	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *EntityReference) GetFullyQualifiedName() string {
@@ -655,6 +890,13 @@ func (x *EntityReference) GetFullyQualifiedName() string {
 		return x.FullyQualifiedName
 	}
 	return ""
+}
+
+func (x *EntityReference) GetField() []string {
+	if x != nil {
+		return x.Field
+	}
+	return nil
 }
 
 // Metadata describing the operation.
@@ -681,7 +923,7 @@ type OperationMetadata struct {
 
 func (x *OperationMetadata) Reset() {
 	*x = OperationMetadata{}
-	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[5]
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -693,7 +935,7 @@ func (x *OperationMetadata) String() string {
 func (*OperationMetadata) ProtoMessage() {}
 
 func (x *OperationMetadata) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[5]
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -706,7 +948,7 @@ func (x *OperationMetadata) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OperationMetadata.ProtoReflect.Descriptor instead.
 func (*OperationMetadata) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{5}
+	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *OperationMetadata) GetState() OperationMetadata_State {
@@ -752,7 +994,7 @@ func (x *OperationMetadata) GetEndTime() *timestamppb.Timestamp {
 }
 
 // Request message for
-// [ProcessOpenLineageRunEvent][google.cloud.datacatalog.lineage.v1.ProcessOpenLineageRunEvent].
+// [ProcessOpenLineageRunEvent][google.cloud.datacatalog.lineage.v1.Lineage.ProcessOpenLineageRunEvent].
 type ProcessOpenLineageRunEventRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. The name of the project and its location that should own the
@@ -761,9 +1003,9 @@ type ProcessOpenLineageRunEventRequest struct {
 	// Required. OpenLineage message following OpenLineage format:
 	// https://github.com/OpenLineage/OpenLineage/blob/main/spec/OpenLineage.json
 	OpenLineage *structpb.Struct `protobuf:"bytes,2,opt,name=open_lineage,json=openLineage,proto3" json:"open_lineage,omitempty"`
-	// A unique identifier for this request. Restricted to 36 ASCII characters.
-	// A random UUID is recommended. This request is idempotent only if a
-	// `request_id` is provided.
+	// Optional. A unique identifier for this request. Restricted to 36 ASCII
+	// characters. A random UUID is recommended. This request is idempotent only
+	// if a `request_id` is provided.
 	RequestId     string `protobuf:"bytes,3,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -771,7 +1013,7 @@ type ProcessOpenLineageRunEventRequest struct {
 
 func (x *ProcessOpenLineageRunEventRequest) Reset() {
 	*x = ProcessOpenLineageRunEventRequest{}
-	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[6]
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -783,7 +1025,7 @@ func (x *ProcessOpenLineageRunEventRequest) String() string {
 func (*ProcessOpenLineageRunEventRequest) ProtoMessage() {}
 
 func (x *ProcessOpenLineageRunEventRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[6]
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -796,7 +1038,7 @@ func (x *ProcessOpenLineageRunEventRequest) ProtoReflect() protoreflect.Message 
 
 // Deprecated: Use ProcessOpenLineageRunEventRequest.ProtoReflect.Descriptor instead.
 func (*ProcessOpenLineageRunEventRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{6}
+	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *ProcessOpenLineageRunEventRequest) GetParent() string {
@@ -821,7 +1063,7 @@ func (x *ProcessOpenLineageRunEventRequest) GetRequestId() string {
 }
 
 // Response message for
-// [ProcessOpenLineageRunEvent][google.cloud.datacatalog.lineage.v1.ProcessOpenLineageRunEvent].
+// [ProcessOpenLineageRunEvent][google.cloud.datacatalog.lineage.v1.Lineage.ProcessOpenLineageRunEvent].
 type ProcessOpenLineageRunEventResponse struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Created process name.
@@ -841,7 +1083,7 @@ type ProcessOpenLineageRunEventResponse struct {
 
 func (x *ProcessOpenLineageRunEventResponse) Reset() {
 	*x = ProcessOpenLineageRunEventResponse{}
-	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[7]
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -853,7 +1095,7 @@ func (x *ProcessOpenLineageRunEventResponse) String() string {
 func (*ProcessOpenLineageRunEventResponse) ProtoMessage() {}
 
 func (x *ProcessOpenLineageRunEventResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[7]
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -866,7 +1108,7 @@ func (x *ProcessOpenLineageRunEventResponse) ProtoReflect() protoreflect.Message
 
 // Deprecated: Use ProcessOpenLineageRunEventResponse.ProtoReflect.Descriptor instead.
 func (*ProcessOpenLineageRunEventResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{7}
+	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *ProcessOpenLineageRunEventResponse) GetProcess() string {
@@ -891,7 +1133,7 @@ func (x *ProcessOpenLineageRunEventResponse) GetLineageEvents() []string {
 }
 
 // Request message for
-// [CreateProcess][google.cloud.datacatalog.lineage.v1.CreateProcess].
+// [CreateProcess][google.cloud.datacatalog.lineage.v1.Lineage.CreateProcess].
 type CreateProcessRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. The name of the project and its location that should own the
@@ -899,9 +1141,9 @@ type CreateProcessRequest struct {
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The process to create.
 	Process *Process `protobuf:"bytes,2,opt,name=process,proto3" json:"process,omitempty"`
-	// A unique identifier for this request. Restricted to 36 ASCII characters.
-	// A random UUID is recommended. This request is idempotent only if a
-	// `request_id` is provided.
+	// Optional. A unique identifier for this request. Restricted to 36 ASCII
+	// characters. A random UUID is recommended. This request is idempotent only
+	// if a `request_id` is provided.
 	RequestId     string `protobuf:"bytes,3,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -909,7 +1151,7 @@ type CreateProcessRequest struct {
 
 func (x *CreateProcessRequest) Reset() {
 	*x = CreateProcessRequest{}
-	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[8]
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -921,7 +1163,7 @@ func (x *CreateProcessRequest) String() string {
 func (*CreateProcessRequest) ProtoMessage() {}
 
 func (x *CreateProcessRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[8]
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -934,7 +1176,7 @@ func (x *CreateProcessRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateProcessRequest.ProtoReflect.Descriptor instead.
 func (*CreateProcessRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{8}
+	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *CreateProcessRequest) GetParent() string {
@@ -959,25 +1201,30 @@ func (x *CreateProcessRequest) GetRequestId() string {
 }
 
 // Request message for
-// [UpdateProcess][google.cloud.datacatalog.lineage.v1.UpdateProcess].
+// [UpdateProcess][google.cloud.datacatalog.lineage.v1.Lineage.UpdateProcess].
 type UpdateProcessRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. The lineage process to update.
 	//
 	// The process's `name` field is used to identify the process to update.
 	Process *Process `protobuf:"bytes,1,opt,name=process,proto3" json:"process,omitempty"`
-	// The list of fields to update. Currently not used. The whole message is
-	// updated.
+	// Optional. The list of fields to update. Currently not used. The whole
+	// message is updated.
 	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
-	// If set to true and the process is not found, the request inserts it.
-	AllowMissing  bool `protobuf:"varint,3,opt,name=allow_missing,json=allowMissing,proto3" json:"allow_missing,omitempty"`
+	// Optional. If set to true and the process is not found, the request inserts
+	// it.
+	AllowMissing bool `protobuf:"varint,3,opt,name=allow_missing,json=allowMissing,proto3" json:"allow_missing,omitempty"`
+	// Optional. A unique identifier for this request. Restricted to 36 ASCII
+	// characters. A random UUID is recommended. This request is idempotent only
+	// if a `request_id` is provided.
+	RequestId     string `protobuf:"bytes,4,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *UpdateProcessRequest) Reset() {
 	*x = UpdateProcessRequest{}
-	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[9]
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -989,7 +1236,7 @@ func (x *UpdateProcessRequest) String() string {
 func (*UpdateProcessRequest) ProtoMessage() {}
 
 func (x *UpdateProcessRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[9]
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1002,7 +1249,7 @@ func (x *UpdateProcessRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateProcessRequest.ProtoReflect.Descriptor instead.
 func (*UpdateProcessRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{9}
+	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *UpdateProcessRequest) GetProcess() *Process {
@@ -1026,8 +1273,15 @@ func (x *UpdateProcessRequest) GetAllowMissing() bool {
 	return false
 }
 
+func (x *UpdateProcessRequest) GetRequestId() string {
+	if x != nil {
+		return x.RequestId
+	}
+	return ""
+}
+
 // Request message for
-// [GetProcess][google.cloud.datacatalog.lineage.v1.GetProcess].
+// [GetProcess][google.cloud.datacatalog.lineage.v1.Lineage.GetProcess].
 type GetProcessRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. The name of the process to get.
@@ -1038,7 +1292,7 @@ type GetProcessRequest struct {
 
 func (x *GetProcessRequest) Reset() {
 	*x = GetProcessRequest{}
-	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[10]
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1050,7 +1304,7 @@ func (x *GetProcessRequest) String() string {
 func (*GetProcessRequest) ProtoMessage() {}
 
 func (x *GetProcessRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[10]
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1063,7 +1317,7 @@ func (x *GetProcessRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetProcessRequest.ProtoReflect.Descriptor instead.
 func (*GetProcessRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{10}
+	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *GetProcessRequest) GetName() string {
@@ -1074,19 +1328,19 @@ func (x *GetProcessRequest) GetName() string {
 }
 
 // Request message for
-// [ListProcesses][google.cloud.datacatalog.lineage.v1.ListProcesses].
+// [ListProcesses][google.cloud.datacatalog.lineage.v1.Lineage.ListProcesses].
 type ListProcessesRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. The name of the project and its location that owns this
 	// collection of processes.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
-	// The maximum number of processes to return. The service may return
+	// Optional. The maximum number of processes to return. The service may return
 	// fewer than this value. If unspecified, at most 50 processes are
 	// returned. The maximum value is 100; values greater than 100 are cut to
 	// 100.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	// The page token received from a previous `ListProcesses` call. Specify
-	// it to get the next page.
+	// Optional. The page token received from a previous `ListProcesses` call.
+	// Specify it to get the next page.
 	//
 	// When paginating, all other parameters specified in this call must
 	// match the parameters of the call that provided the page token.
@@ -1097,7 +1351,7 @@ type ListProcessesRequest struct {
 
 func (x *ListProcessesRequest) Reset() {
 	*x = ListProcessesRequest{}
-	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[11]
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1109,7 +1363,7 @@ func (x *ListProcessesRequest) String() string {
 func (*ListProcessesRequest) ProtoMessage() {}
 
 func (x *ListProcessesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[11]
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1122,7 +1376,7 @@ func (x *ListProcessesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListProcessesRequest.ProtoReflect.Descriptor instead.
 func (*ListProcessesRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{11}
+	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *ListProcessesRequest) GetParent() string {
@@ -1147,7 +1401,7 @@ func (x *ListProcessesRequest) GetPageToken() string {
 }
 
 // Response message for
-// [ListProcesses][google.cloud.datacatalog.lineage.v1.ListProcesses].
+// [ListProcesses][google.cloud.datacatalog.lineage.v1.Lineage.ListProcesses].
 type ListProcessesResponse struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The processes from the specified project and location.
@@ -1161,7 +1415,7 @@ type ListProcessesResponse struct {
 
 func (x *ListProcessesResponse) Reset() {
 	*x = ListProcessesResponse{}
-	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[12]
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1173,7 +1427,7 @@ func (x *ListProcessesResponse) String() string {
 func (*ListProcessesResponse) ProtoMessage() {}
 
 func (x *ListProcessesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[12]
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1186,7 +1440,7 @@ func (x *ListProcessesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListProcessesResponse.ProtoReflect.Descriptor instead.
 func (*ListProcessesResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{12}
+	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *ListProcessesResponse) GetProcesses() []*Process {
@@ -1204,12 +1458,12 @@ func (x *ListProcessesResponse) GetNextPageToken() string {
 }
 
 // Request message for
-// [DeleteProcess][google.cloud.datacatalog.lineage.v1.DeleteProcess].
+// [DeleteProcess][google.cloud.datacatalog.lineage.v1.Lineage.DeleteProcess].
 type DeleteProcessRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. The name of the process to delete.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// If set to true and the process is not found, the request
+	// Optional. If set to true and the process is not found, the request
 	// succeeds but the server doesn't perform any actions.
 	AllowMissing  bool `protobuf:"varint,2,opt,name=allow_missing,json=allowMissing,proto3" json:"allow_missing,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -1218,7 +1472,7 @@ type DeleteProcessRequest struct {
 
 func (x *DeleteProcessRequest) Reset() {
 	*x = DeleteProcessRequest{}
-	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[13]
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1230,7 +1484,7 @@ func (x *DeleteProcessRequest) String() string {
 func (*DeleteProcessRequest) ProtoMessage() {}
 
 func (x *DeleteProcessRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[13]
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1243,7 +1497,7 @@ func (x *DeleteProcessRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteProcessRequest.ProtoReflect.Descriptor instead.
 func (*DeleteProcessRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{13}
+	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *DeleteProcessRequest) GetName() string {
@@ -1261,16 +1515,16 @@ func (x *DeleteProcessRequest) GetAllowMissing() bool {
 }
 
 // Request message for
-// [CreateRun][google.cloud.datacatalog.lineage.v1.CreateRun].
+// [CreateRun][google.cloud.datacatalog.lineage.v1.Lineage.CreateRun].
 type CreateRunRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. The name of the process that should own the run.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The run to create.
 	Run *Run `protobuf:"bytes,2,opt,name=run,proto3" json:"run,omitempty"`
-	// A unique identifier for this request. Restricted to 36 ASCII characters.
-	// A random UUID is recommended. This request is idempotent only if a
-	// `request_id` is provided.
+	// Optional. A unique identifier for this request. Restricted to 36 ASCII
+	// characters. A random UUID is recommended. This request is idempotent only
+	// if a `request_id` is provided.
 	RequestId     string `protobuf:"bytes,3,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -1278,7 +1532,7 @@ type CreateRunRequest struct {
 
 func (x *CreateRunRequest) Reset() {
 	*x = CreateRunRequest{}
-	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[14]
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1290,7 +1544,7 @@ func (x *CreateRunRequest) String() string {
 func (*CreateRunRequest) ProtoMessage() {}
 
 func (x *CreateRunRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[14]
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1303,7 +1557,7 @@ func (x *CreateRunRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateRunRequest.ProtoReflect.Descriptor instead.
 func (*CreateRunRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{14}
+	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *CreateRunRequest) GetParent() string {
@@ -1328,7 +1582,7 @@ func (x *CreateRunRequest) GetRequestId() string {
 }
 
 // Request message for
-// [UpdateRun][google.cloud.datacatalog.lineage.v1.UpdateRun].
+// [UpdateRun][google.cloud.datacatalog.lineage.v1.Lineage.UpdateRun].
 type UpdateRunRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. The lineage run to update.
@@ -1338,10 +1592,10 @@ type UpdateRunRequest struct {
 	// Format:
 	// `projects/{project}/locations/{location}/processes/{process}/runs/{run}`.
 	Run *Run `protobuf:"bytes,1,opt,name=run,proto3" json:"run,omitempty"`
-	// The list of fields to update. Currently not used. The whole message is
-	// updated.
+	// Optional. The list of fields to update. Currently not used. The whole
+	// message is updated.
 	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
-	// If set to true and the run is not found, the request creates it.
+	// Optional. If set to true and the run is not found, the request creates it.
 	AllowMissing  bool `protobuf:"varint,3,opt,name=allow_missing,json=allowMissing,proto3" json:"allow_missing,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -1349,7 +1603,7 @@ type UpdateRunRequest struct {
 
 func (x *UpdateRunRequest) Reset() {
 	*x = UpdateRunRequest{}
-	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[15]
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1361,7 +1615,7 @@ func (x *UpdateRunRequest) String() string {
 func (*UpdateRunRequest) ProtoMessage() {}
 
 func (x *UpdateRunRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[15]
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1374,7 +1628,7 @@ func (x *UpdateRunRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateRunRequest.ProtoReflect.Descriptor instead.
 func (*UpdateRunRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{15}
+	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *UpdateRunRequest) GetRun() *Run {
@@ -1399,7 +1653,7 @@ func (x *UpdateRunRequest) GetAllowMissing() bool {
 }
 
 // Request message for
-// [GetRun][google.cloud.datacatalog.lineage.v1.GetRun].
+// [GetRun][google.cloud.datacatalog.lineage.v1.Lineage.GetRun].
 type GetRunRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. The name of the run to get.
@@ -1410,7 +1664,7 @@ type GetRunRequest struct {
 
 func (x *GetRunRequest) Reset() {
 	*x = GetRunRequest{}
-	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[16]
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1422,7 +1676,7 @@ func (x *GetRunRequest) String() string {
 func (*GetRunRequest) ProtoMessage() {}
 
 func (x *GetRunRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[16]
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1435,7 +1689,7 @@ func (x *GetRunRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetRunRequest.ProtoReflect.Descriptor instead.
 func (*GetRunRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{16}
+	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *GetRunRequest) GetName() string {
@@ -1446,17 +1700,17 @@ func (x *GetRunRequest) GetName() string {
 }
 
 // Request message for
-// [ListRuns][google.cloud.datacatalog.lineage.v1.ListRuns].
+// [ListRuns][google.cloud.datacatalog.lineage.v1.Lineage.ListRuns].
 type ListRunsRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. The name of process that owns this collection of runs.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
-	// The maximum number of runs to return. The service may return
+	// Optional. The maximum number of runs to return. The service may return
 	// fewer than this value. If unspecified, at most 50 runs are
 	// returned. The maximum value is 100; values greater than 100 are cut to
 	// 100.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	// The page token received from a previous `ListRuns` call. Specify
+	// Optional. The page token received from a previous `ListRuns` call. Specify
 	// it to get the next page.
 	//
 	// When paginating, all other parameters specified in this call must
@@ -1468,7 +1722,7 @@ type ListRunsRequest struct {
 
 func (x *ListRunsRequest) Reset() {
 	*x = ListRunsRequest{}
-	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[17]
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1480,7 +1734,7 @@ func (x *ListRunsRequest) String() string {
 func (*ListRunsRequest) ProtoMessage() {}
 
 func (x *ListRunsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[17]
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1493,7 +1747,7 @@ func (x *ListRunsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListRunsRequest.ProtoReflect.Descriptor instead.
 func (*ListRunsRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{17}
+	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *ListRunsRequest) GetParent() string {
@@ -1518,7 +1772,7 @@ func (x *ListRunsRequest) GetPageToken() string {
 }
 
 // Response message for
-// [ListRuns][google.cloud.datacatalog.lineage.v1.ListRuns].
+// [ListRuns][google.cloud.datacatalog.lineage.v1.Lineage.ListRuns].
 type ListRunsResponse struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The runs from the specified project and location.
@@ -1532,7 +1786,7 @@ type ListRunsResponse struct {
 
 func (x *ListRunsResponse) Reset() {
 	*x = ListRunsResponse{}
-	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[18]
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1544,7 +1798,7 @@ func (x *ListRunsResponse) String() string {
 func (*ListRunsResponse) ProtoMessage() {}
 
 func (x *ListRunsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[18]
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1557,7 +1811,7 @@ func (x *ListRunsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListRunsResponse.ProtoReflect.Descriptor instead.
 func (*ListRunsResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{18}
+	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *ListRunsResponse) GetRuns() []*Run {
@@ -1575,12 +1829,12 @@ func (x *ListRunsResponse) GetNextPageToken() string {
 }
 
 // Request message for
-// [DeleteRun][google.cloud.datacatalog.lineage.v1.DeleteRun].
+// [DeleteRun][google.cloud.datacatalog.lineage.v1.Lineage.DeleteRun].
 type DeleteRunRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. The name of the run to delete.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// If set to true and the run is not found, the request
+	// Optional. If set to true and the run is not found, the request
 	// succeeds but the server doesn't perform any actions.
 	AllowMissing  bool `protobuf:"varint,2,opt,name=allow_missing,json=allowMissing,proto3" json:"allow_missing,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -1589,7 +1843,7 @@ type DeleteRunRequest struct {
 
 func (x *DeleteRunRequest) Reset() {
 	*x = DeleteRunRequest{}
-	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[19]
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1601,7 +1855,7 @@ func (x *DeleteRunRequest) String() string {
 func (*DeleteRunRequest) ProtoMessage() {}
 
 func (x *DeleteRunRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[19]
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1614,7 +1868,7 @@ func (x *DeleteRunRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteRunRequest.ProtoReflect.Descriptor instead.
 func (*DeleteRunRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{19}
+	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *DeleteRunRequest) GetName() string {
@@ -1632,16 +1886,16 @@ func (x *DeleteRunRequest) GetAllowMissing() bool {
 }
 
 // Request message for
-// [CreateLineageEvent][google.cloud.datacatalog.lineage.v1.CreateLineageEvent].
+// [CreateLineageEvent][google.cloud.datacatalog.lineage.v1.Lineage.CreateLineageEvent].
 type CreateLineageEventRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. The name of the run that should own the lineage event.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The lineage event to create.
 	LineageEvent *LineageEvent `protobuf:"bytes,2,opt,name=lineage_event,json=lineageEvent,proto3" json:"lineage_event,omitempty"`
-	// A unique identifier for this request. Restricted to 36 ASCII characters.
-	// A random UUID is recommended. This request is idempotent only if a
-	// `request_id` is provided.
+	// Optional. A unique identifier for this request. Restricted to 36 ASCII
+	// characters. A random UUID is recommended. This request is idempotent only
+	// if a `request_id` is provided.
 	RequestId     string `protobuf:"bytes,3,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -1649,7 +1903,7 @@ type CreateLineageEventRequest struct {
 
 func (x *CreateLineageEventRequest) Reset() {
 	*x = CreateLineageEventRequest{}
-	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[20]
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1661,7 +1915,7 @@ func (x *CreateLineageEventRequest) String() string {
 func (*CreateLineageEventRequest) ProtoMessage() {}
 
 func (x *CreateLineageEventRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[20]
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1674,7 +1928,7 @@ func (x *CreateLineageEventRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateLineageEventRequest.ProtoReflect.Descriptor instead.
 func (*CreateLineageEventRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{20}
+	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *CreateLineageEventRequest) GetParent() string {
@@ -1699,7 +1953,7 @@ func (x *CreateLineageEventRequest) GetRequestId() string {
 }
 
 // Request message for
-// [GetLineageEvent][google.cloud.datacatalog.lineage.v1.GetLineageEvent].
+// [GetLineageEvent][google.cloud.datacatalog.lineage.v1.Lineage.GetLineageEvent].
 type GetLineageEventRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. The name of the lineage event to get.
@@ -1710,7 +1964,7 @@ type GetLineageEventRequest struct {
 
 func (x *GetLineageEventRequest) Reset() {
 	*x = GetLineageEventRequest{}
-	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[21]
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1722,7 +1976,7 @@ func (x *GetLineageEventRequest) String() string {
 func (*GetLineageEventRequest) ProtoMessage() {}
 
 func (x *GetLineageEventRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[21]
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1735,7 +1989,7 @@ func (x *GetLineageEventRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetLineageEventRequest.ProtoReflect.Descriptor instead.
 func (*GetLineageEventRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{21}
+	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *GetLineageEventRequest) GetName() string {
@@ -1746,20 +2000,20 @@ func (x *GetLineageEventRequest) GetName() string {
 }
 
 // Request message for
-// [ListLineageEvents][google.cloud.datacatalog.lineage.v1.ListLineageEvents].
+// [ListLineageEvents][google.cloud.datacatalog.lineage.v1.Lineage.ListLineageEvents].
 type ListLineageEventsRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. The name of the run that owns the collection of lineage events to
 	// get.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
-	// The maximum number of lineage events to return.
+	// Optional. The maximum number of lineage events to return.
 	//
 	// The service may return fewer events than this value.
 	// If unspecified, at most 50 events are returned. The maximum value is 100;
 	// values greater than 100 are cut to 100.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	// The page token received from a previous `ListLineageEvents` call. Specify
-	// it to get the next page.
+	// Optional. The page token received from a previous `ListLineageEvents` call.
+	// Specify it to get the next page.
 	//
 	// When paginating, all other parameters specified in this call must
 	// match the parameters of the call that provided the page token.
@@ -1770,7 +2024,7 @@ type ListLineageEventsRequest struct {
 
 func (x *ListLineageEventsRequest) Reset() {
 	*x = ListLineageEventsRequest{}
-	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[22]
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1782,7 +2036,7 @@ func (x *ListLineageEventsRequest) String() string {
 func (*ListLineageEventsRequest) ProtoMessage() {}
 
 func (x *ListLineageEventsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[22]
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1795,7 +2049,7 @@ func (x *ListLineageEventsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListLineageEventsRequest.ProtoReflect.Descriptor instead.
 func (*ListLineageEventsRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{22}
+	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *ListLineageEventsRequest) GetParent() string {
@@ -1820,7 +2074,7 @@ func (x *ListLineageEventsRequest) GetPageToken() string {
 }
 
 // Response message for
-// [ListLineageEvents][google.cloud.datacatalog.lineage.v1.ListLineageEvents].
+// [ListLineageEvents][google.cloud.datacatalog.lineage.v1.Lineage.ListLineageEvents].
 type ListLineageEventsResponse struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Lineage events from the specified project and location.
@@ -1834,7 +2088,7 @@ type ListLineageEventsResponse struct {
 
 func (x *ListLineageEventsResponse) Reset() {
 	*x = ListLineageEventsResponse{}
-	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[23]
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1846,7 +2100,7 @@ func (x *ListLineageEventsResponse) String() string {
 func (*ListLineageEventsResponse) ProtoMessage() {}
 
 func (x *ListLineageEventsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[23]
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1859,7 +2113,7 @@ func (x *ListLineageEventsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListLineageEventsResponse.ProtoReflect.Descriptor instead.
 func (*ListLineageEventsResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{23}
+	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *ListLineageEventsResponse) GetLineageEvents() []*LineageEvent {
@@ -1877,12 +2131,12 @@ func (x *ListLineageEventsResponse) GetNextPageToken() string {
 }
 
 // Request message for
-// [DeleteLineageEvent][google.cloud.datacatalog.lineage.v1.DeleteLineageEvent].
+// [DeleteLineageEvent][google.cloud.datacatalog.lineage.v1.Lineage.DeleteLineageEvent].
 type DeleteLineageEventRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. The name of the lineage event to delete.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// If set to true and the lineage event is not found, the request
+	// Optional. If set to true and the lineage event is not found, the request
 	// succeeds but the server doesn't perform any actions.
 	AllowMissing  bool `protobuf:"varint,2,opt,name=allow_missing,json=allowMissing,proto3" json:"allow_missing,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -1891,7 +2145,7 @@ type DeleteLineageEventRequest struct {
 
 func (x *DeleteLineageEventRequest) Reset() {
 	*x = DeleteLineageEventRequest{}
-	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[24]
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1903,7 +2157,7 @@ func (x *DeleteLineageEventRequest) String() string {
 func (*DeleteLineageEventRequest) ProtoMessage() {}
 
 func (x *DeleteLineageEventRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[24]
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1916,7 +2170,7 @@ func (x *DeleteLineageEventRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteLineageEventRequest.ProtoReflect.Descriptor instead.
 func (*DeleteLineageEventRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{24}
+	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{25}
 }
 
 func (x *DeleteLineageEventRequest) GetName() string {
@@ -1945,6 +2199,8 @@ type SearchLinksRequest struct {
 	//
 	//	*SearchLinksRequest_Source
 	//	*SearchLinksRequest_Target
+	//	*SearchLinksRequest_Sources
+	//	*SearchLinksRequest_Targets
 	Criteria isSearchLinksRequest_Criteria `protobuf_oneof:"criteria"`
 	// Optional. The maximum number of links to return in a single page of the
 	// response. A page may contain fewer links than this value. If unspecified,
@@ -1965,7 +2221,7 @@ type SearchLinksRequest struct {
 
 func (x *SearchLinksRequest) Reset() {
 	*x = SearchLinksRequest{}
-	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[25]
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1977,7 +2233,7 @@ func (x *SearchLinksRequest) String() string {
 func (*SearchLinksRequest) ProtoMessage() {}
 
 func (x *SearchLinksRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[25]
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1990,7 +2246,7 @@ func (x *SearchLinksRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SearchLinksRequest.ProtoReflect.Descriptor instead.
 func (*SearchLinksRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{25}
+	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{26}
 }
 
 func (x *SearchLinksRequest) GetParent() string {
@@ -2020,6 +2276,24 @@ func (x *SearchLinksRequest) GetTarget() *EntityReference {
 	if x != nil {
 		if x, ok := x.Criteria.(*SearchLinksRequest_Target); ok {
 			return x.Target
+		}
+	}
+	return nil
+}
+
+func (x *SearchLinksRequest) GetSources() *MultipleEntityReference {
+	if x != nil {
+		if x, ok := x.Criteria.(*SearchLinksRequest_Sources); ok {
+			return x.Sources
+		}
+	}
+	return nil
+}
+
+func (x *SearchLinksRequest) GetTargets() *MultipleEntityReference {
+	if x != nil {
+		if x, ok := x.Criteria.(*SearchLinksRequest_Targets); ok {
+			return x.Targets
 		}
 	}
 	return nil
@@ -2055,9 +2329,82 @@ type SearchLinksRequest_Target struct {
 	Target *EntityReference `protobuf:"bytes,5,opt,name=target,proto3,oneof"`
 }
 
+type SearchLinksRequest_Sources struct {
+	// Optional. Send a list of asset information in the **sources** field to
+	// retrieve all links that lead from the specified assets to downstream
+	// assets. This field is similar to the `source`
+	// [source][google.cloud.datacatalog.lineage.v1.SearchLinksRequest.source]
+	// field but allows providing multiple entities.
+	// All entities within the `MultipleEntityReference` must have the same
+	// `fully_qualified_name`.
+	Sources *MultipleEntityReference `protobuf:"bytes,6,opt,name=sources,proto3,oneof"`
+}
+
+type SearchLinksRequest_Targets struct {
+	// Optional. Send a list of asset information in the **targets** field to
+	// retrieve all links that lead from upstream assets to the specified
+	// assets. This field is similar to the `target`
+	// [target][google.cloud.datacatalog.lineage.v1.SearchLinksRequest.target]
+	// field but allows providing multiple entities.
+	// All entities within the `MultipleEntityReference` must have the same
+	// `fully_qualified_name`.
+	Targets *MultipleEntityReference `protobuf:"bytes,7,opt,name=targets,proto3,oneof"`
+}
+
 func (*SearchLinksRequest_Source) isSearchLinksRequest_Criteria() {}
 
 func (*SearchLinksRequest_Target) isSearchLinksRequest_Criteria() {}
+
+func (*SearchLinksRequest_Sources) isSearchLinksRequest_Criteria() {}
+
+func (*SearchLinksRequest_Targets) isSearchLinksRequest_Criteria() {}
+
+// Multiple entity reference for SearchLinksRequest.
+type MultipleEntityReference struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. The list of entities to search for links. The maximum number of
+	// entities is 20.
+	Entities      []*EntityReference `protobuf:"bytes,1,rep,name=entities,proto3" json:"entities,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *MultipleEntityReference) Reset() {
+	*x = MultipleEntityReference{}
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[27]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *MultipleEntityReference) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MultipleEntityReference) ProtoMessage() {}
+
+func (x *MultipleEntityReference) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[27]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MultipleEntityReference.ProtoReflect.Descriptor instead.
+func (*MultipleEntityReference) Descriptor() ([]byte, []int) {
+	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{27}
+}
+
+func (x *MultipleEntityReference) GetEntities() []*EntityReference {
+	if x != nil {
+		return x.Entities
+	}
+	return nil
+}
 
 // Response message for
 // [SearchLinks][google.cloud.datacatalog.lineage.v1.Lineage.SearchLinks].
@@ -2075,7 +2422,7 @@ type SearchLinksResponse struct {
 
 func (x *SearchLinksResponse) Reset() {
 	*x = SearchLinksResponse{}
-	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[26]
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2087,7 +2434,7 @@ func (x *SearchLinksResponse) String() string {
 func (*SearchLinksResponse) ProtoMessage() {}
 
 func (x *SearchLinksResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[26]
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2100,7 +2447,7 @@ func (x *SearchLinksResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SearchLinksResponse.ProtoReflect.Descriptor instead.
 func (*SearchLinksResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{26}
+	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{28}
 }
 
 func (x *SearchLinksResponse) GetLinks() []*Link {
@@ -2134,14 +2481,17 @@ type Link struct {
 	// The start of the first event establishing this link.
 	StartTime *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=start_time,json=startTime,proto3" json:"start_time,omitempty"`
 	// The end of the last event establishing this link.
-	EndTime       *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=end_time,json=endTime,proto3" json:"end_time,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	EndTime *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=end_time,json=endTime,proto3" json:"end_time,omitempty"`
+	// Optional. The dependency info of the link (applies only to column level
+	// links).
+	DependencyInfo []*Link_DependencyInfo `protobuf:"bytes,6,rep,name=dependency_info,json=dependencyInfo,proto3" json:"dependency_info,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *Link) Reset() {
 	*x = Link{}
-	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[27]
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[29]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2153,7 +2503,7 @@ func (x *Link) String() string {
 func (*Link) ProtoMessage() {}
 
 func (x *Link) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[27]
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[29]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2166,7 +2516,7 @@ func (x *Link) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Link.ProtoReflect.Descriptor instead.
 func (*Link) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{27}
+	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{29}
 }
 
 func (x *Link) GetName() string {
@@ -2204,6 +2554,13 @@ func (x *Link) GetEndTime() *timestamppb.Timestamp {
 	return nil
 }
 
+func (x *Link) GetDependencyInfo() []*Link_DependencyInfo {
+	if x != nil {
+		return x.DependencyInfo
+	}
+	return nil
+}
+
 // Request message for
 // [BatchSearchLinkProcesses][google.cloud.datacatalog.lineage.v1.Lineage.BatchSearchLinkProcesses].
 type BatchSearchLinkProcessesRequest struct {
@@ -2218,11 +2575,11 @@ type BatchSearchLinkProcessesRequest struct {
 	//
 	// Format: `projects/{project}/locations/{location}/links/{link}`.
 	Links []string `protobuf:"bytes,2,rep,name=links,proto3" json:"links,omitempty"`
-	// The maximum number of processes to return in a single page of the response.
-	// A page may contain fewer results than this value.
+	// Optional. The maximum number of processes to return in a single page of the
+	// response. A page may contain fewer results than this value.
 	PageSize int32 `protobuf:"varint,3,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	// The page token received from a previous `BatchSearchLinkProcesses` call.
-	// Use it to get the next page.
+	// Optional. The page token received from a previous
+	// `BatchSearchLinkProcesses` call. Use it to get the next page.
 	//
 	// When requesting subsequent pages of a response, remember that
 	// all parameters must match the values you provided
@@ -2234,7 +2591,7 @@ type BatchSearchLinkProcessesRequest struct {
 
 func (x *BatchSearchLinkProcessesRequest) Reset() {
 	*x = BatchSearchLinkProcessesRequest{}
-	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[28]
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[30]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2246,7 +2603,7 @@ func (x *BatchSearchLinkProcessesRequest) String() string {
 func (*BatchSearchLinkProcessesRequest) ProtoMessage() {}
 
 func (x *BatchSearchLinkProcessesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[28]
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[30]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2259,7 +2616,7 @@ func (x *BatchSearchLinkProcessesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BatchSearchLinkProcessesRequest.ProtoReflect.Descriptor instead.
 func (*BatchSearchLinkProcessesRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{28}
+	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{30}
 }
 
 func (x *BatchSearchLinkProcessesRequest) GetParent() string {
@@ -2305,7 +2662,7 @@ type BatchSearchLinkProcessesResponse struct {
 
 func (x *BatchSearchLinkProcessesResponse) Reset() {
 	*x = BatchSearchLinkProcessesResponse{}
-	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[29]
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[31]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2317,7 +2674,7 @@ func (x *BatchSearchLinkProcessesResponse) String() string {
 func (*BatchSearchLinkProcessesResponse) ProtoMessage() {}
 
 func (x *BatchSearchLinkProcessesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[29]
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[31]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2330,7 +2687,7 @@ func (x *BatchSearchLinkProcessesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BatchSearchLinkProcessesResponse.ProtoReflect.Descriptor instead.
 func (*BatchSearchLinkProcessesResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{29}
+	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{31}
 }
 
 func (x *BatchSearchLinkProcessesResponse) GetProcessLinks() []*ProcessLinks {
@@ -2366,7 +2723,7 @@ type ProcessLinks struct {
 
 func (x *ProcessLinks) Reset() {
 	*x = ProcessLinks{}
-	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[30]
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[32]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2378,7 +2735,7 @@ func (x *ProcessLinks) String() string {
 func (*ProcessLinks) ProtoMessage() {}
 
 func (x *ProcessLinks) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[30]
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[32]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2391,7 +2748,7 @@ func (x *ProcessLinks) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ProcessLinks.ProtoReflect.Descriptor instead.
 func (*ProcessLinks) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{30}
+	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{32}
 }
 
 func (x *ProcessLinks) GetProcess() string {
@@ -2424,7 +2781,7 @@ type ProcessLinkInfo struct {
 
 func (x *ProcessLinkInfo) Reset() {
 	*x = ProcessLinkInfo{}
-	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[31]
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[33]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2436,7 +2793,7 @@ func (x *ProcessLinkInfo) String() string {
 func (*ProcessLinkInfo) ProtoMessage() {}
 
 func (x *ProcessLinkInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[31]
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[33]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2449,7 +2806,7 @@ func (x *ProcessLinkInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ProcessLinkInfo.ProtoReflect.Descriptor instead.
 func (*ProcessLinkInfo) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{31}
+	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{33}
 }
 
 func (x *ProcessLinkInfo) GetLink() string {
@@ -2479,11 +2836,12 @@ type Origin struct {
 	// Type of the source.
 	//
 	// Use of a source_type other than `CUSTOM` for process creation
-	// or updating is highly discouraged, and may be restricted in the future
-	// without notice.
+	// or updating is highly discouraged. It might be restricted in the future
+	// without notice. There will be increase in cost if you use any of the source
+	// types other than `CUSTOM`.
 	SourceType Origin_SourceType `protobuf:"varint,1,opt,name=source_type,json=sourceType,proto3,enum=google.cloud.datacatalog.lineage.v1.Origin_SourceType" json:"source_type,omitempty"`
-	// If the source_type isn't CUSTOM, the value of this field should be a GCP
-	// resource name of the system, which reports lineage. The project and
+	// If the source_type isn't CUSTOM, the value of this field should be a Google
+	// Cloud resource name of the system, which reports lineage. The project and
 	// location parts of the resource name must match the project and location of
 	// the lineage resource being created. Examples:
 	//
@@ -2498,7 +2856,7 @@ type Origin struct {
 
 func (x *Origin) Reset() {
 	*x = Origin{}
-	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[32]
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[34]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2510,7 +2868,7 @@ func (x *Origin) String() string {
 func (*Origin) ProtoMessage() {}
 
 func (x *Origin) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[32]
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[34]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2523,7 +2881,7 @@ func (x *Origin) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Origin.ProtoReflect.Descriptor instead.
 func (*Origin) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{32}
+	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{34}
 }
 
 func (x *Origin) GetSourceType() Origin_SourceType {
@@ -2540,11 +2898,606 @@ func (x *Origin) GetName() string {
 	return ""
 }
 
+// Lineage link between two entities.
+type LineageLink struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The entity that is the **source** of this link.
+	Source *EntityReference `protobuf:"bytes,1,opt,name=source,proto3" json:"source,omitempty"`
+	// The entity that is the **target** of this link.
+	Target *EntityReference `protobuf:"bytes,2,opt,name=target,proto3" json:"target,omitempty"`
+	// Processes metadata associated with the link.
+	Processes []*LineageLink_LineageProcess `protobuf:"bytes,3,rep,name=processes,proto3" json:"processes,omitempty"`
+	// Describes how the target entity is dependent on the source entity.
+	DependencyInfo []*LineageLink_DependencyInfo `protobuf:"bytes,4,rep,name=dependency_info,json=dependencyInfo,proto3" json:"dependency_info,omitempty"`
+	// Depth of the current link in the graph starting from 1.
+	Depth int32 `protobuf:"varint,5,opt,name=depth,proto3" json:"depth,omitempty"`
+	// The location where the LineageEvent that created the link is stored.
+	Location      string `protobuf:"bytes,7,opt,name=location,proto3" json:"location,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *LineageLink) Reset() {
+	*x = LineageLink{}
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[35]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LineageLink) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LineageLink) ProtoMessage() {}
+
+func (x *LineageLink) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[35]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LineageLink.ProtoReflect.Descriptor instead.
+func (*LineageLink) Descriptor() ([]byte, []int) {
+	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{35}
+}
+
+func (x *LineageLink) GetSource() *EntityReference {
+	if x != nil {
+		return x.Source
+	}
+	return nil
+}
+
+func (x *LineageLink) GetTarget() *EntityReference {
+	if x != nil {
+		return x.Target
+	}
+	return nil
+}
+
+func (x *LineageLink) GetProcesses() []*LineageLink_LineageProcess {
+	if x != nil {
+		return x.Processes
+	}
+	return nil
+}
+
+func (x *LineageLink) GetDependencyInfo() []*LineageLink_DependencyInfo {
+	if x != nil {
+		return x.DependencyInfo
+	}
+	return nil
+}
+
+func (x *LineageLink) GetDepth() int32 {
+	if x != nil {
+		return x.Depth
+	}
+	return 0
+}
+
+func (x *LineageLink) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
+// Request message for
+// [SearchLineageStreaming][google.cloud.datacatalog.lineage.v1.Lineage.SearchLineageStreaming].
+type SearchLineageStreamingRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The project and location to initiate the search from.
+	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
+	// Required. The locations to search in.
+	Locations []string `protobuf:"bytes,2,rep,name=locations,proto3" json:"locations,omitempty"`
+	// Required. Criteria for the root of the search.
+	RootCriteria *SearchLineageStreamingRequest_RootCriteria `protobuf:"bytes,3,opt,name=root_criteria,json=rootCriteria,proto3" json:"root_criteria,omitempty"`
+	// Required. Direction of the search.
+	Direction SearchLineageStreamingRequest_SearchDirection `protobuf:"varint,4,opt,name=direction,proto3,enum=google.cloud.datacatalog.lineage.v1.SearchLineageStreamingRequest_SearchDirection" json:"direction,omitempty"`
+	// Optional. Filters for the search.
+	Filters *SearchLineageStreamingRequest_SearchFilters `protobuf:"bytes,5,opt,name=filters,proto3" json:"filters,omitempty"`
+	// Optional. Limits for the search.
+	Limits        *SearchLineageStreamingRequest_SearchLimits `protobuf:"bytes,6,opt,name=limits,proto3" json:"limits,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SearchLineageStreamingRequest) Reset() {
+	*x = SearchLineageStreamingRequest{}
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[36]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SearchLineageStreamingRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SearchLineageStreamingRequest) ProtoMessage() {}
+
+func (x *SearchLineageStreamingRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[36]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SearchLineageStreamingRequest.ProtoReflect.Descriptor instead.
+func (*SearchLineageStreamingRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{36}
+}
+
+func (x *SearchLineageStreamingRequest) GetParent() string {
+	if x != nil {
+		return x.Parent
+	}
+	return ""
+}
+
+func (x *SearchLineageStreamingRequest) GetLocations() []string {
+	if x != nil {
+		return x.Locations
+	}
+	return nil
+}
+
+func (x *SearchLineageStreamingRequest) GetRootCriteria() *SearchLineageStreamingRequest_RootCriteria {
+	if x != nil {
+		return x.RootCriteria
+	}
+	return nil
+}
+
+func (x *SearchLineageStreamingRequest) GetDirection() SearchLineageStreamingRequest_SearchDirection {
+	if x != nil {
+		return x.Direction
+	}
+	return SearchLineageStreamingRequest_SEARCH_DIRECTION_UNSPECIFIED
+}
+
+func (x *SearchLineageStreamingRequest) GetFilters() *SearchLineageStreamingRequest_SearchFilters {
+	if x != nil {
+		return x.Filters
+	}
+	return nil
+}
+
+func (x *SearchLineageStreamingRequest) GetLimits() *SearchLineageStreamingRequest_SearchLimits {
+	if x != nil {
+		return x.Limits
+	}
+	return nil
+}
+
+// Response message for
+// [SearchLineageStreaming][google.cloud.datacatalog.lineage.v1.Lineage.SearchLineageStreaming].
+type SearchLineageStreamingResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Output only. The lineage links that match the search criteria. Can be empty
+	// if no links match.
+	Links []*LineageLink `protobuf:"bytes,1,rep,name=links,proto3" json:"links,omitempty"`
+	// Unordered list. Unreachable resources. If non-empty, the result set might
+	// be incomplete.
+	//
+	// Currently, only locations are supported.
+	//
+	// Format: `projects/[PROJECT_NUMBER]/locations/[LOCATION]`
+	// Example: projects/123456789/locations/us-east1
+	Unreachable   []string `protobuf:"bytes,2,rep,name=unreachable,proto3" json:"unreachable,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SearchLineageStreamingResponse) Reset() {
+	*x = SearchLineageStreamingResponse{}
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[37]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SearchLineageStreamingResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SearchLineageStreamingResponse) ProtoMessage() {}
+
+func (x *SearchLineageStreamingResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[37]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SearchLineageStreamingResponse.ProtoReflect.Descriptor instead.
+func (*SearchLineageStreamingResponse) Descriptor() ([]byte, []int) {
+	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{37}
+}
+
+func (x *SearchLineageStreamingResponse) GetLinks() []*LineageLink {
+	if x != nil {
+		return x.Links
+	}
+	return nil
+}
+
+func (x *SearchLineageStreamingResponse) GetUnreachable() []string {
+	if x != nil {
+		return x.Unreachable
+	}
+	return nil
+}
+
+// Dependency info describes how one entity depends on another.
+type Link_DependencyInfo struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The type of dependency.
+	DependencyType DependencyType `protobuf:"varint,1,opt,name=dependency_type,json=dependencyType,proto3,enum=google.cloud.datacatalog.lineage.v1.DependencyType" json:"dependency_type,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *Link_DependencyInfo) Reset() {
+	*x = Link_DependencyInfo{}
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[40]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Link_DependencyInfo) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Link_DependencyInfo) ProtoMessage() {}
+
+func (x *Link_DependencyInfo) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[40]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Link_DependencyInfo.ProtoReflect.Descriptor instead.
+func (*Link_DependencyInfo) Descriptor() ([]byte, []int) {
+	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{29, 0}
+}
+
+func (x *Link_DependencyInfo) GetDependencyType() DependencyType {
+	if x != nil {
+		return x.DependencyType
+	}
+	return DependencyType_DEPENDENCY_TYPE_UNSPECIFIED
+}
+
+// Process metadata for the link.
+type LineageLink_LineageProcess struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Process that created the link.
+	Process       *Process `protobuf:"bytes,3,opt,name=process,proto3" json:"process,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *LineageLink_LineageProcess) Reset() {
+	*x = LineageLink_LineageProcess{}
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[41]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LineageLink_LineageProcess) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LineageLink_LineageProcess) ProtoMessage() {}
+
+func (x *LineageLink_LineageProcess) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[41]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LineageLink_LineageProcess.ProtoReflect.Descriptor instead.
+func (*LineageLink_LineageProcess) Descriptor() ([]byte, []int) {
+	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{35, 0}
+}
+
+func (x *LineageLink_LineageProcess) GetProcess() *Process {
+	if x != nil {
+		return x.Process
+	}
+	return nil
+}
+
+// Dependency info describes how one entity is dependent on another.
+type LineageLink_DependencyInfo struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The type of dependency.
+	DependencyType DependencyType `protobuf:"varint,1,opt,name=dependency_type,json=dependencyType,proto3,enum=google.cloud.datacatalog.lineage.v1.DependencyType" json:"dependency_type,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *LineageLink_DependencyInfo) Reset() {
+	*x = LineageLink_DependencyInfo{}
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[42]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LineageLink_DependencyInfo) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LineageLink_DependencyInfo) ProtoMessage() {}
+
+func (x *LineageLink_DependencyInfo) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[42]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LineageLink_DependencyInfo.ProtoReflect.Descriptor instead.
+func (*LineageLink_DependencyInfo) Descriptor() ([]byte, []int) {
+	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{35, 1}
+}
+
+func (x *LineageLink_DependencyInfo) GetDependencyType() DependencyType {
+	if x != nil {
+		return x.DependencyType
+	}
+	return DependencyType_DEPENDENCY_TYPE_UNSPECIFIED
+}
+
+// Filters for the search.
+type SearchLineageStreamingRequest_SearchFilters struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. Types of dependencies between entities to retrieve.
+	// If unspecified, all dependency types are returned.
+	DependencyTypes []DependencyType `protobuf:"varint,1,rep,packed,name=dependency_types,json=dependencyTypes,proto3,enum=google.cloud.datacatalog.lineage.v1.DependencyType" json:"dependency_types,omitempty"`
+	// Optional. Entity set restriction. If unspecified, the method returns all
+	// entities.
+	EntitySet SearchLineageStreamingRequest_EntitySet `protobuf:"varint,2,opt,name=entity_set,json=entitySet,proto3,enum=google.cloud.datacatalog.lineage.v1.SearchLineageStreamingRequest_EntitySet" json:"entity_set,omitempty"`
+	// Optional. Time interval to search for lineage. If unspecified, all
+	// lineage is returned. Currently, at most one of `start_time` and
+	// `end_time` can be set.
+	TimeRange     *interval.Interval `protobuf:"bytes,3,opt,name=time_range,json=timeRange,proto3" json:"time_range,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SearchLineageStreamingRequest_SearchFilters) Reset() {
+	*x = SearchLineageStreamingRequest_SearchFilters{}
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[43]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SearchLineageStreamingRequest_SearchFilters) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SearchLineageStreamingRequest_SearchFilters) ProtoMessage() {}
+
+func (x *SearchLineageStreamingRequest_SearchFilters) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[43]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SearchLineageStreamingRequest_SearchFilters.ProtoReflect.Descriptor instead.
+func (*SearchLineageStreamingRequest_SearchFilters) Descriptor() ([]byte, []int) {
+	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{36, 0}
+}
+
+func (x *SearchLineageStreamingRequest_SearchFilters) GetDependencyTypes() []DependencyType {
+	if x != nil {
+		return x.DependencyTypes
+	}
+	return nil
+}
+
+func (x *SearchLineageStreamingRequest_SearchFilters) GetEntitySet() SearchLineageStreamingRequest_EntitySet {
+	if x != nil {
+		return x.EntitySet
+	}
+	return SearchLineageStreamingRequest_ENTITY_SET_UNSPECIFIED
+}
+
+func (x *SearchLineageStreamingRequest_SearchFilters) GetTimeRange() *interval.Interval {
+	if x != nil {
+		return x.TimeRange
+	}
+	return nil
+}
+
+// Limits for the search results.
+type SearchLineageStreamingRequest_SearchLimits struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. The maximum depth of the search. The default value is 5 and
+	// maximum value is 100.
+	MaxDepth int32 `protobuf:"varint,1,opt,name=max_depth,json=maxDepth,proto3" json:"max_depth,omitempty"`
+	// Optional. The maximum number of links to return in the response. The
+	// default value is 1_000 and the maximum value is 10_000.
+	MaxResults int32 `protobuf:"varint,2,opt,name=max_results,json=maxResults,proto3" json:"max_results,omitempty"`
+	// Optional. The maximum number of processes to return per link. The default
+	// value is 0 and the maximum value is 100. If this value is non-zero, the
+	// response will contain process names for the links. To retrieve full
+	// process details in the response, include `links.processes.process` in the
+	// [FieldMask](https://developers.google.com/workspace/docs/api/how-tos/field-masks#read_with_a_field_mask).
+	MaxProcessPerLink int32 `protobuf:"varint,3,opt,name=max_process_per_link,json=maxProcessPerLink,proto3" json:"max_process_per_link,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *SearchLineageStreamingRequest_SearchLimits) Reset() {
+	*x = SearchLineageStreamingRequest_SearchLimits{}
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[44]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SearchLineageStreamingRequest_SearchLimits) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SearchLineageStreamingRequest_SearchLimits) ProtoMessage() {}
+
+func (x *SearchLineageStreamingRequest_SearchLimits) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[44]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SearchLineageStreamingRequest_SearchLimits.ProtoReflect.Descriptor instead.
+func (*SearchLineageStreamingRequest_SearchLimits) Descriptor() ([]byte, []int) {
+	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{36, 1}
+}
+
+func (x *SearchLineageStreamingRequest_SearchLimits) GetMaxDepth() int32 {
+	if x != nil {
+		return x.MaxDepth
+	}
+	return 0
+}
+
+func (x *SearchLineageStreamingRequest_SearchLimits) GetMaxResults() int32 {
+	if x != nil {
+		return x.MaxResults
+	}
+	return 0
+}
+
+func (x *SearchLineageStreamingRequest_SearchLimits) GetMaxProcessPerLink() int32 {
+	if x != nil {
+		return x.MaxProcessPerLink
+	}
+	return 0
+}
+
+// Criteria for the root of the search.
+type SearchLineageStreamingRequest_RootCriteria struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Criteria for the root of the search.
+	//
+	// Types that are valid to be assigned to Criteria:
+	//
+	//	*SearchLineageStreamingRequest_RootCriteria_Entities
+	Criteria      isSearchLineageStreamingRequest_RootCriteria_Criteria `protobuf_oneof:"criteria"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SearchLineageStreamingRequest_RootCriteria) Reset() {
+	*x = SearchLineageStreamingRequest_RootCriteria{}
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[45]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SearchLineageStreamingRequest_RootCriteria) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SearchLineageStreamingRequest_RootCriteria) ProtoMessage() {}
+
+func (x *SearchLineageStreamingRequest_RootCriteria) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[45]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SearchLineageStreamingRequest_RootCriteria.ProtoReflect.Descriptor instead.
+func (*SearchLineageStreamingRequest_RootCriteria) Descriptor() ([]byte, []int) {
+	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP(), []int{36, 2}
+}
+
+func (x *SearchLineageStreamingRequest_RootCriteria) GetCriteria() isSearchLineageStreamingRequest_RootCriteria_Criteria {
+	if x != nil {
+		return x.Criteria
+	}
+	return nil
+}
+
+func (x *SearchLineageStreamingRequest_RootCriteria) GetEntities() *MultipleEntityReference {
+	if x != nil {
+		if x, ok := x.Criteria.(*SearchLineageStreamingRequest_RootCriteria_Entities); ok {
+			return x.Entities
+		}
+	}
+	return nil
+}
+
+type isSearchLineageStreamingRequest_RootCriteria_Criteria interface {
+	isSearchLineageStreamingRequest_RootCriteria_Criteria()
+}
+
+type SearchLineageStreamingRequest_RootCriteria_Entities struct {
+	// Optional. The entities to initiate the search from. Entities can be
+	// specified by FQN only, or by FQN and field. To search by FQN and all
+	// available fields for that FQN, use the wildcard `*` as the field value.
+	Entities *MultipleEntityReference `protobuf:"bytes,1,opt,name=entities,proto3,oneof"`
+}
+
+func (*SearchLineageStreamingRequest_RootCriteria_Entities) isSearchLineageStreamingRequest_RootCriteria_Criteria() {
+}
+
 var File_google_cloud_datacatalog_lineage_v1_lineage_proto protoreflect.FileDescriptor
 
 const file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDesc = "" +
 	"\n" +
-	"1google/cloud/datacatalog/lineage/v1/lineage.proto\x12#google.cloud.datacatalog.lineage.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb4\x03\n" +
+	"1google/cloud/datacatalog/lineage/v1/lineage.proto\x12#google.cloud.datacatalog.lineage.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1agoogle/type/interval.proto\"\xc8\x03\n" +
 	"\aProcess\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12&\n" +
 	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12a\n" +
@@ -2554,8 +3507,8 @@ const file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDesc = "" +
 	"\x06origin\x18\x04 \x01(\v2+.google.cloud.datacatalog.lineage.v1.OriginB\x03\xe0A\x01R\x06origin\x1aU\n" +
 	"\x0fAttributesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12,\n" +
-	"\x05value\x18\x02 \x01(\v2\x16.google.protobuf.ValueR\x05value:\x028\x01:d\xeaAa\n" +
-	"\"datalineage.googleapis.com/Process\x12;projects/{project}/locations/{location}/processes/{process}\"\xfb\x04\n" +
+	"\x05value\x18\x02 \x01(\v2\x16.google.protobuf.ValueR\x05value:\x028\x01:x\xeaAu\n" +
+	"\"datalineage.googleapis.com/Process\x12;projects/{project}/locations/{location}/processes/{process}*\tprocesses2\aprocess\"\x86\x05\n" +
 	"\x03Run\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12&\n" +
 	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12]\n" +
@@ -2575,20 +3528,24 @@ const file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDesc = "" +
 	"\tCOMPLETED\x10\x02\x12\n" +
 	"\n" +
 	"\x06FAILED\x10\x03\x12\v\n" +
-	"\aABORTED\x10\x04:k\xeaAh\n" +
-	"\x1edatalineage.googleapis.com/Run\x12Fprojects/{project}/locations/{location}/processes/{process}/runs/{run}\"\x84\x03\n" +
+	"\aABORTED\x10\x04:v\xeaAs\n" +
+	"\x1edatalineage.googleapis.com/Run\x12Fprojects/{project}/locations/{location}/processes/{process}/runs/{run}*\x04runs2\x03run\"\xa1\x03\n" +
 	"\fLineageEvent\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12I\n" +
 	"\x05links\x18\b \x03(\v2..google.cloud.datacatalog.lineage.v1.EventLinkB\x03\xe0A\x01R\x05links\x12>\n" +
 	"\n" +
 	"start_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x02R\tstartTime\x12:\n" +
-	"\bend_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\aendTime:\x93\x01\xeaA\x8f\x01\n" +
-	"'datalineage.googleapis.com/LineageEvent\x12dprojects/{project}/locations/{location}/processes/{process}/runs/{run}/lineageEvents/{lineage_event}\"\xb1\x01\n" +
+	"\bend_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\aendTime:\xb0\x01\xeaA\xac\x01\n" +
+	"'datalineage.googleapis.com/LineageEvent\x12dprojects/{project}/locations/{location}/processes/{process}/runs/{run}/lineageEvents/{lineage_event}*\rlineageEvents2\flineageEvent\"\x94\x02\n" +
 	"\tEventLink\x12Q\n" +
 	"\x06source\x18\x01 \x01(\v24.google.cloud.datacatalog.lineage.v1.EntityReferenceB\x03\xe0A\x02R\x06source\x12Q\n" +
-	"\x06target\x18\x02 \x01(\v24.google.cloud.datacatalog.lineage.v1.EntityReferenceB\x03\xe0A\x02R\x06target\"H\n" +
+	"\x06target\x18\x02 \x01(\v24.google.cloud.datacatalog.lineage.v1.EntityReferenceB\x03\xe0A\x02R\x06target\x12a\n" +
+	"\x0fdependency_info\x18\x03 \x01(\v23.google.cloud.datacatalog.lineage.v1.DependencyInfoB\x03\xe0A\x01R\x0edependencyInfo\"s\n" +
+	"\x0eDependencyInfo\x12a\n" +
+	"\x0fdependency_type\x18\x01 \x01(\x0e23.google.cloud.datacatalog.lineage.v1.DependencyTypeB\x03\xe0A\x02R\x0edependencyType\"c\n" +
 	"\x0fEntityReference\x125\n" +
-	"\x14fully_qualified_name\x18\x01 \x01(\tB\x03\xe0A\x02R\x12fullyQualifiedName\"\xa9\x04\n" +
+	"\x14fully_qualified_name\x18\x01 \x01(\tB\x03\xe0A\x02R\x12fullyQualifiedName\x12\x19\n" +
+	"\x05field\x18\x03 \x03(\tB\x03\xe0A\x01R\x05field\"\xa9\x04\n" +
 	"\x11OperationMetadata\x12W\n" +
 	"\x05state\x18\x01 \x01(\x0e2<.google.cloud.datacatalog.lineage.v1.OperationMetadata.StateB\x03\xe0A\x03R\x05state\x12g\n" +
 	"\x0eoperation_type\x18\x02 \x01(\x0e2;.google.cloud.datacatalog.lineage.v1.OperationMetadata.TypeB\x03\xe0A\x03R\roperationType\x12\x1f\n" +
@@ -2609,114 +3566,125 @@ const file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDesc = "" +
 	"\n" +
 	"\x06DELETE\x10\x01\x12\n" +
 	"\n" +
-	"\x06CREATE\x10\x02\"\xa0\x01\n" +
+	"\x06CREATE\x10\x02\"\xad\x01\n" +
 	"!ProcessOpenLineageRunEventRequest\x12\x1b\n" +
 	"\x06parent\x18\x01 \x01(\tB\x03\xe0A\x02R\x06parent\x12?\n" +
-	"\fopen_lineage\x18\x02 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x02R\vopenLineage\x12\x1d\n" +
+	"\fopen_lineage\x18\x02 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x02R\vopenLineage\x12*\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tR\trequestId\"\xf3\x01\n" +
+	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xf3\x01\n" +
 	"\"ProcessOpenLineageRunEventResponse\x12A\n" +
 	"\aprocess\x18\x01 \x01(\tB'\xfaA$\n" +
 	"\"datalineage.googleapis.com/ProcessR\aprocess\x125\n" +
 	"\x03run\x18\x02 \x01(\tB#\xfaA \n" +
 	"\x1edatalineage.googleapis.com/RunR\x03run\x12S\n" +
 	"\x0elineage_events\x18\x03 \x03(\tB,\xfaA)\n" +
-	"'datalineage.googleapis.com/LineageEventR\rlineageEvents\"\xc6\x01\n" +
+	"'datalineage.googleapis.com/LineageEventR\rlineageEvents\"\xd3\x01\n" +
 	"\x14CreateProcessRequest\x12B\n" +
 	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\x12\"datalineage.googleapis.com/ProcessR\x06parent\x12K\n" +
-	"\aprocess\x18\x02 \x01(\v2,.google.cloud.datacatalog.lineage.v1.ProcessB\x03\xe0A\x02R\aprocess\x12\x1d\n" +
+	"\aprocess\x18\x02 \x01(\v2,.google.cloud.datacatalog.lineage.v1.ProcessB\x03\xe0A\x02R\aprocess\x12*\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tR\trequestId\"\xc5\x01\n" +
+	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xfb\x01\n" +
 	"\x14UpdateProcessRequest\x12K\n" +
-	"\aprocess\x18\x01 \x01(\v2,.google.cloud.datacatalog.lineage.v1.ProcessB\x03\xe0A\x02R\aprocess\x12;\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\x12#\n" +
-	"\rallow_missing\x18\x03 \x01(\bR\fallowMissing\"S\n" +
+	"\aprocess\x18\x01 \x01(\v2,.google.cloud.datacatalog.lineage.v1.ProcessB\x03\xe0A\x02R\aprocess\x12@\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
+	"updateMask\x12(\n" +
+	"\rallow_missing\x18\x03 \x01(\bB\x03\xe0A\x01R\fallowMissing\x12*\n" +
+	"\n" +
+	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"S\n" +
 	"\x11GetProcessRequest\x12>\n" +
 	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"datalineage.googleapis.com/ProcessR\x04name\"\x96\x01\n" +
+	"\"datalineage.googleapis.com/ProcessR\x04name\"\xa0\x01\n" +
 	"\x14ListProcessesRequest\x12B\n" +
-	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\x12\"datalineage.googleapis.com/ProcessR\x06parent\x12\x1b\n" +
-	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\x12\"datalineage.googleapis.com/ProcessR\x06parent\x12 \n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tR\tpageToken\"\x8b\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x8b\x01\n" +
 	"\x15ListProcessesResponse\x12J\n" +
 	"\tprocesses\x18\x01 \x03(\v2,.google.cloud.datacatalog.lineage.v1.ProcessR\tprocesses\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"{\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x80\x01\n" +
 	"\x14DeleteProcessRequest\x12>\n" +
 	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
-	"\"datalineage.googleapis.com/ProcessR\x04name\x12#\n" +
-	"\rallow_missing\x18\x02 \x01(\bR\fallowMissing\"\xb2\x01\n" +
+	"\"datalineage.googleapis.com/ProcessR\x04name\x12(\n" +
+	"\rallow_missing\x18\x02 \x01(\bB\x03\xe0A\x01R\fallowMissing\"\xbf\x01\n" +
 	"\x10CreateRunRequest\x12>\n" +
 	"\x06parent\x18\x01 \x01(\tB&\xe0A\x02\xfaA \x12\x1edatalineage.googleapis.com/RunR\x06parent\x12?\n" +
-	"\x03run\x18\x02 \x01(\v2(.google.cloud.datacatalog.lineage.v1.RunB\x03\xe0A\x02R\x03run\x12\x1d\n" +
+	"\x03run\x18\x02 \x01(\v2(.google.cloud.datacatalog.lineage.v1.RunB\x03\xe0A\x02R\x03run\x12*\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tR\trequestId\"\xb5\x01\n" +
+	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xbf\x01\n" +
 	"\x10UpdateRunRequest\x12?\n" +
-	"\x03run\x18\x01 \x01(\v2(.google.cloud.datacatalog.lineage.v1.RunB\x03\xe0A\x02R\x03run\x12;\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\x12#\n" +
-	"\rallow_missing\x18\x03 \x01(\bR\fallowMissing\"K\n" +
+	"\x03run\x18\x01 \x01(\v2(.google.cloud.datacatalog.lineage.v1.RunB\x03\xe0A\x02R\x03run\x12@\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
+	"updateMask\x12(\n" +
+	"\rallow_missing\x18\x03 \x01(\bB\x03\xe0A\x01R\fallowMissing\"K\n" +
 	"\rGetRunRequest\x12:\n" +
 	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1edatalineage.googleapis.com/RunR\x04name\"\x8d\x01\n" +
-	"\x0fListRunsRequest\x12>\n" +
-	"\x06parent\x18\x01 \x01(\tB&\xe0A\x02\xfaA \x12\x1edatalineage.googleapis.com/RunR\x06parent\x12\x1b\n" +
-	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
+	"\x1edatalineage.googleapis.com/RunR\x04name\"\x9b\x01\n" +
+	"\x0fListRunsRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
+	"\"datalineage.googleapis.com/ProcessR\x06parent\x12 \n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tR\tpageToken\"x\n" +
+	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"x\n" +
 	"\x10ListRunsResponse\x12<\n" +
 	"\x04runs\x18\x01 \x03(\v2(.google.cloud.datacatalog.lineage.v1.RunR\x04runs\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"s\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"x\n" +
 	"\x10DeleteRunRequest\x12:\n" +
 	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1edatalineage.googleapis.com/RunR\x04name\x12#\n" +
-	"\rallow_missing\x18\x02 \x01(\bR\fallowMissing\"\xe0\x01\n" +
+	"\x1edatalineage.googleapis.com/RunR\x04name\x12(\n" +
+	"\rallow_missing\x18\x02 \x01(\bB\x03\xe0A\x01R\fallowMissing\"\xed\x01\n" +
 	"\x19CreateLineageEventRequest\x12G\n" +
 	"\x06parent\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\x12'datalineage.googleapis.com/LineageEventR\x06parent\x12[\n" +
-	"\rlineage_event\x18\x02 \x01(\v21.google.cloud.datacatalog.lineage.v1.LineageEventB\x03\xe0A\x02R\flineageEvent\x12\x1d\n" +
+	"\rlineage_event\x18\x02 \x01(\v21.google.cloud.datacatalog.lineage.v1.LineageEventB\x03\xe0A\x02R\flineageEvent\x12*\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tR\trequestId\"]\n" +
+	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"]\n" +
 	"\x16GetLineageEventRequest\x12C\n" +
 	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'datalineage.googleapis.com/LineageEventR\x04name\"\x9f\x01\n" +
-	"\x18ListLineageEventsRequest\x12G\n" +
-	"\x06parent\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\x12'datalineage.googleapis.com/LineageEventR\x06parent\x12\x1b\n" +
-	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
+	"'datalineage.googleapis.com/LineageEventR\x04name\"\xa0\x01\n" +
+	"\x18ListLineageEventsRequest\x12>\n" +
+	"\x06parent\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
+	"\x1edatalineage.googleapis.com/RunR\x06parent\x12 \n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tR\tpageToken\"\x9d\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x9d\x01\n" +
 	"\x19ListLineageEventsResponse\x12X\n" +
 	"\x0elineage_events\x18\x01 \x03(\v21.google.cloud.datacatalog.lineage.v1.LineageEventR\rlineageEvents\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x85\x01\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x8a\x01\n" +
 	"\x19DeleteLineageEventRequest\x12C\n" +
 	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'datalineage.googleapis.com/LineageEventR\x04name\x12#\n" +
-	"\rallow_missing\x18\x02 \x01(\bR\fallowMissing\"\xd4\x02\n" +
+	"'datalineage.googleapis.com/LineageEventR\x04name\x12(\n" +
+	"\rallow_missing\x18\x02 \x01(\bB\x03\xe0A\x01R\fallowMissing\"\x92\x04\n" +
 	"\x12SearchLinksRequest\x12B\n" +
 	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\x12\"datalineage.googleapis.com/ProcessR\x06parent\x12S\n" +
 	"\x06source\x18\x04 \x01(\v24.google.cloud.datacatalog.lineage.v1.EntityReferenceB\x03\xe0A\x01H\x00R\x06source\x12S\n" +
-	"\x06target\x18\x05 \x01(\v24.google.cloud.datacatalog.lineage.v1.EntityReferenceB\x03\xe0A\x01H\x00R\x06target\x12 \n" +
+	"\x06target\x18\x05 \x01(\v24.google.cloud.datacatalog.lineage.v1.EntityReferenceB\x03\xe0A\x01H\x00R\x06target\x12]\n" +
+	"\asources\x18\x06 \x01(\v2<.google.cloud.datacatalog.lineage.v1.MultipleEntityReferenceB\x03\xe0A\x01H\x00R\asources\x12]\n" +
+	"\atargets\x18\a \x01(\v2<.google.cloud.datacatalog.lineage.v1.MultipleEntityReferenceB\x03\xe0A\x01H\x00R\atargets\x12 \n" +
 	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageTokenB\n" +
 	"\n" +
-	"\bcriteria\"~\n" +
+	"\bcriteria\"p\n" +
+	"\x17MultipleEntityReference\x12U\n" +
+	"\bentities\x18\x01 \x03(\v24.google.cloud.datacatalog.lineage.v1.EntityReferenceB\x03\xe0A\x01R\bentities\"~\n" +
 	"\x13SearchLinksResponse\x12?\n" +
 	"\x05links\x18\x01 \x03(\v2).google.cloud.datacatalog.lineage.v1.LinkR\x05links\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xb0\x02\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x88\x04\n" +
 	"\x04Link\x12\x1a\n" +
 	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x03\xe0A\x05R\x04name\x12L\n" +
 	"\x06source\x18\x02 \x01(\v24.google.cloud.datacatalog.lineage.v1.EntityReferenceR\x06source\x12L\n" +
 	"\x06target\x18\x03 \x01(\v24.google.cloud.datacatalog.lineage.v1.EntityReferenceR\x06target\x129\n" +
 	"\n" +
 	"start_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\tstartTime\x125\n" +
-	"\bend_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\aendTime\"\xbc\x01\n" +
+	"\bend_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\aendTime\x12f\n" +
+	"\x0fdependency_info\x18\x06 \x03(\v28.google.cloud.datacatalog.lineage.v1.Link.DependencyInfoB\x03\xe0A\x01R\x0edependencyInfo\x1an\n" +
+	"\x0eDependencyInfo\x12\\\n" +
+	"\x0fdependency_type\x18\x01 \x01(\x0e23.google.cloud.datacatalog.lineage.v1.DependencyTypeR\x0edependencyType\"\xc6\x01\n" +
 	"\x1fBatchSearchLinkProcessesRequest\x12B\n" +
 	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\x12\"datalineage.googleapis.com/ProcessR\x06parent\x12\x19\n" +
-	"\x05links\x18\x02 \x03(\tB\x03\xe0A\x02R\x05links\x12\x1b\n" +
-	"\tpage_size\x18\x03 \x01(\x05R\bpageSize\x12\x1d\n" +
+	"\x05links\x18\x02 \x03(\tB\x03\xe0A\x02R\x05links\x12 \n" +
+	"\tpage_size\x18\x03 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
 	"\n" +
-	"page_token\x18\x04 \x01(\tR\tpageToken\"\xa2\x01\n" +
+	"page_token\x18\x04 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xa2\x01\n" +
 	" BatchSearchLinkProcessesResponse\x12V\n" +
 	"\rprocess_links\x18\x01 \x03(\v21.google.cloud.datacatalog.lineage.v1.ProcessLinksR\fprocessLinks\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x9d\x01\n" +
@@ -2728,11 +3696,11 @@ const file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDesc = "" +
 	"\x04link\x18\x01 \x01(\tR\x04link\x129\n" +
 	"\n" +
 	"start_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\tstartTime\x125\n" +
-	"\bend_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\aendTime\"\xfb\x01\n" +
+	"\bend_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\aendTime\"\xa9\x02\n" +
 	"\x06Origin\x12W\n" +
 	"\vsource_type\x18\x01 \x01(\x0e26.google.cloud.datacatalog.lineage.v1.Origin.SourceTypeR\n" +
 	"sourceType\x12\x12\n" +
-	"\x04name\x18\x02 \x01(\tR\x04name\"\x83\x01\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\"\xb1\x01\n" +
 	"\n" +
 	"SourceType\x12\x1b\n" +
 	"\x17SOURCE_TYPE_UNSPECIFIED\x10\x00\x12\n" +
@@ -2742,7 +3710,60 @@ const file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDesc = "" +
 	"\vDATA_FUSION\x10\x03\x12\f\n" +
 	"\bCOMPOSER\x10\x04\x12\x11\n" +
 	"\rLOOKER_STUDIO\x10\x05\x12\f\n" +
-	"\bDATAPROC\x10\x062\xbc\x1d\n" +
+	"\bDATAPROC\x10\x06\x12\r\n" +
+	"\tVERTEX_AI\x10\a\x12\f\n" +
+	"\bDATAFLOW\x10\b\x12\x0f\n" +
+	"\vLOOKER_CORE\x10\t\"\xee\x04\n" +
+	"\vLineageLink\x12L\n" +
+	"\x06source\x18\x01 \x01(\v24.google.cloud.datacatalog.lineage.v1.EntityReferenceR\x06source\x12L\n" +
+	"\x06target\x18\x02 \x01(\v24.google.cloud.datacatalog.lineage.v1.EntityReferenceR\x06target\x12]\n" +
+	"\tprocesses\x18\x03 \x03(\v2?.google.cloud.datacatalog.lineage.v1.LineageLink.LineageProcessR\tprocesses\x12h\n" +
+	"\x0fdependency_info\x18\x04 \x03(\v2?.google.cloud.datacatalog.lineage.v1.LineageLink.DependencyInfoR\x0edependencyInfo\x12\x14\n" +
+	"\x05depth\x18\x05 \x01(\x05R\x05depth\x12\x1a\n" +
+	"\blocation\x18\a \x01(\tR\blocation\x1aX\n" +
+	"\x0eLineageProcess\x12F\n" +
+	"\aprocess\x18\x03 \x01(\v2,.google.cloud.datacatalog.lineage.v1.ProcessR\aprocess\x1an\n" +
+	"\x0eDependencyInfo\x12\\\n" +
+	"\x0fdependency_type\x18\x01 \x01(\x0e23.google.cloud.datacatalog.lineage.v1.DependencyTypeR\x0edependencyType\"\x91\n" +
+	"\n" +
+	"\x1dSearchLineageStreamingRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\x12\"datalineage.googleapis.com/ProcessR\x06parent\x12!\n" +
+	"\tlocations\x18\x02 \x03(\tB\x03\xe0A\x02R\tlocations\x12y\n" +
+	"\rroot_criteria\x18\x03 \x01(\v2O.google.cloud.datacatalog.lineage.v1.SearchLineageStreamingRequest.RootCriteriaB\x03\xe0A\x02R\frootCriteria\x12u\n" +
+	"\tdirection\x18\x04 \x01(\x0e2R.google.cloud.datacatalog.lineage.v1.SearchLineageStreamingRequest.SearchDirectionB\x03\xe0A\x02R\tdirection\x12o\n" +
+	"\afilters\x18\x05 \x01(\v2P.google.cloud.datacatalog.lineage.v1.SearchLineageStreamingRequest.SearchFiltersB\x03\xe0A\x01R\afilters\x12l\n" +
+	"\x06limits\x18\x06 \x01(\v2O.google.cloud.datacatalog.lineage.v1.SearchLineageStreamingRequest.SearchLimitsB\x03\xe0A\x01R\x06limits\x1a\xa1\x02\n" +
+	"\rSearchFilters\x12c\n" +
+	"\x10dependency_types\x18\x01 \x03(\x0e23.google.cloud.datacatalog.lineage.v1.DependencyTypeB\x03\xe0A\x01R\x0fdependencyTypes\x12p\n" +
+	"\n" +
+	"entity_set\x18\x02 \x01(\x0e2L.google.cloud.datacatalog.lineage.v1.SearchLineageStreamingRequest.EntitySetB\x03\xe0A\x01R\tentitySet\x129\n" +
+	"\n" +
+	"time_range\x18\x03 \x01(\v2\x15.google.type.IntervalB\x03\xe0A\x01R\ttimeRange\x1a\x8c\x01\n" +
+	"\fSearchLimits\x12 \n" +
+	"\tmax_depth\x18\x01 \x01(\x05B\x03\xe0A\x01R\bmaxDepth\x12$\n" +
+	"\vmax_results\x18\x02 \x01(\x05B\x03\xe0A\x01R\n" +
+	"maxResults\x124\n" +
+	"\x14max_process_per_link\x18\x03 \x01(\x05B\x03\xe0A\x01R\x11maxProcessPerLink\x1a{\n" +
+	"\fRootCriteria\x12_\n" +
+	"\bentities\x18\x01 \x01(\v2<.google.cloud.datacatalog.lineage.v1.MultipleEntityReferenceB\x03\xe0A\x01H\x00R\bentitiesB\n" +
+	"\n" +
+	"\bcriteria\"Q\n" +
+	"\x0fSearchDirection\x12 \n" +
+	"\x1cSEARCH_DIRECTION_UNSPECIFIED\x10\x00\x12\x0e\n" +
+	"\n" +
+	"DOWNSTREAM\x10\x01\x12\f\n" +
+	"\bUPSTREAM\x10\x02\"5\n" +
+	"\tEntitySet\x12\x1a\n" +
+	"\x16ENTITY_SET_UNSPECIFIED\x10\x00\x12\f\n" +
+	"\bENTITIES\x10\x01\"\x94\x01\n" +
+	"\x1eSearchLineageStreamingResponse\x12K\n" +
+	"\x05links\x18\x01 \x03(\v20.google.cloud.datacatalog.lineage.v1.LineageLinkB\x03\xe0A\x03R\x05links\x12%\n" +
+	"\vunreachable\x18\x02 \x03(\tB\x03\xe0A\x06R\vunreachable*L\n" +
+	"\x0eDependencyType\x12\x1f\n" +
+	"\x1bDEPENDENCY_TYPE_UNSPECIFIED\x10\x00\x12\x0e\n" +
+	"\n" +
+	"EXACT_COPY\x10\x01\x12\t\n" +
+	"\x05OTHER\x10\x032\xa9\x1f\n" +
 	"\aLineage\x12\x99\x02\n" +
 	"\x1aProcessOpenLineageRunEvent\x12F.google.cloud.datacatalog.lineage.v1.ProcessOpenLineageRunEventRequest\x1aG.google.cloud.datacatalog.lineage.v1.ProcessOpenLineageRunEventResponse\"j\xdaA\x13parent,open_lineage\x82\xd3\xe4\x93\x02N:\fopen_lineage\">/v1/{parent=projects/*/locations/*}:processOpenLineageRunEvent\x12\xc9\x01\n" +
 	"\rCreateProcess\x129.google.cloud.datacatalog.lineage.v1.CreateProcessRequest\x1a,.google.cloud.datacatalog.lineage.v1.Process\"O\xdaA\x0eparent,process\x82\xd3\xe4\x93\x028:\aprocess\"-/v1/{parent=projects/*/locations/*}/processes\x12\xd6\x01\n" +
@@ -2764,7 +3785,8 @@ const file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDesc = "" +
 	"\x11ListLineageEvents\x12=.google.cloud.datacatalog.lineage.v1.ListLineageEventsRequest\x1a>.google.cloud.datacatalog.lineage.v1.ListLineageEventsResponse\"U\xdaA\x06parent\x82\xd3\xe4\x93\x02F\x12D/v1/{parent=projects/*/locations/*/processes/*/runs/*}/lineageEvents\x12\xc1\x01\n" +
 	"\x12DeleteLineageEvent\x12>.google.cloud.datacatalog.lineage.v1.DeleteLineageEventRequest\x1a\x16.google.protobuf.Empty\"S\xdaA\x04name\x82\xd3\xe4\x93\x02F*D/v1/{name=projects/*/locations/*/processes/*/runs/*/lineageEvents/*}\x12\xbc\x01\n" +
 	"\vSearchLinks\x127.google.cloud.datacatalog.lineage.v1.SearchLinksRequest\x1a8.google.cloud.datacatalog.lineage.v1.SearchLinksResponse\":\x82\xd3\xe4\x93\x024:\x01*\"//v1/{parent=projects/*/locations/*}:searchLinks\x12\xf0\x01\n" +
-	"\x18BatchSearchLinkProcesses\x12D.google.cloud.datacatalog.lineage.v1.BatchSearchLinkProcessesRequest\x1aE.google.cloud.datacatalog.lineage.v1.BatchSearchLinkProcessesResponse\"G\x82\xd3\xe4\x93\x02A:\x01*\"</v1/{parent=projects/*/locations/*}:batchSearchLinkProcesses\x1aN\xcaA\x1adatalineage.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\xf2\x01\n" +
+	"\x18BatchSearchLinkProcesses\x12D.google.cloud.datacatalog.lineage.v1.BatchSearchLinkProcessesRequest\x1aE.google.cloud.datacatalog.lineage.v1.BatchSearchLinkProcessesResponse\"G\x82\xd3\xe4\x93\x02A:\x01*\"</v1/{parent=projects/*/locations/*}:batchSearchLinkProcesses\x12\xea\x01\n" +
+	"\x16SearchLineageStreaming\x12B.google.cloud.datacatalog.lineage.v1.SearchLineageStreamingRequest\x1aC.google.cloud.datacatalog.lineage.v1.SearchLineageStreamingResponse\"E\x82\xd3\xe4\x93\x02?:\x01*\":/v1/{parent=projects/*/locations/*}:searchLineageStreaming0\x01\x1aN\xcaA\x1adatalineage.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\xf2\x01\n" +
 	"'com.google.cloud.datacatalog.lineage.v1B\fLineageProtoP\x01ZAcloud.google.com/go/datacatalog/lineage/apiv1/lineagepb;lineagepb\xaa\x02#Google.Cloud.DataCatalog.Lineage.V1\xca\x02#Google\\Cloud\\DataCatalog\\Lineage\\V1\xea\x02'Google::Cloud::DataCatalog::Lineage::V1b\x06proto3"
 
 var (
@@ -2779,135 +3801,174 @@ func file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescGZIP() []byte
 	return file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDescData
 }
 
-var file_google_cloud_datacatalog_lineage_v1_lineage_proto_enumTypes = make([]protoimpl.EnumInfo, 4)
-var file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes = make([]protoimpl.MessageInfo, 35)
+var file_google_cloud_datacatalog_lineage_v1_lineage_proto_enumTypes = make([]protoimpl.EnumInfo, 7)
+var file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes = make([]protoimpl.MessageInfo, 46)
 var file_google_cloud_datacatalog_lineage_v1_lineage_proto_goTypes = []any{
-	(Run_State)(0),                             // 0: google.cloud.datacatalog.lineage.v1.Run.State
-	(OperationMetadata_State)(0),               // 1: google.cloud.datacatalog.lineage.v1.OperationMetadata.State
-	(OperationMetadata_Type)(0),                // 2: google.cloud.datacatalog.lineage.v1.OperationMetadata.Type
-	(Origin_SourceType)(0),                     // 3: google.cloud.datacatalog.lineage.v1.Origin.SourceType
-	(*Process)(nil),                            // 4: google.cloud.datacatalog.lineage.v1.Process
-	(*Run)(nil),                                // 5: google.cloud.datacatalog.lineage.v1.Run
-	(*LineageEvent)(nil),                       // 6: google.cloud.datacatalog.lineage.v1.LineageEvent
-	(*EventLink)(nil),                          // 7: google.cloud.datacatalog.lineage.v1.EventLink
-	(*EntityReference)(nil),                    // 8: google.cloud.datacatalog.lineage.v1.EntityReference
-	(*OperationMetadata)(nil),                  // 9: google.cloud.datacatalog.lineage.v1.OperationMetadata
-	(*ProcessOpenLineageRunEventRequest)(nil),  // 10: google.cloud.datacatalog.lineage.v1.ProcessOpenLineageRunEventRequest
-	(*ProcessOpenLineageRunEventResponse)(nil), // 11: google.cloud.datacatalog.lineage.v1.ProcessOpenLineageRunEventResponse
-	(*CreateProcessRequest)(nil),               // 12: google.cloud.datacatalog.lineage.v1.CreateProcessRequest
-	(*UpdateProcessRequest)(nil),               // 13: google.cloud.datacatalog.lineage.v1.UpdateProcessRequest
-	(*GetProcessRequest)(nil),                  // 14: google.cloud.datacatalog.lineage.v1.GetProcessRequest
-	(*ListProcessesRequest)(nil),               // 15: google.cloud.datacatalog.lineage.v1.ListProcessesRequest
-	(*ListProcessesResponse)(nil),              // 16: google.cloud.datacatalog.lineage.v1.ListProcessesResponse
-	(*DeleteProcessRequest)(nil),               // 17: google.cloud.datacatalog.lineage.v1.DeleteProcessRequest
-	(*CreateRunRequest)(nil),                   // 18: google.cloud.datacatalog.lineage.v1.CreateRunRequest
-	(*UpdateRunRequest)(nil),                   // 19: google.cloud.datacatalog.lineage.v1.UpdateRunRequest
-	(*GetRunRequest)(nil),                      // 20: google.cloud.datacatalog.lineage.v1.GetRunRequest
-	(*ListRunsRequest)(nil),                    // 21: google.cloud.datacatalog.lineage.v1.ListRunsRequest
-	(*ListRunsResponse)(nil),                   // 22: google.cloud.datacatalog.lineage.v1.ListRunsResponse
-	(*DeleteRunRequest)(nil),                   // 23: google.cloud.datacatalog.lineage.v1.DeleteRunRequest
-	(*CreateLineageEventRequest)(nil),          // 24: google.cloud.datacatalog.lineage.v1.CreateLineageEventRequest
-	(*GetLineageEventRequest)(nil),             // 25: google.cloud.datacatalog.lineage.v1.GetLineageEventRequest
-	(*ListLineageEventsRequest)(nil),           // 26: google.cloud.datacatalog.lineage.v1.ListLineageEventsRequest
-	(*ListLineageEventsResponse)(nil),          // 27: google.cloud.datacatalog.lineage.v1.ListLineageEventsResponse
-	(*DeleteLineageEventRequest)(nil),          // 28: google.cloud.datacatalog.lineage.v1.DeleteLineageEventRequest
-	(*SearchLinksRequest)(nil),                 // 29: google.cloud.datacatalog.lineage.v1.SearchLinksRequest
-	(*SearchLinksResponse)(nil),                // 30: google.cloud.datacatalog.lineage.v1.SearchLinksResponse
-	(*Link)(nil),                               // 31: google.cloud.datacatalog.lineage.v1.Link
-	(*BatchSearchLinkProcessesRequest)(nil),    // 32: google.cloud.datacatalog.lineage.v1.BatchSearchLinkProcessesRequest
-	(*BatchSearchLinkProcessesResponse)(nil),   // 33: google.cloud.datacatalog.lineage.v1.BatchSearchLinkProcessesResponse
-	(*ProcessLinks)(nil),                       // 34: google.cloud.datacatalog.lineage.v1.ProcessLinks
-	(*ProcessLinkInfo)(nil),                    // 35: google.cloud.datacatalog.lineage.v1.ProcessLinkInfo
-	(*Origin)(nil),                             // 36: google.cloud.datacatalog.lineage.v1.Origin
-	nil,                                        // 37: google.cloud.datacatalog.lineage.v1.Process.AttributesEntry
-	nil,                                        // 38: google.cloud.datacatalog.lineage.v1.Run.AttributesEntry
-	(*timestamppb.Timestamp)(nil),              // 39: google.protobuf.Timestamp
-	(*structpb.Struct)(nil),                    // 40: google.protobuf.Struct
-	(*fieldmaskpb.FieldMask)(nil),              // 41: google.protobuf.FieldMask
-	(*structpb.Value)(nil),                     // 42: google.protobuf.Value
-	(*longrunningpb.Operation)(nil),            // 43: google.longrunning.Operation
-	(*emptypb.Empty)(nil),                      // 44: google.protobuf.Empty
+	(DependencyType)(0),                                 // 0: google.cloud.datacatalog.lineage.v1.DependencyType
+	(Run_State)(0),                                      // 1: google.cloud.datacatalog.lineage.v1.Run.State
+	(OperationMetadata_State)(0),                        // 2: google.cloud.datacatalog.lineage.v1.OperationMetadata.State
+	(OperationMetadata_Type)(0),                         // 3: google.cloud.datacatalog.lineage.v1.OperationMetadata.Type
+	(Origin_SourceType)(0),                              // 4: google.cloud.datacatalog.lineage.v1.Origin.SourceType
+	(SearchLineageStreamingRequest_SearchDirection)(0),  // 5: google.cloud.datacatalog.lineage.v1.SearchLineageStreamingRequest.SearchDirection
+	(SearchLineageStreamingRequest_EntitySet)(0),        // 6: google.cloud.datacatalog.lineage.v1.SearchLineageStreamingRequest.EntitySet
+	(*Process)(nil),                                     // 7: google.cloud.datacatalog.lineage.v1.Process
+	(*Run)(nil),                                         // 8: google.cloud.datacatalog.lineage.v1.Run
+	(*LineageEvent)(nil),                                // 9: google.cloud.datacatalog.lineage.v1.LineageEvent
+	(*EventLink)(nil),                                   // 10: google.cloud.datacatalog.lineage.v1.EventLink
+	(*DependencyInfo)(nil),                              // 11: google.cloud.datacatalog.lineage.v1.DependencyInfo
+	(*EntityReference)(nil),                             // 12: google.cloud.datacatalog.lineage.v1.EntityReference
+	(*OperationMetadata)(nil),                           // 13: google.cloud.datacatalog.lineage.v1.OperationMetadata
+	(*ProcessOpenLineageRunEventRequest)(nil),           // 14: google.cloud.datacatalog.lineage.v1.ProcessOpenLineageRunEventRequest
+	(*ProcessOpenLineageRunEventResponse)(nil),          // 15: google.cloud.datacatalog.lineage.v1.ProcessOpenLineageRunEventResponse
+	(*CreateProcessRequest)(nil),                        // 16: google.cloud.datacatalog.lineage.v1.CreateProcessRequest
+	(*UpdateProcessRequest)(nil),                        // 17: google.cloud.datacatalog.lineage.v1.UpdateProcessRequest
+	(*GetProcessRequest)(nil),                           // 18: google.cloud.datacatalog.lineage.v1.GetProcessRequest
+	(*ListProcessesRequest)(nil),                        // 19: google.cloud.datacatalog.lineage.v1.ListProcessesRequest
+	(*ListProcessesResponse)(nil),                       // 20: google.cloud.datacatalog.lineage.v1.ListProcessesResponse
+	(*DeleteProcessRequest)(nil),                        // 21: google.cloud.datacatalog.lineage.v1.DeleteProcessRequest
+	(*CreateRunRequest)(nil),                            // 22: google.cloud.datacatalog.lineage.v1.CreateRunRequest
+	(*UpdateRunRequest)(nil),                            // 23: google.cloud.datacatalog.lineage.v1.UpdateRunRequest
+	(*GetRunRequest)(nil),                               // 24: google.cloud.datacatalog.lineage.v1.GetRunRequest
+	(*ListRunsRequest)(nil),                             // 25: google.cloud.datacatalog.lineage.v1.ListRunsRequest
+	(*ListRunsResponse)(nil),                            // 26: google.cloud.datacatalog.lineage.v1.ListRunsResponse
+	(*DeleteRunRequest)(nil),                            // 27: google.cloud.datacatalog.lineage.v1.DeleteRunRequest
+	(*CreateLineageEventRequest)(nil),                   // 28: google.cloud.datacatalog.lineage.v1.CreateLineageEventRequest
+	(*GetLineageEventRequest)(nil),                      // 29: google.cloud.datacatalog.lineage.v1.GetLineageEventRequest
+	(*ListLineageEventsRequest)(nil),                    // 30: google.cloud.datacatalog.lineage.v1.ListLineageEventsRequest
+	(*ListLineageEventsResponse)(nil),                   // 31: google.cloud.datacatalog.lineage.v1.ListLineageEventsResponse
+	(*DeleteLineageEventRequest)(nil),                   // 32: google.cloud.datacatalog.lineage.v1.DeleteLineageEventRequest
+	(*SearchLinksRequest)(nil),                          // 33: google.cloud.datacatalog.lineage.v1.SearchLinksRequest
+	(*MultipleEntityReference)(nil),                     // 34: google.cloud.datacatalog.lineage.v1.MultipleEntityReference
+	(*SearchLinksResponse)(nil),                         // 35: google.cloud.datacatalog.lineage.v1.SearchLinksResponse
+	(*Link)(nil),                                        // 36: google.cloud.datacatalog.lineage.v1.Link
+	(*BatchSearchLinkProcessesRequest)(nil),             // 37: google.cloud.datacatalog.lineage.v1.BatchSearchLinkProcessesRequest
+	(*BatchSearchLinkProcessesResponse)(nil),            // 38: google.cloud.datacatalog.lineage.v1.BatchSearchLinkProcessesResponse
+	(*ProcessLinks)(nil),                                // 39: google.cloud.datacatalog.lineage.v1.ProcessLinks
+	(*ProcessLinkInfo)(nil),                             // 40: google.cloud.datacatalog.lineage.v1.ProcessLinkInfo
+	(*Origin)(nil),                                      // 41: google.cloud.datacatalog.lineage.v1.Origin
+	(*LineageLink)(nil),                                 // 42: google.cloud.datacatalog.lineage.v1.LineageLink
+	(*SearchLineageStreamingRequest)(nil),               // 43: google.cloud.datacatalog.lineage.v1.SearchLineageStreamingRequest
+	(*SearchLineageStreamingResponse)(nil),              // 44: google.cloud.datacatalog.lineage.v1.SearchLineageStreamingResponse
+	nil,                                                 // 45: google.cloud.datacatalog.lineage.v1.Process.AttributesEntry
+	nil,                                                 // 46: google.cloud.datacatalog.lineage.v1.Run.AttributesEntry
+	(*Link_DependencyInfo)(nil),                         // 47: google.cloud.datacatalog.lineage.v1.Link.DependencyInfo
+	(*LineageLink_LineageProcess)(nil),                  // 48: google.cloud.datacatalog.lineage.v1.LineageLink.LineageProcess
+	(*LineageLink_DependencyInfo)(nil),                  // 49: google.cloud.datacatalog.lineage.v1.LineageLink.DependencyInfo
+	(*SearchLineageStreamingRequest_SearchFilters)(nil), // 50: google.cloud.datacatalog.lineage.v1.SearchLineageStreamingRequest.SearchFilters
+	(*SearchLineageStreamingRequest_SearchLimits)(nil),  // 51: google.cloud.datacatalog.lineage.v1.SearchLineageStreamingRequest.SearchLimits
+	(*SearchLineageStreamingRequest_RootCriteria)(nil),  // 52: google.cloud.datacatalog.lineage.v1.SearchLineageStreamingRequest.RootCriteria
+	(*timestamppb.Timestamp)(nil),                       // 53: google.protobuf.Timestamp
+	(*structpb.Struct)(nil),                             // 54: google.protobuf.Struct
+	(*fieldmaskpb.FieldMask)(nil),                       // 55: google.protobuf.FieldMask
+	(*structpb.Value)(nil),                              // 56: google.protobuf.Value
+	(*interval.Interval)(nil),                           // 57: google.type.Interval
+	(*longrunningpb.Operation)(nil),                     // 58: google.longrunning.Operation
+	(*emptypb.Empty)(nil),                               // 59: google.protobuf.Empty
 }
 var file_google_cloud_datacatalog_lineage_v1_lineage_proto_depIdxs = []int32{
-	37, // 0: google.cloud.datacatalog.lineage.v1.Process.attributes:type_name -> google.cloud.datacatalog.lineage.v1.Process.AttributesEntry
-	36, // 1: google.cloud.datacatalog.lineage.v1.Process.origin:type_name -> google.cloud.datacatalog.lineage.v1.Origin
-	38, // 2: google.cloud.datacatalog.lineage.v1.Run.attributes:type_name -> google.cloud.datacatalog.lineage.v1.Run.AttributesEntry
-	39, // 3: google.cloud.datacatalog.lineage.v1.Run.start_time:type_name -> google.protobuf.Timestamp
-	39, // 4: google.cloud.datacatalog.lineage.v1.Run.end_time:type_name -> google.protobuf.Timestamp
-	0,  // 5: google.cloud.datacatalog.lineage.v1.Run.state:type_name -> google.cloud.datacatalog.lineage.v1.Run.State
-	7,  // 6: google.cloud.datacatalog.lineage.v1.LineageEvent.links:type_name -> google.cloud.datacatalog.lineage.v1.EventLink
-	39, // 7: google.cloud.datacatalog.lineage.v1.LineageEvent.start_time:type_name -> google.protobuf.Timestamp
-	39, // 8: google.cloud.datacatalog.lineage.v1.LineageEvent.end_time:type_name -> google.protobuf.Timestamp
-	8,  // 9: google.cloud.datacatalog.lineage.v1.EventLink.source:type_name -> google.cloud.datacatalog.lineage.v1.EntityReference
-	8,  // 10: google.cloud.datacatalog.lineage.v1.EventLink.target:type_name -> google.cloud.datacatalog.lineage.v1.EntityReference
-	1,  // 11: google.cloud.datacatalog.lineage.v1.OperationMetadata.state:type_name -> google.cloud.datacatalog.lineage.v1.OperationMetadata.State
-	2,  // 12: google.cloud.datacatalog.lineage.v1.OperationMetadata.operation_type:type_name -> google.cloud.datacatalog.lineage.v1.OperationMetadata.Type
-	39, // 13: google.cloud.datacatalog.lineage.v1.OperationMetadata.create_time:type_name -> google.protobuf.Timestamp
-	39, // 14: google.cloud.datacatalog.lineage.v1.OperationMetadata.end_time:type_name -> google.protobuf.Timestamp
-	40, // 15: google.cloud.datacatalog.lineage.v1.ProcessOpenLineageRunEventRequest.open_lineage:type_name -> google.protobuf.Struct
-	4,  // 16: google.cloud.datacatalog.lineage.v1.CreateProcessRequest.process:type_name -> google.cloud.datacatalog.lineage.v1.Process
-	4,  // 17: google.cloud.datacatalog.lineage.v1.UpdateProcessRequest.process:type_name -> google.cloud.datacatalog.lineage.v1.Process
-	41, // 18: google.cloud.datacatalog.lineage.v1.UpdateProcessRequest.update_mask:type_name -> google.protobuf.FieldMask
-	4,  // 19: google.cloud.datacatalog.lineage.v1.ListProcessesResponse.processes:type_name -> google.cloud.datacatalog.lineage.v1.Process
-	5,  // 20: google.cloud.datacatalog.lineage.v1.CreateRunRequest.run:type_name -> google.cloud.datacatalog.lineage.v1.Run
-	5,  // 21: google.cloud.datacatalog.lineage.v1.UpdateRunRequest.run:type_name -> google.cloud.datacatalog.lineage.v1.Run
-	41, // 22: google.cloud.datacatalog.lineage.v1.UpdateRunRequest.update_mask:type_name -> google.protobuf.FieldMask
-	5,  // 23: google.cloud.datacatalog.lineage.v1.ListRunsResponse.runs:type_name -> google.cloud.datacatalog.lineage.v1.Run
-	6,  // 24: google.cloud.datacatalog.lineage.v1.CreateLineageEventRequest.lineage_event:type_name -> google.cloud.datacatalog.lineage.v1.LineageEvent
-	6,  // 25: google.cloud.datacatalog.lineage.v1.ListLineageEventsResponse.lineage_events:type_name -> google.cloud.datacatalog.lineage.v1.LineageEvent
-	8,  // 26: google.cloud.datacatalog.lineage.v1.SearchLinksRequest.source:type_name -> google.cloud.datacatalog.lineage.v1.EntityReference
-	8,  // 27: google.cloud.datacatalog.lineage.v1.SearchLinksRequest.target:type_name -> google.cloud.datacatalog.lineage.v1.EntityReference
-	31, // 28: google.cloud.datacatalog.lineage.v1.SearchLinksResponse.links:type_name -> google.cloud.datacatalog.lineage.v1.Link
-	8,  // 29: google.cloud.datacatalog.lineage.v1.Link.source:type_name -> google.cloud.datacatalog.lineage.v1.EntityReference
-	8,  // 30: google.cloud.datacatalog.lineage.v1.Link.target:type_name -> google.cloud.datacatalog.lineage.v1.EntityReference
-	39, // 31: google.cloud.datacatalog.lineage.v1.Link.start_time:type_name -> google.protobuf.Timestamp
-	39, // 32: google.cloud.datacatalog.lineage.v1.Link.end_time:type_name -> google.protobuf.Timestamp
-	34, // 33: google.cloud.datacatalog.lineage.v1.BatchSearchLinkProcessesResponse.process_links:type_name -> google.cloud.datacatalog.lineage.v1.ProcessLinks
-	35, // 34: google.cloud.datacatalog.lineage.v1.ProcessLinks.links:type_name -> google.cloud.datacatalog.lineage.v1.ProcessLinkInfo
-	39, // 35: google.cloud.datacatalog.lineage.v1.ProcessLinkInfo.start_time:type_name -> google.protobuf.Timestamp
-	39, // 36: google.cloud.datacatalog.lineage.v1.ProcessLinkInfo.end_time:type_name -> google.protobuf.Timestamp
-	3,  // 37: google.cloud.datacatalog.lineage.v1.Origin.source_type:type_name -> google.cloud.datacatalog.lineage.v1.Origin.SourceType
-	42, // 38: google.cloud.datacatalog.lineage.v1.Process.AttributesEntry.value:type_name -> google.protobuf.Value
-	42, // 39: google.cloud.datacatalog.lineage.v1.Run.AttributesEntry.value:type_name -> google.protobuf.Value
-	10, // 40: google.cloud.datacatalog.lineage.v1.Lineage.ProcessOpenLineageRunEvent:input_type -> google.cloud.datacatalog.lineage.v1.ProcessOpenLineageRunEventRequest
-	12, // 41: google.cloud.datacatalog.lineage.v1.Lineage.CreateProcess:input_type -> google.cloud.datacatalog.lineage.v1.CreateProcessRequest
-	13, // 42: google.cloud.datacatalog.lineage.v1.Lineage.UpdateProcess:input_type -> google.cloud.datacatalog.lineage.v1.UpdateProcessRequest
-	14, // 43: google.cloud.datacatalog.lineage.v1.Lineage.GetProcess:input_type -> google.cloud.datacatalog.lineage.v1.GetProcessRequest
-	15, // 44: google.cloud.datacatalog.lineage.v1.Lineage.ListProcesses:input_type -> google.cloud.datacatalog.lineage.v1.ListProcessesRequest
-	17, // 45: google.cloud.datacatalog.lineage.v1.Lineage.DeleteProcess:input_type -> google.cloud.datacatalog.lineage.v1.DeleteProcessRequest
-	18, // 46: google.cloud.datacatalog.lineage.v1.Lineage.CreateRun:input_type -> google.cloud.datacatalog.lineage.v1.CreateRunRequest
-	19, // 47: google.cloud.datacatalog.lineage.v1.Lineage.UpdateRun:input_type -> google.cloud.datacatalog.lineage.v1.UpdateRunRequest
-	20, // 48: google.cloud.datacatalog.lineage.v1.Lineage.GetRun:input_type -> google.cloud.datacatalog.lineage.v1.GetRunRequest
-	21, // 49: google.cloud.datacatalog.lineage.v1.Lineage.ListRuns:input_type -> google.cloud.datacatalog.lineage.v1.ListRunsRequest
-	23, // 50: google.cloud.datacatalog.lineage.v1.Lineage.DeleteRun:input_type -> google.cloud.datacatalog.lineage.v1.DeleteRunRequest
-	24, // 51: google.cloud.datacatalog.lineage.v1.Lineage.CreateLineageEvent:input_type -> google.cloud.datacatalog.lineage.v1.CreateLineageEventRequest
-	25, // 52: google.cloud.datacatalog.lineage.v1.Lineage.GetLineageEvent:input_type -> google.cloud.datacatalog.lineage.v1.GetLineageEventRequest
-	26, // 53: google.cloud.datacatalog.lineage.v1.Lineage.ListLineageEvents:input_type -> google.cloud.datacatalog.lineage.v1.ListLineageEventsRequest
-	28, // 54: google.cloud.datacatalog.lineage.v1.Lineage.DeleteLineageEvent:input_type -> google.cloud.datacatalog.lineage.v1.DeleteLineageEventRequest
-	29, // 55: google.cloud.datacatalog.lineage.v1.Lineage.SearchLinks:input_type -> google.cloud.datacatalog.lineage.v1.SearchLinksRequest
-	32, // 56: google.cloud.datacatalog.lineage.v1.Lineage.BatchSearchLinkProcesses:input_type -> google.cloud.datacatalog.lineage.v1.BatchSearchLinkProcessesRequest
-	11, // 57: google.cloud.datacatalog.lineage.v1.Lineage.ProcessOpenLineageRunEvent:output_type -> google.cloud.datacatalog.lineage.v1.ProcessOpenLineageRunEventResponse
-	4,  // 58: google.cloud.datacatalog.lineage.v1.Lineage.CreateProcess:output_type -> google.cloud.datacatalog.lineage.v1.Process
-	4,  // 59: google.cloud.datacatalog.lineage.v1.Lineage.UpdateProcess:output_type -> google.cloud.datacatalog.lineage.v1.Process
-	4,  // 60: google.cloud.datacatalog.lineage.v1.Lineage.GetProcess:output_type -> google.cloud.datacatalog.lineage.v1.Process
-	16, // 61: google.cloud.datacatalog.lineage.v1.Lineage.ListProcesses:output_type -> google.cloud.datacatalog.lineage.v1.ListProcessesResponse
-	43, // 62: google.cloud.datacatalog.lineage.v1.Lineage.DeleteProcess:output_type -> google.longrunning.Operation
-	5,  // 63: google.cloud.datacatalog.lineage.v1.Lineage.CreateRun:output_type -> google.cloud.datacatalog.lineage.v1.Run
-	5,  // 64: google.cloud.datacatalog.lineage.v1.Lineage.UpdateRun:output_type -> google.cloud.datacatalog.lineage.v1.Run
-	5,  // 65: google.cloud.datacatalog.lineage.v1.Lineage.GetRun:output_type -> google.cloud.datacatalog.lineage.v1.Run
-	22, // 66: google.cloud.datacatalog.lineage.v1.Lineage.ListRuns:output_type -> google.cloud.datacatalog.lineage.v1.ListRunsResponse
-	43, // 67: google.cloud.datacatalog.lineage.v1.Lineage.DeleteRun:output_type -> google.longrunning.Operation
-	6,  // 68: google.cloud.datacatalog.lineage.v1.Lineage.CreateLineageEvent:output_type -> google.cloud.datacatalog.lineage.v1.LineageEvent
-	6,  // 69: google.cloud.datacatalog.lineage.v1.Lineage.GetLineageEvent:output_type -> google.cloud.datacatalog.lineage.v1.LineageEvent
-	27, // 70: google.cloud.datacatalog.lineage.v1.Lineage.ListLineageEvents:output_type -> google.cloud.datacatalog.lineage.v1.ListLineageEventsResponse
-	44, // 71: google.cloud.datacatalog.lineage.v1.Lineage.DeleteLineageEvent:output_type -> google.protobuf.Empty
-	30, // 72: google.cloud.datacatalog.lineage.v1.Lineage.SearchLinks:output_type -> google.cloud.datacatalog.lineage.v1.SearchLinksResponse
-	33, // 73: google.cloud.datacatalog.lineage.v1.Lineage.BatchSearchLinkProcesses:output_type -> google.cloud.datacatalog.lineage.v1.BatchSearchLinkProcessesResponse
-	57, // [57:74] is the sub-list for method output_type
-	40, // [40:57] is the sub-list for method input_type
-	40, // [40:40] is the sub-list for extension type_name
-	40, // [40:40] is the sub-list for extension extendee
-	0,  // [0:40] is the sub-list for field type_name
+	45, // 0: google.cloud.datacatalog.lineage.v1.Process.attributes:type_name -> google.cloud.datacatalog.lineage.v1.Process.AttributesEntry
+	41, // 1: google.cloud.datacatalog.lineage.v1.Process.origin:type_name -> google.cloud.datacatalog.lineage.v1.Origin
+	46, // 2: google.cloud.datacatalog.lineage.v1.Run.attributes:type_name -> google.cloud.datacatalog.lineage.v1.Run.AttributesEntry
+	53, // 3: google.cloud.datacatalog.lineage.v1.Run.start_time:type_name -> google.protobuf.Timestamp
+	53, // 4: google.cloud.datacatalog.lineage.v1.Run.end_time:type_name -> google.protobuf.Timestamp
+	1,  // 5: google.cloud.datacatalog.lineage.v1.Run.state:type_name -> google.cloud.datacatalog.lineage.v1.Run.State
+	10, // 6: google.cloud.datacatalog.lineage.v1.LineageEvent.links:type_name -> google.cloud.datacatalog.lineage.v1.EventLink
+	53, // 7: google.cloud.datacatalog.lineage.v1.LineageEvent.start_time:type_name -> google.protobuf.Timestamp
+	53, // 8: google.cloud.datacatalog.lineage.v1.LineageEvent.end_time:type_name -> google.protobuf.Timestamp
+	12, // 9: google.cloud.datacatalog.lineage.v1.EventLink.source:type_name -> google.cloud.datacatalog.lineage.v1.EntityReference
+	12, // 10: google.cloud.datacatalog.lineage.v1.EventLink.target:type_name -> google.cloud.datacatalog.lineage.v1.EntityReference
+	11, // 11: google.cloud.datacatalog.lineage.v1.EventLink.dependency_info:type_name -> google.cloud.datacatalog.lineage.v1.DependencyInfo
+	0,  // 12: google.cloud.datacatalog.lineage.v1.DependencyInfo.dependency_type:type_name -> google.cloud.datacatalog.lineage.v1.DependencyType
+	2,  // 13: google.cloud.datacatalog.lineage.v1.OperationMetadata.state:type_name -> google.cloud.datacatalog.lineage.v1.OperationMetadata.State
+	3,  // 14: google.cloud.datacatalog.lineage.v1.OperationMetadata.operation_type:type_name -> google.cloud.datacatalog.lineage.v1.OperationMetadata.Type
+	53, // 15: google.cloud.datacatalog.lineage.v1.OperationMetadata.create_time:type_name -> google.protobuf.Timestamp
+	53, // 16: google.cloud.datacatalog.lineage.v1.OperationMetadata.end_time:type_name -> google.protobuf.Timestamp
+	54, // 17: google.cloud.datacatalog.lineage.v1.ProcessOpenLineageRunEventRequest.open_lineage:type_name -> google.protobuf.Struct
+	7,  // 18: google.cloud.datacatalog.lineage.v1.CreateProcessRequest.process:type_name -> google.cloud.datacatalog.lineage.v1.Process
+	7,  // 19: google.cloud.datacatalog.lineage.v1.UpdateProcessRequest.process:type_name -> google.cloud.datacatalog.lineage.v1.Process
+	55, // 20: google.cloud.datacatalog.lineage.v1.UpdateProcessRequest.update_mask:type_name -> google.protobuf.FieldMask
+	7,  // 21: google.cloud.datacatalog.lineage.v1.ListProcessesResponse.processes:type_name -> google.cloud.datacatalog.lineage.v1.Process
+	8,  // 22: google.cloud.datacatalog.lineage.v1.CreateRunRequest.run:type_name -> google.cloud.datacatalog.lineage.v1.Run
+	8,  // 23: google.cloud.datacatalog.lineage.v1.UpdateRunRequest.run:type_name -> google.cloud.datacatalog.lineage.v1.Run
+	55, // 24: google.cloud.datacatalog.lineage.v1.UpdateRunRequest.update_mask:type_name -> google.protobuf.FieldMask
+	8,  // 25: google.cloud.datacatalog.lineage.v1.ListRunsResponse.runs:type_name -> google.cloud.datacatalog.lineage.v1.Run
+	9,  // 26: google.cloud.datacatalog.lineage.v1.CreateLineageEventRequest.lineage_event:type_name -> google.cloud.datacatalog.lineage.v1.LineageEvent
+	9,  // 27: google.cloud.datacatalog.lineage.v1.ListLineageEventsResponse.lineage_events:type_name -> google.cloud.datacatalog.lineage.v1.LineageEvent
+	12, // 28: google.cloud.datacatalog.lineage.v1.SearchLinksRequest.source:type_name -> google.cloud.datacatalog.lineage.v1.EntityReference
+	12, // 29: google.cloud.datacatalog.lineage.v1.SearchLinksRequest.target:type_name -> google.cloud.datacatalog.lineage.v1.EntityReference
+	34, // 30: google.cloud.datacatalog.lineage.v1.SearchLinksRequest.sources:type_name -> google.cloud.datacatalog.lineage.v1.MultipleEntityReference
+	34, // 31: google.cloud.datacatalog.lineage.v1.SearchLinksRequest.targets:type_name -> google.cloud.datacatalog.lineage.v1.MultipleEntityReference
+	12, // 32: google.cloud.datacatalog.lineage.v1.MultipleEntityReference.entities:type_name -> google.cloud.datacatalog.lineage.v1.EntityReference
+	36, // 33: google.cloud.datacatalog.lineage.v1.SearchLinksResponse.links:type_name -> google.cloud.datacatalog.lineage.v1.Link
+	12, // 34: google.cloud.datacatalog.lineage.v1.Link.source:type_name -> google.cloud.datacatalog.lineage.v1.EntityReference
+	12, // 35: google.cloud.datacatalog.lineage.v1.Link.target:type_name -> google.cloud.datacatalog.lineage.v1.EntityReference
+	53, // 36: google.cloud.datacatalog.lineage.v1.Link.start_time:type_name -> google.protobuf.Timestamp
+	53, // 37: google.cloud.datacatalog.lineage.v1.Link.end_time:type_name -> google.protobuf.Timestamp
+	47, // 38: google.cloud.datacatalog.lineage.v1.Link.dependency_info:type_name -> google.cloud.datacatalog.lineage.v1.Link.DependencyInfo
+	39, // 39: google.cloud.datacatalog.lineage.v1.BatchSearchLinkProcessesResponse.process_links:type_name -> google.cloud.datacatalog.lineage.v1.ProcessLinks
+	40, // 40: google.cloud.datacatalog.lineage.v1.ProcessLinks.links:type_name -> google.cloud.datacatalog.lineage.v1.ProcessLinkInfo
+	53, // 41: google.cloud.datacatalog.lineage.v1.ProcessLinkInfo.start_time:type_name -> google.protobuf.Timestamp
+	53, // 42: google.cloud.datacatalog.lineage.v1.ProcessLinkInfo.end_time:type_name -> google.protobuf.Timestamp
+	4,  // 43: google.cloud.datacatalog.lineage.v1.Origin.source_type:type_name -> google.cloud.datacatalog.lineage.v1.Origin.SourceType
+	12, // 44: google.cloud.datacatalog.lineage.v1.LineageLink.source:type_name -> google.cloud.datacatalog.lineage.v1.EntityReference
+	12, // 45: google.cloud.datacatalog.lineage.v1.LineageLink.target:type_name -> google.cloud.datacatalog.lineage.v1.EntityReference
+	48, // 46: google.cloud.datacatalog.lineage.v1.LineageLink.processes:type_name -> google.cloud.datacatalog.lineage.v1.LineageLink.LineageProcess
+	49, // 47: google.cloud.datacatalog.lineage.v1.LineageLink.dependency_info:type_name -> google.cloud.datacatalog.lineage.v1.LineageLink.DependencyInfo
+	52, // 48: google.cloud.datacatalog.lineage.v1.SearchLineageStreamingRequest.root_criteria:type_name -> google.cloud.datacatalog.lineage.v1.SearchLineageStreamingRequest.RootCriteria
+	5,  // 49: google.cloud.datacatalog.lineage.v1.SearchLineageStreamingRequest.direction:type_name -> google.cloud.datacatalog.lineage.v1.SearchLineageStreamingRequest.SearchDirection
+	50, // 50: google.cloud.datacatalog.lineage.v1.SearchLineageStreamingRequest.filters:type_name -> google.cloud.datacatalog.lineage.v1.SearchLineageStreamingRequest.SearchFilters
+	51, // 51: google.cloud.datacatalog.lineage.v1.SearchLineageStreamingRequest.limits:type_name -> google.cloud.datacatalog.lineage.v1.SearchLineageStreamingRequest.SearchLimits
+	42, // 52: google.cloud.datacatalog.lineage.v1.SearchLineageStreamingResponse.links:type_name -> google.cloud.datacatalog.lineage.v1.LineageLink
+	56, // 53: google.cloud.datacatalog.lineage.v1.Process.AttributesEntry.value:type_name -> google.protobuf.Value
+	56, // 54: google.cloud.datacatalog.lineage.v1.Run.AttributesEntry.value:type_name -> google.protobuf.Value
+	0,  // 55: google.cloud.datacatalog.lineage.v1.Link.DependencyInfo.dependency_type:type_name -> google.cloud.datacatalog.lineage.v1.DependencyType
+	7,  // 56: google.cloud.datacatalog.lineage.v1.LineageLink.LineageProcess.process:type_name -> google.cloud.datacatalog.lineage.v1.Process
+	0,  // 57: google.cloud.datacatalog.lineage.v1.LineageLink.DependencyInfo.dependency_type:type_name -> google.cloud.datacatalog.lineage.v1.DependencyType
+	0,  // 58: google.cloud.datacatalog.lineage.v1.SearchLineageStreamingRequest.SearchFilters.dependency_types:type_name -> google.cloud.datacatalog.lineage.v1.DependencyType
+	6,  // 59: google.cloud.datacatalog.lineage.v1.SearchLineageStreamingRequest.SearchFilters.entity_set:type_name -> google.cloud.datacatalog.lineage.v1.SearchLineageStreamingRequest.EntitySet
+	57, // 60: google.cloud.datacatalog.lineage.v1.SearchLineageStreamingRequest.SearchFilters.time_range:type_name -> google.type.Interval
+	34, // 61: google.cloud.datacatalog.lineage.v1.SearchLineageStreamingRequest.RootCriteria.entities:type_name -> google.cloud.datacatalog.lineage.v1.MultipleEntityReference
+	14, // 62: google.cloud.datacatalog.lineage.v1.Lineage.ProcessOpenLineageRunEvent:input_type -> google.cloud.datacatalog.lineage.v1.ProcessOpenLineageRunEventRequest
+	16, // 63: google.cloud.datacatalog.lineage.v1.Lineage.CreateProcess:input_type -> google.cloud.datacatalog.lineage.v1.CreateProcessRequest
+	17, // 64: google.cloud.datacatalog.lineage.v1.Lineage.UpdateProcess:input_type -> google.cloud.datacatalog.lineage.v1.UpdateProcessRequest
+	18, // 65: google.cloud.datacatalog.lineage.v1.Lineage.GetProcess:input_type -> google.cloud.datacatalog.lineage.v1.GetProcessRequest
+	19, // 66: google.cloud.datacatalog.lineage.v1.Lineage.ListProcesses:input_type -> google.cloud.datacatalog.lineage.v1.ListProcessesRequest
+	21, // 67: google.cloud.datacatalog.lineage.v1.Lineage.DeleteProcess:input_type -> google.cloud.datacatalog.lineage.v1.DeleteProcessRequest
+	22, // 68: google.cloud.datacatalog.lineage.v1.Lineage.CreateRun:input_type -> google.cloud.datacatalog.lineage.v1.CreateRunRequest
+	23, // 69: google.cloud.datacatalog.lineage.v1.Lineage.UpdateRun:input_type -> google.cloud.datacatalog.lineage.v1.UpdateRunRequest
+	24, // 70: google.cloud.datacatalog.lineage.v1.Lineage.GetRun:input_type -> google.cloud.datacatalog.lineage.v1.GetRunRequest
+	25, // 71: google.cloud.datacatalog.lineage.v1.Lineage.ListRuns:input_type -> google.cloud.datacatalog.lineage.v1.ListRunsRequest
+	27, // 72: google.cloud.datacatalog.lineage.v1.Lineage.DeleteRun:input_type -> google.cloud.datacatalog.lineage.v1.DeleteRunRequest
+	28, // 73: google.cloud.datacatalog.lineage.v1.Lineage.CreateLineageEvent:input_type -> google.cloud.datacatalog.lineage.v1.CreateLineageEventRequest
+	29, // 74: google.cloud.datacatalog.lineage.v1.Lineage.GetLineageEvent:input_type -> google.cloud.datacatalog.lineage.v1.GetLineageEventRequest
+	30, // 75: google.cloud.datacatalog.lineage.v1.Lineage.ListLineageEvents:input_type -> google.cloud.datacatalog.lineage.v1.ListLineageEventsRequest
+	32, // 76: google.cloud.datacatalog.lineage.v1.Lineage.DeleteLineageEvent:input_type -> google.cloud.datacatalog.lineage.v1.DeleteLineageEventRequest
+	33, // 77: google.cloud.datacatalog.lineage.v1.Lineage.SearchLinks:input_type -> google.cloud.datacatalog.lineage.v1.SearchLinksRequest
+	37, // 78: google.cloud.datacatalog.lineage.v1.Lineage.BatchSearchLinkProcesses:input_type -> google.cloud.datacatalog.lineage.v1.BatchSearchLinkProcessesRequest
+	43, // 79: google.cloud.datacatalog.lineage.v1.Lineage.SearchLineageStreaming:input_type -> google.cloud.datacatalog.lineage.v1.SearchLineageStreamingRequest
+	15, // 80: google.cloud.datacatalog.lineage.v1.Lineage.ProcessOpenLineageRunEvent:output_type -> google.cloud.datacatalog.lineage.v1.ProcessOpenLineageRunEventResponse
+	7,  // 81: google.cloud.datacatalog.lineage.v1.Lineage.CreateProcess:output_type -> google.cloud.datacatalog.lineage.v1.Process
+	7,  // 82: google.cloud.datacatalog.lineage.v1.Lineage.UpdateProcess:output_type -> google.cloud.datacatalog.lineage.v1.Process
+	7,  // 83: google.cloud.datacatalog.lineage.v1.Lineage.GetProcess:output_type -> google.cloud.datacatalog.lineage.v1.Process
+	20, // 84: google.cloud.datacatalog.lineage.v1.Lineage.ListProcesses:output_type -> google.cloud.datacatalog.lineage.v1.ListProcessesResponse
+	58, // 85: google.cloud.datacatalog.lineage.v1.Lineage.DeleteProcess:output_type -> google.longrunning.Operation
+	8,  // 86: google.cloud.datacatalog.lineage.v1.Lineage.CreateRun:output_type -> google.cloud.datacatalog.lineage.v1.Run
+	8,  // 87: google.cloud.datacatalog.lineage.v1.Lineage.UpdateRun:output_type -> google.cloud.datacatalog.lineage.v1.Run
+	8,  // 88: google.cloud.datacatalog.lineage.v1.Lineage.GetRun:output_type -> google.cloud.datacatalog.lineage.v1.Run
+	26, // 89: google.cloud.datacatalog.lineage.v1.Lineage.ListRuns:output_type -> google.cloud.datacatalog.lineage.v1.ListRunsResponse
+	58, // 90: google.cloud.datacatalog.lineage.v1.Lineage.DeleteRun:output_type -> google.longrunning.Operation
+	9,  // 91: google.cloud.datacatalog.lineage.v1.Lineage.CreateLineageEvent:output_type -> google.cloud.datacatalog.lineage.v1.LineageEvent
+	9,  // 92: google.cloud.datacatalog.lineage.v1.Lineage.GetLineageEvent:output_type -> google.cloud.datacatalog.lineage.v1.LineageEvent
+	31, // 93: google.cloud.datacatalog.lineage.v1.Lineage.ListLineageEvents:output_type -> google.cloud.datacatalog.lineage.v1.ListLineageEventsResponse
+	59, // 94: google.cloud.datacatalog.lineage.v1.Lineage.DeleteLineageEvent:output_type -> google.protobuf.Empty
+	35, // 95: google.cloud.datacatalog.lineage.v1.Lineage.SearchLinks:output_type -> google.cloud.datacatalog.lineage.v1.SearchLinksResponse
+	38, // 96: google.cloud.datacatalog.lineage.v1.Lineage.BatchSearchLinkProcesses:output_type -> google.cloud.datacatalog.lineage.v1.BatchSearchLinkProcessesResponse
+	44, // 97: google.cloud.datacatalog.lineage.v1.Lineage.SearchLineageStreaming:output_type -> google.cloud.datacatalog.lineage.v1.SearchLineageStreamingResponse
+	80, // [80:98] is the sub-list for method output_type
+	62, // [62:80] is the sub-list for method input_type
+	62, // [62:62] is the sub-list for extension type_name
+	62, // [62:62] is the sub-list for extension extendee
+	0,  // [0:62] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_datacatalog_lineage_v1_lineage_proto_init() }
@@ -2915,17 +3976,22 @@ func file_google_cloud_datacatalog_lineage_v1_lineage_proto_init() {
 	if File_google_cloud_datacatalog_lineage_v1_lineage_proto != nil {
 		return
 	}
-	file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[25].OneofWrappers = []any{
+	file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[26].OneofWrappers = []any{
 		(*SearchLinksRequest_Source)(nil),
 		(*SearchLinksRequest_Target)(nil),
+		(*SearchLinksRequest_Sources)(nil),
+		(*SearchLinksRequest_Targets)(nil),
+	}
+	file_google_cloud_datacatalog_lineage_v1_lineage_proto_msgTypes[45].OneofWrappers = []any{
+		(*SearchLineageStreamingRequest_RootCriteria_Entities)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDesc), len(file_google_cloud_datacatalog_lineage_v1_lineage_proto_rawDesc)),
-			NumEnums:      4,
-			NumMessages:   35,
+			NumEnums:      7,
+			NumMessages:   46,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

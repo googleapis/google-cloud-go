@@ -455,7 +455,7 @@
         "resultType": "*containerpb.NodePoolUpgradeInfo",
         "shortName": "FetchNodePoolUpgradeInfo"
       },
-      "description": "FetchNodePoolUpgradeInfo fetch upgrade information of a specific nodepool.",
+      "description": "FetchNodePoolUpgradeInfo fetch upgrade information of a specific node pool.",
       "file": "ClusterManagerClient/FetchNodePoolUpgradeInfo/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",

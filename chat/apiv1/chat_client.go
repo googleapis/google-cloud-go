@@ -4011,6 +4011,9 @@ func (c *restClient) CreateMessage(ctx context.Context, req *chatpb.CreateMessag
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetCreateMessageNotificationOptions().GetNotificationType() != 0 {
+		params.Add("createMessageNotificationOptions.notificationType", fmt.Sprintf("%v", req.GetCreateMessageNotificationOptions().GetNotificationType()))
+	}
 	if req.GetMessageId() != "" {
 		params.Add("messageId", fmt.Sprintf("%v", req.GetMessageId()))
 	}

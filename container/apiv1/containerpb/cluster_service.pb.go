@@ -28,6 +28,8 @@ import (
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	code "google.golang.org/genproto/googleapis/rpc/code"
 	status "google.golang.org/genproto/googleapis/rpc/status"
+	date "google.golang.org/genproto/googleapis/type/date"
+	timeofday "google.golang.org/genproto/googleapis/type/timeofday"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
@@ -225,8 +227,8 @@ const (
 	// max_surge and max_unavailable determines the level of upgrade parallelism.
 	NodePoolUpdateStrategy_SURGE NodePoolUpdateStrategy = 3
 	// SHORT_LIVED is the dedicated upgrade strategy for
-	// QueuedProvisioning and flex start nodepools scaled up only by enqueueing to
-	// the Dynamic Workload Scheduler (DWS).
+	// QueuedProvisioning and flex start node pools scaled up only by enqueueing
+	// to the Dynamic Workload Scheduler (DWS).
 	NodePoolUpdateStrategy_SHORT_LIVED NodePoolUpdateStrategy = 5
 )
 
@@ -624,7 +626,7 @@ func (LinuxNodeConfig_TransparentHugepageDefrag) EnumDescriptor() ([]byte, []int
 	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{0, 2}
 }
 
-// Defines the kernel module loading policy for nodes in the nodepool.
+// Defines the kernel module loading policy for nodes in the node pool.
 type LinuxNodeConfig_NodeKernelModuleLoading_Policy int32
 
 const (
@@ -686,7 +688,7 @@ func (x LinuxNodeConfig_NodeKernelModuleLoading_Policy) Number() protoreflect.En
 
 // Deprecated: Use LinuxNodeConfig_NodeKernelModuleLoading_Policy.Descriptor instead.
 func (LinuxNodeConfig_NodeKernelModuleLoading_Policy) EnumDescriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{0, 2, 0}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{0, 3, 0}
 }
 
 // Possible OS version that can be used.
@@ -859,6 +861,60 @@ func (NodeConfig_EffectiveCgroupMode) EnumDescriptor() ([]byte, []int) {
 	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{8, 1}
 }
 
+// Controls architecture tainting behavior for a node pool.
+// New values may be added in the future.
+type TaintConfig_ArchitectureTaintBehavior int32
+
+const (
+	// Specifies that the behavior is unspecified, defaults to ARM.
+	TaintConfig_ARCHITECTURE_TAINT_BEHAVIOR_UNSPECIFIED TaintConfig_ArchitectureTaintBehavior = 0
+	// Disables default architecture taints on the node pool.
+	TaintConfig_NONE TaintConfig_ArchitectureTaintBehavior = 1
+	// Taints all the nodes in the node pool with the default ARM taint.
+	TaintConfig_ARM TaintConfig_ArchitectureTaintBehavior = 2
+)
+
+// Enum value maps for TaintConfig_ArchitectureTaintBehavior.
+var (
+	TaintConfig_ArchitectureTaintBehavior_name = map[int32]string{
+		0: "ARCHITECTURE_TAINT_BEHAVIOR_UNSPECIFIED",
+		1: "NONE",
+		2: "ARM",
+	}
+	TaintConfig_ArchitectureTaintBehavior_value = map[string]int32{
+		"ARCHITECTURE_TAINT_BEHAVIOR_UNSPECIFIED": 0,
+		"NONE": 1,
+		"ARM":  2,
+	}
+)
+
+func (x TaintConfig_ArchitectureTaintBehavior) Enum() *TaintConfig_ArchitectureTaintBehavior {
+	p := new(TaintConfig_ArchitectureTaintBehavior)
+	*p = x
+	return p
+}
+
+func (x TaintConfig_ArchitectureTaintBehavior) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (TaintConfig_ArchitectureTaintBehavior) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_container_v1_cluster_service_proto_enumTypes[14].Descriptor()
+}
+
+func (TaintConfig_ArchitectureTaintBehavior) Type() protoreflect.EnumType {
+	return &file_google_container_v1_cluster_service_proto_enumTypes[14]
+}
+
+func (x TaintConfig_ArchitectureTaintBehavior) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use TaintConfig_ArchitectureTaintBehavior.Descriptor instead.
+func (TaintConfig_ArchitectureTaintBehavior) EnumDescriptor() ([]byte, []int) {
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{9, 0}
+}
+
 // Level of PMU access.
 type AdvancedMachineFeatures_PerformanceMonitoringUnit int32
 
@@ -900,11 +956,11 @@ func (x AdvancedMachineFeatures_PerformanceMonitoringUnit) String() string {
 }
 
 func (AdvancedMachineFeatures_PerformanceMonitoringUnit) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_container_v1_cluster_service_proto_enumTypes[14].Descriptor()
+	return file_google_container_v1_cluster_service_proto_enumTypes[15].Descriptor()
 }
 
 func (AdvancedMachineFeatures_PerformanceMonitoringUnit) Type() protoreflect.EnumType {
-	return &file_google_container_v1_cluster_service_proto_enumTypes[14]
+	return &file_google_container_v1_cluster_service_proto_enumTypes[15]
 }
 
 func (x AdvancedMachineFeatures_PerformanceMonitoringUnit) Number() protoreflect.EnumNumber {
@@ -913,7 +969,7 @@ func (x AdvancedMachineFeatures_PerformanceMonitoringUnit) Number() protoreflect
 
 // Deprecated: Use AdvancedMachineFeatures_PerformanceMonitoringUnit.Descriptor instead.
 func (AdvancedMachineFeatures_PerformanceMonitoringUnit) EnumDescriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{9, 0}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{10, 0}
 }
 
 // Node network tier
@@ -949,11 +1005,11 @@ func (x NodeNetworkConfig_NetworkPerformanceConfig_Tier) String() string {
 }
 
 func (NodeNetworkConfig_NetworkPerformanceConfig_Tier) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_container_v1_cluster_service_proto_enumTypes[15].Descriptor()
+	return file_google_container_v1_cluster_service_proto_enumTypes[16].Descriptor()
 }
 
 func (NodeNetworkConfig_NetworkPerformanceConfig_Tier) Type() protoreflect.EnumType {
-	return &file_google_container_v1_cluster_service_proto_enumTypes[15]
+	return &file_google_container_v1_cluster_service_proto_enumTypes[16]
 }
 
 func (x NodeNetworkConfig_NetworkPerformanceConfig_Tier) Number() protoreflect.EnumNumber {
@@ -962,7 +1018,7 @@ func (x NodeNetworkConfig_NetworkPerformanceConfig_Tier) Number() protoreflect.E
 
 // Deprecated: Use NodeNetworkConfig_NetworkPerformanceConfig_Tier.Descriptor instead.
 func (NodeNetworkConfig_NetworkPerformanceConfig_Tier) EnumDescriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{10, 0, 0}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{11, 0, 0}
 }
 
 // Possible types of sandboxes.
@@ -998,11 +1054,11 @@ func (x SandboxConfig_Type) String() string {
 }
 
 func (SandboxConfig_Type) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_container_v1_cluster_service_proto_enumTypes[16].Descriptor()
+	return file_google_container_v1_cluster_service_proto_enumTypes[17].Descriptor()
 }
 
 func (SandboxConfig_Type) Type() protoreflect.EnumType {
-	return &file_google_container_v1_cluster_service_proto_enumTypes[16]
+	return &file_google_container_v1_cluster_service_proto_enumTypes[17]
 }
 
 func (x SandboxConfig_Type) Number() protoreflect.EnumNumber {
@@ -1011,7 +1067,7 @@ func (x SandboxConfig_Type) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use SandboxConfig_Type.Descriptor instead.
 func (SandboxConfig_Type) EnumDescriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{14, 0}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{15, 0}
 }
 
 // Indicates whether to consume capacity from a reservation or not.
@@ -1056,11 +1112,11 @@ func (x ReservationAffinity_Type) String() string {
 }
 
 func (ReservationAffinity_Type) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_container_v1_cluster_service_proto_enumTypes[17].Descriptor()
+	return file_google_container_v1_cluster_service_proto_enumTypes[18].Descriptor()
 }
 
 func (ReservationAffinity_Type) Type() protoreflect.EnumType {
-	return &file_google_container_v1_cluster_service_proto_enumTypes[17]
+	return &file_google_container_v1_cluster_service_proto_enumTypes[18]
 }
 
 func (x ReservationAffinity_Type) Number() protoreflect.EnumNumber {
@@ -1069,7 +1125,7 @@ func (x ReservationAffinity_Type) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use ReservationAffinity_Type.Descriptor instead.
 func (ReservationAffinity_Type) EnumDescriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{16, 0}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{17, 0}
 }
 
 // Operator allows user to specify affinity or anti-affinity for the
@@ -1110,11 +1166,11 @@ func (x SoleTenantConfig_NodeAffinity_Operator) String() string {
 }
 
 func (SoleTenantConfig_NodeAffinity_Operator) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_container_v1_cluster_service_proto_enumTypes[18].Descriptor()
+	return file_google_container_v1_cluster_service_proto_enumTypes[19].Descriptor()
 }
 
 func (SoleTenantConfig_NodeAffinity_Operator) Type() protoreflect.EnumType {
-	return &file_google_container_v1_cluster_service_proto_enumTypes[18]
+	return &file_google_container_v1_cluster_service_proto_enumTypes[19]
 }
 
 func (x SoleTenantConfig_NodeAffinity_Operator) Number() protoreflect.EnumNumber {
@@ -1123,7 +1179,7 @@ func (x SoleTenantConfig_NodeAffinity_Operator) Number() protoreflect.EnumNumber
 
 // Deprecated: Use SoleTenantConfig_NodeAffinity_Operator.Descriptor instead.
 func (SoleTenantConfig_NodeAffinity_Operator) EnumDescriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{17, 0, 0}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{18, 0, 0}
 }
 
 // HostCapability configures capabilities for the registry host.
@@ -1167,11 +1223,11 @@ func (x ContainerdConfig_RegistryHostConfig_HostCapability) String() string {
 }
 
 func (ContainerdConfig_RegistryHostConfig_HostCapability) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_container_v1_cluster_service_proto_enumTypes[19].Descriptor()
+	return file_google_container_v1_cluster_service_proto_enumTypes[20].Descriptor()
 }
 
 func (ContainerdConfig_RegistryHostConfig_HostCapability) Type() protoreflect.EnumType {
-	return &file_google_container_v1_cluster_service_proto_enumTypes[19]
+	return &file_google_container_v1_cluster_service_proto_enumTypes[20]
 }
 
 func (x ContainerdConfig_RegistryHostConfig_HostCapability) Number() protoreflect.EnumNumber {
@@ -1180,7 +1236,7 @@ func (x ContainerdConfig_RegistryHostConfig_HostCapability) Number() protoreflec
 
 // Deprecated: Use ContainerdConfig_RegistryHostConfig_HostCapability.Descriptor instead.
 func (ContainerdConfig_RegistryHostConfig_HostCapability) EnumDescriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{18, 2, 0}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{19, 2, 0}
 }
 
 // Possible values for Effect in taint.
@@ -1224,11 +1280,11 @@ func (x NodeTaint_Effect) String() string {
 }
 
 func (NodeTaint_Effect) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_container_v1_cluster_service_proto_enumTypes[20].Descriptor()
+	return file_google_container_v1_cluster_service_proto_enumTypes[21].Descriptor()
 }
 
 func (NodeTaint_Effect) Type() protoreflect.EnumType {
-	return &file_google_container_v1_cluster_service_proto_enumTypes[20]
+	return &file_google_container_v1_cluster_service_proto_enumTypes[21]
 }
 
 func (x NodeTaint_Effect) Number() protoreflect.EnumNumber {
@@ -1237,7 +1293,7 @@ func (x NodeTaint_Effect) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use NodeTaint_Effect.Descriptor instead.
 func (NodeTaint_Effect) EnumDescriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{19, 0}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{20, 0}
 }
 
 // Load balancer type of ingress service of Cloud Run.
@@ -1277,11 +1333,11 @@ func (x CloudRunConfig_LoadBalancerType) String() string {
 }
 
 func (CloudRunConfig_LoadBalancerType) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_container_v1_cluster_service_proto_enumTypes[21].Descriptor()
+	return file_google_container_v1_cluster_service_proto_enumTypes[22].Descriptor()
 }
 
 func (CloudRunConfig_LoadBalancerType) Type() protoreflect.EnumType {
-	return &file_google_container_v1_cluster_service_proto_enumTypes[21]
+	return &file_google_container_v1_cluster_service_proto_enumTypes[22]
 }
 
 func (x CloudRunConfig_LoadBalancerType) Number() protoreflect.EnumNumber {
@@ -1290,7 +1346,7 @@ func (x CloudRunConfig_LoadBalancerType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use CloudRunConfig_LoadBalancerType.Descriptor instead.
 func (CloudRunConfig_LoadBalancerType) EnumDescriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{35, 0}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{36, 0}
 }
 
 // Allowed Network Policy providers.
@@ -1326,11 +1382,11 @@ func (x NetworkPolicy_Provider) String() string {
 }
 
 func (NetworkPolicy_Provider) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_container_v1_cluster_service_proto_enumTypes[22].Descriptor()
+	return file_google_container_v1_cluster_service_proto_enumTypes[23].Descriptor()
 }
 
 func (NetworkPolicy_Provider) Type() protoreflect.EnumType {
-	return &file_google_container_v1_cluster_service_proto_enumTypes[22]
+	return &file_google_container_v1_cluster_service_proto_enumTypes[23]
 }
 
 func (x NetworkPolicy_Provider) Number() protoreflect.EnumNumber {
@@ -1339,7 +1395,7 @@ func (x NetworkPolicy_Provider) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use NetworkPolicy_Provider.Descriptor instead.
 func (NetworkPolicy_Provider) EnumDescriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{49, 0}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{52, 0}
 }
 
 // Binary Authorization mode of operation.
@@ -1381,11 +1437,11 @@ func (x BinaryAuthorization_EvaluationMode) String() string {
 }
 
 func (BinaryAuthorization_EvaluationMode) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_container_v1_cluster_service_proto_enumTypes[23].Descriptor()
+	return file_google_container_v1_cluster_service_proto_enumTypes[24].Descriptor()
 }
 
 func (BinaryAuthorization_EvaluationMode) Type() protoreflect.EnumType {
-	return &file_google_container_v1_cluster_service_proto_enumTypes[23]
+	return &file_google_container_v1_cluster_service_proto_enumTypes[24]
 }
 
 func (x BinaryAuthorization_EvaluationMode) Number() protoreflect.EnumNumber {
@@ -1394,7 +1450,7 @@ func (x BinaryAuthorization_EvaluationMode) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use BinaryAuthorization_EvaluationMode.Descriptor instead.
 func (BinaryAuthorization_EvaluationMode) EnumDescriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{50, 0}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{53, 0}
 }
 
 // The current status of the cluster.
@@ -1455,11 +1511,11 @@ func (x Cluster_Status) String() string {
 }
 
 func (Cluster_Status) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_container_v1_cluster_service_proto_enumTypes[24].Descriptor()
+	return file_google_container_v1_cluster_service_proto_enumTypes[25].Descriptor()
 }
 
 func (Cluster_Status) Type() protoreflect.EnumType {
-	return &file_google_container_v1_cluster_service_proto_enumTypes[24]
+	return &file_google_container_v1_cluster_service_proto_enumTypes[25]
 }
 
 func (x Cluster_Status) Number() protoreflect.EnumNumber {
@@ -1468,7 +1524,114 @@ func (x Cluster_Status) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Cluster_Status.Descriptor instead.
 func (Cluster_Status) EnumDescriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{53, 0}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{56, 0}
+}
+
+// The mode of node creation.
+type NodeCreationConfig_Mode int32
+
+const (
+	// When no user input is provided.
+	NodeCreationConfig_MODE_UNSPECIFIED NodeCreationConfig_Mode = 0
+	// Kubelet registers itself.
+	NodeCreationConfig_VIA_KUBELET NodeCreationConfig_Mode = 1
+	// gcp-controller-manager automatically creates the node object after
+	// CSR approval.
+	NodeCreationConfig_VIA_CONTROL_PLANE NodeCreationConfig_Mode = 2
+)
+
+// Enum value maps for NodeCreationConfig_Mode.
+var (
+	NodeCreationConfig_Mode_name = map[int32]string{
+		0: "MODE_UNSPECIFIED",
+		1: "VIA_KUBELET",
+		2: "VIA_CONTROL_PLANE",
+	}
+	NodeCreationConfig_Mode_value = map[string]int32{
+		"MODE_UNSPECIFIED":  0,
+		"VIA_KUBELET":       1,
+		"VIA_CONTROL_PLANE": 2,
+	}
+)
+
+func (x NodeCreationConfig_Mode) Enum() *NodeCreationConfig_Mode {
+	p := new(NodeCreationConfig_Mode)
+	*p = x
+	return p
+}
+
+func (x NodeCreationConfig_Mode) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (NodeCreationConfig_Mode) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_container_v1_cluster_service_proto_enumTypes[26].Descriptor()
+}
+
+func (NodeCreationConfig_Mode) Type() protoreflect.EnumType {
+	return &file_google_container_v1_cluster_service_proto_enumTypes[26]
+}
+
+func (x NodeCreationConfig_Mode) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use NodeCreationConfig_Mode.Descriptor instead.
+func (NodeCreationConfig_Mode) EnumDescriptor() ([]byte, []int) {
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{57, 0}
+}
+
+// Mode defines the mode of control plane egress.
+type ControlPlaneEgress_Mode int32
+
+const (
+	// Default value not specified.
+	ControlPlaneEgress_MODE_UNSPECIFIED ControlPlaneEgress_Mode = 0
+	// Control plane has public IP and no restriction on egress.
+	ControlPlaneEgress_VIA_CONTROL_PLANE ControlPlaneEgress_Mode = 1
+	// No public IP on control plane and only internal allowlisted egress.
+	ControlPlaneEgress_NONE ControlPlaneEgress_Mode = 2
+)
+
+// Enum value maps for ControlPlaneEgress_Mode.
+var (
+	ControlPlaneEgress_Mode_name = map[int32]string{
+		0: "MODE_UNSPECIFIED",
+		1: "VIA_CONTROL_PLANE",
+		2: "NONE",
+	}
+	ControlPlaneEgress_Mode_value = map[string]int32{
+		"MODE_UNSPECIFIED":  0,
+		"VIA_CONTROL_PLANE": 1,
+		"NONE":              2,
+	}
+)
+
+func (x ControlPlaneEgress_Mode) Enum() *ControlPlaneEgress_Mode {
+	p := new(ControlPlaneEgress_Mode)
+	*p = x
+	return p
+}
+
+func (x ControlPlaneEgress_Mode) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (ControlPlaneEgress_Mode) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_container_v1_cluster_service_proto_enumTypes[27].Descriptor()
+}
+
+func (ControlPlaneEgress_Mode) Type() protoreflect.EnumType {
+	return &file_google_container_v1_cluster_service_proto_enumTypes[27]
+}
+
+func (x ControlPlaneEgress_Mode) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use ControlPlaneEgress_Mode.Descriptor instead.
+func (ControlPlaneEgress_Mode) EnumDescriptor() ([]byte, []int) {
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{58, 0}
 }
 
 // Mode defines the mode of anonymous authentication
@@ -1509,11 +1672,11 @@ func (x AnonymousAuthenticationConfig_Mode) String() string {
 }
 
 func (AnonymousAuthenticationConfig_Mode) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_container_v1_cluster_service_proto_enumTypes[25].Descriptor()
+	return file_google_container_v1_cluster_service_proto_enumTypes[28].Descriptor()
 }
 
 func (AnonymousAuthenticationConfig_Mode) Type() protoreflect.EnumType {
-	return &file_google_container_v1_cluster_service_proto_enumTypes[25]
+	return &file_google_container_v1_cluster_service_proto_enumTypes[28]
 }
 
 func (x AnonymousAuthenticationConfig_Mode) Number() protoreflect.EnumNumber {
@@ -1522,7 +1685,7 @@ func (x AnonymousAuthenticationConfig_Mode) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use AnonymousAuthenticationConfig_Mode.Descriptor instead.
 func (AnonymousAuthenticationConfig_Mode) EnumDescriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{56, 0}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{61, 0}
 }
 
 // Mode defines enablement mode for Compliance Posture.
@@ -1562,11 +1725,11 @@ func (x CompliancePostureConfig_Mode) String() string {
 }
 
 func (CompliancePostureConfig_Mode) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_container_v1_cluster_service_proto_enumTypes[26].Descriptor()
+	return file_google_container_v1_cluster_service_proto_enumTypes[29].Descriptor()
 }
 
 func (CompliancePostureConfig_Mode) Type() protoreflect.EnumType {
-	return &file_google_container_v1_cluster_service_proto_enumTypes[26]
+	return &file_google_container_v1_cluster_service_proto_enumTypes[29]
 }
 
 func (x CompliancePostureConfig_Mode) Number() protoreflect.EnumNumber {
@@ -1575,7 +1738,7 @@ func (x CompliancePostureConfig_Mode) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use CompliancePostureConfig_Mode.Descriptor instead.
 func (CompliancePostureConfig_Mode) EnumDescriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{57, 0}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{62, 0}
 }
 
 // Mode defines enablement mode for GKE Security posture features.
@@ -1588,7 +1751,13 @@ const (
 	SecurityPostureConfig_DISABLED SecurityPostureConfig_Mode = 1
 	// Applies Security Posture features on the cluster.
 	SecurityPostureConfig_BASIC SecurityPostureConfig_Mode = 2
+	// Deprecated: Security Posture Enterprise features are no longer supported.
+	// For more details, see
+	// https://cloud.google.com/kubernetes-engine/docs/deprecations/posture-management-deprecation.
+	//
 	// Applies the Security Posture off cluster Enterprise level features.
+	//
+	// Deprecated: Marked as deprecated in google/container/v1/cluster_service.proto.
 	SecurityPostureConfig_ENTERPRISE SecurityPostureConfig_Mode = 3
 )
 
@@ -1619,11 +1788,11 @@ func (x SecurityPostureConfig_Mode) String() string {
 }
 
 func (SecurityPostureConfig_Mode) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_container_v1_cluster_service_proto_enumTypes[27].Descriptor()
+	return file_google_container_v1_cluster_service_proto_enumTypes[30].Descriptor()
 }
 
 func (SecurityPostureConfig_Mode) Type() protoreflect.EnumType {
-	return &file_google_container_v1_cluster_service_proto_enumTypes[27]
+	return &file_google_container_v1_cluster_service_proto_enumTypes[30]
 }
 
 func (x SecurityPostureConfig_Mode) Number() protoreflect.EnumNumber {
@@ -1632,7 +1801,7 @@ func (x SecurityPostureConfig_Mode) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use SecurityPostureConfig_Mode.Descriptor instead.
 func (SecurityPostureConfig_Mode) EnumDescriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{59, 0}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{64, 0}
 }
 
 // VulnerabilityMode defines enablement mode for vulnerability scanning.
@@ -1643,7 +1812,13 @@ const (
 	SecurityPostureConfig_VULNERABILITY_MODE_UNSPECIFIED SecurityPostureConfig_VulnerabilityMode = 0
 	// Disables vulnerability scanning on the cluster.
 	SecurityPostureConfig_VULNERABILITY_DISABLED SecurityPostureConfig_VulnerabilityMode = 1
+	// Deprecated: Basic vulnerability scanning is no longer supported.
+	// For more details, see
+	// https://cloud.google.com/kubernetes-engine/docs/deprecations/posture-management-deprecation.
+	//
 	// Applies basic vulnerability scanning on the cluster.
+	//
+	// Deprecated: Marked as deprecated in google/container/v1/cluster_service.proto.
 	SecurityPostureConfig_VULNERABILITY_BASIC SecurityPostureConfig_VulnerabilityMode = 2
 	// Applies the Security Posture's vulnerability on cluster Enterprise level
 	// features.
@@ -1677,11 +1852,11 @@ func (x SecurityPostureConfig_VulnerabilityMode) String() string {
 }
 
 func (SecurityPostureConfig_VulnerabilityMode) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_container_v1_cluster_service_proto_enumTypes[28].Descriptor()
+	return file_google_container_v1_cluster_service_proto_enumTypes[31].Descriptor()
 }
 
 func (SecurityPostureConfig_VulnerabilityMode) Type() protoreflect.EnumType {
-	return &file_google_container_v1_cluster_service_proto_enumTypes[28]
+	return &file_google_container_v1_cluster_service_proto_enumTypes[31]
 }
 
 func (x SecurityPostureConfig_VulnerabilityMode) Number() protoreflect.EnumNumber {
@@ -1690,12 +1865,12 @@ func (x SecurityPostureConfig_VulnerabilityMode) Number() protoreflect.EnumNumbe
 
 // Deprecated: Use SecurityPostureConfig_VulnerabilityMode.Descriptor instead.
 func (SecurityPostureConfig_VulnerabilityMode) EnumDescriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{59, 1}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{64, 1}
 }
 
 // Additional subnet with DRAINING status will not be selected during new node
 // pool creation. To undrain the draining status, update the cluster to set
-// the sunbet to ACTIVE status. To remove the additional subnet, use the
+// the subnet to ACTIVE status. To remove the additional subnet, use the
 // update cluster API to remove the subnet from the
 // desired_additional_ip_ranges list. IP ranges can be removed regardless of
 // its status, as long as no node pools are using them.
@@ -1737,11 +1912,11 @@ func (x AdditionalIPRangesConfig_Status) String() string {
 }
 
 func (AdditionalIPRangesConfig_Status) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_container_v1_cluster_service_proto_enumTypes[29].Descriptor()
+	return file_google_container_v1_cluster_service_proto_enumTypes[32].Descriptor()
 }
 
 func (AdditionalIPRangesConfig_Status) Type() protoreflect.EnumType {
-	return &file_google_container_v1_cluster_service_proto_enumTypes[29]
+	return &file_google_container_v1_cluster_service_proto_enumTypes[32]
 }
 
 func (x AdditionalIPRangesConfig_Status) Number() protoreflect.EnumNumber {
@@ -1750,7 +1925,7 @@ func (x AdditionalIPRangesConfig_Status) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use AdditionalIPRangesConfig_Status.Descriptor instead.
 func (AdditionalIPRangesConfig_Status) EnumDescriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{65, 0}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{70, 0}
 }
 
 // Current status of the operation.
@@ -1798,11 +1973,11 @@ func (x Operation_Status) String() string {
 }
 
 func (Operation_Status) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_container_v1_cluster_service_proto_enumTypes[30].Descriptor()
+	return file_google_container_v1_cluster_service_proto_enumTypes[33].Descriptor()
 }
 
 func (Operation_Status) Type() protoreflect.EnumType {
-	return &file_google_container_v1_cluster_service_proto_enumTypes[30]
+	return &file_google_container_v1_cluster_service_proto_enumTypes[33]
 }
 
 func (x Operation_Status) Number() protoreflect.EnumNumber {
@@ -1811,7 +1986,7 @@ func (x Operation_Status) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Operation_Status.Descriptor instead.
 func (Operation_Status) EnumDescriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{70, 0}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{75, 0}
 }
 
 // Operation type categorizes the operation.
@@ -1991,11 +2166,11 @@ func (x Operation_Type) String() string {
 }
 
 func (Operation_Type) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_container_v1_cluster_service_proto_enumTypes[31].Descriptor()
+	return file_google_container_v1_cluster_service_proto_enumTypes[34].Descriptor()
 }
 
 func (Operation_Type) Type() protoreflect.EnumType {
-	return &file_google_container_v1_cluster_service_proto_enumTypes[31]
+	return &file_google_container_v1_cluster_service_proto_enumTypes[34]
 }
 
 func (x Operation_Type) Number() protoreflect.EnumNumber {
@@ -2004,7 +2179,7 @@ func (x Operation_Type) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Operation_Type.Descriptor instead.
 func (Operation_Type) EnumDescriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{70, 1}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{75, 1}
 }
 
 // Operation type: what type update to perform.
@@ -2051,11 +2226,11 @@ func (x SetMasterAuthRequest_Action) String() string {
 }
 
 func (SetMasterAuthRequest_Action) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_container_v1_cluster_service_proto_enumTypes[32].Descriptor()
+	return file_google_container_v1_cluster_service_proto_enumTypes[35].Descriptor()
 }
 
 func (SetMasterAuthRequest_Action) Type() protoreflect.EnumType {
-	return &file_google_container_v1_cluster_service_proto_enumTypes[32]
+	return &file_google_container_v1_cluster_service_proto_enumTypes[35]
 }
 
 func (x SetMasterAuthRequest_Action) Number() protoreflect.EnumNumber {
@@ -2064,7 +2239,7 @@ func (x SetMasterAuthRequest_Action) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use SetMasterAuthRequest_Action.Descriptor instead.
 func (SetMasterAuthRequest_Action) EnumDescriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{82, 0}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{87, 0}
 }
 
 // The current status of the node pool instance.
@@ -2127,11 +2302,11 @@ func (x NodePool_Status) String() string {
 }
 
 func (NodePool_Status) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_container_v1_cluster_service_proto_enumTypes[33].Descriptor()
+	return file_google_container_v1_cluster_service_proto_enumTypes[36].Descriptor()
 }
 
 func (NodePool_Status) Type() protoreflect.EnumType {
-	return &file_google_container_v1_cluster_service_proto_enumTypes[33]
+	return &file_google_container_v1_cluster_service_proto_enumTypes[36]
 }
 
 func (x NodePool_Status) Number() protoreflect.EnumNumber {
@@ -2140,7 +2315,7 @@ func (x NodePool_Status) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use NodePool_Status.Descriptor instead.
 func (NodePool_Status) EnumDescriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{97, 0}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{102, 0}
 }
 
 // Phase represents the different stages blue-green upgrade is running in.
@@ -2200,11 +2375,11 @@ func (x NodePool_UpdateInfo_BlueGreenInfo_Phase) String() string {
 }
 
 func (NodePool_UpdateInfo_BlueGreenInfo_Phase) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_container_v1_cluster_service_proto_enumTypes[34].Descriptor()
+	return file_google_container_v1_cluster_service_proto_enumTypes[37].Descriptor()
 }
 
 func (NodePool_UpdateInfo_BlueGreenInfo_Phase) Type() protoreflect.EnumType {
-	return &file_google_container_v1_cluster_service_proto_enumTypes[34]
+	return &file_google_container_v1_cluster_service_proto_enumTypes[37]
 }
 
 func (x NodePool_UpdateInfo_BlueGreenInfo_Phase) Number() protoreflect.EnumNumber {
@@ -2213,7 +2388,7 @@ func (x NodePool_UpdateInfo_BlueGreenInfo_Phase) Number() protoreflect.EnumNumbe
 
 // Deprecated: Use NodePool_UpdateInfo_BlueGreenInfo_Phase.Descriptor instead.
 func (NodePool_UpdateInfo_BlueGreenInfo_Phase) EnumDescriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{97, 1, 0, 0}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{102, 1, 0, 0}
 }
 
 // Type defines the type of placement policy.
@@ -2251,11 +2426,11 @@ func (x NodePool_PlacementPolicy_Type) String() string {
 }
 
 func (NodePool_PlacementPolicy_Type) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_container_v1_cluster_service_proto_enumTypes[35].Descriptor()
+	return file_google_container_v1_cluster_service_proto_enumTypes[38].Descriptor()
 }
 
 func (NodePool_PlacementPolicy_Type) Type() protoreflect.EnumType {
-	return &file_google_container_v1_cluster_service_proto_enumTypes[35]
+	return &file_google_container_v1_cluster_service_proto_enumTypes[38]
 }
 
 func (x NodePool_PlacementPolicy_Type) Number() protoreflect.EnumNumber {
@@ -2264,7 +2439,7 @@ func (x NodePool_PlacementPolicy_Type) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use NodePool_PlacementPolicy_Type.Descriptor instead.
 func (NodePool_PlacementPolicy_Type) EnumDescriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{97, 2, 0}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{102, 2, 0}
 }
 
 // Scope of exclusion.
@@ -2309,11 +2484,11 @@ func (x MaintenanceExclusionOptions_Scope) String() string {
 }
 
 func (MaintenanceExclusionOptions_Scope) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_container_v1_cluster_service_proto_enumTypes[36].Descriptor()
+	return file_google_container_v1_cluster_service_proto_enumTypes[39].Descriptor()
 }
 
 func (MaintenanceExclusionOptions_Scope) Type() protoreflect.EnumType {
-	return &file_google_container_v1_cluster_service_proto_enumTypes[36]
+	return &file_google_container_v1_cluster_service_proto_enumTypes[39]
 }
 
 func (x MaintenanceExclusionOptions_Scope) Number() protoreflect.EnumNumber {
@@ -2322,7 +2497,7 @@ func (x MaintenanceExclusionOptions_Scope) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use MaintenanceExclusionOptions_Scope.Descriptor instead.
 func (MaintenanceExclusionOptions_Scope) EnumDescriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{104, 0}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{110, 0}
 }
 
 // EndTimeBehavior specifies the behavior of the exclusion end time.
@@ -2360,11 +2535,11 @@ func (x MaintenanceExclusionOptions_EndTimeBehavior) String() string {
 }
 
 func (MaintenanceExclusionOptions_EndTimeBehavior) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_container_v1_cluster_service_proto_enumTypes[37].Descriptor()
+	return file_google_container_v1_cluster_service_proto_enumTypes[40].Descriptor()
 }
 
 func (MaintenanceExclusionOptions_EndTimeBehavior) Type() protoreflect.EnumType {
-	return &file_google_container_v1_cluster_service_proto_enumTypes[37]
+	return &file_google_container_v1_cluster_service_proto_enumTypes[40]
 }
 
 func (x MaintenanceExclusionOptions_EndTimeBehavior) Number() protoreflect.EnumNumber {
@@ -2373,7 +2548,7 @@ func (x MaintenanceExclusionOptions_EndTimeBehavior) Number() protoreflect.EnumN
 
 // Deprecated: Use MaintenanceExclusionOptions_EndTimeBehavior.Descriptor instead.
 func (MaintenanceExclusionOptions_EndTimeBehavior) EnumDescriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{104, 1}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{110, 1}
 }
 
 // Defines possible options for autoscaling_profile field.
@@ -2413,11 +2588,11 @@ func (x ClusterAutoscaling_AutoscalingProfile) String() string {
 }
 
 func (ClusterAutoscaling_AutoscalingProfile) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_container_v1_cluster_service_proto_enumTypes[38].Descriptor()
+	return file_google_container_v1_cluster_service_proto_enumTypes[41].Descriptor()
 }
 
 func (ClusterAutoscaling_AutoscalingProfile) Type() protoreflect.EnumType {
-	return &file_google_container_v1_cluster_service_proto_enumTypes[38]
+	return &file_google_container_v1_cluster_service_proto_enumTypes[41]
 }
 
 func (x ClusterAutoscaling_AutoscalingProfile) Number() protoreflect.EnumNumber {
@@ -2426,7 +2601,7 @@ func (x ClusterAutoscaling_AutoscalingProfile) Number() protoreflect.EnumNumber 
 
 // Deprecated: Use ClusterAutoscaling_AutoscalingProfile.Descriptor instead.
 func (ClusterAutoscaling_AutoscalingProfile) EnumDescriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{112, 0}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{119, 0}
 }
 
 // Defines possible options for Autopilot general profile.
@@ -2437,6 +2612,8 @@ const (
 	ClusterAutoscaling_AUTOPILOT_GENERAL_PROFILE_UNSPECIFIED ClusterAutoscaling_AutopilotGeneralProfile = 0
 	// Avoid extra IP consumption.
 	ClusterAutoscaling_NO_PERFORMANCE ClusterAutoscaling_AutopilotGeneralProfile = 1
+	// Use default configuration.
+	ClusterAutoscaling_NONE ClusterAutoscaling_AutopilotGeneralProfile = 2
 )
 
 // Enum value maps for ClusterAutoscaling_AutopilotGeneralProfile.
@@ -2444,10 +2621,12 @@ var (
 	ClusterAutoscaling_AutopilotGeneralProfile_name = map[int32]string{
 		0: "AUTOPILOT_GENERAL_PROFILE_UNSPECIFIED",
 		1: "NO_PERFORMANCE",
+		2: "NONE",
 	}
 	ClusterAutoscaling_AutopilotGeneralProfile_value = map[string]int32{
 		"AUTOPILOT_GENERAL_PROFILE_UNSPECIFIED": 0,
 		"NO_PERFORMANCE":                        1,
+		"NONE":                                  2,
 	}
 )
 
@@ -2462,11 +2641,11 @@ func (x ClusterAutoscaling_AutopilotGeneralProfile) String() string {
 }
 
 func (ClusterAutoscaling_AutopilotGeneralProfile) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_container_v1_cluster_service_proto_enumTypes[39].Descriptor()
+	return file_google_container_v1_cluster_service_proto_enumTypes[42].Descriptor()
 }
 
 func (ClusterAutoscaling_AutopilotGeneralProfile) Type() protoreflect.EnumType {
-	return &file_google_container_v1_cluster_service_proto_enumTypes[39]
+	return &file_google_container_v1_cluster_service_proto_enumTypes[42]
 }
 
 func (x ClusterAutoscaling_AutopilotGeneralProfile) Number() protoreflect.EnumNumber {
@@ -2475,11 +2654,11 @@ func (x ClusterAutoscaling_AutopilotGeneralProfile) Number() protoreflect.EnumNu
 
 // Deprecated: Use ClusterAutoscaling_AutopilotGeneralProfile.Descriptor instead.
 func (ClusterAutoscaling_AutopilotGeneralProfile) EnumDescriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{112, 1}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{119, 1}
 }
 
 // Location policy specifies how zones are picked when scaling up the
-// nodepool.
+// node pool.
 type NodePoolAutoscaling_LocationPolicy int32
 
 const (
@@ -2517,11 +2696,11 @@ func (x NodePoolAutoscaling_LocationPolicy) String() string {
 }
 
 func (NodePoolAutoscaling_LocationPolicy) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_container_v1_cluster_service_proto_enumTypes[40].Descriptor()
+	return file_google_container_v1_cluster_service_proto_enumTypes[43].Descriptor()
 }
 
 func (NodePoolAutoscaling_LocationPolicy) Type() protoreflect.EnumType {
-	return &file_google_container_v1_cluster_service_proto_enumTypes[40]
+	return &file_google_container_v1_cluster_service_proto_enumTypes[43]
 }
 
 func (x NodePoolAutoscaling_LocationPolicy) Number() protoreflect.EnumNumber {
@@ -2530,7 +2709,7 @@ func (x NodePoolAutoscaling_LocationPolicy) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use NodePoolAutoscaling_LocationPolicy.Descriptor instead.
 func (NodePoolAutoscaling_LocationPolicy) EnumDescriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{116, 0}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{123, 0}
 }
 
 // The type of GPU sharing strategy currently provided.
@@ -2570,11 +2749,11 @@ func (x GPUSharingConfig_GPUSharingStrategy) String() string {
 }
 
 func (GPUSharingConfig_GPUSharingStrategy) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_container_v1_cluster_service_proto_enumTypes[41].Descriptor()
+	return file_google_container_v1_cluster_service_proto_enumTypes[44].Descriptor()
 }
 
 func (GPUSharingConfig_GPUSharingStrategy) Type() protoreflect.EnumType {
-	return &file_google_container_v1_cluster_service_proto_enumTypes[41]
+	return &file_google_container_v1_cluster_service_proto_enumTypes[44]
 }
 
 func (x GPUSharingConfig_GPUSharingStrategy) Number() protoreflect.EnumNumber {
@@ -2583,7 +2762,7 @@ func (x GPUSharingConfig_GPUSharingStrategy) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use GPUSharingConfig_GPUSharingStrategy.Descriptor instead.
 func (GPUSharingConfig_GPUSharingStrategy) EnumDescriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{122, 0}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{129, 0}
 }
 
 // The GPU driver version to install.
@@ -2627,11 +2806,11 @@ func (x GPUDriverInstallationConfig_GPUDriverVersion) String() string {
 }
 
 func (GPUDriverInstallationConfig_GPUDriverVersion) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_container_v1_cluster_service_proto_enumTypes[42].Descriptor()
+	return file_google_container_v1_cluster_service_proto_enumTypes[45].Descriptor()
 }
 
 func (GPUDriverInstallationConfig_GPUDriverVersion) Type() protoreflect.EnumType {
-	return &file_google_container_v1_cluster_service_proto_enumTypes[42]
+	return &file_google_container_v1_cluster_service_proto_enumTypes[45]
 }
 
 func (x GPUDriverInstallationConfig_GPUDriverVersion) Number() protoreflect.EnumNumber {
@@ -2640,7 +2819,7 @@ func (x GPUDriverInstallationConfig_GPUDriverVersion) Number() protoreflect.Enum
 
 // Deprecated: Use GPUDriverInstallationConfig_GPUDriverVersion.Descriptor instead.
 func (GPUDriverInstallationConfig_GPUDriverVersion) EnumDescriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{123, 0}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{130, 0}
 }
 
 // Mode is the configuration for how to expose metadata to workloads running
@@ -2685,11 +2864,11 @@ func (x WorkloadMetadataConfig_Mode) String() string {
 }
 
 func (WorkloadMetadataConfig_Mode) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_container_v1_cluster_service_proto_enumTypes[43].Descriptor()
+	return file_google_container_v1_cluster_service_proto_enumTypes[46].Descriptor()
 }
 
 func (WorkloadMetadataConfig_Mode) Type() protoreflect.EnumType {
-	return &file_google_container_v1_cluster_service_proto_enumTypes[43]
+	return &file_google_container_v1_cluster_service_proto_enumTypes[46]
 }
 
 func (x WorkloadMetadataConfig_Mode) Number() protoreflect.EnumNumber {
@@ -2698,7 +2877,7 @@ func (x WorkloadMetadataConfig_Mode) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use WorkloadMetadataConfig_Mode.Descriptor instead.
 func (WorkloadMetadataConfig_Mode) EnumDescriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{124, 0}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{131, 0}
 }
 
 // Code for each condition
@@ -2766,11 +2945,11 @@ func (x StatusCondition_Code) String() string {
 }
 
 func (StatusCondition_Code) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_container_v1_cluster_service_proto_enumTypes[44].Descriptor()
+	return file_google_container_v1_cluster_service_proto_enumTypes[47].Descriptor()
 }
 
 func (StatusCondition_Code) Type() protoreflect.EnumType {
-	return &file_google_container_v1_cluster_service_proto_enumTypes[44]
+	return &file_google_container_v1_cluster_service_proto_enumTypes[47]
 }
 
 func (x StatusCondition_Code) Number() protoreflect.EnumNumber {
@@ -2779,7 +2958,7 @@ func (x StatusCondition_Code) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use StatusCondition_Code.Descriptor instead.
 func (StatusCondition_Code) EnumDescriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{127, 0}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{134, 0}
 }
 
 // Node network tier
@@ -2815,11 +2994,11 @@ func (x NetworkConfig_ClusterNetworkPerformanceConfig_Tier) String() string {
 }
 
 func (NetworkConfig_ClusterNetworkPerformanceConfig_Tier) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_container_v1_cluster_service_proto_enumTypes[45].Descriptor()
+	return file_google_container_v1_cluster_service_proto_enumTypes[48].Descriptor()
 }
 
 func (NetworkConfig_ClusterNetworkPerformanceConfig_Tier) Type() protoreflect.EnumType {
-	return &file_google_container_v1_cluster_service_proto_enumTypes[45]
+	return &file_google_container_v1_cluster_service_proto_enumTypes[48]
 }
 
 func (x NetworkConfig_ClusterNetworkPerformanceConfig_Tier) Number() protoreflect.EnumNumber {
@@ -2828,7 +3007,7 @@ func (x NetworkConfig_ClusterNetworkPerformanceConfig_Tier) Number() protoreflec
 
 // Deprecated: Use NetworkConfig_ClusterNetworkPerformanceConfig_Tier.Descriptor instead.
 func (NetworkConfig_ClusterNetworkPerformanceConfig_Tier) EnumDescriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{128, 0, 0}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{135, 0, 0}
 }
 
 // Channel describes if/how Gateway API should be installed and implemented in
@@ -2876,11 +3055,11 @@ func (x GatewayAPIConfig_Channel) String() string {
 }
 
 func (GatewayAPIConfig_Channel) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_container_v1_cluster_service_proto_enumTypes[46].Descriptor()
+	return file_google_container_v1_cluster_service_proto_enumTypes[49].Descriptor()
 }
 
 func (GatewayAPIConfig_Channel) Type() protoreflect.EnumType {
-	return &file_google_container_v1_cluster_service_proto_enumTypes[46]
+	return &file_google_container_v1_cluster_service_proto_enumTypes[49]
 }
 
 func (x GatewayAPIConfig_Channel) Number() protoreflect.EnumNumber {
@@ -2889,7 +3068,7 @@ func (x GatewayAPIConfig_Channel) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use GatewayAPIConfig_Channel.Descriptor instead.
 func (GatewayAPIConfig_Channel) EnumDescriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{129, 0}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{136, 0}
 }
 
 // The type of the reported issue.
@@ -2937,11 +3116,11 @@ func (x AutopilotCompatibilityIssue_IssueType) String() string {
 }
 
 func (AutopilotCompatibilityIssue_IssueType) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_container_v1_cluster_service_proto_enumTypes[47].Descriptor()
+	return file_google_container_v1_cluster_service_proto_enumTypes[50].Descriptor()
 }
 
 func (AutopilotCompatibilityIssue_IssueType) Type() protoreflect.EnumType {
-	return &file_google_container_v1_cluster_service_proto_enumTypes[47]
+	return &file_google_container_v1_cluster_service_proto_enumTypes[50]
 }
 
 func (x AutopilotCompatibilityIssue_IssueType) Number() protoreflect.EnumNumber {
@@ -2950,7 +3129,7 @@ func (x AutopilotCompatibilityIssue_IssueType) Number() protoreflect.EnumNumber 
 
 // Deprecated: Use AutopilotCompatibilityIssue_IssueType.Descriptor instead.
 func (AutopilotCompatibilityIssue_IssueType) EnumDescriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{137, 0}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{144, 0}
 }
 
 // Possible values for 'channel'.
@@ -3007,11 +3186,11 @@ func (x ReleaseChannel_Channel) String() string {
 }
 
 func (ReleaseChannel_Channel) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_container_v1_cluster_service_proto_enumTypes[48].Descriptor()
+	return file_google_container_v1_cluster_service_proto_enumTypes[51].Descriptor()
 }
 
 func (ReleaseChannel_Channel) Type() protoreflect.EnumType {
-	return &file_google_container_v1_cluster_service_proto_enumTypes[48]
+	return &file_google_container_v1_cluster_service_proto_enumTypes[51]
 }
 
 func (x ReleaseChannel_Channel) Number() protoreflect.EnumNumber {
@@ -3020,7 +3199,7 @@ func (x ReleaseChannel_Channel) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use ReleaseChannel_Channel.Descriptor instead.
 func (ReleaseChannel_Channel) EnumDescriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{139, 0}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{146, 0}
 }
 
 // Provider lists the various in-cluster DNS providers.
@@ -3064,11 +3243,11 @@ func (x DNSConfig_Provider) String() string {
 }
 
 func (DNSConfig_Provider) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_container_v1_cluster_service_proto_enumTypes[49].Descriptor()
+	return file_google_container_v1_cluster_service_proto_enumTypes[52].Descriptor()
 }
 
 func (DNSConfig_Provider) Type() protoreflect.EnumType {
-	return &file_google_container_v1_cluster_service_proto_enumTypes[49]
+	return &file_google_container_v1_cluster_service_proto_enumTypes[52]
 }
 
 func (x DNSConfig_Provider) Number() protoreflect.EnumNumber {
@@ -3077,7 +3256,7 @@ func (x DNSConfig_Provider) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use DNSConfig_Provider.Descriptor instead.
 func (DNSConfig_Provider) EnumDescriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{143, 0}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{150, 0}
 }
 
 // DNSScope lists the various scopes of access to cluster DNS records.
@@ -3117,11 +3296,11 @@ func (x DNSConfig_DNSScope) String() string {
 }
 
 func (DNSConfig_DNSScope) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_container_v1_cluster_service_proto_enumTypes[50].Descriptor()
+	return file_google_container_v1_cluster_service_proto_enumTypes[53].Descriptor()
 }
 
 func (DNSConfig_DNSScope) Type() protoreflect.EnumType {
-	return &file_google_container_v1_cluster_service_proto_enumTypes[50]
+	return &file_google_container_v1_cluster_service_proto_enumTypes[53]
 }
 
 func (x DNSConfig_DNSScope) Number() protoreflect.EnumNumber {
@@ -3130,7 +3309,7 @@ func (x DNSConfig_DNSScope) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use DNSConfig_DNSScope.Descriptor instead.
 func (DNSConfig_DNSScope) EnumDescriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{143, 1}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{150, 1}
 }
 
 // State of etcd encryption.
@@ -3144,6 +3323,10 @@ const (
 	// Secrets in etcd are stored in plain text (at etcd level) - this is
 	// unrelated to Compute Engine level full disk encryption.
 	DatabaseEncryption_DECRYPTED DatabaseEncryption_State = 2
+	// Encryption of all objects in the storage is enabled. There is no
+	// guarantee that all objects in the storage are encrypted, but eventually
+	// they will be.
+	DatabaseEncryption_ALL_OBJECTS_ENCRYPTION_ENABLED DatabaseEncryption_State = 3
 )
 
 // Enum value maps for DatabaseEncryption_State.
@@ -3152,11 +3335,13 @@ var (
 		0: "UNKNOWN",
 		1: "ENCRYPTED",
 		2: "DECRYPTED",
+		3: "ALL_OBJECTS_ENCRYPTION_ENABLED",
 	}
 	DatabaseEncryption_State_value = map[string]int32{
-		"UNKNOWN":   0,
-		"ENCRYPTED": 1,
-		"DECRYPTED": 2,
+		"UNKNOWN":                        0,
+		"ENCRYPTED":                      1,
+		"DECRYPTED":                      2,
+		"ALL_OBJECTS_ENCRYPTION_ENABLED": 3,
 	}
 )
 
@@ -3171,11 +3356,11 @@ func (x DatabaseEncryption_State) String() string {
 }
 
 func (DatabaseEncryption_State) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_container_v1_cluster_service_proto_enumTypes[51].Descriptor()
+	return file_google_container_v1_cluster_service_proto_enumTypes[54].Descriptor()
 }
 
 func (DatabaseEncryption_State) Type() protoreflect.EnumType {
-	return &file_google_container_v1_cluster_service_proto_enumTypes[51]
+	return &file_google_container_v1_cluster_service_proto_enumTypes[54]
 }
 
 func (x DatabaseEncryption_State) Number() protoreflect.EnumNumber {
@@ -3184,7 +3369,7 @@ func (x DatabaseEncryption_State) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use DatabaseEncryption_State.Descriptor instead.
 func (DatabaseEncryption_State) EnumDescriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{148, 0}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{155, 0}
 }
 
 // Current State of etcd encryption.
@@ -3208,27 +3393,41 @@ const (
 	DatabaseEncryption_CURRENT_STATE_DECRYPTION_PENDING DatabaseEncryption_CurrentState = 5
 	// De-crypting Secrets to plain text in etcd encountered an error.
 	DatabaseEncryption_CURRENT_STATE_DECRYPTION_ERROR DatabaseEncryption_CurrentState = 6
+	// Encryption of all objects in the storage is enabled.
+	// It does not guarantee that all objects in the storage are encrypted,
+	// but eventually they will be.
+	DatabaseEncryption_CURRENT_STATE_ALL_OBJECTS_ENCRYPTION_ENABLED DatabaseEncryption_CurrentState = 8
+	// Enablement of the encryption of all objects in storage is pending.
+	DatabaseEncryption_CURRENT_STATE_ALL_OBJECTS_ENCRYPTION_PENDING DatabaseEncryption_CurrentState = 9
+	// Enabling encryption of all objects in storage encountered an error.
+	DatabaseEncryption_CURRENT_STATE_ALL_OBJECTS_ENCRYPTION_ERROR DatabaseEncryption_CurrentState = 10
 )
 
 // Enum value maps for DatabaseEncryption_CurrentState.
 var (
 	DatabaseEncryption_CurrentState_name = map[int32]string{
-		0: "CURRENT_STATE_UNSPECIFIED",
-		7: "CURRENT_STATE_ENCRYPTED",
-		2: "CURRENT_STATE_DECRYPTED",
-		3: "CURRENT_STATE_ENCRYPTION_PENDING",
-		4: "CURRENT_STATE_ENCRYPTION_ERROR",
-		5: "CURRENT_STATE_DECRYPTION_PENDING",
-		6: "CURRENT_STATE_DECRYPTION_ERROR",
+		0:  "CURRENT_STATE_UNSPECIFIED",
+		7:  "CURRENT_STATE_ENCRYPTED",
+		2:  "CURRENT_STATE_DECRYPTED",
+		3:  "CURRENT_STATE_ENCRYPTION_PENDING",
+		4:  "CURRENT_STATE_ENCRYPTION_ERROR",
+		5:  "CURRENT_STATE_DECRYPTION_PENDING",
+		6:  "CURRENT_STATE_DECRYPTION_ERROR",
+		8:  "CURRENT_STATE_ALL_OBJECTS_ENCRYPTION_ENABLED",
+		9:  "CURRENT_STATE_ALL_OBJECTS_ENCRYPTION_PENDING",
+		10: "CURRENT_STATE_ALL_OBJECTS_ENCRYPTION_ERROR",
 	}
 	DatabaseEncryption_CurrentState_value = map[string]int32{
-		"CURRENT_STATE_UNSPECIFIED":        0,
-		"CURRENT_STATE_ENCRYPTED":          7,
-		"CURRENT_STATE_DECRYPTED":          2,
-		"CURRENT_STATE_ENCRYPTION_PENDING": 3,
-		"CURRENT_STATE_ENCRYPTION_ERROR":   4,
-		"CURRENT_STATE_DECRYPTION_PENDING": 5,
-		"CURRENT_STATE_DECRYPTION_ERROR":   6,
+		"CURRENT_STATE_UNSPECIFIED":                    0,
+		"CURRENT_STATE_ENCRYPTED":                      7,
+		"CURRENT_STATE_DECRYPTED":                      2,
+		"CURRENT_STATE_ENCRYPTION_PENDING":             3,
+		"CURRENT_STATE_ENCRYPTION_ERROR":               4,
+		"CURRENT_STATE_DECRYPTION_PENDING":             5,
+		"CURRENT_STATE_DECRYPTION_ERROR":               6,
+		"CURRENT_STATE_ALL_OBJECTS_ENCRYPTION_ENABLED": 8,
+		"CURRENT_STATE_ALL_OBJECTS_ENCRYPTION_PENDING": 9,
+		"CURRENT_STATE_ALL_OBJECTS_ENCRYPTION_ERROR":   10,
 	}
 )
 
@@ -3243,11 +3442,11 @@ func (x DatabaseEncryption_CurrentState) String() string {
 }
 
 func (DatabaseEncryption_CurrentState) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_container_v1_cluster_service_proto_enumTypes[52].Descriptor()
+	return file_google_container_v1_cluster_service_proto_enumTypes[55].Descriptor()
 }
 
 func (DatabaseEncryption_CurrentState) Type() protoreflect.EnumType {
-	return &file_google_container_v1_cluster_service_proto_enumTypes[52]
+	return &file_google_container_v1_cluster_service_proto_enumTypes[55]
 }
 
 func (x DatabaseEncryption_CurrentState) Number() protoreflect.EnumNumber {
@@ -3256,7 +3455,7 @@ func (x DatabaseEncryption_CurrentState) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use DatabaseEncryption_CurrentState.Descriptor instead.
 func (DatabaseEncryption_CurrentState) EnumDescriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{148, 1}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{155, 1}
 }
 
 // Status shows the current usage of a secondary IP range.
@@ -3309,11 +3508,11 @@ func (x UsableSubnetworkSecondaryRange_Status) String() string {
 }
 
 func (UsableSubnetworkSecondaryRange_Status) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_container_v1_cluster_service_proto_enumTypes[53].Descriptor()
+	return file_google_container_v1_cluster_service_proto_enumTypes[56].Descriptor()
 }
 
 func (UsableSubnetworkSecondaryRange_Status) Type() protoreflect.EnumType {
-	return &file_google_container_v1_cluster_service_proto_enumTypes[53]
+	return &file_google_container_v1_cluster_service_proto_enumTypes[56]
 }
 
 func (x UsableSubnetworkSecondaryRange_Status) Number() protoreflect.EnumNumber {
@@ -3322,7 +3521,7 @@ func (x UsableSubnetworkSecondaryRange_Status) Number() protoreflect.EnumNumber 
 
 // Deprecated: Use UsableSubnetworkSecondaryRange_Status.Descriptor instead.
 func (UsableSubnetworkSecondaryRange_Status) EnumDescriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{151, 0}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{158, 0}
 }
 
 // Option for GPU direct Strategies
@@ -3358,11 +3557,11 @@ func (x GPUDirectConfig_GPUDirectStrategy) String() string {
 }
 
 func (GPUDirectConfig_GPUDirectStrategy) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_container_v1_cluster_service_proto_enumTypes[54].Descriptor()
+	return file_google_container_v1_cluster_service_proto_enumTypes[57].Descriptor()
 }
 
 func (GPUDirectConfig_GPUDirectStrategy) Type() protoreflect.EnumType {
-	return &file_google_container_v1_cluster_service_proto_enumTypes[54]
+	return &file_google_container_v1_cluster_service_proto_enumTypes[57]
 }
 
 func (x GPUDirectConfig_GPUDirectStrategy) Number() protoreflect.EnumNumber {
@@ -3371,7 +3570,7 @@ func (x GPUDirectConfig_GPUDirectStrategy) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use GPUDirectConfig_GPUDirectStrategy.Descriptor instead.
 func (GPUDirectConfig_GPUDirectStrategy) EnumDescriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{159, 0}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{166, 0}
 }
 
 // Types of notifications currently supported. Can be used to filter what
@@ -3420,11 +3619,11 @@ func (x NotificationConfig_EventType) String() string {
 }
 
 func (NotificationConfig_EventType) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_container_v1_cluster_service_proto_enumTypes[55].Descriptor()
+	return file_google_container_v1_cluster_service_proto_enumTypes[58].Descriptor()
 }
 
 func (NotificationConfig_EventType) Type() protoreflect.EnumType {
-	return &file_google_container_v1_cluster_service_proto_enumTypes[55]
+	return &file_google_container_v1_cluster_service_proto_enumTypes[58]
 }
 
 func (x NotificationConfig_EventType) Number() protoreflect.EnumNumber {
@@ -3433,7 +3632,7 @@ func (x NotificationConfig_EventType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use NotificationConfig_EventType.Descriptor instead.
 func (NotificationConfig_EventType) EnumDescriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{160, 0}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{167, 0}
 }
 
 // The type of technology used by the confidential node.
@@ -3477,11 +3676,11 @@ func (x ConfidentialNodes_ConfidentialInstanceType) String() string {
 }
 
 func (ConfidentialNodes_ConfidentialInstanceType) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_container_v1_cluster_service_proto_enumTypes[56].Descriptor()
+	return file_google_container_v1_cluster_service_proto_enumTypes[59].Descriptor()
 }
 
 func (ConfidentialNodes_ConfidentialInstanceType) Type() protoreflect.EnumType {
-	return &file_google_container_v1_cluster_service_proto_enumTypes[56]
+	return &file_google_container_v1_cluster_service_proto_enumTypes[59]
 }
 
 func (x ConfidentialNodes_ConfidentialInstanceType) Number() protoreflect.EnumNumber {
@@ -3490,7 +3689,7 @@ func (x ConfidentialNodes_ConfidentialInstanceType) Number() protoreflect.EnumNu
 
 // Deprecated: Use ConfidentialNodes_ConfidentialInstanceType.Descriptor instead.
 func (ConfidentialNodes_ConfidentialInstanceType) EnumDescriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{161, 0}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{168, 0}
 }
 
 // The state of the upgrade.
@@ -3499,6 +3698,8 @@ type UpgradeInfoEvent_State int32
 const (
 	// STATE_UNSPECIFIED indicates the state is unspecified.
 	UpgradeInfoEvent_STATE_UNSPECIFIED UpgradeInfoEvent_State = 0
+	// SCHEDULED indicates the upgrade was scheduled.
+	UpgradeInfoEvent_SCHEDULED UpgradeInfoEvent_State = 1
 	// STARTED indicates the upgrade has started.
 	UpgradeInfoEvent_STARTED UpgradeInfoEvent_State = 3
 	// SUCCEEDED indicates the upgrade has completed successfully.
@@ -3513,6 +3714,7 @@ const (
 var (
 	UpgradeInfoEvent_State_name = map[int32]string{
 		0: "STATE_UNSPECIFIED",
+		1: "SCHEDULED",
 		3: "STARTED",
 		4: "SUCCEEDED",
 		5: "FAILED",
@@ -3520,6 +3722,7 @@ var (
 	}
 	UpgradeInfoEvent_State_value = map[string]int32{
 		"STATE_UNSPECIFIED": 0,
+		"SCHEDULED":         1,
 		"STARTED":           3,
 		"SUCCEEDED":         4,
 		"FAILED":            5,
@@ -3538,11 +3741,11 @@ func (x UpgradeInfoEvent_State) String() string {
 }
 
 func (UpgradeInfoEvent_State) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_container_v1_cluster_service_proto_enumTypes[57].Descriptor()
+	return file_google_container_v1_cluster_service_proto_enumTypes[60].Descriptor()
 }
 
 func (UpgradeInfoEvent_State) Type() protoreflect.EnumType {
-	return &file_google_container_v1_cluster_service_proto_enumTypes[57]
+	return &file_google_container_v1_cluster_service_proto_enumTypes[60]
 }
 
 func (x UpgradeInfoEvent_State) Number() protoreflect.EnumNumber {
@@ -3551,7 +3754,7 @@ func (x UpgradeInfoEvent_State) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use UpgradeInfoEvent_State.Descriptor instead.
 func (UpgradeInfoEvent_State) EnumDescriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{163, 0}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{170, 0}
 }
 
 // The type of the event.
@@ -3602,11 +3805,11 @@ func (x UpgradeInfoEvent_EventType) String() string {
 }
 
 func (UpgradeInfoEvent_EventType) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_container_v1_cluster_service_proto_enumTypes[58].Descriptor()
+	return file_google_container_v1_cluster_service_proto_enumTypes[61].Descriptor()
 }
 
 func (UpgradeInfoEvent_EventType) Type() protoreflect.EnumType {
-	return &file_google_container_v1_cluster_service_proto_enumTypes[58]
+	return &file_google_container_v1_cluster_service_proto_enumTypes[61]
 }
 
 func (x UpgradeInfoEvent_EventType) Number() protoreflect.EnumNumber {
@@ -3615,7 +3818,7 @@ func (x UpgradeInfoEvent_EventType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use UpgradeInfoEvent_EventType.Descriptor instead.
 func (UpgradeInfoEvent_EventType) EnumDescriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{163, 1}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{170, 1}
 }
 
 // The type of the disruption event.
@@ -3657,11 +3860,11 @@ func (x DisruptionEvent_DisruptionType) String() string {
 }
 
 func (DisruptionEvent_DisruptionType) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_container_v1_cluster_service_proto_enumTypes[59].Descriptor()
+	return file_google_container_v1_cluster_service_proto_enumTypes[62].Descriptor()
 }
 
 func (DisruptionEvent_DisruptionType) Type() protoreflect.EnumType {
-	return &file_google_container_v1_cluster_service_proto_enumTypes[59]
+	return &file_google_container_v1_cluster_service_proto_enumTypes[62]
 }
 
 func (x DisruptionEvent_DisruptionType) Number() protoreflect.EnumNumber {
@@ -3670,7 +3873,7 @@ func (x DisruptionEvent_DisruptionType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use DisruptionEvent_DisruptionType.Descriptor instead.
 func (DisruptionEvent_DisruptionType) EnumDescriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{164, 0}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{171, 0}
 }
 
 // GKE components exposing logs
@@ -3734,11 +3937,11 @@ func (x LoggingComponentConfig_Component) String() string {
 }
 
 func (LoggingComponentConfig_Component) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_container_v1_cluster_service_proto_enumTypes[60].Descriptor()
+	return file_google_container_v1_cluster_service_proto_enumTypes[63].Descriptor()
 }
 
 func (LoggingComponentConfig_Component) Type() protoreflect.EnumType {
-	return &file_google_container_v1_cluster_service_proto_enumTypes[60]
+	return &file_google_container_v1_cluster_service_proto_enumTypes[63]
 }
 
 func (x LoggingComponentConfig_Component) Number() protoreflect.EnumNumber {
@@ -3747,7 +3950,7 @@ func (x LoggingComponentConfig_Component) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use LoggingComponentConfig_Component.Descriptor instead.
 func (LoggingComponentConfig_Component) EnumDescriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{171, 0}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{179, 0}
 }
 
 // Supported Relay modes
@@ -3791,11 +3994,11 @@ func (x AdvancedDatapathObservabilityConfig_RelayMode) String() string {
 }
 
 func (AdvancedDatapathObservabilityConfig_RelayMode) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_container_v1_cluster_service_proto_enumTypes[61].Descriptor()
+	return file_google_container_v1_cluster_service_proto_enumTypes[64].Descriptor()
 }
 
 func (AdvancedDatapathObservabilityConfig_RelayMode) Type() protoreflect.EnumType {
-	return &file_google_container_v1_cluster_service_proto_enumTypes[61]
+	return &file_google_container_v1_cluster_service_proto_enumTypes[64]
 }
 
 func (x AdvancedDatapathObservabilityConfig_RelayMode) Number() protoreflect.EnumNumber {
@@ -3804,7 +4007,7 @@ func (x AdvancedDatapathObservabilityConfig_RelayMode) Number() protoreflect.Enu
 
 // Deprecated: Use AdvancedDatapathObservabilityConfig_RelayMode.Descriptor instead.
 func (AdvancedDatapathObservabilityConfig_RelayMode) EnumDescriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{174, 0}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{182, 0}
 }
 
 // Logging component variants.
@@ -3844,11 +4047,11 @@ func (x LoggingVariantConfig_Variant) String() string {
 }
 
 func (LoggingVariantConfig_Variant) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_container_v1_cluster_service_proto_enumTypes[62].Descriptor()
+	return file_google_container_v1_cluster_service_proto_enumTypes[65].Descriptor()
 }
 
 func (LoggingVariantConfig_Variant) Type() protoreflect.EnumType {
-	return &file_google_container_v1_cluster_service_proto_enumTypes[62]
+	return &file_google_container_v1_cluster_service_proto_enumTypes[65]
 }
 
 func (x LoggingVariantConfig_Variant) Number() protoreflect.EnumNumber {
@@ -3857,7 +4060,7 @@ func (x LoggingVariantConfig_Variant) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use LoggingVariantConfig_Variant.Descriptor instead.
 func (LoggingVariantConfig_Variant) EnumDescriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{177, 0}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{185, 0}
 }
 
 // GKE components exposing metrics
@@ -3945,11 +4148,11 @@ func (x MonitoringComponentConfig_Component) String() string {
 }
 
 func (MonitoringComponentConfig_Component) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_container_v1_cluster_service_proto_enumTypes[63].Descriptor()
+	return file_google_container_v1_cluster_service_proto_enumTypes[66].Descriptor()
 }
 
 func (MonitoringComponentConfig_Component) Type() protoreflect.EnumType {
-	return &file_google_container_v1_cluster_service_proto_enumTypes[63]
+	return &file_google_container_v1_cluster_service_proto_enumTypes[66]
 }
 
 func (x MonitoringComponentConfig_Component) Number() protoreflect.EnumNumber {
@@ -3958,7 +4161,7 @@ func (x MonitoringComponentConfig_Component) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use MonitoringComponentConfig_Component.Descriptor instead.
 func (MonitoringComponentConfig_Component) EnumDescriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{178, 0}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{186, 0}
 }
 
 // Scope for applications monitored by Auto-Monitoring
@@ -3998,11 +4201,11 @@ func (x AutoMonitoringConfig_Scope) String() string {
 }
 
 func (AutoMonitoringConfig_Scope) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_container_v1_cluster_service_proto_enumTypes[64].Descriptor()
+	return file_google_container_v1_cluster_service_proto_enumTypes[67].Descriptor()
 }
 
 func (AutoMonitoringConfig_Scope) Type() protoreflect.EnumType {
-	return &file_google_container_v1_cluster_service_proto_enumTypes[64]
+	return &file_google_container_v1_cluster_service_proto_enumTypes[67]
 }
 
 func (x AutoMonitoringConfig_Scope) Number() protoreflect.EnumNumber {
@@ -4011,7 +4214,7 @@ func (x AutoMonitoringConfig_Scope) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use AutoMonitoringConfig_Scope.Descriptor instead.
 func (AutoMonitoringConfig_Scope) EnumDescriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{180, 0}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{188, 0}
 }
 
 // Possible types of Horizontal Pod Autoscaling profile.
@@ -4053,11 +4256,11 @@ func (x PodAutoscaling_HPAProfile) String() string {
 }
 
 func (PodAutoscaling_HPAProfile) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_container_v1_cluster_service_proto_enumTypes[65].Descriptor()
+	return file_google_container_v1_cluster_service_proto_enumTypes[68].Descriptor()
 }
 
 func (PodAutoscaling_HPAProfile) Type() protoreflect.EnumType {
-	return &file_google_container_v1_cluster_service_proto_enumTypes[65]
+	return &file_google_container_v1_cluster_service_proto_enumTypes[68]
 }
 
 func (x PodAutoscaling_HPAProfile) Number() protoreflect.EnumNumber {
@@ -4066,7 +4269,7 @@ func (x PodAutoscaling_HPAProfile) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use PodAutoscaling_HPAProfile.Descriptor instead.
 func (PodAutoscaling_HPAProfile) EnumDescriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{181, 0}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{189, 0}
 }
 
 // MembershipType describes if the membership supports all features or only
@@ -4103,11 +4306,11 @@ func (x Fleet_MembershipType) String() string {
 }
 
 func (Fleet_MembershipType) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_container_v1_cluster_service_proto_enumTypes[66].Descriptor()
+	return file_google_container_v1_cluster_service_proto_enumTypes[69].Descriptor()
 }
 
 func (Fleet_MembershipType) Type() protoreflect.EnumType {
-	return &file_google_container_v1_cluster_service_proto_enumTypes[66]
+	return &file_google_container_v1_cluster_service_proto_enumTypes[69]
 }
 
 func (x Fleet_MembershipType) Number() protoreflect.EnumNumber {
@@ -4116,7 +4319,7 @@ func (x Fleet_MembershipType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Fleet_MembershipType.Descriptor instead.
 func (Fleet_MembershipType) EnumDescriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{182, 0}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{190, 0}
 }
 
 // Premium tiers for GKE Cluster.
@@ -4161,11 +4364,11 @@ func (x EnterpriseConfig_ClusterTier) String() string {
 }
 
 func (EnterpriseConfig_ClusterTier) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_container_v1_cluster_service_proto_enumTypes[67].Descriptor()
+	return file_google_container_v1_cluster_service_proto_enumTypes[70].Descriptor()
 }
 
 func (EnterpriseConfig_ClusterTier) Type() protoreflect.EnumType {
-	return &file_google_container_v1_cluster_service_proto_enumTypes[67]
+	return &file_google_container_v1_cluster_service_proto_enumTypes[70]
 }
 
 func (x EnterpriseConfig_ClusterTier) Number() protoreflect.EnumNumber {
@@ -4174,7 +4377,7 @@ func (x EnterpriseConfig_ClusterTier) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use EnterpriseConfig_ClusterTier.Descriptor instead.
 func (EnterpriseConfig_ClusterTier) EnumDescriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{187, 0}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{195, 0}
 }
 
 // Mode specifies how the secondary boot disk will be used.
@@ -4212,11 +4415,11 @@ func (x SecondaryBootDisk_Mode) String() string {
 }
 
 func (SecondaryBootDisk_Mode) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_container_v1_cluster_service_proto_enumTypes[68].Descriptor()
+	return file_google_container_v1_cluster_service_proto_enumTypes[71].Descriptor()
 }
 
 func (SecondaryBootDisk_Mode) Type() protoreflect.EnumType {
-	return &file_google_container_v1_cluster_service_proto_enumTypes[68]
+	return &file_google_container_v1_cluster_service_proto_enumTypes[71]
 }
 
 func (x SecondaryBootDisk_Mode) Number() protoreflect.EnumNumber {
@@ -4225,7 +4428,7 @@ func (x SecondaryBootDisk_Mode) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use SecondaryBootDisk_Mode.Descriptor instead.
 func (SecondaryBootDisk_Mode) EnumDescriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{190, 0}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{198, 0}
 }
 
 // AutoUpgradeStatus indicates the status of auto upgrade.
@@ -4270,11 +4473,11 @@ func (x ClusterUpgradeInfo_AutoUpgradeStatus) String() string {
 }
 
 func (ClusterUpgradeInfo_AutoUpgradeStatus) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_container_v1_cluster_service_proto_enumTypes[69].Descriptor()
+	return file_google_container_v1_cluster_service_proto_enumTypes[72].Descriptor()
 }
 
 func (ClusterUpgradeInfo_AutoUpgradeStatus) Type() protoreflect.EnumType {
-	return &file_google_container_v1_cluster_service_proto_enumTypes[69]
+	return &file_google_container_v1_cluster_service_proto_enumTypes[72]
 }
 
 func (x ClusterUpgradeInfo_AutoUpgradeStatus) Number() protoreflect.EnumNumber {
@@ -4283,7 +4486,7 @@ func (x ClusterUpgradeInfo_AutoUpgradeStatus) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use ClusterUpgradeInfo_AutoUpgradeStatus.Descriptor instead.
 func (ClusterUpgradeInfo_AutoUpgradeStatus) EnumDescriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{193, 0}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{201, 0}
 }
 
 // AutoUpgradePausedReason indicates the reason for auto upgrade paused
@@ -4345,11 +4548,11 @@ func (x ClusterUpgradeInfo_AutoUpgradePausedReason) String() string {
 }
 
 func (ClusterUpgradeInfo_AutoUpgradePausedReason) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_container_v1_cluster_service_proto_enumTypes[70].Descriptor()
+	return file_google_container_v1_cluster_service_proto_enumTypes[73].Descriptor()
 }
 
 func (ClusterUpgradeInfo_AutoUpgradePausedReason) Type() protoreflect.EnumType {
-	return &file_google_container_v1_cluster_service_proto_enumTypes[70]
+	return &file_google_container_v1_cluster_service_proto_enumTypes[73]
 }
 
 func (x ClusterUpgradeInfo_AutoUpgradePausedReason) Number() protoreflect.EnumNumber {
@@ -4358,7 +4561,7 @@ func (x ClusterUpgradeInfo_AutoUpgradePausedReason) Number() protoreflect.EnumNu
 
 // Deprecated: Use ClusterUpgradeInfo_AutoUpgradePausedReason.Descriptor instead.
 func (ClusterUpgradeInfo_AutoUpgradePausedReason) EnumDescriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{193, 1}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{201, 1}
 }
 
 // State indicates the state of the upgrade.
@@ -4406,11 +4609,11 @@ func (x UpgradeDetails_State) String() string {
 }
 
 func (UpgradeDetails_State) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_container_v1_cluster_service_proto_enumTypes[71].Descriptor()
+	return file_google_container_v1_cluster_service_proto_enumTypes[74].Descriptor()
 }
 
 func (UpgradeDetails_State) Type() protoreflect.EnumType {
-	return &file_google_container_v1_cluster_service_proto_enumTypes[71]
+	return &file_google_container_v1_cluster_service_proto_enumTypes[74]
 }
 
 func (x UpgradeDetails_State) Number() protoreflect.EnumNumber {
@@ -4419,7 +4622,7 @@ func (x UpgradeDetails_State) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use UpgradeDetails_State.Descriptor instead.
 func (UpgradeDetails_State) EnumDescriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{194, 0}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{202, 0}
 }
 
 // StartType indicates the type of starting the upgrade.
@@ -4459,11 +4662,11 @@ func (x UpgradeDetails_StartType) String() string {
 }
 
 func (UpgradeDetails_StartType) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_container_v1_cluster_service_proto_enumTypes[72].Descriptor()
+	return file_google_container_v1_cluster_service_proto_enumTypes[75].Descriptor()
 }
 
 func (UpgradeDetails_StartType) Type() protoreflect.EnumType {
-	return &file_google_container_v1_cluster_service_proto_enumTypes[72]
+	return &file_google_container_v1_cluster_service_proto_enumTypes[75]
 }
 
 func (x UpgradeDetails_StartType) Number() protoreflect.EnumNumber {
@@ -4472,7 +4675,7 @@ func (x UpgradeDetails_StartType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use UpgradeDetails_StartType.Descriptor instead.
 func (UpgradeDetails_StartType) EnumDescriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{194, 1}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{202, 1}
 }
 
 // AutoUpgradeStatus indicates the status of auto upgrade.
@@ -4517,11 +4720,11 @@ func (x NodePoolUpgradeInfo_AutoUpgradeStatus) String() string {
 }
 
 func (NodePoolUpgradeInfo_AutoUpgradeStatus) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_container_v1_cluster_service_proto_enumTypes[73].Descriptor()
+	return file_google_container_v1_cluster_service_proto_enumTypes[76].Descriptor()
 }
 
 func (NodePoolUpgradeInfo_AutoUpgradeStatus) Type() protoreflect.EnumType {
-	return &file_google_container_v1_cluster_service_proto_enumTypes[73]
+	return &file_google_container_v1_cluster_service_proto_enumTypes[76]
 }
 
 func (x NodePoolUpgradeInfo_AutoUpgradeStatus) Number() protoreflect.EnumNumber {
@@ -4530,7 +4733,7 @@ func (x NodePoolUpgradeInfo_AutoUpgradeStatus) Number() protoreflect.EnumNumber 
 
 // Deprecated: Use NodePoolUpgradeInfo_AutoUpgradeStatus.Descriptor instead.
 func (NodePoolUpgradeInfo_AutoUpgradeStatus) EnumDescriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{196, 0}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{204, 0}
 }
 
 // AutoUpgradePausedReason indicates the reason for auto upgrade paused
@@ -4582,11 +4785,11 @@ func (x NodePoolUpgradeInfo_AutoUpgradePausedReason) String() string {
 }
 
 func (NodePoolUpgradeInfo_AutoUpgradePausedReason) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_container_v1_cluster_service_proto_enumTypes[74].Descriptor()
+	return file_google_container_v1_cluster_service_proto_enumTypes[77].Descriptor()
 }
 
 func (NodePoolUpgradeInfo_AutoUpgradePausedReason) Type() protoreflect.EnumType {
-	return &file_google_container_v1_cluster_service_proto_enumTypes[74]
+	return &file_google_container_v1_cluster_service_proto_enumTypes[77]
 }
 
 func (x NodePoolUpgradeInfo_AutoUpgradePausedReason) Number() protoreflect.EnumNumber {
@@ -4595,7 +4798,7 @@ func (x NodePoolUpgradeInfo_AutoUpgradePausedReason) Number() protoreflect.EnumN
 
 // Deprecated: Use NodePoolUpgradeInfo_AutoUpgradePausedReason.Descriptor instead.
 func (NodePoolUpgradeInfo_AutoUpgradePausedReason) EnumDescriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{196, 1}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{204, 1}
 }
 
 // PatchMode specifies how auto upgrade patch builds should be
@@ -4635,11 +4838,11 @@ func (x GkeAutoUpgradeConfig_PatchMode) String() string {
 }
 
 func (GkeAutoUpgradeConfig_PatchMode) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_container_v1_cluster_service_proto_enumTypes[75].Descriptor()
+	return file_google_container_v1_cluster_service_proto_enumTypes[78].Descriptor()
 }
 
 func (GkeAutoUpgradeConfig_PatchMode) Type() protoreflect.EnumType {
-	return &file_google_container_v1_cluster_service_proto_enumTypes[75]
+	return &file_google_container_v1_cluster_service_proto_enumTypes[78]
 }
 
 func (x GkeAutoUpgradeConfig_PatchMode) Number() protoreflect.EnumNumber {
@@ -4648,7 +4851,7 @@ func (x GkeAutoUpgradeConfig_PatchMode) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use GkeAutoUpgradeConfig_PatchMode.Descriptor instead.
 func (GkeAutoUpgradeConfig_PatchMode) EnumDescriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{197, 0}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{206, 0}
 }
 
 // Network tier configuration.
@@ -4698,11 +4901,11 @@ func (x NetworkTierConfig_NetworkTier) String() string {
 }
 
 func (NetworkTierConfig_NetworkTier) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_container_v1_cluster_service_proto_enumTypes[76].Descriptor()
+	return file_google_container_v1_cluster_service_proto_enumTypes[79].Descriptor()
 }
 
 func (NetworkTierConfig_NetworkTier) Type() protoreflect.EnumType {
-	return &file_google_container_v1_cluster_service_proto_enumTypes[76]
+	return &file_google_container_v1_cluster_service_proto_enumTypes[79]
 }
 
 func (x NetworkTierConfig_NetworkTier) Number() protoreflect.EnumNumber {
@@ -4711,7 +4914,7 @@ func (x NetworkTierConfig_NetworkTier) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use NetworkTierConfig_NetworkTier.Descriptor instead.
 func (NetworkTierConfig_NetworkTier) EnumDescriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{198, 0}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{207, 0}
 }
 
 // Scope is the scope of the Managed OpenTelemetry pipeline.
@@ -4752,11 +4955,11 @@ func (x ManagedOpenTelemetryConfig_Scope) String() string {
 }
 
 func (ManagedOpenTelemetryConfig_Scope) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_container_v1_cluster_service_proto_enumTypes[77].Descriptor()
+	return file_google_container_v1_cluster_service_proto_enumTypes[80].Descriptor()
 }
 
 func (ManagedOpenTelemetryConfig_Scope) Type() protoreflect.EnumType {
-	return &file_google_container_v1_cluster_service_proto_enumTypes[77]
+	return &file_google_container_v1_cluster_service_proto_enumTypes[80]
 }
 
 func (x ManagedOpenTelemetryConfig_Scope) Number() protoreflect.EnumNumber {
@@ -4765,7 +4968,7 @@ func (x ManagedOpenTelemetryConfig_Scope) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use ManagedOpenTelemetryConfig_Scope.Descriptor instead.
 func (ManagedOpenTelemetryConfig_Scope) EnumDescriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{199, 0}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{209, 0}
 }
 
 // Parameters that can be configured on Linux nodes.
@@ -4849,6 +5052,9 @@ type LinuxNodeConfig struct {
 	// See https://docs.kernel.org/admin-guide/mm/transhuge.html
 	// for more details.
 	TransparentHugepageDefrag LinuxNodeConfig_TransparentHugepageDefrag `protobuf:"varint,5,opt,name=transparent_hugepage_defrag,json=transparentHugepageDefrag,proto3,enum=google.container.v1.LinuxNodeConfig_TransparentHugepageDefrag" json:"transparent_hugepage_defrag,omitempty"`
+	// Optional. Allow users to run arbitrary bash script or container on the
+	// node.
+	CustomNodeInit *LinuxNodeConfig_CustomNodeInit `protobuf:"bytes,11,opt,name=custom_node_init,json=customNodeInit,proto3" json:"custom_node_init,omitempty"`
 	// Optional. Enables and configures swap space on nodes.
 	// If omitted, swap is disabled.
 	SwapConfig *LinuxNodeConfig_SwapConfig `protobuf:"bytes,12,opt,name=swap_config,json=swapConfig,proto3,oneof" json:"swap_config,omitempty"`
@@ -4856,8 +5062,10 @@ type LinuxNodeConfig struct {
 	// When enabled, the node pool will be provisioned with a Container-Optimized
 	// OS image that enforces kernel module signature verification.
 	NodeKernelModuleLoading *LinuxNodeConfig_NodeKernelModuleLoading `protobuf:"bytes,13,opt,name=node_kernel_module_loading,json=nodeKernelModuleLoading,proto3" json:"node_kernel_module_loading,omitempty"`
-	unknownFields           protoimpl.UnknownFields
-	sizeCache               protoimpl.SizeCache
+	// Optional. The accurate time configuration for the node pool.
+	AccurateTimeConfig *LinuxNodeConfig_AccurateTimeConfig `protobuf:"bytes,14,opt,name=accurate_time_config,json=accurateTimeConfig,proto3,oneof" json:"accurate_time_config,omitempty"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
 }
 
 func (x *LinuxNodeConfig) Reset() {
@@ -4925,6 +5133,13 @@ func (x *LinuxNodeConfig) GetTransparentHugepageDefrag() LinuxNodeConfig_Transpa
 	return LinuxNodeConfig_TRANSPARENT_HUGEPAGE_DEFRAG_UNSPECIFIED
 }
 
+func (x *LinuxNodeConfig) GetCustomNodeInit() *LinuxNodeConfig_CustomNodeInit {
+	if x != nil {
+		return x.CustomNodeInit
+	}
+	return nil
+}
+
 func (x *LinuxNodeConfig) GetSwapConfig() *LinuxNodeConfig_SwapConfig {
 	if x != nil {
 		return x.SwapConfig
@@ -4935,6 +5150,13 @@ func (x *LinuxNodeConfig) GetSwapConfig() *LinuxNodeConfig_SwapConfig {
 func (x *LinuxNodeConfig) GetNodeKernelModuleLoading() *LinuxNodeConfig_NodeKernelModuleLoading {
 	if x != nil {
 		return x.NodeKernelModuleLoading
+	}
+	return nil
+}
+
+func (x *LinuxNodeConfig) GetAccurateTimeConfig() *LinuxNodeConfig_AccurateTimeConfig {
+	if x != nil {
+		return x.AccurateTimeConfig
 	}
 	return nil
 }
@@ -5144,6 +5366,9 @@ type NodeKubeletConfig struct {
 	// container cgroups in cgroups v2. This causes processes in the container to
 	// be OOM killed individually instead of as a group.
 	SingleProcessOomKill *bool `protobuf:"varint,22,opt,name=single_process_oom_kill,json=singleProcessOomKill,proto3,oneof" json:"single_process_oom_kill,omitempty"`
+	// Optional. Contains configuration options to modify node-level parameters
+	// for container restart behavior.
+	CrashLoopBackOff *NodeKubeletConfig_CrashLoopBackOffConfig `protobuf:"bytes,24,opt,name=crash_loop_back_off,json=crashLoopBackOff,proto3" json:"crash_loop_back_off,omitempty"`
 	// Optional. shutdown_grace_period_seconds is the maximum allowed grace period
 	// (in seconds) the total duration that the node should delay the shutdown
 	// during a graceful shutdown. This is the total grace period for pod
@@ -5332,6 +5557,13 @@ func (x *NodeKubeletConfig) GetSingleProcessOomKill() bool {
 		return *x.SingleProcessOomKill
 	}
 	return false
+}
+
+func (x *NodeKubeletConfig) GetCrashLoopBackOff() *NodeKubeletConfig_CrashLoopBackOffConfig {
+	if x != nil {
+		return x.CrashLoopBackOff
+	}
+	return nil
 }
 
 func (x *NodeKubeletConfig) GetShutdownGracePeriodSeconds() int32 {
@@ -5896,14 +6128,23 @@ type NodeConfig struct {
 	// https://cloud.google.com/kubernetes-engine/docs/concepts/node-images
 	// for available image types.
 	ImageType string `protobuf:"bytes,5,opt,name=image_type,json=imageType,proto3" json:"image_type,omitempty"`
-	// The map of Kubernetes labels (key/value pairs) to be applied to each node.
-	// These will added in addition to any default label(s) that
-	// Kubernetes may apply to the node.
-	// In case of conflict in label keys, the applied set may differ depending on
-	// the Kubernetes version -- it's best to assume the behavior is undefined
-	// and conflicts should be avoided.
-	// For more information, including usage and the valid values, see:
-	// https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
+	// The Kubernetes labels (key/value pairs) to apply to each node. The values
+	// in this field are added to the set of default labels Kubernetes applies to
+	// nodes.
+	//
+	// This field has the following restrictions:
+	//
+	//   - Labels must use a valid Kubernetes syntax and character set, as defined
+	//     in
+	//     https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#syntax-and-character-set.
+	//   - This field supports up to 1,024 total characters in a single request.
+	//
+	// Depending on the Kubernetes version, keys in this field might conflict with
+	// the keys of the default labels, which might change which of your labels
+	// are applied to the nodes. Assume that the behavior is unpredictable and
+	// avoid label key conflicts. For more information about the default labels,
+	// see:
+	// https://kubernetes.io/docs/reference/labels-annotations-taints/
 	Labels map[string]string `protobuf:"bytes,6,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	// The number of local SSD disks to be attached to the node.
 	//
@@ -6032,8 +6273,10 @@ type NodeConfig struct {
 	// scale down underutilized nodes. If not set, nodes are scaled down by
 	// default behavior, i.e. according to the chosen autoscaling profile.
 	ConsolidationDelay *durationpb.Duration `protobuf:"bytes,60,opt,name=consolidation_delay,json=consolidationDelay,proto3" json:"consolidation_delay,omitempty"`
-	unknownFields      protoimpl.UnknownFields
-	sizeCache          protoimpl.SizeCache
+	// Optional. The taint configuration for the node pool.
+	TaintConfig   *TaintConfig `protobuf:"bytes,62,opt,name=taint_config,json=taintConfig,proto3,oneof" json:"taint_config,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *NodeConfig) Reset() {
@@ -6395,6 +6638,59 @@ func (x *NodeConfig) GetConsolidationDelay() *durationpb.Duration {
 	return nil
 }
 
+func (x *NodeConfig) GetTaintConfig() *TaintConfig {
+	if x != nil {
+		return x.TaintConfig
+	}
+	return nil
+}
+
+// TaintConfig contains the configuration for the taints of the node pool.
+type TaintConfig struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. Controls architecture tainting behavior.
+	ArchitectureTaintBehavior *TaintConfig_ArchitectureTaintBehavior `protobuf:"varint,2,opt,name=architecture_taint_behavior,json=architectureTaintBehavior,proto3,enum=google.container.v1.TaintConfig_ArchitectureTaintBehavior,oneof" json:"architecture_taint_behavior,omitempty"`
+	unknownFields             protoimpl.UnknownFields
+	sizeCache                 protoimpl.SizeCache
+}
+
+func (x *TaintConfig) Reset() {
+	*x = TaintConfig{}
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TaintConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TaintConfig) ProtoMessage() {}
+
+func (x *TaintConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TaintConfig.ProtoReflect.Descriptor instead.
+func (*TaintConfig) Descriptor() ([]byte, []int) {
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *TaintConfig) GetArchitectureTaintBehavior() TaintConfig_ArchitectureTaintBehavior {
+	if x != nil && x.ArchitectureTaintBehavior != nil {
+		return *x.ArchitectureTaintBehavior
+	}
+	return TaintConfig_ARCHITECTURE_TAINT_BEHAVIOR_UNSPECIFIED
+}
+
 // Specifies options for controlling advanced machine features.
 type AdvancedMachineFeatures struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -6413,7 +6709,7 @@ type AdvancedMachineFeatures struct {
 
 func (x *AdvancedMachineFeatures) Reset() {
 	*x = AdvancedMachineFeatures{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[9]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6425,7 +6721,7 @@ func (x *AdvancedMachineFeatures) String() string {
 func (*AdvancedMachineFeatures) ProtoMessage() {}
 
 func (x *AdvancedMachineFeatures) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[9]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6438,7 +6734,7 @@ func (x *AdvancedMachineFeatures) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AdvancedMachineFeatures.ProtoReflect.Descriptor instead.
 func (*AdvancedMachineFeatures) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{9}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *AdvancedMachineFeatures) GetThreadsPerCore() int64 {
@@ -6510,7 +6806,7 @@ type NodeNetworkConfig struct {
 	// Network bandwidth tier configuration.
 	NetworkPerformanceConfig *NodeNetworkConfig_NetworkPerformanceConfig `protobuf:"bytes,11,opt,name=network_performance_config,json=networkPerformanceConfig,proto3,oneof" json:"network_performance_config,omitempty"`
 	// [PRIVATE FIELD]
-	// Pod CIDR size overprovisioning config for the nodepool.
+	// Pod CIDR size overprovisioning config for the node pool.
 	//
 	// Pod CIDR size per node depends on max_pods_per_node. By default, the value
 	// of max_pods_per_node is rounded off to next power of 2 and we then double
@@ -6536,23 +6832,31 @@ type NodeNetworkConfig struct {
 	// Format: projects/{project}/regions/{region}/subnetworks/{subnetwork}
 	// If the cluster is associated with multiple subnetworks, the subnetwork can
 	// be either:
-	//  1. A user supplied subnetwork name/full path during node pool creation.
-	//     Example1: my-subnet
-	//     Example2: projects/gke-project/regions/us-central1/subnetworks/my-subnet
-	//  2. A subnetwork path picked based on the IP utilization during node pool
-	//     creation and is immutable.
+	// - A user supplied subnetwork name during node pool creation (e.g.,
+	// `my-subnet`). The name must be between 1 and 63 characters long, start
+	// with a letter, contain only letters, numbers, and hyphens, and end with a
+	// letter or a number.
+	// - A full subnetwork path during node pool creation, such as
+	// `projects/gke-project/regions/us-central1/subnetworks/my-subnet`
+	// - A subnetwork path picked based on the IP utilization during node pool
+	// creation and is immutable.
 	Subnetwork string `protobuf:"bytes,19,opt,name=subnetwork,proto3" json:"subnetwork,omitempty"`
 	// Output only. The network tier configuration for the node pool inherits from
 	// the cluster-level configuration and remains immutable throughout the node
 	// pool's lifecycle, including during upgrades.
 	NetworkTierConfig *NetworkTierConfig `protobuf:"bytes,20,opt,name=network_tier_config,json=networkTierConfig,proto3" json:"network_tier_config,omitempty"`
-	unknownFields     protoimpl.UnknownFields
-	sizeCache         protoimpl.SizeCache
+	// Immutable. The accelerator network profile for the node pool. For now the
+	// only valid value is "auto". If specified, the network configuration of the
+	// nodes in this node pool will be managed by this profile for the supported
+	// machine types, zone, etc.
+	AcceleratorNetworkProfile string `protobuf:"bytes,21,opt,name=accelerator_network_profile,json=acceleratorNetworkProfile,proto3" json:"accelerator_network_profile,omitempty"`
+	unknownFields             protoimpl.UnknownFields
+	sizeCache                 protoimpl.SizeCache
 }
 
 func (x *NodeNetworkConfig) Reset() {
 	*x = NodeNetworkConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[10]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6564,7 +6868,7 @@ func (x *NodeNetworkConfig) String() string {
 func (*NodeNetworkConfig) ProtoMessage() {}
 
 func (x *NodeNetworkConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[10]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6577,7 +6881,7 @@ func (x *NodeNetworkConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NodeNetworkConfig.ProtoReflect.Descriptor instead.
 func (*NodeNetworkConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{10}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *NodeNetworkConfig) GetCreatePodRange() bool {
@@ -6657,6 +6961,13 @@ func (x *NodeNetworkConfig) GetNetworkTierConfig() *NetworkTierConfig {
 	return nil
 }
 
+func (x *NodeNetworkConfig) GetAcceleratorNetworkProfile() string {
+	if x != nil {
+		return x.AcceleratorNetworkProfile
+	}
+	return ""
+}
+
 // AdditionalNodeNetworkConfig is the configuration for additional node networks
 // within the NodeNetworkConfig message
 type AdditionalNodeNetworkConfig struct {
@@ -6671,7 +6982,7 @@ type AdditionalNodeNetworkConfig struct {
 
 func (x *AdditionalNodeNetworkConfig) Reset() {
 	*x = AdditionalNodeNetworkConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[11]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6683,7 +6994,7 @@ func (x *AdditionalNodeNetworkConfig) String() string {
 func (*AdditionalNodeNetworkConfig) ProtoMessage() {}
 
 func (x *AdditionalNodeNetworkConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[11]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6696,7 +7007,7 @@ func (x *AdditionalNodeNetworkConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AdditionalNodeNetworkConfig.ProtoReflect.Descriptor instead.
 func (*AdditionalNodeNetworkConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{11}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *AdditionalNodeNetworkConfig) GetNetwork() string {
@@ -6730,7 +7041,7 @@ type AdditionalPodNetworkConfig struct {
 
 func (x *AdditionalPodNetworkConfig) Reset() {
 	*x = AdditionalPodNetworkConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[12]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6742,7 +7053,7 @@ func (x *AdditionalPodNetworkConfig) String() string {
 func (*AdditionalPodNetworkConfig) ProtoMessage() {}
 
 func (x *AdditionalPodNetworkConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[12]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6755,7 +7066,7 @@ func (x *AdditionalPodNetworkConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AdditionalPodNetworkConfig.ProtoReflect.Descriptor instead.
 func (*AdditionalPodNetworkConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{12}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *AdditionalPodNetworkConfig) GetSubnetwork() string {
@@ -6801,7 +7112,7 @@ type ShieldedInstanceConfig struct {
 
 func (x *ShieldedInstanceConfig) Reset() {
 	*x = ShieldedInstanceConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[13]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6813,7 +7124,7 @@ func (x *ShieldedInstanceConfig) String() string {
 func (*ShieldedInstanceConfig) ProtoMessage() {}
 
 func (x *ShieldedInstanceConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[13]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6826,7 +7137,7 @@ func (x *ShieldedInstanceConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ShieldedInstanceConfig.ProtoReflect.Descriptor instead.
 func (*ShieldedInstanceConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{13}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *ShieldedInstanceConfig) GetEnableSecureBoot() bool {
@@ -6854,7 +7165,7 @@ type SandboxConfig struct {
 
 func (x *SandboxConfig) Reset() {
 	*x = SandboxConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[14]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6866,7 +7177,7 @@ func (x *SandboxConfig) String() string {
 func (*SandboxConfig) ProtoMessage() {}
 
 func (x *SandboxConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[14]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6879,7 +7190,7 @@ func (x *SandboxConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SandboxConfig.ProtoReflect.Descriptor instead.
 func (*SandboxConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{14}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *SandboxConfig) GetType() SandboxConfig_Type {
@@ -6901,7 +7212,7 @@ type GcfsConfig struct {
 
 func (x *GcfsConfig) Reset() {
 	*x = GcfsConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[15]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6913,7 +7224,7 @@ func (x *GcfsConfig) String() string {
 func (*GcfsConfig) ProtoMessage() {}
 
 func (x *GcfsConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[15]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6926,7 +7237,7 @@ func (x *GcfsConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GcfsConfig.ProtoReflect.Descriptor instead.
 func (*GcfsConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{15}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *GcfsConfig) GetEnabled() bool {
@@ -6956,7 +7267,7 @@ type ReservationAffinity struct {
 
 func (x *ReservationAffinity) Reset() {
 	*x = ReservationAffinity{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[16]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6968,7 +7279,7 @@ func (x *ReservationAffinity) String() string {
 func (*ReservationAffinity) ProtoMessage() {}
 
 func (x *ReservationAffinity) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[16]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6981,7 +7292,7 @@ func (x *ReservationAffinity) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReservationAffinity.ProtoReflect.Descriptor instead.
 func (*ReservationAffinity) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{16}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *ReservationAffinity) GetConsumeReservationType() ReservationAffinity_Type {
@@ -7021,7 +7332,7 @@ type SoleTenantConfig struct {
 
 func (x *SoleTenantConfig) Reset() {
 	*x = SoleTenantConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[17]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7033,7 +7344,7 @@ func (x *SoleTenantConfig) String() string {
 func (*SoleTenantConfig) ProtoMessage() {}
 
 func (x *SoleTenantConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[17]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7046,7 +7357,7 @@ func (x *SoleTenantConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SoleTenantConfig.ProtoReflect.Descriptor instead.
 func (*SoleTenantConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{17}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *SoleTenantConfig) GetNodeAffinities() []*SoleTenantConfig_NodeAffinity {
@@ -7082,7 +7393,7 @@ type ContainerdConfig struct {
 
 func (x *ContainerdConfig) Reset() {
 	*x = ContainerdConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[18]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7094,7 +7405,7 @@ func (x *ContainerdConfig) String() string {
 func (*ContainerdConfig) ProtoMessage() {}
 
 func (x *ContainerdConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[18]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7107,7 +7418,7 @@ func (x *ContainerdConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ContainerdConfig.ProtoReflect.Descriptor instead.
 func (*ContainerdConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{18}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *ContainerdConfig) GetPrivateRegistryAccessConfig() *ContainerdConfig_PrivateRegistryAccessConfig {
@@ -7151,7 +7462,7 @@ type NodeTaint struct {
 
 func (x *NodeTaint) Reset() {
 	*x = NodeTaint{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[19]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7163,7 +7474,7 @@ func (x *NodeTaint) String() string {
 func (*NodeTaint) ProtoMessage() {}
 
 func (x *NodeTaint) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[19]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7176,7 +7487,7 @@ func (x *NodeTaint) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NodeTaint.ProtoReflect.Descriptor instead.
 func (*NodeTaint) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{19}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *NodeTaint) GetKey() string {
@@ -7212,7 +7523,7 @@ type NodeTaints struct {
 
 func (x *NodeTaints) Reset() {
 	*x = NodeTaints{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[20]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7224,7 +7535,7 @@ func (x *NodeTaints) String() string {
 func (*NodeTaints) ProtoMessage() {}
 
 func (x *NodeTaints) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[20]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7237,7 +7548,7 @@ func (x *NodeTaints) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NodeTaints.ProtoReflect.Descriptor instead.
 func (*NodeTaints) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{20}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *NodeTaints) GetTaints() []*NodeTaint {
@@ -7259,7 +7570,7 @@ type NodeLabels struct {
 
 func (x *NodeLabels) Reset() {
 	*x = NodeLabels{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[21]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7271,7 +7582,7 @@ func (x *NodeLabels) String() string {
 func (*NodeLabels) ProtoMessage() {}
 
 func (x *NodeLabels) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[21]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7284,7 +7595,7 @@ func (x *NodeLabels) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NodeLabels.ProtoReflect.Descriptor instead.
 func (*NodeLabels) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{21}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *NodeLabels) GetLabels() map[string]string {
@@ -7306,7 +7617,7 @@ type ResourceLabels struct {
 
 func (x *ResourceLabels) Reset() {
 	*x = ResourceLabels{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[22]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7318,7 +7629,7 @@ func (x *ResourceLabels) String() string {
 func (*ResourceLabels) ProtoMessage() {}
 
 func (x *ResourceLabels) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[22]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7331,7 +7642,7 @@ func (x *ResourceLabels) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ResourceLabels.ProtoReflect.Descriptor instead.
 func (*ResourceLabels) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{22}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *ResourceLabels) GetLabels() map[string]string {
@@ -7353,7 +7664,7 @@ type NetworkTags struct {
 
 func (x *NetworkTags) Reset() {
 	*x = NetworkTags{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[23]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7365,7 +7676,7 @@ func (x *NetworkTags) String() string {
 func (*NetworkTags) ProtoMessage() {}
 
 func (x *NetworkTags) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[23]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7378,7 +7689,7 @@ func (x *NetworkTags) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NetworkTags.ProtoReflect.Descriptor instead.
 func (*NetworkTags) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{23}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *NetworkTags) GetTags() []string {
@@ -7436,7 +7747,7 @@ type MasterAuth struct {
 
 func (x *MasterAuth) Reset() {
 	*x = MasterAuth{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[24]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7448,7 +7759,7 @@ func (x *MasterAuth) String() string {
 func (*MasterAuth) ProtoMessage() {}
 
 func (x *MasterAuth) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[24]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7461,7 +7772,7 @@ func (x *MasterAuth) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MasterAuth.ProtoReflect.Descriptor instead.
 func (*MasterAuth) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{24}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{25}
 }
 
 // Deprecated: Marked as deprecated in google/container/v1/cluster_service.proto.
@@ -7519,7 +7830,7 @@ type ClientCertificateConfig struct {
 
 func (x *ClientCertificateConfig) Reset() {
 	*x = ClientCertificateConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[25]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7531,7 +7842,7 @@ func (x *ClientCertificateConfig) String() string {
 func (*ClientCertificateConfig) ProtoMessage() {}
 
 func (x *ClientCertificateConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[25]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7544,7 +7855,7 @@ func (x *ClientCertificateConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ClientCertificateConfig.ProtoReflect.Descriptor instead.
 func (*ClientCertificateConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{25}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{26}
 }
 
 func (x *ClientCertificateConfig) GetIssueClientCertificate() bool {
@@ -7604,15 +7915,21 @@ type AddonsConfig struct {
 	HighScaleCheckpointingConfig *HighScaleCheckpointingConfig `protobuf:"bytes,22,opt,name=high_scale_checkpointing_config,json=highScaleCheckpointingConfig,proto3" json:"high_scale_checkpointing_config,omitempty"`
 	// Configuration for the Lustre CSI driver.
 	LustreCsiDriverConfig *LustreCsiDriverConfig `protobuf:"bytes,23,opt,name=lustre_csi_driver_config,json=lustreCsiDriverConfig,proto3" json:"lustre_csi_driver_config,omitempty"`
+	// Optional. Configuration for the Pod Snapshot feature.
+	PodSnapshotConfig *PodSnapshotConfig `protobuf:"bytes,24,opt,name=pod_snapshot_config,json=podSnapshotConfig,proto3" json:"pod_snapshot_config,omitempty"`
+	// Configuration for the Slurm Operator.
+	SlurmOperatorConfig *SlurmOperatorConfig `protobuf:"bytes,25,opt,name=slurm_operator_config,json=slurmOperatorConfig,proto3" json:"slurm_operator_config,omitempty"`
 	// Optional. Configuration for the slice controller add-on.
 	SliceControllerConfig *SliceControllerConfig `protobuf:"bytes,26,opt,name=slice_controller_config,json=sliceControllerConfig,proto3" json:"slice_controller_config,omitempty"`
-	unknownFields         protoimpl.UnknownFields
-	sizeCache             protoimpl.SizeCache
+	// Optional. Configuration for NodeReadinessController add-on.
+	NodeReadinessConfig *NodeReadinessConfig `protobuf:"bytes,29,opt,name=node_readiness_config,json=nodeReadinessConfig,proto3" json:"node_readiness_config,omitempty"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
 }
 
 func (x *AddonsConfig) Reset() {
 	*x = AddonsConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[26]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7624,7 +7941,7 @@ func (x *AddonsConfig) String() string {
 func (*AddonsConfig) ProtoMessage() {}
 
 func (x *AddonsConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[26]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7637,7 +7954,7 @@ func (x *AddonsConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AddonsConfig.ProtoReflect.Descriptor instead.
 func (*AddonsConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{26}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{27}
 }
 
 func (x *AddonsConfig) GetHttpLoadBalancing() *HttpLoadBalancing {
@@ -7753,9 +8070,30 @@ func (x *AddonsConfig) GetLustreCsiDriverConfig() *LustreCsiDriverConfig {
 	return nil
 }
 
+func (x *AddonsConfig) GetPodSnapshotConfig() *PodSnapshotConfig {
+	if x != nil {
+		return x.PodSnapshotConfig
+	}
+	return nil
+}
+
+func (x *AddonsConfig) GetSlurmOperatorConfig() *SlurmOperatorConfig {
+	if x != nil {
+		return x.SlurmOperatorConfig
+	}
+	return nil
+}
+
 func (x *AddonsConfig) GetSliceControllerConfig() *SliceControllerConfig {
 	if x != nil {
 		return x.SliceControllerConfig
+	}
+	return nil
+}
+
+func (x *AddonsConfig) GetNodeReadinessConfig() *NodeReadinessConfig {
+	if x != nil {
+		return x.NodeReadinessConfig
 	}
 	return nil
 }
@@ -7774,7 +8112,7 @@ type HttpLoadBalancing struct {
 
 func (x *HttpLoadBalancing) Reset() {
 	*x = HttpLoadBalancing{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[27]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7786,7 +8124,7 @@ func (x *HttpLoadBalancing) String() string {
 func (*HttpLoadBalancing) ProtoMessage() {}
 
 func (x *HttpLoadBalancing) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[27]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7799,7 +8137,7 @@ func (x *HttpLoadBalancing) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HttpLoadBalancing.ProtoReflect.Descriptor instead.
 func (*HttpLoadBalancing) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{27}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{28}
 }
 
 func (x *HttpLoadBalancing) GetDisabled() bool {
@@ -7824,7 +8162,7 @@ type HorizontalPodAutoscaling struct {
 
 func (x *HorizontalPodAutoscaling) Reset() {
 	*x = HorizontalPodAutoscaling{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[28]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[29]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7836,7 +8174,7 @@ func (x *HorizontalPodAutoscaling) String() string {
 func (*HorizontalPodAutoscaling) ProtoMessage() {}
 
 func (x *HorizontalPodAutoscaling) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[28]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[29]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7849,7 +8187,7 @@ func (x *HorizontalPodAutoscaling) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HorizontalPodAutoscaling.ProtoReflect.Descriptor instead.
 func (*HorizontalPodAutoscaling) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{28}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{29}
 }
 
 func (x *HorizontalPodAutoscaling) GetDisabled() bool {
@@ -7870,7 +8208,7 @@ type KubernetesDashboard struct {
 
 func (x *KubernetesDashboard) Reset() {
 	*x = KubernetesDashboard{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[29]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[30]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7882,7 +8220,7 @@ func (x *KubernetesDashboard) String() string {
 func (*KubernetesDashboard) ProtoMessage() {}
 
 func (x *KubernetesDashboard) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[29]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[30]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7895,7 +8233,7 @@ func (x *KubernetesDashboard) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use KubernetesDashboard.ProtoReflect.Descriptor instead.
 func (*KubernetesDashboard) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{29}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{30}
 }
 
 func (x *KubernetesDashboard) GetDisabled() bool {
@@ -7918,7 +8256,7 @@ type NetworkPolicyConfig struct {
 
 func (x *NetworkPolicyConfig) Reset() {
 	*x = NetworkPolicyConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[30]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[31]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7930,7 +8268,7 @@ func (x *NetworkPolicyConfig) String() string {
 func (*NetworkPolicyConfig) ProtoMessage() {}
 
 func (x *NetworkPolicyConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[30]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[31]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7943,7 +8281,7 @@ func (x *NetworkPolicyConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NetworkPolicyConfig.ProtoReflect.Descriptor instead.
 func (*NetworkPolicyConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{30}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{31}
 }
 
 func (x *NetworkPolicyConfig) GetDisabled() bool {
@@ -7964,7 +8302,7 @@ type DnsCacheConfig struct {
 
 func (x *DnsCacheConfig) Reset() {
 	*x = DnsCacheConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[31]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[32]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7976,7 +8314,7 @@ func (x *DnsCacheConfig) String() string {
 func (*DnsCacheConfig) ProtoMessage() {}
 
 func (x *DnsCacheConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[31]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[32]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7989,7 +8327,7 @@ func (x *DnsCacheConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DnsCacheConfig.ProtoReflect.Descriptor instead.
 func (*DnsCacheConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{31}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{32}
 }
 
 func (x *DnsCacheConfig) GetEnabled() bool {
@@ -8010,7 +8348,7 @@ type PrivateClusterMasterGlobalAccessConfig struct {
 
 func (x *PrivateClusterMasterGlobalAccessConfig) Reset() {
 	*x = PrivateClusterMasterGlobalAccessConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[32]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[33]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8022,7 +8360,7 @@ func (x *PrivateClusterMasterGlobalAccessConfig) String() string {
 func (*PrivateClusterMasterGlobalAccessConfig) ProtoMessage() {}
 
 func (x *PrivateClusterMasterGlobalAccessConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[32]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[33]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8035,7 +8373,7 @@ func (x *PrivateClusterMasterGlobalAccessConfig) ProtoReflect() protoreflect.Mes
 
 // Deprecated: Use PrivateClusterMasterGlobalAccessConfig.ProtoReflect.Descriptor instead.
 func (*PrivateClusterMasterGlobalAccessConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{32}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{33}
 }
 
 func (x *PrivateClusterMasterGlobalAccessConfig) GetEnabled() bool {
@@ -8113,7 +8451,7 @@ type PrivateClusterConfig struct {
 
 func (x *PrivateClusterConfig) Reset() {
 	*x = PrivateClusterConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[33]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[34]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8125,7 +8463,7 @@ func (x *PrivateClusterConfig) String() string {
 func (*PrivateClusterConfig) ProtoMessage() {}
 
 func (x *PrivateClusterConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[33]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[34]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8138,7 +8476,7 @@ func (x *PrivateClusterConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PrivateClusterConfig.ProtoReflect.Descriptor instead.
 func (*PrivateClusterConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{33}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{34}
 }
 
 // Deprecated: Marked as deprecated in google/container/v1/cluster_service.proto.
@@ -8218,7 +8556,7 @@ type AuthenticatorGroupsConfig struct {
 
 func (x *AuthenticatorGroupsConfig) Reset() {
 	*x = AuthenticatorGroupsConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[34]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[35]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8230,7 +8568,7 @@ func (x *AuthenticatorGroupsConfig) String() string {
 func (*AuthenticatorGroupsConfig) ProtoMessage() {}
 
 func (x *AuthenticatorGroupsConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[34]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[35]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8243,7 +8581,7 @@ func (x *AuthenticatorGroupsConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AuthenticatorGroupsConfig.ProtoReflect.Descriptor instead.
 func (*AuthenticatorGroupsConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{34}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{35}
 }
 
 func (x *AuthenticatorGroupsConfig) GetEnabled() bool {
@@ -8273,7 +8611,7 @@ type CloudRunConfig struct {
 
 func (x *CloudRunConfig) Reset() {
 	*x = CloudRunConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[35]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[36]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8285,7 +8623,7 @@ func (x *CloudRunConfig) String() string {
 func (*CloudRunConfig) ProtoMessage() {}
 
 func (x *CloudRunConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[35]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[36]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8298,7 +8636,7 @@ func (x *CloudRunConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CloudRunConfig.ProtoReflect.Descriptor instead.
 func (*CloudRunConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{35}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{36}
 }
 
 func (x *CloudRunConfig) GetDisabled() bool {
@@ -8326,7 +8664,7 @@ type ConfigConnectorConfig struct {
 
 func (x *ConfigConnectorConfig) Reset() {
 	*x = ConfigConnectorConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[36]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[37]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8338,7 +8676,7 @@ func (x *ConfigConnectorConfig) String() string {
 func (*ConfigConnectorConfig) ProtoMessage() {}
 
 func (x *ConfigConnectorConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[36]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[37]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8351,7 +8689,7 @@ func (x *ConfigConnectorConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConfigConnectorConfig.ProtoReflect.Descriptor instead.
 func (*ConfigConnectorConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{36}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{37}
 }
 
 func (x *ConfigConnectorConfig) GetEnabled() bool {
@@ -8372,7 +8710,7 @@ type GcePersistentDiskCsiDriverConfig struct {
 
 func (x *GcePersistentDiskCsiDriverConfig) Reset() {
 	*x = GcePersistentDiskCsiDriverConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[37]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[38]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8384,7 +8722,7 @@ func (x *GcePersistentDiskCsiDriverConfig) String() string {
 func (*GcePersistentDiskCsiDriverConfig) ProtoMessage() {}
 
 func (x *GcePersistentDiskCsiDriverConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[37]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[38]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8397,7 +8735,7 @@ func (x *GcePersistentDiskCsiDriverConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GcePersistentDiskCsiDriverConfig.ProtoReflect.Descriptor instead.
 func (*GcePersistentDiskCsiDriverConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{37}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{38}
 }
 
 func (x *GcePersistentDiskCsiDriverConfig) GetEnabled() bool {
@@ -8418,7 +8756,7 @@ type GcpFilestoreCsiDriverConfig struct {
 
 func (x *GcpFilestoreCsiDriverConfig) Reset() {
 	*x = GcpFilestoreCsiDriverConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[38]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[39]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8430,7 +8768,7 @@ func (x *GcpFilestoreCsiDriverConfig) String() string {
 func (*GcpFilestoreCsiDriverConfig) ProtoMessage() {}
 
 func (x *GcpFilestoreCsiDriverConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[38]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[39]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8443,7 +8781,7 @@ func (x *GcpFilestoreCsiDriverConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GcpFilestoreCsiDriverConfig.ProtoReflect.Descriptor instead.
 func (*GcpFilestoreCsiDriverConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{38}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{39}
 }
 
 func (x *GcpFilestoreCsiDriverConfig) GetEnabled() bool {
@@ -8464,7 +8802,7 @@ type GcsFuseCsiDriverConfig struct {
 
 func (x *GcsFuseCsiDriverConfig) Reset() {
 	*x = GcsFuseCsiDriverConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[39]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[40]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8476,7 +8814,7 @@ func (x *GcsFuseCsiDriverConfig) String() string {
 func (*GcsFuseCsiDriverConfig) ProtoMessage() {}
 
 func (x *GcsFuseCsiDriverConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[39]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[40]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8489,7 +8827,7 @@ func (x *GcsFuseCsiDriverConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GcsFuseCsiDriverConfig.ProtoReflect.Descriptor instead.
 func (*GcsFuseCsiDriverConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{39}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{40}
 }
 
 func (x *GcsFuseCsiDriverConfig) GetEnabled() bool {
@@ -8511,7 +8849,7 @@ type ParallelstoreCsiDriverConfig struct {
 
 func (x *ParallelstoreCsiDriverConfig) Reset() {
 	*x = ParallelstoreCsiDriverConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[40]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[41]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8523,7 +8861,7 @@ func (x *ParallelstoreCsiDriverConfig) String() string {
 func (*ParallelstoreCsiDriverConfig) ProtoMessage() {}
 
 func (x *ParallelstoreCsiDriverConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[40]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[41]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8536,7 +8874,7 @@ func (x *ParallelstoreCsiDriverConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ParallelstoreCsiDriverConfig.ProtoReflect.Descriptor instead.
 func (*ParallelstoreCsiDriverConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{40}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{41}
 }
 
 func (x *ParallelstoreCsiDriverConfig) GetEnabled() bool {
@@ -8558,7 +8896,7 @@ type HighScaleCheckpointingConfig struct {
 
 func (x *HighScaleCheckpointingConfig) Reset() {
 	*x = HighScaleCheckpointingConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[41]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[42]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8570,7 +8908,7 @@ func (x *HighScaleCheckpointingConfig) String() string {
 func (*HighScaleCheckpointingConfig) ProtoMessage() {}
 
 func (x *HighScaleCheckpointingConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[41]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[42]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8583,7 +8921,7 @@ func (x *HighScaleCheckpointingConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HighScaleCheckpointingConfig.ProtoReflect.Descriptor instead.
 func (*HighScaleCheckpointingConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{41}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{42}
 }
 
 func (x *HighScaleCheckpointingConfig) GetEnabled() bool {
@@ -8612,13 +8950,19 @@ type LustreCsiDriverConfig struct {
 	//
 	// Deprecated: Marked as deprecated in google/container/v1/cluster_service.proto.
 	EnableLegacyLustrePort bool `protobuf:"varint,3,opt,name=enable_legacy_lustre_port,json=enableLegacyLustrePort,proto3" json:"enable_legacy_lustre_port,omitempty"`
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
+	// When set to true, this disables multi-NIC support for the Lustre CSI
+	// driver.
+	// By default, GKE enables multi-NIC support, which allows the Lustre
+	// CSI driver to automatically detect and configure all suitable network
+	// interfaces on a node to maximize I/O performance for demanding workloads.
+	DisableMultiNic bool `protobuf:"varint,4,opt,name=disable_multi_nic,json=disableMultiNic,proto3" json:"disable_multi_nic,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
 }
 
 func (x *LustreCsiDriverConfig) Reset() {
 	*x = LustreCsiDriverConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[42]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[43]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8630,7 +8974,7 @@ func (x *LustreCsiDriverConfig) String() string {
 func (*LustreCsiDriverConfig) ProtoMessage() {}
 
 func (x *LustreCsiDriverConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[42]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[43]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8643,7 +8987,7 @@ func (x *LustreCsiDriverConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LustreCsiDriverConfig.ProtoReflect.Descriptor instead.
 func (*LustreCsiDriverConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{42}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{43}
 }
 
 func (x *LustreCsiDriverConfig) GetEnabled() bool {
@@ -8661,6 +9005,107 @@ func (x *LustreCsiDriverConfig) GetEnableLegacyLustrePort() bool {
 	return false
 }
 
+func (x *LustreCsiDriverConfig) GetDisableMultiNic() bool {
+	if x != nil {
+		return x.DisableMultiNic
+	}
+	return false
+}
+
+// Configuration for the Slurm Operator.
+type SlurmOperatorConfig struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// When enabled, it runs a Slurm Operator that manages the set of compute pods
+	// for Slurm Cluster.
+	Enabled       bool `protobuf:"varint,1,opt,name=enabled,proto3" json:"enabled,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SlurmOperatorConfig) Reset() {
+	*x = SlurmOperatorConfig{}
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[44]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SlurmOperatorConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SlurmOperatorConfig) ProtoMessage() {}
+
+func (x *SlurmOperatorConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[44]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SlurmOperatorConfig.ProtoReflect.Descriptor instead.
+func (*SlurmOperatorConfig) Descriptor() ([]byte, []int) {
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{44}
+}
+
+func (x *SlurmOperatorConfig) GetEnabled() bool {
+	if x != nil {
+		return x.Enabled
+	}
+	return false
+}
+
+// Configuration for the GKE Node Readiness Controller.
+type NodeReadinessConfig struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. Whether the GKE Node Readiness Controller is enabled for this
+	// cluster.
+	Enabled       bool `protobuf:"varint,1,opt,name=enabled,proto3" json:"enabled,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *NodeReadinessConfig) Reset() {
+	*x = NodeReadinessConfig{}
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[45]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *NodeReadinessConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*NodeReadinessConfig) ProtoMessage() {}
+
+func (x *NodeReadinessConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[45]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use NodeReadinessConfig.ProtoReflect.Descriptor instead.
+func (*NodeReadinessConfig) Descriptor() ([]byte, []int) {
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{45}
+}
+
+func (x *NodeReadinessConfig) GetEnabled() bool {
+	if x != nil {
+		return x.Enabled
+	}
+	return false
+}
+
 // Configuration for the Slice Controller.
 type SliceControllerConfig struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -8672,7 +9117,7 @@ type SliceControllerConfig struct {
 
 func (x *SliceControllerConfig) Reset() {
 	*x = SliceControllerConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[43]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[46]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8684,7 +9129,7 @@ func (x *SliceControllerConfig) String() string {
 func (*SliceControllerConfig) ProtoMessage() {}
 
 func (x *SliceControllerConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[43]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[46]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8697,7 +9142,7 @@ func (x *SliceControllerConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SliceControllerConfig.ProtoReflect.Descriptor instead.
 func (*SliceControllerConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{43}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{46}
 }
 
 func (x *SliceControllerConfig) GetEnabled() bool {
@@ -8722,7 +9167,7 @@ type RayOperatorConfig struct {
 
 func (x *RayOperatorConfig) Reset() {
 	*x = RayOperatorConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[44]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[47]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8734,7 +9179,7 @@ func (x *RayOperatorConfig) String() string {
 func (*RayOperatorConfig) ProtoMessage() {}
 
 func (x *RayOperatorConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[44]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[47]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8747,7 +9192,7 @@ func (x *RayOperatorConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RayOperatorConfig.ProtoReflect.Descriptor instead.
 func (*RayOperatorConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{44}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{47}
 }
 
 func (x *RayOperatorConfig) GetEnabled() bool {
@@ -8782,7 +9227,7 @@ type GkeBackupAgentConfig struct {
 
 func (x *GkeBackupAgentConfig) Reset() {
 	*x = GkeBackupAgentConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[45]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[48]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8794,7 +9239,7 @@ func (x *GkeBackupAgentConfig) String() string {
 func (*GkeBackupAgentConfig) ProtoMessage() {}
 
 func (x *GkeBackupAgentConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[45]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[48]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8807,7 +9252,7 @@ func (x *GkeBackupAgentConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GkeBackupAgentConfig.ProtoReflect.Descriptor instead.
 func (*GkeBackupAgentConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{45}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{48}
 }
 
 func (x *GkeBackupAgentConfig) GetEnabled() bool {
@@ -8828,7 +9273,7 @@ type StatefulHAConfig struct {
 
 func (x *StatefulHAConfig) Reset() {
 	*x = StatefulHAConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[46]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[49]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8840,7 +9285,7 @@ func (x *StatefulHAConfig) String() string {
 func (*StatefulHAConfig) ProtoMessage() {}
 
 func (x *StatefulHAConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[46]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[49]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8853,7 +9298,7 @@ func (x *StatefulHAConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StatefulHAConfig.ProtoReflect.Descriptor instead.
 func (*StatefulHAConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{46}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{49}
 }
 
 func (x *StatefulHAConfig) GetEnabled() bool {
@@ -8884,7 +9329,7 @@ type MasterAuthorizedNetworksConfig struct {
 
 func (x *MasterAuthorizedNetworksConfig) Reset() {
 	*x = MasterAuthorizedNetworksConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[47]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[50]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8896,7 +9341,7 @@ func (x *MasterAuthorizedNetworksConfig) String() string {
 func (*MasterAuthorizedNetworksConfig) ProtoMessage() {}
 
 func (x *MasterAuthorizedNetworksConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[47]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[50]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8909,7 +9354,7 @@ func (x *MasterAuthorizedNetworksConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MasterAuthorizedNetworksConfig.ProtoReflect.Descriptor instead.
 func (*MasterAuthorizedNetworksConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{47}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{50}
 }
 
 func (x *MasterAuthorizedNetworksConfig) GetEnabled() bool {
@@ -8955,7 +9400,7 @@ type LegacyAbac struct {
 
 func (x *LegacyAbac) Reset() {
 	*x = LegacyAbac{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[48]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[51]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8967,7 +9412,7 @@ func (x *LegacyAbac) String() string {
 func (*LegacyAbac) ProtoMessage() {}
 
 func (x *LegacyAbac) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[48]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[51]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8980,7 +9425,7 @@ func (x *LegacyAbac) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LegacyAbac.ProtoReflect.Descriptor instead.
 func (*LegacyAbac) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{48}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{51}
 }
 
 func (x *LegacyAbac) GetEnabled() bool {
@@ -9004,7 +9449,7 @@ type NetworkPolicy struct {
 
 func (x *NetworkPolicy) Reset() {
 	*x = NetworkPolicy{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[49]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[52]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9016,7 +9461,7 @@ func (x *NetworkPolicy) String() string {
 func (*NetworkPolicy) ProtoMessage() {}
 
 func (x *NetworkPolicy) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[49]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[52]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9029,7 +9474,7 @@ func (x *NetworkPolicy) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NetworkPolicy.ProtoReflect.Descriptor instead.
 func (*NetworkPolicy) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{49}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{52}
 }
 
 func (x *NetworkPolicy) GetProvider() NetworkPolicy_Provider {
@@ -9064,7 +9509,7 @@ type BinaryAuthorization struct {
 
 func (x *BinaryAuthorization) Reset() {
 	*x = BinaryAuthorization{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[50]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[53]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9076,7 +9521,7 @@ func (x *BinaryAuthorization) String() string {
 func (*BinaryAuthorization) ProtoMessage() {}
 
 func (x *BinaryAuthorization) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[50]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[53]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9089,7 +9534,7 @@ func (x *BinaryAuthorization) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BinaryAuthorization.ProtoReflect.Descriptor instead.
 func (*BinaryAuthorization) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{50}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{53}
 }
 
 // Deprecated: Marked as deprecated in google/container/v1/cluster_service.proto.
@@ -9120,7 +9565,7 @@ type PodCIDROverprovisionConfig struct {
 
 func (x *PodCIDROverprovisionConfig) Reset() {
 	*x = PodCIDROverprovisionConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[51]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[54]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9132,7 +9577,7 @@ func (x *PodCIDROverprovisionConfig) String() string {
 func (*PodCIDROverprovisionConfig) ProtoMessage() {}
 
 func (x *PodCIDROverprovisionConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[51]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[54]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9145,7 +9590,7 @@ func (x *PodCIDROverprovisionConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PodCIDROverprovisionConfig.ProtoReflect.Descriptor instead.
 func (*PodCIDROverprovisionConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{51}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{54}
 }
 
 func (x *PodCIDROverprovisionConfig) GetDisable() bool {
@@ -9320,7 +9765,7 @@ type IPAllocationPolicy struct {
 
 func (x *IPAllocationPolicy) Reset() {
 	*x = IPAllocationPolicy{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[52]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[55]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9332,7 +9777,7 @@ func (x *IPAllocationPolicy) String() string {
 func (*IPAllocationPolicy) ProtoMessage() {}
 
 func (x *IPAllocationPolicy) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[52]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[55]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9345,7 +9790,7 @@ func (x *IPAllocationPolicy) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use IPAllocationPolicy.ProtoReflect.Descriptor instead.
 func (*IPAllocationPolicy) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{52}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{55}
 }
 
 func (x *IPAllocationPolicy) GetUseIpAliases() bool {
@@ -9810,7 +10255,7 @@ type Cluster struct {
 	Etag string `protobuf:"bytes,139,opt,name=etag,proto3" json:"etag,omitempty"`
 	// Fleet information for the cluster.
 	Fleet *Fleet `protobuf:"bytes,140,opt,name=fleet,proto3" json:"fleet,omitempty"`
-	// Enable/Disable Security Posture API features for the cluster.
+	// Optional. Enable/Disable Security Posture API features for the cluster.
 	SecurityPostureConfig *SecurityPostureConfig `protobuf:"bytes,145,opt,name=security_posture_config,json=securityPostureConfig,proto3" json:"security_posture_config,omitempty"`
 	// Configuration for all cluster's control plane endpoints.
 	ControlPlaneEndpointsConfig *ControlPlaneEndpointsConfig `protobuf:"bytes,146,opt,name=control_plane_endpoints_config,json=controlPlaneEndpointsConfig,proto3" json:"control_plane_endpoints_config,omitempty"`
@@ -9825,7 +10270,13 @@ type Cluster struct {
 	EnterpriseConfig *EnterpriseConfig `protobuf:"bytes,149,opt,name=enterprise_config,json=enterpriseConfig,proto3" json:"enterprise_config,omitempty"`
 	// Secret CSI driver configuration.
 	SecretManagerConfig *SecretManagerConfig `protobuf:"bytes,150,opt,name=secret_manager_config,json=secretManagerConfig,proto3" json:"secret_manager_config,omitempty"`
+	// Optional. Deprecated: Compliance Posture is no longer supported.
+	// For more details, see
+	// https://cloud.google.com/kubernetes-engine/docs/deprecations/posture-management-deprecation.
+	//
 	// Enable/Disable Compliance Posture features for the cluster.
+	//
+	// Deprecated: Marked as deprecated in google/container/v1/cluster_service.proto.
 	CompliancePostureConfig *CompliancePostureConfig `protobuf:"bytes,151,opt,name=compliance_posture_config,json=compliancePostureConfig,proto3" json:"compliance_posture_config,omitempty"`
 	// Output only. Reserved for future use.
 	SatisfiesPzs *bool `protobuf:"varint,152,opt,name=satisfies_pzs,json=satisfiesPzs,proto3,oneof" json:"satisfies_pzs,omitempty"`
@@ -9841,15 +10292,25 @@ type Cluster struct {
 	// Configuration for limiting anonymous access to all endpoints except the
 	// health checks.
 	AnonymousAuthenticationConfig *AnonymousAuthenticationConfig `protobuf:"bytes,164,opt,name=anonymous_authentication_config,json=anonymousAuthenticationConfig,proto3" json:"anonymous_authentication_config,omitempty"`
+	// Optional. Configuration for scheduled upgrades.
+	ScheduleUpgradeConfig *ScheduleUpgradeConfig `protobuf:"bytes,165,opt,name=schedule_upgrade_config,json=scheduleUpgradeConfig,proto3" json:"schedule_upgrade_config,omitempty"`
+	// Configuration for sync Secret Manager secrets as k8s secrets.
+	SecretSyncConfig *SecretSyncConfig `protobuf:"bytes,166,opt,name=secret_sync_config,json=secretSyncConfig,proto3" json:"secret_sync_config,omitempty"`
 	// Configuration for Managed OpenTelemetry pipeline.
 	ManagedOpentelemetryConfig *ManagedOpenTelemetryConfig `protobuf:"bytes,168,opt,name=managed_opentelemetry_config,json=managedOpentelemetryConfig,proto3" json:"managed_opentelemetry_config,omitempty"`
-	unknownFields              protoimpl.UnknownFields
-	sizeCache                  protoimpl.SizeCache
+	// Configuration for control plane egress control.
+	ControlPlaneEgress *ControlPlaneEgress `protobuf:"bytes,169,opt,name=control_plane_egress,json=controlPlaneEgress,proto3" json:"control_plane_egress,omitempty"`
+	// Configuration for Managed Machine Learning Diagnostics.
+	ManagedMachineLearningDiagnosticsConfig *ManagedMachineLearningDiagnosticsConfig `protobuf:"bytes,171,opt,name=managed_machine_learning_diagnostics_config,json=managedMachineLearningDiagnosticsConfig,proto3" json:"managed_machine_learning_diagnostics_config,omitempty"`
+	// Optional. Configuration for Node Creation Mode.
+	NodeCreationConfig *NodeCreationConfig `protobuf:"bytes,174,opt,name=node_creation_config,json=nodeCreationConfig,proto3" json:"node_creation_config,omitempty"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
 }
 
 func (x *Cluster) Reset() {
 	*x = Cluster{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[53]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[56]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9861,7 +10322,7 @@ func (x *Cluster) String() string {
 func (*Cluster) ProtoMessage() {}
 
 func (x *Cluster) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[53]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[56]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9874,7 +10335,7 @@ func (x *Cluster) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Cluster.ProtoReflect.Descriptor instead.
 func (*Cluster) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{53}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{56}
 }
 
 func (x *Cluster) GetName() string {
@@ -10385,6 +10846,7 @@ func (x *Cluster) GetSecretManagerConfig() *SecretManagerConfig {
 	return nil
 }
 
+// Deprecated: Marked as deprecated in google/container/v1/cluster_service.proto.
 func (x *Cluster) GetCompliancePostureConfig() *CompliancePostureConfig {
 	if x != nil {
 		return x.CompliancePostureConfig
@@ -10434,11 +10896,139 @@ func (x *Cluster) GetAnonymousAuthenticationConfig() *AnonymousAuthenticationCon
 	return nil
 }
 
+func (x *Cluster) GetScheduleUpgradeConfig() *ScheduleUpgradeConfig {
+	if x != nil {
+		return x.ScheduleUpgradeConfig
+	}
+	return nil
+}
+
+func (x *Cluster) GetSecretSyncConfig() *SecretSyncConfig {
+	if x != nil {
+		return x.SecretSyncConfig
+	}
+	return nil
+}
+
 func (x *Cluster) GetManagedOpentelemetryConfig() *ManagedOpenTelemetryConfig {
 	if x != nil {
 		return x.ManagedOpentelemetryConfig
 	}
 	return nil
+}
+
+func (x *Cluster) GetControlPlaneEgress() *ControlPlaneEgress {
+	if x != nil {
+		return x.ControlPlaneEgress
+	}
+	return nil
+}
+
+func (x *Cluster) GetManagedMachineLearningDiagnosticsConfig() *ManagedMachineLearningDiagnosticsConfig {
+	if x != nil {
+		return x.ManagedMachineLearningDiagnosticsConfig
+	}
+	return nil
+}
+
+func (x *Cluster) GetNodeCreationConfig() *NodeCreationConfig {
+	if x != nil {
+		return x.NodeCreationConfig
+	}
+	return nil
+}
+
+// NodeCreationConfig defines the settings of node creation mode.
+type NodeCreationConfig struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The mode of node creation.
+	NodeCreationMode NodeCreationConfig_Mode `protobuf:"varint,1,opt,name=node_creation_mode,json=nodeCreationMode,proto3,enum=google.container.v1.NodeCreationConfig_Mode" json:"node_creation_mode,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *NodeCreationConfig) Reset() {
+	*x = NodeCreationConfig{}
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[57]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *NodeCreationConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*NodeCreationConfig) ProtoMessage() {}
+
+func (x *NodeCreationConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[57]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use NodeCreationConfig.ProtoReflect.Descriptor instead.
+func (*NodeCreationConfig) Descriptor() ([]byte, []int) {
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{57}
+}
+
+func (x *NodeCreationConfig) GetNodeCreationMode() NodeCreationConfig_Mode {
+	if x != nil {
+		return x.NodeCreationMode
+	}
+	return NodeCreationConfig_MODE_UNSPECIFIED
+}
+
+// ControlPlaneEgress defines the settings needed to enable
+// control plane egress control.
+type ControlPlaneEgress struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Defines the mode of control plane egress.
+	Mode          ControlPlaneEgress_Mode `protobuf:"varint,1,opt,name=mode,proto3,enum=google.container.v1.ControlPlaneEgress_Mode" json:"mode,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ControlPlaneEgress) Reset() {
+	*x = ControlPlaneEgress{}
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[58]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ControlPlaneEgress) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ControlPlaneEgress) ProtoMessage() {}
+
+func (x *ControlPlaneEgress) ProtoReflect() protoreflect.Message {
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[58]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ControlPlaneEgress.ProtoReflect.Descriptor instead.
+func (*ControlPlaneEgress) Descriptor() ([]byte, []int) {
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{58}
+}
+
+func (x *ControlPlaneEgress) GetMode() ControlPlaneEgress_Mode {
+	if x != nil {
+		return x.Mode
+	}
+	return ControlPlaneEgress_MODE_UNSPECIFIED
 }
 
 // RBACBindingConfig allows user to restrict ClusterRoleBindings an RoleBindings
@@ -10457,7 +11047,7 @@ type RBACBindingConfig struct {
 
 func (x *RBACBindingConfig) Reset() {
 	*x = RBACBindingConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[54]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[59]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10469,7 +11059,7 @@ func (x *RBACBindingConfig) String() string {
 func (*RBACBindingConfig) ProtoMessage() {}
 
 func (x *RBACBindingConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[54]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[59]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10482,7 +11072,7 @@ func (x *RBACBindingConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RBACBindingConfig.ProtoReflect.Descriptor instead.
 func (*RBACBindingConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{54}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{59}
 }
 
 func (x *RBACBindingConfig) GetEnableInsecureBindingSystemUnauthenticated() bool {
@@ -10542,7 +11132,7 @@ type UserManagedKeysConfig struct {
 
 func (x *UserManagedKeysConfig) Reset() {
 	*x = UserManagedKeysConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[55]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[60]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10554,7 +11144,7 @@ func (x *UserManagedKeysConfig) String() string {
 func (*UserManagedKeysConfig) ProtoMessage() {}
 
 func (x *UserManagedKeysConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[55]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[60]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10567,7 +11157,7 @@ func (x *UserManagedKeysConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UserManagedKeysConfig.ProtoReflect.Descriptor instead.
 func (*UserManagedKeysConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{55}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{60}
 }
 
 func (x *UserManagedKeysConfig) GetClusterCa() string {
@@ -10645,7 +11235,7 @@ type AnonymousAuthenticationConfig struct {
 
 func (x *AnonymousAuthenticationConfig) Reset() {
 	*x = AnonymousAuthenticationConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[56]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[61]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10657,7 +11247,7 @@ func (x *AnonymousAuthenticationConfig) String() string {
 func (*AnonymousAuthenticationConfig) ProtoMessage() {}
 
 func (x *AnonymousAuthenticationConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[56]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[61]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10670,7 +11260,7 @@ func (x *AnonymousAuthenticationConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AnonymousAuthenticationConfig.ProtoReflect.Descriptor instead.
 func (*AnonymousAuthenticationConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{56}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{61}
 }
 
 func (x *AnonymousAuthenticationConfig) GetMode() AnonymousAuthenticationConfig_Mode {
@@ -10680,8 +11270,14 @@ func (x *AnonymousAuthenticationConfig) GetMode() AnonymousAuthenticationConfig_
 	return AnonymousAuthenticationConfig_MODE_UNSPECIFIED
 }
 
+// Deprecated: Compliance Posture is no longer supported.
+// For more details, see
+// https://cloud.google.com/kubernetes-engine/docs/deprecations/posture-management-deprecation.
+//
 // CompliancePostureConfig defines the settings needed to enable/disable
 // features for the Compliance Posture.
+//
+// Deprecated: Marked as deprecated in google/container/v1/cluster_service.proto.
 type CompliancePostureConfig struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Defines the enablement mode for Compliance Posture.
@@ -10694,7 +11290,7 @@ type CompliancePostureConfig struct {
 
 func (x *CompliancePostureConfig) Reset() {
 	*x = CompliancePostureConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[57]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[62]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10706,7 +11302,7 @@ func (x *CompliancePostureConfig) String() string {
 func (*CompliancePostureConfig) ProtoMessage() {}
 
 func (x *CompliancePostureConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[57]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[62]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10719,7 +11315,7 @@ func (x *CompliancePostureConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CompliancePostureConfig.ProtoReflect.Descriptor instead.
 func (*CompliancePostureConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{57}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{62}
 }
 
 func (x *CompliancePostureConfig) GetMode() CompliancePostureConfig_Mode {
@@ -10747,7 +11343,7 @@ type K8SBetaAPIConfig struct {
 
 func (x *K8SBetaAPIConfig) Reset() {
 	*x = K8SBetaAPIConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[58]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[63]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10759,7 +11355,7 @@ func (x *K8SBetaAPIConfig) String() string {
 func (*K8SBetaAPIConfig) ProtoMessage() {}
 
 func (x *K8SBetaAPIConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[58]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[63]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10772,7 +11368,7 @@ func (x *K8SBetaAPIConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use K8SBetaAPIConfig.ProtoReflect.Descriptor instead.
 func (*K8SBetaAPIConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{58}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{63}
 }
 
 func (x *K8SBetaAPIConfig) GetEnabledApis() []string {
@@ -10796,7 +11392,7 @@ type SecurityPostureConfig struct {
 
 func (x *SecurityPostureConfig) Reset() {
 	*x = SecurityPostureConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[59]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[64]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10808,7 +11404,7 @@ func (x *SecurityPostureConfig) String() string {
 func (*SecurityPostureConfig) ProtoMessage() {}
 
 func (x *SecurityPostureConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[59]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[64]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10821,7 +11417,7 @@ func (x *SecurityPostureConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SecurityPostureConfig.ProtoReflect.Descriptor instead.
 func (*SecurityPostureConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{59}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{64}
 }
 
 func (x *SecurityPostureConfig) GetMode() SecurityPostureConfig_Mode {
@@ -10862,7 +11458,7 @@ type NodePoolAutoConfig struct {
 
 func (x *NodePoolAutoConfig) Reset() {
 	*x = NodePoolAutoConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[60]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[65]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10874,7 +11470,7 @@ func (x *NodePoolAutoConfig) String() string {
 func (*NodePoolAutoConfig) ProtoMessage() {}
 
 func (x *NodePoolAutoConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[60]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[65]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10887,7 +11483,7 @@ func (x *NodePoolAutoConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NodePoolAutoConfig.ProtoReflect.Descriptor instead.
 func (*NodePoolAutoConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{60}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{65}
 }
 
 func (x *NodePoolAutoConfig) GetNetworkTags() *NetworkTags {
@@ -10929,7 +11525,7 @@ type NodePoolDefaults struct {
 
 func (x *NodePoolDefaults) Reset() {
 	*x = NodePoolDefaults{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[61]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[66]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10941,7 +11537,7 @@ func (x *NodePoolDefaults) String() string {
 func (*NodePoolDefaults) ProtoMessage() {}
 
 func (x *NodePoolDefaults) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[61]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[66]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10954,7 +11550,7 @@ func (x *NodePoolDefaults) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NodePoolDefaults.ProtoReflect.Descriptor instead.
 func (*NodePoolDefaults) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{61}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{66}
 }
 
 func (x *NodePoolDefaults) GetNodeConfigDefaults() *NodeConfigDefaults {
@@ -10983,7 +11579,7 @@ type NodeConfigDefaults struct {
 
 func (x *NodeConfigDefaults) Reset() {
 	*x = NodeConfigDefaults{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[62]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[67]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10995,7 +11591,7 @@ func (x *NodeConfigDefaults) String() string {
 func (*NodeConfigDefaults) ProtoMessage() {}
 
 func (x *NodeConfigDefaults) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[62]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[67]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11008,7 +11604,7 @@ func (x *NodeConfigDefaults) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NodeConfigDefaults.ProtoReflect.Descriptor instead.
 func (*NodeConfigDefaults) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{62}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{67}
 }
 
 func (x *NodeConfigDefaults) GetGcfsConfig() *GcfsConfig {
@@ -11252,7 +11848,13 @@ type ClusterUpdate struct {
 	DesiredEnableCiliumClusterwideNetworkPolicy *bool `protobuf:"varint,138,opt,name=desired_enable_cilium_clusterwide_network_policy,json=desiredEnableCiliumClusterwideNetworkPolicy,proto3,oneof" json:"desired_enable_cilium_clusterwide_network_policy,omitempty"`
 	// Enable/Disable Secret Manager Config.
 	DesiredSecretManagerConfig *SecretManagerConfig `protobuf:"bytes,139,opt,name=desired_secret_manager_config,json=desiredSecretManagerConfig,proto3,oneof" json:"desired_secret_manager_config,omitempty"`
+	// Deprecated: Compliance Posture is no longer supported.
+	// For more details, see
+	// https://cloud.google.com/kubernetes-engine/docs/deprecations/posture-management-deprecation.
+	//
 	// Enable/Disable Compliance Posture features for the cluster.
+	//
+	// Deprecated: Marked as deprecated in google/container/v1/cluster_service.proto.
 	DesiredCompliancePostureConfig *CompliancePostureConfig `protobuf:"bytes,140,opt,name=desired_compliance_posture_config,json=desiredCompliancePostureConfig,proto3,oneof" json:"desired_compliance_posture_config,omitempty"`
 	// The desired node kubelet config for the cluster.
 	DesiredNodeKubeletConfig *NodeKubeletConfig `protobuf:"bytes,141,opt,name=desired_node_kubelet_config,json=desiredNodeKubeletConfig,proto3" json:"desired_node_kubelet_config,omitempty"`
@@ -11298,17 +11900,27 @@ type ClusterUpdate struct {
 	GkeAutoUpgradeConfig *GkeAutoUpgradeConfig `protobuf:"bytes,154,opt,name=gke_auto_upgrade_config,json=gkeAutoUpgradeConfig,proto3" json:"gke_auto_upgrade_config,omitempty"`
 	// The desired network tier configuration for the cluster.
 	DesiredNetworkTierConfig *NetworkTierConfig `protobuf:"bytes,155,opt,name=desired_network_tier_config,json=desiredNetworkTierConfig,proto3" json:"desired_network_tier_config,omitempty"`
+	// Configuration for sync Secret Manager secrets as k8s secrets.
+	DesiredSecretSyncConfig *SecretSyncConfig `protobuf:"bytes,158,opt,name=desired_secret_sync_config,json=desiredSecretSyncConfig,proto3" json:"desired_secret_sync_config,omitempty"`
 	// The desired privileged admission config for the cluster.
 	DesiredPrivilegedAdmissionConfig *PrivilegedAdmissionConfig `protobuf:"bytes,159,opt,name=desired_privileged_admission_config,json=desiredPrivilegedAdmissionConfig,proto3" json:"desired_privileged_admission_config,omitempty"`
+	// The desired control plane egress control config for the cluster.
+	DesiredControlPlaneEgress *ControlPlaneEgress `protobuf:"bytes,160,opt,name=desired_control_plane_egress,json=desiredControlPlaneEgress,proto3" json:"desired_control_plane_egress,omitempty"`
 	// The desired managed open telemetry configuration.
 	DesiredManagedOpentelemetryConfig *ManagedOpenTelemetryConfig `protobuf:"bytes,163,opt,name=desired_managed_opentelemetry_config,json=desiredManagedOpentelemetryConfig,proto3" json:"desired_managed_opentelemetry_config,omitempty"`
-	unknownFields                     protoimpl.UnknownFields
-	sizeCache                         protoimpl.SizeCache
+	// The desired autopilot cluster policies that to be enforced in the cluster.
+	DesiredAutopilotClusterPolicyConfig *ClusterPolicyConfig `protobuf:"bytes,164,opt,name=desired_autopilot_cluster_policy_config,json=desiredAutopilotClusterPolicyConfig,proto3" json:"desired_autopilot_cluster_policy_config,omitempty"`
+	// The desired managed machine learning diagnostics configuration.
+	DesiredManagedMachineLearningDiagnosticsConfig *ManagedMachineLearningDiagnosticsConfig `protobuf:"bytes,166,opt,name=desired_managed_machine_learning_diagnostics_config,json=desiredManagedMachineLearningDiagnosticsConfig,proto3" json:"desired_managed_machine_learning_diagnostics_config,omitempty"`
+	// Optional. The desired NodeCreationConfig for the cluster.
+	DesiredNodeCreationConfig *NodeCreationConfig `protobuf:"bytes,171,opt,name=desired_node_creation_config,json=desiredNodeCreationConfig,proto3" json:"desired_node_creation_config,omitempty"`
+	unknownFields             protoimpl.UnknownFields
+	sizeCache                 protoimpl.SizeCache
 }
 
 func (x *ClusterUpdate) Reset() {
 	*x = ClusterUpdate{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[63]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[68]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11320,7 +11932,7 @@ func (x *ClusterUpdate) String() string {
 func (*ClusterUpdate) ProtoMessage() {}
 
 func (x *ClusterUpdate) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[63]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[68]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11333,7 +11945,7 @@ func (x *ClusterUpdate) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ClusterUpdate.ProtoReflect.Descriptor instead.
 func (*ClusterUpdate) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{63}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{68}
 }
 
 func (x *ClusterUpdate) GetDesiredNodeVersion() string {
@@ -11745,6 +12357,7 @@ func (x *ClusterUpdate) GetDesiredSecretManagerConfig() *SecretManagerConfig {
 	return nil
 }
 
+// Deprecated: Marked as deprecated in google/container/v1/cluster_service.proto.
 func (x *ClusterUpdate) GetDesiredCompliancePostureConfig() *CompliancePostureConfig {
 	if x != nil {
 		return x.DesiredCompliancePostureConfig
@@ -11845,6 +12458,13 @@ func (x *ClusterUpdate) GetDesiredNetworkTierConfig() *NetworkTierConfig {
 	return nil
 }
 
+func (x *ClusterUpdate) GetDesiredSecretSyncConfig() *SecretSyncConfig {
+	if x != nil {
+		return x.DesiredSecretSyncConfig
+	}
+	return nil
+}
+
 func (x *ClusterUpdate) GetDesiredPrivilegedAdmissionConfig() *PrivilegedAdmissionConfig {
 	if x != nil {
 		return x.DesiredPrivilegedAdmissionConfig
@@ -11852,9 +12472,37 @@ func (x *ClusterUpdate) GetDesiredPrivilegedAdmissionConfig() *PrivilegedAdmissi
 	return nil
 }
 
+func (x *ClusterUpdate) GetDesiredControlPlaneEgress() *ControlPlaneEgress {
+	if x != nil {
+		return x.DesiredControlPlaneEgress
+	}
+	return nil
+}
+
 func (x *ClusterUpdate) GetDesiredManagedOpentelemetryConfig() *ManagedOpenTelemetryConfig {
 	if x != nil {
 		return x.DesiredManagedOpentelemetryConfig
+	}
+	return nil
+}
+
+func (x *ClusterUpdate) GetDesiredAutopilotClusterPolicyConfig() *ClusterPolicyConfig {
+	if x != nil {
+		return x.DesiredAutopilotClusterPolicyConfig
+	}
+	return nil
+}
+
+func (x *ClusterUpdate) GetDesiredManagedMachineLearningDiagnosticsConfig() *ManagedMachineLearningDiagnosticsConfig {
+	if x != nil {
+		return x.DesiredManagedMachineLearningDiagnosticsConfig
+	}
+	return nil
+}
+
+func (x *ClusterUpdate) GetDesiredNodeCreationConfig() *NodeCreationConfig {
+	if x != nil {
+		return x.DesiredNodeCreationConfig
 	}
 	return nil
 }
@@ -11873,7 +12521,7 @@ type AdditionalPodRangesConfig struct {
 
 func (x *AdditionalPodRangesConfig) Reset() {
 	*x = AdditionalPodRangesConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[64]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[69]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11885,7 +12533,7 @@ func (x *AdditionalPodRangesConfig) String() string {
 func (*AdditionalPodRangesConfig) ProtoMessage() {}
 
 func (x *AdditionalPodRangesConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[64]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[69]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11898,7 +12546,7 @@ func (x *AdditionalPodRangesConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AdditionalPodRangesConfig.ProtoReflect.Descriptor instead.
 func (*AdditionalPodRangesConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{64}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{69}
 }
 
 func (x *AdditionalPodRangesConfig) GetPodRangeNames() []string {
@@ -11937,7 +12585,7 @@ type AdditionalIPRangesConfig struct {
 
 func (x *AdditionalIPRangesConfig) Reset() {
 	*x = AdditionalIPRangesConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[65]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[70]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11949,7 +12597,7 @@ func (x *AdditionalIPRangesConfig) String() string {
 func (*AdditionalIPRangesConfig) ProtoMessage() {}
 
 func (x *AdditionalIPRangesConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[65]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[70]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11962,7 +12610,7 @@ func (x *AdditionalIPRangesConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AdditionalIPRangesConfig.ProtoReflect.Descriptor instead.
 func (*AdditionalIPRangesConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{65}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{70}
 }
 
 func (x *AdditionalIPRangesConfig) GetSubnetwork() string {
@@ -11999,7 +12647,7 @@ type DesiredAdditionalIPRangesConfig struct {
 
 func (x *DesiredAdditionalIPRangesConfig) Reset() {
 	*x = DesiredAdditionalIPRangesConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[66]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[71]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12011,7 +12659,7 @@ func (x *DesiredAdditionalIPRangesConfig) String() string {
 func (*DesiredAdditionalIPRangesConfig) ProtoMessage() {}
 
 func (x *DesiredAdditionalIPRangesConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[66]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[71]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12024,7 +12672,7 @@ func (x *DesiredAdditionalIPRangesConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DesiredAdditionalIPRangesConfig.ProtoReflect.Descriptor instead.
 func (*DesiredAdditionalIPRangesConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{66}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{71}
 }
 
 func (x *DesiredAdditionalIPRangesConfig) GetAdditionalIpRangesConfigs() []*AdditionalIPRangesConfig {
@@ -12045,7 +12693,7 @@ type AutoIpamConfig struct {
 
 func (x *AutoIpamConfig) Reset() {
 	*x = AutoIpamConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[67]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[72]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12057,7 +12705,7 @@ func (x *AutoIpamConfig) String() string {
 func (*AutoIpamConfig) ProtoMessage() {}
 
 func (x *AutoIpamConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[67]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[72]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12070,7 +12718,7 @@ func (x *AutoIpamConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AutoIpamConfig.ProtoReflect.Descriptor instead.
 func (*AutoIpamConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{67}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{72}
 }
 
 func (x *AutoIpamConfig) GetEnabled() bool {
@@ -12093,7 +12741,7 @@ type RangeInfo struct {
 
 func (x *RangeInfo) Reset() {
 	*x = RangeInfo{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[68]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[73]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12105,7 +12753,7 @@ func (x *RangeInfo) String() string {
 func (*RangeInfo) ProtoMessage() {}
 
 func (x *RangeInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[68]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[73]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12118,7 +12766,7 @@ func (x *RangeInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RangeInfo.ProtoReflect.Descriptor instead.
 func (*RangeInfo) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{68}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{73}
 }
 
 func (x *RangeInfo) GetRangeName() string {
@@ -12151,7 +12799,7 @@ type DesiredEnterpriseConfig struct {
 
 func (x *DesiredEnterpriseConfig) Reset() {
 	*x = DesiredEnterpriseConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[69]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[74]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12163,7 +12811,7 @@ func (x *DesiredEnterpriseConfig) String() string {
 func (*DesiredEnterpriseConfig) ProtoMessage() {}
 
 func (x *DesiredEnterpriseConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[69]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[74]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12176,7 +12824,7 @@ func (x *DesiredEnterpriseConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DesiredEnterpriseConfig.ProtoReflect.Descriptor instead.
 func (*DesiredEnterpriseConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{69}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{74}
 }
 
 func (x *DesiredEnterpriseConfig) GetDesiredTier() EnterpriseConfig_ClusterTier {
@@ -12261,7 +12909,7 @@ type Operation struct {
 
 func (x *Operation) Reset() {
 	*x = Operation{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[70]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[75]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12273,7 +12921,7 @@ func (x *Operation) String() string {
 func (*Operation) ProtoMessage() {}
 
 func (x *Operation) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[70]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[75]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12286,7 +12934,7 @@ func (x *Operation) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Operation.ProtoReflect.Descriptor instead.
 func (*Operation) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{70}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{75}
 }
 
 func (x *Operation) GetName() string {
@@ -12425,7 +13073,7 @@ type OperationProgress struct {
 
 func (x *OperationProgress) Reset() {
 	*x = OperationProgress{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[71]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[76]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12437,7 +13085,7 @@ func (x *OperationProgress) String() string {
 func (*OperationProgress) ProtoMessage() {}
 
 func (x *OperationProgress) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[71]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[76]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12450,7 +13098,7 @@ func (x *OperationProgress) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OperationProgress.ProtoReflect.Descriptor instead.
 func (*OperationProgress) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{71}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{76}
 }
 
 func (x *OperationProgress) GetName() string {
@@ -12509,7 +13157,7 @@ type CreateClusterRequest struct {
 
 func (x *CreateClusterRequest) Reset() {
 	*x = CreateClusterRequest{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[72]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[77]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12521,7 +13169,7 @@ func (x *CreateClusterRequest) String() string {
 func (*CreateClusterRequest) ProtoMessage() {}
 
 func (x *CreateClusterRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[72]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[77]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12534,7 +13182,7 @@ func (x *CreateClusterRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateClusterRequest.ProtoReflect.Descriptor instead.
 func (*CreateClusterRequest) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{72}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{77}
 }
 
 // Deprecated: Marked as deprecated in google/container/v1/cluster_service.proto.
@@ -12597,7 +13245,7 @@ type GetClusterRequest struct {
 
 func (x *GetClusterRequest) Reset() {
 	*x = GetClusterRequest{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[73]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[78]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12609,7 +13257,7 @@ func (x *GetClusterRequest) String() string {
 func (*GetClusterRequest) ProtoMessage() {}
 
 func (x *GetClusterRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[73]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[78]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12622,7 +13270,7 @@ func (x *GetClusterRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetClusterRequest.ProtoReflect.Descriptor instead.
 func (*GetClusterRequest) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{73}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{78}
 }
 
 // Deprecated: Marked as deprecated in google/container/v1/cluster_service.proto.
@@ -12688,7 +13336,7 @@ type UpdateClusterRequest struct {
 
 func (x *UpdateClusterRequest) Reset() {
 	*x = UpdateClusterRequest{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[74]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[79]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12700,7 +13348,7 @@ func (x *UpdateClusterRequest) String() string {
 func (*UpdateClusterRequest) ProtoMessage() {}
 
 func (x *UpdateClusterRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[74]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[79]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12713,7 +13361,7 @@ func (x *UpdateClusterRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateClusterRequest.ProtoReflect.Descriptor instead.
 func (*UpdateClusterRequest) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{74}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{79}
 }
 
 // Deprecated: Marked as deprecated in google/container/v1/cluster_service.proto.
@@ -12904,13 +13552,15 @@ type UpdateNodePoolRequest struct {
 	// scale down underutilized nodes. If not set, nodes are scaled down by
 	// default behavior, i.e. according to the chosen autoscaling profile.
 	ConsolidationDelay *durationpb.Duration `protobuf:"bytes,49,opt,name=consolidation_delay,json=consolidationDelay,proto3" json:"consolidation_delay,omitempty"`
-	unknownFields      protoimpl.UnknownFields
-	sizeCache          protoimpl.SizeCache
+	// The taint configuration for the node pool.
+	TaintConfig   *TaintConfig `protobuf:"bytes,51,opt,name=taint_config,json=taintConfig,proto3" json:"taint_config,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *UpdateNodePoolRequest) Reset() {
 	*x = UpdateNodePoolRequest{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[75]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[80]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12922,7 +13572,7 @@ func (x *UpdateNodePoolRequest) String() string {
 func (*UpdateNodePoolRequest) ProtoMessage() {}
 
 func (x *UpdateNodePoolRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[75]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[80]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12935,7 +13585,7 @@ func (x *UpdateNodePoolRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateNodePoolRequest.ProtoReflect.Descriptor instead.
 func (*UpdateNodePoolRequest) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{75}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{80}
 }
 
 // Deprecated: Marked as deprecated in google/container/v1/cluster_service.proto.
@@ -13201,6 +13851,13 @@ func (x *UpdateNodePoolRequest) GetConsolidationDelay() *durationpb.Duration {
 	return nil
 }
 
+func (x *UpdateNodePoolRequest) GetTaintConfig() *TaintConfig {
+	if x != nil {
+		return x.TaintConfig
+	}
+	return nil
+}
+
 // SetNodePoolAutoscalingRequest sets the autoscaler settings of a node pool.
 type SetNodePoolAutoscalingRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -13239,7 +13896,7 @@ type SetNodePoolAutoscalingRequest struct {
 
 func (x *SetNodePoolAutoscalingRequest) Reset() {
 	*x = SetNodePoolAutoscalingRequest{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[76]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[81]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13251,7 +13908,7 @@ func (x *SetNodePoolAutoscalingRequest) String() string {
 func (*SetNodePoolAutoscalingRequest) ProtoMessage() {}
 
 func (x *SetNodePoolAutoscalingRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[76]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[81]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13264,7 +13921,7 @@ func (x *SetNodePoolAutoscalingRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetNodePoolAutoscalingRequest.ProtoReflect.Descriptor instead.
 func (*SetNodePoolAutoscalingRequest) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{76}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{81}
 }
 
 // Deprecated: Marked as deprecated in google/container/v1/cluster_service.proto.
@@ -13355,7 +14012,7 @@ type SetLoggingServiceRequest struct {
 
 func (x *SetLoggingServiceRequest) Reset() {
 	*x = SetLoggingServiceRequest{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[77]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[82]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13367,7 +14024,7 @@ func (x *SetLoggingServiceRequest) String() string {
 func (*SetLoggingServiceRequest) ProtoMessage() {}
 
 func (x *SetLoggingServiceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[77]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[82]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13380,7 +14037,7 @@ func (x *SetLoggingServiceRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetLoggingServiceRequest.ProtoReflect.Descriptor instead.
 func (*SetLoggingServiceRequest) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{77}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{82}
 }
 
 // Deprecated: Marked as deprecated in google/container/v1/cluster_service.proto.
@@ -13463,7 +14120,7 @@ type SetMonitoringServiceRequest struct {
 
 func (x *SetMonitoringServiceRequest) Reset() {
 	*x = SetMonitoringServiceRequest{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[78]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[83]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13475,7 +14132,7 @@ func (x *SetMonitoringServiceRequest) String() string {
 func (*SetMonitoringServiceRequest) ProtoMessage() {}
 
 func (x *SetMonitoringServiceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[78]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[83]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13488,7 +14145,7 @@ func (x *SetMonitoringServiceRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetMonitoringServiceRequest.ProtoReflect.Descriptor instead.
 func (*SetMonitoringServiceRequest) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{78}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{83}
 }
 
 // Deprecated: Marked as deprecated in google/container/v1/cluster_service.proto.
@@ -13562,7 +14219,7 @@ type SetAddonsConfigRequest struct {
 
 func (x *SetAddonsConfigRequest) Reset() {
 	*x = SetAddonsConfigRequest{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[79]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[84]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13574,7 +14231,7 @@ func (x *SetAddonsConfigRequest) String() string {
 func (*SetAddonsConfigRequest) ProtoMessage() {}
 
 func (x *SetAddonsConfigRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[79]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[84]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13587,7 +14244,7 @@ func (x *SetAddonsConfigRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetAddonsConfigRequest.ProtoReflect.Descriptor instead.
 func (*SetAddonsConfigRequest) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{79}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{84}
 }
 
 // Deprecated: Marked as deprecated in google/container/v1/cluster_service.proto.
@@ -13666,7 +14323,7 @@ type SetLocationsRequest struct {
 
 func (x *SetLocationsRequest) Reset() {
 	*x = SetLocationsRequest{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[80]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[85]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13678,7 +14335,7 @@ func (x *SetLocationsRequest) String() string {
 func (*SetLocationsRequest) ProtoMessage() {}
 
 func (x *SetLocationsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[80]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[85]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13691,7 +14348,7 @@ func (x *SetLocationsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetLocationsRequest.ProtoReflect.Descriptor instead.
 func (*SetLocationsRequest) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{80}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{85}
 }
 
 // Deprecated: Marked as deprecated in google/container/v1/cluster_service.proto.
@@ -13773,7 +14430,7 @@ type UpdateMasterRequest struct {
 
 func (x *UpdateMasterRequest) Reset() {
 	*x = UpdateMasterRequest{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[81]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[86]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13785,7 +14442,7 @@ func (x *UpdateMasterRequest) String() string {
 func (*UpdateMasterRequest) ProtoMessage() {}
 
 func (x *UpdateMasterRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[81]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[86]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13798,7 +14455,7 @@ func (x *UpdateMasterRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateMasterRequest.ProtoReflect.Descriptor instead.
 func (*UpdateMasterRequest) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{81}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{86}
 }
 
 // Deprecated: Marked as deprecated in google/container/v1/cluster_service.proto.
@@ -13873,7 +14530,7 @@ type SetMasterAuthRequest struct {
 
 func (x *SetMasterAuthRequest) Reset() {
 	*x = SetMasterAuthRequest{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[82]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[87]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13885,7 +14542,7 @@ func (x *SetMasterAuthRequest) String() string {
 func (*SetMasterAuthRequest) ProtoMessage() {}
 
 func (x *SetMasterAuthRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[82]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[87]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13898,7 +14555,7 @@ func (x *SetMasterAuthRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetMasterAuthRequest.ProtoReflect.Descriptor instead.
 func (*SetMasterAuthRequest) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{82}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{87}
 }
 
 // Deprecated: Marked as deprecated in google/container/v1/cluster_service.proto.
@@ -13976,7 +14633,7 @@ type DeleteClusterRequest struct {
 
 func (x *DeleteClusterRequest) Reset() {
 	*x = DeleteClusterRequest{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[83]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[88]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13988,7 +14645,7 @@ func (x *DeleteClusterRequest) String() string {
 func (*DeleteClusterRequest) ProtoMessage() {}
 
 func (x *DeleteClusterRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[83]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[88]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14001,7 +14658,7 @@ func (x *DeleteClusterRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteClusterRequest.ProtoReflect.Descriptor instead.
 func (*DeleteClusterRequest) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{83}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{88}
 }
 
 // Deprecated: Marked as deprecated in google/container/v1/cluster_service.proto.
@@ -14061,7 +14718,7 @@ type ListClustersRequest struct {
 
 func (x *ListClustersRequest) Reset() {
 	*x = ListClustersRequest{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[84]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[89]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14073,7 +14730,7 @@ func (x *ListClustersRequest) String() string {
 func (*ListClustersRequest) ProtoMessage() {}
 
 func (x *ListClustersRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[84]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[89]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14086,7 +14743,7 @@ func (x *ListClustersRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListClustersRequest.ProtoReflect.Descriptor instead.
 func (*ListClustersRequest) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{84}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{89}
 }
 
 // Deprecated: Marked as deprecated in google/container/v1/cluster_service.proto.
@@ -14127,7 +14784,7 @@ type ListClustersResponse struct {
 
 func (x *ListClustersResponse) Reset() {
 	*x = ListClustersResponse{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[85]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[90]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14139,7 +14796,7 @@ func (x *ListClustersResponse) String() string {
 func (*ListClustersResponse) ProtoMessage() {}
 
 func (x *ListClustersResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[85]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[90]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14152,7 +14809,7 @@ func (x *ListClustersResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListClustersResponse.ProtoReflect.Descriptor instead.
 func (*ListClustersResponse) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{85}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{90}
 }
 
 func (x *ListClustersResponse) GetClusters() []*Cluster {
@@ -14199,7 +14856,7 @@ type GetOperationRequest struct {
 
 func (x *GetOperationRequest) Reset() {
 	*x = GetOperationRequest{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[86]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[91]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14211,7 +14868,7 @@ func (x *GetOperationRequest) String() string {
 func (*GetOperationRequest) ProtoMessage() {}
 
 func (x *GetOperationRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[86]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[91]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14224,7 +14881,7 @@ func (x *GetOperationRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetOperationRequest.ProtoReflect.Descriptor instead.
 func (*GetOperationRequest) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{86}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{91}
 }
 
 // Deprecated: Marked as deprecated in google/container/v1/cluster_service.proto.
@@ -14284,7 +14941,7 @@ type ListOperationsRequest struct {
 
 func (x *ListOperationsRequest) Reset() {
 	*x = ListOperationsRequest{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[87]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[92]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14296,7 +14953,7 @@ func (x *ListOperationsRequest) String() string {
 func (*ListOperationsRequest) ProtoMessage() {}
 
 func (x *ListOperationsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[87]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[92]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14309,7 +14966,7 @@ func (x *ListOperationsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListOperationsRequest.ProtoReflect.Descriptor instead.
 func (*ListOperationsRequest) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{87}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{92}
 }
 
 // Deprecated: Marked as deprecated in google/container/v1/cluster_service.proto.
@@ -14365,7 +15022,7 @@ type CancelOperationRequest struct {
 
 func (x *CancelOperationRequest) Reset() {
 	*x = CancelOperationRequest{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[88]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[93]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14377,7 +15034,7 @@ func (x *CancelOperationRequest) String() string {
 func (*CancelOperationRequest) ProtoMessage() {}
 
 func (x *CancelOperationRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[88]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[93]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14390,7 +15047,7 @@ func (x *CancelOperationRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CancelOperationRequest.ProtoReflect.Descriptor instead.
 func (*CancelOperationRequest) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{88}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{93}
 }
 
 // Deprecated: Marked as deprecated in google/container/v1/cluster_service.proto.
@@ -14438,7 +15095,7 @@ type ListOperationsResponse struct {
 
 func (x *ListOperationsResponse) Reset() {
 	*x = ListOperationsResponse{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[89]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[94]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14450,7 +15107,7 @@ func (x *ListOperationsResponse) String() string {
 func (*ListOperationsResponse) ProtoMessage() {}
 
 func (x *ListOperationsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[89]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[94]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14463,7 +15120,7 @@ func (x *ListOperationsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListOperationsResponse.ProtoReflect.Descriptor instead.
 func (*ListOperationsResponse) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{89}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{94}
 }
 
 func (x *ListOperationsResponse) GetOperations() []*Operation {
@@ -14505,7 +15162,7 @@ type GetServerConfigRequest struct {
 
 func (x *GetServerConfigRequest) Reset() {
 	*x = GetServerConfigRequest{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[90]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[95]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14517,7 +15174,7 @@ func (x *GetServerConfigRequest) String() string {
 func (*GetServerConfigRequest) ProtoMessage() {}
 
 func (x *GetServerConfigRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[90]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[95]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14530,7 +15187,7 @@ func (x *GetServerConfigRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetServerConfigRequest.ProtoReflect.Descriptor instead.
 func (*GetServerConfigRequest) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{90}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{95}
 }
 
 // Deprecated: Marked as deprecated in google/container/v1/cluster_service.proto.
@@ -14577,7 +15234,7 @@ type ServerConfig struct {
 
 func (x *ServerConfig) Reset() {
 	*x = ServerConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[91]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[96]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14589,7 +15246,7 @@ func (x *ServerConfig) String() string {
 func (*ServerConfig) ProtoMessage() {}
 
 func (x *ServerConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[91]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[96]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14602,7 +15259,7 @@ func (x *ServerConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ServerConfig.ProtoReflect.Descriptor instead.
 func (*ServerConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{91}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{96}
 }
 
 func (x *ServerConfig) GetDefaultClusterVersion() string {
@@ -14680,7 +15337,7 @@ type CreateNodePoolRequest struct {
 
 func (x *CreateNodePoolRequest) Reset() {
 	*x = CreateNodePoolRequest{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[92]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[97]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14692,7 +15349,7 @@ func (x *CreateNodePoolRequest) String() string {
 func (*CreateNodePoolRequest) ProtoMessage() {}
 
 func (x *CreateNodePoolRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[92]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[97]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14705,7 +15362,7 @@ func (x *CreateNodePoolRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateNodePoolRequest.ProtoReflect.Descriptor instead.
 func (*CreateNodePoolRequest) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{92}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{97}
 }
 
 // Deprecated: Marked as deprecated in google/container/v1/cluster_service.proto.
@@ -14782,7 +15439,7 @@ type DeleteNodePoolRequest struct {
 
 func (x *DeleteNodePoolRequest) Reset() {
 	*x = DeleteNodePoolRequest{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[93]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[98]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14794,7 +15451,7 @@ func (x *DeleteNodePoolRequest) String() string {
 func (*DeleteNodePoolRequest) ProtoMessage() {}
 
 func (x *DeleteNodePoolRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[93]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[98]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14807,7 +15464,7 @@ func (x *DeleteNodePoolRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteNodePoolRequest.ProtoReflect.Descriptor instead.
 func (*DeleteNodePoolRequest) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{93}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{98}
 }
 
 // Deprecated: Marked as deprecated in google/container/v1/cluster_service.proto.
@@ -14879,7 +15536,7 @@ type ListNodePoolsRequest struct {
 
 func (x *ListNodePoolsRequest) Reset() {
 	*x = ListNodePoolsRequest{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[94]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[99]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14891,7 +15548,7 @@ func (x *ListNodePoolsRequest) String() string {
 func (*ListNodePoolsRequest) ProtoMessage() {}
 
 func (x *ListNodePoolsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[94]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[99]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14904,7 +15561,7 @@ func (x *ListNodePoolsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListNodePoolsRequest.ProtoReflect.Descriptor instead.
 func (*ListNodePoolsRequest) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{94}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{99}
 }
 
 // Deprecated: Marked as deprecated in google/container/v1/cluster_service.proto.
@@ -14974,7 +15631,7 @@ type GetNodePoolRequest struct {
 
 func (x *GetNodePoolRequest) Reset() {
 	*x = GetNodePoolRequest{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[95]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[100]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14986,7 +15643,7 @@ func (x *GetNodePoolRequest) String() string {
 func (*GetNodePoolRequest) ProtoMessage() {}
 
 func (x *GetNodePoolRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[95]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[100]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14999,7 +15656,7 @@ func (x *GetNodePoolRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetNodePoolRequest.ProtoReflect.Descriptor instead.
 func (*GetNodePoolRequest) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{95}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{100}
 }
 
 // Deprecated: Marked as deprecated in google/container/v1/cluster_service.proto.
@@ -15060,7 +15717,7 @@ type BlueGreenSettings struct {
 
 func (x *BlueGreenSettings) Reset() {
 	*x = BlueGreenSettings{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[96]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[101]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -15072,7 +15729,7 @@ func (x *BlueGreenSettings) String() string {
 func (*BlueGreenSettings) ProtoMessage() {}
 
 func (x *BlueGreenSettings) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[96]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[101]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -15085,7 +15742,7 @@ func (x *BlueGreenSettings) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BlueGreenSettings.ProtoReflect.Descriptor instead.
 func (*BlueGreenSettings) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{96}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{101}
 }
 
 func (x *BlueGreenSettings) GetRolloutPolicy() isBlueGreenSettings_RolloutPolicy {
@@ -15219,13 +15876,15 @@ type NodePool struct {
 	BestEffortProvisioning *BestEffortProvisioning `protobuf:"bytes,113,opt,name=best_effort_provisioning,json=bestEffortProvisioning,proto3" json:"best_effort_provisioning,omitempty"`
 	// Specifies the node drain configuration for this node pool.
 	NodeDrainConfig *NodePool_NodeDrainConfig `protobuf:"bytes,116,opt,name=node_drain_config,json=nodeDrainConfig,proto3" json:"node_drain_config,omitempty"`
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
+	// Optional. Specifies the maintenance policy for the node pool.
+	MaintenancePolicy *NodePool_NodePoolMaintenancePolicy `protobuf:"bytes,118,opt,name=maintenance_policy,json=maintenancePolicy,proto3" json:"maintenance_policy,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
 }
 
 func (x *NodePool) Reset() {
 	*x = NodePool{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[97]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[102]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -15237,7 +15896,7 @@ func (x *NodePool) String() string {
 func (*NodePool) ProtoMessage() {}
 
 func (x *NodePool) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[97]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[102]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -15250,7 +15909,7 @@ func (x *NodePool) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NodePool.ProtoReflect.Descriptor instead.
 func (*NodePool) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{97}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{102}
 }
 
 func (x *NodePool) GetName() string {
@@ -15408,6 +16067,13 @@ func (x *NodePool) GetNodeDrainConfig() *NodePool_NodeDrainConfig {
 	return nil
 }
 
+func (x *NodePool) GetMaintenancePolicy() *NodePool_NodePoolMaintenancePolicy {
+	if x != nil {
+		return x.MaintenancePolicy
+	}
+	return nil
+}
+
 // NodeManagement defines the set of node management services turned on for the
 // node pool.
 type NodeManagement struct {
@@ -15429,7 +16095,7 @@ type NodeManagement struct {
 
 func (x *NodeManagement) Reset() {
 	*x = NodeManagement{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[98]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[103]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -15441,7 +16107,7 @@ func (x *NodeManagement) String() string {
 func (*NodeManagement) ProtoMessage() {}
 
 func (x *NodeManagement) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[98]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[103]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -15454,7 +16120,7 @@ func (x *NodeManagement) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NodeManagement.ProtoReflect.Descriptor instead.
 func (*NodeManagement) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{98}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{103}
 }
 
 func (x *NodeManagement) GetAutoUpgrade() bool {
@@ -15495,7 +16161,7 @@ type BestEffortProvisioning struct {
 
 func (x *BestEffortProvisioning) Reset() {
 	*x = BestEffortProvisioning{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[99]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[104]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -15507,7 +16173,7 @@ func (x *BestEffortProvisioning) String() string {
 func (*BestEffortProvisioning) ProtoMessage() {}
 
 func (x *BestEffortProvisioning) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[99]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[104]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -15520,7 +16186,7 @@ func (x *BestEffortProvisioning) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BestEffortProvisioning.ProtoReflect.Descriptor instead.
 func (*BestEffortProvisioning) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{99}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{104}
 }
 
 func (x *BestEffortProvisioning) GetEnabled() bool {
@@ -15554,7 +16220,7 @@ type AutoUpgradeOptions struct {
 
 func (x *AutoUpgradeOptions) Reset() {
 	*x = AutoUpgradeOptions{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[100]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[105]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -15566,7 +16232,7 @@ func (x *AutoUpgradeOptions) String() string {
 func (*AutoUpgradeOptions) ProtoMessage() {}
 
 func (x *AutoUpgradeOptions) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[100]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[105]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -15579,7 +16245,7 @@ func (x *AutoUpgradeOptions) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AutoUpgradeOptions.ProtoReflect.Descriptor instead.
 func (*AutoUpgradeOptions) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{100}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{105}
 }
 
 func (x *AutoUpgradeOptions) GetAutoUpgradeStartTime() string {
@@ -15607,13 +16273,15 @@ type MaintenancePolicy struct {
 	// Make a `get()` request to the cluster to get the current
 	// resource version and include it with requests to set the policy.
 	ResourceVersion string `protobuf:"bytes,3,opt,name=resource_version,json=resourceVersion,proto3" json:"resource_version,omitempty"`
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
+	// Optional. The upgrade disruption budget for the cluster control plane.
+	DisruptionBudget *DisruptionBudget `protobuf:"bytes,4,opt,name=disruption_budget,json=disruptionBudget,proto3" json:"disruption_budget,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
 }
 
 func (x *MaintenancePolicy) Reset() {
 	*x = MaintenancePolicy{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[101]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[106]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -15625,7 +16293,7 @@ func (x *MaintenancePolicy) String() string {
 func (*MaintenancePolicy) ProtoMessage() {}
 
 func (x *MaintenancePolicy) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[101]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[106]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -15638,7 +16306,7 @@ func (x *MaintenancePolicy) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MaintenancePolicy.ProtoReflect.Descriptor instead.
 func (*MaintenancePolicy) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{101}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{106}
 }
 
 func (x *MaintenancePolicy) GetWindow() *MaintenanceWindow {
@@ -15655,6 +16323,90 @@ func (x *MaintenancePolicy) GetResourceVersion() string {
 	return ""
 }
 
+func (x *MaintenancePolicy) GetDisruptionBudget() *DisruptionBudget {
+	if x != nil {
+		return x.DisruptionBudget
+	}
+	return nil
+}
+
+// DisruptionBudget defines the upgrade disruption budget for the cluster
+// control plane.
+type DisruptionBudget struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. The minimum duration between two minor version upgrades of the
+	// control plane.
+	MinorVersionDisruptionInterval *durationpb.Duration `protobuf:"bytes,1,opt,name=minor_version_disruption_interval,json=minorVersionDisruptionInterval,proto3" json:"minor_version_disruption_interval,omitempty"`
+	// Optional. The minimum duration between two patch version upgrades of the
+	// control plane.
+	PatchVersionDisruptionInterval *durationpb.Duration `protobuf:"bytes,2,opt,name=patch_version_disruption_interval,json=patchVersionDisruptionInterval,proto3" json:"patch_version_disruption_interval,omitempty"`
+	// Output only. The last time a minor version upgrade was performed on the
+	// control plane.
+	LastMinorVersionDisruptionTime *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=last_minor_version_disruption_time,json=lastMinorVersionDisruptionTime,proto3" json:"last_minor_version_disruption_time,omitempty"`
+	// Output only. The last time a disruption was performed on the control plane.
+	LastDisruptionTime *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=last_disruption_time,json=lastDisruptionTime,proto3" json:"last_disruption_time,omitempty"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
+}
+
+func (x *DisruptionBudget) Reset() {
+	*x = DisruptionBudget{}
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[107]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DisruptionBudget) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DisruptionBudget) ProtoMessage() {}
+
+func (x *DisruptionBudget) ProtoReflect() protoreflect.Message {
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[107]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DisruptionBudget.ProtoReflect.Descriptor instead.
+func (*DisruptionBudget) Descriptor() ([]byte, []int) {
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{107}
+}
+
+func (x *DisruptionBudget) GetMinorVersionDisruptionInterval() *durationpb.Duration {
+	if x != nil {
+		return x.MinorVersionDisruptionInterval
+	}
+	return nil
+}
+
+func (x *DisruptionBudget) GetPatchVersionDisruptionInterval() *durationpb.Duration {
+	if x != nil {
+		return x.PatchVersionDisruptionInterval
+	}
+	return nil
+}
+
+func (x *DisruptionBudget) GetLastMinorVersionDisruptionTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.LastMinorVersionDisruptionTime
+	}
+	return nil
+}
+
+func (x *DisruptionBudget) GetLastDisruptionTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.LastDisruptionTime
+	}
+	return nil
+}
+
 // MaintenanceWindow defines the maintenance window to be used for the cluster.
 type MaintenanceWindow struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -15662,6 +16414,7 @@ type MaintenanceWindow struct {
 	//
 	//	*MaintenanceWindow_DailyMaintenanceWindow
 	//	*MaintenanceWindow_RecurringWindow
+	//	*MaintenanceWindow_RecurringMaintenanceWindow
 	Policy isMaintenanceWindow_Policy `protobuf_oneof:"policy"`
 	// Exceptions to maintenance window. Non-emergency maintenance should not
 	// occur in these windows.
@@ -15672,7 +16425,7 @@ type MaintenanceWindow struct {
 
 func (x *MaintenanceWindow) Reset() {
 	*x = MaintenanceWindow{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[102]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[108]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -15684,7 +16437,7 @@ func (x *MaintenanceWindow) String() string {
 func (*MaintenanceWindow) ProtoMessage() {}
 
 func (x *MaintenanceWindow) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[102]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[108]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -15697,7 +16450,7 @@ func (x *MaintenanceWindow) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MaintenanceWindow.ProtoReflect.Descriptor instead.
 func (*MaintenanceWindow) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{102}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{108}
 }
 
 func (x *MaintenanceWindow) GetPolicy() isMaintenanceWindow_Policy {
@@ -15720,6 +16473,15 @@ func (x *MaintenanceWindow) GetRecurringWindow() *RecurringTimeWindow {
 	if x != nil {
 		if x, ok := x.Policy.(*MaintenanceWindow_RecurringWindow); ok {
 			return x.RecurringWindow
+		}
+	}
+	return nil
+}
+
+func (x *MaintenanceWindow) GetRecurringMaintenanceWindow() *RecurringMaintenanceWindow {
+	if x != nil {
+		if x, ok := x.Policy.(*MaintenanceWindow_RecurringMaintenanceWindow); ok {
+			return x.RecurringMaintenanceWindow
 		}
 	}
 	return nil
@@ -15748,9 +16510,19 @@ type MaintenanceWindow_RecurringWindow struct {
 	RecurringWindow *RecurringTimeWindow `protobuf:"bytes,3,opt,name=recurring_window,json=recurringWindow,proto3,oneof"`
 }
 
+type MaintenanceWindow_RecurringMaintenanceWindow struct {
+	// RecurringMaintenanceWindow specifies some number of recurring time
+	// periods for maintenance to occur. The time windows may be overlapping.
+	// If no maintenance windows are set, maintenance can occur at any time.
+	// Alternative to RecurringWindow, with renamed fields.
+	RecurringMaintenanceWindow *RecurringMaintenanceWindow `protobuf:"bytes,5,opt,name=recurring_maintenance_window,json=recurringMaintenanceWindow,proto3,oneof"`
+}
+
 func (*MaintenanceWindow_DailyMaintenanceWindow) isMaintenanceWindow_Policy() {}
 
 func (*MaintenanceWindow_RecurringWindow) isMaintenanceWindow_Policy() {}
+
+func (*MaintenanceWindow_RecurringMaintenanceWindow) isMaintenanceWindow_Policy() {}
 
 // Represents an arbitrary window of time.
 type TimeWindow struct {
@@ -15770,7 +16542,7 @@ type TimeWindow struct {
 
 func (x *TimeWindow) Reset() {
 	*x = TimeWindow{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[103]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[109]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -15782,7 +16554,7 @@ func (x *TimeWindow) String() string {
 func (*TimeWindow) ProtoMessage() {}
 
 func (x *TimeWindow) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[103]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[109]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -15795,7 +16567,7 @@ func (x *TimeWindow) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TimeWindow.ProtoReflect.Descriptor instead.
 func (*TimeWindow) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{103}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{109}
 }
 
 func (x *TimeWindow) GetOptions() isTimeWindow_Options {
@@ -15854,7 +16626,7 @@ type MaintenanceExclusionOptions struct {
 
 func (x *MaintenanceExclusionOptions) Reset() {
 	*x = MaintenanceExclusionOptions{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[104]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[110]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -15866,7 +16638,7 @@ func (x *MaintenanceExclusionOptions) String() string {
 func (*MaintenanceExclusionOptions) ProtoMessage() {}
 
 func (x *MaintenanceExclusionOptions) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[104]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[110]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -15879,7 +16651,7 @@ func (x *MaintenanceExclusionOptions) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MaintenanceExclusionOptions.ProtoReflect.Descriptor instead.
 func (*MaintenanceExclusionOptions) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{104}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{110}
 }
 
 func (x *MaintenanceExclusionOptions) GetScope() MaintenanceExclusionOptions_Scope {
@@ -15940,7 +16712,7 @@ type RecurringTimeWindow struct {
 
 func (x *RecurringTimeWindow) Reset() {
 	*x = RecurringTimeWindow{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[105]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[111]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -15952,7 +16724,7 @@ func (x *RecurringTimeWindow) String() string {
 func (*RecurringTimeWindow) ProtoMessage() {}
 
 func (x *RecurringTimeWindow) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[105]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[111]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -15965,7 +16737,7 @@ func (x *RecurringTimeWindow) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RecurringTimeWindow.ProtoReflect.Descriptor instead.
 func (*RecurringTimeWindow) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{105}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{111}
 }
 
 func (x *RecurringTimeWindow) GetWindow() *TimeWindow {
@@ -15976,6 +16748,96 @@ func (x *RecurringTimeWindow) GetWindow() *TimeWindow {
 }
 
 func (x *RecurringTimeWindow) GetRecurrence() string {
+	if x != nil {
+		return x.Recurrence
+	}
+	return ""
+}
+
+// Represents an arbitrary window of time that recurs.
+// Will replace RecurringTimeWindow.
+type RecurringMaintenanceWindow struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. Specifies the date before which will not be scheduled.
+	// Depending on the recurrence, this may be the date the first window appears.
+	// Days are measured in the UTC timezone. This setting must be used when
+	// INTERVAL>1 or FREQ=WEEKLY/MONTHLY and no BYDAY specified.
+	DelayUntil *date.Date `protobuf:"bytes,1,opt,name=delay_until,json=delayUntil,proto3,oneof" json:"delay_until,omitempty"`
+	// Required. Start time of the window on days that it is scheduled,
+	// assuming UTC timezone.
+	WindowStartTime *timeofday.TimeOfDay `protobuf:"bytes,2,opt,name=window_start_time,json=windowStartTime,proto3" json:"window_start_time,omitempty"`
+	// Required. Duration of the window.
+	WindowDuration *durationpb.Duration `protobuf:"bytes,3,opt,name=window_duration,json=windowDuration,proto3" json:"window_duration,omitempty"`
+	// Required. An RRULE (https://tools.ietf.org/html/rfc5545#section-3.8.5.3)
+	// for how this window recurs.
+	//
+	// For example, to have something repeat every weekday, you'd use:
+	// `FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR`
+	//
+	// To repeat some window daily (equivalent to the DailyMaintenanceWindow):
+	// `FREQ=DAILY`
+	//
+	// For the first weekend of every month:
+	// `FREQ=MONTHLY;BYSETPOS=1;BYDAY=SA,SU`
+	//
+	// The FREQ values of HOURLY, MINUTELY, and SECONDLY are not supported.
+	Recurrence    string `protobuf:"bytes,4,opt,name=recurrence,proto3" json:"recurrence,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RecurringMaintenanceWindow) Reset() {
+	*x = RecurringMaintenanceWindow{}
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[112]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RecurringMaintenanceWindow) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RecurringMaintenanceWindow) ProtoMessage() {}
+
+func (x *RecurringMaintenanceWindow) ProtoReflect() protoreflect.Message {
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[112]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RecurringMaintenanceWindow.ProtoReflect.Descriptor instead.
+func (*RecurringMaintenanceWindow) Descriptor() ([]byte, []int) {
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{112}
+}
+
+func (x *RecurringMaintenanceWindow) GetDelayUntil() *date.Date {
+	if x != nil {
+		return x.DelayUntil
+	}
+	return nil
+}
+
+func (x *RecurringMaintenanceWindow) GetWindowStartTime() *timeofday.TimeOfDay {
+	if x != nil {
+		return x.WindowStartTime
+	}
+	return nil
+}
+
+func (x *RecurringMaintenanceWindow) GetWindowDuration() *durationpb.Duration {
+	if x != nil {
+		return x.WindowDuration
+	}
+	return nil
+}
+
+func (x *RecurringMaintenanceWindow) GetRecurrence() string {
 	if x != nil {
 		return x.Recurrence
 	}
@@ -16000,7 +16862,7 @@ type DailyMaintenanceWindow struct {
 
 func (x *DailyMaintenanceWindow) Reset() {
 	*x = DailyMaintenanceWindow{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[106]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[113]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -16012,7 +16874,7 @@ func (x *DailyMaintenanceWindow) String() string {
 func (*DailyMaintenanceWindow) ProtoMessage() {}
 
 func (x *DailyMaintenanceWindow) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[106]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[113]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -16025,7 +16887,7 @@ func (x *DailyMaintenanceWindow) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DailyMaintenanceWindow.ProtoReflect.Descriptor instead.
 func (*DailyMaintenanceWindow) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{106}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{113}
 }
 
 func (x *DailyMaintenanceWindow) GetStartTime() string {
@@ -16081,7 +16943,7 @@ type SetNodePoolManagementRequest struct {
 
 func (x *SetNodePoolManagementRequest) Reset() {
 	*x = SetNodePoolManagementRequest{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[107]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[114]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -16093,7 +16955,7 @@ func (x *SetNodePoolManagementRequest) String() string {
 func (*SetNodePoolManagementRequest) ProtoMessage() {}
 
 func (x *SetNodePoolManagementRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[107]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[114]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -16106,7 +16968,7 @@ func (x *SetNodePoolManagementRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetNodePoolManagementRequest.ProtoReflect.Descriptor instead.
 func (*SetNodePoolManagementRequest) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{107}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{114}
 }
 
 // Deprecated: Marked as deprecated in google/container/v1/cluster_service.proto.
@@ -16193,7 +17055,7 @@ type SetNodePoolSizeRequest struct {
 
 func (x *SetNodePoolSizeRequest) Reset() {
 	*x = SetNodePoolSizeRequest{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[108]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[115]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -16205,7 +17067,7 @@ func (x *SetNodePoolSizeRequest) String() string {
 func (*SetNodePoolSizeRequest) ProtoMessage() {}
 
 func (x *SetNodePoolSizeRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[108]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[115]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -16218,7 +17080,7 @@ func (x *SetNodePoolSizeRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetNodePoolSizeRequest.ProtoReflect.Descriptor instead.
 func (*SetNodePoolSizeRequest) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{108}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{115}
 }
 
 // Deprecated: Marked as deprecated in google/container/v1/cluster_service.proto.
@@ -16281,7 +17143,7 @@ type CompleteNodePoolUpgradeRequest struct {
 
 func (x *CompleteNodePoolUpgradeRequest) Reset() {
 	*x = CompleteNodePoolUpgradeRequest{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[109]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[116]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -16293,7 +17155,7 @@ func (x *CompleteNodePoolUpgradeRequest) String() string {
 func (*CompleteNodePoolUpgradeRequest) ProtoMessage() {}
 
 func (x *CompleteNodePoolUpgradeRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[109]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[116]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -16306,7 +17168,7 @@ func (x *CompleteNodePoolUpgradeRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CompleteNodePoolUpgradeRequest.ProtoReflect.Descriptor instead.
 func (*CompleteNodePoolUpgradeRequest) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{109}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{116}
 }
 
 func (x *CompleteNodePoolUpgradeRequest) GetName() string {
@@ -16358,7 +17220,7 @@ type RollbackNodePoolUpgradeRequest struct {
 
 func (x *RollbackNodePoolUpgradeRequest) Reset() {
 	*x = RollbackNodePoolUpgradeRequest{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[110]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[117]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -16370,7 +17232,7 @@ func (x *RollbackNodePoolUpgradeRequest) String() string {
 func (*RollbackNodePoolUpgradeRequest) ProtoMessage() {}
 
 func (x *RollbackNodePoolUpgradeRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[110]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[117]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -16383,7 +17245,7 @@ func (x *RollbackNodePoolUpgradeRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RollbackNodePoolUpgradeRequest.ProtoReflect.Descriptor instead.
 func (*RollbackNodePoolUpgradeRequest) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{110}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{117}
 }
 
 // Deprecated: Marked as deprecated in google/container/v1/cluster_service.proto.
@@ -16443,7 +17305,7 @@ type ListNodePoolsResponse struct {
 
 func (x *ListNodePoolsResponse) Reset() {
 	*x = ListNodePoolsResponse{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[111]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[118]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -16455,7 +17317,7 @@ func (x *ListNodePoolsResponse) String() string {
 func (*ListNodePoolsResponse) ProtoMessage() {}
 
 func (x *ListNodePoolsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[111]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[118]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -16468,7 +17330,7 @@ func (x *ListNodePoolsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListNodePoolsResponse.ProtoReflect.Descriptor instead.
 func (*ListNodePoolsResponse) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{111}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{118}
 }
 
 func (x *ListNodePoolsResponse) GetNodePools() []*NodePool {
@@ -16509,7 +17371,7 @@ type ClusterAutoscaling struct {
 
 func (x *ClusterAutoscaling) Reset() {
 	*x = ClusterAutoscaling{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[112]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[119]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -16521,7 +17383,7 @@ func (x *ClusterAutoscaling) String() string {
 func (*ClusterAutoscaling) ProtoMessage() {}
 
 func (x *ClusterAutoscaling) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[112]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[119]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -16534,7 +17396,7 @@ func (x *ClusterAutoscaling) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ClusterAutoscaling.ProtoReflect.Descriptor instead.
 func (*ClusterAutoscaling) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{112}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{119}
 }
 
 func (x *ClusterAutoscaling) GetEnableNodeAutoprovisioning() bool {
@@ -16643,7 +17505,7 @@ type AutoprovisioningNodePoolDefaults struct {
 
 func (x *AutoprovisioningNodePoolDefaults) Reset() {
 	*x = AutoprovisioningNodePoolDefaults{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[113]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[120]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -16655,7 +17517,7 @@ func (x *AutoprovisioningNodePoolDefaults) String() string {
 func (*AutoprovisioningNodePoolDefaults) ProtoMessage() {}
 
 func (x *AutoprovisioningNodePoolDefaults) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[113]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[120]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -16668,7 +17530,7 @@ func (x *AutoprovisioningNodePoolDefaults) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AutoprovisioningNodePoolDefaults.ProtoReflect.Descriptor instead.
 func (*AutoprovisioningNodePoolDefaults) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{113}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{120}
 }
 
 func (x *AutoprovisioningNodePoolDefaults) GetOauthScopes() []string {
@@ -16765,7 +17627,7 @@ type ResourceLimit struct {
 
 func (x *ResourceLimit) Reset() {
 	*x = ResourceLimit{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[114]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[121]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -16777,7 +17639,7 @@ func (x *ResourceLimit) String() string {
 func (*ResourceLimit) ProtoMessage() {}
 
 func (x *ResourceLimit) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[114]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[121]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -16790,7 +17652,7 @@ func (x *ResourceLimit) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ResourceLimit.ProtoReflect.Descriptor instead.
 func (*ResourceLimit) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{114}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{121}
 }
 
 func (x *ResourceLimit) GetResourceType() string {
@@ -16827,7 +17689,7 @@ type DefaultComputeClassConfig struct {
 
 func (x *DefaultComputeClassConfig) Reset() {
 	*x = DefaultComputeClassConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[115]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[122]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -16839,7 +17701,7 @@ func (x *DefaultComputeClassConfig) String() string {
 func (*DefaultComputeClassConfig) ProtoMessage() {}
 
 func (x *DefaultComputeClassConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[115]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[122]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -16852,7 +17714,7 @@ func (x *DefaultComputeClassConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DefaultComputeClassConfig.ProtoReflect.Descriptor instead.
 func (*DefaultComputeClassConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{115}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{122}
 }
 
 func (x *DefaultComputeClassConfig) GetEnabled() bool {
@@ -16876,7 +17738,7 @@ type NodePoolAutoscaling struct {
 	MaxNodeCount int32 `protobuf:"varint,3,opt,name=max_node_count,json=maxNodeCount,proto3" json:"max_node_count,omitempty"`
 	// Can this node pool be deleted automatically.
 	Autoprovisioned bool `protobuf:"varint,4,opt,name=autoprovisioned,proto3" json:"autoprovisioned,omitempty"`
-	// Location policy used when scaling up a nodepool.
+	// Location policy used when scaling up a node pool.
 	LocationPolicy NodePoolAutoscaling_LocationPolicy `protobuf:"varint,5,opt,name=location_policy,json=locationPolicy,proto3,enum=google.container.v1.NodePoolAutoscaling_LocationPolicy" json:"location_policy,omitempty"`
 	// Minimum number of nodes in the node pool. Must be greater than or equal
 	// to 0 and less than or equal to total_max_node_count.
@@ -16894,7 +17756,7 @@ type NodePoolAutoscaling struct {
 
 func (x *NodePoolAutoscaling) Reset() {
 	*x = NodePoolAutoscaling{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[116]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[123]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -16906,7 +17768,7 @@ func (x *NodePoolAutoscaling) String() string {
 func (*NodePoolAutoscaling) ProtoMessage() {}
 
 func (x *NodePoolAutoscaling) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[116]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[123]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -16919,7 +17781,7 @@ func (x *NodePoolAutoscaling) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NodePoolAutoscaling.ProtoReflect.Descriptor instead.
 func (*NodePoolAutoscaling) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{116}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{123}
 }
 
 func (x *NodePoolAutoscaling) GetEnabled() bool {
@@ -17012,7 +17874,7 @@ type SetLabelsRequest struct {
 
 func (x *SetLabelsRequest) Reset() {
 	*x = SetLabelsRequest{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[117]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[124]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -17024,7 +17886,7 @@ func (x *SetLabelsRequest) String() string {
 func (*SetLabelsRequest) ProtoMessage() {}
 
 func (x *SetLabelsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[117]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[124]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -17037,7 +17899,7 @@ func (x *SetLabelsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetLabelsRequest.ProtoReflect.Descriptor instead.
 func (*SetLabelsRequest) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{117}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{124}
 }
 
 // Deprecated: Marked as deprecated in google/container/v1/cluster_service.proto.
@@ -17118,7 +17980,7 @@ type SetLegacyAbacRequest struct {
 
 func (x *SetLegacyAbacRequest) Reset() {
 	*x = SetLegacyAbacRequest{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[118]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[125]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -17130,7 +17992,7 @@ func (x *SetLegacyAbacRequest) String() string {
 func (*SetLegacyAbacRequest) ProtoMessage() {}
 
 func (x *SetLegacyAbacRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[118]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[125]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -17143,7 +18005,7 @@ func (x *SetLegacyAbacRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetLegacyAbacRequest.ProtoReflect.Descriptor instead.
 func (*SetLegacyAbacRequest) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{118}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{125}
 }
 
 // Deprecated: Marked as deprecated in google/container/v1/cluster_service.proto.
@@ -17217,7 +18079,7 @@ type StartIPRotationRequest struct {
 
 func (x *StartIPRotationRequest) Reset() {
 	*x = StartIPRotationRequest{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[119]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[126]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -17229,7 +18091,7 @@ func (x *StartIPRotationRequest) String() string {
 func (*StartIPRotationRequest) ProtoMessage() {}
 
 func (x *StartIPRotationRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[119]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[126]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -17242,7 +18104,7 @@ func (x *StartIPRotationRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StartIPRotationRequest.ProtoReflect.Descriptor instead.
 func (*StartIPRotationRequest) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{119}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{126}
 }
 
 // Deprecated: Marked as deprecated in google/container/v1/cluster_service.proto.
@@ -17313,7 +18175,7 @@ type CompleteIPRotationRequest struct {
 
 func (x *CompleteIPRotationRequest) Reset() {
 	*x = CompleteIPRotationRequest{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[120]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[127]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -17325,7 +18187,7 @@ func (x *CompleteIPRotationRequest) String() string {
 func (*CompleteIPRotationRequest) ProtoMessage() {}
 
 func (x *CompleteIPRotationRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[120]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[127]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -17338,7 +18200,7 @@ func (x *CompleteIPRotationRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CompleteIPRotationRequest.ProtoReflect.Descriptor instead.
 func (*CompleteIPRotationRequest) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{120}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{127}
 }
 
 // Deprecated: Marked as deprecated in google/container/v1/cluster_service.proto.
@@ -17394,7 +18256,7 @@ type AcceleratorConfig struct {
 
 func (x *AcceleratorConfig) Reset() {
 	*x = AcceleratorConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[121]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[128]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -17406,7 +18268,7 @@ func (x *AcceleratorConfig) String() string {
 func (*AcceleratorConfig) ProtoMessage() {}
 
 func (x *AcceleratorConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[121]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[128]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -17419,7 +18281,7 @@ func (x *AcceleratorConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AcceleratorConfig.ProtoReflect.Descriptor instead.
 func (*AcceleratorConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{121}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{128}
 }
 
 func (x *AcceleratorConfig) GetAcceleratorCount() int64 {
@@ -17471,7 +18333,7 @@ type GPUSharingConfig struct {
 
 func (x *GPUSharingConfig) Reset() {
 	*x = GPUSharingConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[122]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[129]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -17483,7 +18345,7 @@ func (x *GPUSharingConfig) String() string {
 func (*GPUSharingConfig) ProtoMessage() {}
 
 func (x *GPUSharingConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[122]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[129]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -17496,7 +18358,7 @@ func (x *GPUSharingConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GPUSharingConfig.ProtoReflect.Descriptor instead.
 func (*GPUSharingConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{122}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{129}
 }
 
 func (x *GPUSharingConfig) GetMaxSharedClientsPerGpu() int64 {
@@ -17525,7 +18387,7 @@ type GPUDriverInstallationConfig struct {
 
 func (x *GPUDriverInstallationConfig) Reset() {
 	*x = GPUDriverInstallationConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[123]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[130]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -17537,7 +18399,7 @@ func (x *GPUDriverInstallationConfig) String() string {
 func (*GPUDriverInstallationConfig) ProtoMessage() {}
 
 func (x *GPUDriverInstallationConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[123]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[130]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -17550,7 +18412,7 @@ func (x *GPUDriverInstallationConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GPUDriverInstallationConfig.ProtoReflect.Descriptor instead.
 func (*GPUDriverInstallationConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{123}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{130}
 }
 
 func (x *GPUDriverInstallationConfig) GetGpuDriverVersion() GPUDriverInstallationConfig_GPUDriverVersion {
@@ -17573,7 +18435,7 @@ type WorkloadMetadataConfig struct {
 
 func (x *WorkloadMetadataConfig) Reset() {
 	*x = WorkloadMetadataConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[124]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[131]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -17585,7 +18447,7 @@ func (x *WorkloadMetadataConfig) String() string {
 func (*WorkloadMetadataConfig) ProtoMessage() {}
 
 func (x *WorkloadMetadataConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[124]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[131]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -17598,7 +18460,7 @@ func (x *WorkloadMetadataConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WorkloadMetadataConfig.ProtoReflect.Descriptor instead.
 func (*WorkloadMetadataConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{124}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{131}
 }
 
 func (x *WorkloadMetadataConfig) GetMode() WorkloadMetadataConfig_Mode {
@@ -17640,7 +18502,7 @@ type SetNetworkPolicyRequest struct {
 
 func (x *SetNetworkPolicyRequest) Reset() {
 	*x = SetNetworkPolicyRequest{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[125]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[132]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -17652,7 +18514,7 @@ func (x *SetNetworkPolicyRequest) String() string {
 func (*SetNetworkPolicyRequest) ProtoMessage() {}
 
 func (x *SetNetworkPolicyRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[125]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[132]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -17665,7 +18527,7 @@ func (x *SetNetworkPolicyRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetNetworkPolicyRequest.ProtoReflect.Descriptor instead.
 func (*SetNetworkPolicyRequest) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{125}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{132}
 }
 
 // Deprecated: Marked as deprecated in google/container/v1/cluster_service.proto.
@@ -17731,7 +18593,7 @@ type SetMaintenancePolicyRequest struct {
 
 func (x *SetMaintenancePolicyRequest) Reset() {
 	*x = SetMaintenancePolicyRequest{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[126]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[133]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -17743,7 +18605,7 @@ func (x *SetMaintenancePolicyRequest) String() string {
 func (*SetMaintenancePolicyRequest) ProtoMessage() {}
 
 func (x *SetMaintenancePolicyRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[126]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[133]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -17756,7 +18618,7 @@ func (x *SetMaintenancePolicyRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetMaintenancePolicyRequest.ProtoReflect.Descriptor instead.
 func (*SetMaintenancePolicyRequest) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{126}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{133}
 }
 
 func (x *SetMaintenancePolicyRequest) GetProjectId() string {
@@ -17813,7 +18675,7 @@ type StatusCondition struct {
 
 func (x *StatusCondition) Reset() {
 	*x = StatusCondition{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[127]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[134]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -17825,7 +18687,7 @@ func (x *StatusCondition) String() string {
 func (*StatusCondition) ProtoMessage() {}
 
 func (x *StatusCondition) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[127]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[134]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -17838,7 +18700,7 @@ func (x *StatusCondition) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StatusCondition.ProtoReflect.Descriptor instead.
 func (*StatusCondition) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{127}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{134}
 }
 
 // Deprecated: Marked as deprecated in google/container/v1/cluster_service.proto.
@@ -17926,7 +18788,7 @@ type NetworkConfig struct {
 
 func (x *NetworkConfig) Reset() {
 	*x = NetworkConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[128]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[135]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -17938,7 +18800,7 @@ func (x *NetworkConfig) String() string {
 func (*NetworkConfig) ProtoMessage() {}
 
 func (x *NetworkConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[128]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[135]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -17951,7 +18813,7 @@ func (x *NetworkConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NetworkConfig.ProtoReflect.Descriptor instead.
 func (*NetworkConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{128}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{135}
 }
 
 func (x *NetworkConfig) GetNetwork() string {
@@ -18084,7 +18946,7 @@ type GatewayAPIConfig struct {
 
 func (x *GatewayAPIConfig) Reset() {
 	*x = GatewayAPIConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[129]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[136]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -18096,7 +18958,7 @@ func (x *GatewayAPIConfig) String() string {
 func (*GatewayAPIConfig) ProtoMessage() {}
 
 func (x *GatewayAPIConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[129]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[136]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -18109,7 +18971,7 @@ func (x *GatewayAPIConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GatewayAPIConfig.ProtoReflect.Descriptor instead.
 func (*GatewayAPIConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{129}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{136}
 }
 
 func (x *GatewayAPIConfig) GetChannel() GatewayAPIConfig_Channel {
@@ -18130,7 +18992,7 @@ type ServiceExternalIPsConfig struct {
 
 func (x *ServiceExternalIPsConfig) Reset() {
 	*x = ServiceExternalIPsConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[130]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[137]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -18142,7 +19004,7 @@ func (x *ServiceExternalIPsConfig) String() string {
 func (*ServiceExternalIPsConfig) ProtoMessage() {}
 
 func (x *ServiceExternalIPsConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[130]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[137]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -18155,7 +19017,7 @@ func (x *ServiceExternalIPsConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ServiceExternalIPsConfig.ProtoReflect.Descriptor instead.
 func (*ServiceExternalIPsConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{130}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{137}
 }
 
 func (x *ServiceExternalIPsConfig) GetEnabled() bool {
@@ -18178,7 +19040,7 @@ type GetOpenIDConfigRequest struct {
 
 func (x *GetOpenIDConfigRequest) Reset() {
 	*x = GetOpenIDConfigRequest{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[131]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[138]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -18190,7 +19052,7 @@ func (x *GetOpenIDConfigRequest) String() string {
 func (*GetOpenIDConfigRequest) ProtoMessage() {}
 
 func (x *GetOpenIDConfigRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[131]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[138]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -18203,7 +19065,7 @@ func (x *GetOpenIDConfigRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetOpenIDConfigRequest.ProtoReflect.Descriptor instead.
 func (*GetOpenIDConfigRequest) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{131}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{138}
 }
 
 func (x *GetOpenIDConfigRequest) GetParent() string {
@@ -18237,7 +19099,7 @@ type GetOpenIDConfigResponse struct {
 
 func (x *GetOpenIDConfigResponse) Reset() {
 	*x = GetOpenIDConfigResponse{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[132]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[139]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -18249,7 +19111,7 @@ func (x *GetOpenIDConfigResponse) String() string {
 func (*GetOpenIDConfigResponse) ProtoMessage() {}
 
 func (x *GetOpenIDConfigResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[132]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[139]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -18262,7 +19124,7 @@ func (x *GetOpenIDConfigResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetOpenIDConfigResponse.ProtoReflect.Descriptor instead.
 func (*GetOpenIDConfigResponse) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{132}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{139}
 }
 
 func (x *GetOpenIDConfigResponse) GetIssuer() string {
@@ -18329,7 +19191,7 @@ type GetJSONWebKeysRequest struct {
 
 func (x *GetJSONWebKeysRequest) Reset() {
 	*x = GetJSONWebKeysRequest{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[133]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[140]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -18341,7 +19203,7 @@ func (x *GetJSONWebKeysRequest) String() string {
 func (*GetJSONWebKeysRequest) ProtoMessage() {}
 
 func (x *GetJSONWebKeysRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[133]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[140]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -18354,7 +19216,7 @@ func (x *GetJSONWebKeysRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetJSONWebKeysRequest.ProtoReflect.Descriptor instead.
 func (*GetJSONWebKeysRequest) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{133}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{140}
 }
 
 func (x *GetJSONWebKeysRequest) GetParent() string {
@@ -18391,7 +19253,7 @@ type Jwk struct {
 
 func (x *Jwk) Reset() {
 	*x = Jwk{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[134]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[141]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -18403,7 +19265,7 @@ func (x *Jwk) String() string {
 func (*Jwk) ProtoMessage() {}
 
 func (x *Jwk) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[134]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[141]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -18416,7 +19278,7 @@ func (x *Jwk) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Jwk.ProtoReflect.Descriptor instead.
 func (*Jwk) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{134}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{141}
 }
 
 func (x *Jwk) GetKty() string {
@@ -18494,7 +19356,7 @@ type GetJSONWebKeysResponse struct {
 
 func (x *GetJSONWebKeysResponse) Reset() {
 	*x = GetJSONWebKeysResponse{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[135]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[142]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -18506,7 +19368,7 @@ func (x *GetJSONWebKeysResponse) String() string {
 func (*GetJSONWebKeysResponse) ProtoMessage() {}
 
 func (x *GetJSONWebKeysResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[135]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[142]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -18519,7 +19381,7 @@ func (x *GetJSONWebKeysResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetJSONWebKeysResponse.ProtoReflect.Descriptor instead.
 func (*GetJSONWebKeysResponse) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{135}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{142}
 }
 
 func (x *GetJSONWebKeysResponse) GetKeys() []*Jwk {
@@ -18542,7 +19404,7 @@ type CheckAutopilotCompatibilityRequest struct {
 
 func (x *CheckAutopilotCompatibilityRequest) Reset() {
 	*x = CheckAutopilotCompatibilityRequest{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[136]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[143]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -18554,7 +19416,7 @@ func (x *CheckAutopilotCompatibilityRequest) String() string {
 func (*CheckAutopilotCompatibilityRequest) ProtoMessage() {}
 
 func (x *CheckAutopilotCompatibilityRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[136]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[143]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -18567,7 +19429,7 @@ func (x *CheckAutopilotCompatibilityRequest) ProtoReflect() protoreflect.Message
 
 // Deprecated: Use CheckAutopilotCompatibilityRequest.ProtoReflect.Descriptor instead.
 func (*CheckAutopilotCompatibilityRequest) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{136}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{143}
 }
 
 func (x *CheckAutopilotCompatibilityRequest) GetName() string {
@@ -18599,7 +19461,7 @@ type AutopilotCompatibilityIssue struct {
 
 func (x *AutopilotCompatibilityIssue) Reset() {
 	*x = AutopilotCompatibilityIssue{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[137]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[144]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -18611,7 +19473,7 @@ func (x *AutopilotCompatibilityIssue) String() string {
 func (*AutopilotCompatibilityIssue) ProtoMessage() {}
 
 func (x *AutopilotCompatibilityIssue) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[137]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[144]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -18624,7 +19486,7 @@ func (x *AutopilotCompatibilityIssue) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AutopilotCompatibilityIssue.ProtoReflect.Descriptor instead.
 func (*AutopilotCompatibilityIssue) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{137}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{144}
 }
 
 func (x *AutopilotCompatibilityIssue) GetLastObservation() *timestamppb.Timestamp {
@@ -18682,7 +19544,7 @@ type CheckAutopilotCompatibilityResponse struct {
 
 func (x *CheckAutopilotCompatibilityResponse) Reset() {
 	*x = CheckAutopilotCompatibilityResponse{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[138]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[145]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -18694,7 +19556,7 @@ func (x *CheckAutopilotCompatibilityResponse) String() string {
 func (*CheckAutopilotCompatibilityResponse) ProtoMessage() {}
 
 func (x *CheckAutopilotCompatibilityResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[138]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[145]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -18707,7 +19569,7 @@ func (x *CheckAutopilotCompatibilityResponse) ProtoReflect() protoreflect.Messag
 
 // Deprecated: Use CheckAutopilotCompatibilityResponse.ProtoReflect.Descriptor instead.
 func (*CheckAutopilotCompatibilityResponse) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{138}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{145}
 }
 
 func (x *CheckAutopilotCompatibilityResponse) GetIssues() []*AutopilotCompatibilityIssue {
@@ -18740,7 +19602,7 @@ type ReleaseChannel struct {
 
 func (x *ReleaseChannel) Reset() {
 	*x = ReleaseChannel{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[139]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[146]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -18752,7 +19614,7 @@ func (x *ReleaseChannel) String() string {
 func (*ReleaseChannel) ProtoMessage() {}
 
 func (x *ReleaseChannel) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[139]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[146]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -18765,7 +19627,7 @@ func (x *ReleaseChannel) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReleaseChannel.ProtoReflect.Descriptor instead.
 func (*ReleaseChannel) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{139}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{146}
 }
 
 func (x *ReleaseChannel) GetChannel() ReleaseChannel_Channel {
@@ -18786,7 +19648,7 @@ type CostManagementConfig struct {
 
 func (x *CostManagementConfig) Reset() {
 	*x = CostManagementConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[140]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[147]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -18798,7 +19660,7 @@ func (x *CostManagementConfig) String() string {
 func (*CostManagementConfig) ProtoMessage() {}
 
 func (x *CostManagementConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[140]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[147]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -18811,7 +19673,7 @@ func (x *CostManagementConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CostManagementConfig.ProtoReflect.Descriptor instead.
 func (*CostManagementConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{140}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{147}
 }
 
 func (x *CostManagementConfig) GetEnabled() bool {
@@ -18833,7 +19695,7 @@ type IntraNodeVisibilityConfig struct {
 
 func (x *IntraNodeVisibilityConfig) Reset() {
 	*x = IntraNodeVisibilityConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[141]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[148]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -18845,7 +19707,7 @@ func (x *IntraNodeVisibilityConfig) String() string {
 func (*IntraNodeVisibilityConfig) ProtoMessage() {}
 
 func (x *IntraNodeVisibilityConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[141]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[148]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -18858,7 +19720,7 @@ func (x *IntraNodeVisibilityConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use IntraNodeVisibilityConfig.ProtoReflect.Descriptor instead.
 func (*IntraNodeVisibilityConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{141}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{148}
 }
 
 func (x *IntraNodeVisibilityConfig) GetEnabled() bool {
@@ -18880,7 +19742,7 @@ type ILBSubsettingConfig struct {
 
 func (x *ILBSubsettingConfig) Reset() {
 	*x = ILBSubsettingConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[142]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[149]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -18892,7 +19754,7 @@ func (x *ILBSubsettingConfig) String() string {
 func (*ILBSubsettingConfig) ProtoMessage() {}
 
 func (x *ILBSubsettingConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[142]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[149]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -18905,7 +19767,7 @@ func (x *ILBSubsettingConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ILBSubsettingConfig.ProtoReflect.Descriptor instead.
 func (*ILBSubsettingConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{142}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{149}
 }
 
 func (x *ILBSubsettingConfig) GetEnabled() bool {
@@ -18932,7 +19794,7 @@ type DNSConfig struct {
 
 func (x *DNSConfig) Reset() {
 	*x = DNSConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[143]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[150]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -18944,7 +19806,7 @@ func (x *DNSConfig) String() string {
 func (*DNSConfig) ProtoMessage() {}
 
 func (x *DNSConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[143]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[150]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -18957,7 +19819,7 @@ func (x *DNSConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DNSConfig.ProtoReflect.Descriptor instead.
 func (*DNSConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{143}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{150}
 }
 
 func (x *DNSConfig) GetClusterDns() DNSConfig_Provider {
@@ -18999,7 +19861,7 @@ type MaxPodsConstraint struct {
 
 func (x *MaxPodsConstraint) Reset() {
 	*x = MaxPodsConstraint{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[144]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[151]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -19011,7 +19873,7 @@ func (x *MaxPodsConstraint) String() string {
 func (*MaxPodsConstraint) ProtoMessage() {}
 
 func (x *MaxPodsConstraint) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[144]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[151]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -19024,7 +19886,7 @@ func (x *MaxPodsConstraint) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MaxPodsConstraint.ProtoReflect.Descriptor instead.
 func (*MaxPodsConstraint) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{144}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{151}
 }
 
 func (x *MaxPodsConstraint) GetMaxPodsPerNode() int64 {
@@ -19045,7 +19907,7 @@ type WorkloadIdentityConfig struct {
 
 func (x *WorkloadIdentityConfig) Reset() {
 	*x = WorkloadIdentityConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[145]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[152]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -19057,7 +19919,7 @@ func (x *WorkloadIdentityConfig) String() string {
 func (*WorkloadIdentityConfig) ProtoMessage() {}
 
 func (x *WorkloadIdentityConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[145]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[152]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -19070,7 +19932,7 @@ func (x *WorkloadIdentityConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WorkloadIdentityConfig.ProtoReflect.Descriptor instead.
 func (*WorkloadIdentityConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{145}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{152}
 }
 
 func (x *WorkloadIdentityConfig) GetWorkloadPool() string {
@@ -19092,7 +19954,7 @@ type IdentityServiceConfig struct {
 
 func (x *IdentityServiceConfig) Reset() {
 	*x = IdentityServiceConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[146]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[153]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -19104,7 +19966,7 @@ func (x *IdentityServiceConfig) String() string {
 func (*IdentityServiceConfig) ProtoMessage() {}
 
 func (x *IdentityServiceConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[146]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[153]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -19117,7 +19979,7 @@ func (x *IdentityServiceConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use IdentityServiceConfig.ProtoReflect.Descriptor instead.
 func (*IdentityServiceConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{146}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{153}
 }
 
 func (x *IdentityServiceConfig) GetEnabled() bool {
@@ -19146,7 +20008,7 @@ type MeshCertificates struct {
 
 func (x *MeshCertificates) Reset() {
 	*x = MeshCertificates{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[147]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[154]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -19158,7 +20020,7 @@ func (x *MeshCertificates) String() string {
 func (*MeshCertificates) ProtoMessage() {}
 
 func (x *MeshCertificates) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[147]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[154]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -19171,7 +20033,7 @@ func (x *MeshCertificates) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MeshCertificates.ProtoReflect.Descriptor instead.
 func (*MeshCertificates) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{147}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{154}
 }
 
 func (x *MeshCertificates) GetEnableCertificates() *wrapperspb.BoolValue {
@@ -19205,7 +20067,7 @@ type DatabaseEncryption struct {
 
 func (x *DatabaseEncryption) Reset() {
 	*x = DatabaseEncryption{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[148]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[155]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -19217,7 +20079,7 @@ func (x *DatabaseEncryption) String() string {
 func (*DatabaseEncryption) ProtoMessage() {}
 
 func (x *DatabaseEncryption) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[148]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[155]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -19230,7 +20092,7 @@ func (x *DatabaseEncryption) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DatabaseEncryption.ProtoReflect.Descriptor instead.
 func (*DatabaseEncryption) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{148}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{155}
 }
 
 func (x *DatabaseEncryption) GetKeyName() string {
@@ -19294,7 +20156,7 @@ type ListUsableSubnetworksRequest struct {
 
 func (x *ListUsableSubnetworksRequest) Reset() {
 	*x = ListUsableSubnetworksRequest{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[149]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[156]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -19306,7 +20168,7 @@ func (x *ListUsableSubnetworksRequest) String() string {
 func (*ListUsableSubnetworksRequest) ProtoMessage() {}
 
 func (x *ListUsableSubnetworksRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[149]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[156]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -19319,7 +20181,7 @@ func (x *ListUsableSubnetworksRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListUsableSubnetworksRequest.ProtoReflect.Descriptor instead.
 func (*ListUsableSubnetworksRequest) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{149}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{156}
 }
 
 func (x *ListUsableSubnetworksRequest) GetParent() string {
@@ -19367,7 +20229,7 @@ type ListUsableSubnetworksResponse struct {
 
 func (x *ListUsableSubnetworksResponse) Reset() {
 	*x = ListUsableSubnetworksResponse{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[150]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[157]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -19379,7 +20241,7 @@ func (x *ListUsableSubnetworksResponse) String() string {
 func (*ListUsableSubnetworksResponse) ProtoMessage() {}
 
 func (x *ListUsableSubnetworksResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[150]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[157]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -19392,7 +20254,7 @@ func (x *ListUsableSubnetworksResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListUsableSubnetworksResponse.ProtoReflect.Descriptor instead.
 func (*ListUsableSubnetworksResponse) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{150}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{157}
 }
 
 func (x *ListUsableSubnetworksResponse) GetSubnetworks() []*UsableSubnetwork {
@@ -19425,7 +20287,7 @@ type UsableSubnetworkSecondaryRange struct {
 
 func (x *UsableSubnetworkSecondaryRange) Reset() {
 	*x = UsableSubnetworkSecondaryRange{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[151]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[158]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -19437,7 +20299,7 @@ func (x *UsableSubnetworkSecondaryRange) String() string {
 func (*UsableSubnetworkSecondaryRange) ProtoMessage() {}
 
 func (x *UsableSubnetworkSecondaryRange) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[151]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[158]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -19450,7 +20312,7 @@ func (x *UsableSubnetworkSecondaryRange) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UsableSubnetworkSecondaryRange.ProtoReflect.Descriptor instead.
 func (*UsableSubnetworkSecondaryRange) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{151}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{158}
 }
 
 func (x *UsableSubnetworkSecondaryRange) GetRangeName() string {
@@ -19499,7 +20361,7 @@ type UsableSubnetwork struct {
 
 func (x *UsableSubnetwork) Reset() {
 	*x = UsableSubnetwork{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[152]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[159]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -19511,7 +20373,7 @@ func (x *UsableSubnetwork) String() string {
 func (*UsableSubnetwork) ProtoMessage() {}
 
 func (x *UsableSubnetwork) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[152]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[159]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -19524,7 +20386,7 @@ func (x *UsableSubnetwork) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UsableSubnetwork.ProtoReflect.Descriptor instead.
 func (*UsableSubnetwork) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{152}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{159}
 }
 
 func (x *UsableSubnetwork) GetSubnetwork() string {
@@ -19578,7 +20440,7 @@ type ResourceUsageExportConfig struct {
 
 func (x *ResourceUsageExportConfig) Reset() {
 	*x = ResourceUsageExportConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[153]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[160]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -19590,7 +20452,7 @@ func (x *ResourceUsageExportConfig) String() string {
 func (*ResourceUsageExportConfig) ProtoMessage() {}
 
 func (x *ResourceUsageExportConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[153]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[160]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -19603,7 +20465,7 @@ func (x *ResourceUsageExportConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ResourceUsageExportConfig.ProtoReflect.Descriptor instead.
 func (*ResourceUsageExportConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{153}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{160}
 }
 
 func (x *ResourceUsageExportConfig) GetBigqueryDestination() *ResourceUsageExportConfig_BigQueryDestination {
@@ -19640,7 +20502,7 @@ type VerticalPodAutoscaling struct {
 
 func (x *VerticalPodAutoscaling) Reset() {
 	*x = VerticalPodAutoscaling{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[154]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[161]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -19652,7 +20514,7 @@ func (x *VerticalPodAutoscaling) String() string {
 func (*VerticalPodAutoscaling) ProtoMessage() {}
 
 func (x *VerticalPodAutoscaling) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[154]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[161]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -19665,7 +20527,7 @@ func (x *VerticalPodAutoscaling) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use VerticalPodAutoscaling.ProtoReflect.Descriptor instead.
 func (*VerticalPodAutoscaling) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{154}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{161}
 }
 
 func (x *VerticalPodAutoscaling) GetEnabled() bool {
@@ -19687,7 +20549,7 @@ type DefaultSnatStatus struct {
 
 func (x *DefaultSnatStatus) Reset() {
 	*x = DefaultSnatStatus{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[155]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[162]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -19699,7 +20561,7 @@ func (x *DefaultSnatStatus) String() string {
 func (*DefaultSnatStatus) ProtoMessage() {}
 
 func (x *DefaultSnatStatus) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[155]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[162]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -19712,7 +20574,7 @@ func (x *DefaultSnatStatus) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DefaultSnatStatus.ProtoReflect.Descriptor instead.
 func (*DefaultSnatStatus) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{155}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{162}
 }
 
 func (x *DefaultSnatStatus) GetDisabled() bool {
@@ -19733,7 +20595,7 @@ type ShieldedNodes struct {
 
 func (x *ShieldedNodes) Reset() {
 	*x = ShieldedNodes{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[156]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[163]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -19745,7 +20607,7 @@ func (x *ShieldedNodes) String() string {
 func (*ShieldedNodes) ProtoMessage() {}
 
 func (x *ShieldedNodes) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[156]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[163]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -19758,7 +20620,7 @@ func (x *ShieldedNodes) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ShieldedNodes.ProtoReflect.Descriptor instead.
 func (*ShieldedNodes) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{156}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{163}
 }
 
 func (x *ShieldedNodes) GetEnabled() bool {
@@ -19779,7 +20641,7 @@ type VirtualNIC struct {
 
 func (x *VirtualNIC) Reset() {
 	*x = VirtualNIC{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[157]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[164]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -19791,7 +20653,7 @@ func (x *VirtualNIC) String() string {
 func (*VirtualNIC) ProtoMessage() {}
 
 func (x *VirtualNIC) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[157]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[164]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -19804,7 +20666,7 @@ func (x *VirtualNIC) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use VirtualNIC.ProtoReflect.Descriptor instead.
 func (*VirtualNIC) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{157}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{164}
 }
 
 func (x *VirtualNIC) GetEnabled() bool {
@@ -19825,7 +20687,7 @@ type FastSocket struct {
 
 func (x *FastSocket) Reset() {
 	*x = FastSocket{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[158]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[165]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -19837,7 +20699,7 @@ func (x *FastSocket) String() string {
 func (*FastSocket) ProtoMessage() {}
 
 func (x *FastSocket) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[158]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[165]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -19850,7 +20712,7 @@ func (x *FastSocket) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FastSocket.ProtoReflect.Descriptor instead.
 func (*FastSocket) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{158}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{165}
 }
 
 func (x *FastSocket) GetEnabled() bool {
@@ -19871,7 +20733,7 @@ type GPUDirectConfig struct {
 
 func (x *GPUDirectConfig) Reset() {
 	*x = GPUDirectConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[159]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[166]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -19883,7 +20745,7 @@ func (x *GPUDirectConfig) String() string {
 func (*GPUDirectConfig) ProtoMessage() {}
 
 func (x *GPUDirectConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[159]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[166]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -19896,7 +20758,7 @@ func (x *GPUDirectConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GPUDirectConfig.ProtoReflect.Descriptor instead.
 func (*GPUDirectConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{159}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{166}
 }
 
 func (x *GPUDirectConfig) GetGpuDirectStrategy() GPUDirectConfig_GPUDirectStrategy {
@@ -19917,7 +20779,7 @@ type NotificationConfig struct {
 
 func (x *NotificationConfig) Reset() {
 	*x = NotificationConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[160]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[167]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -19929,7 +20791,7 @@ func (x *NotificationConfig) String() string {
 func (*NotificationConfig) ProtoMessage() {}
 
 func (x *NotificationConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[160]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[167]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -19942,7 +20804,7 @@ func (x *NotificationConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NotificationConfig.ProtoReflect.Descriptor instead.
 func (*NotificationConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{160}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{167}
 }
 
 func (x *NotificationConfig) GetPubsub() *NotificationConfig_PubSub {
@@ -19966,7 +20828,7 @@ type ConfidentialNodes struct {
 
 func (x *ConfidentialNodes) Reset() {
 	*x = ConfidentialNodes{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[161]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[168]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -19978,7 +20840,7 @@ func (x *ConfidentialNodes) String() string {
 func (*ConfidentialNodes) ProtoMessage() {}
 
 func (x *ConfidentialNodes) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[161]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[168]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -19991,7 +20853,7 @@ func (x *ConfidentialNodes) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConfidentialNodes.ProtoReflect.Descriptor instead.
 func (*ConfidentialNodes) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{161}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{168}
 }
 
 func (x *ConfidentialNodes) GetEnabled() bool {
@@ -20031,7 +20893,7 @@ type UpgradeEvent struct {
 
 func (x *UpgradeEvent) Reset() {
 	*x = UpgradeEvent{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[162]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[169]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -20043,7 +20905,7 @@ func (x *UpgradeEvent) String() string {
 func (*UpgradeEvent) ProtoMessage() {}
 
 func (x *UpgradeEvent) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[162]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[169]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -20056,7 +20918,7 @@ func (x *UpgradeEvent) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpgradeEvent.ProtoReflect.Descriptor instead.
 func (*UpgradeEvent) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{162}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{169}
 }
 
 func (x *UpgradeEvent) GetResourceType() UpgradeResourceType {
@@ -20139,7 +21001,7 @@ type UpgradeInfoEvent struct {
 
 func (x *UpgradeInfoEvent) Reset() {
 	*x = UpgradeInfoEvent{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[163]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[170]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -20151,7 +21013,7 @@ func (x *UpgradeInfoEvent) String() string {
 func (*UpgradeInfoEvent) ProtoMessage() {}
 
 func (x *UpgradeInfoEvent) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[163]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[170]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -20164,7 +21026,7 @@ func (x *UpgradeInfoEvent) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpgradeInfoEvent.ProtoReflect.Descriptor instead.
 func (*UpgradeInfoEvent) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{163}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{170}
 }
 
 func (x *UpgradeInfoEvent) GetResourceType() UpgradeResourceType {
@@ -20281,7 +21143,7 @@ type DisruptionEvent struct {
 
 func (x *DisruptionEvent) Reset() {
 	*x = DisruptionEvent{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[164]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[171]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -20293,7 +21155,7 @@ func (x *DisruptionEvent) String() string {
 func (*DisruptionEvent) ProtoMessage() {}
 
 func (x *DisruptionEvent) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[164]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[171]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -20306,7 +21168,7 @@ func (x *DisruptionEvent) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DisruptionEvent.ProtoReflect.Descriptor instead.
 func (*DisruptionEvent) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{164}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{171}
 }
 
 func (x *DisruptionEvent) GetDisruptionType() DisruptionEvent_DisruptionType {
@@ -20357,7 +21219,7 @@ type UpgradeAvailableEvent struct {
 
 func (x *UpgradeAvailableEvent) Reset() {
 	*x = UpgradeAvailableEvent{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[165]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[172]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -20369,7 +21231,7 @@ func (x *UpgradeAvailableEvent) String() string {
 func (*UpgradeAvailableEvent) ProtoMessage() {}
 
 func (x *UpgradeAvailableEvent) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[165]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[172]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -20382,7 +21244,7 @@ func (x *UpgradeAvailableEvent) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpgradeAvailableEvent.ProtoReflect.Descriptor instead.
 func (*UpgradeAvailableEvent) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{165}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{172}
 }
 
 func (x *UpgradeAvailableEvent) GetVersion() string {
@@ -20453,7 +21315,7 @@ type SecurityBulletinEvent struct {
 
 func (x *SecurityBulletinEvent) Reset() {
 	*x = SecurityBulletinEvent{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[166]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[173]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -20465,7 +21327,7 @@ func (x *SecurityBulletinEvent) String() string {
 func (*SecurityBulletinEvent) ProtoMessage() {}
 
 func (x *SecurityBulletinEvent) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[166]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[173]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -20478,7 +21340,7 @@ func (x *SecurityBulletinEvent) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SecurityBulletinEvent.ProtoReflect.Descriptor instead.
 func (*SecurityBulletinEvent) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{166}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{173}
 }
 
 func (x *SecurityBulletinEvent) GetResourceTypeAffected() string {
@@ -20568,13 +21430,16 @@ type Autopilot struct {
 	// PrivilegedAdmissionConfig is the configuration related to privileged
 	// admission control.
 	PrivilegedAdmissionConfig *PrivilegedAdmissionConfig `protobuf:"bytes,4,opt,name=privileged_admission_config,json=privilegedAdmissionConfig,proto3" json:"privileged_admission_config,omitempty"`
-	unknownFields             protoimpl.UnknownFields
-	sizeCache                 protoimpl.SizeCache
+	// ClusterPolicyConfig denotes cluster level policies that are enforced for
+	// the cluster.
+	ClusterPolicyConfig *ClusterPolicyConfig `protobuf:"bytes,5,opt,name=cluster_policy_config,json=clusterPolicyConfig,proto3" json:"cluster_policy_config,omitempty"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
 }
 
 func (x *Autopilot) Reset() {
 	*x = Autopilot{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[167]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[174]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -20586,7 +21451,7 @@ func (x *Autopilot) String() string {
 func (*Autopilot) ProtoMessage() {}
 
 func (x *Autopilot) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[167]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[174]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -20599,7 +21464,7 @@ func (x *Autopilot) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Autopilot.ProtoReflect.Descriptor instead.
 func (*Autopilot) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{167}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{174}
 }
 
 func (x *Autopilot) GetEnabled() bool {
@@ -20621,6 +21486,88 @@ func (x *Autopilot) GetPrivilegedAdmissionConfig() *PrivilegedAdmissionConfig {
 		return x.PrivilegedAdmissionConfig
 	}
 	return nil
+}
+
+func (x *Autopilot) GetClusterPolicyConfig() *ClusterPolicyConfig {
+	if x != nil {
+		return x.ClusterPolicyConfig
+	}
+	return nil
+}
+
+// ClusterPolicyConfig stores the configuration for cluster wide policies.
+type ClusterPolicyConfig struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Denotes that preventing creation and mutation of resources in GKE
+	// managed namespaces and cluster-scoped GKE managed resources .
+	NoSystemMutation *bool `protobuf:"varint,1,opt,name=no_system_mutation,json=noSystemMutation,proto3,oneof" json:"no_system_mutation,omitempty"`
+	// Denotes preventing impersonation and CSRs for GKE System users.
+	NoSystemImpersonation *bool `protobuf:"varint,2,opt,name=no_system_impersonation,json=noSystemImpersonation,proto3,oneof" json:"no_system_impersonation,omitempty"`
+	// Denotes preventing unsafe webhooks.
+	NoUnsafeWebhooks *bool `protobuf:"varint,3,opt,name=no_unsafe_webhooks,json=noUnsafeWebhooks,proto3,oneof" json:"no_unsafe_webhooks,omitempty"`
+	// Denotes preventing standard node pools and requiring only autopilot node
+	// pools.
+	NoStandardNodePools *bool `protobuf:"varint,5,opt,name=no_standard_node_pools,json=noStandardNodePools,proto3,oneof" json:"no_standard_node_pools,omitempty"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
+}
+
+func (x *ClusterPolicyConfig) Reset() {
+	*x = ClusterPolicyConfig{}
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[175]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ClusterPolicyConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ClusterPolicyConfig) ProtoMessage() {}
+
+func (x *ClusterPolicyConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[175]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ClusterPolicyConfig.ProtoReflect.Descriptor instead.
+func (*ClusterPolicyConfig) Descriptor() ([]byte, []int) {
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{175}
+}
+
+func (x *ClusterPolicyConfig) GetNoSystemMutation() bool {
+	if x != nil && x.NoSystemMutation != nil {
+		return *x.NoSystemMutation
+	}
+	return false
+}
+
+func (x *ClusterPolicyConfig) GetNoSystemImpersonation() bool {
+	if x != nil && x.NoSystemImpersonation != nil {
+		return *x.NoSystemImpersonation
+	}
+	return false
+}
+
+func (x *ClusterPolicyConfig) GetNoUnsafeWebhooks() bool {
+	if x != nil && x.NoUnsafeWebhooks != nil {
+		return *x.NoUnsafeWebhooks
+	}
+	return false
+}
+
+func (x *ClusterPolicyConfig) GetNoStandardNodePools() bool {
+	if x != nil && x.NoStandardNodePools != nil {
+		return *x.NoStandardNodePools
+	}
+	return false
 }
 
 // PrivilegedAdmissionConfig stores the list of authorized allowlist
@@ -20645,7 +21592,7 @@ type PrivilegedAdmissionConfig struct {
 
 func (x *PrivilegedAdmissionConfig) Reset() {
 	*x = PrivilegedAdmissionConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[168]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[176]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -20657,7 +21604,7 @@ func (x *PrivilegedAdmissionConfig) String() string {
 func (*PrivilegedAdmissionConfig) ProtoMessage() {}
 
 func (x *PrivilegedAdmissionConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[168]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[176]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -20670,7 +21617,7 @@ func (x *PrivilegedAdmissionConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PrivilegedAdmissionConfig.ProtoReflect.Descriptor instead.
 func (*PrivilegedAdmissionConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{168}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{176}
 }
 
 func (x *PrivilegedAdmissionConfig) GetAllowlistPaths() []string {
@@ -20694,7 +21641,7 @@ type WorkloadPolicyConfig struct {
 
 func (x *WorkloadPolicyConfig) Reset() {
 	*x = WorkloadPolicyConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[169]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[177]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -20706,7 +21653,7 @@ func (x *WorkloadPolicyConfig) String() string {
 func (*WorkloadPolicyConfig) ProtoMessage() {}
 
 func (x *WorkloadPolicyConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[169]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[177]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -20719,7 +21666,7 @@ func (x *WorkloadPolicyConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WorkloadPolicyConfig.ProtoReflect.Descriptor instead.
 func (*WorkloadPolicyConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{169}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{177}
 }
 
 func (x *WorkloadPolicyConfig) GetAllowNetAdmin() bool {
@@ -20747,7 +21694,7 @@ type LoggingConfig struct {
 
 func (x *LoggingConfig) Reset() {
 	*x = LoggingConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[170]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[178]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -20759,7 +21706,7 @@ func (x *LoggingConfig) String() string {
 func (*LoggingConfig) ProtoMessage() {}
 
 func (x *LoggingConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[170]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[178]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -20772,7 +21719,7 @@ func (x *LoggingConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LoggingConfig.ProtoReflect.Descriptor instead.
 func (*LoggingConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{170}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{178}
 }
 
 func (x *LoggingConfig) GetComponentConfig() *LoggingComponentConfig {
@@ -20793,7 +21740,7 @@ type LoggingComponentConfig struct {
 
 func (x *LoggingComponentConfig) Reset() {
 	*x = LoggingComponentConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[171]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[179]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -20805,7 +21752,7 @@ func (x *LoggingComponentConfig) String() string {
 func (*LoggingComponentConfig) ProtoMessage() {}
 
 func (x *LoggingComponentConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[171]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[179]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -20818,7 +21765,7 @@ func (x *LoggingComponentConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LoggingComponentConfig.ProtoReflect.Descriptor instead.
 func (*LoggingComponentConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{171}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{179}
 }
 
 func (x *LoggingComponentConfig) GetEnableComponents() []LoggingComponentConfig_Component {
@@ -20839,7 +21786,7 @@ type RayClusterLoggingConfig struct {
 
 func (x *RayClusterLoggingConfig) Reset() {
 	*x = RayClusterLoggingConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[172]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[180]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -20851,7 +21798,7 @@ func (x *RayClusterLoggingConfig) String() string {
 func (*RayClusterLoggingConfig) ProtoMessage() {}
 
 func (x *RayClusterLoggingConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[172]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[180]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -20864,7 +21811,7 @@ func (x *RayClusterLoggingConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RayClusterLoggingConfig.ProtoReflect.Descriptor instead.
 func (*RayClusterLoggingConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{172}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{180}
 }
 
 func (x *RayClusterLoggingConfig) GetEnabled() bool {
@@ -20890,7 +21837,7 @@ type MonitoringConfig struct {
 
 func (x *MonitoringConfig) Reset() {
 	*x = MonitoringConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[173]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[181]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -20902,7 +21849,7 @@ func (x *MonitoringConfig) String() string {
 func (*MonitoringConfig) ProtoMessage() {}
 
 func (x *MonitoringConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[173]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[181]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -20915,7 +21862,7 @@ func (x *MonitoringConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MonitoringConfig.ProtoReflect.Descriptor instead.
 func (*MonitoringConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{173}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{181}
 }
 
 func (x *MonitoringConfig) GetComponentConfig() *MonitoringComponentConfig {
@@ -20955,7 +21902,7 @@ type AdvancedDatapathObservabilityConfig struct {
 
 func (x *AdvancedDatapathObservabilityConfig) Reset() {
 	*x = AdvancedDatapathObservabilityConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[174]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[182]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -20967,7 +21914,7 @@ func (x *AdvancedDatapathObservabilityConfig) String() string {
 func (*AdvancedDatapathObservabilityConfig) ProtoMessage() {}
 
 func (x *AdvancedDatapathObservabilityConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[174]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[182]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -20980,7 +21927,7 @@ func (x *AdvancedDatapathObservabilityConfig) ProtoReflect() protoreflect.Messag
 
 // Deprecated: Use AdvancedDatapathObservabilityConfig.ProtoReflect.Descriptor instead.
 func (*AdvancedDatapathObservabilityConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{174}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{182}
 }
 
 func (x *AdvancedDatapathObservabilityConfig) GetEnableMetrics() bool {
@@ -21016,7 +21963,7 @@ type RayClusterMonitoringConfig struct {
 
 func (x *RayClusterMonitoringConfig) Reset() {
 	*x = RayClusterMonitoringConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[175]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[183]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -21028,7 +21975,7 @@ func (x *RayClusterMonitoringConfig) String() string {
 func (*RayClusterMonitoringConfig) ProtoMessage() {}
 
 func (x *RayClusterMonitoringConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[175]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[183]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -21041,7 +21988,7 @@ func (x *RayClusterMonitoringConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RayClusterMonitoringConfig.ProtoReflect.Descriptor instead.
 func (*RayClusterMonitoringConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{175}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{183}
 }
 
 func (x *RayClusterMonitoringConfig) GetEnabled() bool {
@@ -21051,7 +21998,7 @@ func (x *RayClusterMonitoringConfig) GetEnabled() bool {
 	return false
 }
 
-// NodePoolLoggingConfig specifies logging configuration for nodepools.
+// NodePoolLoggingConfig specifies logging configuration for node pools.
 type NodePoolLoggingConfig struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Logging variant configuration.
@@ -21062,7 +22009,7 @@ type NodePoolLoggingConfig struct {
 
 func (x *NodePoolLoggingConfig) Reset() {
 	*x = NodePoolLoggingConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[176]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[184]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -21074,7 +22021,7 @@ func (x *NodePoolLoggingConfig) String() string {
 func (*NodePoolLoggingConfig) ProtoMessage() {}
 
 func (x *NodePoolLoggingConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[176]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[184]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -21087,7 +22034,7 @@ func (x *NodePoolLoggingConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NodePoolLoggingConfig.ProtoReflect.Descriptor instead.
 func (*NodePoolLoggingConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{176}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{184}
 }
 
 func (x *NodePoolLoggingConfig) GetVariantConfig() *LoggingVariantConfig {
@@ -21108,7 +22055,7 @@ type LoggingVariantConfig struct {
 
 func (x *LoggingVariantConfig) Reset() {
 	*x = LoggingVariantConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[177]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[185]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -21120,7 +22067,7 @@ func (x *LoggingVariantConfig) String() string {
 func (*LoggingVariantConfig) ProtoMessage() {}
 
 func (x *LoggingVariantConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[177]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[185]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -21133,7 +22080,7 @@ func (x *LoggingVariantConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LoggingVariantConfig.ProtoReflect.Descriptor instead.
 func (*LoggingVariantConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{177}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{185}
 }
 
 func (x *LoggingVariantConfig) GetVariant() LoggingVariantConfig_Variant {
@@ -21155,7 +22102,7 @@ type MonitoringComponentConfig struct {
 
 func (x *MonitoringComponentConfig) Reset() {
 	*x = MonitoringComponentConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[178]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[186]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -21167,7 +22114,7 @@ func (x *MonitoringComponentConfig) String() string {
 func (*MonitoringComponentConfig) ProtoMessage() {}
 
 func (x *MonitoringComponentConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[178]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[186]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -21180,7 +22127,7 @@ func (x *MonitoringComponentConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MonitoringComponentConfig.ProtoReflect.Descriptor instead.
 func (*MonitoringComponentConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{178}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{186}
 }
 
 func (x *MonitoringComponentConfig) GetEnableComponents() []MonitoringComponentConfig_Component {
@@ -21204,7 +22151,7 @@ type ManagedPrometheusConfig struct {
 
 func (x *ManagedPrometheusConfig) Reset() {
 	*x = ManagedPrometheusConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[179]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[187]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -21216,7 +22163,7 @@ func (x *ManagedPrometheusConfig) String() string {
 func (*ManagedPrometheusConfig) ProtoMessage() {}
 
 func (x *ManagedPrometheusConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[179]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[187]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -21229,7 +22176,7 @@ func (x *ManagedPrometheusConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ManagedPrometheusConfig.ProtoReflect.Descriptor instead.
 func (*ManagedPrometheusConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{179}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{187}
 }
 
 func (x *ManagedPrometheusConfig) GetEnabled() bool {
@@ -21258,7 +22205,7 @@ type AutoMonitoringConfig struct {
 
 func (x *AutoMonitoringConfig) Reset() {
 	*x = AutoMonitoringConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[180]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[188]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -21270,7 +22217,7 @@ func (x *AutoMonitoringConfig) String() string {
 func (*AutoMonitoringConfig) ProtoMessage() {}
 
 func (x *AutoMonitoringConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[180]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[188]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -21283,7 +22230,7 @@ func (x *AutoMonitoringConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AutoMonitoringConfig.ProtoReflect.Descriptor instead.
 func (*AutoMonitoringConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{180}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{188}
 }
 
 func (x *AutoMonitoringConfig) GetScope() AutoMonitoringConfig_Scope {
@@ -21305,7 +22252,7 @@ type PodAutoscaling struct {
 
 func (x *PodAutoscaling) Reset() {
 	*x = PodAutoscaling{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[181]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[189]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -21317,7 +22264,7 @@ func (x *PodAutoscaling) String() string {
 func (*PodAutoscaling) ProtoMessage() {}
 
 func (x *PodAutoscaling) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[181]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[189]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -21330,7 +22277,7 @@ func (x *PodAutoscaling) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PodAutoscaling.ProtoReflect.Descriptor instead.
 func (*PodAutoscaling) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{181}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{189}
 }
 
 func (x *PodAutoscaling) GetHpaProfile() PodAutoscaling_HPAProfile {
@@ -21362,7 +22309,7 @@ type Fleet struct {
 
 func (x *Fleet) Reset() {
 	*x = Fleet{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[182]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[190]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -21374,7 +22321,7 @@ func (x *Fleet) String() string {
 func (*Fleet) ProtoMessage() {}
 
 func (x *Fleet) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[182]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[190]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -21387,7 +22334,7 @@ func (x *Fleet) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Fleet.ProtoReflect.Descriptor instead.
 func (*Fleet) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{182}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{190}
 }
 
 func (x *Fleet) GetProject() string {
@@ -21431,7 +22378,7 @@ type ControlPlaneEndpointsConfig struct {
 
 func (x *ControlPlaneEndpointsConfig) Reset() {
 	*x = ControlPlaneEndpointsConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[183]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[191]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -21443,7 +22390,7 @@ func (x *ControlPlaneEndpointsConfig) String() string {
 func (*ControlPlaneEndpointsConfig) ProtoMessage() {}
 
 func (x *ControlPlaneEndpointsConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[183]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[191]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -21456,7 +22403,7 @@ func (x *ControlPlaneEndpointsConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ControlPlaneEndpointsConfig.ProtoReflect.Descriptor instead.
 func (*ControlPlaneEndpointsConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{183}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{191}
 }
 
 func (x *ControlPlaneEndpointsConfig) GetDnsEndpointConfig() *ControlPlaneEndpointsConfig_DNSEndpointConfig {
@@ -21500,7 +22447,7 @@ type LocalNvmeSsdBlockConfig struct {
 
 func (x *LocalNvmeSsdBlockConfig) Reset() {
 	*x = LocalNvmeSsdBlockConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[184]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[192]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -21512,7 +22459,7 @@ func (x *LocalNvmeSsdBlockConfig) String() string {
 func (*LocalNvmeSsdBlockConfig) ProtoMessage() {}
 
 func (x *LocalNvmeSsdBlockConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[184]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[192]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -21525,7 +22472,7 @@ func (x *LocalNvmeSsdBlockConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LocalNvmeSsdBlockConfig.ProtoReflect.Descriptor instead.
 func (*LocalNvmeSsdBlockConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{184}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{192}
 }
 
 func (x *LocalNvmeSsdBlockConfig) GetLocalSsdCount() int32 {
@@ -21566,7 +22513,7 @@ type EphemeralStorageLocalSsdConfig struct {
 
 func (x *EphemeralStorageLocalSsdConfig) Reset() {
 	*x = EphemeralStorageLocalSsdConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[185]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[193]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -21578,7 +22525,7 @@ func (x *EphemeralStorageLocalSsdConfig) String() string {
 func (*EphemeralStorageLocalSsdConfig) ProtoMessage() {}
 
 func (x *EphemeralStorageLocalSsdConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[185]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[193]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -21591,7 +22538,7 @@ func (x *EphemeralStorageLocalSsdConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use EphemeralStorageLocalSsdConfig.ProtoReflect.Descriptor instead.
 func (*EphemeralStorageLocalSsdConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{185}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{193}
 }
 
 func (x *EphemeralStorageLocalSsdConfig) GetLocalSsdCount() int32 {
@@ -21627,7 +22574,7 @@ type ResourceManagerTags struct {
 
 func (x *ResourceManagerTags) Reset() {
 	*x = ResourceManagerTags{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[186]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[194]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -21639,7 +22586,7 @@ func (x *ResourceManagerTags) String() string {
 func (*ResourceManagerTags) ProtoMessage() {}
 
 func (x *ResourceManagerTags) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[186]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[194]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -21652,7 +22599,7 @@ func (x *ResourceManagerTags) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ResourceManagerTags.ProtoReflect.Descriptor instead.
 func (*ResourceManagerTags) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{186}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{194}
 }
 
 func (x *ResourceManagerTags) GetTags() map[string]string {
@@ -21680,7 +22627,7 @@ type EnterpriseConfig struct {
 
 func (x *EnterpriseConfig) Reset() {
 	*x = EnterpriseConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[187]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[195]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -21692,7 +22639,7 @@ func (x *EnterpriseConfig) String() string {
 func (*EnterpriseConfig) ProtoMessage() {}
 
 func (x *EnterpriseConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[187]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[195]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -21705,7 +22652,7 @@ func (x *EnterpriseConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use EnterpriseConfig.ProtoReflect.Descriptor instead.
 func (*EnterpriseConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{187}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{195}
 }
 
 func (x *EnterpriseConfig) GetClusterTier() EnterpriseConfig_ClusterTier {
@@ -21735,7 +22682,7 @@ type SecretManagerConfig struct {
 
 func (x *SecretManagerConfig) Reset() {
 	*x = SecretManagerConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[188]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[196]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -21747,7 +22694,7 @@ func (x *SecretManagerConfig) String() string {
 func (*SecretManagerConfig) ProtoMessage() {}
 
 func (x *SecretManagerConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[188]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[196]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -21760,7 +22707,7 @@ func (x *SecretManagerConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SecretManagerConfig.ProtoReflect.Descriptor instead.
 func (*SecretManagerConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{188}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{196}
 }
 
 func (x *SecretManagerConfig) GetEnabled() bool {
@@ -21777,7 +22724,7 @@ func (x *SecretManagerConfig) GetRotationConfig() *SecretManagerConfig_RotationC
 	return nil
 }
 
-// BootDisk specifies the boot disk configuration for nodepools.
+// BootDisk specifies the boot disk configuration for node pools.
 type BootDisk struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Disk type of the boot disk.
@@ -21795,7 +22742,7 @@ type BootDisk struct {
 
 func (x *BootDisk) Reset() {
 	*x = BootDisk{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[189]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[197]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -21807,7 +22754,7 @@ func (x *BootDisk) String() string {
 func (*BootDisk) ProtoMessage() {}
 
 func (x *BootDisk) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[189]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[197]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -21820,7 +22767,7 @@ func (x *BootDisk) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BootDisk.ProtoReflect.Descriptor instead.
 func (*BootDisk) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{189}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{197}
 }
 
 func (x *BootDisk) GetDiskType() string {
@@ -21865,7 +22812,7 @@ type SecondaryBootDisk struct {
 
 func (x *SecondaryBootDisk) Reset() {
 	*x = SecondaryBootDisk{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[190]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[198]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -21877,7 +22824,7 @@ func (x *SecondaryBootDisk) String() string {
 func (*SecondaryBootDisk) ProtoMessage() {}
 
 func (x *SecondaryBootDisk) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[190]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[198]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -21890,7 +22837,7 @@ func (x *SecondaryBootDisk) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SecondaryBootDisk.ProtoReflect.Descriptor instead.
 func (*SecondaryBootDisk) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{190}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{198}
 }
 
 func (x *SecondaryBootDisk) GetMode() SecondaryBootDisk_Mode {
@@ -21917,7 +22864,7 @@ type SecondaryBootDiskUpdateStrategy struct {
 
 func (x *SecondaryBootDiskUpdateStrategy) Reset() {
 	*x = SecondaryBootDiskUpdateStrategy{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[191]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[199]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -21929,7 +22876,7 @@ func (x *SecondaryBootDiskUpdateStrategy) String() string {
 func (*SecondaryBootDiskUpdateStrategy) ProtoMessage() {}
 
 func (x *SecondaryBootDiskUpdateStrategy) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[191]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[199]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -21942,7 +22889,7 @@ func (x *SecondaryBootDiskUpdateStrategy) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SecondaryBootDiskUpdateStrategy.ProtoReflect.Descriptor instead.
 func (*SecondaryBootDiskUpdateStrategy) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{191}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{199}
 }
 
 // FetchClusterUpgradeInfoRequest fetches the upgrade information of a cluster.
@@ -21960,7 +22907,7 @@ type FetchClusterUpgradeInfoRequest struct {
 
 func (x *FetchClusterUpgradeInfoRequest) Reset() {
 	*x = FetchClusterUpgradeInfoRequest{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[192]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[200]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -21972,7 +22919,7 @@ func (x *FetchClusterUpgradeInfoRequest) String() string {
 func (*FetchClusterUpgradeInfoRequest) ProtoMessage() {}
 
 func (x *FetchClusterUpgradeInfoRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[192]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[200]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -21985,7 +22932,7 @@ func (x *FetchClusterUpgradeInfoRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FetchClusterUpgradeInfoRequest.ProtoReflect.Descriptor instead.
 func (*FetchClusterUpgradeInfoRequest) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{192}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{200}
 }
 
 func (x *FetchClusterUpgradeInfoRequest) GetName() string {
@@ -22025,7 +22972,7 @@ type ClusterUpgradeInfo struct {
 
 func (x *ClusterUpgradeInfo) Reset() {
 	*x = ClusterUpgradeInfo{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[193]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[201]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -22037,7 +22984,7 @@ func (x *ClusterUpgradeInfo) String() string {
 func (*ClusterUpgradeInfo) ProtoMessage() {}
 
 func (x *ClusterUpgradeInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[193]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[201]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -22050,7 +22997,7 @@ func (x *ClusterUpgradeInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ClusterUpgradeInfo.ProtoReflect.Descriptor instead.
 func (*ClusterUpgradeInfo) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{193}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{201}
 }
 
 func (x *ClusterUpgradeInfo) GetMinorTargetVersion() string {
@@ -22124,7 +23071,7 @@ type UpgradeDetails struct {
 
 func (x *UpgradeDetails) Reset() {
 	*x = UpgradeDetails{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[194]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[202]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -22136,7 +23083,7 @@ func (x *UpgradeDetails) String() string {
 func (*UpgradeDetails) ProtoMessage() {}
 
 func (x *UpgradeDetails) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[194]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[202]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -22149,7 +23096,7 @@ func (x *UpgradeDetails) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpgradeDetails.ProtoReflect.Descriptor instead.
 func (*UpgradeDetails) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{194}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{202}
 }
 
 func (x *UpgradeDetails) GetState() UpgradeDetails_State {
@@ -22195,10 +23142,10 @@ func (x *UpgradeDetails) GetStartType() UpgradeDetails_StartType {
 }
 
 // FetchNodePoolUpgradeInfoRequest fetches the upgrade information of a
-// nodepool.
+// node pool.
 type FetchNodePoolUpgradeInfoRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. The name (project, location, cluster, nodepool) of the nodepool
+	// Required. The name (project, location, cluster, node pool) of the node pool
 	// to get. Specified in the format
 	// `projects/*/locations/*/clusters/*/nodePools/*` or
 	// `projects/*/zones/*/clusters/*/nodePools/*`.
@@ -22211,7 +23158,7 @@ type FetchNodePoolUpgradeInfoRequest struct {
 
 func (x *FetchNodePoolUpgradeInfoRequest) Reset() {
 	*x = FetchNodePoolUpgradeInfoRequest{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[195]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[203]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -22223,7 +23170,7 @@ func (x *FetchNodePoolUpgradeInfoRequest) String() string {
 func (*FetchNodePoolUpgradeInfoRequest) ProtoMessage() {}
 
 func (x *FetchNodePoolUpgradeInfoRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[195]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[203]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -22236,7 +23183,7 @@ func (x *FetchNodePoolUpgradeInfoRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FetchNodePoolUpgradeInfoRequest.ProtoReflect.Descriptor instead.
 func (*FetchNodePoolUpgradeInfoRequest) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{195}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{203}
 }
 
 func (x *FetchNodePoolUpgradeInfoRequest) GetName() string {
@@ -22253,7 +23200,7 @@ func (x *FetchNodePoolUpgradeInfoRequest) GetVersion() string {
 	return ""
 }
 
-// NodePoolUpgradeInfo contains the upgrade information of a nodepool.
+// NodePoolUpgradeInfo contains the upgrade information of a node pool.
 type NodePoolUpgradeInfo struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// minor_target_version indicates the target version for minor upgrade.
@@ -22266,9 +23213,9 @@ type NodePoolUpgradeInfo struct {
 	PausedReason []NodePoolUpgradeInfo_AutoUpgradePausedReason `protobuf:"varint,4,rep,packed,name=paused_reason,json=pausedReason,proto3,enum=google.container.v1.NodePoolUpgradeInfo_AutoUpgradePausedReason" json:"paused_reason,omitempty"`
 	// The list of past auto upgrades.
 	UpgradeDetails []*UpgradeDetails `protobuf:"bytes,5,rep,name=upgrade_details,json=upgradeDetails,proto3" json:"upgrade_details,omitempty"`
-	// The nodepool's current minor version's end of standard support timestamp.
+	// The node pool's current minor version's end of standard support timestamp.
 	EndOfStandardSupportTimestamp *string `protobuf:"bytes,6,opt,name=end_of_standard_support_timestamp,json=endOfStandardSupportTimestamp,proto3,oneof" json:"end_of_standard_support_timestamp,omitempty"`
-	// The nodepool's current minor version's end of extended support timestamp.
+	// The node pool's current minor version's end of extended support timestamp.
 	EndOfExtendedSupportTimestamp *string `protobuf:"bytes,7,opt,name=end_of_extended_support_timestamp,json=endOfExtendedSupportTimestamp,proto3,oneof" json:"end_of_extended_support_timestamp,omitempty"`
 	unknownFields                 protoimpl.UnknownFields
 	sizeCache                     protoimpl.SizeCache
@@ -22276,7 +23223,7 @@ type NodePoolUpgradeInfo struct {
 
 func (x *NodePoolUpgradeInfo) Reset() {
 	*x = NodePoolUpgradeInfo{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[196]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[204]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -22288,7 +23235,7 @@ func (x *NodePoolUpgradeInfo) String() string {
 func (*NodePoolUpgradeInfo) ProtoMessage() {}
 
 func (x *NodePoolUpgradeInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[196]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[204]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -22301,7 +23248,7 @@ func (x *NodePoolUpgradeInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NodePoolUpgradeInfo.ProtoReflect.Descriptor instead.
 func (*NodePoolUpgradeInfo) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{196}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{204}
 }
 
 func (x *NodePoolUpgradeInfo) GetMinorTargetVersion() string {
@@ -22353,6 +23300,52 @@ func (x *NodePoolUpgradeInfo) GetEndOfExtendedSupportTimestamp() string {
 	return ""
 }
 
+// Configuration for scheduled upgrades on the cluster.
+type ScheduleUpgradeConfig struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. Whether or not scheduled upgrades are enabled.
+	Enabled       bool `protobuf:"varint,1,opt,name=enabled,proto3" json:"enabled,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ScheduleUpgradeConfig) Reset() {
+	*x = ScheduleUpgradeConfig{}
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[205]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ScheduleUpgradeConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ScheduleUpgradeConfig) ProtoMessage() {}
+
+func (x *ScheduleUpgradeConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[205]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ScheduleUpgradeConfig.ProtoReflect.Descriptor instead.
+func (*ScheduleUpgradeConfig) Descriptor() ([]byte, []int) {
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{205}
+}
+
+func (x *ScheduleUpgradeConfig) GetEnabled() bool {
+	if x != nil {
+		return x.Enabled
+	}
+	return false
+}
+
 // GkeAutoUpgradeConfig is the configuration for GKE auto upgrades.
 type GkeAutoUpgradeConfig struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -22365,7 +23358,7 @@ type GkeAutoUpgradeConfig struct {
 
 func (x *GkeAutoUpgradeConfig) Reset() {
 	*x = GkeAutoUpgradeConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[197]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[206]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -22377,7 +23370,7 @@ func (x *GkeAutoUpgradeConfig) String() string {
 func (*GkeAutoUpgradeConfig) ProtoMessage() {}
 
 func (x *GkeAutoUpgradeConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[197]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[206]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -22390,7 +23383,7 @@ func (x *GkeAutoUpgradeConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GkeAutoUpgradeConfig.ProtoReflect.Descriptor instead.
 func (*GkeAutoUpgradeConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{197}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{206}
 }
 
 func (x *GkeAutoUpgradeConfig) GetPatchMode() GkeAutoUpgradeConfig_PatchMode {
@@ -22411,7 +23404,7 @@ type NetworkTierConfig struct {
 
 func (x *NetworkTierConfig) Reset() {
 	*x = NetworkTierConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[198]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[207]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -22423,7 +23416,7 @@ func (x *NetworkTierConfig) String() string {
 func (*NetworkTierConfig) ProtoMessage() {}
 
 func (x *NetworkTierConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[198]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[207]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -22436,7 +23429,7 @@ func (x *NetworkTierConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NetworkTierConfig.ProtoReflect.Descriptor instead.
 func (*NetworkTierConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{198}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{207}
 }
 
 func (x *NetworkTierConfig) GetNetworkTier() NetworkTierConfig_NetworkTier {
@@ -22444,6 +23437,61 @@ func (x *NetworkTierConfig) GetNetworkTier() NetworkTierConfig_NetworkTier {
 		return x.NetworkTier
 	}
 	return NetworkTierConfig_NETWORK_TIER_UNSPECIFIED
+}
+
+// Configuration for sync Secret Manager secrets as k8s secrets.
+type SecretSyncConfig struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Enable/Disable Secret Sync Config.
+	Enabled *bool `protobuf:"varint,1,opt,name=enabled,proto3,oneof" json:"enabled,omitempty"`
+	// Rotation config for secret manager.
+	RotationConfig *SecretSyncConfig_SyncRotationConfig `protobuf:"bytes,2,opt,name=rotation_config,json=rotationConfig,proto3,oneof" json:"rotation_config,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *SecretSyncConfig) Reset() {
+	*x = SecretSyncConfig{}
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[208]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SecretSyncConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SecretSyncConfig) ProtoMessage() {}
+
+func (x *SecretSyncConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[208]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SecretSyncConfig.ProtoReflect.Descriptor instead.
+func (*SecretSyncConfig) Descriptor() ([]byte, []int) {
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{208}
+}
+
+func (x *SecretSyncConfig) GetEnabled() bool {
+	if x != nil && x.Enabled != nil {
+		return *x.Enabled
+	}
+	return false
+}
+
+func (x *SecretSyncConfig) GetRotationConfig() *SecretSyncConfig_SyncRotationConfig {
+	if x != nil {
+		return x.RotationConfig
+	}
+	return nil
 }
 
 // ManagedOpenTelemetryConfig is the configuration for the GKE Managed
@@ -22458,7 +23506,7 @@ type ManagedOpenTelemetryConfig struct {
 
 func (x *ManagedOpenTelemetryConfig) Reset() {
 	*x = ManagedOpenTelemetryConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[199]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[209]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -22470,7 +23518,7 @@ func (x *ManagedOpenTelemetryConfig) String() string {
 func (*ManagedOpenTelemetryConfig) ProtoMessage() {}
 
 func (x *ManagedOpenTelemetryConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[199]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[209]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -22483,7 +23531,7 @@ func (x *ManagedOpenTelemetryConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ManagedOpenTelemetryConfig.ProtoReflect.Descriptor instead.
 func (*ManagedOpenTelemetryConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{199}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{209}
 }
 
 func (x *ManagedOpenTelemetryConfig) GetScope() ManagedOpenTelemetryConfig_Scope {
@@ -22491,6 +23539,99 @@ func (x *ManagedOpenTelemetryConfig) GetScope() ManagedOpenTelemetryConfig_Scope
 		return *x.Scope
 	}
 	return ManagedOpenTelemetryConfig_SCOPE_UNSPECIFIED
+}
+
+// ManagedMachineLearningDiagnosticsConfig is the configuration for the GKE
+// Managed Machine Learning Diagnostics pipeline.
+type ManagedMachineLearningDiagnosticsConfig struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Enable/Disable Managed Machine Learning Diagnostics.
+	Enabled       *bool `protobuf:"varint,1,opt,name=enabled,proto3,oneof" json:"enabled,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ManagedMachineLearningDiagnosticsConfig) Reset() {
+	*x = ManagedMachineLearningDiagnosticsConfig{}
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[210]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ManagedMachineLearningDiagnosticsConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ManagedMachineLearningDiagnosticsConfig) ProtoMessage() {}
+
+func (x *ManagedMachineLearningDiagnosticsConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[210]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ManagedMachineLearningDiagnosticsConfig.ProtoReflect.Descriptor instead.
+func (*ManagedMachineLearningDiagnosticsConfig) Descriptor() ([]byte, []int) {
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{210}
+}
+
+func (x *ManagedMachineLearningDiagnosticsConfig) GetEnabled() bool {
+	if x != nil && x.Enabled != nil {
+		return *x.Enabled
+	}
+	return false
+}
+
+// PodSnapshotConfig is the configuration for GKE Pod Snapshots feature.
+type PodSnapshotConfig struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Whether or not the Pod Snapshots feature is enabled.
+	Enabled       bool `protobuf:"varint,1,opt,name=enabled,proto3" json:"enabled,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *PodSnapshotConfig) Reset() {
+	*x = PodSnapshotConfig{}
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[211]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PodSnapshotConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PodSnapshotConfig) ProtoMessage() {}
+
+func (x *PodSnapshotConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[211]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PodSnapshotConfig.ProtoReflect.Descriptor instead.
+func (*PodSnapshotConfig) Descriptor() ([]byte, []int) {
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{211}
+}
+
+func (x *PodSnapshotConfig) GetEnabled() bool {
+	if x != nil {
+		return x.Enabled
+	}
+	return false
 }
 
 // Hugepages amount in both 2m and 1g size
@@ -22506,7 +23647,7 @@ type LinuxNodeConfig_HugepagesConfig struct {
 
 func (x *LinuxNodeConfig_HugepagesConfig) Reset() {
 	*x = LinuxNodeConfig_HugepagesConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[200]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[212]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -22518,7 +23659,7 @@ func (x *LinuxNodeConfig_HugepagesConfig) String() string {
 func (*LinuxNodeConfig_HugepagesConfig) ProtoMessage() {}
 
 func (x *LinuxNodeConfig_HugepagesConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[200]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[212]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -22548,6 +23689,52 @@ func (x *LinuxNodeConfig_HugepagesConfig) GetHugepageSize1G() int32 {
 	return 0
 }
 
+// Support for running custom init code while bootstrapping nodes.
+type LinuxNodeConfig_CustomNodeInit struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. The init script to be executed on the node.
+	InitScript    *LinuxNodeConfig_CustomNodeInit_InitScript `protobuf:"bytes,1,opt,name=init_script,json=initScript,proto3" json:"init_script,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *LinuxNodeConfig_CustomNodeInit) Reset() {
+	*x = LinuxNodeConfig_CustomNodeInit{}
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[213]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LinuxNodeConfig_CustomNodeInit) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LinuxNodeConfig_CustomNodeInit) ProtoMessage() {}
+
+func (x *LinuxNodeConfig_CustomNodeInit) ProtoReflect() protoreflect.Message {
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[213]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LinuxNodeConfig_CustomNodeInit.ProtoReflect.Descriptor instead.
+func (*LinuxNodeConfig_CustomNodeInit) Descriptor() ([]byte, []int) {
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{0, 1}
+}
+
+func (x *LinuxNodeConfig_CustomNodeInit) GetInitScript() *LinuxNodeConfig_CustomNodeInit_InitScript {
+	if x != nil {
+		return x.InitScript
+	}
+	return nil
+}
+
 // Configuration for swap memory on a node pool.
 type LinuxNodeConfig_SwapConfig struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -22570,7 +23757,7 @@ type LinuxNodeConfig_SwapConfig struct {
 
 func (x *LinuxNodeConfig_SwapConfig) Reset() {
 	*x = LinuxNodeConfig_SwapConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[201]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[214]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -22582,7 +23769,7 @@ func (x *LinuxNodeConfig_SwapConfig) String() string {
 func (*LinuxNodeConfig_SwapConfig) ProtoMessage() {}
 
 func (x *LinuxNodeConfig_SwapConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[201]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[214]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -22595,7 +23782,7 @@ func (x *LinuxNodeConfig_SwapConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LinuxNodeConfig_SwapConfig.ProtoReflect.Descriptor instead.
 func (*LinuxNodeConfig_SwapConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{0, 1}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{0, 2}
 }
 
 func (x *LinuxNodeConfig_SwapConfig) GetEnabled() bool {
@@ -22685,7 +23872,7 @@ type LinuxNodeConfig_NodeKernelModuleLoading struct {
 
 func (x *LinuxNodeConfig_NodeKernelModuleLoading) Reset() {
 	*x = LinuxNodeConfig_NodeKernelModuleLoading{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[202]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[215]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -22697,7 +23884,7 @@ func (x *LinuxNodeConfig_NodeKernelModuleLoading) String() string {
 func (*LinuxNodeConfig_NodeKernelModuleLoading) ProtoMessage() {}
 
 func (x *LinuxNodeConfig_NodeKernelModuleLoading) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[202]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[215]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -22710,7 +23897,7 @@ func (x *LinuxNodeConfig_NodeKernelModuleLoading) ProtoReflect() protoreflect.Me
 
 // Deprecated: Use LinuxNodeConfig_NodeKernelModuleLoading.ProtoReflect.Descriptor instead.
 func (*LinuxNodeConfig_NodeKernelModuleLoading) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{0, 2}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{0, 3}
 }
 
 func (x *LinuxNodeConfig_NodeKernelModuleLoading) GetPolicy() LinuxNodeConfig_NodeKernelModuleLoading_Policy {
@@ -22718,6 +23905,143 @@ func (x *LinuxNodeConfig_NodeKernelModuleLoading) GetPolicy() LinuxNodeConfig_No
 		return x.Policy
 	}
 	return LinuxNodeConfig_NodeKernelModuleLoading_POLICY_UNSPECIFIED
+}
+
+// AccurateTimeConfig contains configuration for the accurate time
+// synchronization feature.
+type LinuxNodeConfig_AccurateTimeConfig struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Enables enhanced time synchronization using PTP-KVM.
+	EnablePtpKvmTimeSync *bool `protobuf:"varint,1,opt,name=enable_ptp_kvm_time_sync,json=enablePtpKvmTimeSync,proto3,oneof" json:"enable_ptp_kvm_time_sync,omitempty"`
+	unknownFields        protoimpl.UnknownFields
+	sizeCache            protoimpl.SizeCache
+}
+
+func (x *LinuxNodeConfig_AccurateTimeConfig) Reset() {
+	*x = LinuxNodeConfig_AccurateTimeConfig{}
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[216]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LinuxNodeConfig_AccurateTimeConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LinuxNodeConfig_AccurateTimeConfig) ProtoMessage() {}
+
+func (x *LinuxNodeConfig_AccurateTimeConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[216]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LinuxNodeConfig_AccurateTimeConfig.ProtoReflect.Descriptor instead.
+func (*LinuxNodeConfig_AccurateTimeConfig) Descriptor() ([]byte, []int) {
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{0, 4}
+}
+
+func (x *LinuxNodeConfig_AccurateTimeConfig) GetEnablePtpKvmTimeSync() bool {
+	if x != nil && x.EnablePtpKvmTimeSync != nil {
+		return *x.EnablePtpKvmTimeSync
+	}
+	return false
+}
+
+// InitScript provide a simply bash script to be executed on the node.
+type LinuxNodeConfig_CustomNodeInit_InitScript struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The Cloud Storage URI for storing the init script.
+	// Format: gs://BUCKET_NAME/OBJECT_NAME
+	// The service account on the node pool must have read access to the
+	// object.
+	// User can't configure both gcs_uri and gcp_secret_manager_secret_uri.
+	GcsUri string `protobuf:"bytes,1,opt,name=gcs_uri,json=gcsUri,proto3" json:"gcs_uri,omitempty"`
+	// The generation of the init script stored in Gloud Storage.
+	// This is the required field to identify the version of the
+	// init script.
+	// User can get the genetaion from
+	// `gcloud storage objects describe gs://BUCKET_NAME/OBJECT_NAME
+	// --format="value(generation)"` or from the "Version history" tab of the
+	// object in the Cloud Console UI.
+	GcsGeneration int64 `protobuf:"varint,2,opt,name=gcs_generation,json=gcsGeneration,proto3" json:"gcs_generation,omitempty"`
+	// Optional. The optional arguments line to be passed to the init script.
+	Args []string `protobuf:"bytes,3,rep,name=args,proto3" json:"args,omitempty"`
+	// The resource name of the secret manager secret hosting the init script.
+	// Both global and regional secrets are supported with format below:
+	// Global secret: projects/{project}/secrets/{secret}/versions/{version}
+	// Regional secret:
+	// projects/{project}/locations/{location}/secrets/{secret}/versions/{version}
+	// Example: projects/1234567890/secrets/script_1/versions/1.
+	// Accept version number only, not support version alias.
+	// User can't configure both gcp_secret_manager_secret_uri and gcs_uri.
+	GcpSecretManagerSecretUri string `protobuf:"bytes,4,opt,name=gcp_secret_manager_secret_uri,json=gcpSecretManagerSecretUri,proto3" json:"gcp_secret_manager_secret_uri,omitempty"`
+	unknownFields             protoimpl.UnknownFields
+	sizeCache                 protoimpl.SizeCache
+}
+
+func (x *LinuxNodeConfig_CustomNodeInit_InitScript) Reset() {
+	*x = LinuxNodeConfig_CustomNodeInit_InitScript{}
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[218]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LinuxNodeConfig_CustomNodeInit_InitScript) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LinuxNodeConfig_CustomNodeInit_InitScript) ProtoMessage() {}
+
+func (x *LinuxNodeConfig_CustomNodeInit_InitScript) ProtoReflect() protoreflect.Message {
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[218]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LinuxNodeConfig_CustomNodeInit_InitScript.ProtoReflect.Descriptor instead.
+func (*LinuxNodeConfig_CustomNodeInit_InitScript) Descriptor() ([]byte, []int) {
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{0, 1, 0}
+}
+
+func (x *LinuxNodeConfig_CustomNodeInit_InitScript) GetGcsUri() string {
+	if x != nil {
+		return x.GcsUri
+	}
+	return ""
+}
+
+func (x *LinuxNodeConfig_CustomNodeInit_InitScript) GetGcsGeneration() int64 {
+	if x != nil {
+		return x.GcsGeneration
+	}
+	return 0
+}
+
+func (x *LinuxNodeConfig_CustomNodeInit_InitScript) GetArgs() []string {
+	if x != nil {
+		return x.Args
+	}
+	return nil
+}
+
+func (x *LinuxNodeConfig_CustomNodeInit_InitScript) GetGcpSecretManagerSecretUri() string {
+	if x != nil {
+		return x.GcpSecretManagerSecretUri
+	}
+	return ""
 }
 
 // Defines encryption settings for the swap space.
@@ -22732,7 +24056,7 @@ type LinuxNodeConfig_SwapConfig_EncryptionConfig struct {
 
 func (x *LinuxNodeConfig_SwapConfig_EncryptionConfig) Reset() {
 	*x = LinuxNodeConfig_SwapConfig_EncryptionConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[204]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[219]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -22744,7 +24068,7 @@ func (x *LinuxNodeConfig_SwapConfig_EncryptionConfig) String() string {
 func (*LinuxNodeConfig_SwapConfig_EncryptionConfig) ProtoMessage() {}
 
 func (x *LinuxNodeConfig_SwapConfig_EncryptionConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[204]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[219]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -22757,7 +24081,7 @@ func (x *LinuxNodeConfig_SwapConfig_EncryptionConfig) ProtoReflect() protoreflec
 
 // Deprecated: Use LinuxNodeConfig_SwapConfig_EncryptionConfig.ProtoReflect.Descriptor instead.
 func (*LinuxNodeConfig_SwapConfig_EncryptionConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{0, 1, 0}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{0, 2, 0}
 }
 
 func (x *LinuxNodeConfig_SwapConfig_EncryptionConfig) GetDisabled() bool {
@@ -22784,7 +24108,7 @@ type LinuxNodeConfig_SwapConfig_BootDiskProfile struct {
 
 func (x *LinuxNodeConfig_SwapConfig_BootDiskProfile) Reset() {
 	*x = LinuxNodeConfig_SwapConfig_BootDiskProfile{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[205]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[220]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -22796,7 +24120,7 @@ func (x *LinuxNodeConfig_SwapConfig_BootDiskProfile) String() string {
 func (*LinuxNodeConfig_SwapConfig_BootDiskProfile) ProtoMessage() {}
 
 func (x *LinuxNodeConfig_SwapConfig_BootDiskProfile) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[205]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[220]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -22809,7 +24133,7 @@ func (x *LinuxNodeConfig_SwapConfig_BootDiskProfile) ProtoReflect() protoreflect
 
 // Deprecated: Use LinuxNodeConfig_SwapConfig_BootDiskProfile.ProtoReflect.Descriptor instead.
 func (*LinuxNodeConfig_SwapConfig_BootDiskProfile) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{0, 1, 1}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{0, 2, 1}
 }
 
 func (x *LinuxNodeConfig_SwapConfig_BootDiskProfile) GetSwapSize() isLinuxNodeConfig_SwapConfig_BootDiskProfile_SwapSize {
@@ -22874,7 +24198,7 @@ type LinuxNodeConfig_SwapConfig_EphemeralLocalSsdProfile struct {
 
 func (x *LinuxNodeConfig_SwapConfig_EphemeralLocalSsdProfile) Reset() {
 	*x = LinuxNodeConfig_SwapConfig_EphemeralLocalSsdProfile{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[206]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[221]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -22886,7 +24210,7 @@ func (x *LinuxNodeConfig_SwapConfig_EphemeralLocalSsdProfile) String() string {
 func (*LinuxNodeConfig_SwapConfig_EphemeralLocalSsdProfile) ProtoMessage() {}
 
 func (x *LinuxNodeConfig_SwapConfig_EphemeralLocalSsdProfile) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[206]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[221]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -22899,7 +24223,7 @@ func (x *LinuxNodeConfig_SwapConfig_EphemeralLocalSsdProfile) ProtoReflect() pro
 
 // Deprecated: Use LinuxNodeConfig_SwapConfig_EphemeralLocalSsdProfile.ProtoReflect.Descriptor instead.
 func (*LinuxNodeConfig_SwapConfig_EphemeralLocalSsdProfile) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{0, 1, 2}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{0, 2, 2}
 }
 
 func (x *LinuxNodeConfig_SwapConfig_EphemeralLocalSsdProfile) GetSwapSize() isLinuxNodeConfig_SwapConfig_EphemeralLocalSsdProfile_SwapSize {
@@ -22959,7 +24283,7 @@ type LinuxNodeConfig_SwapConfig_DedicatedLocalSsdProfile struct {
 
 func (x *LinuxNodeConfig_SwapConfig_DedicatedLocalSsdProfile) Reset() {
 	*x = LinuxNodeConfig_SwapConfig_DedicatedLocalSsdProfile{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[207]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[222]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -22971,7 +24295,7 @@ func (x *LinuxNodeConfig_SwapConfig_DedicatedLocalSsdProfile) String() string {
 func (*LinuxNodeConfig_SwapConfig_DedicatedLocalSsdProfile) ProtoMessage() {}
 
 func (x *LinuxNodeConfig_SwapConfig_DedicatedLocalSsdProfile) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[207]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[222]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -22984,7 +24308,7 @@ func (x *LinuxNodeConfig_SwapConfig_DedicatedLocalSsdProfile) ProtoReflect() pro
 
 // Deprecated: Use LinuxNodeConfig_SwapConfig_DedicatedLocalSsdProfile.ProtoReflect.Descriptor instead.
 func (*LinuxNodeConfig_SwapConfig_DedicatedLocalSsdProfile) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{0, 1, 3}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{0, 2, 3}
 }
 
 func (x *LinuxNodeConfig_SwapConfig_DedicatedLocalSsdProfile) GetDiskCount() int64 {
@@ -22992,6 +24316,63 @@ func (x *LinuxNodeConfig_SwapConfig_DedicatedLocalSsdProfile) GetDiskCount() int
 		return x.DiskCount
 	}
 	return 0
+}
+
+// Contains config to modify node-level parameters for container restart
+// behavior.
+type NodeKubeletConfig_CrashLoopBackOffConfig struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. The maximum duration the backoff delay can accrue to for
+	// container restarts, minimum 1 second, maximum 300 seconds. If not set,
+	// defaults to the internal crashloopbackoff maximum.
+	//
+	// The string must be a sequence of decimal numbers, each with optional
+	// fraction and a unit suffix, such as "300ms".
+	// Valid time units are "ns", "us" (or "µs"), "ms", "s", "m", "h".
+	//
+	// See
+	// https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#configurable-container-restart-delay
+	// for more details.
+	MaxContainerRestartPeriod string `protobuf:"bytes,1,opt,name=max_container_restart_period,json=maxContainerRestartPeriod,proto3" json:"max_container_restart_period,omitempty"`
+	unknownFields             protoimpl.UnknownFields
+	sizeCache                 protoimpl.SizeCache
+}
+
+func (x *NodeKubeletConfig_CrashLoopBackOffConfig) Reset() {
+	*x = NodeKubeletConfig_CrashLoopBackOffConfig{}
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[223]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *NodeKubeletConfig_CrashLoopBackOffConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*NodeKubeletConfig_CrashLoopBackOffConfig) ProtoMessage() {}
+
+func (x *NodeKubeletConfig_CrashLoopBackOffConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[223]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use NodeKubeletConfig_CrashLoopBackOffConfig.ProtoReflect.Descriptor instead.
+func (*NodeKubeletConfig_CrashLoopBackOffConfig) Descriptor() ([]byte, []int) {
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{2, 0}
+}
+
+func (x *NodeKubeletConfig_CrashLoopBackOffConfig) GetMaxContainerRestartPeriod() string {
+	if x != nil {
+		return x.MaxContainerRestartPeriod
+	}
+	return ""
 }
 
 // Configuration of all network bandwidth tiers
@@ -23005,7 +24386,7 @@ type NodeNetworkConfig_NetworkPerformanceConfig struct {
 
 func (x *NodeNetworkConfig_NetworkPerformanceConfig) Reset() {
 	*x = NodeNetworkConfig_NetworkPerformanceConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[211]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[227]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -23017,7 +24398,7 @@ func (x *NodeNetworkConfig_NetworkPerformanceConfig) String() string {
 func (*NodeNetworkConfig_NetworkPerformanceConfig) ProtoMessage() {}
 
 func (x *NodeNetworkConfig_NetworkPerformanceConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[211]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[227]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -23030,7 +24411,7 @@ func (x *NodeNetworkConfig_NetworkPerformanceConfig) ProtoReflect() protoreflect
 
 // Deprecated: Use NodeNetworkConfig_NetworkPerformanceConfig.ProtoReflect.Descriptor instead.
 func (*NodeNetworkConfig_NetworkPerformanceConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{10, 0}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{11, 0}
 }
 
 func (x *NodeNetworkConfig_NetworkPerformanceConfig) GetTotalEgressBandwidthTier() NodeNetworkConfig_NetworkPerformanceConfig_Tier {
@@ -23057,7 +24438,7 @@ type SoleTenantConfig_NodeAffinity struct {
 
 func (x *SoleTenantConfig_NodeAffinity) Reset() {
 	*x = SoleTenantConfig_NodeAffinity{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[212]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[228]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -23069,7 +24450,7 @@ func (x *SoleTenantConfig_NodeAffinity) String() string {
 func (*SoleTenantConfig_NodeAffinity) ProtoMessage() {}
 
 func (x *SoleTenantConfig_NodeAffinity) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[212]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[228]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -23082,7 +24463,7 @@ func (x *SoleTenantConfig_NodeAffinity) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SoleTenantConfig_NodeAffinity.ProtoReflect.Descriptor instead.
 func (*SoleTenantConfig_NodeAffinity) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{17, 0}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{18, 0}
 }
 
 func (x *SoleTenantConfig_NodeAffinity) GetKey() string {
@@ -23120,7 +24501,7 @@ type ContainerdConfig_PrivateRegistryAccessConfig struct {
 
 func (x *ContainerdConfig_PrivateRegistryAccessConfig) Reset() {
 	*x = ContainerdConfig_PrivateRegistryAccessConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[213]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[229]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -23132,7 +24513,7 @@ func (x *ContainerdConfig_PrivateRegistryAccessConfig) String() string {
 func (*ContainerdConfig_PrivateRegistryAccessConfig) ProtoMessage() {}
 
 func (x *ContainerdConfig_PrivateRegistryAccessConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[213]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[229]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -23145,7 +24526,7 @@ func (x *ContainerdConfig_PrivateRegistryAccessConfig) ProtoReflect() protorefle
 
 // Deprecated: Use ContainerdConfig_PrivateRegistryAccessConfig.ProtoReflect.Descriptor instead.
 func (*ContainerdConfig_PrivateRegistryAccessConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{18, 0}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{19, 0}
 }
 
 func (x *ContainerdConfig_PrivateRegistryAccessConfig) GetEnabled() bool {
@@ -23173,7 +24554,7 @@ type ContainerdConfig_WritableCgroups struct {
 
 func (x *ContainerdConfig_WritableCgroups) Reset() {
 	*x = ContainerdConfig_WritableCgroups{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[214]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[230]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -23185,7 +24566,7 @@ func (x *ContainerdConfig_WritableCgroups) String() string {
 func (*ContainerdConfig_WritableCgroups) ProtoMessage() {}
 
 func (x *ContainerdConfig_WritableCgroups) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[214]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[230]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -23198,7 +24579,7 @@ func (x *ContainerdConfig_WritableCgroups) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ContainerdConfig_WritableCgroups.ProtoReflect.Descriptor instead.
 func (*ContainerdConfig_WritableCgroups) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{18, 1}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{19, 1}
 }
 
 func (x *ContainerdConfig_WritableCgroups) GetEnabled() bool {
@@ -23217,11 +24598,11 @@ type ContainerdConfig_RegistryHostConfig struct {
 	// Defines the host name of the registry server, which will be used to
 	// create configuration file as /etc/containerd/hosts.d/<server>/hosts.toml.
 	// It supports fully qualified domain names (FQDN) and IP addresses:
-	// Specifying port is supported.
+	// Specifying port is supported, while scheme and path are NOT supported.
 	// Wildcards are NOT supported.
 	// Examples:
-	// - my.customdomain.com
-	// - 10.0.1.2:5000
+	// - `my.customdomain.com`
+	// - `10.0.1.2:5000`
 	Server string `protobuf:"bytes,1,opt,name=server,proto3" json:"server,omitempty"`
 	// HostConfig configures a list of host-specific configurations for the
 	// server.
@@ -23233,7 +24614,7 @@ type ContainerdConfig_RegistryHostConfig struct {
 
 func (x *ContainerdConfig_RegistryHostConfig) Reset() {
 	*x = ContainerdConfig_RegistryHostConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[215]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[231]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -23245,7 +24626,7 @@ func (x *ContainerdConfig_RegistryHostConfig) String() string {
 func (*ContainerdConfig_RegistryHostConfig) ProtoMessage() {}
 
 func (x *ContainerdConfig_RegistryHostConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[215]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[231]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -23258,7 +24639,7 @@ func (x *ContainerdConfig_RegistryHostConfig) ProtoReflect() protoreflect.Messag
 
 // Deprecated: Use ContainerdConfig_RegistryHostConfig.ProtoReflect.Descriptor instead.
 func (*ContainerdConfig_RegistryHostConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{18, 2}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{19, 2}
 }
 
 func (x *ContainerdConfig_RegistryHostConfig) GetServer() string {
@@ -23283,8 +24664,8 @@ type ContainerdConfig_PrivateRegistryAccessConfig_CertificateAuthorityDomainConf
 	// Specifying port is supported.
 	// Wildcards are NOT supported.
 	// Examples:
-	// - my.customdomain.com
-	// - 10.0.1.2:5000
+	// - `my.customdomain.com`
+	// - `10.0.1.2:5000`
 	Fqdns []string `protobuf:"bytes,1,rep,name=fqdns,proto3" json:"fqdns,omitempty"`
 	// Certificate access config. The following are supported:
 	// - GCPSecretManagerCertificateConfig
@@ -23299,7 +24680,7 @@ type ContainerdConfig_PrivateRegistryAccessConfig_CertificateAuthorityDomainConf
 
 func (x *ContainerdConfig_PrivateRegistryAccessConfig_CertificateAuthorityDomainConfig) Reset() {
 	*x = ContainerdConfig_PrivateRegistryAccessConfig_CertificateAuthorityDomainConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[216]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[232]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -23312,7 +24693,7 @@ func (*ContainerdConfig_PrivateRegistryAccessConfig_CertificateAuthorityDomainCo
 }
 
 func (x *ContainerdConfig_PrivateRegistryAccessConfig_CertificateAuthorityDomainConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[216]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[232]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -23325,7 +24706,7 @@ func (x *ContainerdConfig_PrivateRegistryAccessConfig_CertificateAuthorityDomain
 
 // Deprecated: Use ContainerdConfig_PrivateRegistryAccessConfig_CertificateAuthorityDomainConfig.ProtoReflect.Descriptor instead.
 func (*ContainerdConfig_PrivateRegistryAccessConfig_CertificateAuthorityDomainConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{18, 0, 0}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{19, 0, 0}
 }
 
 func (x *ContainerdConfig_PrivateRegistryAccessConfig_CertificateAuthorityDomainConfig) GetFqdns() []string {
@@ -23377,7 +24758,7 @@ type ContainerdConfig_PrivateRegistryAccessConfig_CertificateAuthorityDomainConf
 
 func (x *ContainerdConfig_PrivateRegistryAccessConfig_CertificateAuthorityDomainConfig_GCPSecretManagerCertificateConfig) Reset() {
 	*x = ContainerdConfig_PrivateRegistryAccessConfig_CertificateAuthorityDomainConfig_GCPSecretManagerCertificateConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[217]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[233]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -23390,7 +24771,7 @@ func (*ContainerdConfig_PrivateRegistryAccessConfig_CertificateAuthorityDomainCo
 }
 
 func (x *ContainerdConfig_PrivateRegistryAccessConfig_CertificateAuthorityDomainConfig_GCPSecretManagerCertificateConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[217]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[233]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -23403,7 +24784,7 @@ func (x *ContainerdConfig_PrivateRegistryAccessConfig_CertificateAuthorityDomain
 
 // Deprecated: Use ContainerdConfig_PrivateRegistryAccessConfig_CertificateAuthorityDomainConfig_GCPSecretManagerCertificateConfig.ProtoReflect.Descriptor instead.
 func (*ContainerdConfig_PrivateRegistryAccessConfig_CertificateAuthorityDomainConfig_GCPSecretManagerCertificateConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{18, 0, 0, 0}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{19, 0, 0, 0}
 }
 
 func (x *ContainerdConfig_PrivateRegistryAccessConfig_CertificateAuthorityDomainConfig_GCPSecretManagerCertificateConfig) GetSecretUri() string {
@@ -23428,7 +24809,7 @@ type ContainerdConfig_RegistryHostConfig_CertificateConfig struct {
 
 func (x *ContainerdConfig_RegistryHostConfig_CertificateConfig) Reset() {
 	*x = ContainerdConfig_RegistryHostConfig_CertificateConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[218]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[234]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -23440,7 +24821,7 @@ func (x *ContainerdConfig_RegistryHostConfig_CertificateConfig) String() string 
 func (*ContainerdConfig_RegistryHostConfig_CertificateConfig) ProtoMessage() {}
 
 func (x *ContainerdConfig_RegistryHostConfig_CertificateConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[218]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[234]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -23453,7 +24834,7 @@ func (x *ContainerdConfig_RegistryHostConfig_CertificateConfig) ProtoReflect() p
 
 // Deprecated: Use ContainerdConfig_RegistryHostConfig_CertificateConfig.ProtoReflect.Descriptor instead.
 func (*ContainerdConfig_RegistryHostConfig_CertificateConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{18, 2, 0}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{19, 2, 0}
 }
 
 func (x *ContainerdConfig_RegistryHostConfig_CertificateConfig) GetCertificate() isContainerdConfig_RegistryHostConfig_CertificateConfig_Certificate {
@@ -23504,7 +24885,7 @@ type ContainerdConfig_RegistryHostConfig_CertificateConfigPair struct {
 
 func (x *ContainerdConfig_RegistryHostConfig_CertificateConfigPair) Reset() {
 	*x = ContainerdConfig_RegistryHostConfig_CertificateConfigPair{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[219]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[235]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -23516,7 +24897,7 @@ func (x *ContainerdConfig_RegistryHostConfig_CertificateConfigPair) String() str
 func (*ContainerdConfig_RegistryHostConfig_CertificateConfigPair) ProtoMessage() {}
 
 func (x *ContainerdConfig_RegistryHostConfig_CertificateConfigPair) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[219]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[235]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -23529,7 +24910,7 @@ func (x *ContainerdConfig_RegistryHostConfig_CertificateConfigPair) ProtoReflect
 
 // Deprecated: Use ContainerdConfig_RegistryHostConfig_CertificateConfigPair.ProtoReflect.Descriptor instead.
 func (*ContainerdConfig_RegistryHostConfig_CertificateConfigPair) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{18, 2, 1}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{19, 2, 1}
 }
 
 func (x *ContainerdConfig_RegistryHostConfig_CertificateConfigPair) GetCert() *ContainerdConfig_RegistryHostConfig_CertificateConfig {
@@ -23559,7 +24940,7 @@ type ContainerdConfig_RegistryHostConfig_RegistryHeader struct {
 
 func (x *ContainerdConfig_RegistryHostConfig_RegistryHeader) Reset() {
 	*x = ContainerdConfig_RegistryHostConfig_RegistryHeader{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[220]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[236]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -23571,7 +24952,7 @@ func (x *ContainerdConfig_RegistryHostConfig_RegistryHeader) String() string {
 func (*ContainerdConfig_RegistryHostConfig_RegistryHeader) ProtoMessage() {}
 
 func (x *ContainerdConfig_RegistryHostConfig_RegistryHeader) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[220]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[236]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -23584,7 +24965,7 @@ func (x *ContainerdConfig_RegistryHostConfig_RegistryHeader) ProtoReflect() prot
 
 // Deprecated: Use ContainerdConfig_RegistryHostConfig_RegistryHeader.ProtoReflect.Descriptor instead.
 func (*ContainerdConfig_RegistryHostConfig_RegistryHeader) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{18, 2, 2}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{19, 2, 2}
 }
 
 func (x *ContainerdConfig_RegistryHostConfig_RegistryHeader) GetKey() string {
@@ -23605,12 +24986,14 @@ func (x *ContainerdConfig_RegistryHostConfig_RegistryHeader) GetValue() []string
 type ContainerdConfig_RegistryHostConfig_HostConfig struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Host configures the registry host/mirror.
-	// It supports fully qualified domain names (FQDN) and IP addresses:
-	// Specifying port is supported.
+	// It supports fully qualified domain names (FQDNs) and IP addresses.
+	// Specifying scheme, port or path is supported. Scheme can only be http
+	// or https.
 	// Wildcards are NOT supported.
 	// Examples:
-	// - my.customdomain.com
-	// - 10.0.1.2:5000
+	// - `my.customdomain.com`
+	// - `https://my.customdomain.com/path`
+	// - `10.0.1.2:5000`
 	Host string `protobuf:"bytes,1,opt,name=host,proto3" json:"host,omitempty"`
 	// Capabilities represent the capabilities of the registry host,
 	// specifying what operations a host is capable of performing.
@@ -23640,7 +25023,7 @@ type ContainerdConfig_RegistryHostConfig_HostConfig struct {
 
 func (x *ContainerdConfig_RegistryHostConfig_HostConfig) Reset() {
 	*x = ContainerdConfig_RegistryHostConfig_HostConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[221]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[237]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -23652,7 +25035,7 @@ func (x *ContainerdConfig_RegistryHostConfig_HostConfig) String() string {
 func (*ContainerdConfig_RegistryHostConfig_HostConfig) ProtoMessage() {}
 
 func (x *ContainerdConfig_RegistryHostConfig_HostConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[221]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[237]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -23665,7 +25048,7 @@ func (x *ContainerdConfig_RegistryHostConfig_HostConfig) ProtoReflect() protoref
 
 // Deprecated: Use ContainerdConfig_RegistryHostConfig_HostConfig.ProtoReflect.Descriptor instead.
 func (*ContainerdConfig_RegistryHostConfig_HostConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{18, 2, 3}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{19, 2, 3}
 }
 
 func (x *ContainerdConfig_RegistryHostConfig_HostConfig) GetHost() string {
@@ -23730,7 +25113,7 @@ type MasterAuthorizedNetworksConfig_CidrBlock struct {
 
 func (x *MasterAuthorizedNetworksConfig_CidrBlock) Reset() {
 	*x = MasterAuthorizedNetworksConfig_CidrBlock{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[224]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[240]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -23742,7 +25125,7 @@ func (x *MasterAuthorizedNetworksConfig_CidrBlock) String() string {
 func (*MasterAuthorizedNetworksConfig_CidrBlock) ProtoMessage() {}
 
 func (x *MasterAuthorizedNetworksConfig_CidrBlock) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[224]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[240]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -23755,7 +25138,7 @@ func (x *MasterAuthorizedNetworksConfig_CidrBlock) ProtoReflect() protoreflect.M
 
 // Deprecated: Use MasterAuthorizedNetworksConfig_CidrBlock.ProtoReflect.Descriptor instead.
 func (*MasterAuthorizedNetworksConfig_CidrBlock) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{47, 0}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{50, 0}
 }
 
 func (x *MasterAuthorizedNetworksConfig_CidrBlock) GetDisplayName() string {
@@ -23783,7 +25166,7 @@ type CompliancePostureConfig_ComplianceStandard struct {
 
 func (x *CompliancePostureConfig_ComplianceStandard) Reset() {
 	*x = CompliancePostureConfig_ComplianceStandard{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[226]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[242]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -23795,7 +25178,7 @@ func (x *CompliancePostureConfig_ComplianceStandard) String() string {
 func (*CompliancePostureConfig_ComplianceStandard) ProtoMessage() {}
 
 func (x *CompliancePostureConfig_ComplianceStandard) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[226]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[242]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -23808,7 +25191,7 @@ func (x *CompliancePostureConfig_ComplianceStandard) ProtoReflect() protoreflect
 
 // Deprecated: Use CompliancePostureConfig_ComplianceStandard.ProtoReflect.Descriptor instead.
 func (*CompliancePostureConfig_ComplianceStandard) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{57, 0}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{62, 0}
 }
 
 func (x *CompliancePostureConfig_ComplianceStandard) GetStandard() string {
@@ -23837,7 +25220,7 @@ type OperationProgress_Metric struct {
 
 func (x *OperationProgress_Metric) Reset() {
 	*x = OperationProgress_Metric{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[227]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[243]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -23849,7 +25232,7 @@ func (x *OperationProgress_Metric) String() string {
 func (*OperationProgress_Metric) ProtoMessage() {}
 
 func (x *OperationProgress_Metric) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[227]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[243]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -23862,7 +25245,7 @@ func (x *OperationProgress_Metric) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OperationProgress_Metric.ProtoReflect.Descriptor instead.
 func (*OperationProgress_Metric) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{71, 0}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{76, 0}
 }
 
 func (x *OperationProgress_Metric) GetName() string {
@@ -23948,7 +25331,7 @@ type ServerConfig_ReleaseChannelConfig struct {
 
 func (x *ServerConfig_ReleaseChannelConfig) Reset() {
 	*x = ServerConfig_ReleaseChannelConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[228]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[244]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -23960,7 +25343,7 @@ func (x *ServerConfig_ReleaseChannelConfig) String() string {
 func (*ServerConfig_ReleaseChannelConfig) ProtoMessage() {}
 
 func (x *ServerConfig_ReleaseChannelConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[228]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[244]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -23973,7 +25356,7 @@ func (x *ServerConfig_ReleaseChannelConfig) ProtoReflect() protoreflect.Message 
 
 // Deprecated: Use ServerConfig_ReleaseChannelConfig.ProtoReflect.Descriptor instead.
 func (*ServerConfig_ReleaseChannelConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{91, 0}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{96, 0}
 }
 
 func (x *ServerConfig_ReleaseChannelConfig) GetChannel() ReleaseChannel_Channel {
@@ -24022,7 +25405,7 @@ type BlueGreenSettings_StandardRolloutPolicy struct {
 
 func (x *BlueGreenSettings_StandardRolloutPolicy) Reset() {
 	*x = BlueGreenSettings_StandardRolloutPolicy{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[229]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[245]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -24034,7 +25417,7 @@ func (x *BlueGreenSettings_StandardRolloutPolicy) String() string {
 func (*BlueGreenSettings_StandardRolloutPolicy) ProtoMessage() {}
 
 func (x *BlueGreenSettings_StandardRolloutPolicy) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[229]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[245]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -24047,7 +25430,7 @@ func (x *BlueGreenSettings_StandardRolloutPolicy) ProtoReflect() protoreflect.Me
 
 // Deprecated: Use BlueGreenSettings_StandardRolloutPolicy.ProtoReflect.Descriptor instead.
 func (*BlueGreenSettings_StandardRolloutPolicy) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{96, 0}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{101, 0}
 }
 
 func (x *BlueGreenSettings_StandardRolloutPolicy) GetUpdateBatchSize() isBlueGreenSettings_StandardRolloutPolicy_UpdateBatchSize {
@@ -24117,7 +25500,7 @@ type BlueGreenSettings_AutoscaledRolloutPolicy struct {
 
 func (x *BlueGreenSettings_AutoscaledRolloutPolicy) Reset() {
 	*x = BlueGreenSettings_AutoscaledRolloutPolicy{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[230]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[246]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -24129,7 +25512,7 @@ func (x *BlueGreenSettings_AutoscaledRolloutPolicy) String() string {
 func (*BlueGreenSettings_AutoscaledRolloutPolicy) ProtoMessage() {}
 
 func (x *BlueGreenSettings_AutoscaledRolloutPolicy) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[230]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[246]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -24142,7 +25525,7 @@ func (x *BlueGreenSettings_AutoscaledRolloutPolicy) ProtoReflect() protoreflect.
 
 // Deprecated: Use BlueGreenSettings_AutoscaledRolloutPolicy.ProtoReflect.Descriptor instead.
 func (*BlueGreenSettings_AutoscaledRolloutPolicy) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{96, 1}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{101, 1}
 }
 
 func (x *BlueGreenSettings_AutoscaledRolloutPolicy) GetWaitForDrainDuration() *durationpb.Duration {
@@ -24217,7 +25600,7 @@ type NodePool_UpgradeSettings struct {
 
 func (x *NodePool_UpgradeSettings) Reset() {
 	*x = NodePool_UpgradeSettings{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[231]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[247]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -24229,7 +25612,7 @@ func (x *NodePool_UpgradeSettings) String() string {
 func (*NodePool_UpgradeSettings) ProtoMessage() {}
 
 func (x *NodePool_UpgradeSettings) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[231]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[247]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -24242,7 +25625,7 @@ func (x *NodePool_UpgradeSettings) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NodePool_UpgradeSettings.ProtoReflect.Descriptor instead.
 func (*NodePool_UpgradeSettings) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{97, 0}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{102, 0}
 }
 
 func (x *NodePool_UpgradeSettings) GetMaxSurge() int32 {
@@ -24285,7 +25668,7 @@ type NodePool_UpdateInfo struct {
 
 func (x *NodePool_UpdateInfo) Reset() {
 	*x = NodePool_UpdateInfo{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[232]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[248]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -24297,7 +25680,7 @@ func (x *NodePool_UpdateInfo) String() string {
 func (*NodePool_UpdateInfo) ProtoMessage() {}
 
 func (x *NodePool_UpdateInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[232]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[248]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -24310,7 +25693,7 @@ func (x *NodePool_UpdateInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NodePool_UpdateInfo.ProtoReflect.Descriptor instead.
 func (*NodePool_UpdateInfo) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{97, 1}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{102, 1}
 }
 
 func (x *NodePool_UpdateInfo) GetBlueGreenInfo() *NodePool_UpdateInfo_BlueGreenInfo {
@@ -24338,7 +25721,7 @@ type NodePool_PlacementPolicy struct {
 
 func (x *NodePool_PlacementPolicy) Reset() {
 	*x = NodePool_PlacementPolicy{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[233]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[249]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -24350,7 +25733,7 @@ func (x *NodePool_PlacementPolicy) String() string {
 func (*NodePool_PlacementPolicy) ProtoMessage() {}
 
 func (x *NodePool_PlacementPolicy) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[233]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[249]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -24363,7 +25746,7 @@ func (x *NodePool_PlacementPolicy) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NodePool_PlacementPolicy.ProtoReflect.Descriptor instead.
 func (*NodePool_PlacementPolicy) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{97, 2}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{102, 2}
 }
 
 func (x *NodePool_PlacementPolicy) GetType() NodePool_PlacementPolicy_Type {
@@ -24390,7 +25773,7 @@ func (x *NodePool_PlacementPolicy) GetPolicyName() string {
 // QueuedProvisioning defines the queued provisioning used by the node pool.
 type NodePool_QueuedProvisioning struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Denotes that this nodepool is QRM specific, meaning nodes can be only
+	// Denotes that this node pool is QRM specific, meaning nodes can be only
 	// obtained through queuing via the Cluster Autoscaler ProvisioningRequest
 	// API.
 	Enabled       bool `protobuf:"varint,1,opt,name=enabled,proto3" json:"enabled,omitempty"`
@@ -24400,7 +25783,7 @@ type NodePool_QueuedProvisioning struct {
 
 func (x *NodePool_QueuedProvisioning) Reset() {
 	*x = NodePool_QueuedProvisioning{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[234]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[250]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -24412,7 +25795,7 @@ func (x *NodePool_QueuedProvisioning) String() string {
 func (*NodePool_QueuedProvisioning) ProtoMessage() {}
 
 func (x *NodePool_QueuedProvisioning) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[234]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[250]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -24425,7 +25808,7 @@ func (x *NodePool_QueuedProvisioning) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NodePool_QueuedProvisioning.ProtoReflect.Descriptor instead.
 func (*NodePool_QueuedProvisioning) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{97, 3}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{102, 3}
 }
 
 func (x *NodePool_QueuedProvisioning) GetEnabled() bool {
@@ -24436,9 +25819,13 @@ func (x *NodePool_QueuedProvisioning) GetEnabled() bool {
 }
 
 // NodeDrainConfig contains the node drain related configurations for this
-// nodepool.
+// node pool.
 type NodePool_NodeDrainConfig struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
+	// The duration of the PDB timeout period for node drain.
+	PdbTimeoutDuration *durationpb.Duration `protobuf:"bytes,1,opt,name=pdb_timeout_duration,json=pdbTimeoutDuration,proto3,oneof" json:"pdb_timeout_duration,omitempty"`
+	// The duration of the grace termination period for node drain.
+	GraceTerminationDuration *durationpb.Duration `protobuf:"bytes,2,opt,name=grace_termination_duration,json=graceTerminationDuration,proto3,oneof" json:"grace_termination_duration,omitempty"`
 	// Whether to respect PDB during node pool deletion.
 	RespectPdbDuringNodePoolDeletion *bool `protobuf:"varint,3,opt,name=respect_pdb_during_node_pool_deletion,json=respectPdbDuringNodePoolDeletion,proto3,oneof" json:"respect_pdb_during_node_pool_deletion,omitempty"`
 	unknownFields                    protoimpl.UnknownFields
@@ -24447,7 +25834,7 @@ type NodePool_NodeDrainConfig struct {
 
 func (x *NodePool_NodeDrainConfig) Reset() {
 	*x = NodePool_NodeDrainConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[235]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[251]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -24459,7 +25846,7 @@ func (x *NodePool_NodeDrainConfig) String() string {
 func (*NodePool_NodeDrainConfig) ProtoMessage() {}
 
 func (x *NodePool_NodeDrainConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[235]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[251]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -24472,7 +25859,21 @@ func (x *NodePool_NodeDrainConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NodePool_NodeDrainConfig.ProtoReflect.Descriptor instead.
 func (*NodePool_NodeDrainConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{97, 4}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{102, 4}
+}
+
+func (x *NodePool_NodeDrainConfig) GetPdbTimeoutDuration() *durationpb.Duration {
+	if x != nil {
+		return x.PdbTimeoutDuration
+	}
+	return nil
+}
+
+func (x *NodePool_NodeDrainConfig) GetGraceTerminationDuration() *durationpb.Duration {
+	if x != nil {
+		return x.GraceTerminationDuration
+	}
+	return nil
 }
 
 func (x *NodePool_NodeDrainConfig) GetRespectPdbDuringNodePoolDeletion() bool {
@@ -24480,6 +25881,120 @@ func (x *NodePool_NodeDrainConfig) GetRespectPdbDuringNodePoolDeletion() bool {
 		return *x.RespectPdbDuringNodePoolDeletion
 	}
 	return false
+}
+
+// Defines the maintenance exclusion for the node pool.
+type NodePool_ExclusionUntilEndOfSupport struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. Indicates whether the exclusion is enabled.
+	Enabled bool `protobuf:"varint,1,opt,name=enabled,proto3" json:"enabled,omitempty"`
+	// Output only. The start time of the maintenance exclusion. It is output
+	// only. It is the exclusion creation time.
+	StartTime *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=start_time,json=startTime,proto3" json:"start_time,omitempty"`
+	// Output only. The end time of the maintenance exclusion. It is output
+	// only. It is the cluster control plane version's end of support time, or
+	// end of extended support time when the cluster is on extended support
+	// channel.
+	EndTime       *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=end_time,json=endTime,proto3" json:"end_time,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *NodePool_ExclusionUntilEndOfSupport) Reset() {
+	*x = NodePool_ExclusionUntilEndOfSupport{}
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[252]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *NodePool_ExclusionUntilEndOfSupport) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*NodePool_ExclusionUntilEndOfSupport) ProtoMessage() {}
+
+func (x *NodePool_ExclusionUntilEndOfSupport) ProtoReflect() protoreflect.Message {
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[252]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use NodePool_ExclusionUntilEndOfSupport.ProtoReflect.Descriptor instead.
+func (*NodePool_ExclusionUntilEndOfSupport) Descriptor() ([]byte, []int) {
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{102, 5}
+}
+
+func (x *NodePool_ExclusionUntilEndOfSupport) GetEnabled() bool {
+	if x != nil {
+		return x.Enabled
+	}
+	return false
+}
+
+func (x *NodePool_ExclusionUntilEndOfSupport) GetStartTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.StartTime
+	}
+	return nil
+}
+
+func (x *NodePool_ExclusionUntilEndOfSupport) GetEndTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.EndTime
+	}
+	return nil
+}
+
+// Defines the maintenance policy for the node pool.
+type NodePool_NodePoolMaintenancePolicy struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. The exclusion until end of support for the node pool.
+	ExclusionUntilEndOfSupport *NodePool_ExclusionUntilEndOfSupport `protobuf:"bytes,1,opt,name=exclusion_until_end_of_support,json=exclusionUntilEndOfSupport,proto3" json:"exclusion_until_end_of_support,omitempty"`
+	unknownFields              protoimpl.UnknownFields
+	sizeCache                  protoimpl.SizeCache
+}
+
+func (x *NodePool_NodePoolMaintenancePolicy) Reset() {
+	*x = NodePool_NodePoolMaintenancePolicy{}
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[253]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *NodePool_NodePoolMaintenancePolicy) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*NodePool_NodePoolMaintenancePolicy) ProtoMessage() {}
+
+func (x *NodePool_NodePoolMaintenancePolicy) ProtoReflect() protoreflect.Message {
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[253]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use NodePool_NodePoolMaintenancePolicy.ProtoReflect.Descriptor instead.
+func (*NodePool_NodePoolMaintenancePolicy) Descriptor() ([]byte, []int) {
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{102, 6}
+}
+
+func (x *NodePool_NodePoolMaintenancePolicy) GetExclusionUntilEndOfSupport() *NodePool_ExclusionUntilEndOfSupport {
+	if x != nil {
+		return x.ExclusionUntilEndOfSupport
+	}
+	return nil
 }
 
 // Information relevant to blue-green upgrade.
@@ -24506,7 +26021,7 @@ type NodePool_UpdateInfo_BlueGreenInfo struct {
 
 func (x *NodePool_UpdateInfo_BlueGreenInfo) Reset() {
 	*x = NodePool_UpdateInfo_BlueGreenInfo{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[236]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[254]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -24518,7 +26033,7 @@ func (x *NodePool_UpdateInfo_BlueGreenInfo) String() string {
 func (*NodePool_UpdateInfo_BlueGreenInfo) ProtoMessage() {}
 
 func (x *NodePool_UpdateInfo_BlueGreenInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[236]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[254]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -24531,7 +26046,7 @@ func (x *NodePool_UpdateInfo_BlueGreenInfo) ProtoReflect() protoreflect.Message 
 
 // Deprecated: Use NodePool_UpdateInfo_BlueGreenInfo.ProtoReflect.Descriptor instead.
 func (*NodePool_UpdateInfo_BlueGreenInfo) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{97, 1, 0}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{102, 1, 0}
 }
 
 func (x *NodePool_UpdateInfo_BlueGreenInfo) GetPhase() NodePool_UpdateInfo_BlueGreenInfo_Phase {
@@ -24580,7 +26095,7 @@ type NetworkConfig_ClusterNetworkPerformanceConfig struct {
 
 func (x *NetworkConfig_ClusterNetworkPerformanceConfig) Reset() {
 	*x = NetworkConfig_ClusterNetworkPerformanceConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[239]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[257]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -24592,7 +26107,7 @@ func (x *NetworkConfig_ClusterNetworkPerformanceConfig) String() string {
 func (*NetworkConfig_ClusterNetworkPerformanceConfig) ProtoMessage() {}
 
 func (x *NetworkConfig_ClusterNetworkPerformanceConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[239]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[257]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -24605,7 +26120,7 @@ func (x *NetworkConfig_ClusterNetworkPerformanceConfig) ProtoReflect() protorefl
 
 // Deprecated: Use NetworkConfig_ClusterNetworkPerformanceConfig.ProtoReflect.Descriptor instead.
 func (*NetworkConfig_ClusterNetworkPerformanceConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{128, 0}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{135, 0}
 }
 
 func (x *NetworkConfig_ClusterNetworkPerformanceConfig) GetTotalEgressBandwidthTier() NetworkConfig_ClusterNetworkPerformanceConfig_Tier {
@@ -24631,7 +26146,7 @@ type DatabaseEncryption_OperationError struct {
 
 func (x *DatabaseEncryption_OperationError) Reset() {
 	*x = DatabaseEncryption_OperationError{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[240]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[258]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -24643,7 +26158,7 @@ func (x *DatabaseEncryption_OperationError) String() string {
 func (*DatabaseEncryption_OperationError) ProtoMessage() {}
 
 func (x *DatabaseEncryption_OperationError) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[240]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[258]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -24656,7 +26171,7 @@ func (x *DatabaseEncryption_OperationError) ProtoReflect() protoreflect.Message 
 
 // Deprecated: Use DatabaseEncryption_OperationError.ProtoReflect.Descriptor instead.
 func (*DatabaseEncryption_OperationError) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{148, 0}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{155, 0}
 }
 
 func (x *DatabaseEncryption_OperationError) GetKeyName() string {
@@ -24691,7 +26206,7 @@ type ResourceUsageExportConfig_BigQueryDestination struct {
 
 func (x *ResourceUsageExportConfig_BigQueryDestination) Reset() {
 	*x = ResourceUsageExportConfig_BigQueryDestination{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[241]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[259]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -24703,7 +26218,7 @@ func (x *ResourceUsageExportConfig_BigQueryDestination) String() string {
 func (*ResourceUsageExportConfig_BigQueryDestination) ProtoMessage() {}
 
 func (x *ResourceUsageExportConfig_BigQueryDestination) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[241]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[259]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -24716,7 +26231,7 @@ func (x *ResourceUsageExportConfig_BigQueryDestination) ProtoReflect() protorefl
 
 // Deprecated: Use ResourceUsageExportConfig_BigQueryDestination.ProtoReflect.Descriptor instead.
 func (*ResourceUsageExportConfig_BigQueryDestination) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{153, 0}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{160, 0}
 }
 
 func (x *ResourceUsageExportConfig_BigQueryDestination) GetDatasetId() string {
@@ -24739,7 +26254,7 @@ type ResourceUsageExportConfig_ConsumptionMeteringConfig struct {
 
 func (x *ResourceUsageExportConfig_ConsumptionMeteringConfig) Reset() {
 	*x = ResourceUsageExportConfig_ConsumptionMeteringConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[242]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[260]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -24751,7 +26266,7 @@ func (x *ResourceUsageExportConfig_ConsumptionMeteringConfig) String() string {
 func (*ResourceUsageExportConfig_ConsumptionMeteringConfig) ProtoMessage() {}
 
 func (x *ResourceUsageExportConfig_ConsumptionMeteringConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[242]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[260]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -24764,7 +26279,7 @@ func (x *ResourceUsageExportConfig_ConsumptionMeteringConfig) ProtoReflect() pro
 
 // Deprecated: Use ResourceUsageExportConfig_ConsumptionMeteringConfig.ProtoReflect.Descriptor instead.
 func (*ResourceUsageExportConfig_ConsumptionMeteringConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{153, 1}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{160, 1}
 }
 
 func (x *ResourceUsageExportConfig_ConsumptionMeteringConfig) GetEnabled() bool {
@@ -24792,7 +26307,7 @@ type NotificationConfig_PubSub struct {
 
 func (x *NotificationConfig_PubSub) Reset() {
 	*x = NotificationConfig_PubSub{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[243]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[261]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -24804,7 +26319,7 @@ func (x *NotificationConfig_PubSub) String() string {
 func (*NotificationConfig_PubSub) ProtoMessage() {}
 
 func (x *NotificationConfig_PubSub) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[243]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[261]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -24817,7 +26332,7 @@ func (x *NotificationConfig_PubSub) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NotificationConfig_PubSub.ProtoReflect.Descriptor instead.
 func (*NotificationConfig_PubSub) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{160, 0}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{167, 0}
 }
 
 func (x *NotificationConfig_PubSub) GetEnabled() bool {
@@ -24855,7 +26370,7 @@ type NotificationConfig_Filter struct {
 
 func (x *NotificationConfig_Filter) Reset() {
 	*x = NotificationConfig_Filter{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[244]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[262]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -24867,7 +26382,7 @@ func (x *NotificationConfig_Filter) String() string {
 func (*NotificationConfig_Filter) ProtoMessage() {}
 
 func (x *NotificationConfig_Filter) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[244]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[262]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -24880,7 +26395,7 @@ func (x *NotificationConfig_Filter) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NotificationConfig_Filter.ProtoReflect.Descriptor instead.
 func (*NotificationConfig_Filter) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{160, 1}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{167, 1}
 }
 
 func (x *NotificationConfig_Filter) GetEventType() []NotificationConfig_EventType {
@@ -24903,7 +26418,7 @@ type DisruptionEvent_PdbBlockedPod struct {
 
 func (x *DisruptionEvent_PdbBlockedPod) Reset() {
 	*x = DisruptionEvent_PdbBlockedPod{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[245]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[263]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -24915,7 +26430,7 @@ func (x *DisruptionEvent_PdbBlockedPod) String() string {
 func (*DisruptionEvent_PdbBlockedPod) ProtoMessage() {}
 
 func (x *DisruptionEvent_PdbBlockedPod) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[245]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[263]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -24928,7 +26443,7 @@ func (x *DisruptionEvent_PdbBlockedPod) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DisruptionEvent_PdbBlockedPod.ProtoReflect.Descriptor instead.
 func (*DisruptionEvent_PdbBlockedPod) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{164, 0}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{171, 0}
 }
 
 func (x *DisruptionEvent_PdbBlockedPod) GetNamespace() string {
@@ -24967,7 +26482,7 @@ type ControlPlaneEndpointsConfig_DNSEndpointConfig struct {
 
 func (x *ControlPlaneEndpointsConfig_DNSEndpointConfig) Reset() {
 	*x = ControlPlaneEndpointsConfig_DNSEndpointConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[246]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[264]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -24979,7 +26494,7 @@ func (x *ControlPlaneEndpointsConfig_DNSEndpointConfig) String() string {
 func (*ControlPlaneEndpointsConfig_DNSEndpointConfig) ProtoMessage() {}
 
 func (x *ControlPlaneEndpointsConfig_DNSEndpointConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[246]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[264]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -24992,7 +26507,7 @@ func (x *ControlPlaneEndpointsConfig_DNSEndpointConfig) ProtoReflect() protorefl
 
 // Deprecated: Use ControlPlaneEndpointsConfig_DNSEndpointConfig.ProtoReflect.Descriptor instead.
 func (*ControlPlaneEndpointsConfig_DNSEndpointConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{183, 0}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{191, 0}
 }
 
 func (x *ControlPlaneEndpointsConfig_DNSEndpointConfig) GetEndpoint() string {
@@ -25063,7 +26578,7 @@ type ControlPlaneEndpointsConfig_IPEndpointsConfig struct {
 
 func (x *ControlPlaneEndpointsConfig_IPEndpointsConfig) Reset() {
 	*x = ControlPlaneEndpointsConfig_IPEndpointsConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[247]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[265]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -25075,7 +26590,7 @@ func (x *ControlPlaneEndpointsConfig_IPEndpointsConfig) String() string {
 func (*ControlPlaneEndpointsConfig_IPEndpointsConfig) ProtoMessage() {}
 
 func (x *ControlPlaneEndpointsConfig_IPEndpointsConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[247]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[265]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -25088,7 +26603,7 @@ func (x *ControlPlaneEndpointsConfig_IPEndpointsConfig) ProtoReflect() protorefl
 
 // Deprecated: Use ControlPlaneEndpointsConfig_IPEndpointsConfig.ProtoReflect.Descriptor instead.
 func (*ControlPlaneEndpointsConfig_IPEndpointsConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{183, 1}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{191, 1}
 }
 
 func (x *ControlPlaneEndpointsConfig_IPEndpointsConfig) GetEnabled() bool {
@@ -25154,7 +26669,7 @@ type SecretManagerConfig_RotationConfig struct {
 
 func (x *SecretManagerConfig_RotationConfig) Reset() {
 	*x = SecretManagerConfig_RotationConfig{}
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[249]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[267]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -25166,7 +26681,7 @@ func (x *SecretManagerConfig_RotationConfig) String() string {
 func (*SecretManagerConfig_RotationConfig) ProtoMessage() {}
 
 func (x *SecretManagerConfig_RotationConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_container_v1_cluster_service_proto_msgTypes[249]
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[267]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -25179,7 +26694,7 @@ func (x *SecretManagerConfig_RotationConfig) ProtoReflect() protoreflect.Message
 
 // Deprecated: Use SecretManagerConfig_RotationConfig.ProtoReflect.Descriptor instead.
 func (*SecretManagerConfig_RotationConfig) Descriptor() ([]byte, []int) {
-	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{188, 0}
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{196, 0}
 }
 
 func (x *SecretManagerConfig_RotationConfig) GetEnabled() bool {
@@ -25196,26 +26711,93 @@ func (x *SecretManagerConfig_RotationConfig) GetRotationInterval() *durationpb.D
 	return nil
 }
 
+// SyncRotationConfig is config for secret manager auto rotation.
+type SecretSyncConfig_SyncRotationConfig struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Whether the rotation is enabled.
+	Enabled *bool `protobuf:"varint,1,opt,name=enabled,proto3,oneof" json:"enabled,omitempty"`
+	// The interval between two consecutive rotations. Default rotation interval
+	// is 2 minutes.
+	RotationInterval *durationpb.Duration `protobuf:"bytes,2,opt,name=rotation_interval,json=rotationInterval,proto3,oneof" json:"rotation_interval,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *SecretSyncConfig_SyncRotationConfig) Reset() {
+	*x = SecretSyncConfig_SyncRotationConfig{}
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[268]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SecretSyncConfig_SyncRotationConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SecretSyncConfig_SyncRotationConfig) ProtoMessage() {}
+
+func (x *SecretSyncConfig_SyncRotationConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_google_container_v1_cluster_service_proto_msgTypes[268]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SecretSyncConfig_SyncRotationConfig.ProtoReflect.Descriptor instead.
+func (*SecretSyncConfig_SyncRotationConfig) Descriptor() ([]byte, []int) {
+	return file_google_container_v1_cluster_service_proto_rawDescGZIP(), []int{208, 0}
+}
+
+func (x *SecretSyncConfig_SyncRotationConfig) GetEnabled() bool {
+	if x != nil && x.Enabled != nil {
+		return *x.Enabled
+	}
+	return false
+}
+
+func (x *SecretSyncConfig_SyncRotationConfig) GetRotationInterval() *durationpb.Duration {
+	if x != nil {
+		return x.RotationInterval
+	}
+	return nil
+}
+
 var File_google_container_v1_cluster_service_proto protoreflect.FileDescriptor
 
 const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\n" +
-	")google/container/v1/cluster_service.proto\x12\x13google.container.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/wrappers.proto\x1a\x15google/rpc/code.proto\x1a\x17google/rpc/status.proto\"\xe7\x15\n" +
+	")google/container/v1/cluster_service.proto\x12\x13google.container.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/wrappers.proto\x1a\x15google/rpc/code.proto\x1a\x17google/rpc/status.proto\x1a\x16google/type/date.proto\x1a\x1bgoogle/type/timeofday.proto\"\xec\x1a\n" +
 	"\x0fLinuxNodeConfig\x12K\n" +
 	"\asysctls\x18\x01 \x03(\v21.google.container.v1.LinuxNodeConfig.SysctlsEntryR\asysctls\x12P\n" +
 	"\vcgroup_mode\x18\x02 \x01(\x0e2/.google.container.v1.LinuxNodeConfig.CgroupModeR\n" +
 	"cgroupMode\x12\\\n" +
 	"\thugepages\x18\x03 \x01(\v24.google.container.v1.LinuxNodeConfig.HugepagesConfigB\x03\xe0A\x01H\x00R\thugepages\x88\x01\x01\x12\x86\x01\n" +
 	"\x1ctransparent_hugepage_enabled\x18\x04 \x01(\x0e2?.google.container.v1.LinuxNodeConfig.TransparentHugepageEnabledB\x03\xe0A\x01R\x1atransparentHugepageEnabled\x12\x83\x01\n" +
-	"\x1btransparent_hugepage_defrag\x18\x05 \x01(\x0e2>.google.container.v1.LinuxNodeConfig.TransparentHugepageDefragB\x03\xe0A\x01R\x19transparentHugepageDefrag\x12Z\n" +
+	"\x1btransparent_hugepage_defrag\x18\x05 \x01(\x0e2>.google.container.v1.LinuxNodeConfig.TransparentHugepageDefragB\x03\xe0A\x01R\x19transparentHugepageDefrag\x12b\n" +
+	"\x10custom_node_init\x18\v \x01(\v23.google.container.v1.LinuxNodeConfig.CustomNodeInitB\x03\xe0A\x01R\x0ecustomNodeInit\x12Z\n" +
 	"\vswap_config\x18\f \x01(\v2/.google.container.v1.LinuxNodeConfig.SwapConfigB\x03\xe0A\x01H\x01R\n" +
 	"swapConfig\x88\x01\x01\x12~\n" +
-	"\x1anode_kernel_module_loading\x18\r \x01(\v2<.google.container.v1.LinuxNodeConfig.NodeKernelModuleLoadingB\x03\xe0A\x01R\x17nodeKernelModuleLoading\x1a\x9f\x01\n" +
+	"\x1anode_kernel_module_loading\x18\r \x01(\v2<.google.container.v1.LinuxNodeConfig.NodeKernelModuleLoadingB\x03\xe0A\x01R\x17nodeKernelModuleLoading\x12s\n" +
+	"\x14accurate_time_config\x18\x0e \x01(\v27.google.container.v1.LinuxNodeConfig.AccurateTimeConfigB\x03\xe0A\x01H\x02R\x12accurateTimeConfig\x88\x01\x01\x1a\x9f\x01\n" +
 	"\x0fHugepagesConfig\x121\n" +
 	"\x0fhugepage_size2m\x18\x01 \x01(\x05B\x03\xe0A\x01H\x00R\x0ehugepageSize2m\x88\x01\x01\x121\n" +
 	"\x0fhugepage_size1g\x18\x02 \x01(\x05B\x03\xe0A\x01H\x01R\x0ehugepageSize1g\x88\x01\x01B\x12\n" +
 	"\x10_hugepage_size2mB\x12\n" +
-	"\x10_hugepage_size1g\x1a\xdc\a\n" +
+	"\x10_hugepage_size1g\x1a\xa0\x02\n" +
+	"\x0eCustomNodeInit\x12d\n" +
+	"\vinit_script\x18\x01 \x01(\v2>.google.container.v1.LinuxNodeConfig.CustomNodeInit.InitScriptB\x03\xe0A\x01R\n" +
+	"initScript\x1a\xa7\x01\n" +
+	"\n" +
+	"InitScript\x12\x17\n" +
+	"\agcs_uri\x18\x01 \x01(\tR\x06gcsUri\x12%\n" +
+	"\x0egcs_generation\x18\x02 \x01(\x03R\rgcsGeneration\x12\x17\n" +
+	"\x04args\x18\x03 \x03(\tB\x03\xe0A\x01R\x04args\x12@\n" +
+	"\x1dgcp_secret_manager_secret_uri\x18\x04 \x01(\tR\x19gcpSecretManagerSecretUri\x1a\xdc\a\n" +
 	"\n" +
 	"SwapConfig\x12\"\n" +
 	"\aenabled\x18\x01 \x01(\bB\x03\xe0A\x01H\x01R\aenabled\x88\x01\x01\x12w\n" +
@@ -25246,7 +26828,10 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\x06Policy\x12\x16\n" +
 	"\x12POLICY_UNSPECIFIED\x10\x00\x12\x1a\n" +
 	"\x16ENFORCE_SIGNED_MODULES\x10\x01\x12!\n" +
-	"\x1dDO_NOT_ENFORCE_SIGNED_MODULES\x10\x02\x1a:\n" +
+	"\x1dDO_NOT_ENFORCE_SIGNED_MODULES\x10\x02\x1an\n" +
+	"\x12AccurateTimeConfig\x12;\n" +
+	"\x18enable_ptp_kvm_time_sync\x18\x01 \x01(\bH\x00R\x14enablePtpKvmTimeSync\x88\x01\x01B\x1b\n" +
+	"\x19_enable_ptp_kvm_time_sync\x1a:\n" +
 	"\fSysctlsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"Q\n" +
@@ -25269,14 +26854,15 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"!TRANSPARENT_HUGEPAGE_DEFRAG_NEVER\x10\x05B\f\n" +
 	"\n" +
 	"_hugepagesB\x0e\n" +
-	"\f_swap_config\"\xbf\x01\n" +
+	"\f_swap_configB\x17\n" +
+	"\x15_accurate_time_config\"\xbf\x01\n" +
 	"\x11WindowsNodeConfig\x12O\n" +
 	"\n" +
 	"os_version\x18\x01 \x01(\x0e20.google.container.v1.WindowsNodeConfig.OSVersionR\tosVersion\"Y\n" +
 	"\tOSVersion\x12\x1a\n" +
 	"\x16OS_VERSION_UNSPECIFIED\x10\x00\x12\x17\n" +
 	"\x13OS_VERSION_LTSC2019\x10\x01\x12\x17\n" +
-	"\x13OS_VERSION_LTSC2022\x10\x02\"\xd2\r\n" +
+	"\x13OS_VERSION_LTSC2022\x10\x02\"\xa5\x0f\n" +
 	"\x11NodeKubeletConfig\x12,\n" +
 	"\x12cpu_manager_policy\x18\x01 \x01(\tR\x10cpuManagerPolicy\x12T\n" +
 	"\x10topology_manager\x18\b \x01(\v2$.google.container.v1.TopologyManagerB\x03\xe0A\x01R\x0ftopologyManager\x12N\n" +
@@ -25298,9 +26884,12 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\x18eviction_minimum_reclaim\x18\x13 \x01(\v2+.google.container.v1.EvictionMinimumReclaimB\x03\xe0A\x01R\x16evictionMinimumReclaim\x12T\n" +
 	"%eviction_max_pod_grace_period_seconds\x18\x14 \x01(\x05B\x03\xe0A\x01R evictionMaxPodGracePeriodSeconds\x12<\n" +
 	"\x18max_parallel_image_pulls\x18\x15 \x01(\x05B\x03\xe0A\x01R\x15maxParallelImagePulls\x12?\n" +
-	"\x17single_process_oom_kill\x18\x16 \x01(\bB\x03\xe0A\x01H\x01R\x14singleProcessOomKill\x88\x01\x01\x12K\n" +
+	"\x17single_process_oom_kill\x18\x16 \x01(\bB\x03\xe0A\x01H\x01R\x14singleProcessOomKill\x88\x01\x01\x12q\n" +
+	"\x13crash_loop_back_off\x18\x18 \x01(\v2=.google.container.v1.NodeKubeletConfig.CrashLoopBackOffConfigB\x03\xe0A\x01R\x10crashLoopBackOff\x12K\n" +
 	"\x1dshutdown_grace_period_seconds\x18\x1a \x01(\x05B\x03\xe0A\x01H\x02R\x1ashutdownGracePeriodSeconds\x88\x01\x01\x12e\n" +
-	"+shutdown_grace_period_critical_pods_seconds\x18\x1b \x01(\x05B\x03\xe0A\x01H\x03R&shutdownGracePeriodCriticalPodsSeconds\x88\x01\x01B)\n" +
+	"+shutdown_grace_period_critical_pods_seconds\x18\x1b \x01(\x05B\x03\xe0A\x01H\x03R&shutdownGracePeriodCriticalPodsSeconds\x88\x01\x01\x1a^\n" +
+	"\x16CrashLoopBackOffConfig\x12D\n" +
+	"\x1cmax_container_restart_period\x18\x01 \x01(\tB\x03\xe0A\x01R\x19maxContainerRestartPeriodB)\n" +
 	"'_insecure_kubelet_readonly_port_enabledB\x1a\n" +
 	"\x18_single_process_oom_killB \n" +
 	"\x1e_shutdown_grace_period_secondsB.\n" +
@@ -25330,7 +26919,7 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\x12nodefs_inodes_free\x18\x03 \x01(\tB\x03\xe0A\x01R\x10nodefsInodesFree\x120\n" +
 	"\x11imagefs_available\x18\x04 \x01(\tB\x03\xe0A\x01R\x10imagefsAvailable\x123\n" +
 	"\x13imagefs_inodes_free\x18\x05 \x01(\tB\x03\xe0A\x01R\x11imagefsInodesFree\x12(\n" +
-	"\rpid_available\x18\x06 \x01(\tB\x03\xe0A\x01R\fpidAvailable\"\x90\x1e\n" +
+	"\rpid_available\x18\x06 \x01(\tB\x03\xe0A\x01R\fpidAvailable\"\xf0\x1e\n" +
 	"\n" +
 	"NodeConfig\x12!\n" +
 	"\fmachine_type\x18\x01 \x01(\tR\vmachineType\x12 \n" +
@@ -25386,7 +26975,8 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\n" +
 	"flex_start\x188 \x01(\bH\x04R\tflexStart\x88\x01\x01\x12:\n" +
 	"\tboot_disk\x189 \x01(\v2\x1d.google.container.v1.BootDiskR\bbootDisk\x12J\n" +
-	"\x13consolidation_delay\x18< \x01(\v2\x19.google.protobuf.DurationR\x12consolidationDelay\x1a;\n" +
+	"\x13consolidation_delay\x18< \x01(\v2\x19.google.protobuf.DurationR\x12consolidationDelay\x12M\n" +
+	"\ftaint_config\x18> \x01(\v2 .google.container.v1.TaintConfigB\x03\xe0A\x01H\x05R\vtaintConfig\x88\x01\x01\x1a;\n" +
 	"\rMetadataEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a9\n" +
@@ -25408,7 +26998,15 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"$_secondary_boot_disk_update_strategyB\x14\n" +
 	"\x12_gpu_direct_configB\x1c\n" +
 	"\x1a_local_ssd_encryption_modeB\r\n" +
-	"\v_flex_start\"\xec\x03\n" +
+	"\v_flex_startB\x0f\n" +
+	"\r_taint_config\"\x91\x02\n" +
+	"\vTaintConfig\x12\x84\x01\n" +
+	"\x1barchitecture_taint_behavior\x18\x02 \x01(\x0e2:.google.container.v1.TaintConfig.ArchitectureTaintBehaviorB\x03\xe0A\x01H\x00R\x19architectureTaintBehavior\x88\x01\x01\"[\n" +
+	"\x19ArchitectureTaintBehavior\x12+\n" +
+	"'ARCHITECTURE_TAINT_BEHAVIOR_UNSPECIFIED\x10\x00\x12\b\n" +
+	"\x04NONE\x10\x01\x12\a\n" +
+	"\x03ARM\x10\x02B\x1e\n" +
+	"\x1c_architecture_taint_behavior\"\xec\x03\n" +
 	"\x17AdvancedMachineFeatures\x12-\n" +
 	"\x10threads_per_core\x18\x01 \x01(\x03H\x00R\x0ethreadsPerCore\x88\x01\x01\x12E\n" +
 	"\x1cenable_nested_virtualization\x18\x02 \x01(\bH\x01R\x1aenableNestedVirtualization\x88\x01\x01\x12\x8b\x01\n" +
@@ -25420,7 +27018,8 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\bENHANCED\x10\x03B\x13\n" +
 	"\x11_threads_per_coreB\x1f\n" +
 	"\x1d_enable_nested_virtualizationB\x1e\n" +
-	"\x1c_performance_monitoring_unit\"\xc1\t\n" +
+	"\x1c_performance_monitoring_unit\"\x86\n" +
+	"\n" +
 	"\x11NodeNetworkConfig\x12-\n" +
 	"\x10create_pod_range\x18\x04 \x01(\bB\x03\xe0A\x04R\x0ecreatePodRange\x12\x1b\n" +
 	"\tpod_range\x18\x05 \x01(\tR\bpodRange\x12-\n" +
@@ -25435,7 +27034,8 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"subnetwork\x18\x13 \x01(\tB)\xe0A\x01\xfaA#\n" +
 	"!compute.googleapis.com/SubnetworkR\n" +
 	"subnetwork\x12[\n" +
-	"\x13network_tier_config\x18\x14 \x01(\v2&.google.container.v1.NetworkTierConfigB\x03\xe0A\x03R\x11networkTierConfig\x1a\xef\x01\n" +
+	"\x13network_tier_config\x18\x14 \x01(\v2&.google.container.v1.NetworkTierConfigB\x03\xe0A\x03R\x11networkTierConfig\x12C\n" +
+	"\x1baccelerator_network_profile\x18\x15 \x01(\tB\x03\xe0A\x05R\x19acceleratorNetworkProfile\x1a\xef\x01\n" +
 	"\x18NetworkPerformanceConfig\x12\x88\x01\n" +
 	"\x1btotal_egress_bandwidth_tier\x18\x01 \x01(\x0e2D.google.container.v1.NodeNetworkConfig.NetworkPerformanceConfig.TierH\x00R\x18totalEgressBandwidthTier\x88\x01\x01\"(\n" +
 	"\x04Tier\x12\x14\n" +
@@ -25569,7 +27169,7 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\n" +
 	"client_key\x18f \x01(\tB\x03\xe0A\x03R\tclientKey\"S\n" +
 	"\x17ClientCertificateConfig\x128\n" +
-	"\x18issue_client_certificate\x18\x01 \x01(\bR\x16issueClientCertificate\"\xd9\r\n" +
+	"\x18issue_client_certificate\x18\x01 \x01(\bR\x16issueClientCertificate\"\xf7\x0f\n" +
 	"\fAddonsConfig\x12V\n" +
 	"\x13http_load_balancing\x18\x01 \x01(\v2&.google.container.v1.HttpLoadBalancingR\x11httpLoadBalancing\x12k\n" +
 	"\x1ahorizontal_pod_autoscaling\x18\x02 \x01(\v2-.google.container.v1.HorizontalPodAutoscalingR\x18horizontalPodAutoscaling\x12_\n" +
@@ -25587,8 +27187,11 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\x1fparallelstore_csi_driver_config\x18\x13 \x01(\v21.google.container.v1.ParallelstoreCsiDriverConfigR\x1cparallelstoreCsiDriverConfig\x12[\n" +
 	"\x13ray_operator_config\x18\x15 \x01(\v2&.google.container.v1.RayOperatorConfigB\x03\xe0A\x01R\x11rayOperatorConfig\x12x\n" +
 	"\x1fhigh_scale_checkpointing_config\x18\x16 \x01(\v21.google.container.v1.HighScaleCheckpointingConfigR\x1chighScaleCheckpointingConfig\x12c\n" +
-	"\x18lustre_csi_driver_config\x18\x17 \x01(\v2*.google.container.v1.LustreCsiDriverConfigR\x15lustreCsiDriverConfig\x12g\n" +
-	"\x17slice_controller_config\x18\x1a \x01(\v2*.google.container.v1.SliceControllerConfigB\x03\xe0A\x01R\x15sliceControllerConfig\"/\n" +
+	"\x18lustre_csi_driver_config\x18\x17 \x01(\v2*.google.container.v1.LustreCsiDriverConfigR\x15lustreCsiDriverConfig\x12[\n" +
+	"\x13pod_snapshot_config\x18\x18 \x01(\v2&.google.container.v1.PodSnapshotConfigB\x03\xe0A\x01R\x11podSnapshotConfig\x12\\\n" +
+	"\x15slurm_operator_config\x18\x19 \x01(\v2(.google.container.v1.SlurmOperatorConfigR\x13slurmOperatorConfig\x12g\n" +
+	"\x17slice_controller_config\x18\x1a \x01(\v2*.google.container.v1.SliceControllerConfigB\x03\xe0A\x01R\x15sliceControllerConfig\x12a\n" +
+	"\x15node_readiness_config\x18\x1d \x01(\v2(.google.container.v1.NodeReadinessConfigB\x03\xe0A\x01R\x13nodeReadinessConfig\"/\n" +
 	"\x11HttpLoadBalancing\x12\x1a\n" +
 	"\bdisabled\x18\x01 \x01(\bR\bdisabled\"6\n" +
 	"\x18HorizontalPodAutoscaling\x12\x1a\n" +
@@ -25632,10 +27235,15 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\x1cParallelstoreCsiDriverConfig\x12\x18\n" +
 	"\aenabled\x18\x01 \x01(\bR\aenabled\"8\n" +
 	"\x1cHighScaleCheckpointingConfig\x12\x18\n" +
-	"\aenabled\x18\x01 \x01(\bR\aenabled\"p\n" +
+	"\aenabled\x18\x01 \x01(\bR\aenabled\"\x9c\x01\n" +
 	"\x15LustreCsiDriverConfig\x12\x18\n" +
 	"\aenabled\x18\x01 \x01(\bR\aenabled\x12=\n" +
-	"\x19enable_legacy_lustre_port\x18\x03 \x01(\bB\x02\x18\x01R\x16enableLegacyLustrePort\"6\n" +
+	"\x19enable_legacy_lustre_port\x18\x03 \x01(\bB\x02\x18\x01R\x16enableLegacyLustrePort\x12*\n" +
+	"\x11disable_multi_nic\x18\x04 \x01(\bR\x0fdisableMultiNic\"/\n" +
+	"\x13SlurmOperatorConfig\x12\x18\n" +
+	"\aenabled\x18\x01 \x01(\bR\aenabled\"4\n" +
+	"\x13NodeReadinessConfig\x12\x1d\n" +
+	"\aenabled\x18\x01 \x01(\bB\x03\xe0A\x01R\aenabled\"6\n" +
 	"\x15SliceControllerConfig\x12\x1d\n" +
 	"\aenabled\x18\x01 \x01(\bB\x03\xe0A\x01R\aenabled\"\x96\x02\n" +
 	"\x11RayOperatorConfig\x12\x18\n" +
@@ -25703,7 +27311,7 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\"default_pod_ipv4_range_utilization\x18\x19 \x01(\x01B\x03\xe0A\x03R\x1edefaultPodIpv4RangeUtilization\x12s\n" +
 	"\x1cadditional_ip_ranges_configs\x18\x1d \x03(\v2-.google.container.v1.AdditionalIPRangesConfigB\x03\xe0A\x03R\x19additionalIpRangesConfigs\x12R\n" +
 	"\x10auto_ipam_config\x18\x1e \x01(\v2#.google.container.v1.AutoIpamConfigB\x03\xe0A\x01R\x0eautoIpamConfig\x12V\n" +
-	"\x13network_tier_config\x18\x1f \x01(\v2&.google.container.v1.NetworkTierConfigR\x11networkTierConfig\"\xe6-\n" +
+	"\x13network_tier_config\x18\x1f \x01(\v2&.google.container.v1.NetworkTierConfigR\x11networkTierConfig\"\x8d2\n" +
 	"\aCluster\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x120\n" +
@@ -25782,20 +27390,25 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\x15node_pool_auto_config\x18\x88\x01 \x01(\v2'.google.container.v1.NodePoolAutoConfigR\x12nodePoolAutoConfig\x12M\n" +
 	"\x0fpod_autoscaling\x18\x8a\x01 \x01(\v2#.google.container.v1.PodAutoscalingR\x0epodAutoscaling\x12\x13\n" +
 	"\x04etag\x18\x8b\x01 \x01(\tR\x04etag\x121\n" +
-	"\x05fleet\x18\x8c\x01 \x01(\v2\x1a.google.container.v1.FleetR\x05fleet\x12c\n" +
-	"\x17security_posture_config\x18\x91\x01 \x01(\v2*.google.container.v1.SecurityPostureConfigR\x15securityPostureConfig\x12v\n" +
+	"\x05fleet\x18\x8c\x01 \x01(\v2\x1a.google.container.v1.FleetR\x05fleet\x12h\n" +
+	"\x17security_posture_config\x18\x91\x01 \x01(\v2*.google.container.v1.SecurityPostureConfigB\x03\xe0A\x01R\x15securityPostureConfig\x12v\n" +
 	"\x1econtrol_plane_endpoints_config\x18\x92\x01 \x01(\v20.google.container.v1.ControlPlaneEndpointsConfigR\x1bcontrolPlaneEndpointsConfig\x12W\n" +
 	"\x14enable_k8s_beta_apis\x18\x8f\x01 \x01(\v2%.google.container.v1.K8sBetaAPIConfigR\x11enableK8sBetaApis\x12W\n" +
 	"\x11enterprise_config\x18\x95\x01 \x01(\v2%.google.container.v1.EnterpriseConfigB\x02\x18\x01R\x10enterpriseConfig\x12]\n" +
-	"\x15secret_manager_config\x18\x96\x01 \x01(\v2(.google.container.v1.SecretManagerConfigR\x13secretManagerConfig\x12i\n" +
-	"\x19compliance_posture_config\x18\x97\x01 \x01(\v2,.google.container.v1.CompliancePostureConfigR\x17compliancePostureConfig\x12.\n" +
+	"\x15secret_manager_config\x18\x96\x01 \x01(\v2(.google.container.v1.SecretManagerConfigR\x13secretManagerConfig\x12p\n" +
+	"\x19compliance_posture_config\x18\x97\x01 \x01(\v2,.google.container.v1.CompliancePostureConfigB\x05\xe0A\x01\x18\x01R\x17compliancePostureConfig\x12.\n" +
 	"\rsatisfies_pzs\x18\x98\x01 \x01(\bB\x03\xe0A\x03H\x01R\fsatisfiesPzs\x88\x01\x01\x12.\n" +
 	"\rsatisfies_pzi\x18\x99\x01 \x01(\bB\x03\xe0A\x03H\x02R\fsatisfiesPzi\x88\x01\x01\x12i\n" +
 	"\x18user_managed_keys_config\x18\x9a\x01 \x01(\v2*.google.container.v1.UserManagedKeysConfigH\x03R\x15userManagedKeysConfig\x88\x01\x01\x12\\\n" +
 	"\x13rbac_binding_config\x18\x9c\x01 \x01(\v2&.google.container.v1.RBACBindingConfigH\x04R\x11rbacBindingConfig\x88\x01\x01\x12a\n" +
 	"\x17gke_auto_upgrade_config\x18\xa3\x01 \x01(\v2).google.container.v1.GkeAutoUpgradeConfigR\x14gkeAutoUpgradeConfig\x12{\n" +
-	"\x1fanonymous_authentication_config\x18\xa4\x01 \x01(\v22.google.container.v1.AnonymousAuthenticationConfigR\x1danonymousAuthenticationConfig\x12r\n" +
-	"\x1cmanaged_opentelemetry_config\x18\xa8\x01 \x01(\v2/.google.container.v1.ManagedOpenTelemetryConfigR\x1amanagedOpentelemetryConfig\x1aA\n" +
+	"\x1fanonymous_authentication_config\x18\xa4\x01 \x01(\v22.google.container.v1.AnonymousAuthenticationConfigR\x1danonymousAuthenticationConfig\x12h\n" +
+	"\x17schedule_upgrade_config\x18\xa5\x01 \x01(\v2*.google.container.v1.ScheduleUpgradeConfigB\x03\xe0A\x01R\x15scheduleUpgradeConfig\x12T\n" +
+	"\x12secret_sync_config\x18\xa6\x01 \x01(\v2%.google.container.v1.SecretSyncConfigR\x10secretSyncConfig\x12r\n" +
+	"\x1cmanaged_opentelemetry_config\x18\xa8\x01 \x01(\v2/.google.container.v1.ManagedOpenTelemetryConfigR\x1amanagedOpentelemetryConfig\x12Z\n" +
+	"\x14control_plane_egress\x18\xa9\x01 \x01(\v2'.google.container.v1.ControlPlaneEgressR\x12controlPlaneEgress\x12\x9b\x01\n" +
+	"+managed_machine_learning_diagnostics_config\x18\xab\x01 \x01(\v2<.google.container.v1.ManagedMachineLearningDiagnosticsConfigR'managedMachineLearningDiagnosticsConfig\x12_\n" +
+	"\x14node_creation_config\x18\xae\x01 \x01(\v2'.google.container.v1.NodeCreationConfigB\x03\xe0A\x01R\x12nodeCreationConfig\x1aA\n" +
 	"\x13ResourceLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"w\n" +
@@ -25811,7 +27424,19 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\x0e_satisfies_pzsB\x10\n" +
 	"\x0e_satisfies_pziB\x1b\n" +
 	"\x19_user_managed_keys_configB\x16\n" +
-	"\x14_rbac_binding_config\"\xc5\x02\n" +
+	"\x14_rbac_binding_config\"\xb6\x01\n" +
+	"\x12NodeCreationConfig\x12Z\n" +
+	"\x12node_creation_mode\x18\x01 \x01(\x0e2,.google.container.v1.NodeCreationConfig.ModeR\x10nodeCreationMode\"D\n" +
+	"\x04Mode\x12\x14\n" +
+	"\x10MODE_UNSPECIFIED\x10\x00\x12\x0f\n" +
+	"\vVIA_KUBELET\x10\x01\x12\x15\n" +
+	"\x11VIA_CONTROL_PLANE\x10\x02\"\x95\x01\n" +
+	"\x12ControlPlaneEgress\x12@\n" +
+	"\x04mode\x18\x01 \x01(\x0e2,.google.container.v1.ControlPlaneEgress.ModeR\x04mode\"=\n" +
+	"\x04Mode\x12\x14\n" +
+	"\x10MODE_UNSPECIFIED\x10\x00\x12\x15\n" +
+	"\x11VIA_CONTROL_PLANE\x10\x01\x12\b\n" +
+	"\x04NONE\x10\x02\"\xc5\x02\n" +
 	"\x11RBACBindingConfig\x12g\n" +
 	".enable_insecure_binding_system_unauthenticated\x18\x01 \x01(\bH\x00R*enableInsecureBindingSystemUnauthenticated\x88\x01\x01\x12c\n" +
 	",enable_insecure_binding_system_authenticated\x18\x02 \x01(\bH\x01R(enableInsecureBindingSystemAuthenticated\x88\x01\x01B1\n" +
@@ -25843,7 +27468,7 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\x04Mode\x12\x14\n" +
 	"\x10MODE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aENABLED\x10\x01\x12\v\n" +
-	"\aLIMITED\x10\x02\"\xdf\x02\n" +
+	"\aLIMITED\x10\x02\"\xe3\x02\n" +
 	"\x17CompliancePostureConfig\x12J\n" +
 	"\x04mode\x18\x01 \x01(\x0e21.google.container.v1.CompliancePostureConfig.ModeH\x00R\x04mode\x88\x01\x01\x12r\n" +
 	"\x14compliance_standards\x18\x02 \x03(\v2?.google.container.v1.CompliancePostureConfig.ComplianceStandardR\x13complianceStandards\x1aB\n" +
@@ -25853,23 +27478,23 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\x04Mode\x12\x14\n" +
 	"\x10MODE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bDISABLED\x10\x01\x12\v\n" +
-	"\aENABLED\x10\x02B\a\n" +
+	"\aENABLED\x10\x02:\x02\x18\x01B\a\n" +
 	"\x05_mode\"5\n" +
 	"\x10K8sBetaAPIConfig\x12!\n" +
-	"\fenabled_apis\x18\x01 \x03(\tR\venabledApis\"\xc7\x03\n" +
+	"\fenabled_apis\x18\x01 \x03(\tR\venabledApis\"\xcf\x03\n" +
 	"\x15SecurityPostureConfig\x12H\n" +
 	"\x04mode\x18\x01 \x01(\x0e2/.google.container.v1.SecurityPostureConfig.ModeH\x00R\x04mode\x88\x01\x01\x12p\n" +
-	"\x12vulnerability_mode\x18\x02 \x01(\x0e2<.google.container.v1.SecurityPostureConfig.VulnerabilityModeH\x01R\x11vulnerabilityMode\x88\x01\x01\"E\n" +
+	"\x12vulnerability_mode\x18\x02 \x01(\x0e2<.google.container.v1.SecurityPostureConfig.VulnerabilityModeH\x01R\x11vulnerabilityMode\x88\x01\x01\"I\n" +
 	"\x04Mode\x12\x14\n" +
 	"\x10MODE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bDISABLED\x10\x01\x12\t\n" +
-	"\x05BASIC\x10\x02\x12\x0e\n" +
+	"\x05BASIC\x10\x02\x12\x12\n" +
 	"\n" +
-	"ENTERPRISE\x10\x03\"\x8a\x01\n" +
+	"ENTERPRISE\x10\x03\x1a\x02\b\x01\"\x8e\x01\n" +
 	"\x11VulnerabilityMode\x12\"\n" +
 	"\x1eVULNERABILITY_MODE_UNSPECIFIED\x10\x00\x12\x1a\n" +
-	"\x16VULNERABILITY_DISABLED\x10\x01\x12\x17\n" +
-	"\x13VULNERABILITY_BASIC\x10\x02\x12\x1c\n" +
+	"\x16VULNERABILITY_DISABLED\x10\x01\x12\x1b\n" +
+	"\x13VULNERABILITY_BASIC\x10\x02\x1a\x02\b\x01\x12\x1c\n" +
 	"\x18VULNERABILITY_ENTERPRISE\x10\x03B\a\n" +
 	"\x05_modeB\x15\n" +
 	"\x13_vulnerability_mode\"\xe6\x02\n" +
@@ -25885,7 +27510,7 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"gcfsConfig\x12Q\n" +
 	"\x0elogging_config\x18\x03 \x01(\v2*.google.container.v1.NodePoolLoggingConfigR\rloggingConfig\x12R\n" +
 	"\x11containerd_config\x18\x04 \x01(\v2%.google.container.v1.ContainerdConfigR\x10containerdConfig\x12V\n" +
-	"\x13node_kubelet_config\x18\x06 \x01(\v2&.google.container.v1.NodeKubeletConfigR\x11nodeKubeletConfig\"\xfd>\n" +
+	"\x13node_kubelet_config\x18\x06 \x01(\v2&.google.container.v1.NodeKubeletConfigR\x11nodeKubeletConfig\"\xf0C\n" +
 	"\rClusterUpdate\x120\n" +
 	"\x14desired_node_version\x18\x04 \x01(\tR\x12desiredNodeVersion\x12<\n" +
 	"\x1adesired_monitoring_service\x18\x05 \x01(\tR\x18desiredMonitoringService\x12U\n" +
@@ -25945,8 +27570,8 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"3desired_node_pool_auto_config_resource_manager_tags\x18\x88\x01 \x01(\v2(.google.container.v1.ResourceManagerTagsR,desiredNodePoolAutoConfigResourceManagerTags\x12\x84\x01\n" +
 	"$desired_in_transit_encryption_config\x18\x89\x01 \x01(\x0e2..google.container.v1.InTransitEncryptionConfigH\x04R desiredInTransitEncryptionConfig\x88\x01\x01\x12k\n" +
 	"0desired_enable_cilium_clusterwide_network_policy\x18\x8a\x01 \x01(\bH\x05R+desiredEnableCiliumClusterwideNetworkPolicy\x88\x01\x01\x12q\n" +
-	"\x1ddesired_secret_manager_config\x18\x8b\x01 \x01(\v2(.google.container.v1.SecretManagerConfigH\x06R\x1adesiredSecretManagerConfig\x88\x01\x01\x12}\n" +
-	"!desired_compliance_posture_config\x18\x8c\x01 \x01(\v2,.google.container.v1.CompliancePostureConfigH\aR\x1edesiredCompliancePostureConfig\x88\x01\x01\x12f\n" +
+	"\x1ddesired_secret_manager_config\x18\x8b\x01 \x01(\v2(.google.container.v1.SecretManagerConfigH\x06R\x1adesiredSecretManagerConfig\x88\x01\x01\x12\x81\x01\n" +
+	"!desired_compliance_posture_config\x18\x8c\x01 \x01(\v2,.google.container.v1.CompliancePostureConfigB\x02\x18\x01H\aR\x1edesiredCompliancePostureConfig\x88\x01\x01\x12f\n" +
 	"\x1bdesired_node_kubelet_config\x18\x8d\x01 \x01(\v2&.google.container.v1.NodeKubeletConfigR\x18desiredNodeKubeletConfig\x12\x85\x01\n" +
 	",desired_node_pool_auto_config_kubelet_config\x18\x8e\x01 \x01(\v2&.google.container.v1.NodeKubeletConfigR&desiredNodePoolAutoConfigKubeletConfig\x12h\n" +
 	"\x18user_managed_keys_config\x18\x8f\x01 \x01(\v2*.google.container.v1.UserManagedKeysConfigB\x02\x18\x01R\x15userManagedKeysConfig\x12k\n" +
@@ -25959,9 +27584,14 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	" desired_user_managed_keys_config\x18\x98\x01 \x01(\v2*.google.container.v1.UserManagedKeysConfigR\x1cdesiredUserManagedKeysConfig\x12\x8a\x01\n" +
 	"'desired_anonymous_authentication_config\x18\x9c\x01 \x01(\v22.google.container.v1.AnonymousAuthenticationConfigR$desiredAnonymousAuthenticationConfig\x12a\n" +
 	"\x17gke_auto_upgrade_config\x18\x9a\x01 \x01(\v2).google.container.v1.GkeAutoUpgradeConfigR\x14gkeAutoUpgradeConfig\x12f\n" +
-	"\x1bdesired_network_tier_config\x18\x9b\x01 \x01(\v2&.google.container.v1.NetworkTierConfigR\x18desiredNetworkTierConfig\x12~\n" +
-	"#desired_privileged_admission_config\x18\x9f\x01 \x01(\v2..google.container.v1.PrivilegedAdmissionConfigR desiredPrivilegedAdmissionConfig\x12\x81\x01\n" +
-	"$desired_managed_opentelemetry_config\x18\xa3\x01 \x01(\v2/.google.container.v1.ManagedOpenTelemetryConfigR!desiredManagedOpentelemetryConfigB\"\n" +
+	"\x1bdesired_network_tier_config\x18\x9b\x01 \x01(\v2&.google.container.v1.NetworkTierConfigR\x18desiredNetworkTierConfig\x12c\n" +
+	"\x1adesired_secret_sync_config\x18\x9e\x01 \x01(\v2%.google.container.v1.SecretSyncConfigR\x17desiredSecretSyncConfig\x12~\n" +
+	"#desired_privileged_admission_config\x18\x9f\x01 \x01(\v2..google.container.v1.PrivilegedAdmissionConfigR desiredPrivilegedAdmissionConfig\x12i\n" +
+	"\x1cdesired_control_plane_egress\x18\xa0\x01 \x01(\v2'.google.container.v1.ControlPlaneEgressR\x19desiredControlPlaneEgress\x12\x81\x01\n" +
+	"$desired_managed_opentelemetry_config\x18\xa3\x01 \x01(\v2/.google.container.v1.ManagedOpenTelemetryConfigR!desiredManagedOpentelemetryConfig\x12\x7f\n" +
+	"'desired_autopilot_cluster_policy_config\x18\xa4\x01 \x01(\v2(.google.container.v1.ClusterPolicyConfigR#desiredAutopilotClusterPolicyConfig\x12\xaa\x01\n" +
+	"3desired_managed_machine_learning_diagnostics_config\x18\xa6\x01 \x01(\v2<.google.container.v1.ManagedMachineLearningDiagnosticsConfigR.desiredManagedMachineLearningDiagnosticsConfig\x12n\n" +
+	"\x1cdesired_node_creation_config\x18\xab\x01 \x01(\v2'.google.container.v1.NodeCreationConfigB\x03\xe0A\x01R\x19desiredNodeCreationConfigB\"\n" +
 	" _desired_enable_private_endpointB'\n" +
 	"%_desired_default_enable_private_nodesB%\n" +
 	"#_desired_enable_fqdn_network_policyB\"\n" +
@@ -26077,7 +27707,7 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\n" +
 	"cluster_id\x18\x03 \x01(\tB\x02\x18\x01R\tclusterId\x12?\n" +
 	"\x06update\x18\x04 \x01(\v2\".google.container.v1.ClusterUpdateB\x03\xe0A\x02R\x06update\x12\x12\n" +
-	"\x04name\x18\x05 \x01(\tR\x04name\"\xec\x11\n" +
+	"\x04name\x18\x05 \x01(\tR\x04name\"\xb1\x12\n" +
 	"\x15UpdateNodePoolRequest\x12!\n" +
 	"\n" +
 	"project_id\x18\x01 \x01(\tB\x02\x18\x01R\tprojectId\x12\x16\n" +
@@ -26123,7 +27753,8 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"flex_start\x18. \x01(\bH\x00R\tflexStart\x88\x01\x01\x12:\n" +
 	"\tboot_disk\x18/ \x01(\v2\x1d.google.container.v1.BootDiskR\bbootDisk\x12Y\n" +
 	"\x11node_drain_config\x180 \x01(\v2-.google.container.v1.NodePool.NodeDrainConfigR\x0fnodeDrainConfig\x12J\n" +
-	"\x13consolidation_delay\x181 \x01(\v2\x19.google.protobuf.DurationR\x12consolidationDelayB\r\n" +
+	"\x13consolidation_delay\x181 \x01(\v2\x19.google.protobuf.DurationR\x12consolidationDelay\x12C\n" +
+	"\ftaint_config\x183 \x01(\v2 .google.container.v1.TaintConfigR\vtaintConfigB\r\n" +
 	"\v_flex_start\"\x88\x02\n" +
 	"\x1dSetNodePoolAutoscalingRequest\x12!\n" +
 	"\n" +
@@ -26289,7 +27920,7 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\x17AutoscaledRolloutPolicy\x12U\n" +
 	"\x17wait_for_drain_duration\x18\x01 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\x14waitForDrainDurationB\x10\n" +
 	"\x0erollout_policyB\x1a\n" +
-	"\x18_node_pool_soak_duration\"\xb1\x16\n" +
+	"\x18_node_pool_soak_duration\"\xe2\x1b\n" +
 	"\bNodePool\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x127\n" +
 	"\x06config\x18\x02 \x01(\v2\x1f.google.container.v1.NodeConfigR\x06config\x12,\n" +
@@ -26317,7 +27948,8 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\x04etag\x18n \x01(\tR\x04etag\x12a\n" +
 	"\x13queued_provisioning\x18p \x01(\v20.google.container.v1.NodePool.QueuedProvisioningR\x12queuedProvisioning\x12e\n" +
 	"\x18best_effort_provisioning\x18q \x01(\v2+.google.container.v1.BestEffortProvisioningR\x16bestEffortProvisioning\x12Y\n" +
-	"\x11node_drain_config\x18t \x01(\v2-.google.container.v1.NodePool.NodeDrainConfigR\x0fnodeDrainConfig\x1a\xa7\x02\n" +
+	"\x11node_drain_config\x18t \x01(\v2-.google.container.v1.NodePool.NodeDrainConfigR\x0fnodeDrainConfig\x12k\n" +
+	"\x12maintenance_policy\x18v \x01(\v27.google.container.v1.NodePool.NodePoolMaintenancePolicyB\x03\xe0A\x01R\x11maintenancePolicy\x1a\xa7\x02\n" +
 	"\x0fUpgradeSettings\x12\x1b\n" +
 	"\tmax_surge\x18\x01 \x01(\x05R\bmaxSurge\x12'\n" +
 	"\x0fmax_unavailable\x18\x02 \x01(\x05R\x0emaxUnavailable\x12L\n" +
@@ -26352,10 +27984,21 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aCOMPACT\x10\x01\x1a.\n" +
 	"\x12QueuedProvisioning\x12\x18\n" +
-	"\aenabled\x18\x01 \x01(\bR\aenabled\x1a\x91\x01\n" +
-	"\x0fNodeDrainConfig\x12T\n" +
-	"%respect_pdb_during_node_pool_deletion\x18\x03 \x01(\bH\x00R respectPdbDuringNodePoolDeletion\x88\x01\x01B(\n" +
-	"&_respect_pdb_during_node_pool_deletion\"\x81\x01\n" +
+	"\aenabled\x18\x01 \x01(\bR\aenabled\x1a\xf9\x02\n" +
+	"\x0fNodeDrainConfig\x12P\n" +
+	"\x14pdb_timeout_duration\x18\x01 \x01(\v2\x19.google.protobuf.DurationH\x00R\x12pdbTimeoutDuration\x88\x01\x01\x12\\\n" +
+	"\x1agrace_termination_duration\x18\x02 \x01(\v2\x19.google.protobuf.DurationH\x01R\x18graceTerminationDuration\x88\x01\x01\x12T\n" +
+	"%respect_pdb_during_node_pool_deletion\x18\x03 \x01(\bH\x02R respectPdbDuringNodePoolDeletion\x88\x01\x01B\x17\n" +
+	"\x15_pdb_timeout_durationB\x1d\n" +
+	"\x1b_grace_termination_durationB(\n" +
+	"&_respect_pdb_during_node_pool_deletion\x1a\xb7\x01\n" +
+	"\x1aExclusionUntilEndOfSupport\x12\x1d\n" +
+	"\aenabled\x18\x01 \x01(\bB\x03\xe0A\x01R\aenabled\x12>\n" +
+	"\n" +
+	"start_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tstartTime\x12:\n" +
+	"\bend_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\x1a\x9f\x01\n" +
+	"\x19NodePoolMaintenancePolicy\x12\x81\x01\n" +
+	"\x1eexclusion_until_end_of_support\x18\x01 \x01(\v28.google.container.v1.NodePool.ExclusionUntilEndOfSupportB\x03\xe0A\x01R\x1aexclusionUntilEndOfSupport\"\x81\x01\n" +
 	"\x06Status\x12\x16\n" +
 	"\x12STATUS_UNSPECIFIED\x10\x00\x12\x10\n" +
 	"\fPROVISIONING\x10\x01\x12\v\n" +
@@ -26375,13 +28018,20 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\x13min_provision_nodes\x18\x02 \x01(\x05R\x11minProvisionNodes\"w\n" +
 	"\x12AutoUpgradeOptions\x12:\n" +
 	"\x17auto_upgrade_start_time\x18\x01 \x01(\tB\x03\xe0A\x03R\x14autoUpgradeStartTime\x12%\n" +
-	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x03R\vdescription\"~\n" +
+	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x03R\vdescription\"\xd7\x01\n" +
 	"\x11MaintenancePolicy\x12>\n" +
 	"\x06window\x18\x01 \x01(\v2&.google.container.v1.MaintenanceWindowR\x06window\x12)\n" +
-	"\x10resource_version\x18\x03 \x01(\tR\x0fresourceVersion\"\xc2\x03\n" +
+	"\x10resource_version\x18\x03 \x01(\tR\x0fresourceVersion\x12W\n" +
+	"\x11disruption_budget\x18\x04 \x01(\v2%.google.container.v1.DisruptionBudgetB\x03\xe0A\x01R\x10disruptionBudget\"\xa8\x03\n" +
+	"\x10DisruptionBudget\x12i\n" +
+	"!minor_version_disruption_interval\x18\x01 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\x1eminorVersionDisruptionInterval\x12i\n" +
+	"!patch_version_disruption_interval\x18\x02 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\x1epatchVersionDisruptionInterval\x12k\n" +
+	"\"last_minor_version_disruption_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x1elastMinorVersionDisruptionTime\x12Q\n" +
+	"\x14last_disruption_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x12lastDisruptionTime\"\xb7\x04\n" +
 	"\x11MaintenanceWindow\x12g\n" +
 	"\x18daily_maintenance_window\x18\x02 \x01(\v2+.google.container.v1.DailyMaintenanceWindowH\x00R\x16dailyMaintenanceWindow\x12U\n" +
-	"\x10recurring_window\x18\x03 \x01(\v2(.google.container.v1.RecurringTimeWindowH\x00R\x0frecurringWindow\x12x\n" +
+	"\x10recurring_window\x18\x03 \x01(\v2(.google.container.v1.RecurringTimeWindowH\x00R\x0frecurringWindow\x12s\n" +
+	"\x1crecurring_maintenance_window\x18\x05 \x01(\v2/.google.container.v1.RecurringMaintenanceWindowH\x00R\x1arecurringMaintenanceWindow\x12x\n" +
 	"\x16maintenance_exclusions\x18\x04 \x03(\v2A.google.container.v1.MaintenanceWindow.MaintenanceExclusionsEntryR\x15maintenanceExclusions\x1ai\n" +
 	"\x1aMaintenanceExclusionsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x125\n" +
@@ -26408,7 +28058,16 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\x06window\x18\x01 \x01(\v2\x1f.google.container.v1.TimeWindowR\x06window\x12\x1e\n" +
 	"\n" +
 	"recurrence\x18\x02 \x01(\tR\n" +
-	"recurrence\"X\n" +
+	"recurrence\"\xa1\x02\n" +
+	"\x1aRecurringMaintenanceWindow\x12<\n" +
+	"\vdelay_until\x18\x01 \x01(\v2\x11.google.type.DateB\x03\xe0A\x01H\x00R\n" +
+	"delayUntil\x88\x01\x01\x12G\n" +
+	"\x11window_start_time\x18\x02 \x01(\v2\x16.google.type.TimeOfDayB\x03\xe0A\x02R\x0fwindowStartTime\x12G\n" +
+	"\x0fwindow_duration\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x02R\x0ewindowDuration\x12#\n" +
+	"\n" +
+	"recurrence\x18\x04 \x01(\tB\x03\xe0A\x02R\n" +
+	"recurrenceB\x0e\n" +
+	"\f_delay_until\"X\n" +
 	"\x16DailyMaintenanceWindow\x12\x1d\n" +
 	"\n" +
 	"start_time\x18\x02 \x01(\tR\tstartTime\x12\x1f\n" +
@@ -26451,7 +28110,7 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"respectPdb\"U\n" +
 	"\x15ListNodePoolsResponse\x12<\n" +
 	"\n" +
-	"node_pools\x18\x01 \x03(\v2\x1d.google.container.v1.NodePoolR\tnodePools\"\xf5\x06\n" +
+	"node_pools\x18\x01 \x03(\v2\x1d.google.container.v1.NodePoolR\tnodePools\"\xff\x06\n" +
 	"\x12ClusterAutoscaling\x12@\n" +
 	"\x1cenable_node_autoprovisioning\x18\x01 \x01(\bR\x1aenableNodeAutoprovisioning\x12K\n" +
 	"\x0fresource_limits\x18\x02 \x03(\v2\".google.container.v1.ResourceLimitR\x0eresourceLimits\x12k\n" +
@@ -26463,10 +28122,11 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\x12AutoscalingProfile\x12\x17\n" +
 	"\x13PROFILE_UNSPECIFIED\x10\x00\x12\x18\n" +
 	"\x14OPTIMIZE_UTILIZATION\x10\x01\x12\f\n" +
-	"\bBALANCED\x10\x02\"X\n" +
+	"\bBALANCED\x10\x02\"b\n" +
 	"\x17AutopilotGeneralProfile\x12)\n" +
 	"%AUTOPILOT_GENERAL_PROFILE_UNSPECIFIED\x10\x00\x12\x12\n" +
-	"\x0eNO_PERFORMANCE\x10\x01\"\xaf\x05\n" +
+	"\x0eNO_PERFORMANCE\x10\x01\x12\b\n" +
+	"\x04NONE\x10\x02\"\xaf\x05\n" +
 	" AutoprovisioningNodePoolDefaults\x12!\n" +
 	"\foauth_scopes\x18\x01 \x03(\tR\voauthScopes\x12'\n" +
 	"\x0fservice_account\x18\x02 \x01(\tR\x0eserviceAccount\x12X\n" +
@@ -26721,7 +28381,7 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\x15IdentityServiceConfig\x12\x18\n" +
 	"\aenabled\x18\x01 \x01(\bR\aenabled\"_\n" +
 	"\x10MeshCertificates\x12K\n" +
-	"\x13enable_certificates\x18\x01 \x01(\v2\x1a.google.protobuf.BoolValueR\x12enableCertificates\"\xc9\x06\n" +
+	"\x13enable_certificates\x18\x01 \x01(\v2\x1a.google.protobuf.BoolValueR\x12enableCertificates\"\x81\b\n" +
 	"\x12DatabaseEncryption\x12\x19\n" +
 	"\bkey_name\x18\x01 \x01(\tR\akeyName\x12C\n" +
 	"\x05state\x18\x02 \x01(\x0e2-.google.container.v1.DatabaseEncryption.StateR\x05state\x12c\n" +
@@ -26731,11 +28391,12 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\x0eOperationError\x12\x19\n" +
 	"\bkey_name\x18\x01 \x01(\tR\akeyName\x12#\n" +
 	"\rerror_message\x18\x02 \x01(\tR\ferrorMessage\x128\n" +
-	"\ttimestamp\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\ttimestamp\"2\n" +
+	"\ttimestamp\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\ttimestamp\"V\n" +
 	"\x05State\x12\v\n" +
 	"\aUNKNOWN\x10\x00\x12\r\n" +
 	"\tENCRYPTED\x10\x01\x12\r\n" +
-	"\tDECRYPTED\x10\x02\"\xfb\x01\n" +
+	"\tDECRYPTED\x10\x02\x12\"\n" +
+	"\x1eALL_OBJECTS_ENCRYPTION_ENABLED\x10\x03\"\x8f\x03\n" +
 	"\fCurrentState\x12\x1d\n" +
 	"\x19CURRENT_STATE_UNSPECIFIED\x10\x00\x12\x1b\n" +
 	"\x17CURRENT_STATE_ENCRYPTED\x10\a\x12\x1b\n" +
@@ -26743,7 +28404,11 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	" CURRENT_STATE_ENCRYPTION_PENDING\x10\x03\x12\"\n" +
 	"\x1eCURRENT_STATE_ENCRYPTION_ERROR\x10\x04\x12$\n" +
 	" CURRENT_STATE_DECRYPTION_PENDING\x10\x05\x12\"\n" +
-	"\x1eCURRENT_STATE_DECRYPTION_ERROR\x10\x06B\x10\n" +
+	"\x1eCURRENT_STATE_DECRYPTION_ERROR\x10\x06\x120\n" +
+	",CURRENT_STATE_ALL_OBJECTS_ENCRYPTION_ENABLED\x10\b\x120\n" +
+	",CURRENT_STATE_ALL_OBJECTS_ENCRYPTION_PENDING\x10\t\x12.\n" +
+	"*CURRENT_STATE_ALL_OBJECTS_ENCRYPTION_ERROR\x10\n" +
+	"B\x10\n" +
 	"\x0e_current_state\"\x8a\x01\n" +
 	"\x1cListUsableSubnetworksRequest\x12\x16\n" +
 	"\x06parent\x18\x01 \x01(\tR\x06parent\x12\x16\n" +
@@ -26831,7 +28496,7 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\x14operation_start_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\x12operationStartTime\x12'\n" +
 	"\x0fcurrent_version\x18\x04 \x01(\tR\x0ecurrentVersion\x12%\n" +
 	"\x0etarget_version\x18\x05 \x01(\tR\rtargetVersion\x12\x1a\n" +
-	"\bresource\x18\x06 \x01(\tR\bresource\"\xd9\b\n" +
+	"\bresource\x18\x06 \x01(\tR\bresource\"\xe8\b\n" +
 	"\x10UpgradeInfoEvent\x12M\n" +
 	"\rresource_type\x18\x01 \x01(\x0e2(.google.container.v1.UpgradeResourceTypeR\fresourceType\x12\x1c\n" +
 	"\toperation\x18\x02 \x01(\tR\toperation\x129\n" +
@@ -26848,9 +28513,10 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\vdescription\x18\v \x01(\tR\vdescription\x12N\n" +
 	"\n" +
 	"event_type\x18\f \x01(\x0e2/.google.container.v1.UpgradeInfoEvent.EventTypeR\teventType\x12T\n" +
-	"\x10disruption_event\x18\x0e \x01(\v2$.google.container.v1.DisruptionEventH\x02R\x0fdisruptionEvent\x88\x01\x01\"T\n" +
+	"\x10disruption_event\x18\x0e \x01(\v2$.google.container.v1.DisruptionEventH\x02R\x0fdisruptionEvent\x88\x01\x01\"c\n" +
 	"\x05State\x12\x15\n" +
-	"\x11STATE_UNSPECIFIED\x10\x00\x12\v\n" +
+	"\x11STATE_UNSPECIFIED\x10\x00\x12\r\n" +
+	"\tSCHEDULED\x10\x01\x12\v\n" +
 	"\aSTARTED\x10\x03\x12\r\n" +
 	"\tSUCCEEDED\x10\x04\x12\n" +
 	"\n" +
@@ -26896,11 +28562,21 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\x18suggested_upgrade_target\x18\t \x01(\tR\x16suggestedUpgradeTarget\x122\n" +
 	"\x15manual_steps_required\x18\n" +
 	" \x01(\bR\x13manualStepsRequired\x12-\n" +
-	"\x12mitigated_versions\x18\v \x03(\tR\x11mitigatedVersions\"\xf6\x01\n" +
+	"\x12mitigated_versions\x18\v \x03(\tR\x11mitigatedVersions\"\xd4\x02\n" +
 	"\tAutopilot\x12\x18\n" +
 	"\aenabled\x18\x01 \x01(\bR\aenabled\x12_\n" +
 	"\x16workload_policy_config\x18\x02 \x01(\v2).google.container.v1.WorkloadPolicyConfigR\x14workloadPolicyConfig\x12n\n" +
-	"\x1bprivileged_admission_config\x18\x04 \x01(\v2..google.container.v1.PrivilegedAdmissionConfigR\x19privilegedAdmissionConfig\"D\n" +
+	"\x1bprivileged_admission_config\x18\x04 \x01(\v2..google.container.v1.PrivilegedAdmissionConfigR\x19privilegedAdmissionConfig\x12\\\n" +
+	"\x15cluster_policy_config\x18\x05 \x01(\v2(.google.container.v1.ClusterPolicyConfigR\x13clusterPolicyConfig\"\xd7\x02\n" +
+	"\x13ClusterPolicyConfig\x121\n" +
+	"\x12no_system_mutation\x18\x01 \x01(\bH\x00R\x10noSystemMutation\x88\x01\x01\x12;\n" +
+	"\x17no_system_impersonation\x18\x02 \x01(\bH\x01R\x15noSystemImpersonation\x88\x01\x01\x121\n" +
+	"\x12no_unsafe_webhooks\x18\x03 \x01(\bH\x02R\x10noUnsafeWebhooks\x88\x01\x01\x128\n" +
+	"\x16no_standard_node_pools\x18\x05 \x01(\bH\x03R\x13noStandardNodePools\x88\x01\x01B\x15\n" +
+	"\x13_no_system_mutationB\x1a\n" +
+	"\x18_no_system_impersonationB\x15\n" +
+	"\x13_no_unsafe_webhooksB\x19\n" +
+	"\x17_no_standard_node_pools\"D\n" +
 	"\x19PrivilegedAdmissionConfig\x12'\n" +
 	"\x0fallowlist_paths\x18\x01 \x03(\tR\x0eallowlistPaths\"\xe2\x01\n" +
 	"\x14WorkloadPolicyConfig\x12+\n" +
@@ -27142,7 +28818,9 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\x15_minor_target_versionB\x17\n" +
 	"\x15_patch_target_versionB$\n" +
 	"\"_end_of_standard_support_timestampB$\n" +
-	"\"_end_of_extended_support_timestamp\"\xa4\x01\n" +
+	"\"_end_of_extended_support_timestamp\"6\n" +
+	"\x15ScheduleUpgradeConfig\x12\x1d\n" +
+	"\aenabled\x18\x01 \x01(\bB\x03\xe0A\x01R\aenabled\"\xa4\x01\n" +
 	"\x14GkeAutoUpgradeConfig\x12R\n" +
 	"\n" +
 	"patch_mode\x18\x01 \x01(\x0e23.google.container.v1.GkeAutoUpgradeConfig.PatchModeR\tpatchMode\"8\n" +
@@ -27155,14 +28833,32 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\x18NETWORK_TIER_UNSPECIFIED\x10\x00\x12\x18\n" +
 	"\x14NETWORK_TIER_DEFAULT\x10\x01\x12\x18\n" +
 	"\x14NETWORK_TIER_PREMIUM\x10\x02\x12\x19\n" +
-	"\x15NETWORK_TIER_STANDARD\x10\x03\"\xd1\x01\n" +
+	"\x15NETWORK_TIER_STANDARD\x10\x03\"\xde\x02\n" +
+	"\x10SecretSyncConfig\x12\x1d\n" +
+	"\aenabled\x18\x01 \x01(\bH\x00R\aenabled\x88\x01\x01\x12f\n" +
+	"\x0frotation_config\x18\x02 \x01(\v28.google.container.v1.SecretSyncConfig.SyncRotationConfigH\x01R\x0erotationConfig\x88\x01\x01\x1a\xa2\x01\n" +
+	"\x12SyncRotationConfig\x12\x1d\n" +
+	"\aenabled\x18\x01 \x01(\bH\x00R\aenabled\x88\x01\x01\x12K\n" +
+	"\x11rotation_interval\x18\x02 \x01(\v2\x19.google.protobuf.DurationH\x01R\x10rotationInterval\x88\x01\x01B\n" +
+	"\n" +
+	"\b_enabledB\x14\n" +
+	"\x12_rotation_intervalB\n" +
+	"\n" +
+	"\b_enabledB\x12\n" +
+	"\x10_rotation_config\"\xd1\x01\n" +
 	"\x1aManagedOpenTelemetryConfig\x12P\n" +
 	"\x05scope\x18\x01 \x01(\x0e25.google.container.v1.ManagedOpenTelemetryConfig.ScopeH\x00R\x05scope\x88\x01\x01\"W\n" +
 	"\x05Scope\x12\x15\n" +
 	"\x11SCOPE_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04NONE\x10\x01\x12-\n" +
 	")COLLECTION_AND_INSTRUMENTATION_COMPONENTS\x10\x02B\b\n" +
-	"\x06_scope*\xc6\x01\n" +
+	"\x06_scope\"T\n" +
+	"'ManagedMachineLearningDiagnosticsConfig\x12\x1d\n" +
+	"\aenabled\x18\x01 \x01(\bH\x00R\aenabled\x88\x01\x01B\n" +
+	"\n" +
+	"\b_enabled\"-\n" +
+	"\x11PodSnapshotConfig\x12\x18\n" +
+	"\aenabled\x18\x01 \x01(\bR\aenabled*\xc6\x01\n" +
 	"\x17PrivateIPv6GoogleAccess\x12*\n" +
 	"&PRIVATE_IPV6_GOOGLE_ACCESS_UNSPECIFIED\x10\x00\x12'\n" +
 	"#PRIVATE_IPV6_GOOGLE_ACCESS_DISABLED\x10\x01\x12(\n" +
@@ -27194,7 +28890,7 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\x19InTransitEncryptionConfig\x12,\n" +
 	"(IN_TRANSIT_ENCRYPTION_CONFIG_UNSPECIFIED\x10\x00\x12\"\n" +
 	"\x1eIN_TRANSIT_ENCRYPTION_DISABLED\x10\x01\x120\n" +
-	",IN_TRANSIT_ENCRYPTION_INTER_NODE_TRANSPARENT\x10\x022\xf9M\n" +
+	",IN_TRANSIT_ENCRYPTION_INTER_NODE_TRANSPARENT\x10\x022\xd9N\n" +
 	"\x0eClusterManager\x12\xe8\x01\n" +
 	"\fListClusters\x12(.google.container.v1.ListClustersRequest\x1a).google.container.v1.ListClustersResponse\"\x82\x01\xdaA\x0fproject_id,zone\xdaA\x06parent\x82\xd3\xe4\x93\x02aZ1\x12//v1/projects/{project_id}/zones/{zone}/clusters\x12,/v1/{parent=projects/*/locations/*}/clusters\x12\xed\x01\n" +
 	"\n" +
@@ -27232,7 +28928,7 @@ const file_google_container_v1_cluster_service_proto_rawDesc = "" +
 	"\x15ListUsableSubnetworks\x121.google.container.v1.ListUsableSubnetworksRequest\x1a2.google.container.v1.ListUsableSubnetworksResponse\"<\x82\xd3\xe4\x93\x026\x124/v1/{parent=projects/*}/aggregated/usableSubnetworks\x12\xe2\x01\n" +
 	"\x1bCheckAutopilotCompatibility\x127.google.container.v1.CheckAutopilotCompatibilityRequest\x1a8.google.container.v1.CheckAutopilotCompatibilityResponse\"P\x82\xd3\xe4\x93\x02J\x12H/v1/{name=projects/*/locations/*/clusters/*}:checkAutopilotCompatibility\x12\x92\x02\n" +
 	"\x17FetchClusterUpgradeInfo\x123.google.container.v1.FetchClusterUpgradeInfoRequest\x1a'.google.container.v1.ClusterUpgradeInfo\"\x98\x01\xdaA\x04name\x82\xd3\xe4\x93\x02\x8a\x01ZB\x12@/v1/{name=projects/*/zones/*/clusters/*}:fetchClusterUpgradeInfo\x12D/v1/{name=projects/*/locations/*/clusters/*}:fetchClusterUpgradeInfo\x12\xaf\x02\n" +
-	"\x18FetchNodePoolUpgradeInfo\x124.google.container.v1.FetchNodePoolUpgradeInfoRequest\x1a(.google.container.v1.NodePoolUpgradeInfo\"\xb2\x01\xdaA\x04name\x82\xd3\xe4\x93\x02\xa4\x01ZO\x12M/v1/{name=projects/*/zones/*/clusters/*/nodePools/*}:fetchNodePoolUpgradeInfo\x12Q/v1/{name=projects/*/locations/*/clusters/*/nodePools/*}:fetchNodePoolUpgradeInfo\x1aL\xcaA\x18container.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\xf4\x04\xeaA@\n" +
+	"\x18FetchNodePoolUpgradeInfo\x124.google.container.v1.FetchNodePoolUpgradeInfoRequest\x1a(.google.container.v1.NodePoolUpgradeInfo\"\xb2\x01\xdaA\x04name\x82\xd3\xe4\x93\x02\xa4\x01ZO\x12M/v1/{name=projects/*/zones/*/clusters/*/nodePools/*}:fetchNodePoolUpgradeInfo\x12Q/v1/{name=projects/*/locations/*/clusters/*/nodePools/*}:fetchNodePoolUpgradeInfo\x1a\xab\x01\xcaA\x18container.googleapis.com\xd2A\x8c\x01https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/container,https://www.googleapis.com/auth/container.read-onlyB\xf4\x04\xeaA@\n" +
 	"\x1bpubsub.googleapis.com/Topic\x12!projects/{project}/topics/{topic}\xeaA\\\n" +
 	"\x1fprivateca.googleapis.com/CaPool\x129projects/{project}/locations/{location}/caPools/{ca_pool}\xeaA\xa6\x01\n" +
 	"(cloudkms.googleapis.com/CryptoKeyVersion\x12zprojects/{project}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{crypto_key}/cryptoKeyVersions/{crypto_key_version}\xeaAa\n" +
@@ -27251,8 +28947,8 @@ func file_google_container_v1_cluster_service_proto_rawDescGZIP() []byte {
 	return file_google_container_v1_cluster_service_proto_rawDescData
 }
 
-var file_google_container_v1_cluster_service_proto_enumTypes = make([]protoimpl.EnumInfo, 78)
-var file_google_container_v1_cluster_service_proto_msgTypes = make([]protoimpl.MessageInfo, 250)
+var file_google_container_v1_cluster_service_proto_enumTypes = make([]protoimpl.EnumInfo, 81)
+var file_google_container_v1_cluster_service_proto_msgTypes = make([]protoimpl.MessageInfo, 269)
 var file_google_container_v1_cluster_service_proto_goTypes = []any{
 	(PrivateIPv6GoogleAccess)(0),                            // 0: google.container.v1.PrivateIPv6GoogleAccess
 	(UpgradeResourceType)(0),                                // 1: google.container.v1.UpgradeResourceType
@@ -27268,824 +28964,888 @@ var file_google_container_v1_cluster_service_proto_goTypes = []any{
 	(WindowsNodeConfig_OSVersion)(0),                        // 11: google.container.v1.WindowsNodeConfig.OSVersion
 	(NodeConfig_LocalSsdEncryptionMode)(0),                  // 12: google.container.v1.NodeConfig.LocalSsdEncryptionMode
 	(NodeConfig_EffectiveCgroupMode)(0),                     // 13: google.container.v1.NodeConfig.EffectiveCgroupMode
-	(AdvancedMachineFeatures_PerformanceMonitoringUnit)(0),  // 14: google.container.v1.AdvancedMachineFeatures.PerformanceMonitoringUnit
-	(NodeNetworkConfig_NetworkPerformanceConfig_Tier)(0),    // 15: google.container.v1.NodeNetworkConfig.NetworkPerformanceConfig.Tier
-	(SandboxConfig_Type)(0),                                 // 16: google.container.v1.SandboxConfig.Type
-	(ReservationAffinity_Type)(0),                           // 17: google.container.v1.ReservationAffinity.Type
-	(SoleTenantConfig_NodeAffinity_Operator)(0),             // 18: google.container.v1.SoleTenantConfig.NodeAffinity.Operator
-	(ContainerdConfig_RegistryHostConfig_HostCapability)(0), // 19: google.container.v1.ContainerdConfig.RegistryHostConfig.HostCapability
-	(NodeTaint_Effect)(0),                                   // 20: google.container.v1.NodeTaint.Effect
-	(CloudRunConfig_LoadBalancerType)(0),                    // 21: google.container.v1.CloudRunConfig.LoadBalancerType
-	(NetworkPolicy_Provider)(0),                             // 22: google.container.v1.NetworkPolicy.Provider
-	(BinaryAuthorization_EvaluationMode)(0),                 // 23: google.container.v1.BinaryAuthorization.EvaluationMode
-	(Cluster_Status)(0),                                     // 24: google.container.v1.Cluster.Status
-	(AnonymousAuthenticationConfig_Mode)(0),                 // 25: google.container.v1.AnonymousAuthenticationConfig.Mode
-	(CompliancePostureConfig_Mode)(0),                       // 26: google.container.v1.CompliancePostureConfig.Mode
-	(SecurityPostureConfig_Mode)(0),                         // 27: google.container.v1.SecurityPostureConfig.Mode
-	(SecurityPostureConfig_VulnerabilityMode)(0),            // 28: google.container.v1.SecurityPostureConfig.VulnerabilityMode
-	(AdditionalIPRangesConfig_Status)(0),                    // 29: google.container.v1.AdditionalIPRangesConfig.Status
-	(Operation_Status)(0),                                   // 30: google.container.v1.Operation.Status
-	(Operation_Type)(0),                                     // 31: google.container.v1.Operation.Type
-	(SetMasterAuthRequest_Action)(0),                        // 32: google.container.v1.SetMasterAuthRequest.Action
-	(NodePool_Status)(0),                                    // 33: google.container.v1.NodePool.Status
-	(NodePool_UpdateInfo_BlueGreenInfo_Phase)(0),            // 34: google.container.v1.NodePool.UpdateInfo.BlueGreenInfo.Phase
-	(NodePool_PlacementPolicy_Type)(0),                      // 35: google.container.v1.NodePool.PlacementPolicy.Type
-	(MaintenanceExclusionOptions_Scope)(0),                  // 36: google.container.v1.MaintenanceExclusionOptions.Scope
-	(MaintenanceExclusionOptions_EndTimeBehavior)(0),        // 37: google.container.v1.MaintenanceExclusionOptions.EndTimeBehavior
-	(ClusterAutoscaling_AutoscalingProfile)(0),              // 38: google.container.v1.ClusterAutoscaling.AutoscalingProfile
-	(ClusterAutoscaling_AutopilotGeneralProfile)(0),         // 39: google.container.v1.ClusterAutoscaling.AutopilotGeneralProfile
-	(NodePoolAutoscaling_LocationPolicy)(0),                 // 40: google.container.v1.NodePoolAutoscaling.LocationPolicy
-	(GPUSharingConfig_GPUSharingStrategy)(0),                // 41: google.container.v1.GPUSharingConfig.GPUSharingStrategy
-	(GPUDriverInstallationConfig_GPUDriverVersion)(0),       // 42: google.container.v1.GPUDriverInstallationConfig.GPUDriverVersion
-	(WorkloadMetadataConfig_Mode)(0),                        // 43: google.container.v1.WorkloadMetadataConfig.Mode
-	(StatusCondition_Code)(0),                               // 44: google.container.v1.StatusCondition.Code
-	(NetworkConfig_ClusterNetworkPerformanceConfig_Tier)(0), // 45: google.container.v1.NetworkConfig.ClusterNetworkPerformanceConfig.Tier
-	(GatewayAPIConfig_Channel)(0),                           // 46: google.container.v1.GatewayAPIConfig.Channel
-	(AutopilotCompatibilityIssue_IssueType)(0),              // 47: google.container.v1.AutopilotCompatibilityIssue.IssueType
-	(ReleaseChannel_Channel)(0),                             // 48: google.container.v1.ReleaseChannel.Channel
-	(DNSConfig_Provider)(0),                                 // 49: google.container.v1.DNSConfig.Provider
-	(DNSConfig_DNSScope)(0),                                 // 50: google.container.v1.DNSConfig.DNSScope
-	(DatabaseEncryption_State)(0),                           // 51: google.container.v1.DatabaseEncryption.State
-	(DatabaseEncryption_CurrentState)(0),                    // 52: google.container.v1.DatabaseEncryption.CurrentState
-	(UsableSubnetworkSecondaryRange_Status)(0),              // 53: google.container.v1.UsableSubnetworkSecondaryRange.Status
-	(GPUDirectConfig_GPUDirectStrategy)(0),                  // 54: google.container.v1.GPUDirectConfig.GPUDirectStrategy
-	(NotificationConfig_EventType)(0),                       // 55: google.container.v1.NotificationConfig.EventType
-	(ConfidentialNodes_ConfidentialInstanceType)(0),         // 56: google.container.v1.ConfidentialNodes.ConfidentialInstanceType
-	(UpgradeInfoEvent_State)(0),                             // 57: google.container.v1.UpgradeInfoEvent.State
-	(UpgradeInfoEvent_EventType)(0),                         // 58: google.container.v1.UpgradeInfoEvent.EventType
-	(DisruptionEvent_DisruptionType)(0),                     // 59: google.container.v1.DisruptionEvent.DisruptionType
-	(LoggingComponentConfig_Component)(0),                   // 60: google.container.v1.LoggingComponentConfig.Component
-	(AdvancedDatapathObservabilityConfig_RelayMode)(0),      // 61: google.container.v1.AdvancedDatapathObservabilityConfig.RelayMode
-	(LoggingVariantConfig_Variant)(0),                       // 62: google.container.v1.LoggingVariantConfig.Variant
-	(MonitoringComponentConfig_Component)(0),                // 63: google.container.v1.MonitoringComponentConfig.Component
-	(AutoMonitoringConfig_Scope)(0),                         // 64: google.container.v1.AutoMonitoringConfig.Scope
-	(PodAutoscaling_HPAProfile)(0),                          // 65: google.container.v1.PodAutoscaling.HPAProfile
-	(Fleet_MembershipType)(0),                               // 66: google.container.v1.Fleet.MembershipType
-	(EnterpriseConfig_ClusterTier)(0),                       // 67: google.container.v1.EnterpriseConfig.ClusterTier
-	(SecondaryBootDisk_Mode)(0),                             // 68: google.container.v1.SecondaryBootDisk.Mode
-	(ClusterUpgradeInfo_AutoUpgradeStatus)(0),               // 69: google.container.v1.ClusterUpgradeInfo.AutoUpgradeStatus
-	(ClusterUpgradeInfo_AutoUpgradePausedReason)(0),         // 70: google.container.v1.ClusterUpgradeInfo.AutoUpgradePausedReason
-	(UpgradeDetails_State)(0),                               // 71: google.container.v1.UpgradeDetails.State
-	(UpgradeDetails_StartType)(0),                           // 72: google.container.v1.UpgradeDetails.StartType
-	(NodePoolUpgradeInfo_AutoUpgradeStatus)(0),              // 73: google.container.v1.NodePoolUpgradeInfo.AutoUpgradeStatus
-	(NodePoolUpgradeInfo_AutoUpgradePausedReason)(0),        // 74: google.container.v1.NodePoolUpgradeInfo.AutoUpgradePausedReason
-	(GkeAutoUpgradeConfig_PatchMode)(0),                     // 75: google.container.v1.GkeAutoUpgradeConfig.PatchMode
-	(NetworkTierConfig_NetworkTier)(0),                      // 76: google.container.v1.NetworkTierConfig.NetworkTier
-	(ManagedOpenTelemetryConfig_Scope)(0),                   // 77: google.container.v1.ManagedOpenTelemetryConfig.Scope
-	(*LinuxNodeConfig)(nil),                                 // 78: google.container.v1.LinuxNodeConfig
-	(*WindowsNodeConfig)(nil),                               // 79: google.container.v1.WindowsNodeConfig
-	(*NodeKubeletConfig)(nil),                               // 80: google.container.v1.NodeKubeletConfig
-	(*TopologyManager)(nil),                                 // 81: google.container.v1.TopologyManager
-	(*MemoryManager)(nil),                                   // 82: google.container.v1.MemoryManager
-	(*EvictionSignals)(nil),                                 // 83: google.container.v1.EvictionSignals
-	(*EvictionGracePeriod)(nil),                             // 84: google.container.v1.EvictionGracePeriod
-	(*EvictionMinimumReclaim)(nil),                          // 85: google.container.v1.EvictionMinimumReclaim
-	(*NodeConfig)(nil),                                      // 86: google.container.v1.NodeConfig
-	(*AdvancedMachineFeatures)(nil),                         // 87: google.container.v1.AdvancedMachineFeatures
-	(*NodeNetworkConfig)(nil),                               // 88: google.container.v1.NodeNetworkConfig
-	(*AdditionalNodeNetworkConfig)(nil),                     // 89: google.container.v1.AdditionalNodeNetworkConfig
-	(*AdditionalPodNetworkConfig)(nil),                      // 90: google.container.v1.AdditionalPodNetworkConfig
-	(*ShieldedInstanceConfig)(nil),                          // 91: google.container.v1.ShieldedInstanceConfig
-	(*SandboxConfig)(nil),                                   // 92: google.container.v1.SandboxConfig
-	(*GcfsConfig)(nil),                                      // 93: google.container.v1.GcfsConfig
-	(*ReservationAffinity)(nil),                             // 94: google.container.v1.ReservationAffinity
-	(*SoleTenantConfig)(nil),                                // 95: google.container.v1.SoleTenantConfig
-	(*ContainerdConfig)(nil),                                // 96: google.container.v1.ContainerdConfig
-	(*NodeTaint)(nil),                                       // 97: google.container.v1.NodeTaint
-	(*NodeTaints)(nil),                                      // 98: google.container.v1.NodeTaints
-	(*NodeLabels)(nil),                                      // 99: google.container.v1.NodeLabels
-	(*ResourceLabels)(nil),                                  // 100: google.container.v1.ResourceLabels
-	(*NetworkTags)(nil),                                     // 101: google.container.v1.NetworkTags
-	(*MasterAuth)(nil),                                      // 102: google.container.v1.MasterAuth
-	(*ClientCertificateConfig)(nil),                         // 103: google.container.v1.ClientCertificateConfig
-	(*AddonsConfig)(nil),                                    // 104: google.container.v1.AddonsConfig
-	(*HttpLoadBalancing)(nil),                               // 105: google.container.v1.HttpLoadBalancing
-	(*HorizontalPodAutoscaling)(nil),                        // 106: google.container.v1.HorizontalPodAutoscaling
-	(*KubernetesDashboard)(nil),                             // 107: google.container.v1.KubernetesDashboard
-	(*NetworkPolicyConfig)(nil),                             // 108: google.container.v1.NetworkPolicyConfig
-	(*DnsCacheConfig)(nil),                                  // 109: google.container.v1.DnsCacheConfig
-	(*PrivateClusterMasterGlobalAccessConfig)(nil),          // 110: google.container.v1.PrivateClusterMasterGlobalAccessConfig
-	(*PrivateClusterConfig)(nil),                            // 111: google.container.v1.PrivateClusterConfig
-	(*AuthenticatorGroupsConfig)(nil),                       // 112: google.container.v1.AuthenticatorGroupsConfig
-	(*CloudRunConfig)(nil),                                  // 113: google.container.v1.CloudRunConfig
-	(*ConfigConnectorConfig)(nil),                           // 114: google.container.v1.ConfigConnectorConfig
-	(*GcePersistentDiskCsiDriverConfig)(nil),                // 115: google.container.v1.GcePersistentDiskCsiDriverConfig
-	(*GcpFilestoreCsiDriverConfig)(nil),                     // 116: google.container.v1.GcpFilestoreCsiDriverConfig
-	(*GcsFuseCsiDriverConfig)(nil),                          // 117: google.container.v1.GcsFuseCsiDriverConfig
-	(*ParallelstoreCsiDriverConfig)(nil),                    // 118: google.container.v1.ParallelstoreCsiDriverConfig
-	(*HighScaleCheckpointingConfig)(nil),                    // 119: google.container.v1.HighScaleCheckpointingConfig
-	(*LustreCsiDriverConfig)(nil),                           // 120: google.container.v1.LustreCsiDriverConfig
-	(*SliceControllerConfig)(nil),                           // 121: google.container.v1.SliceControllerConfig
-	(*RayOperatorConfig)(nil),                               // 122: google.container.v1.RayOperatorConfig
-	(*GkeBackupAgentConfig)(nil),                            // 123: google.container.v1.GkeBackupAgentConfig
-	(*StatefulHAConfig)(nil),                                // 124: google.container.v1.StatefulHAConfig
-	(*MasterAuthorizedNetworksConfig)(nil),                  // 125: google.container.v1.MasterAuthorizedNetworksConfig
-	(*LegacyAbac)(nil),                                      // 126: google.container.v1.LegacyAbac
-	(*NetworkPolicy)(nil),                                   // 127: google.container.v1.NetworkPolicy
-	(*BinaryAuthorization)(nil),                             // 128: google.container.v1.BinaryAuthorization
-	(*PodCIDROverprovisionConfig)(nil),                      // 129: google.container.v1.PodCIDROverprovisionConfig
-	(*IPAllocationPolicy)(nil),                              // 130: google.container.v1.IPAllocationPolicy
-	(*Cluster)(nil),                                         // 131: google.container.v1.Cluster
-	(*RBACBindingConfig)(nil),                               // 132: google.container.v1.RBACBindingConfig
-	(*UserManagedKeysConfig)(nil),                           // 133: google.container.v1.UserManagedKeysConfig
-	(*AnonymousAuthenticationConfig)(nil),                   // 134: google.container.v1.AnonymousAuthenticationConfig
-	(*CompliancePostureConfig)(nil),                         // 135: google.container.v1.CompliancePostureConfig
-	(*K8SBetaAPIConfig)(nil),                                // 136: google.container.v1.K8sBetaAPIConfig
-	(*SecurityPostureConfig)(nil),                           // 137: google.container.v1.SecurityPostureConfig
-	(*NodePoolAutoConfig)(nil),                              // 138: google.container.v1.NodePoolAutoConfig
-	(*NodePoolDefaults)(nil),                                // 139: google.container.v1.NodePoolDefaults
-	(*NodeConfigDefaults)(nil),                              // 140: google.container.v1.NodeConfigDefaults
-	(*ClusterUpdate)(nil),                                   // 141: google.container.v1.ClusterUpdate
-	(*AdditionalPodRangesConfig)(nil),                       // 142: google.container.v1.AdditionalPodRangesConfig
-	(*AdditionalIPRangesConfig)(nil),                        // 143: google.container.v1.AdditionalIPRangesConfig
-	(*DesiredAdditionalIPRangesConfig)(nil),                 // 144: google.container.v1.DesiredAdditionalIPRangesConfig
-	(*AutoIpamConfig)(nil),                                  // 145: google.container.v1.AutoIpamConfig
-	(*RangeInfo)(nil),                                       // 146: google.container.v1.RangeInfo
-	(*DesiredEnterpriseConfig)(nil),                         // 147: google.container.v1.DesiredEnterpriseConfig
-	(*Operation)(nil),                                       // 148: google.container.v1.Operation
-	(*OperationProgress)(nil),                               // 149: google.container.v1.OperationProgress
-	(*CreateClusterRequest)(nil),                            // 150: google.container.v1.CreateClusterRequest
-	(*GetClusterRequest)(nil),                               // 151: google.container.v1.GetClusterRequest
-	(*UpdateClusterRequest)(nil),                            // 152: google.container.v1.UpdateClusterRequest
-	(*UpdateNodePoolRequest)(nil),                           // 153: google.container.v1.UpdateNodePoolRequest
-	(*SetNodePoolAutoscalingRequest)(nil),                   // 154: google.container.v1.SetNodePoolAutoscalingRequest
-	(*SetLoggingServiceRequest)(nil),                        // 155: google.container.v1.SetLoggingServiceRequest
-	(*SetMonitoringServiceRequest)(nil),                     // 156: google.container.v1.SetMonitoringServiceRequest
-	(*SetAddonsConfigRequest)(nil),                          // 157: google.container.v1.SetAddonsConfigRequest
-	(*SetLocationsRequest)(nil),                             // 158: google.container.v1.SetLocationsRequest
-	(*UpdateMasterRequest)(nil),                             // 159: google.container.v1.UpdateMasterRequest
-	(*SetMasterAuthRequest)(nil),                            // 160: google.container.v1.SetMasterAuthRequest
-	(*DeleteClusterRequest)(nil),                            // 161: google.container.v1.DeleteClusterRequest
-	(*ListClustersRequest)(nil),                             // 162: google.container.v1.ListClustersRequest
-	(*ListClustersResponse)(nil),                            // 163: google.container.v1.ListClustersResponse
-	(*GetOperationRequest)(nil),                             // 164: google.container.v1.GetOperationRequest
-	(*ListOperationsRequest)(nil),                           // 165: google.container.v1.ListOperationsRequest
-	(*CancelOperationRequest)(nil),                          // 166: google.container.v1.CancelOperationRequest
-	(*ListOperationsResponse)(nil),                          // 167: google.container.v1.ListOperationsResponse
-	(*GetServerConfigRequest)(nil),                          // 168: google.container.v1.GetServerConfigRequest
-	(*ServerConfig)(nil),                                    // 169: google.container.v1.ServerConfig
-	(*CreateNodePoolRequest)(nil),                           // 170: google.container.v1.CreateNodePoolRequest
-	(*DeleteNodePoolRequest)(nil),                           // 171: google.container.v1.DeleteNodePoolRequest
-	(*ListNodePoolsRequest)(nil),                            // 172: google.container.v1.ListNodePoolsRequest
-	(*GetNodePoolRequest)(nil),                              // 173: google.container.v1.GetNodePoolRequest
-	(*BlueGreenSettings)(nil),                               // 174: google.container.v1.BlueGreenSettings
-	(*NodePool)(nil),                                        // 175: google.container.v1.NodePool
-	(*NodeManagement)(nil),                                  // 176: google.container.v1.NodeManagement
-	(*BestEffortProvisioning)(nil),                          // 177: google.container.v1.BestEffortProvisioning
-	(*AutoUpgradeOptions)(nil),                              // 178: google.container.v1.AutoUpgradeOptions
-	(*MaintenancePolicy)(nil),                               // 179: google.container.v1.MaintenancePolicy
-	(*MaintenanceWindow)(nil),                               // 180: google.container.v1.MaintenanceWindow
-	(*TimeWindow)(nil),                                      // 181: google.container.v1.TimeWindow
-	(*MaintenanceExclusionOptions)(nil),                     // 182: google.container.v1.MaintenanceExclusionOptions
-	(*RecurringTimeWindow)(nil),                             // 183: google.container.v1.RecurringTimeWindow
-	(*DailyMaintenanceWindow)(nil),                          // 184: google.container.v1.DailyMaintenanceWindow
-	(*SetNodePoolManagementRequest)(nil),                    // 185: google.container.v1.SetNodePoolManagementRequest
-	(*SetNodePoolSizeRequest)(nil),                          // 186: google.container.v1.SetNodePoolSizeRequest
-	(*CompleteNodePoolUpgradeRequest)(nil),                  // 187: google.container.v1.CompleteNodePoolUpgradeRequest
-	(*RollbackNodePoolUpgradeRequest)(nil),                  // 188: google.container.v1.RollbackNodePoolUpgradeRequest
-	(*ListNodePoolsResponse)(nil),                           // 189: google.container.v1.ListNodePoolsResponse
-	(*ClusterAutoscaling)(nil),                              // 190: google.container.v1.ClusterAutoscaling
-	(*AutoprovisioningNodePoolDefaults)(nil),                // 191: google.container.v1.AutoprovisioningNodePoolDefaults
-	(*ResourceLimit)(nil),                                   // 192: google.container.v1.ResourceLimit
-	(*DefaultComputeClassConfig)(nil),                       // 193: google.container.v1.DefaultComputeClassConfig
-	(*NodePoolAutoscaling)(nil),                             // 194: google.container.v1.NodePoolAutoscaling
-	(*SetLabelsRequest)(nil),                                // 195: google.container.v1.SetLabelsRequest
-	(*SetLegacyAbacRequest)(nil),                            // 196: google.container.v1.SetLegacyAbacRequest
-	(*StartIPRotationRequest)(nil),                          // 197: google.container.v1.StartIPRotationRequest
-	(*CompleteIPRotationRequest)(nil),                       // 198: google.container.v1.CompleteIPRotationRequest
-	(*AcceleratorConfig)(nil),                               // 199: google.container.v1.AcceleratorConfig
-	(*GPUSharingConfig)(nil),                                // 200: google.container.v1.GPUSharingConfig
-	(*GPUDriverInstallationConfig)(nil),                     // 201: google.container.v1.GPUDriverInstallationConfig
-	(*WorkloadMetadataConfig)(nil),                          // 202: google.container.v1.WorkloadMetadataConfig
-	(*SetNetworkPolicyRequest)(nil),                         // 203: google.container.v1.SetNetworkPolicyRequest
-	(*SetMaintenancePolicyRequest)(nil),                     // 204: google.container.v1.SetMaintenancePolicyRequest
-	(*StatusCondition)(nil),                                 // 205: google.container.v1.StatusCondition
-	(*NetworkConfig)(nil),                                   // 206: google.container.v1.NetworkConfig
-	(*GatewayAPIConfig)(nil),                                // 207: google.container.v1.GatewayAPIConfig
-	(*ServiceExternalIPsConfig)(nil),                        // 208: google.container.v1.ServiceExternalIPsConfig
-	(*GetOpenIDConfigRequest)(nil),                          // 209: google.container.v1.GetOpenIDConfigRequest
-	(*GetOpenIDConfigResponse)(nil),                         // 210: google.container.v1.GetOpenIDConfigResponse
-	(*GetJSONWebKeysRequest)(nil),                           // 211: google.container.v1.GetJSONWebKeysRequest
-	(*Jwk)(nil),                                             // 212: google.container.v1.Jwk
-	(*GetJSONWebKeysResponse)(nil),                          // 213: google.container.v1.GetJSONWebKeysResponse
-	(*CheckAutopilotCompatibilityRequest)(nil),              // 214: google.container.v1.CheckAutopilotCompatibilityRequest
-	(*AutopilotCompatibilityIssue)(nil),                     // 215: google.container.v1.AutopilotCompatibilityIssue
-	(*CheckAutopilotCompatibilityResponse)(nil),             // 216: google.container.v1.CheckAutopilotCompatibilityResponse
-	(*ReleaseChannel)(nil),                                  // 217: google.container.v1.ReleaseChannel
-	(*CostManagementConfig)(nil),                            // 218: google.container.v1.CostManagementConfig
-	(*IntraNodeVisibilityConfig)(nil),                       // 219: google.container.v1.IntraNodeVisibilityConfig
-	(*ILBSubsettingConfig)(nil),                             // 220: google.container.v1.ILBSubsettingConfig
-	(*DNSConfig)(nil),                                       // 221: google.container.v1.DNSConfig
-	(*MaxPodsConstraint)(nil),                               // 222: google.container.v1.MaxPodsConstraint
-	(*WorkloadIdentityConfig)(nil),                          // 223: google.container.v1.WorkloadIdentityConfig
-	(*IdentityServiceConfig)(nil),                           // 224: google.container.v1.IdentityServiceConfig
-	(*MeshCertificates)(nil),                                // 225: google.container.v1.MeshCertificates
-	(*DatabaseEncryption)(nil),                              // 226: google.container.v1.DatabaseEncryption
-	(*ListUsableSubnetworksRequest)(nil),                    // 227: google.container.v1.ListUsableSubnetworksRequest
-	(*ListUsableSubnetworksResponse)(nil),                   // 228: google.container.v1.ListUsableSubnetworksResponse
-	(*UsableSubnetworkSecondaryRange)(nil),                  // 229: google.container.v1.UsableSubnetworkSecondaryRange
-	(*UsableSubnetwork)(nil),                                // 230: google.container.v1.UsableSubnetwork
-	(*ResourceUsageExportConfig)(nil),                       // 231: google.container.v1.ResourceUsageExportConfig
-	(*VerticalPodAutoscaling)(nil),                          // 232: google.container.v1.VerticalPodAutoscaling
-	(*DefaultSnatStatus)(nil),                               // 233: google.container.v1.DefaultSnatStatus
-	(*ShieldedNodes)(nil),                                   // 234: google.container.v1.ShieldedNodes
-	(*VirtualNIC)(nil),                                      // 235: google.container.v1.VirtualNIC
-	(*FastSocket)(nil),                                      // 236: google.container.v1.FastSocket
-	(*GPUDirectConfig)(nil),                                 // 237: google.container.v1.GPUDirectConfig
-	(*NotificationConfig)(nil),                              // 238: google.container.v1.NotificationConfig
-	(*ConfidentialNodes)(nil),                               // 239: google.container.v1.ConfidentialNodes
-	(*UpgradeEvent)(nil),                                    // 240: google.container.v1.UpgradeEvent
-	(*UpgradeInfoEvent)(nil),                                // 241: google.container.v1.UpgradeInfoEvent
-	(*DisruptionEvent)(nil),                                 // 242: google.container.v1.DisruptionEvent
-	(*UpgradeAvailableEvent)(nil),                           // 243: google.container.v1.UpgradeAvailableEvent
-	(*SecurityBulletinEvent)(nil),                           // 244: google.container.v1.SecurityBulletinEvent
-	(*Autopilot)(nil),                                       // 245: google.container.v1.Autopilot
-	(*PrivilegedAdmissionConfig)(nil),                       // 246: google.container.v1.PrivilegedAdmissionConfig
-	(*WorkloadPolicyConfig)(nil),                            // 247: google.container.v1.WorkloadPolicyConfig
-	(*LoggingConfig)(nil),                                   // 248: google.container.v1.LoggingConfig
-	(*LoggingComponentConfig)(nil),                          // 249: google.container.v1.LoggingComponentConfig
-	(*RayClusterLoggingConfig)(nil),                         // 250: google.container.v1.RayClusterLoggingConfig
-	(*MonitoringConfig)(nil),                                // 251: google.container.v1.MonitoringConfig
-	(*AdvancedDatapathObservabilityConfig)(nil),             // 252: google.container.v1.AdvancedDatapathObservabilityConfig
-	(*RayClusterMonitoringConfig)(nil),                      // 253: google.container.v1.RayClusterMonitoringConfig
-	(*NodePoolLoggingConfig)(nil),                           // 254: google.container.v1.NodePoolLoggingConfig
-	(*LoggingVariantConfig)(nil),                            // 255: google.container.v1.LoggingVariantConfig
-	(*MonitoringComponentConfig)(nil),                       // 256: google.container.v1.MonitoringComponentConfig
-	(*ManagedPrometheusConfig)(nil),                         // 257: google.container.v1.ManagedPrometheusConfig
-	(*AutoMonitoringConfig)(nil),                            // 258: google.container.v1.AutoMonitoringConfig
-	(*PodAutoscaling)(nil),                                  // 259: google.container.v1.PodAutoscaling
-	(*Fleet)(nil),                                           // 260: google.container.v1.Fleet
-	(*ControlPlaneEndpointsConfig)(nil),                     // 261: google.container.v1.ControlPlaneEndpointsConfig
-	(*LocalNvmeSsdBlockConfig)(nil),                         // 262: google.container.v1.LocalNvmeSsdBlockConfig
-	(*EphemeralStorageLocalSsdConfig)(nil),                  // 263: google.container.v1.EphemeralStorageLocalSsdConfig
-	(*ResourceManagerTags)(nil),                             // 264: google.container.v1.ResourceManagerTags
-	(*EnterpriseConfig)(nil),                                // 265: google.container.v1.EnterpriseConfig
-	(*SecretManagerConfig)(nil),                             // 266: google.container.v1.SecretManagerConfig
-	(*BootDisk)(nil),                                        // 267: google.container.v1.BootDisk
-	(*SecondaryBootDisk)(nil),                               // 268: google.container.v1.SecondaryBootDisk
-	(*SecondaryBootDiskUpdateStrategy)(nil),                 // 269: google.container.v1.SecondaryBootDiskUpdateStrategy
-	(*FetchClusterUpgradeInfoRequest)(nil),                  // 270: google.container.v1.FetchClusterUpgradeInfoRequest
-	(*ClusterUpgradeInfo)(nil),                              // 271: google.container.v1.ClusterUpgradeInfo
-	(*UpgradeDetails)(nil),                                  // 272: google.container.v1.UpgradeDetails
-	(*FetchNodePoolUpgradeInfoRequest)(nil),                 // 273: google.container.v1.FetchNodePoolUpgradeInfoRequest
-	(*NodePoolUpgradeInfo)(nil),                             // 274: google.container.v1.NodePoolUpgradeInfo
-	(*GkeAutoUpgradeConfig)(nil),                            // 275: google.container.v1.GkeAutoUpgradeConfig
-	(*NetworkTierConfig)(nil),                               // 276: google.container.v1.NetworkTierConfig
-	(*ManagedOpenTelemetryConfig)(nil),                      // 277: google.container.v1.ManagedOpenTelemetryConfig
-	(*LinuxNodeConfig_HugepagesConfig)(nil),                 // 278: google.container.v1.LinuxNodeConfig.HugepagesConfig
-	(*LinuxNodeConfig_SwapConfig)(nil),                      // 279: google.container.v1.LinuxNodeConfig.SwapConfig
-	(*LinuxNodeConfig_NodeKernelModuleLoading)(nil),         // 280: google.container.v1.LinuxNodeConfig.NodeKernelModuleLoading
-	nil, // 281: google.container.v1.LinuxNodeConfig.SysctlsEntry
-	(*LinuxNodeConfig_SwapConfig_EncryptionConfig)(nil),         // 282: google.container.v1.LinuxNodeConfig.SwapConfig.EncryptionConfig
-	(*LinuxNodeConfig_SwapConfig_BootDiskProfile)(nil),          // 283: google.container.v1.LinuxNodeConfig.SwapConfig.BootDiskProfile
-	(*LinuxNodeConfig_SwapConfig_EphemeralLocalSsdProfile)(nil), // 284: google.container.v1.LinuxNodeConfig.SwapConfig.EphemeralLocalSsdProfile
-	(*LinuxNodeConfig_SwapConfig_DedicatedLocalSsdProfile)(nil), // 285: google.container.v1.LinuxNodeConfig.SwapConfig.DedicatedLocalSsdProfile
-	nil, // 286: google.container.v1.NodeConfig.MetadataEntry
-	nil, // 287: google.container.v1.NodeConfig.LabelsEntry
-	nil, // 288: google.container.v1.NodeConfig.ResourceLabelsEntry
-	(*NodeNetworkConfig_NetworkPerformanceConfig)(nil),                                                                      // 289: google.container.v1.NodeNetworkConfig.NetworkPerformanceConfig
-	(*SoleTenantConfig_NodeAffinity)(nil),                                                                                   // 290: google.container.v1.SoleTenantConfig.NodeAffinity
-	(*ContainerdConfig_PrivateRegistryAccessConfig)(nil),                                                                    // 291: google.container.v1.ContainerdConfig.PrivateRegistryAccessConfig
-	(*ContainerdConfig_WritableCgroups)(nil),                                                                                // 292: google.container.v1.ContainerdConfig.WritableCgroups
-	(*ContainerdConfig_RegistryHostConfig)(nil),                                                                             // 293: google.container.v1.ContainerdConfig.RegistryHostConfig
-	(*ContainerdConfig_PrivateRegistryAccessConfig_CertificateAuthorityDomainConfig)(nil),                                   // 294: google.container.v1.ContainerdConfig.PrivateRegistryAccessConfig.CertificateAuthorityDomainConfig
-	(*ContainerdConfig_PrivateRegistryAccessConfig_CertificateAuthorityDomainConfig_GCPSecretManagerCertificateConfig)(nil), // 295: google.container.v1.ContainerdConfig.PrivateRegistryAccessConfig.CertificateAuthorityDomainConfig.GCPSecretManagerCertificateConfig
-	(*ContainerdConfig_RegistryHostConfig_CertificateConfig)(nil),                                                           // 296: google.container.v1.ContainerdConfig.RegistryHostConfig.CertificateConfig
-	(*ContainerdConfig_RegistryHostConfig_CertificateConfigPair)(nil),                                                       // 297: google.container.v1.ContainerdConfig.RegistryHostConfig.CertificateConfigPair
-	(*ContainerdConfig_RegistryHostConfig_RegistryHeader)(nil),                                                              // 298: google.container.v1.ContainerdConfig.RegistryHostConfig.RegistryHeader
-	(*ContainerdConfig_RegistryHostConfig_HostConfig)(nil),                                                                  // 299: google.container.v1.ContainerdConfig.RegistryHostConfig.HostConfig
-	nil, // 300: google.container.v1.NodeLabels.LabelsEntry
-	nil, // 301: google.container.v1.ResourceLabels.LabelsEntry
-	(*MasterAuthorizedNetworksConfig_CidrBlock)(nil), // 302: google.container.v1.MasterAuthorizedNetworksConfig.CidrBlock
-	nil, // 303: google.container.v1.Cluster.ResourceLabelsEntry
-	(*CompliancePostureConfig_ComplianceStandard)(nil), // 304: google.container.v1.CompliancePostureConfig.ComplianceStandard
-	(*OperationProgress_Metric)(nil),                   // 305: google.container.v1.OperationProgress.Metric
-	(*ServerConfig_ReleaseChannelConfig)(nil),          // 306: google.container.v1.ServerConfig.ReleaseChannelConfig
-	(*BlueGreenSettings_StandardRolloutPolicy)(nil),    // 307: google.container.v1.BlueGreenSettings.StandardRolloutPolicy
-	(*BlueGreenSettings_AutoscaledRolloutPolicy)(nil),  // 308: google.container.v1.BlueGreenSettings.AutoscaledRolloutPolicy
-	(*NodePool_UpgradeSettings)(nil),                   // 309: google.container.v1.NodePool.UpgradeSettings
-	(*NodePool_UpdateInfo)(nil),                        // 310: google.container.v1.NodePool.UpdateInfo
-	(*NodePool_PlacementPolicy)(nil),                   // 311: google.container.v1.NodePool.PlacementPolicy
-	(*NodePool_QueuedProvisioning)(nil),                // 312: google.container.v1.NodePool.QueuedProvisioning
-	(*NodePool_NodeDrainConfig)(nil),                   // 313: google.container.v1.NodePool.NodeDrainConfig
-	(*NodePool_UpdateInfo_BlueGreenInfo)(nil),          // 314: google.container.v1.NodePool.UpdateInfo.BlueGreenInfo
-	nil, // 315: google.container.v1.MaintenanceWindow.MaintenanceExclusionsEntry
-	nil, // 316: google.container.v1.SetLabelsRequest.ResourceLabelsEntry
-	(*NetworkConfig_ClusterNetworkPerformanceConfig)(nil),       // 317: google.container.v1.NetworkConfig.ClusterNetworkPerformanceConfig
-	(*DatabaseEncryption_OperationError)(nil),                   // 318: google.container.v1.DatabaseEncryption.OperationError
-	(*ResourceUsageExportConfig_BigQueryDestination)(nil),       // 319: google.container.v1.ResourceUsageExportConfig.BigQueryDestination
-	(*ResourceUsageExportConfig_ConsumptionMeteringConfig)(nil), // 320: google.container.v1.ResourceUsageExportConfig.ConsumptionMeteringConfig
-	(*NotificationConfig_PubSub)(nil),                           // 321: google.container.v1.NotificationConfig.PubSub
-	(*NotificationConfig_Filter)(nil),                           // 322: google.container.v1.NotificationConfig.Filter
-	(*DisruptionEvent_PdbBlockedPod)(nil),                       // 323: google.container.v1.DisruptionEvent.PdbBlockedPod
-	(*ControlPlaneEndpointsConfig_DNSEndpointConfig)(nil),       // 324: google.container.v1.ControlPlaneEndpointsConfig.DNSEndpointConfig
-	(*ControlPlaneEndpointsConfig_IPEndpointsConfig)(nil),       // 325: google.container.v1.ControlPlaneEndpointsConfig.IPEndpointsConfig
-	nil, // 326: google.container.v1.ResourceManagerTags.TagsEntry
-	(*SecretManagerConfig_RotationConfig)(nil), // 327: google.container.v1.SecretManagerConfig.RotationConfig
-	(*wrapperspb.BoolValue)(nil),               // 328: google.protobuf.BoolValue
-	(*durationpb.Duration)(nil),                // 329: google.protobuf.Duration
-	(*status.Status)(nil),                      // 330: google.rpc.Status
-	(*timestamppb.Timestamp)(nil),              // 331: google.protobuf.Timestamp
-	(code.Code)(0),                             // 332: google.rpc.Code
-	(*emptypb.Empty)(nil),                      // 333: google.protobuf.Empty
+	(TaintConfig_ArchitectureTaintBehavior)(0),              // 14: google.container.v1.TaintConfig.ArchitectureTaintBehavior
+	(AdvancedMachineFeatures_PerformanceMonitoringUnit)(0),  // 15: google.container.v1.AdvancedMachineFeatures.PerformanceMonitoringUnit
+	(NodeNetworkConfig_NetworkPerformanceConfig_Tier)(0),    // 16: google.container.v1.NodeNetworkConfig.NetworkPerformanceConfig.Tier
+	(SandboxConfig_Type)(0),                                 // 17: google.container.v1.SandboxConfig.Type
+	(ReservationAffinity_Type)(0),                           // 18: google.container.v1.ReservationAffinity.Type
+	(SoleTenantConfig_NodeAffinity_Operator)(0),             // 19: google.container.v1.SoleTenantConfig.NodeAffinity.Operator
+	(ContainerdConfig_RegistryHostConfig_HostCapability)(0), // 20: google.container.v1.ContainerdConfig.RegistryHostConfig.HostCapability
+	(NodeTaint_Effect)(0),                                   // 21: google.container.v1.NodeTaint.Effect
+	(CloudRunConfig_LoadBalancerType)(0),                    // 22: google.container.v1.CloudRunConfig.LoadBalancerType
+	(NetworkPolicy_Provider)(0),                             // 23: google.container.v1.NetworkPolicy.Provider
+	(BinaryAuthorization_EvaluationMode)(0),                 // 24: google.container.v1.BinaryAuthorization.EvaluationMode
+	(Cluster_Status)(0),                                     // 25: google.container.v1.Cluster.Status
+	(NodeCreationConfig_Mode)(0),                            // 26: google.container.v1.NodeCreationConfig.Mode
+	(ControlPlaneEgress_Mode)(0),                            // 27: google.container.v1.ControlPlaneEgress.Mode
+	(AnonymousAuthenticationConfig_Mode)(0),                 // 28: google.container.v1.AnonymousAuthenticationConfig.Mode
+	(CompliancePostureConfig_Mode)(0),                       // 29: google.container.v1.CompliancePostureConfig.Mode
+	(SecurityPostureConfig_Mode)(0),                         // 30: google.container.v1.SecurityPostureConfig.Mode
+	(SecurityPostureConfig_VulnerabilityMode)(0),            // 31: google.container.v1.SecurityPostureConfig.VulnerabilityMode
+	(AdditionalIPRangesConfig_Status)(0),                    // 32: google.container.v1.AdditionalIPRangesConfig.Status
+	(Operation_Status)(0),                                   // 33: google.container.v1.Operation.Status
+	(Operation_Type)(0),                                     // 34: google.container.v1.Operation.Type
+	(SetMasterAuthRequest_Action)(0),                        // 35: google.container.v1.SetMasterAuthRequest.Action
+	(NodePool_Status)(0),                                    // 36: google.container.v1.NodePool.Status
+	(NodePool_UpdateInfo_BlueGreenInfo_Phase)(0),            // 37: google.container.v1.NodePool.UpdateInfo.BlueGreenInfo.Phase
+	(NodePool_PlacementPolicy_Type)(0),                      // 38: google.container.v1.NodePool.PlacementPolicy.Type
+	(MaintenanceExclusionOptions_Scope)(0),                  // 39: google.container.v1.MaintenanceExclusionOptions.Scope
+	(MaintenanceExclusionOptions_EndTimeBehavior)(0),        // 40: google.container.v1.MaintenanceExclusionOptions.EndTimeBehavior
+	(ClusterAutoscaling_AutoscalingProfile)(0),              // 41: google.container.v1.ClusterAutoscaling.AutoscalingProfile
+	(ClusterAutoscaling_AutopilotGeneralProfile)(0),         // 42: google.container.v1.ClusterAutoscaling.AutopilotGeneralProfile
+	(NodePoolAutoscaling_LocationPolicy)(0),                 // 43: google.container.v1.NodePoolAutoscaling.LocationPolicy
+	(GPUSharingConfig_GPUSharingStrategy)(0),                // 44: google.container.v1.GPUSharingConfig.GPUSharingStrategy
+	(GPUDriverInstallationConfig_GPUDriverVersion)(0),       // 45: google.container.v1.GPUDriverInstallationConfig.GPUDriverVersion
+	(WorkloadMetadataConfig_Mode)(0),                        // 46: google.container.v1.WorkloadMetadataConfig.Mode
+	(StatusCondition_Code)(0),                               // 47: google.container.v1.StatusCondition.Code
+	(NetworkConfig_ClusterNetworkPerformanceConfig_Tier)(0), // 48: google.container.v1.NetworkConfig.ClusterNetworkPerformanceConfig.Tier
+	(GatewayAPIConfig_Channel)(0),                           // 49: google.container.v1.GatewayAPIConfig.Channel
+	(AutopilotCompatibilityIssue_IssueType)(0),              // 50: google.container.v1.AutopilotCompatibilityIssue.IssueType
+	(ReleaseChannel_Channel)(0),                             // 51: google.container.v1.ReleaseChannel.Channel
+	(DNSConfig_Provider)(0),                                 // 52: google.container.v1.DNSConfig.Provider
+	(DNSConfig_DNSScope)(0),                                 // 53: google.container.v1.DNSConfig.DNSScope
+	(DatabaseEncryption_State)(0),                           // 54: google.container.v1.DatabaseEncryption.State
+	(DatabaseEncryption_CurrentState)(0),                    // 55: google.container.v1.DatabaseEncryption.CurrentState
+	(UsableSubnetworkSecondaryRange_Status)(0),              // 56: google.container.v1.UsableSubnetworkSecondaryRange.Status
+	(GPUDirectConfig_GPUDirectStrategy)(0),                  // 57: google.container.v1.GPUDirectConfig.GPUDirectStrategy
+	(NotificationConfig_EventType)(0),                       // 58: google.container.v1.NotificationConfig.EventType
+	(ConfidentialNodes_ConfidentialInstanceType)(0),         // 59: google.container.v1.ConfidentialNodes.ConfidentialInstanceType
+	(UpgradeInfoEvent_State)(0),                             // 60: google.container.v1.UpgradeInfoEvent.State
+	(UpgradeInfoEvent_EventType)(0),                         // 61: google.container.v1.UpgradeInfoEvent.EventType
+	(DisruptionEvent_DisruptionType)(0),                     // 62: google.container.v1.DisruptionEvent.DisruptionType
+	(LoggingComponentConfig_Component)(0),                   // 63: google.container.v1.LoggingComponentConfig.Component
+	(AdvancedDatapathObservabilityConfig_RelayMode)(0),      // 64: google.container.v1.AdvancedDatapathObservabilityConfig.RelayMode
+	(LoggingVariantConfig_Variant)(0),                       // 65: google.container.v1.LoggingVariantConfig.Variant
+	(MonitoringComponentConfig_Component)(0),                // 66: google.container.v1.MonitoringComponentConfig.Component
+	(AutoMonitoringConfig_Scope)(0),                         // 67: google.container.v1.AutoMonitoringConfig.Scope
+	(PodAutoscaling_HPAProfile)(0),                          // 68: google.container.v1.PodAutoscaling.HPAProfile
+	(Fleet_MembershipType)(0),                               // 69: google.container.v1.Fleet.MembershipType
+	(EnterpriseConfig_ClusterTier)(0),                       // 70: google.container.v1.EnterpriseConfig.ClusterTier
+	(SecondaryBootDisk_Mode)(0),                             // 71: google.container.v1.SecondaryBootDisk.Mode
+	(ClusterUpgradeInfo_AutoUpgradeStatus)(0),               // 72: google.container.v1.ClusterUpgradeInfo.AutoUpgradeStatus
+	(ClusterUpgradeInfo_AutoUpgradePausedReason)(0),         // 73: google.container.v1.ClusterUpgradeInfo.AutoUpgradePausedReason
+	(UpgradeDetails_State)(0),                               // 74: google.container.v1.UpgradeDetails.State
+	(UpgradeDetails_StartType)(0),                           // 75: google.container.v1.UpgradeDetails.StartType
+	(NodePoolUpgradeInfo_AutoUpgradeStatus)(0),              // 76: google.container.v1.NodePoolUpgradeInfo.AutoUpgradeStatus
+	(NodePoolUpgradeInfo_AutoUpgradePausedReason)(0),        // 77: google.container.v1.NodePoolUpgradeInfo.AutoUpgradePausedReason
+	(GkeAutoUpgradeConfig_PatchMode)(0),                     // 78: google.container.v1.GkeAutoUpgradeConfig.PatchMode
+	(NetworkTierConfig_NetworkTier)(0),                      // 79: google.container.v1.NetworkTierConfig.NetworkTier
+	(ManagedOpenTelemetryConfig_Scope)(0),                   // 80: google.container.v1.ManagedOpenTelemetryConfig.Scope
+	(*LinuxNodeConfig)(nil),                                 // 81: google.container.v1.LinuxNodeConfig
+	(*WindowsNodeConfig)(nil),                               // 82: google.container.v1.WindowsNodeConfig
+	(*NodeKubeletConfig)(nil),                               // 83: google.container.v1.NodeKubeletConfig
+	(*TopologyManager)(nil),                                 // 84: google.container.v1.TopologyManager
+	(*MemoryManager)(nil),                                   // 85: google.container.v1.MemoryManager
+	(*EvictionSignals)(nil),                                 // 86: google.container.v1.EvictionSignals
+	(*EvictionGracePeriod)(nil),                             // 87: google.container.v1.EvictionGracePeriod
+	(*EvictionMinimumReclaim)(nil),                          // 88: google.container.v1.EvictionMinimumReclaim
+	(*NodeConfig)(nil),                                      // 89: google.container.v1.NodeConfig
+	(*TaintConfig)(nil),                                     // 90: google.container.v1.TaintConfig
+	(*AdvancedMachineFeatures)(nil),                         // 91: google.container.v1.AdvancedMachineFeatures
+	(*NodeNetworkConfig)(nil),                               // 92: google.container.v1.NodeNetworkConfig
+	(*AdditionalNodeNetworkConfig)(nil),                     // 93: google.container.v1.AdditionalNodeNetworkConfig
+	(*AdditionalPodNetworkConfig)(nil),                      // 94: google.container.v1.AdditionalPodNetworkConfig
+	(*ShieldedInstanceConfig)(nil),                          // 95: google.container.v1.ShieldedInstanceConfig
+	(*SandboxConfig)(nil),                                   // 96: google.container.v1.SandboxConfig
+	(*GcfsConfig)(nil),                                      // 97: google.container.v1.GcfsConfig
+	(*ReservationAffinity)(nil),                             // 98: google.container.v1.ReservationAffinity
+	(*SoleTenantConfig)(nil),                                // 99: google.container.v1.SoleTenantConfig
+	(*ContainerdConfig)(nil),                                // 100: google.container.v1.ContainerdConfig
+	(*NodeTaint)(nil),                                       // 101: google.container.v1.NodeTaint
+	(*NodeTaints)(nil),                                      // 102: google.container.v1.NodeTaints
+	(*NodeLabels)(nil),                                      // 103: google.container.v1.NodeLabels
+	(*ResourceLabels)(nil),                                  // 104: google.container.v1.ResourceLabels
+	(*NetworkTags)(nil),                                     // 105: google.container.v1.NetworkTags
+	(*MasterAuth)(nil),                                      // 106: google.container.v1.MasterAuth
+	(*ClientCertificateConfig)(nil),                         // 107: google.container.v1.ClientCertificateConfig
+	(*AddonsConfig)(nil),                                    // 108: google.container.v1.AddonsConfig
+	(*HttpLoadBalancing)(nil),                               // 109: google.container.v1.HttpLoadBalancing
+	(*HorizontalPodAutoscaling)(nil),                        // 110: google.container.v1.HorizontalPodAutoscaling
+	(*KubernetesDashboard)(nil),                             // 111: google.container.v1.KubernetesDashboard
+	(*NetworkPolicyConfig)(nil),                             // 112: google.container.v1.NetworkPolicyConfig
+	(*DnsCacheConfig)(nil),                                  // 113: google.container.v1.DnsCacheConfig
+	(*PrivateClusterMasterGlobalAccessConfig)(nil),          // 114: google.container.v1.PrivateClusterMasterGlobalAccessConfig
+	(*PrivateClusterConfig)(nil),                            // 115: google.container.v1.PrivateClusterConfig
+	(*AuthenticatorGroupsConfig)(nil),                       // 116: google.container.v1.AuthenticatorGroupsConfig
+	(*CloudRunConfig)(nil),                                  // 117: google.container.v1.CloudRunConfig
+	(*ConfigConnectorConfig)(nil),                           // 118: google.container.v1.ConfigConnectorConfig
+	(*GcePersistentDiskCsiDriverConfig)(nil),                // 119: google.container.v1.GcePersistentDiskCsiDriverConfig
+	(*GcpFilestoreCsiDriverConfig)(nil),                     // 120: google.container.v1.GcpFilestoreCsiDriverConfig
+	(*GcsFuseCsiDriverConfig)(nil),                          // 121: google.container.v1.GcsFuseCsiDriverConfig
+	(*ParallelstoreCsiDriverConfig)(nil),                    // 122: google.container.v1.ParallelstoreCsiDriverConfig
+	(*HighScaleCheckpointingConfig)(nil),                    // 123: google.container.v1.HighScaleCheckpointingConfig
+	(*LustreCsiDriverConfig)(nil),                           // 124: google.container.v1.LustreCsiDriverConfig
+	(*SlurmOperatorConfig)(nil),                             // 125: google.container.v1.SlurmOperatorConfig
+	(*NodeReadinessConfig)(nil),                             // 126: google.container.v1.NodeReadinessConfig
+	(*SliceControllerConfig)(nil),                           // 127: google.container.v1.SliceControllerConfig
+	(*RayOperatorConfig)(nil),                               // 128: google.container.v1.RayOperatorConfig
+	(*GkeBackupAgentConfig)(nil),                            // 129: google.container.v1.GkeBackupAgentConfig
+	(*StatefulHAConfig)(nil),                                // 130: google.container.v1.StatefulHAConfig
+	(*MasterAuthorizedNetworksConfig)(nil),                  // 131: google.container.v1.MasterAuthorizedNetworksConfig
+	(*LegacyAbac)(nil),                                      // 132: google.container.v1.LegacyAbac
+	(*NetworkPolicy)(nil),                                   // 133: google.container.v1.NetworkPolicy
+	(*BinaryAuthorization)(nil),                             // 134: google.container.v1.BinaryAuthorization
+	(*PodCIDROverprovisionConfig)(nil),                      // 135: google.container.v1.PodCIDROverprovisionConfig
+	(*IPAllocationPolicy)(nil),                              // 136: google.container.v1.IPAllocationPolicy
+	(*Cluster)(nil),                                         // 137: google.container.v1.Cluster
+	(*NodeCreationConfig)(nil),                              // 138: google.container.v1.NodeCreationConfig
+	(*ControlPlaneEgress)(nil),                              // 139: google.container.v1.ControlPlaneEgress
+	(*RBACBindingConfig)(nil),                               // 140: google.container.v1.RBACBindingConfig
+	(*UserManagedKeysConfig)(nil),                           // 141: google.container.v1.UserManagedKeysConfig
+	(*AnonymousAuthenticationConfig)(nil),                   // 142: google.container.v1.AnonymousAuthenticationConfig
+	(*CompliancePostureConfig)(nil),                         // 143: google.container.v1.CompliancePostureConfig
+	(*K8SBetaAPIConfig)(nil),                                // 144: google.container.v1.K8sBetaAPIConfig
+	(*SecurityPostureConfig)(nil),                           // 145: google.container.v1.SecurityPostureConfig
+	(*NodePoolAutoConfig)(nil),                              // 146: google.container.v1.NodePoolAutoConfig
+	(*NodePoolDefaults)(nil),                                // 147: google.container.v1.NodePoolDefaults
+	(*NodeConfigDefaults)(nil),                              // 148: google.container.v1.NodeConfigDefaults
+	(*ClusterUpdate)(nil),                                   // 149: google.container.v1.ClusterUpdate
+	(*AdditionalPodRangesConfig)(nil),                       // 150: google.container.v1.AdditionalPodRangesConfig
+	(*AdditionalIPRangesConfig)(nil),                        // 151: google.container.v1.AdditionalIPRangesConfig
+	(*DesiredAdditionalIPRangesConfig)(nil),                 // 152: google.container.v1.DesiredAdditionalIPRangesConfig
+	(*AutoIpamConfig)(nil),                                  // 153: google.container.v1.AutoIpamConfig
+	(*RangeInfo)(nil),                                       // 154: google.container.v1.RangeInfo
+	(*DesiredEnterpriseConfig)(nil),                         // 155: google.container.v1.DesiredEnterpriseConfig
+	(*Operation)(nil),                                       // 156: google.container.v1.Operation
+	(*OperationProgress)(nil),                               // 157: google.container.v1.OperationProgress
+	(*CreateClusterRequest)(nil),                            // 158: google.container.v1.CreateClusterRequest
+	(*GetClusterRequest)(nil),                               // 159: google.container.v1.GetClusterRequest
+	(*UpdateClusterRequest)(nil),                            // 160: google.container.v1.UpdateClusterRequest
+	(*UpdateNodePoolRequest)(nil),                           // 161: google.container.v1.UpdateNodePoolRequest
+	(*SetNodePoolAutoscalingRequest)(nil),                   // 162: google.container.v1.SetNodePoolAutoscalingRequest
+	(*SetLoggingServiceRequest)(nil),                        // 163: google.container.v1.SetLoggingServiceRequest
+	(*SetMonitoringServiceRequest)(nil),                     // 164: google.container.v1.SetMonitoringServiceRequest
+	(*SetAddonsConfigRequest)(nil),                          // 165: google.container.v1.SetAddonsConfigRequest
+	(*SetLocationsRequest)(nil),                             // 166: google.container.v1.SetLocationsRequest
+	(*UpdateMasterRequest)(nil),                             // 167: google.container.v1.UpdateMasterRequest
+	(*SetMasterAuthRequest)(nil),                            // 168: google.container.v1.SetMasterAuthRequest
+	(*DeleteClusterRequest)(nil),                            // 169: google.container.v1.DeleteClusterRequest
+	(*ListClustersRequest)(nil),                             // 170: google.container.v1.ListClustersRequest
+	(*ListClustersResponse)(nil),                            // 171: google.container.v1.ListClustersResponse
+	(*GetOperationRequest)(nil),                             // 172: google.container.v1.GetOperationRequest
+	(*ListOperationsRequest)(nil),                           // 173: google.container.v1.ListOperationsRequest
+	(*CancelOperationRequest)(nil),                          // 174: google.container.v1.CancelOperationRequest
+	(*ListOperationsResponse)(nil),                          // 175: google.container.v1.ListOperationsResponse
+	(*GetServerConfigRequest)(nil),                          // 176: google.container.v1.GetServerConfigRequest
+	(*ServerConfig)(nil),                                    // 177: google.container.v1.ServerConfig
+	(*CreateNodePoolRequest)(nil),                           // 178: google.container.v1.CreateNodePoolRequest
+	(*DeleteNodePoolRequest)(nil),                           // 179: google.container.v1.DeleteNodePoolRequest
+	(*ListNodePoolsRequest)(nil),                            // 180: google.container.v1.ListNodePoolsRequest
+	(*GetNodePoolRequest)(nil),                              // 181: google.container.v1.GetNodePoolRequest
+	(*BlueGreenSettings)(nil),                               // 182: google.container.v1.BlueGreenSettings
+	(*NodePool)(nil),                                        // 183: google.container.v1.NodePool
+	(*NodeManagement)(nil),                                  // 184: google.container.v1.NodeManagement
+	(*BestEffortProvisioning)(nil),                          // 185: google.container.v1.BestEffortProvisioning
+	(*AutoUpgradeOptions)(nil),                              // 186: google.container.v1.AutoUpgradeOptions
+	(*MaintenancePolicy)(nil),                               // 187: google.container.v1.MaintenancePolicy
+	(*DisruptionBudget)(nil),                                // 188: google.container.v1.DisruptionBudget
+	(*MaintenanceWindow)(nil),                               // 189: google.container.v1.MaintenanceWindow
+	(*TimeWindow)(nil),                                      // 190: google.container.v1.TimeWindow
+	(*MaintenanceExclusionOptions)(nil),                     // 191: google.container.v1.MaintenanceExclusionOptions
+	(*RecurringTimeWindow)(nil),                             // 192: google.container.v1.RecurringTimeWindow
+	(*RecurringMaintenanceWindow)(nil),                      // 193: google.container.v1.RecurringMaintenanceWindow
+	(*DailyMaintenanceWindow)(nil),                          // 194: google.container.v1.DailyMaintenanceWindow
+	(*SetNodePoolManagementRequest)(nil),                    // 195: google.container.v1.SetNodePoolManagementRequest
+	(*SetNodePoolSizeRequest)(nil),                          // 196: google.container.v1.SetNodePoolSizeRequest
+	(*CompleteNodePoolUpgradeRequest)(nil),                  // 197: google.container.v1.CompleteNodePoolUpgradeRequest
+	(*RollbackNodePoolUpgradeRequest)(nil),                  // 198: google.container.v1.RollbackNodePoolUpgradeRequest
+	(*ListNodePoolsResponse)(nil),                           // 199: google.container.v1.ListNodePoolsResponse
+	(*ClusterAutoscaling)(nil),                              // 200: google.container.v1.ClusterAutoscaling
+	(*AutoprovisioningNodePoolDefaults)(nil),                // 201: google.container.v1.AutoprovisioningNodePoolDefaults
+	(*ResourceLimit)(nil),                                   // 202: google.container.v1.ResourceLimit
+	(*DefaultComputeClassConfig)(nil),                       // 203: google.container.v1.DefaultComputeClassConfig
+	(*NodePoolAutoscaling)(nil),                             // 204: google.container.v1.NodePoolAutoscaling
+	(*SetLabelsRequest)(nil),                                // 205: google.container.v1.SetLabelsRequest
+	(*SetLegacyAbacRequest)(nil),                            // 206: google.container.v1.SetLegacyAbacRequest
+	(*StartIPRotationRequest)(nil),                          // 207: google.container.v1.StartIPRotationRequest
+	(*CompleteIPRotationRequest)(nil),                       // 208: google.container.v1.CompleteIPRotationRequest
+	(*AcceleratorConfig)(nil),                               // 209: google.container.v1.AcceleratorConfig
+	(*GPUSharingConfig)(nil),                                // 210: google.container.v1.GPUSharingConfig
+	(*GPUDriverInstallationConfig)(nil),                     // 211: google.container.v1.GPUDriverInstallationConfig
+	(*WorkloadMetadataConfig)(nil),                          // 212: google.container.v1.WorkloadMetadataConfig
+	(*SetNetworkPolicyRequest)(nil),                         // 213: google.container.v1.SetNetworkPolicyRequest
+	(*SetMaintenancePolicyRequest)(nil),                     // 214: google.container.v1.SetMaintenancePolicyRequest
+	(*StatusCondition)(nil),                                 // 215: google.container.v1.StatusCondition
+	(*NetworkConfig)(nil),                                   // 216: google.container.v1.NetworkConfig
+	(*GatewayAPIConfig)(nil),                                // 217: google.container.v1.GatewayAPIConfig
+	(*ServiceExternalIPsConfig)(nil),                        // 218: google.container.v1.ServiceExternalIPsConfig
+	(*GetOpenIDConfigRequest)(nil),                          // 219: google.container.v1.GetOpenIDConfigRequest
+	(*GetOpenIDConfigResponse)(nil),                         // 220: google.container.v1.GetOpenIDConfigResponse
+	(*GetJSONWebKeysRequest)(nil),                           // 221: google.container.v1.GetJSONWebKeysRequest
+	(*Jwk)(nil),                                             // 222: google.container.v1.Jwk
+	(*GetJSONWebKeysResponse)(nil),                          // 223: google.container.v1.GetJSONWebKeysResponse
+	(*CheckAutopilotCompatibilityRequest)(nil),              // 224: google.container.v1.CheckAutopilotCompatibilityRequest
+	(*AutopilotCompatibilityIssue)(nil),                     // 225: google.container.v1.AutopilotCompatibilityIssue
+	(*CheckAutopilotCompatibilityResponse)(nil),             // 226: google.container.v1.CheckAutopilotCompatibilityResponse
+	(*ReleaseChannel)(nil),                                  // 227: google.container.v1.ReleaseChannel
+	(*CostManagementConfig)(nil),                            // 228: google.container.v1.CostManagementConfig
+	(*IntraNodeVisibilityConfig)(nil),                       // 229: google.container.v1.IntraNodeVisibilityConfig
+	(*ILBSubsettingConfig)(nil),                             // 230: google.container.v1.ILBSubsettingConfig
+	(*DNSConfig)(nil),                                       // 231: google.container.v1.DNSConfig
+	(*MaxPodsConstraint)(nil),                               // 232: google.container.v1.MaxPodsConstraint
+	(*WorkloadIdentityConfig)(nil),                          // 233: google.container.v1.WorkloadIdentityConfig
+	(*IdentityServiceConfig)(nil),                           // 234: google.container.v1.IdentityServiceConfig
+	(*MeshCertificates)(nil),                                // 235: google.container.v1.MeshCertificates
+	(*DatabaseEncryption)(nil),                              // 236: google.container.v1.DatabaseEncryption
+	(*ListUsableSubnetworksRequest)(nil),                    // 237: google.container.v1.ListUsableSubnetworksRequest
+	(*ListUsableSubnetworksResponse)(nil),                   // 238: google.container.v1.ListUsableSubnetworksResponse
+	(*UsableSubnetworkSecondaryRange)(nil),                  // 239: google.container.v1.UsableSubnetworkSecondaryRange
+	(*UsableSubnetwork)(nil),                                // 240: google.container.v1.UsableSubnetwork
+	(*ResourceUsageExportConfig)(nil),                       // 241: google.container.v1.ResourceUsageExportConfig
+	(*VerticalPodAutoscaling)(nil),                          // 242: google.container.v1.VerticalPodAutoscaling
+	(*DefaultSnatStatus)(nil),                               // 243: google.container.v1.DefaultSnatStatus
+	(*ShieldedNodes)(nil),                                   // 244: google.container.v1.ShieldedNodes
+	(*VirtualNIC)(nil),                                      // 245: google.container.v1.VirtualNIC
+	(*FastSocket)(nil),                                      // 246: google.container.v1.FastSocket
+	(*GPUDirectConfig)(nil),                                 // 247: google.container.v1.GPUDirectConfig
+	(*NotificationConfig)(nil),                              // 248: google.container.v1.NotificationConfig
+	(*ConfidentialNodes)(nil),                               // 249: google.container.v1.ConfidentialNodes
+	(*UpgradeEvent)(nil),                                    // 250: google.container.v1.UpgradeEvent
+	(*UpgradeInfoEvent)(nil),                                // 251: google.container.v1.UpgradeInfoEvent
+	(*DisruptionEvent)(nil),                                 // 252: google.container.v1.DisruptionEvent
+	(*UpgradeAvailableEvent)(nil),                           // 253: google.container.v1.UpgradeAvailableEvent
+	(*SecurityBulletinEvent)(nil),                           // 254: google.container.v1.SecurityBulletinEvent
+	(*Autopilot)(nil),                                       // 255: google.container.v1.Autopilot
+	(*ClusterPolicyConfig)(nil),                             // 256: google.container.v1.ClusterPolicyConfig
+	(*PrivilegedAdmissionConfig)(nil),                       // 257: google.container.v1.PrivilegedAdmissionConfig
+	(*WorkloadPolicyConfig)(nil),                            // 258: google.container.v1.WorkloadPolicyConfig
+	(*LoggingConfig)(nil),                                   // 259: google.container.v1.LoggingConfig
+	(*LoggingComponentConfig)(nil),                          // 260: google.container.v1.LoggingComponentConfig
+	(*RayClusterLoggingConfig)(nil),                         // 261: google.container.v1.RayClusterLoggingConfig
+	(*MonitoringConfig)(nil),                                // 262: google.container.v1.MonitoringConfig
+	(*AdvancedDatapathObservabilityConfig)(nil),             // 263: google.container.v1.AdvancedDatapathObservabilityConfig
+	(*RayClusterMonitoringConfig)(nil),                      // 264: google.container.v1.RayClusterMonitoringConfig
+	(*NodePoolLoggingConfig)(nil),                           // 265: google.container.v1.NodePoolLoggingConfig
+	(*LoggingVariantConfig)(nil),                            // 266: google.container.v1.LoggingVariantConfig
+	(*MonitoringComponentConfig)(nil),                       // 267: google.container.v1.MonitoringComponentConfig
+	(*ManagedPrometheusConfig)(nil),                         // 268: google.container.v1.ManagedPrometheusConfig
+	(*AutoMonitoringConfig)(nil),                            // 269: google.container.v1.AutoMonitoringConfig
+	(*PodAutoscaling)(nil),                                  // 270: google.container.v1.PodAutoscaling
+	(*Fleet)(nil),                                           // 271: google.container.v1.Fleet
+	(*ControlPlaneEndpointsConfig)(nil),                     // 272: google.container.v1.ControlPlaneEndpointsConfig
+	(*LocalNvmeSsdBlockConfig)(nil),                         // 273: google.container.v1.LocalNvmeSsdBlockConfig
+	(*EphemeralStorageLocalSsdConfig)(nil),                  // 274: google.container.v1.EphemeralStorageLocalSsdConfig
+	(*ResourceManagerTags)(nil),                             // 275: google.container.v1.ResourceManagerTags
+	(*EnterpriseConfig)(nil),                                // 276: google.container.v1.EnterpriseConfig
+	(*SecretManagerConfig)(nil),                             // 277: google.container.v1.SecretManagerConfig
+	(*BootDisk)(nil),                                        // 278: google.container.v1.BootDisk
+	(*SecondaryBootDisk)(nil),                               // 279: google.container.v1.SecondaryBootDisk
+	(*SecondaryBootDiskUpdateStrategy)(nil),                 // 280: google.container.v1.SecondaryBootDiskUpdateStrategy
+	(*FetchClusterUpgradeInfoRequest)(nil),                  // 281: google.container.v1.FetchClusterUpgradeInfoRequest
+	(*ClusterUpgradeInfo)(nil),                              // 282: google.container.v1.ClusterUpgradeInfo
+	(*UpgradeDetails)(nil),                                  // 283: google.container.v1.UpgradeDetails
+	(*FetchNodePoolUpgradeInfoRequest)(nil),                 // 284: google.container.v1.FetchNodePoolUpgradeInfoRequest
+	(*NodePoolUpgradeInfo)(nil),                             // 285: google.container.v1.NodePoolUpgradeInfo
+	(*ScheduleUpgradeConfig)(nil),                           // 286: google.container.v1.ScheduleUpgradeConfig
+	(*GkeAutoUpgradeConfig)(nil),                            // 287: google.container.v1.GkeAutoUpgradeConfig
+	(*NetworkTierConfig)(nil),                               // 288: google.container.v1.NetworkTierConfig
+	(*SecretSyncConfig)(nil),                                // 289: google.container.v1.SecretSyncConfig
+	(*ManagedOpenTelemetryConfig)(nil),                      // 290: google.container.v1.ManagedOpenTelemetryConfig
+	(*ManagedMachineLearningDiagnosticsConfig)(nil),         // 291: google.container.v1.ManagedMachineLearningDiagnosticsConfig
+	(*PodSnapshotConfig)(nil),                               // 292: google.container.v1.PodSnapshotConfig
+	(*LinuxNodeConfig_HugepagesConfig)(nil),                 // 293: google.container.v1.LinuxNodeConfig.HugepagesConfig
+	(*LinuxNodeConfig_CustomNodeInit)(nil),                  // 294: google.container.v1.LinuxNodeConfig.CustomNodeInit
+	(*LinuxNodeConfig_SwapConfig)(nil),                      // 295: google.container.v1.LinuxNodeConfig.SwapConfig
+	(*LinuxNodeConfig_NodeKernelModuleLoading)(nil),         // 296: google.container.v1.LinuxNodeConfig.NodeKernelModuleLoading
+	(*LinuxNodeConfig_AccurateTimeConfig)(nil),              // 297: google.container.v1.LinuxNodeConfig.AccurateTimeConfig
+	nil, // 298: google.container.v1.LinuxNodeConfig.SysctlsEntry
+	(*LinuxNodeConfig_CustomNodeInit_InitScript)(nil),           // 299: google.container.v1.LinuxNodeConfig.CustomNodeInit.InitScript
+	(*LinuxNodeConfig_SwapConfig_EncryptionConfig)(nil),         // 300: google.container.v1.LinuxNodeConfig.SwapConfig.EncryptionConfig
+	(*LinuxNodeConfig_SwapConfig_BootDiskProfile)(nil),          // 301: google.container.v1.LinuxNodeConfig.SwapConfig.BootDiskProfile
+	(*LinuxNodeConfig_SwapConfig_EphemeralLocalSsdProfile)(nil), // 302: google.container.v1.LinuxNodeConfig.SwapConfig.EphemeralLocalSsdProfile
+	(*LinuxNodeConfig_SwapConfig_DedicatedLocalSsdProfile)(nil), // 303: google.container.v1.LinuxNodeConfig.SwapConfig.DedicatedLocalSsdProfile
+	(*NodeKubeletConfig_CrashLoopBackOffConfig)(nil),            // 304: google.container.v1.NodeKubeletConfig.CrashLoopBackOffConfig
+	nil, // 305: google.container.v1.NodeConfig.MetadataEntry
+	nil, // 306: google.container.v1.NodeConfig.LabelsEntry
+	nil, // 307: google.container.v1.NodeConfig.ResourceLabelsEntry
+	(*NodeNetworkConfig_NetworkPerformanceConfig)(nil),                                                                      // 308: google.container.v1.NodeNetworkConfig.NetworkPerformanceConfig
+	(*SoleTenantConfig_NodeAffinity)(nil),                                                                                   // 309: google.container.v1.SoleTenantConfig.NodeAffinity
+	(*ContainerdConfig_PrivateRegistryAccessConfig)(nil),                                                                    // 310: google.container.v1.ContainerdConfig.PrivateRegistryAccessConfig
+	(*ContainerdConfig_WritableCgroups)(nil),                                                                                // 311: google.container.v1.ContainerdConfig.WritableCgroups
+	(*ContainerdConfig_RegistryHostConfig)(nil),                                                                             // 312: google.container.v1.ContainerdConfig.RegistryHostConfig
+	(*ContainerdConfig_PrivateRegistryAccessConfig_CertificateAuthorityDomainConfig)(nil),                                   // 313: google.container.v1.ContainerdConfig.PrivateRegistryAccessConfig.CertificateAuthorityDomainConfig
+	(*ContainerdConfig_PrivateRegistryAccessConfig_CertificateAuthorityDomainConfig_GCPSecretManagerCertificateConfig)(nil), // 314: google.container.v1.ContainerdConfig.PrivateRegistryAccessConfig.CertificateAuthorityDomainConfig.GCPSecretManagerCertificateConfig
+	(*ContainerdConfig_RegistryHostConfig_CertificateConfig)(nil),                                                           // 315: google.container.v1.ContainerdConfig.RegistryHostConfig.CertificateConfig
+	(*ContainerdConfig_RegistryHostConfig_CertificateConfigPair)(nil),                                                       // 316: google.container.v1.ContainerdConfig.RegistryHostConfig.CertificateConfigPair
+	(*ContainerdConfig_RegistryHostConfig_RegistryHeader)(nil),                                                              // 317: google.container.v1.ContainerdConfig.RegistryHostConfig.RegistryHeader
+	(*ContainerdConfig_RegistryHostConfig_HostConfig)(nil),                                                                  // 318: google.container.v1.ContainerdConfig.RegistryHostConfig.HostConfig
+	nil, // 319: google.container.v1.NodeLabels.LabelsEntry
+	nil, // 320: google.container.v1.ResourceLabels.LabelsEntry
+	(*MasterAuthorizedNetworksConfig_CidrBlock)(nil), // 321: google.container.v1.MasterAuthorizedNetworksConfig.CidrBlock
+	nil, // 322: google.container.v1.Cluster.ResourceLabelsEntry
+	(*CompliancePostureConfig_ComplianceStandard)(nil), // 323: google.container.v1.CompliancePostureConfig.ComplianceStandard
+	(*OperationProgress_Metric)(nil),                   // 324: google.container.v1.OperationProgress.Metric
+	(*ServerConfig_ReleaseChannelConfig)(nil),          // 325: google.container.v1.ServerConfig.ReleaseChannelConfig
+	(*BlueGreenSettings_StandardRolloutPolicy)(nil),    // 326: google.container.v1.BlueGreenSettings.StandardRolloutPolicy
+	(*BlueGreenSettings_AutoscaledRolloutPolicy)(nil),  // 327: google.container.v1.BlueGreenSettings.AutoscaledRolloutPolicy
+	(*NodePool_UpgradeSettings)(nil),                   // 328: google.container.v1.NodePool.UpgradeSettings
+	(*NodePool_UpdateInfo)(nil),                        // 329: google.container.v1.NodePool.UpdateInfo
+	(*NodePool_PlacementPolicy)(nil),                   // 330: google.container.v1.NodePool.PlacementPolicy
+	(*NodePool_QueuedProvisioning)(nil),                // 331: google.container.v1.NodePool.QueuedProvisioning
+	(*NodePool_NodeDrainConfig)(nil),                   // 332: google.container.v1.NodePool.NodeDrainConfig
+	(*NodePool_ExclusionUntilEndOfSupport)(nil),        // 333: google.container.v1.NodePool.ExclusionUntilEndOfSupport
+	(*NodePool_NodePoolMaintenancePolicy)(nil),         // 334: google.container.v1.NodePool.NodePoolMaintenancePolicy
+	(*NodePool_UpdateInfo_BlueGreenInfo)(nil),          // 335: google.container.v1.NodePool.UpdateInfo.BlueGreenInfo
+	nil, // 336: google.container.v1.MaintenanceWindow.MaintenanceExclusionsEntry
+	nil, // 337: google.container.v1.SetLabelsRequest.ResourceLabelsEntry
+	(*NetworkConfig_ClusterNetworkPerformanceConfig)(nil),       // 338: google.container.v1.NetworkConfig.ClusterNetworkPerformanceConfig
+	(*DatabaseEncryption_OperationError)(nil),                   // 339: google.container.v1.DatabaseEncryption.OperationError
+	(*ResourceUsageExportConfig_BigQueryDestination)(nil),       // 340: google.container.v1.ResourceUsageExportConfig.BigQueryDestination
+	(*ResourceUsageExportConfig_ConsumptionMeteringConfig)(nil), // 341: google.container.v1.ResourceUsageExportConfig.ConsumptionMeteringConfig
+	(*NotificationConfig_PubSub)(nil),                           // 342: google.container.v1.NotificationConfig.PubSub
+	(*NotificationConfig_Filter)(nil),                           // 343: google.container.v1.NotificationConfig.Filter
+	(*DisruptionEvent_PdbBlockedPod)(nil),                       // 344: google.container.v1.DisruptionEvent.PdbBlockedPod
+	(*ControlPlaneEndpointsConfig_DNSEndpointConfig)(nil),       // 345: google.container.v1.ControlPlaneEndpointsConfig.DNSEndpointConfig
+	(*ControlPlaneEndpointsConfig_IPEndpointsConfig)(nil),       // 346: google.container.v1.ControlPlaneEndpointsConfig.IPEndpointsConfig
+	nil, // 347: google.container.v1.ResourceManagerTags.TagsEntry
+	(*SecretManagerConfig_RotationConfig)(nil),  // 348: google.container.v1.SecretManagerConfig.RotationConfig
+	(*SecretSyncConfig_SyncRotationConfig)(nil), // 349: google.container.v1.SecretSyncConfig.SyncRotationConfig
+	(*wrapperspb.BoolValue)(nil),                // 350: google.protobuf.BoolValue
+	(*durationpb.Duration)(nil),                 // 351: google.protobuf.Duration
+	(*status.Status)(nil),                       // 352: google.rpc.Status
+	(*timestamppb.Timestamp)(nil),               // 353: google.protobuf.Timestamp
+	(*date.Date)(nil),                           // 354: google.type.Date
+	(*timeofday.TimeOfDay)(nil),                 // 355: google.type.TimeOfDay
+	(code.Code)(0),                              // 356: google.rpc.Code
+	(*emptypb.Empty)(nil),                       // 357: google.protobuf.Empty
 }
 var file_google_container_v1_cluster_service_proto_depIdxs = []int32{
-	281, // 0: google.container.v1.LinuxNodeConfig.sysctls:type_name -> google.container.v1.LinuxNodeConfig.SysctlsEntry
+	298, // 0: google.container.v1.LinuxNodeConfig.sysctls:type_name -> google.container.v1.LinuxNodeConfig.SysctlsEntry
 	7,   // 1: google.container.v1.LinuxNodeConfig.cgroup_mode:type_name -> google.container.v1.LinuxNodeConfig.CgroupMode
-	278, // 2: google.container.v1.LinuxNodeConfig.hugepages:type_name -> google.container.v1.LinuxNodeConfig.HugepagesConfig
+	293, // 2: google.container.v1.LinuxNodeConfig.hugepages:type_name -> google.container.v1.LinuxNodeConfig.HugepagesConfig
 	8,   // 3: google.container.v1.LinuxNodeConfig.transparent_hugepage_enabled:type_name -> google.container.v1.LinuxNodeConfig.TransparentHugepageEnabled
 	9,   // 4: google.container.v1.LinuxNodeConfig.transparent_hugepage_defrag:type_name -> google.container.v1.LinuxNodeConfig.TransparentHugepageDefrag
-	279, // 5: google.container.v1.LinuxNodeConfig.swap_config:type_name -> google.container.v1.LinuxNodeConfig.SwapConfig
-	280, // 6: google.container.v1.LinuxNodeConfig.node_kernel_module_loading:type_name -> google.container.v1.LinuxNodeConfig.NodeKernelModuleLoading
-	11,  // 7: google.container.v1.WindowsNodeConfig.os_version:type_name -> google.container.v1.WindowsNodeConfig.OSVersion
-	81,  // 8: google.container.v1.NodeKubeletConfig.topology_manager:type_name -> google.container.v1.TopologyManager
-	82,  // 9: google.container.v1.NodeKubeletConfig.memory_manager:type_name -> google.container.v1.MemoryManager
-	328, // 10: google.container.v1.NodeKubeletConfig.cpu_cfs_quota:type_name -> google.protobuf.BoolValue
-	83,  // 11: google.container.v1.NodeKubeletConfig.eviction_soft:type_name -> google.container.v1.EvictionSignals
-	84,  // 12: google.container.v1.NodeKubeletConfig.eviction_soft_grace_period:type_name -> google.container.v1.EvictionGracePeriod
-	85,  // 13: google.container.v1.NodeKubeletConfig.eviction_minimum_reclaim:type_name -> google.container.v1.EvictionMinimumReclaim
-	286, // 14: google.container.v1.NodeConfig.metadata:type_name -> google.container.v1.NodeConfig.MetadataEntry
-	287, // 15: google.container.v1.NodeConfig.labels:type_name -> google.container.v1.NodeConfig.LabelsEntry
-	199, // 16: google.container.v1.NodeConfig.accelerators:type_name -> google.container.v1.AcceleratorConfig
-	202, // 17: google.container.v1.NodeConfig.workload_metadata_config:type_name -> google.container.v1.WorkloadMetadataConfig
-	97,  // 18: google.container.v1.NodeConfig.taints:type_name -> google.container.v1.NodeTaint
-	92,  // 19: google.container.v1.NodeConfig.sandbox_config:type_name -> google.container.v1.SandboxConfig
-	94,  // 20: google.container.v1.NodeConfig.reservation_affinity:type_name -> google.container.v1.ReservationAffinity
-	91,  // 21: google.container.v1.NodeConfig.shielded_instance_config:type_name -> google.container.v1.ShieldedInstanceConfig
-	78,  // 22: google.container.v1.NodeConfig.linux_node_config:type_name -> google.container.v1.LinuxNodeConfig
-	80,  // 23: google.container.v1.NodeConfig.kubelet_config:type_name -> google.container.v1.NodeKubeletConfig
-	93,  // 24: google.container.v1.NodeConfig.gcfs_config:type_name -> google.container.v1.GcfsConfig
-	87,  // 25: google.container.v1.NodeConfig.advanced_machine_features:type_name -> google.container.v1.AdvancedMachineFeatures
-	235, // 26: google.container.v1.NodeConfig.gvnic:type_name -> google.container.v1.VirtualNIC
-	239, // 27: google.container.v1.NodeConfig.confidential_nodes:type_name -> google.container.v1.ConfidentialNodes
-	236, // 28: google.container.v1.NodeConfig.fast_socket:type_name -> google.container.v1.FastSocket
-	288, // 29: google.container.v1.NodeConfig.resource_labels:type_name -> google.container.v1.NodeConfig.ResourceLabelsEntry
-	254, // 30: google.container.v1.NodeConfig.logging_config:type_name -> google.container.v1.NodePoolLoggingConfig
-	79,  // 31: google.container.v1.NodeConfig.windows_node_config:type_name -> google.container.v1.WindowsNodeConfig
-	262, // 32: google.container.v1.NodeConfig.local_nvme_ssd_block_config:type_name -> google.container.v1.LocalNvmeSsdBlockConfig
-	263, // 33: google.container.v1.NodeConfig.ephemeral_storage_local_ssd_config:type_name -> google.container.v1.EphemeralStorageLocalSsdConfig
-	95,  // 34: google.container.v1.NodeConfig.sole_tenant_config:type_name -> google.container.v1.SoleTenantConfig
-	96,  // 35: google.container.v1.NodeConfig.containerd_config:type_name -> google.container.v1.ContainerdConfig
-	264, // 36: google.container.v1.NodeConfig.resource_manager_tags:type_name -> google.container.v1.ResourceManagerTags
-	268, // 37: google.container.v1.NodeConfig.secondary_boot_disks:type_name -> google.container.v1.SecondaryBootDisk
-	269, // 38: google.container.v1.NodeConfig.secondary_boot_disk_update_strategy:type_name -> google.container.v1.SecondaryBootDiskUpdateStrategy
-	237, // 39: google.container.v1.NodeConfig.gpu_direct_config:type_name -> google.container.v1.GPUDirectConfig
-	329, // 40: google.container.v1.NodeConfig.max_run_duration:type_name -> google.protobuf.Duration
-	12,  // 41: google.container.v1.NodeConfig.local_ssd_encryption_mode:type_name -> google.container.v1.NodeConfig.LocalSsdEncryptionMode
-	13,  // 42: google.container.v1.NodeConfig.effective_cgroup_mode:type_name -> google.container.v1.NodeConfig.EffectiveCgroupMode
-	267, // 43: google.container.v1.NodeConfig.boot_disk:type_name -> google.container.v1.BootDisk
-	329, // 44: google.container.v1.NodeConfig.consolidation_delay:type_name -> google.protobuf.Duration
-	14,  // 45: google.container.v1.AdvancedMachineFeatures.performance_monitoring_unit:type_name -> google.container.v1.AdvancedMachineFeatures.PerformanceMonitoringUnit
-	289, // 46: google.container.v1.NodeNetworkConfig.network_performance_config:type_name -> google.container.v1.NodeNetworkConfig.NetworkPerformanceConfig
-	129, // 47: google.container.v1.NodeNetworkConfig.pod_cidr_overprovision_config:type_name -> google.container.v1.PodCIDROverprovisionConfig
-	89,  // 48: google.container.v1.NodeNetworkConfig.additional_node_network_configs:type_name -> google.container.v1.AdditionalNodeNetworkConfig
-	90,  // 49: google.container.v1.NodeNetworkConfig.additional_pod_network_configs:type_name -> google.container.v1.AdditionalPodNetworkConfig
-	276, // 50: google.container.v1.NodeNetworkConfig.network_tier_config:type_name -> google.container.v1.NetworkTierConfig
-	222, // 51: google.container.v1.AdditionalPodNetworkConfig.max_pods_per_node:type_name -> google.container.v1.MaxPodsConstraint
-	16,  // 52: google.container.v1.SandboxConfig.type:type_name -> google.container.v1.SandboxConfig.Type
-	17,  // 53: google.container.v1.ReservationAffinity.consume_reservation_type:type_name -> google.container.v1.ReservationAffinity.Type
-	290, // 54: google.container.v1.SoleTenantConfig.node_affinities:type_name -> google.container.v1.SoleTenantConfig.NodeAffinity
-	291, // 55: google.container.v1.ContainerdConfig.private_registry_access_config:type_name -> google.container.v1.ContainerdConfig.PrivateRegistryAccessConfig
-	292, // 56: google.container.v1.ContainerdConfig.writable_cgroups:type_name -> google.container.v1.ContainerdConfig.WritableCgroups
-	293, // 57: google.container.v1.ContainerdConfig.registry_hosts:type_name -> google.container.v1.ContainerdConfig.RegistryHostConfig
-	20,  // 58: google.container.v1.NodeTaint.effect:type_name -> google.container.v1.NodeTaint.Effect
-	97,  // 59: google.container.v1.NodeTaints.taints:type_name -> google.container.v1.NodeTaint
-	300, // 60: google.container.v1.NodeLabels.labels:type_name -> google.container.v1.NodeLabels.LabelsEntry
-	301, // 61: google.container.v1.ResourceLabels.labels:type_name -> google.container.v1.ResourceLabels.LabelsEntry
-	103, // 62: google.container.v1.MasterAuth.client_certificate_config:type_name -> google.container.v1.ClientCertificateConfig
-	105, // 63: google.container.v1.AddonsConfig.http_load_balancing:type_name -> google.container.v1.HttpLoadBalancing
-	106, // 64: google.container.v1.AddonsConfig.horizontal_pod_autoscaling:type_name -> google.container.v1.HorizontalPodAutoscaling
-	107, // 65: google.container.v1.AddonsConfig.kubernetes_dashboard:type_name -> google.container.v1.KubernetesDashboard
-	108, // 66: google.container.v1.AddonsConfig.network_policy_config:type_name -> google.container.v1.NetworkPolicyConfig
-	113, // 67: google.container.v1.AddonsConfig.cloud_run_config:type_name -> google.container.v1.CloudRunConfig
-	109, // 68: google.container.v1.AddonsConfig.dns_cache_config:type_name -> google.container.v1.DnsCacheConfig
-	114, // 69: google.container.v1.AddonsConfig.config_connector_config:type_name -> google.container.v1.ConfigConnectorConfig
-	115, // 70: google.container.v1.AddonsConfig.gce_persistent_disk_csi_driver_config:type_name -> google.container.v1.GcePersistentDiskCsiDriverConfig
-	116, // 71: google.container.v1.AddonsConfig.gcp_filestore_csi_driver_config:type_name -> google.container.v1.GcpFilestoreCsiDriverConfig
-	123, // 72: google.container.v1.AddonsConfig.gke_backup_agent_config:type_name -> google.container.v1.GkeBackupAgentConfig
-	117, // 73: google.container.v1.AddonsConfig.gcs_fuse_csi_driver_config:type_name -> google.container.v1.GcsFuseCsiDriverConfig
-	124, // 74: google.container.v1.AddonsConfig.stateful_ha_config:type_name -> google.container.v1.StatefulHAConfig
-	118, // 75: google.container.v1.AddonsConfig.parallelstore_csi_driver_config:type_name -> google.container.v1.ParallelstoreCsiDriverConfig
-	122, // 76: google.container.v1.AddonsConfig.ray_operator_config:type_name -> google.container.v1.RayOperatorConfig
-	119, // 77: google.container.v1.AddonsConfig.high_scale_checkpointing_config:type_name -> google.container.v1.HighScaleCheckpointingConfig
-	120, // 78: google.container.v1.AddonsConfig.lustre_csi_driver_config:type_name -> google.container.v1.LustreCsiDriverConfig
-	121, // 79: google.container.v1.AddonsConfig.slice_controller_config:type_name -> google.container.v1.SliceControllerConfig
-	110, // 80: google.container.v1.PrivateClusterConfig.master_global_access_config:type_name -> google.container.v1.PrivateClusterMasterGlobalAccessConfig
-	21,  // 81: google.container.v1.CloudRunConfig.load_balancer_type:type_name -> google.container.v1.CloudRunConfig.LoadBalancerType
-	250, // 82: google.container.v1.RayOperatorConfig.ray_cluster_logging_config:type_name -> google.container.v1.RayClusterLoggingConfig
-	253, // 83: google.container.v1.RayOperatorConfig.ray_cluster_monitoring_config:type_name -> google.container.v1.RayClusterMonitoringConfig
-	302, // 84: google.container.v1.MasterAuthorizedNetworksConfig.cidr_blocks:type_name -> google.container.v1.MasterAuthorizedNetworksConfig.CidrBlock
-	22,  // 85: google.container.v1.NetworkPolicy.provider:type_name -> google.container.v1.NetworkPolicy.Provider
-	23,  // 86: google.container.v1.BinaryAuthorization.evaluation_mode:type_name -> google.container.v1.BinaryAuthorization.EvaluationMode
-	4,   // 87: google.container.v1.IPAllocationPolicy.stack_type:type_name -> google.container.v1.StackType
-	5,   // 88: google.container.v1.IPAllocationPolicy.ipv6_access_type:type_name -> google.container.v1.IPv6AccessType
-	129, // 89: google.container.v1.IPAllocationPolicy.pod_cidr_overprovision_config:type_name -> google.container.v1.PodCIDROverprovisionConfig
-	142, // 90: google.container.v1.IPAllocationPolicy.additional_pod_ranges_config:type_name -> google.container.v1.AdditionalPodRangesConfig
-	143, // 91: google.container.v1.IPAllocationPolicy.additional_ip_ranges_configs:type_name -> google.container.v1.AdditionalIPRangesConfig
-	145, // 92: google.container.v1.IPAllocationPolicy.auto_ipam_config:type_name -> google.container.v1.AutoIpamConfig
-	276, // 93: google.container.v1.IPAllocationPolicy.network_tier_config:type_name -> google.container.v1.NetworkTierConfig
-	86,  // 94: google.container.v1.Cluster.node_config:type_name -> google.container.v1.NodeConfig
-	102, // 95: google.container.v1.Cluster.master_auth:type_name -> google.container.v1.MasterAuth
-	104, // 96: google.container.v1.Cluster.addons_config:type_name -> google.container.v1.AddonsConfig
-	175, // 97: google.container.v1.Cluster.node_pools:type_name -> google.container.v1.NodePool
-	303, // 98: google.container.v1.Cluster.resource_labels:type_name -> google.container.v1.Cluster.ResourceLabelsEntry
-	126, // 99: google.container.v1.Cluster.legacy_abac:type_name -> google.container.v1.LegacyAbac
-	127, // 100: google.container.v1.Cluster.network_policy:type_name -> google.container.v1.NetworkPolicy
-	130, // 101: google.container.v1.Cluster.ip_allocation_policy:type_name -> google.container.v1.IPAllocationPolicy
-	125, // 102: google.container.v1.Cluster.master_authorized_networks_config:type_name -> google.container.v1.MasterAuthorizedNetworksConfig
-	179, // 103: google.container.v1.Cluster.maintenance_policy:type_name -> google.container.v1.MaintenancePolicy
-	128, // 104: google.container.v1.Cluster.binary_authorization:type_name -> google.container.v1.BinaryAuthorization
-	190, // 105: google.container.v1.Cluster.autoscaling:type_name -> google.container.v1.ClusterAutoscaling
-	206, // 106: google.container.v1.Cluster.network_config:type_name -> google.container.v1.NetworkConfig
-	222, // 107: google.container.v1.Cluster.default_max_pods_constraint:type_name -> google.container.v1.MaxPodsConstraint
-	231, // 108: google.container.v1.Cluster.resource_usage_export_config:type_name -> google.container.v1.ResourceUsageExportConfig
-	112, // 109: google.container.v1.Cluster.authenticator_groups_config:type_name -> google.container.v1.AuthenticatorGroupsConfig
-	111, // 110: google.container.v1.Cluster.private_cluster_config:type_name -> google.container.v1.PrivateClusterConfig
-	226, // 111: google.container.v1.Cluster.database_encryption:type_name -> google.container.v1.DatabaseEncryption
-	232, // 112: google.container.v1.Cluster.vertical_pod_autoscaling:type_name -> google.container.v1.VerticalPodAutoscaling
-	234, // 113: google.container.v1.Cluster.shielded_nodes:type_name -> google.container.v1.ShieldedNodes
-	217, // 114: google.container.v1.Cluster.release_channel:type_name -> google.container.v1.ReleaseChannel
-	223, // 115: google.container.v1.Cluster.workload_identity_config:type_name -> google.container.v1.WorkloadIdentityConfig
-	225, // 116: google.container.v1.Cluster.mesh_certificates:type_name -> google.container.v1.MeshCertificates
-	218, // 117: google.container.v1.Cluster.cost_management_config:type_name -> google.container.v1.CostManagementConfig
-	238, // 118: google.container.v1.Cluster.notification_config:type_name -> google.container.v1.NotificationConfig
-	239, // 119: google.container.v1.Cluster.confidential_nodes:type_name -> google.container.v1.ConfidentialNodes
-	224, // 120: google.container.v1.Cluster.identity_service_config:type_name -> google.container.v1.IdentityServiceConfig
-	24,  // 121: google.container.v1.Cluster.status:type_name -> google.container.v1.Cluster.Status
-	205, // 122: google.container.v1.Cluster.conditions:type_name -> google.container.v1.StatusCondition
-	245, // 123: google.container.v1.Cluster.autopilot:type_name -> google.container.v1.Autopilot
-	139, // 124: google.container.v1.Cluster.node_pool_defaults:type_name -> google.container.v1.NodePoolDefaults
-	248, // 125: google.container.v1.Cluster.logging_config:type_name -> google.container.v1.LoggingConfig
-	251, // 126: google.container.v1.Cluster.monitoring_config:type_name -> google.container.v1.MonitoringConfig
-	138, // 127: google.container.v1.Cluster.node_pool_auto_config:type_name -> google.container.v1.NodePoolAutoConfig
-	259, // 128: google.container.v1.Cluster.pod_autoscaling:type_name -> google.container.v1.PodAutoscaling
-	260, // 129: google.container.v1.Cluster.fleet:type_name -> google.container.v1.Fleet
-	137, // 130: google.container.v1.Cluster.security_posture_config:type_name -> google.container.v1.SecurityPostureConfig
-	261, // 131: google.container.v1.Cluster.control_plane_endpoints_config:type_name -> google.container.v1.ControlPlaneEndpointsConfig
-	136, // 132: google.container.v1.Cluster.enable_k8s_beta_apis:type_name -> google.container.v1.K8sBetaAPIConfig
-	265, // 133: google.container.v1.Cluster.enterprise_config:type_name -> google.container.v1.EnterpriseConfig
-	266, // 134: google.container.v1.Cluster.secret_manager_config:type_name -> google.container.v1.SecretManagerConfig
-	135, // 135: google.container.v1.Cluster.compliance_posture_config:type_name -> google.container.v1.CompliancePostureConfig
-	133, // 136: google.container.v1.Cluster.user_managed_keys_config:type_name -> google.container.v1.UserManagedKeysConfig
-	132, // 137: google.container.v1.Cluster.rbac_binding_config:type_name -> google.container.v1.RBACBindingConfig
-	275, // 138: google.container.v1.Cluster.gke_auto_upgrade_config:type_name -> google.container.v1.GkeAutoUpgradeConfig
-	134, // 139: google.container.v1.Cluster.anonymous_authentication_config:type_name -> google.container.v1.AnonymousAuthenticationConfig
-	277, // 140: google.container.v1.Cluster.managed_opentelemetry_config:type_name -> google.container.v1.ManagedOpenTelemetryConfig
-	25,  // 141: google.container.v1.AnonymousAuthenticationConfig.mode:type_name -> google.container.v1.AnonymousAuthenticationConfig.Mode
-	26,  // 142: google.container.v1.CompliancePostureConfig.mode:type_name -> google.container.v1.CompliancePostureConfig.Mode
-	304, // 143: google.container.v1.CompliancePostureConfig.compliance_standards:type_name -> google.container.v1.CompliancePostureConfig.ComplianceStandard
-	27,  // 144: google.container.v1.SecurityPostureConfig.mode:type_name -> google.container.v1.SecurityPostureConfig.Mode
-	28,  // 145: google.container.v1.SecurityPostureConfig.vulnerability_mode:type_name -> google.container.v1.SecurityPostureConfig.VulnerabilityMode
-	101, // 146: google.container.v1.NodePoolAutoConfig.network_tags:type_name -> google.container.v1.NetworkTags
-	264, // 147: google.container.v1.NodePoolAutoConfig.resource_manager_tags:type_name -> google.container.v1.ResourceManagerTags
-	80,  // 148: google.container.v1.NodePoolAutoConfig.node_kubelet_config:type_name -> google.container.v1.NodeKubeletConfig
-	78,  // 149: google.container.v1.NodePoolAutoConfig.linux_node_config:type_name -> google.container.v1.LinuxNodeConfig
-	140, // 150: google.container.v1.NodePoolDefaults.node_config_defaults:type_name -> google.container.v1.NodeConfigDefaults
-	93,  // 151: google.container.v1.NodeConfigDefaults.gcfs_config:type_name -> google.container.v1.GcfsConfig
-	254, // 152: google.container.v1.NodeConfigDefaults.logging_config:type_name -> google.container.v1.NodePoolLoggingConfig
-	96,  // 153: google.container.v1.NodeConfigDefaults.containerd_config:type_name -> google.container.v1.ContainerdConfig
-	80,  // 154: google.container.v1.NodeConfigDefaults.node_kubelet_config:type_name -> google.container.v1.NodeKubeletConfig
-	104, // 155: google.container.v1.ClusterUpdate.desired_addons_config:type_name -> google.container.v1.AddonsConfig
-	226, // 156: google.container.v1.ClusterUpdate.desired_database_encryption:type_name -> google.container.v1.DatabaseEncryption
-	223, // 157: google.container.v1.ClusterUpdate.desired_workload_identity_config:type_name -> google.container.v1.WorkloadIdentityConfig
-	225, // 158: google.container.v1.ClusterUpdate.desired_mesh_certificates:type_name -> google.container.v1.MeshCertificates
-	234, // 159: google.container.v1.ClusterUpdate.desired_shielded_nodes:type_name -> google.container.v1.ShieldedNodes
-	218, // 160: google.container.v1.ClusterUpdate.desired_cost_management_config:type_name -> google.container.v1.CostManagementConfig
-	221, // 161: google.container.v1.ClusterUpdate.desired_dns_config:type_name -> google.container.v1.DNSConfig
-	194, // 162: google.container.v1.ClusterUpdate.desired_node_pool_autoscaling:type_name -> google.container.v1.NodePoolAutoscaling
-	125, // 163: google.container.v1.ClusterUpdate.desired_master_authorized_networks_config:type_name -> google.container.v1.MasterAuthorizedNetworksConfig
-	190, // 164: google.container.v1.ClusterUpdate.desired_cluster_autoscaling:type_name -> google.container.v1.ClusterAutoscaling
-	128, // 165: google.container.v1.ClusterUpdate.desired_binary_authorization:type_name -> google.container.v1.BinaryAuthorization
-	231, // 166: google.container.v1.ClusterUpdate.desired_resource_usage_export_config:type_name -> google.container.v1.ResourceUsageExportConfig
-	232, // 167: google.container.v1.ClusterUpdate.desired_vertical_pod_autoscaling:type_name -> google.container.v1.VerticalPodAutoscaling
-	111, // 168: google.container.v1.ClusterUpdate.desired_private_cluster_config:type_name -> google.container.v1.PrivateClusterConfig
-	219, // 169: google.container.v1.ClusterUpdate.desired_intra_node_visibility_config:type_name -> google.container.v1.IntraNodeVisibilityConfig
-	233, // 170: google.container.v1.ClusterUpdate.desired_default_snat_status:type_name -> google.container.v1.DefaultSnatStatus
-	217, // 171: google.container.v1.ClusterUpdate.desired_release_channel:type_name -> google.container.v1.ReleaseChannel
-	220, // 172: google.container.v1.ClusterUpdate.desired_l4ilb_subsetting_config:type_name -> google.container.v1.ILBSubsettingConfig
-	2,   // 173: google.container.v1.ClusterUpdate.desired_datapath_provider:type_name -> google.container.v1.DatapathProvider
-	0,   // 174: google.container.v1.ClusterUpdate.desired_private_ipv6_google_access:type_name -> google.container.v1.PrivateIPv6GoogleAccess
-	238, // 175: google.container.v1.ClusterUpdate.desired_notification_config:type_name -> google.container.v1.NotificationConfig
-	112, // 176: google.container.v1.ClusterUpdate.desired_authenticator_groups_config:type_name -> google.container.v1.AuthenticatorGroupsConfig
-	248, // 177: google.container.v1.ClusterUpdate.desired_logging_config:type_name -> google.container.v1.LoggingConfig
-	251, // 178: google.container.v1.ClusterUpdate.desired_monitoring_config:type_name -> google.container.v1.MonitoringConfig
-	224, // 179: google.container.v1.ClusterUpdate.desired_identity_service_config:type_name -> google.container.v1.IdentityServiceConfig
-	208, // 180: google.container.v1.ClusterUpdate.desired_service_external_ips_config:type_name -> google.container.v1.ServiceExternalIPsConfig
-	261, // 181: google.container.v1.ClusterUpdate.desired_control_plane_endpoints_config:type_name -> google.container.v1.ControlPlaneEndpointsConfig
-	93,  // 182: google.container.v1.ClusterUpdate.desired_gcfs_config:type_name -> google.container.v1.GcfsConfig
-	101, // 183: google.container.v1.ClusterUpdate.desired_node_pool_auto_config_network_tags:type_name -> google.container.v1.NetworkTags
-	259, // 184: google.container.v1.ClusterUpdate.desired_pod_autoscaling:type_name -> google.container.v1.PodAutoscaling
-	207, // 185: google.container.v1.ClusterUpdate.desired_gateway_api_config:type_name -> google.container.v1.GatewayAPIConfig
-	254, // 186: google.container.v1.ClusterUpdate.desired_node_pool_logging_config:type_name -> google.container.v1.NodePoolLoggingConfig
-	260, // 187: google.container.v1.ClusterUpdate.desired_fleet:type_name -> google.container.v1.Fleet
-	4,   // 188: google.container.v1.ClusterUpdate.desired_stack_type:type_name -> google.container.v1.StackType
-	142, // 189: google.container.v1.ClusterUpdate.additional_pod_ranges_config:type_name -> google.container.v1.AdditionalPodRangesConfig
-	142, // 190: google.container.v1.ClusterUpdate.removed_additional_pod_ranges_config:type_name -> google.container.v1.AdditionalPodRangesConfig
-	136, // 191: google.container.v1.ClusterUpdate.enable_k8s_beta_apis:type_name -> google.container.v1.K8sBetaAPIConfig
-	137, // 192: google.container.v1.ClusterUpdate.desired_security_posture_config:type_name -> google.container.v1.SecurityPostureConfig
-	317, // 193: google.container.v1.ClusterUpdate.desired_network_performance_config:type_name -> google.container.v1.NetworkConfig.ClusterNetworkPerformanceConfig
-	247, // 194: google.container.v1.ClusterUpdate.desired_autopilot_workload_policy_config:type_name -> google.container.v1.WorkloadPolicyConfig
-	136, // 195: google.container.v1.ClusterUpdate.desired_k8s_beta_apis:type_name -> google.container.v1.K8sBetaAPIConfig
-	96,  // 196: google.container.v1.ClusterUpdate.desired_containerd_config:type_name -> google.container.v1.ContainerdConfig
-	264, // 197: google.container.v1.ClusterUpdate.desired_node_pool_auto_config_resource_manager_tags:type_name -> google.container.v1.ResourceManagerTags
-	6,   // 198: google.container.v1.ClusterUpdate.desired_in_transit_encryption_config:type_name -> google.container.v1.InTransitEncryptionConfig
-	266, // 199: google.container.v1.ClusterUpdate.desired_secret_manager_config:type_name -> google.container.v1.SecretManagerConfig
-	135, // 200: google.container.v1.ClusterUpdate.desired_compliance_posture_config:type_name -> google.container.v1.CompliancePostureConfig
-	80,  // 201: google.container.v1.ClusterUpdate.desired_node_kubelet_config:type_name -> google.container.v1.NodeKubeletConfig
-	80,  // 202: google.container.v1.ClusterUpdate.desired_node_pool_auto_config_kubelet_config:type_name -> google.container.v1.NodeKubeletConfig
-	133, // 203: google.container.v1.ClusterUpdate.user_managed_keys_config:type_name -> google.container.v1.UserManagedKeysConfig
-	132, // 204: google.container.v1.ClusterUpdate.desired_rbac_binding_config:type_name -> google.container.v1.RBACBindingConfig
-	144, // 205: google.container.v1.ClusterUpdate.desired_additional_ip_ranges_config:type_name -> google.container.v1.DesiredAdditionalIPRangesConfig
-	147, // 206: google.container.v1.ClusterUpdate.desired_enterprise_config:type_name -> google.container.v1.DesiredEnterpriseConfig
-	145, // 207: google.container.v1.ClusterUpdate.desired_auto_ipam_config:type_name -> google.container.v1.AutoIpamConfig
-	78,  // 208: google.container.v1.ClusterUpdate.desired_node_pool_auto_config_linux_node_config:type_name -> google.container.v1.LinuxNodeConfig
-	133, // 209: google.container.v1.ClusterUpdate.desired_user_managed_keys_config:type_name -> google.container.v1.UserManagedKeysConfig
-	134, // 210: google.container.v1.ClusterUpdate.desired_anonymous_authentication_config:type_name -> google.container.v1.AnonymousAuthenticationConfig
-	275, // 211: google.container.v1.ClusterUpdate.gke_auto_upgrade_config:type_name -> google.container.v1.GkeAutoUpgradeConfig
-	276, // 212: google.container.v1.ClusterUpdate.desired_network_tier_config:type_name -> google.container.v1.NetworkTierConfig
-	246, // 213: google.container.v1.ClusterUpdate.desired_privileged_admission_config:type_name -> google.container.v1.PrivilegedAdmissionConfig
-	277, // 214: google.container.v1.ClusterUpdate.desired_managed_opentelemetry_config:type_name -> google.container.v1.ManagedOpenTelemetryConfig
-	146, // 215: google.container.v1.AdditionalPodRangesConfig.pod_range_info:type_name -> google.container.v1.RangeInfo
-	29,  // 216: google.container.v1.AdditionalIPRangesConfig.status:type_name -> google.container.v1.AdditionalIPRangesConfig.Status
-	143, // 217: google.container.v1.DesiredAdditionalIPRangesConfig.additional_ip_ranges_configs:type_name -> google.container.v1.AdditionalIPRangesConfig
-	67,  // 218: google.container.v1.DesiredEnterpriseConfig.desired_tier:type_name -> google.container.v1.EnterpriseConfig.ClusterTier
-	31,  // 219: google.container.v1.Operation.operation_type:type_name -> google.container.v1.Operation.Type
-	30,  // 220: google.container.v1.Operation.status:type_name -> google.container.v1.Operation.Status
-	149, // 221: google.container.v1.Operation.progress:type_name -> google.container.v1.OperationProgress
-	205, // 222: google.container.v1.Operation.cluster_conditions:type_name -> google.container.v1.StatusCondition
-	205, // 223: google.container.v1.Operation.nodepool_conditions:type_name -> google.container.v1.StatusCondition
-	330, // 224: google.container.v1.Operation.error:type_name -> google.rpc.Status
-	30,  // 225: google.container.v1.OperationProgress.status:type_name -> google.container.v1.Operation.Status
-	305, // 226: google.container.v1.OperationProgress.metrics:type_name -> google.container.v1.OperationProgress.Metric
-	149, // 227: google.container.v1.OperationProgress.stages:type_name -> google.container.v1.OperationProgress
-	131, // 228: google.container.v1.CreateClusterRequest.cluster:type_name -> google.container.v1.Cluster
-	141, // 229: google.container.v1.UpdateClusterRequest.update:type_name -> google.container.v1.ClusterUpdate
-	202, // 230: google.container.v1.UpdateNodePoolRequest.workload_metadata_config:type_name -> google.container.v1.WorkloadMetadataConfig
-	309, // 231: google.container.v1.UpdateNodePoolRequest.upgrade_settings:type_name -> google.container.v1.NodePool.UpgradeSettings
-	101, // 232: google.container.v1.UpdateNodePoolRequest.tags:type_name -> google.container.v1.NetworkTags
-	98,  // 233: google.container.v1.UpdateNodePoolRequest.taints:type_name -> google.container.v1.NodeTaints
-	99,  // 234: google.container.v1.UpdateNodePoolRequest.labels:type_name -> google.container.v1.NodeLabels
-	78,  // 235: google.container.v1.UpdateNodePoolRequest.linux_node_config:type_name -> google.container.v1.LinuxNodeConfig
-	80,  // 236: google.container.v1.UpdateNodePoolRequest.kubelet_config:type_name -> google.container.v1.NodeKubeletConfig
-	88,  // 237: google.container.v1.UpdateNodePoolRequest.node_network_config:type_name -> google.container.v1.NodeNetworkConfig
-	93,  // 238: google.container.v1.UpdateNodePoolRequest.gcfs_config:type_name -> google.container.v1.GcfsConfig
-	239, // 239: google.container.v1.UpdateNodePoolRequest.confidential_nodes:type_name -> google.container.v1.ConfidentialNodes
-	235, // 240: google.container.v1.UpdateNodePoolRequest.gvnic:type_name -> google.container.v1.VirtualNIC
-	236, // 241: google.container.v1.UpdateNodePoolRequest.fast_socket:type_name -> google.container.v1.FastSocket
-	254, // 242: google.container.v1.UpdateNodePoolRequest.logging_config:type_name -> google.container.v1.NodePoolLoggingConfig
-	100, // 243: google.container.v1.UpdateNodePoolRequest.resource_labels:type_name -> google.container.v1.ResourceLabels
-	79,  // 244: google.container.v1.UpdateNodePoolRequest.windows_node_config:type_name -> google.container.v1.WindowsNodeConfig
-	199, // 245: google.container.v1.UpdateNodePoolRequest.accelerators:type_name -> google.container.v1.AcceleratorConfig
-	264, // 246: google.container.v1.UpdateNodePoolRequest.resource_manager_tags:type_name -> google.container.v1.ResourceManagerTags
-	96,  // 247: google.container.v1.UpdateNodePoolRequest.containerd_config:type_name -> google.container.v1.ContainerdConfig
-	312, // 248: google.container.v1.UpdateNodePoolRequest.queued_provisioning:type_name -> google.container.v1.NodePool.QueuedProvisioning
-	329, // 249: google.container.v1.UpdateNodePoolRequest.max_run_duration:type_name -> google.protobuf.Duration
-	267, // 250: google.container.v1.UpdateNodePoolRequest.boot_disk:type_name -> google.container.v1.BootDisk
-	313, // 251: google.container.v1.UpdateNodePoolRequest.node_drain_config:type_name -> google.container.v1.NodePool.NodeDrainConfig
-	329, // 252: google.container.v1.UpdateNodePoolRequest.consolidation_delay:type_name -> google.protobuf.Duration
-	194, // 253: google.container.v1.SetNodePoolAutoscalingRequest.autoscaling:type_name -> google.container.v1.NodePoolAutoscaling
-	104, // 254: google.container.v1.SetAddonsConfigRequest.addons_config:type_name -> google.container.v1.AddonsConfig
-	32,  // 255: google.container.v1.SetMasterAuthRequest.action:type_name -> google.container.v1.SetMasterAuthRequest.Action
-	102, // 256: google.container.v1.SetMasterAuthRequest.update:type_name -> google.container.v1.MasterAuth
-	131, // 257: google.container.v1.ListClustersResponse.clusters:type_name -> google.container.v1.Cluster
-	148, // 258: google.container.v1.ListOperationsResponse.operations:type_name -> google.container.v1.Operation
-	306, // 259: google.container.v1.ServerConfig.channels:type_name -> google.container.v1.ServerConfig.ReleaseChannelConfig
-	175, // 260: google.container.v1.CreateNodePoolRequest.node_pool:type_name -> google.container.v1.NodePool
-	307, // 261: google.container.v1.BlueGreenSettings.standard_rollout_policy:type_name -> google.container.v1.BlueGreenSettings.StandardRolloutPolicy
-	308, // 262: google.container.v1.BlueGreenSettings.autoscaled_rollout_policy:type_name -> google.container.v1.BlueGreenSettings.AutoscaledRolloutPolicy
-	329, // 263: google.container.v1.BlueGreenSettings.node_pool_soak_duration:type_name -> google.protobuf.Duration
-	86,  // 264: google.container.v1.NodePool.config:type_name -> google.container.v1.NodeConfig
-	88,  // 265: google.container.v1.NodePool.network_config:type_name -> google.container.v1.NodeNetworkConfig
-	33,  // 266: google.container.v1.NodePool.status:type_name -> google.container.v1.NodePool.Status
-	194, // 267: google.container.v1.NodePool.autoscaling:type_name -> google.container.v1.NodePoolAutoscaling
-	176, // 268: google.container.v1.NodePool.management:type_name -> google.container.v1.NodeManagement
-	222, // 269: google.container.v1.NodePool.max_pods_constraint:type_name -> google.container.v1.MaxPodsConstraint
-	205, // 270: google.container.v1.NodePool.conditions:type_name -> google.container.v1.StatusCondition
-	309, // 271: google.container.v1.NodePool.upgrade_settings:type_name -> google.container.v1.NodePool.UpgradeSettings
-	311, // 272: google.container.v1.NodePool.placement_policy:type_name -> google.container.v1.NodePool.PlacementPolicy
-	310, // 273: google.container.v1.NodePool.update_info:type_name -> google.container.v1.NodePool.UpdateInfo
-	312, // 274: google.container.v1.NodePool.queued_provisioning:type_name -> google.container.v1.NodePool.QueuedProvisioning
-	177, // 275: google.container.v1.NodePool.best_effort_provisioning:type_name -> google.container.v1.BestEffortProvisioning
-	313, // 276: google.container.v1.NodePool.node_drain_config:type_name -> google.container.v1.NodePool.NodeDrainConfig
-	178, // 277: google.container.v1.NodeManagement.upgrade_options:type_name -> google.container.v1.AutoUpgradeOptions
-	180, // 278: google.container.v1.MaintenancePolicy.window:type_name -> google.container.v1.MaintenanceWindow
-	184, // 279: google.container.v1.MaintenanceWindow.daily_maintenance_window:type_name -> google.container.v1.DailyMaintenanceWindow
-	183, // 280: google.container.v1.MaintenanceWindow.recurring_window:type_name -> google.container.v1.RecurringTimeWindow
-	315, // 281: google.container.v1.MaintenanceWindow.maintenance_exclusions:type_name -> google.container.v1.MaintenanceWindow.MaintenanceExclusionsEntry
-	182, // 282: google.container.v1.TimeWindow.maintenance_exclusion_options:type_name -> google.container.v1.MaintenanceExclusionOptions
-	331, // 283: google.container.v1.TimeWindow.start_time:type_name -> google.protobuf.Timestamp
-	331, // 284: google.container.v1.TimeWindow.end_time:type_name -> google.protobuf.Timestamp
-	36,  // 285: google.container.v1.MaintenanceExclusionOptions.scope:type_name -> google.container.v1.MaintenanceExclusionOptions.Scope
-	37,  // 286: google.container.v1.MaintenanceExclusionOptions.end_time_behavior:type_name -> google.container.v1.MaintenanceExclusionOptions.EndTimeBehavior
-	181, // 287: google.container.v1.RecurringTimeWindow.window:type_name -> google.container.v1.TimeWindow
-	176, // 288: google.container.v1.SetNodePoolManagementRequest.management:type_name -> google.container.v1.NodeManagement
-	175, // 289: google.container.v1.ListNodePoolsResponse.node_pools:type_name -> google.container.v1.NodePool
-	192, // 290: google.container.v1.ClusterAutoscaling.resource_limits:type_name -> google.container.v1.ResourceLimit
-	38,  // 291: google.container.v1.ClusterAutoscaling.autoscaling_profile:type_name -> google.container.v1.ClusterAutoscaling.AutoscalingProfile
-	191, // 292: google.container.v1.ClusterAutoscaling.autoprovisioning_node_pool_defaults:type_name -> google.container.v1.AutoprovisioningNodePoolDefaults
-	193, // 293: google.container.v1.ClusterAutoscaling.default_compute_class_config:type_name -> google.container.v1.DefaultComputeClassConfig
-	39,  // 294: google.container.v1.ClusterAutoscaling.autopilot_general_profile:type_name -> google.container.v1.ClusterAutoscaling.AutopilotGeneralProfile
-	309, // 295: google.container.v1.AutoprovisioningNodePoolDefaults.upgrade_settings:type_name -> google.container.v1.NodePool.UpgradeSettings
-	176, // 296: google.container.v1.AutoprovisioningNodePoolDefaults.management:type_name -> google.container.v1.NodeManagement
-	91,  // 297: google.container.v1.AutoprovisioningNodePoolDefaults.shielded_instance_config:type_name -> google.container.v1.ShieldedInstanceConfig
-	40,  // 298: google.container.v1.NodePoolAutoscaling.location_policy:type_name -> google.container.v1.NodePoolAutoscaling.LocationPolicy
-	316, // 299: google.container.v1.SetLabelsRequest.resource_labels:type_name -> google.container.v1.SetLabelsRequest.ResourceLabelsEntry
-	200, // 300: google.container.v1.AcceleratorConfig.gpu_sharing_config:type_name -> google.container.v1.GPUSharingConfig
-	201, // 301: google.container.v1.AcceleratorConfig.gpu_driver_installation_config:type_name -> google.container.v1.GPUDriverInstallationConfig
-	41,  // 302: google.container.v1.GPUSharingConfig.gpu_sharing_strategy:type_name -> google.container.v1.GPUSharingConfig.GPUSharingStrategy
-	42,  // 303: google.container.v1.GPUDriverInstallationConfig.gpu_driver_version:type_name -> google.container.v1.GPUDriverInstallationConfig.GPUDriverVersion
-	43,  // 304: google.container.v1.WorkloadMetadataConfig.mode:type_name -> google.container.v1.WorkloadMetadataConfig.Mode
-	127, // 305: google.container.v1.SetNetworkPolicyRequest.network_policy:type_name -> google.container.v1.NetworkPolicy
-	179, // 306: google.container.v1.SetMaintenancePolicyRequest.maintenance_policy:type_name -> google.container.v1.MaintenancePolicy
-	44,  // 307: google.container.v1.StatusCondition.code:type_name -> google.container.v1.StatusCondition.Code
-	332, // 308: google.container.v1.StatusCondition.canonical_code:type_name -> google.rpc.Code
-	233, // 309: google.container.v1.NetworkConfig.default_snat_status:type_name -> google.container.v1.DefaultSnatStatus
-	2,   // 310: google.container.v1.NetworkConfig.datapath_provider:type_name -> google.container.v1.DatapathProvider
-	0,   // 311: google.container.v1.NetworkConfig.private_ipv6_google_access:type_name -> google.container.v1.PrivateIPv6GoogleAccess
-	221, // 312: google.container.v1.NetworkConfig.dns_config:type_name -> google.container.v1.DNSConfig
-	208, // 313: google.container.v1.NetworkConfig.service_external_ips_config:type_name -> google.container.v1.ServiceExternalIPsConfig
-	207, // 314: google.container.v1.NetworkConfig.gateway_api_config:type_name -> google.container.v1.GatewayAPIConfig
-	317, // 315: google.container.v1.NetworkConfig.network_performance_config:type_name -> google.container.v1.NetworkConfig.ClusterNetworkPerformanceConfig
-	6,   // 316: google.container.v1.NetworkConfig.in_transit_encryption_config:type_name -> google.container.v1.InTransitEncryptionConfig
-	46,  // 317: google.container.v1.GatewayAPIConfig.channel:type_name -> google.container.v1.GatewayAPIConfig.Channel
-	212, // 318: google.container.v1.GetJSONWebKeysResponse.keys:type_name -> google.container.v1.Jwk
-	331, // 319: google.container.v1.AutopilotCompatibilityIssue.last_observation:type_name -> google.protobuf.Timestamp
-	47,  // 320: google.container.v1.AutopilotCompatibilityIssue.incompatibility_type:type_name -> google.container.v1.AutopilotCompatibilityIssue.IssueType
-	215, // 321: google.container.v1.CheckAutopilotCompatibilityResponse.issues:type_name -> google.container.v1.AutopilotCompatibilityIssue
-	48,  // 322: google.container.v1.ReleaseChannel.channel:type_name -> google.container.v1.ReleaseChannel.Channel
-	49,  // 323: google.container.v1.DNSConfig.cluster_dns:type_name -> google.container.v1.DNSConfig.Provider
-	50,  // 324: google.container.v1.DNSConfig.cluster_dns_scope:type_name -> google.container.v1.DNSConfig.DNSScope
-	328, // 325: google.container.v1.MeshCertificates.enable_certificates:type_name -> google.protobuf.BoolValue
-	51,  // 326: google.container.v1.DatabaseEncryption.state:type_name -> google.container.v1.DatabaseEncryption.State
-	52,  // 327: google.container.v1.DatabaseEncryption.current_state:type_name -> google.container.v1.DatabaseEncryption.CurrentState
-	318, // 328: google.container.v1.DatabaseEncryption.last_operation_errors:type_name -> google.container.v1.DatabaseEncryption.OperationError
-	230, // 329: google.container.v1.ListUsableSubnetworksResponse.subnetworks:type_name -> google.container.v1.UsableSubnetwork
-	53,  // 330: google.container.v1.UsableSubnetworkSecondaryRange.status:type_name -> google.container.v1.UsableSubnetworkSecondaryRange.Status
-	229, // 331: google.container.v1.UsableSubnetwork.secondary_ip_ranges:type_name -> google.container.v1.UsableSubnetworkSecondaryRange
-	319, // 332: google.container.v1.ResourceUsageExportConfig.bigquery_destination:type_name -> google.container.v1.ResourceUsageExportConfig.BigQueryDestination
-	320, // 333: google.container.v1.ResourceUsageExportConfig.consumption_metering_config:type_name -> google.container.v1.ResourceUsageExportConfig.ConsumptionMeteringConfig
-	54,  // 334: google.container.v1.GPUDirectConfig.gpu_direct_strategy:type_name -> google.container.v1.GPUDirectConfig.GPUDirectStrategy
-	321, // 335: google.container.v1.NotificationConfig.pubsub:type_name -> google.container.v1.NotificationConfig.PubSub
-	56,  // 336: google.container.v1.ConfidentialNodes.confidential_instance_type:type_name -> google.container.v1.ConfidentialNodes.ConfidentialInstanceType
-	1,   // 337: google.container.v1.UpgradeEvent.resource_type:type_name -> google.container.v1.UpgradeResourceType
-	331, // 338: google.container.v1.UpgradeEvent.operation_start_time:type_name -> google.protobuf.Timestamp
-	1,   // 339: google.container.v1.UpgradeInfoEvent.resource_type:type_name -> google.container.v1.UpgradeResourceType
-	331, // 340: google.container.v1.UpgradeInfoEvent.start_time:type_name -> google.protobuf.Timestamp
-	331, // 341: google.container.v1.UpgradeInfoEvent.end_time:type_name -> google.protobuf.Timestamp
-	57,  // 342: google.container.v1.UpgradeInfoEvent.state:type_name -> google.container.v1.UpgradeInfoEvent.State
-	331, // 343: google.container.v1.UpgradeInfoEvent.standard_support_end_time:type_name -> google.protobuf.Timestamp
-	331, // 344: google.container.v1.UpgradeInfoEvent.extended_support_end_time:type_name -> google.protobuf.Timestamp
-	58,  // 345: google.container.v1.UpgradeInfoEvent.event_type:type_name -> google.container.v1.UpgradeInfoEvent.EventType
-	242, // 346: google.container.v1.UpgradeInfoEvent.disruption_event:type_name -> google.container.v1.DisruptionEvent
-	59,  // 347: google.container.v1.DisruptionEvent.disruption_type:type_name -> google.container.v1.DisruptionEvent.DisruptionType
-	323, // 348: google.container.v1.DisruptionEvent.pdb_blocked_pod:type_name -> google.container.v1.DisruptionEvent.PdbBlockedPod
-	329, // 349: google.container.v1.DisruptionEvent.pdb_violation_timeout:type_name -> google.protobuf.Duration
-	1,   // 350: google.container.v1.UpgradeAvailableEvent.resource_type:type_name -> google.container.v1.UpgradeResourceType
-	217, // 351: google.container.v1.UpgradeAvailableEvent.release_channel:type_name -> google.container.v1.ReleaseChannel
-	247, // 352: google.container.v1.Autopilot.workload_policy_config:type_name -> google.container.v1.WorkloadPolicyConfig
-	246, // 353: google.container.v1.Autopilot.privileged_admission_config:type_name -> google.container.v1.PrivilegedAdmissionConfig
-	249, // 354: google.container.v1.LoggingConfig.component_config:type_name -> google.container.v1.LoggingComponentConfig
-	60,  // 355: google.container.v1.LoggingComponentConfig.enable_components:type_name -> google.container.v1.LoggingComponentConfig.Component
-	256, // 356: google.container.v1.MonitoringConfig.component_config:type_name -> google.container.v1.MonitoringComponentConfig
-	257, // 357: google.container.v1.MonitoringConfig.managed_prometheus_config:type_name -> google.container.v1.ManagedPrometheusConfig
-	252, // 358: google.container.v1.MonitoringConfig.advanced_datapath_observability_config:type_name -> google.container.v1.AdvancedDatapathObservabilityConfig
-	61,  // 359: google.container.v1.AdvancedDatapathObservabilityConfig.relay_mode:type_name -> google.container.v1.AdvancedDatapathObservabilityConfig.RelayMode
-	255, // 360: google.container.v1.NodePoolLoggingConfig.variant_config:type_name -> google.container.v1.LoggingVariantConfig
-	62,  // 361: google.container.v1.LoggingVariantConfig.variant:type_name -> google.container.v1.LoggingVariantConfig.Variant
-	63,  // 362: google.container.v1.MonitoringComponentConfig.enable_components:type_name -> google.container.v1.MonitoringComponentConfig.Component
-	258, // 363: google.container.v1.ManagedPrometheusConfig.auto_monitoring_config:type_name -> google.container.v1.AutoMonitoringConfig
-	64,  // 364: google.container.v1.AutoMonitoringConfig.scope:type_name -> google.container.v1.AutoMonitoringConfig.Scope
-	65,  // 365: google.container.v1.PodAutoscaling.hpa_profile:type_name -> google.container.v1.PodAutoscaling.HPAProfile
-	66,  // 366: google.container.v1.Fleet.membership_type:type_name -> google.container.v1.Fleet.MembershipType
-	324, // 367: google.container.v1.ControlPlaneEndpointsConfig.dns_endpoint_config:type_name -> google.container.v1.ControlPlaneEndpointsConfig.DNSEndpointConfig
-	325, // 368: google.container.v1.ControlPlaneEndpointsConfig.ip_endpoints_config:type_name -> google.container.v1.ControlPlaneEndpointsConfig.IPEndpointsConfig
-	326, // 369: google.container.v1.ResourceManagerTags.tags:type_name -> google.container.v1.ResourceManagerTags.TagsEntry
-	67,  // 370: google.container.v1.EnterpriseConfig.cluster_tier:type_name -> google.container.v1.EnterpriseConfig.ClusterTier
-	67,  // 371: google.container.v1.EnterpriseConfig.desired_tier:type_name -> google.container.v1.EnterpriseConfig.ClusterTier
-	327, // 372: google.container.v1.SecretManagerConfig.rotation_config:type_name -> google.container.v1.SecretManagerConfig.RotationConfig
-	68,  // 373: google.container.v1.SecondaryBootDisk.mode:type_name -> google.container.v1.SecondaryBootDisk.Mode
-	69,  // 374: google.container.v1.ClusterUpgradeInfo.auto_upgrade_status:type_name -> google.container.v1.ClusterUpgradeInfo.AutoUpgradeStatus
-	70,  // 375: google.container.v1.ClusterUpgradeInfo.paused_reason:type_name -> google.container.v1.ClusterUpgradeInfo.AutoUpgradePausedReason
-	272, // 376: google.container.v1.ClusterUpgradeInfo.upgrade_details:type_name -> google.container.v1.UpgradeDetails
-	71,  // 377: google.container.v1.UpgradeDetails.state:type_name -> google.container.v1.UpgradeDetails.State
-	331, // 378: google.container.v1.UpgradeDetails.start_time:type_name -> google.protobuf.Timestamp
-	331, // 379: google.container.v1.UpgradeDetails.end_time:type_name -> google.protobuf.Timestamp
-	72,  // 380: google.container.v1.UpgradeDetails.start_type:type_name -> google.container.v1.UpgradeDetails.StartType
-	73,  // 381: google.container.v1.NodePoolUpgradeInfo.auto_upgrade_status:type_name -> google.container.v1.NodePoolUpgradeInfo.AutoUpgradeStatus
-	74,  // 382: google.container.v1.NodePoolUpgradeInfo.paused_reason:type_name -> google.container.v1.NodePoolUpgradeInfo.AutoUpgradePausedReason
-	272, // 383: google.container.v1.NodePoolUpgradeInfo.upgrade_details:type_name -> google.container.v1.UpgradeDetails
-	75,  // 384: google.container.v1.GkeAutoUpgradeConfig.patch_mode:type_name -> google.container.v1.GkeAutoUpgradeConfig.PatchMode
-	76,  // 385: google.container.v1.NetworkTierConfig.network_tier:type_name -> google.container.v1.NetworkTierConfig.NetworkTier
-	77,  // 386: google.container.v1.ManagedOpenTelemetryConfig.scope:type_name -> google.container.v1.ManagedOpenTelemetryConfig.Scope
-	282, // 387: google.container.v1.LinuxNodeConfig.SwapConfig.encryption_config:type_name -> google.container.v1.LinuxNodeConfig.SwapConfig.EncryptionConfig
-	283, // 388: google.container.v1.LinuxNodeConfig.SwapConfig.boot_disk_profile:type_name -> google.container.v1.LinuxNodeConfig.SwapConfig.BootDiskProfile
-	284, // 389: google.container.v1.LinuxNodeConfig.SwapConfig.ephemeral_local_ssd_profile:type_name -> google.container.v1.LinuxNodeConfig.SwapConfig.EphemeralLocalSsdProfile
-	285, // 390: google.container.v1.LinuxNodeConfig.SwapConfig.dedicated_local_ssd_profile:type_name -> google.container.v1.LinuxNodeConfig.SwapConfig.DedicatedLocalSsdProfile
-	10,  // 391: google.container.v1.LinuxNodeConfig.NodeKernelModuleLoading.policy:type_name -> google.container.v1.LinuxNodeConfig.NodeKernelModuleLoading.Policy
-	15,  // 392: google.container.v1.NodeNetworkConfig.NetworkPerformanceConfig.total_egress_bandwidth_tier:type_name -> google.container.v1.NodeNetworkConfig.NetworkPerformanceConfig.Tier
-	18,  // 393: google.container.v1.SoleTenantConfig.NodeAffinity.operator:type_name -> google.container.v1.SoleTenantConfig.NodeAffinity.Operator
-	294, // 394: google.container.v1.ContainerdConfig.PrivateRegistryAccessConfig.certificate_authority_domain_config:type_name -> google.container.v1.ContainerdConfig.PrivateRegistryAccessConfig.CertificateAuthorityDomainConfig
-	299, // 395: google.container.v1.ContainerdConfig.RegistryHostConfig.hosts:type_name -> google.container.v1.ContainerdConfig.RegistryHostConfig.HostConfig
-	295, // 396: google.container.v1.ContainerdConfig.PrivateRegistryAccessConfig.CertificateAuthorityDomainConfig.gcp_secret_manager_certificate_config:type_name -> google.container.v1.ContainerdConfig.PrivateRegistryAccessConfig.CertificateAuthorityDomainConfig.GCPSecretManagerCertificateConfig
-	296, // 397: google.container.v1.ContainerdConfig.RegistryHostConfig.CertificateConfigPair.cert:type_name -> google.container.v1.ContainerdConfig.RegistryHostConfig.CertificateConfig
-	296, // 398: google.container.v1.ContainerdConfig.RegistryHostConfig.CertificateConfigPair.key:type_name -> google.container.v1.ContainerdConfig.RegistryHostConfig.CertificateConfig
-	19,  // 399: google.container.v1.ContainerdConfig.RegistryHostConfig.HostConfig.capabilities:type_name -> google.container.v1.ContainerdConfig.RegistryHostConfig.HostCapability
-	298, // 400: google.container.v1.ContainerdConfig.RegistryHostConfig.HostConfig.header:type_name -> google.container.v1.ContainerdConfig.RegistryHostConfig.RegistryHeader
-	296, // 401: google.container.v1.ContainerdConfig.RegistryHostConfig.HostConfig.ca:type_name -> google.container.v1.ContainerdConfig.RegistryHostConfig.CertificateConfig
-	297, // 402: google.container.v1.ContainerdConfig.RegistryHostConfig.HostConfig.client:type_name -> google.container.v1.ContainerdConfig.RegistryHostConfig.CertificateConfigPair
-	329, // 403: google.container.v1.ContainerdConfig.RegistryHostConfig.HostConfig.dial_timeout:type_name -> google.protobuf.Duration
-	48,  // 404: google.container.v1.ServerConfig.ReleaseChannelConfig.channel:type_name -> google.container.v1.ReleaseChannel.Channel
-	329, // 405: google.container.v1.BlueGreenSettings.StandardRolloutPolicy.batch_soak_duration:type_name -> google.protobuf.Duration
-	329, // 406: google.container.v1.BlueGreenSettings.AutoscaledRolloutPolicy.wait_for_drain_duration:type_name -> google.protobuf.Duration
-	3,   // 407: google.container.v1.NodePool.UpgradeSettings.strategy:type_name -> google.container.v1.NodePoolUpdateStrategy
-	174, // 408: google.container.v1.NodePool.UpgradeSettings.blue_green_settings:type_name -> google.container.v1.BlueGreenSettings
-	314, // 409: google.container.v1.NodePool.UpdateInfo.blue_green_info:type_name -> google.container.v1.NodePool.UpdateInfo.BlueGreenInfo
-	35,  // 410: google.container.v1.NodePool.PlacementPolicy.type:type_name -> google.container.v1.NodePool.PlacementPolicy.Type
-	34,  // 411: google.container.v1.NodePool.UpdateInfo.BlueGreenInfo.phase:type_name -> google.container.v1.NodePool.UpdateInfo.BlueGreenInfo.Phase
-	181, // 412: google.container.v1.MaintenanceWindow.MaintenanceExclusionsEntry.value:type_name -> google.container.v1.TimeWindow
-	45,  // 413: google.container.v1.NetworkConfig.ClusterNetworkPerformanceConfig.total_egress_bandwidth_tier:type_name -> google.container.v1.NetworkConfig.ClusterNetworkPerformanceConfig.Tier
-	331, // 414: google.container.v1.DatabaseEncryption.OperationError.timestamp:type_name -> google.protobuf.Timestamp
-	322, // 415: google.container.v1.NotificationConfig.PubSub.filter:type_name -> google.container.v1.NotificationConfig.Filter
-	55,  // 416: google.container.v1.NotificationConfig.Filter.event_type:type_name -> google.container.v1.NotificationConfig.EventType
-	125, // 417: google.container.v1.ControlPlaneEndpointsConfig.IPEndpointsConfig.authorized_networks_config:type_name -> google.container.v1.MasterAuthorizedNetworksConfig
-	329, // 418: google.container.v1.SecretManagerConfig.RotationConfig.rotation_interval:type_name -> google.protobuf.Duration
-	162, // 419: google.container.v1.ClusterManager.ListClusters:input_type -> google.container.v1.ListClustersRequest
-	151, // 420: google.container.v1.ClusterManager.GetCluster:input_type -> google.container.v1.GetClusterRequest
-	150, // 421: google.container.v1.ClusterManager.CreateCluster:input_type -> google.container.v1.CreateClusterRequest
-	152, // 422: google.container.v1.ClusterManager.UpdateCluster:input_type -> google.container.v1.UpdateClusterRequest
-	153, // 423: google.container.v1.ClusterManager.UpdateNodePool:input_type -> google.container.v1.UpdateNodePoolRequest
-	154, // 424: google.container.v1.ClusterManager.SetNodePoolAutoscaling:input_type -> google.container.v1.SetNodePoolAutoscalingRequest
-	155, // 425: google.container.v1.ClusterManager.SetLoggingService:input_type -> google.container.v1.SetLoggingServiceRequest
-	156, // 426: google.container.v1.ClusterManager.SetMonitoringService:input_type -> google.container.v1.SetMonitoringServiceRequest
-	157, // 427: google.container.v1.ClusterManager.SetAddonsConfig:input_type -> google.container.v1.SetAddonsConfigRequest
-	158, // 428: google.container.v1.ClusterManager.SetLocations:input_type -> google.container.v1.SetLocationsRequest
-	159, // 429: google.container.v1.ClusterManager.UpdateMaster:input_type -> google.container.v1.UpdateMasterRequest
-	160, // 430: google.container.v1.ClusterManager.SetMasterAuth:input_type -> google.container.v1.SetMasterAuthRequest
-	161, // 431: google.container.v1.ClusterManager.DeleteCluster:input_type -> google.container.v1.DeleteClusterRequest
-	165, // 432: google.container.v1.ClusterManager.ListOperations:input_type -> google.container.v1.ListOperationsRequest
-	164, // 433: google.container.v1.ClusterManager.GetOperation:input_type -> google.container.v1.GetOperationRequest
-	166, // 434: google.container.v1.ClusterManager.CancelOperation:input_type -> google.container.v1.CancelOperationRequest
-	168, // 435: google.container.v1.ClusterManager.GetServerConfig:input_type -> google.container.v1.GetServerConfigRequest
-	211, // 436: google.container.v1.ClusterManager.GetJSONWebKeys:input_type -> google.container.v1.GetJSONWebKeysRequest
-	172, // 437: google.container.v1.ClusterManager.ListNodePools:input_type -> google.container.v1.ListNodePoolsRequest
-	173, // 438: google.container.v1.ClusterManager.GetNodePool:input_type -> google.container.v1.GetNodePoolRequest
-	170, // 439: google.container.v1.ClusterManager.CreateNodePool:input_type -> google.container.v1.CreateNodePoolRequest
-	171, // 440: google.container.v1.ClusterManager.DeleteNodePool:input_type -> google.container.v1.DeleteNodePoolRequest
-	187, // 441: google.container.v1.ClusterManager.CompleteNodePoolUpgrade:input_type -> google.container.v1.CompleteNodePoolUpgradeRequest
-	188, // 442: google.container.v1.ClusterManager.RollbackNodePoolUpgrade:input_type -> google.container.v1.RollbackNodePoolUpgradeRequest
-	185, // 443: google.container.v1.ClusterManager.SetNodePoolManagement:input_type -> google.container.v1.SetNodePoolManagementRequest
-	195, // 444: google.container.v1.ClusterManager.SetLabels:input_type -> google.container.v1.SetLabelsRequest
-	196, // 445: google.container.v1.ClusterManager.SetLegacyAbac:input_type -> google.container.v1.SetLegacyAbacRequest
-	197, // 446: google.container.v1.ClusterManager.StartIPRotation:input_type -> google.container.v1.StartIPRotationRequest
-	198, // 447: google.container.v1.ClusterManager.CompleteIPRotation:input_type -> google.container.v1.CompleteIPRotationRequest
-	186, // 448: google.container.v1.ClusterManager.SetNodePoolSize:input_type -> google.container.v1.SetNodePoolSizeRequest
-	203, // 449: google.container.v1.ClusterManager.SetNetworkPolicy:input_type -> google.container.v1.SetNetworkPolicyRequest
-	204, // 450: google.container.v1.ClusterManager.SetMaintenancePolicy:input_type -> google.container.v1.SetMaintenancePolicyRequest
-	227, // 451: google.container.v1.ClusterManager.ListUsableSubnetworks:input_type -> google.container.v1.ListUsableSubnetworksRequest
-	214, // 452: google.container.v1.ClusterManager.CheckAutopilotCompatibility:input_type -> google.container.v1.CheckAutopilotCompatibilityRequest
-	270, // 453: google.container.v1.ClusterManager.FetchClusterUpgradeInfo:input_type -> google.container.v1.FetchClusterUpgradeInfoRequest
-	273, // 454: google.container.v1.ClusterManager.FetchNodePoolUpgradeInfo:input_type -> google.container.v1.FetchNodePoolUpgradeInfoRequest
-	163, // 455: google.container.v1.ClusterManager.ListClusters:output_type -> google.container.v1.ListClustersResponse
-	131, // 456: google.container.v1.ClusterManager.GetCluster:output_type -> google.container.v1.Cluster
-	148, // 457: google.container.v1.ClusterManager.CreateCluster:output_type -> google.container.v1.Operation
-	148, // 458: google.container.v1.ClusterManager.UpdateCluster:output_type -> google.container.v1.Operation
-	148, // 459: google.container.v1.ClusterManager.UpdateNodePool:output_type -> google.container.v1.Operation
-	148, // 460: google.container.v1.ClusterManager.SetNodePoolAutoscaling:output_type -> google.container.v1.Operation
-	148, // 461: google.container.v1.ClusterManager.SetLoggingService:output_type -> google.container.v1.Operation
-	148, // 462: google.container.v1.ClusterManager.SetMonitoringService:output_type -> google.container.v1.Operation
-	148, // 463: google.container.v1.ClusterManager.SetAddonsConfig:output_type -> google.container.v1.Operation
-	148, // 464: google.container.v1.ClusterManager.SetLocations:output_type -> google.container.v1.Operation
-	148, // 465: google.container.v1.ClusterManager.UpdateMaster:output_type -> google.container.v1.Operation
-	148, // 466: google.container.v1.ClusterManager.SetMasterAuth:output_type -> google.container.v1.Operation
-	148, // 467: google.container.v1.ClusterManager.DeleteCluster:output_type -> google.container.v1.Operation
-	167, // 468: google.container.v1.ClusterManager.ListOperations:output_type -> google.container.v1.ListOperationsResponse
-	148, // 469: google.container.v1.ClusterManager.GetOperation:output_type -> google.container.v1.Operation
-	333, // 470: google.container.v1.ClusterManager.CancelOperation:output_type -> google.protobuf.Empty
-	169, // 471: google.container.v1.ClusterManager.GetServerConfig:output_type -> google.container.v1.ServerConfig
-	213, // 472: google.container.v1.ClusterManager.GetJSONWebKeys:output_type -> google.container.v1.GetJSONWebKeysResponse
-	189, // 473: google.container.v1.ClusterManager.ListNodePools:output_type -> google.container.v1.ListNodePoolsResponse
-	175, // 474: google.container.v1.ClusterManager.GetNodePool:output_type -> google.container.v1.NodePool
-	148, // 475: google.container.v1.ClusterManager.CreateNodePool:output_type -> google.container.v1.Operation
-	148, // 476: google.container.v1.ClusterManager.DeleteNodePool:output_type -> google.container.v1.Operation
-	333, // 477: google.container.v1.ClusterManager.CompleteNodePoolUpgrade:output_type -> google.protobuf.Empty
-	148, // 478: google.container.v1.ClusterManager.RollbackNodePoolUpgrade:output_type -> google.container.v1.Operation
-	148, // 479: google.container.v1.ClusterManager.SetNodePoolManagement:output_type -> google.container.v1.Operation
-	148, // 480: google.container.v1.ClusterManager.SetLabels:output_type -> google.container.v1.Operation
-	148, // 481: google.container.v1.ClusterManager.SetLegacyAbac:output_type -> google.container.v1.Operation
-	148, // 482: google.container.v1.ClusterManager.StartIPRotation:output_type -> google.container.v1.Operation
-	148, // 483: google.container.v1.ClusterManager.CompleteIPRotation:output_type -> google.container.v1.Operation
-	148, // 484: google.container.v1.ClusterManager.SetNodePoolSize:output_type -> google.container.v1.Operation
-	148, // 485: google.container.v1.ClusterManager.SetNetworkPolicy:output_type -> google.container.v1.Operation
-	148, // 486: google.container.v1.ClusterManager.SetMaintenancePolicy:output_type -> google.container.v1.Operation
-	228, // 487: google.container.v1.ClusterManager.ListUsableSubnetworks:output_type -> google.container.v1.ListUsableSubnetworksResponse
-	216, // 488: google.container.v1.ClusterManager.CheckAutopilotCompatibility:output_type -> google.container.v1.CheckAutopilotCompatibilityResponse
-	271, // 489: google.container.v1.ClusterManager.FetchClusterUpgradeInfo:output_type -> google.container.v1.ClusterUpgradeInfo
-	274, // 490: google.container.v1.ClusterManager.FetchNodePoolUpgradeInfo:output_type -> google.container.v1.NodePoolUpgradeInfo
-	455, // [455:491] is the sub-list for method output_type
-	419, // [419:455] is the sub-list for method input_type
-	419, // [419:419] is the sub-list for extension type_name
-	419, // [419:419] is the sub-list for extension extendee
-	0,   // [0:419] is the sub-list for field type_name
+	294, // 5: google.container.v1.LinuxNodeConfig.custom_node_init:type_name -> google.container.v1.LinuxNodeConfig.CustomNodeInit
+	295, // 6: google.container.v1.LinuxNodeConfig.swap_config:type_name -> google.container.v1.LinuxNodeConfig.SwapConfig
+	296, // 7: google.container.v1.LinuxNodeConfig.node_kernel_module_loading:type_name -> google.container.v1.LinuxNodeConfig.NodeKernelModuleLoading
+	297, // 8: google.container.v1.LinuxNodeConfig.accurate_time_config:type_name -> google.container.v1.LinuxNodeConfig.AccurateTimeConfig
+	11,  // 9: google.container.v1.WindowsNodeConfig.os_version:type_name -> google.container.v1.WindowsNodeConfig.OSVersion
+	84,  // 10: google.container.v1.NodeKubeletConfig.topology_manager:type_name -> google.container.v1.TopologyManager
+	85,  // 11: google.container.v1.NodeKubeletConfig.memory_manager:type_name -> google.container.v1.MemoryManager
+	350, // 12: google.container.v1.NodeKubeletConfig.cpu_cfs_quota:type_name -> google.protobuf.BoolValue
+	86,  // 13: google.container.v1.NodeKubeletConfig.eviction_soft:type_name -> google.container.v1.EvictionSignals
+	87,  // 14: google.container.v1.NodeKubeletConfig.eviction_soft_grace_period:type_name -> google.container.v1.EvictionGracePeriod
+	88,  // 15: google.container.v1.NodeKubeletConfig.eviction_minimum_reclaim:type_name -> google.container.v1.EvictionMinimumReclaim
+	304, // 16: google.container.v1.NodeKubeletConfig.crash_loop_back_off:type_name -> google.container.v1.NodeKubeletConfig.CrashLoopBackOffConfig
+	305, // 17: google.container.v1.NodeConfig.metadata:type_name -> google.container.v1.NodeConfig.MetadataEntry
+	306, // 18: google.container.v1.NodeConfig.labels:type_name -> google.container.v1.NodeConfig.LabelsEntry
+	209, // 19: google.container.v1.NodeConfig.accelerators:type_name -> google.container.v1.AcceleratorConfig
+	212, // 20: google.container.v1.NodeConfig.workload_metadata_config:type_name -> google.container.v1.WorkloadMetadataConfig
+	101, // 21: google.container.v1.NodeConfig.taints:type_name -> google.container.v1.NodeTaint
+	96,  // 22: google.container.v1.NodeConfig.sandbox_config:type_name -> google.container.v1.SandboxConfig
+	98,  // 23: google.container.v1.NodeConfig.reservation_affinity:type_name -> google.container.v1.ReservationAffinity
+	95,  // 24: google.container.v1.NodeConfig.shielded_instance_config:type_name -> google.container.v1.ShieldedInstanceConfig
+	81,  // 25: google.container.v1.NodeConfig.linux_node_config:type_name -> google.container.v1.LinuxNodeConfig
+	83,  // 26: google.container.v1.NodeConfig.kubelet_config:type_name -> google.container.v1.NodeKubeletConfig
+	97,  // 27: google.container.v1.NodeConfig.gcfs_config:type_name -> google.container.v1.GcfsConfig
+	91,  // 28: google.container.v1.NodeConfig.advanced_machine_features:type_name -> google.container.v1.AdvancedMachineFeatures
+	245, // 29: google.container.v1.NodeConfig.gvnic:type_name -> google.container.v1.VirtualNIC
+	249, // 30: google.container.v1.NodeConfig.confidential_nodes:type_name -> google.container.v1.ConfidentialNodes
+	246, // 31: google.container.v1.NodeConfig.fast_socket:type_name -> google.container.v1.FastSocket
+	307, // 32: google.container.v1.NodeConfig.resource_labels:type_name -> google.container.v1.NodeConfig.ResourceLabelsEntry
+	265, // 33: google.container.v1.NodeConfig.logging_config:type_name -> google.container.v1.NodePoolLoggingConfig
+	82,  // 34: google.container.v1.NodeConfig.windows_node_config:type_name -> google.container.v1.WindowsNodeConfig
+	273, // 35: google.container.v1.NodeConfig.local_nvme_ssd_block_config:type_name -> google.container.v1.LocalNvmeSsdBlockConfig
+	274, // 36: google.container.v1.NodeConfig.ephemeral_storage_local_ssd_config:type_name -> google.container.v1.EphemeralStorageLocalSsdConfig
+	99,  // 37: google.container.v1.NodeConfig.sole_tenant_config:type_name -> google.container.v1.SoleTenantConfig
+	100, // 38: google.container.v1.NodeConfig.containerd_config:type_name -> google.container.v1.ContainerdConfig
+	275, // 39: google.container.v1.NodeConfig.resource_manager_tags:type_name -> google.container.v1.ResourceManagerTags
+	279, // 40: google.container.v1.NodeConfig.secondary_boot_disks:type_name -> google.container.v1.SecondaryBootDisk
+	280, // 41: google.container.v1.NodeConfig.secondary_boot_disk_update_strategy:type_name -> google.container.v1.SecondaryBootDiskUpdateStrategy
+	247, // 42: google.container.v1.NodeConfig.gpu_direct_config:type_name -> google.container.v1.GPUDirectConfig
+	351, // 43: google.container.v1.NodeConfig.max_run_duration:type_name -> google.protobuf.Duration
+	12,  // 44: google.container.v1.NodeConfig.local_ssd_encryption_mode:type_name -> google.container.v1.NodeConfig.LocalSsdEncryptionMode
+	13,  // 45: google.container.v1.NodeConfig.effective_cgroup_mode:type_name -> google.container.v1.NodeConfig.EffectiveCgroupMode
+	278, // 46: google.container.v1.NodeConfig.boot_disk:type_name -> google.container.v1.BootDisk
+	351, // 47: google.container.v1.NodeConfig.consolidation_delay:type_name -> google.protobuf.Duration
+	90,  // 48: google.container.v1.NodeConfig.taint_config:type_name -> google.container.v1.TaintConfig
+	14,  // 49: google.container.v1.TaintConfig.architecture_taint_behavior:type_name -> google.container.v1.TaintConfig.ArchitectureTaintBehavior
+	15,  // 50: google.container.v1.AdvancedMachineFeatures.performance_monitoring_unit:type_name -> google.container.v1.AdvancedMachineFeatures.PerformanceMonitoringUnit
+	308, // 51: google.container.v1.NodeNetworkConfig.network_performance_config:type_name -> google.container.v1.NodeNetworkConfig.NetworkPerformanceConfig
+	135, // 52: google.container.v1.NodeNetworkConfig.pod_cidr_overprovision_config:type_name -> google.container.v1.PodCIDROverprovisionConfig
+	93,  // 53: google.container.v1.NodeNetworkConfig.additional_node_network_configs:type_name -> google.container.v1.AdditionalNodeNetworkConfig
+	94,  // 54: google.container.v1.NodeNetworkConfig.additional_pod_network_configs:type_name -> google.container.v1.AdditionalPodNetworkConfig
+	288, // 55: google.container.v1.NodeNetworkConfig.network_tier_config:type_name -> google.container.v1.NetworkTierConfig
+	232, // 56: google.container.v1.AdditionalPodNetworkConfig.max_pods_per_node:type_name -> google.container.v1.MaxPodsConstraint
+	17,  // 57: google.container.v1.SandboxConfig.type:type_name -> google.container.v1.SandboxConfig.Type
+	18,  // 58: google.container.v1.ReservationAffinity.consume_reservation_type:type_name -> google.container.v1.ReservationAffinity.Type
+	309, // 59: google.container.v1.SoleTenantConfig.node_affinities:type_name -> google.container.v1.SoleTenantConfig.NodeAffinity
+	310, // 60: google.container.v1.ContainerdConfig.private_registry_access_config:type_name -> google.container.v1.ContainerdConfig.PrivateRegistryAccessConfig
+	311, // 61: google.container.v1.ContainerdConfig.writable_cgroups:type_name -> google.container.v1.ContainerdConfig.WritableCgroups
+	312, // 62: google.container.v1.ContainerdConfig.registry_hosts:type_name -> google.container.v1.ContainerdConfig.RegistryHostConfig
+	21,  // 63: google.container.v1.NodeTaint.effect:type_name -> google.container.v1.NodeTaint.Effect
+	101, // 64: google.container.v1.NodeTaints.taints:type_name -> google.container.v1.NodeTaint
+	319, // 65: google.container.v1.NodeLabels.labels:type_name -> google.container.v1.NodeLabels.LabelsEntry
+	320, // 66: google.container.v1.ResourceLabels.labels:type_name -> google.container.v1.ResourceLabels.LabelsEntry
+	107, // 67: google.container.v1.MasterAuth.client_certificate_config:type_name -> google.container.v1.ClientCertificateConfig
+	109, // 68: google.container.v1.AddonsConfig.http_load_balancing:type_name -> google.container.v1.HttpLoadBalancing
+	110, // 69: google.container.v1.AddonsConfig.horizontal_pod_autoscaling:type_name -> google.container.v1.HorizontalPodAutoscaling
+	111, // 70: google.container.v1.AddonsConfig.kubernetes_dashboard:type_name -> google.container.v1.KubernetesDashboard
+	112, // 71: google.container.v1.AddonsConfig.network_policy_config:type_name -> google.container.v1.NetworkPolicyConfig
+	117, // 72: google.container.v1.AddonsConfig.cloud_run_config:type_name -> google.container.v1.CloudRunConfig
+	113, // 73: google.container.v1.AddonsConfig.dns_cache_config:type_name -> google.container.v1.DnsCacheConfig
+	118, // 74: google.container.v1.AddonsConfig.config_connector_config:type_name -> google.container.v1.ConfigConnectorConfig
+	119, // 75: google.container.v1.AddonsConfig.gce_persistent_disk_csi_driver_config:type_name -> google.container.v1.GcePersistentDiskCsiDriverConfig
+	120, // 76: google.container.v1.AddonsConfig.gcp_filestore_csi_driver_config:type_name -> google.container.v1.GcpFilestoreCsiDriverConfig
+	129, // 77: google.container.v1.AddonsConfig.gke_backup_agent_config:type_name -> google.container.v1.GkeBackupAgentConfig
+	121, // 78: google.container.v1.AddonsConfig.gcs_fuse_csi_driver_config:type_name -> google.container.v1.GcsFuseCsiDriverConfig
+	130, // 79: google.container.v1.AddonsConfig.stateful_ha_config:type_name -> google.container.v1.StatefulHAConfig
+	122, // 80: google.container.v1.AddonsConfig.parallelstore_csi_driver_config:type_name -> google.container.v1.ParallelstoreCsiDriverConfig
+	128, // 81: google.container.v1.AddonsConfig.ray_operator_config:type_name -> google.container.v1.RayOperatorConfig
+	123, // 82: google.container.v1.AddonsConfig.high_scale_checkpointing_config:type_name -> google.container.v1.HighScaleCheckpointingConfig
+	124, // 83: google.container.v1.AddonsConfig.lustre_csi_driver_config:type_name -> google.container.v1.LustreCsiDriverConfig
+	292, // 84: google.container.v1.AddonsConfig.pod_snapshot_config:type_name -> google.container.v1.PodSnapshotConfig
+	125, // 85: google.container.v1.AddonsConfig.slurm_operator_config:type_name -> google.container.v1.SlurmOperatorConfig
+	127, // 86: google.container.v1.AddonsConfig.slice_controller_config:type_name -> google.container.v1.SliceControllerConfig
+	126, // 87: google.container.v1.AddonsConfig.node_readiness_config:type_name -> google.container.v1.NodeReadinessConfig
+	114, // 88: google.container.v1.PrivateClusterConfig.master_global_access_config:type_name -> google.container.v1.PrivateClusterMasterGlobalAccessConfig
+	22,  // 89: google.container.v1.CloudRunConfig.load_balancer_type:type_name -> google.container.v1.CloudRunConfig.LoadBalancerType
+	261, // 90: google.container.v1.RayOperatorConfig.ray_cluster_logging_config:type_name -> google.container.v1.RayClusterLoggingConfig
+	264, // 91: google.container.v1.RayOperatorConfig.ray_cluster_monitoring_config:type_name -> google.container.v1.RayClusterMonitoringConfig
+	321, // 92: google.container.v1.MasterAuthorizedNetworksConfig.cidr_blocks:type_name -> google.container.v1.MasterAuthorizedNetworksConfig.CidrBlock
+	23,  // 93: google.container.v1.NetworkPolicy.provider:type_name -> google.container.v1.NetworkPolicy.Provider
+	24,  // 94: google.container.v1.BinaryAuthorization.evaluation_mode:type_name -> google.container.v1.BinaryAuthorization.EvaluationMode
+	4,   // 95: google.container.v1.IPAllocationPolicy.stack_type:type_name -> google.container.v1.StackType
+	5,   // 96: google.container.v1.IPAllocationPolicy.ipv6_access_type:type_name -> google.container.v1.IPv6AccessType
+	135, // 97: google.container.v1.IPAllocationPolicy.pod_cidr_overprovision_config:type_name -> google.container.v1.PodCIDROverprovisionConfig
+	150, // 98: google.container.v1.IPAllocationPolicy.additional_pod_ranges_config:type_name -> google.container.v1.AdditionalPodRangesConfig
+	151, // 99: google.container.v1.IPAllocationPolicy.additional_ip_ranges_configs:type_name -> google.container.v1.AdditionalIPRangesConfig
+	153, // 100: google.container.v1.IPAllocationPolicy.auto_ipam_config:type_name -> google.container.v1.AutoIpamConfig
+	288, // 101: google.container.v1.IPAllocationPolicy.network_tier_config:type_name -> google.container.v1.NetworkTierConfig
+	89,  // 102: google.container.v1.Cluster.node_config:type_name -> google.container.v1.NodeConfig
+	106, // 103: google.container.v1.Cluster.master_auth:type_name -> google.container.v1.MasterAuth
+	108, // 104: google.container.v1.Cluster.addons_config:type_name -> google.container.v1.AddonsConfig
+	183, // 105: google.container.v1.Cluster.node_pools:type_name -> google.container.v1.NodePool
+	322, // 106: google.container.v1.Cluster.resource_labels:type_name -> google.container.v1.Cluster.ResourceLabelsEntry
+	132, // 107: google.container.v1.Cluster.legacy_abac:type_name -> google.container.v1.LegacyAbac
+	133, // 108: google.container.v1.Cluster.network_policy:type_name -> google.container.v1.NetworkPolicy
+	136, // 109: google.container.v1.Cluster.ip_allocation_policy:type_name -> google.container.v1.IPAllocationPolicy
+	131, // 110: google.container.v1.Cluster.master_authorized_networks_config:type_name -> google.container.v1.MasterAuthorizedNetworksConfig
+	187, // 111: google.container.v1.Cluster.maintenance_policy:type_name -> google.container.v1.MaintenancePolicy
+	134, // 112: google.container.v1.Cluster.binary_authorization:type_name -> google.container.v1.BinaryAuthorization
+	200, // 113: google.container.v1.Cluster.autoscaling:type_name -> google.container.v1.ClusterAutoscaling
+	216, // 114: google.container.v1.Cluster.network_config:type_name -> google.container.v1.NetworkConfig
+	232, // 115: google.container.v1.Cluster.default_max_pods_constraint:type_name -> google.container.v1.MaxPodsConstraint
+	241, // 116: google.container.v1.Cluster.resource_usage_export_config:type_name -> google.container.v1.ResourceUsageExportConfig
+	116, // 117: google.container.v1.Cluster.authenticator_groups_config:type_name -> google.container.v1.AuthenticatorGroupsConfig
+	115, // 118: google.container.v1.Cluster.private_cluster_config:type_name -> google.container.v1.PrivateClusterConfig
+	236, // 119: google.container.v1.Cluster.database_encryption:type_name -> google.container.v1.DatabaseEncryption
+	242, // 120: google.container.v1.Cluster.vertical_pod_autoscaling:type_name -> google.container.v1.VerticalPodAutoscaling
+	244, // 121: google.container.v1.Cluster.shielded_nodes:type_name -> google.container.v1.ShieldedNodes
+	227, // 122: google.container.v1.Cluster.release_channel:type_name -> google.container.v1.ReleaseChannel
+	233, // 123: google.container.v1.Cluster.workload_identity_config:type_name -> google.container.v1.WorkloadIdentityConfig
+	235, // 124: google.container.v1.Cluster.mesh_certificates:type_name -> google.container.v1.MeshCertificates
+	228, // 125: google.container.v1.Cluster.cost_management_config:type_name -> google.container.v1.CostManagementConfig
+	248, // 126: google.container.v1.Cluster.notification_config:type_name -> google.container.v1.NotificationConfig
+	249, // 127: google.container.v1.Cluster.confidential_nodes:type_name -> google.container.v1.ConfidentialNodes
+	234, // 128: google.container.v1.Cluster.identity_service_config:type_name -> google.container.v1.IdentityServiceConfig
+	25,  // 129: google.container.v1.Cluster.status:type_name -> google.container.v1.Cluster.Status
+	215, // 130: google.container.v1.Cluster.conditions:type_name -> google.container.v1.StatusCondition
+	255, // 131: google.container.v1.Cluster.autopilot:type_name -> google.container.v1.Autopilot
+	147, // 132: google.container.v1.Cluster.node_pool_defaults:type_name -> google.container.v1.NodePoolDefaults
+	259, // 133: google.container.v1.Cluster.logging_config:type_name -> google.container.v1.LoggingConfig
+	262, // 134: google.container.v1.Cluster.monitoring_config:type_name -> google.container.v1.MonitoringConfig
+	146, // 135: google.container.v1.Cluster.node_pool_auto_config:type_name -> google.container.v1.NodePoolAutoConfig
+	270, // 136: google.container.v1.Cluster.pod_autoscaling:type_name -> google.container.v1.PodAutoscaling
+	271, // 137: google.container.v1.Cluster.fleet:type_name -> google.container.v1.Fleet
+	145, // 138: google.container.v1.Cluster.security_posture_config:type_name -> google.container.v1.SecurityPostureConfig
+	272, // 139: google.container.v1.Cluster.control_plane_endpoints_config:type_name -> google.container.v1.ControlPlaneEndpointsConfig
+	144, // 140: google.container.v1.Cluster.enable_k8s_beta_apis:type_name -> google.container.v1.K8sBetaAPIConfig
+	276, // 141: google.container.v1.Cluster.enterprise_config:type_name -> google.container.v1.EnterpriseConfig
+	277, // 142: google.container.v1.Cluster.secret_manager_config:type_name -> google.container.v1.SecretManagerConfig
+	143, // 143: google.container.v1.Cluster.compliance_posture_config:type_name -> google.container.v1.CompliancePostureConfig
+	141, // 144: google.container.v1.Cluster.user_managed_keys_config:type_name -> google.container.v1.UserManagedKeysConfig
+	140, // 145: google.container.v1.Cluster.rbac_binding_config:type_name -> google.container.v1.RBACBindingConfig
+	287, // 146: google.container.v1.Cluster.gke_auto_upgrade_config:type_name -> google.container.v1.GkeAutoUpgradeConfig
+	142, // 147: google.container.v1.Cluster.anonymous_authentication_config:type_name -> google.container.v1.AnonymousAuthenticationConfig
+	286, // 148: google.container.v1.Cluster.schedule_upgrade_config:type_name -> google.container.v1.ScheduleUpgradeConfig
+	289, // 149: google.container.v1.Cluster.secret_sync_config:type_name -> google.container.v1.SecretSyncConfig
+	290, // 150: google.container.v1.Cluster.managed_opentelemetry_config:type_name -> google.container.v1.ManagedOpenTelemetryConfig
+	139, // 151: google.container.v1.Cluster.control_plane_egress:type_name -> google.container.v1.ControlPlaneEgress
+	291, // 152: google.container.v1.Cluster.managed_machine_learning_diagnostics_config:type_name -> google.container.v1.ManagedMachineLearningDiagnosticsConfig
+	138, // 153: google.container.v1.Cluster.node_creation_config:type_name -> google.container.v1.NodeCreationConfig
+	26,  // 154: google.container.v1.NodeCreationConfig.node_creation_mode:type_name -> google.container.v1.NodeCreationConfig.Mode
+	27,  // 155: google.container.v1.ControlPlaneEgress.mode:type_name -> google.container.v1.ControlPlaneEgress.Mode
+	28,  // 156: google.container.v1.AnonymousAuthenticationConfig.mode:type_name -> google.container.v1.AnonymousAuthenticationConfig.Mode
+	29,  // 157: google.container.v1.CompliancePostureConfig.mode:type_name -> google.container.v1.CompliancePostureConfig.Mode
+	323, // 158: google.container.v1.CompliancePostureConfig.compliance_standards:type_name -> google.container.v1.CompliancePostureConfig.ComplianceStandard
+	30,  // 159: google.container.v1.SecurityPostureConfig.mode:type_name -> google.container.v1.SecurityPostureConfig.Mode
+	31,  // 160: google.container.v1.SecurityPostureConfig.vulnerability_mode:type_name -> google.container.v1.SecurityPostureConfig.VulnerabilityMode
+	105, // 161: google.container.v1.NodePoolAutoConfig.network_tags:type_name -> google.container.v1.NetworkTags
+	275, // 162: google.container.v1.NodePoolAutoConfig.resource_manager_tags:type_name -> google.container.v1.ResourceManagerTags
+	83,  // 163: google.container.v1.NodePoolAutoConfig.node_kubelet_config:type_name -> google.container.v1.NodeKubeletConfig
+	81,  // 164: google.container.v1.NodePoolAutoConfig.linux_node_config:type_name -> google.container.v1.LinuxNodeConfig
+	148, // 165: google.container.v1.NodePoolDefaults.node_config_defaults:type_name -> google.container.v1.NodeConfigDefaults
+	97,  // 166: google.container.v1.NodeConfigDefaults.gcfs_config:type_name -> google.container.v1.GcfsConfig
+	265, // 167: google.container.v1.NodeConfigDefaults.logging_config:type_name -> google.container.v1.NodePoolLoggingConfig
+	100, // 168: google.container.v1.NodeConfigDefaults.containerd_config:type_name -> google.container.v1.ContainerdConfig
+	83,  // 169: google.container.v1.NodeConfigDefaults.node_kubelet_config:type_name -> google.container.v1.NodeKubeletConfig
+	108, // 170: google.container.v1.ClusterUpdate.desired_addons_config:type_name -> google.container.v1.AddonsConfig
+	236, // 171: google.container.v1.ClusterUpdate.desired_database_encryption:type_name -> google.container.v1.DatabaseEncryption
+	233, // 172: google.container.v1.ClusterUpdate.desired_workload_identity_config:type_name -> google.container.v1.WorkloadIdentityConfig
+	235, // 173: google.container.v1.ClusterUpdate.desired_mesh_certificates:type_name -> google.container.v1.MeshCertificates
+	244, // 174: google.container.v1.ClusterUpdate.desired_shielded_nodes:type_name -> google.container.v1.ShieldedNodes
+	228, // 175: google.container.v1.ClusterUpdate.desired_cost_management_config:type_name -> google.container.v1.CostManagementConfig
+	231, // 176: google.container.v1.ClusterUpdate.desired_dns_config:type_name -> google.container.v1.DNSConfig
+	204, // 177: google.container.v1.ClusterUpdate.desired_node_pool_autoscaling:type_name -> google.container.v1.NodePoolAutoscaling
+	131, // 178: google.container.v1.ClusterUpdate.desired_master_authorized_networks_config:type_name -> google.container.v1.MasterAuthorizedNetworksConfig
+	200, // 179: google.container.v1.ClusterUpdate.desired_cluster_autoscaling:type_name -> google.container.v1.ClusterAutoscaling
+	134, // 180: google.container.v1.ClusterUpdate.desired_binary_authorization:type_name -> google.container.v1.BinaryAuthorization
+	241, // 181: google.container.v1.ClusterUpdate.desired_resource_usage_export_config:type_name -> google.container.v1.ResourceUsageExportConfig
+	242, // 182: google.container.v1.ClusterUpdate.desired_vertical_pod_autoscaling:type_name -> google.container.v1.VerticalPodAutoscaling
+	115, // 183: google.container.v1.ClusterUpdate.desired_private_cluster_config:type_name -> google.container.v1.PrivateClusterConfig
+	229, // 184: google.container.v1.ClusterUpdate.desired_intra_node_visibility_config:type_name -> google.container.v1.IntraNodeVisibilityConfig
+	243, // 185: google.container.v1.ClusterUpdate.desired_default_snat_status:type_name -> google.container.v1.DefaultSnatStatus
+	227, // 186: google.container.v1.ClusterUpdate.desired_release_channel:type_name -> google.container.v1.ReleaseChannel
+	230, // 187: google.container.v1.ClusterUpdate.desired_l4ilb_subsetting_config:type_name -> google.container.v1.ILBSubsettingConfig
+	2,   // 188: google.container.v1.ClusterUpdate.desired_datapath_provider:type_name -> google.container.v1.DatapathProvider
+	0,   // 189: google.container.v1.ClusterUpdate.desired_private_ipv6_google_access:type_name -> google.container.v1.PrivateIPv6GoogleAccess
+	248, // 190: google.container.v1.ClusterUpdate.desired_notification_config:type_name -> google.container.v1.NotificationConfig
+	116, // 191: google.container.v1.ClusterUpdate.desired_authenticator_groups_config:type_name -> google.container.v1.AuthenticatorGroupsConfig
+	259, // 192: google.container.v1.ClusterUpdate.desired_logging_config:type_name -> google.container.v1.LoggingConfig
+	262, // 193: google.container.v1.ClusterUpdate.desired_monitoring_config:type_name -> google.container.v1.MonitoringConfig
+	234, // 194: google.container.v1.ClusterUpdate.desired_identity_service_config:type_name -> google.container.v1.IdentityServiceConfig
+	218, // 195: google.container.v1.ClusterUpdate.desired_service_external_ips_config:type_name -> google.container.v1.ServiceExternalIPsConfig
+	272, // 196: google.container.v1.ClusterUpdate.desired_control_plane_endpoints_config:type_name -> google.container.v1.ControlPlaneEndpointsConfig
+	97,  // 197: google.container.v1.ClusterUpdate.desired_gcfs_config:type_name -> google.container.v1.GcfsConfig
+	105, // 198: google.container.v1.ClusterUpdate.desired_node_pool_auto_config_network_tags:type_name -> google.container.v1.NetworkTags
+	270, // 199: google.container.v1.ClusterUpdate.desired_pod_autoscaling:type_name -> google.container.v1.PodAutoscaling
+	217, // 200: google.container.v1.ClusterUpdate.desired_gateway_api_config:type_name -> google.container.v1.GatewayAPIConfig
+	265, // 201: google.container.v1.ClusterUpdate.desired_node_pool_logging_config:type_name -> google.container.v1.NodePoolLoggingConfig
+	271, // 202: google.container.v1.ClusterUpdate.desired_fleet:type_name -> google.container.v1.Fleet
+	4,   // 203: google.container.v1.ClusterUpdate.desired_stack_type:type_name -> google.container.v1.StackType
+	150, // 204: google.container.v1.ClusterUpdate.additional_pod_ranges_config:type_name -> google.container.v1.AdditionalPodRangesConfig
+	150, // 205: google.container.v1.ClusterUpdate.removed_additional_pod_ranges_config:type_name -> google.container.v1.AdditionalPodRangesConfig
+	144, // 206: google.container.v1.ClusterUpdate.enable_k8s_beta_apis:type_name -> google.container.v1.K8sBetaAPIConfig
+	145, // 207: google.container.v1.ClusterUpdate.desired_security_posture_config:type_name -> google.container.v1.SecurityPostureConfig
+	338, // 208: google.container.v1.ClusterUpdate.desired_network_performance_config:type_name -> google.container.v1.NetworkConfig.ClusterNetworkPerformanceConfig
+	258, // 209: google.container.v1.ClusterUpdate.desired_autopilot_workload_policy_config:type_name -> google.container.v1.WorkloadPolicyConfig
+	144, // 210: google.container.v1.ClusterUpdate.desired_k8s_beta_apis:type_name -> google.container.v1.K8sBetaAPIConfig
+	100, // 211: google.container.v1.ClusterUpdate.desired_containerd_config:type_name -> google.container.v1.ContainerdConfig
+	275, // 212: google.container.v1.ClusterUpdate.desired_node_pool_auto_config_resource_manager_tags:type_name -> google.container.v1.ResourceManagerTags
+	6,   // 213: google.container.v1.ClusterUpdate.desired_in_transit_encryption_config:type_name -> google.container.v1.InTransitEncryptionConfig
+	277, // 214: google.container.v1.ClusterUpdate.desired_secret_manager_config:type_name -> google.container.v1.SecretManagerConfig
+	143, // 215: google.container.v1.ClusterUpdate.desired_compliance_posture_config:type_name -> google.container.v1.CompliancePostureConfig
+	83,  // 216: google.container.v1.ClusterUpdate.desired_node_kubelet_config:type_name -> google.container.v1.NodeKubeletConfig
+	83,  // 217: google.container.v1.ClusterUpdate.desired_node_pool_auto_config_kubelet_config:type_name -> google.container.v1.NodeKubeletConfig
+	141, // 218: google.container.v1.ClusterUpdate.user_managed_keys_config:type_name -> google.container.v1.UserManagedKeysConfig
+	140, // 219: google.container.v1.ClusterUpdate.desired_rbac_binding_config:type_name -> google.container.v1.RBACBindingConfig
+	152, // 220: google.container.v1.ClusterUpdate.desired_additional_ip_ranges_config:type_name -> google.container.v1.DesiredAdditionalIPRangesConfig
+	155, // 221: google.container.v1.ClusterUpdate.desired_enterprise_config:type_name -> google.container.v1.DesiredEnterpriseConfig
+	153, // 222: google.container.v1.ClusterUpdate.desired_auto_ipam_config:type_name -> google.container.v1.AutoIpamConfig
+	81,  // 223: google.container.v1.ClusterUpdate.desired_node_pool_auto_config_linux_node_config:type_name -> google.container.v1.LinuxNodeConfig
+	141, // 224: google.container.v1.ClusterUpdate.desired_user_managed_keys_config:type_name -> google.container.v1.UserManagedKeysConfig
+	142, // 225: google.container.v1.ClusterUpdate.desired_anonymous_authentication_config:type_name -> google.container.v1.AnonymousAuthenticationConfig
+	287, // 226: google.container.v1.ClusterUpdate.gke_auto_upgrade_config:type_name -> google.container.v1.GkeAutoUpgradeConfig
+	288, // 227: google.container.v1.ClusterUpdate.desired_network_tier_config:type_name -> google.container.v1.NetworkTierConfig
+	289, // 228: google.container.v1.ClusterUpdate.desired_secret_sync_config:type_name -> google.container.v1.SecretSyncConfig
+	257, // 229: google.container.v1.ClusterUpdate.desired_privileged_admission_config:type_name -> google.container.v1.PrivilegedAdmissionConfig
+	139, // 230: google.container.v1.ClusterUpdate.desired_control_plane_egress:type_name -> google.container.v1.ControlPlaneEgress
+	290, // 231: google.container.v1.ClusterUpdate.desired_managed_opentelemetry_config:type_name -> google.container.v1.ManagedOpenTelemetryConfig
+	256, // 232: google.container.v1.ClusterUpdate.desired_autopilot_cluster_policy_config:type_name -> google.container.v1.ClusterPolicyConfig
+	291, // 233: google.container.v1.ClusterUpdate.desired_managed_machine_learning_diagnostics_config:type_name -> google.container.v1.ManagedMachineLearningDiagnosticsConfig
+	138, // 234: google.container.v1.ClusterUpdate.desired_node_creation_config:type_name -> google.container.v1.NodeCreationConfig
+	154, // 235: google.container.v1.AdditionalPodRangesConfig.pod_range_info:type_name -> google.container.v1.RangeInfo
+	32,  // 236: google.container.v1.AdditionalIPRangesConfig.status:type_name -> google.container.v1.AdditionalIPRangesConfig.Status
+	151, // 237: google.container.v1.DesiredAdditionalIPRangesConfig.additional_ip_ranges_configs:type_name -> google.container.v1.AdditionalIPRangesConfig
+	70,  // 238: google.container.v1.DesiredEnterpriseConfig.desired_tier:type_name -> google.container.v1.EnterpriseConfig.ClusterTier
+	34,  // 239: google.container.v1.Operation.operation_type:type_name -> google.container.v1.Operation.Type
+	33,  // 240: google.container.v1.Operation.status:type_name -> google.container.v1.Operation.Status
+	157, // 241: google.container.v1.Operation.progress:type_name -> google.container.v1.OperationProgress
+	215, // 242: google.container.v1.Operation.cluster_conditions:type_name -> google.container.v1.StatusCondition
+	215, // 243: google.container.v1.Operation.nodepool_conditions:type_name -> google.container.v1.StatusCondition
+	352, // 244: google.container.v1.Operation.error:type_name -> google.rpc.Status
+	33,  // 245: google.container.v1.OperationProgress.status:type_name -> google.container.v1.Operation.Status
+	324, // 246: google.container.v1.OperationProgress.metrics:type_name -> google.container.v1.OperationProgress.Metric
+	157, // 247: google.container.v1.OperationProgress.stages:type_name -> google.container.v1.OperationProgress
+	137, // 248: google.container.v1.CreateClusterRequest.cluster:type_name -> google.container.v1.Cluster
+	149, // 249: google.container.v1.UpdateClusterRequest.update:type_name -> google.container.v1.ClusterUpdate
+	212, // 250: google.container.v1.UpdateNodePoolRequest.workload_metadata_config:type_name -> google.container.v1.WorkloadMetadataConfig
+	328, // 251: google.container.v1.UpdateNodePoolRequest.upgrade_settings:type_name -> google.container.v1.NodePool.UpgradeSettings
+	105, // 252: google.container.v1.UpdateNodePoolRequest.tags:type_name -> google.container.v1.NetworkTags
+	102, // 253: google.container.v1.UpdateNodePoolRequest.taints:type_name -> google.container.v1.NodeTaints
+	103, // 254: google.container.v1.UpdateNodePoolRequest.labels:type_name -> google.container.v1.NodeLabels
+	81,  // 255: google.container.v1.UpdateNodePoolRequest.linux_node_config:type_name -> google.container.v1.LinuxNodeConfig
+	83,  // 256: google.container.v1.UpdateNodePoolRequest.kubelet_config:type_name -> google.container.v1.NodeKubeletConfig
+	92,  // 257: google.container.v1.UpdateNodePoolRequest.node_network_config:type_name -> google.container.v1.NodeNetworkConfig
+	97,  // 258: google.container.v1.UpdateNodePoolRequest.gcfs_config:type_name -> google.container.v1.GcfsConfig
+	249, // 259: google.container.v1.UpdateNodePoolRequest.confidential_nodes:type_name -> google.container.v1.ConfidentialNodes
+	245, // 260: google.container.v1.UpdateNodePoolRequest.gvnic:type_name -> google.container.v1.VirtualNIC
+	246, // 261: google.container.v1.UpdateNodePoolRequest.fast_socket:type_name -> google.container.v1.FastSocket
+	265, // 262: google.container.v1.UpdateNodePoolRequest.logging_config:type_name -> google.container.v1.NodePoolLoggingConfig
+	104, // 263: google.container.v1.UpdateNodePoolRequest.resource_labels:type_name -> google.container.v1.ResourceLabels
+	82,  // 264: google.container.v1.UpdateNodePoolRequest.windows_node_config:type_name -> google.container.v1.WindowsNodeConfig
+	209, // 265: google.container.v1.UpdateNodePoolRequest.accelerators:type_name -> google.container.v1.AcceleratorConfig
+	275, // 266: google.container.v1.UpdateNodePoolRequest.resource_manager_tags:type_name -> google.container.v1.ResourceManagerTags
+	100, // 267: google.container.v1.UpdateNodePoolRequest.containerd_config:type_name -> google.container.v1.ContainerdConfig
+	331, // 268: google.container.v1.UpdateNodePoolRequest.queued_provisioning:type_name -> google.container.v1.NodePool.QueuedProvisioning
+	351, // 269: google.container.v1.UpdateNodePoolRequest.max_run_duration:type_name -> google.protobuf.Duration
+	278, // 270: google.container.v1.UpdateNodePoolRequest.boot_disk:type_name -> google.container.v1.BootDisk
+	332, // 271: google.container.v1.UpdateNodePoolRequest.node_drain_config:type_name -> google.container.v1.NodePool.NodeDrainConfig
+	351, // 272: google.container.v1.UpdateNodePoolRequest.consolidation_delay:type_name -> google.protobuf.Duration
+	90,  // 273: google.container.v1.UpdateNodePoolRequest.taint_config:type_name -> google.container.v1.TaintConfig
+	204, // 274: google.container.v1.SetNodePoolAutoscalingRequest.autoscaling:type_name -> google.container.v1.NodePoolAutoscaling
+	108, // 275: google.container.v1.SetAddonsConfigRequest.addons_config:type_name -> google.container.v1.AddonsConfig
+	35,  // 276: google.container.v1.SetMasterAuthRequest.action:type_name -> google.container.v1.SetMasterAuthRequest.Action
+	106, // 277: google.container.v1.SetMasterAuthRequest.update:type_name -> google.container.v1.MasterAuth
+	137, // 278: google.container.v1.ListClustersResponse.clusters:type_name -> google.container.v1.Cluster
+	156, // 279: google.container.v1.ListOperationsResponse.operations:type_name -> google.container.v1.Operation
+	325, // 280: google.container.v1.ServerConfig.channels:type_name -> google.container.v1.ServerConfig.ReleaseChannelConfig
+	183, // 281: google.container.v1.CreateNodePoolRequest.node_pool:type_name -> google.container.v1.NodePool
+	326, // 282: google.container.v1.BlueGreenSettings.standard_rollout_policy:type_name -> google.container.v1.BlueGreenSettings.StandardRolloutPolicy
+	327, // 283: google.container.v1.BlueGreenSettings.autoscaled_rollout_policy:type_name -> google.container.v1.BlueGreenSettings.AutoscaledRolloutPolicy
+	351, // 284: google.container.v1.BlueGreenSettings.node_pool_soak_duration:type_name -> google.protobuf.Duration
+	89,  // 285: google.container.v1.NodePool.config:type_name -> google.container.v1.NodeConfig
+	92,  // 286: google.container.v1.NodePool.network_config:type_name -> google.container.v1.NodeNetworkConfig
+	36,  // 287: google.container.v1.NodePool.status:type_name -> google.container.v1.NodePool.Status
+	204, // 288: google.container.v1.NodePool.autoscaling:type_name -> google.container.v1.NodePoolAutoscaling
+	184, // 289: google.container.v1.NodePool.management:type_name -> google.container.v1.NodeManagement
+	232, // 290: google.container.v1.NodePool.max_pods_constraint:type_name -> google.container.v1.MaxPodsConstraint
+	215, // 291: google.container.v1.NodePool.conditions:type_name -> google.container.v1.StatusCondition
+	328, // 292: google.container.v1.NodePool.upgrade_settings:type_name -> google.container.v1.NodePool.UpgradeSettings
+	330, // 293: google.container.v1.NodePool.placement_policy:type_name -> google.container.v1.NodePool.PlacementPolicy
+	329, // 294: google.container.v1.NodePool.update_info:type_name -> google.container.v1.NodePool.UpdateInfo
+	331, // 295: google.container.v1.NodePool.queued_provisioning:type_name -> google.container.v1.NodePool.QueuedProvisioning
+	185, // 296: google.container.v1.NodePool.best_effort_provisioning:type_name -> google.container.v1.BestEffortProvisioning
+	332, // 297: google.container.v1.NodePool.node_drain_config:type_name -> google.container.v1.NodePool.NodeDrainConfig
+	334, // 298: google.container.v1.NodePool.maintenance_policy:type_name -> google.container.v1.NodePool.NodePoolMaintenancePolicy
+	186, // 299: google.container.v1.NodeManagement.upgrade_options:type_name -> google.container.v1.AutoUpgradeOptions
+	189, // 300: google.container.v1.MaintenancePolicy.window:type_name -> google.container.v1.MaintenanceWindow
+	188, // 301: google.container.v1.MaintenancePolicy.disruption_budget:type_name -> google.container.v1.DisruptionBudget
+	351, // 302: google.container.v1.DisruptionBudget.minor_version_disruption_interval:type_name -> google.protobuf.Duration
+	351, // 303: google.container.v1.DisruptionBudget.patch_version_disruption_interval:type_name -> google.protobuf.Duration
+	353, // 304: google.container.v1.DisruptionBudget.last_minor_version_disruption_time:type_name -> google.protobuf.Timestamp
+	353, // 305: google.container.v1.DisruptionBudget.last_disruption_time:type_name -> google.protobuf.Timestamp
+	194, // 306: google.container.v1.MaintenanceWindow.daily_maintenance_window:type_name -> google.container.v1.DailyMaintenanceWindow
+	192, // 307: google.container.v1.MaintenanceWindow.recurring_window:type_name -> google.container.v1.RecurringTimeWindow
+	193, // 308: google.container.v1.MaintenanceWindow.recurring_maintenance_window:type_name -> google.container.v1.RecurringMaintenanceWindow
+	336, // 309: google.container.v1.MaintenanceWindow.maintenance_exclusions:type_name -> google.container.v1.MaintenanceWindow.MaintenanceExclusionsEntry
+	191, // 310: google.container.v1.TimeWindow.maintenance_exclusion_options:type_name -> google.container.v1.MaintenanceExclusionOptions
+	353, // 311: google.container.v1.TimeWindow.start_time:type_name -> google.protobuf.Timestamp
+	353, // 312: google.container.v1.TimeWindow.end_time:type_name -> google.protobuf.Timestamp
+	39,  // 313: google.container.v1.MaintenanceExclusionOptions.scope:type_name -> google.container.v1.MaintenanceExclusionOptions.Scope
+	40,  // 314: google.container.v1.MaintenanceExclusionOptions.end_time_behavior:type_name -> google.container.v1.MaintenanceExclusionOptions.EndTimeBehavior
+	190, // 315: google.container.v1.RecurringTimeWindow.window:type_name -> google.container.v1.TimeWindow
+	354, // 316: google.container.v1.RecurringMaintenanceWindow.delay_until:type_name -> google.type.Date
+	355, // 317: google.container.v1.RecurringMaintenanceWindow.window_start_time:type_name -> google.type.TimeOfDay
+	351, // 318: google.container.v1.RecurringMaintenanceWindow.window_duration:type_name -> google.protobuf.Duration
+	184, // 319: google.container.v1.SetNodePoolManagementRequest.management:type_name -> google.container.v1.NodeManagement
+	183, // 320: google.container.v1.ListNodePoolsResponse.node_pools:type_name -> google.container.v1.NodePool
+	202, // 321: google.container.v1.ClusterAutoscaling.resource_limits:type_name -> google.container.v1.ResourceLimit
+	41,  // 322: google.container.v1.ClusterAutoscaling.autoscaling_profile:type_name -> google.container.v1.ClusterAutoscaling.AutoscalingProfile
+	201, // 323: google.container.v1.ClusterAutoscaling.autoprovisioning_node_pool_defaults:type_name -> google.container.v1.AutoprovisioningNodePoolDefaults
+	203, // 324: google.container.v1.ClusterAutoscaling.default_compute_class_config:type_name -> google.container.v1.DefaultComputeClassConfig
+	42,  // 325: google.container.v1.ClusterAutoscaling.autopilot_general_profile:type_name -> google.container.v1.ClusterAutoscaling.AutopilotGeneralProfile
+	328, // 326: google.container.v1.AutoprovisioningNodePoolDefaults.upgrade_settings:type_name -> google.container.v1.NodePool.UpgradeSettings
+	184, // 327: google.container.v1.AutoprovisioningNodePoolDefaults.management:type_name -> google.container.v1.NodeManagement
+	95,  // 328: google.container.v1.AutoprovisioningNodePoolDefaults.shielded_instance_config:type_name -> google.container.v1.ShieldedInstanceConfig
+	43,  // 329: google.container.v1.NodePoolAutoscaling.location_policy:type_name -> google.container.v1.NodePoolAutoscaling.LocationPolicy
+	337, // 330: google.container.v1.SetLabelsRequest.resource_labels:type_name -> google.container.v1.SetLabelsRequest.ResourceLabelsEntry
+	210, // 331: google.container.v1.AcceleratorConfig.gpu_sharing_config:type_name -> google.container.v1.GPUSharingConfig
+	211, // 332: google.container.v1.AcceleratorConfig.gpu_driver_installation_config:type_name -> google.container.v1.GPUDriverInstallationConfig
+	44,  // 333: google.container.v1.GPUSharingConfig.gpu_sharing_strategy:type_name -> google.container.v1.GPUSharingConfig.GPUSharingStrategy
+	45,  // 334: google.container.v1.GPUDriverInstallationConfig.gpu_driver_version:type_name -> google.container.v1.GPUDriverInstallationConfig.GPUDriverVersion
+	46,  // 335: google.container.v1.WorkloadMetadataConfig.mode:type_name -> google.container.v1.WorkloadMetadataConfig.Mode
+	133, // 336: google.container.v1.SetNetworkPolicyRequest.network_policy:type_name -> google.container.v1.NetworkPolicy
+	187, // 337: google.container.v1.SetMaintenancePolicyRequest.maintenance_policy:type_name -> google.container.v1.MaintenancePolicy
+	47,  // 338: google.container.v1.StatusCondition.code:type_name -> google.container.v1.StatusCondition.Code
+	356, // 339: google.container.v1.StatusCondition.canonical_code:type_name -> google.rpc.Code
+	243, // 340: google.container.v1.NetworkConfig.default_snat_status:type_name -> google.container.v1.DefaultSnatStatus
+	2,   // 341: google.container.v1.NetworkConfig.datapath_provider:type_name -> google.container.v1.DatapathProvider
+	0,   // 342: google.container.v1.NetworkConfig.private_ipv6_google_access:type_name -> google.container.v1.PrivateIPv6GoogleAccess
+	231, // 343: google.container.v1.NetworkConfig.dns_config:type_name -> google.container.v1.DNSConfig
+	218, // 344: google.container.v1.NetworkConfig.service_external_ips_config:type_name -> google.container.v1.ServiceExternalIPsConfig
+	217, // 345: google.container.v1.NetworkConfig.gateway_api_config:type_name -> google.container.v1.GatewayAPIConfig
+	338, // 346: google.container.v1.NetworkConfig.network_performance_config:type_name -> google.container.v1.NetworkConfig.ClusterNetworkPerformanceConfig
+	6,   // 347: google.container.v1.NetworkConfig.in_transit_encryption_config:type_name -> google.container.v1.InTransitEncryptionConfig
+	49,  // 348: google.container.v1.GatewayAPIConfig.channel:type_name -> google.container.v1.GatewayAPIConfig.Channel
+	222, // 349: google.container.v1.GetJSONWebKeysResponse.keys:type_name -> google.container.v1.Jwk
+	353, // 350: google.container.v1.AutopilotCompatibilityIssue.last_observation:type_name -> google.protobuf.Timestamp
+	50,  // 351: google.container.v1.AutopilotCompatibilityIssue.incompatibility_type:type_name -> google.container.v1.AutopilotCompatibilityIssue.IssueType
+	225, // 352: google.container.v1.CheckAutopilotCompatibilityResponse.issues:type_name -> google.container.v1.AutopilotCompatibilityIssue
+	51,  // 353: google.container.v1.ReleaseChannel.channel:type_name -> google.container.v1.ReleaseChannel.Channel
+	52,  // 354: google.container.v1.DNSConfig.cluster_dns:type_name -> google.container.v1.DNSConfig.Provider
+	53,  // 355: google.container.v1.DNSConfig.cluster_dns_scope:type_name -> google.container.v1.DNSConfig.DNSScope
+	350, // 356: google.container.v1.MeshCertificates.enable_certificates:type_name -> google.protobuf.BoolValue
+	54,  // 357: google.container.v1.DatabaseEncryption.state:type_name -> google.container.v1.DatabaseEncryption.State
+	55,  // 358: google.container.v1.DatabaseEncryption.current_state:type_name -> google.container.v1.DatabaseEncryption.CurrentState
+	339, // 359: google.container.v1.DatabaseEncryption.last_operation_errors:type_name -> google.container.v1.DatabaseEncryption.OperationError
+	240, // 360: google.container.v1.ListUsableSubnetworksResponse.subnetworks:type_name -> google.container.v1.UsableSubnetwork
+	56,  // 361: google.container.v1.UsableSubnetworkSecondaryRange.status:type_name -> google.container.v1.UsableSubnetworkSecondaryRange.Status
+	239, // 362: google.container.v1.UsableSubnetwork.secondary_ip_ranges:type_name -> google.container.v1.UsableSubnetworkSecondaryRange
+	340, // 363: google.container.v1.ResourceUsageExportConfig.bigquery_destination:type_name -> google.container.v1.ResourceUsageExportConfig.BigQueryDestination
+	341, // 364: google.container.v1.ResourceUsageExportConfig.consumption_metering_config:type_name -> google.container.v1.ResourceUsageExportConfig.ConsumptionMeteringConfig
+	57,  // 365: google.container.v1.GPUDirectConfig.gpu_direct_strategy:type_name -> google.container.v1.GPUDirectConfig.GPUDirectStrategy
+	342, // 366: google.container.v1.NotificationConfig.pubsub:type_name -> google.container.v1.NotificationConfig.PubSub
+	59,  // 367: google.container.v1.ConfidentialNodes.confidential_instance_type:type_name -> google.container.v1.ConfidentialNodes.ConfidentialInstanceType
+	1,   // 368: google.container.v1.UpgradeEvent.resource_type:type_name -> google.container.v1.UpgradeResourceType
+	353, // 369: google.container.v1.UpgradeEvent.operation_start_time:type_name -> google.protobuf.Timestamp
+	1,   // 370: google.container.v1.UpgradeInfoEvent.resource_type:type_name -> google.container.v1.UpgradeResourceType
+	353, // 371: google.container.v1.UpgradeInfoEvent.start_time:type_name -> google.protobuf.Timestamp
+	353, // 372: google.container.v1.UpgradeInfoEvent.end_time:type_name -> google.protobuf.Timestamp
+	60,  // 373: google.container.v1.UpgradeInfoEvent.state:type_name -> google.container.v1.UpgradeInfoEvent.State
+	353, // 374: google.container.v1.UpgradeInfoEvent.standard_support_end_time:type_name -> google.protobuf.Timestamp
+	353, // 375: google.container.v1.UpgradeInfoEvent.extended_support_end_time:type_name -> google.protobuf.Timestamp
+	61,  // 376: google.container.v1.UpgradeInfoEvent.event_type:type_name -> google.container.v1.UpgradeInfoEvent.EventType
+	252, // 377: google.container.v1.UpgradeInfoEvent.disruption_event:type_name -> google.container.v1.DisruptionEvent
+	62,  // 378: google.container.v1.DisruptionEvent.disruption_type:type_name -> google.container.v1.DisruptionEvent.DisruptionType
+	344, // 379: google.container.v1.DisruptionEvent.pdb_blocked_pod:type_name -> google.container.v1.DisruptionEvent.PdbBlockedPod
+	351, // 380: google.container.v1.DisruptionEvent.pdb_violation_timeout:type_name -> google.protobuf.Duration
+	1,   // 381: google.container.v1.UpgradeAvailableEvent.resource_type:type_name -> google.container.v1.UpgradeResourceType
+	227, // 382: google.container.v1.UpgradeAvailableEvent.release_channel:type_name -> google.container.v1.ReleaseChannel
+	258, // 383: google.container.v1.Autopilot.workload_policy_config:type_name -> google.container.v1.WorkloadPolicyConfig
+	257, // 384: google.container.v1.Autopilot.privileged_admission_config:type_name -> google.container.v1.PrivilegedAdmissionConfig
+	256, // 385: google.container.v1.Autopilot.cluster_policy_config:type_name -> google.container.v1.ClusterPolicyConfig
+	260, // 386: google.container.v1.LoggingConfig.component_config:type_name -> google.container.v1.LoggingComponentConfig
+	63,  // 387: google.container.v1.LoggingComponentConfig.enable_components:type_name -> google.container.v1.LoggingComponentConfig.Component
+	267, // 388: google.container.v1.MonitoringConfig.component_config:type_name -> google.container.v1.MonitoringComponentConfig
+	268, // 389: google.container.v1.MonitoringConfig.managed_prometheus_config:type_name -> google.container.v1.ManagedPrometheusConfig
+	263, // 390: google.container.v1.MonitoringConfig.advanced_datapath_observability_config:type_name -> google.container.v1.AdvancedDatapathObservabilityConfig
+	64,  // 391: google.container.v1.AdvancedDatapathObservabilityConfig.relay_mode:type_name -> google.container.v1.AdvancedDatapathObservabilityConfig.RelayMode
+	266, // 392: google.container.v1.NodePoolLoggingConfig.variant_config:type_name -> google.container.v1.LoggingVariantConfig
+	65,  // 393: google.container.v1.LoggingVariantConfig.variant:type_name -> google.container.v1.LoggingVariantConfig.Variant
+	66,  // 394: google.container.v1.MonitoringComponentConfig.enable_components:type_name -> google.container.v1.MonitoringComponentConfig.Component
+	269, // 395: google.container.v1.ManagedPrometheusConfig.auto_monitoring_config:type_name -> google.container.v1.AutoMonitoringConfig
+	67,  // 396: google.container.v1.AutoMonitoringConfig.scope:type_name -> google.container.v1.AutoMonitoringConfig.Scope
+	68,  // 397: google.container.v1.PodAutoscaling.hpa_profile:type_name -> google.container.v1.PodAutoscaling.HPAProfile
+	69,  // 398: google.container.v1.Fleet.membership_type:type_name -> google.container.v1.Fleet.MembershipType
+	345, // 399: google.container.v1.ControlPlaneEndpointsConfig.dns_endpoint_config:type_name -> google.container.v1.ControlPlaneEndpointsConfig.DNSEndpointConfig
+	346, // 400: google.container.v1.ControlPlaneEndpointsConfig.ip_endpoints_config:type_name -> google.container.v1.ControlPlaneEndpointsConfig.IPEndpointsConfig
+	347, // 401: google.container.v1.ResourceManagerTags.tags:type_name -> google.container.v1.ResourceManagerTags.TagsEntry
+	70,  // 402: google.container.v1.EnterpriseConfig.cluster_tier:type_name -> google.container.v1.EnterpriseConfig.ClusterTier
+	70,  // 403: google.container.v1.EnterpriseConfig.desired_tier:type_name -> google.container.v1.EnterpriseConfig.ClusterTier
+	348, // 404: google.container.v1.SecretManagerConfig.rotation_config:type_name -> google.container.v1.SecretManagerConfig.RotationConfig
+	71,  // 405: google.container.v1.SecondaryBootDisk.mode:type_name -> google.container.v1.SecondaryBootDisk.Mode
+	72,  // 406: google.container.v1.ClusterUpgradeInfo.auto_upgrade_status:type_name -> google.container.v1.ClusterUpgradeInfo.AutoUpgradeStatus
+	73,  // 407: google.container.v1.ClusterUpgradeInfo.paused_reason:type_name -> google.container.v1.ClusterUpgradeInfo.AutoUpgradePausedReason
+	283, // 408: google.container.v1.ClusterUpgradeInfo.upgrade_details:type_name -> google.container.v1.UpgradeDetails
+	74,  // 409: google.container.v1.UpgradeDetails.state:type_name -> google.container.v1.UpgradeDetails.State
+	353, // 410: google.container.v1.UpgradeDetails.start_time:type_name -> google.protobuf.Timestamp
+	353, // 411: google.container.v1.UpgradeDetails.end_time:type_name -> google.protobuf.Timestamp
+	75,  // 412: google.container.v1.UpgradeDetails.start_type:type_name -> google.container.v1.UpgradeDetails.StartType
+	76,  // 413: google.container.v1.NodePoolUpgradeInfo.auto_upgrade_status:type_name -> google.container.v1.NodePoolUpgradeInfo.AutoUpgradeStatus
+	77,  // 414: google.container.v1.NodePoolUpgradeInfo.paused_reason:type_name -> google.container.v1.NodePoolUpgradeInfo.AutoUpgradePausedReason
+	283, // 415: google.container.v1.NodePoolUpgradeInfo.upgrade_details:type_name -> google.container.v1.UpgradeDetails
+	78,  // 416: google.container.v1.GkeAutoUpgradeConfig.patch_mode:type_name -> google.container.v1.GkeAutoUpgradeConfig.PatchMode
+	79,  // 417: google.container.v1.NetworkTierConfig.network_tier:type_name -> google.container.v1.NetworkTierConfig.NetworkTier
+	349, // 418: google.container.v1.SecretSyncConfig.rotation_config:type_name -> google.container.v1.SecretSyncConfig.SyncRotationConfig
+	80,  // 419: google.container.v1.ManagedOpenTelemetryConfig.scope:type_name -> google.container.v1.ManagedOpenTelemetryConfig.Scope
+	299, // 420: google.container.v1.LinuxNodeConfig.CustomNodeInit.init_script:type_name -> google.container.v1.LinuxNodeConfig.CustomNodeInit.InitScript
+	300, // 421: google.container.v1.LinuxNodeConfig.SwapConfig.encryption_config:type_name -> google.container.v1.LinuxNodeConfig.SwapConfig.EncryptionConfig
+	301, // 422: google.container.v1.LinuxNodeConfig.SwapConfig.boot_disk_profile:type_name -> google.container.v1.LinuxNodeConfig.SwapConfig.BootDiskProfile
+	302, // 423: google.container.v1.LinuxNodeConfig.SwapConfig.ephemeral_local_ssd_profile:type_name -> google.container.v1.LinuxNodeConfig.SwapConfig.EphemeralLocalSsdProfile
+	303, // 424: google.container.v1.LinuxNodeConfig.SwapConfig.dedicated_local_ssd_profile:type_name -> google.container.v1.LinuxNodeConfig.SwapConfig.DedicatedLocalSsdProfile
+	10,  // 425: google.container.v1.LinuxNodeConfig.NodeKernelModuleLoading.policy:type_name -> google.container.v1.LinuxNodeConfig.NodeKernelModuleLoading.Policy
+	16,  // 426: google.container.v1.NodeNetworkConfig.NetworkPerformanceConfig.total_egress_bandwidth_tier:type_name -> google.container.v1.NodeNetworkConfig.NetworkPerformanceConfig.Tier
+	19,  // 427: google.container.v1.SoleTenantConfig.NodeAffinity.operator:type_name -> google.container.v1.SoleTenantConfig.NodeAffinity.Operator
+	313, // 428: google.container.v1.ContainerdConfig.PrivateRegistryAccessConfig.certificate_authority_domain_config:type_name -> google.container.v1.ContainerdConfig.PrivateRegistryAccessConfig.CertificateAuthorityDomainConfig
+	318, // 429: google.container.v1.ContainerdConfig.RegistryHostConfig.hosts:type_name -> google.container.v1.ContainerdConfig.RegistryHostConfig.HostConfig
+	314, // 430: google.container.v1.ContainerdConfig.PrivateRegistryAccessConfig.CertificateAuthorityDomainConfig.gcp_secret_manager_certificate_config:type_name -> google.container.v1.ContainerdConfig.PrivateRegistryAccessConfig.CertificateAuthorityDomainConfig.GCPSecretManagerCertificateConfig
+	315, // 431: google.container.v1.ContainerdConfig.RegistryHostConfig.CertificateConfigPair.cert:type_name -> google.container.v1.ContainerdConfig.RegistryHostConfig.CertificateConfig
+	315, // 432: google.container.v1.ContainerdConfig.RegistryHostConfig.CertificateConfigPair.key:type_name -> google.container.v1.ContainerdConfig.RegistryHostConfig.CertificateConfig
+	20,  // 433: google.container.v1.ContainerdConfig.RegistryHostConfig.HostConfig.capabilities:type_name -> google.container.v1.ContainerdConfig.RegistryHostConfig.HostCapability
+	317, // 434: google.container.v1.ContainerdConfig.RegistryHostConfig.HostConfig.header:type_name -> google.container.v1.ContainerdConfig.RegistryHostConfig.RegistryHeader
+	315, // 435: google.container.v1.ContainerdConfig.RegistryHostConfig.HostConfig.ca:type_name -> google.container.v1.ContainerdConfig.RegistryHostConfig.CertificateConfig
+	316, // 436: google.container.v1.ContainerdConfig.RegistryHostConfig.HostConfig.client:type_name -> google.container.v1.ContainerdConfig.RegistryHostConfig.CertificateConfigPair
+	351, // 437: google.container.v1.ContainerdConfig.RegistryHostConfig.HostConfig.dial_timeout:type_name -> google.protobuf.Duration
+	51,  // 438: google.container.v1.ServerConfig.ReleaseChannelConfig.channel:type_name -> google.container.v1.ReleaseChannel.Channel
+	351, // 439: google.container.v1.BlueGreenSettings.StandardRolloutPolicy.batch_soak_duration:type_name -> google.protobuf.Duration
+	351, // 440: google.container.v1.BlueGreenSettings.AutoscaledRolloutPolicy.wait_for_drain_duration:type_name -> google.protobuf.Duration
+	3,   // 441: google.container.v1.NodePool.UpgradeSettings.strategy:type_name -> google.container.v1.NodePoolUpdateStrategy
+	182, // 442: google.container.v1.NodePool.UpgradeSettings.blue_green_settings:type_name -> google.container.v1.BlueGreenSettings
+	335, // 443: google.container.v1.NodePool.UpdateInfo.blue_green_info:type_name -> google.container.v1.NodePool.UpdateInfo.BlueGreenInfo
+	38,  // 444: google.container.v1.NodePool.PlacementPolicy.type:type_name -> google.container.v1.NodePool.PlacementPolicy.Type
+	351, // 445: google.container.v1.NodePool.NodeDrainConfig.pdb_timeout_duration:type_name -> google.protobuf.Duration
+	351, // 446: google.container.v1.NodePool.NodeDrainConfig.grace_termination_duration:type_name -> google.protobuf.Duration
+	353, // 447: google.container.v1.NodePool.ExclusionUntilEndOfSupport.start_time:type_name -> google.protobuf.Timestamp
+	353, // 448: google.container.v1.NodePool.ExclusionUntilEndOfSupport.end_time:type_name -> google.protobuf.Timestamp
+	333, // 449: google.container.v1.NodePool.NodePoolMaintenancePolicy.exclusion_until_end_of_support:type_name -> google.container.v1.NodePool.ExclusionUntilEndOfSupport
+	37,  // 450: google.container.v1.NodePool.UpdateInfo.BlueGreenInfo.phase:type_name -> google.container.v1.NodePool.UpdateInfo.BlueGreenInfo.Phase
+	190, // 451: google.container.v1.MaintenanceWindow.MaintenanceExclusionsEntry.value:type_name -> google.container.v1.TimeWindow
+	48,  // 452: google.container.v1.NetworkConfig.ClusterNetworkPerformanceConfig.total_egress_bandwidth_tier:type_name -> google.container.v1.NetworkConfig.ClusterNetworkPerformanceConfig.Tier
+	353, // 453: google.container.v1.DatabaseEncryption.OperationError.timestamp:type_name -> google.protobuf.Timestamp
+	343, // 454: google.container.v1.NotificationConfig.PubSub.filter:type_name -> google.container.v1.NotificationConfig.Filter
+	58,  // 455: google.container.v1.NotificationConfig.Filter.event_type:type_name -> google.container.v1.NotificationConfig.EventType
+	131, // 456: google.container.v1.ControlPlaneEndpointsConfig.IPEndpointsConfig.authorized_networks_config:type_name -> google.container.v1.MasterAuthorizedNetworksConfig
+	351, // 457: google.container.v1.SecretManagerConfig.RotationConfig.rotation_interval:type_name -> google.protobuf.Duration
+	351, // 458: google.container.v1.SecretSyncConfig.SyncRotationConfig.rotation_interval:type_name -> google.protobuf.Duration
+	170, // 459: google.container.v1.ClusterManager.ListClusters:input_type -> google.container.v1.ListClustersRequest
+	159, // 460: google.container.v1.ClusterManager.GetCluster:input_type -> google.container.v1.GetClusterRequest
+	158, // 461: google.container.v1.ClusterManager.CreateCluster:input_type -> google.container.v1.CreateClusterRequest
+	160, // 462: google.container.v1.ClusterManager.UpdateCluster:input_type -> google.container.v1.UpdateClusterRequest
+	161, // 463: google.container.v1.ClusterManager.UpdateNodePool:input_type -> google.container.v1.UpdateNodePoolRequest
+	162, // 464: google.container.v1.ClusterManager.SetNodePoolAutoscaling:input_type -> google.container.v1.SetNodePoolAutoscalingRequest
+	163, // 465: google.container.v1.ClusterManager.SetLoggingService:input_type -> google.container.v1.SetLoggingServiceRequest
+	164, // 466: google.container.v1.ClusterManager.SetMonitoringService:input_type -> google.container.v1.SetMonitoringServiceRequest
+	165, // 467: google.container.v1.ClusterManager.SetAddonsConfig:input_type -> google.container.v1.SetAddonsConfigRequest
+	166, // 468: google.container.v1.ClusterManager.SetLocations:input_type -> google.container.v1.SetLocationsRequest
+	167, // 469: google.container.v1.ClusterManager.UpdateMaster:input_type -> google.container.v1.UpdateMasterRequest
+	168, // 470: google.container.v1.ClusterManager.SetMasterAuth:input_type -> google.container.v1.SetMasterAuthRequest
+	169, // 471: google.container.v1.ClusterManager.DeleteCluster:input_type -> google.container.v1.DeleteClusterRequest
+	173, // 472: google.container.v1.ClusterManager.ListOperations:input_type -> google.container.v1.ListOperationsRequest
+	172, // 473: google.container.v1.ClusterManager.GetOperation:input_type -> google.container.v1.GetOperationRequest
+	174, // 474: google.container.v1.ClusterManager.CancelOperation:input_type -> google.container.v1.CancelOperationRequest
+	176, // 475: google.container.v1.ClusterManager.GetServerConfig:input_type -> google.container.v1.GetServerConfigRequest
+	221, // 476: google.container.v1.ClusterManager.GetJSONWebKeys:input_type -> google.container.v1.GetJSONWebKeysRequest
+	180, // 477: google.container.v1.ClusterManager.ListNodePools:input_type -> google.container.v1.ListNodePoolsRequest
+	181, // 478: google.container.v1.ClusterManager.GetNodePool:input_type -> google.container.v1.GetNodePoolRequest
+	178, // 479: google.container.v1.ClusterManager.CreateNodePool:input_type -> google.container.v1.CreateNodePoolRequest
+	179, // 480: google.container.v1.ClusterManager.DeleteNodePool:input_type -> google.container.v1.DeleteNodePoolRequest
+	197, // 481: google.container.v1.ClusterManager.CompleteNodePoolUpgrade:input_type -> google.container.v1.CompleteNodePoolUpgradeRequest
+	198, // 482: google.container.v1.ClusterManager.RollbackNodePoolUpgrade:input_type -> google.container.v1.RollbackNodePoolUpgradeRequest
+	195, // 483: google.container.v1.ClusterManager.SetNodePoolManagement:input_type -> google.container.v1.SetNodePoolManagementRequest
+	205, // 484: google.container.v1.ClusterManager.SetLabels:input_type -> google.container.v1.SetLabelsRequest
+	206, // 485: google.container.v1.ClusterManager.SetLegacyAbac:input_type -> google.container.v1.SetLegacyAbacRequest
+	207, // 486: google.container.v1.ClusterManager.StartIPRotation:input_type -> google.container.v1.StartIPRotationRequest
+	208, // 487: google.container.v1.ClusterManager.CompleteIPRotation:input_type -> google.container.v1.CompleteIPRotationRequest
+	196, // 488: google.container.v1.ClusterManager.SetNodePoolSize:input_type -> google.container.v1.SetNodePoolSizeRequest
+	213, // 489: google.container.v1.ClusterManager.SetNetworkPolicy:input_type -> google.container.v1.SetNetworkPolicyRequest
+	214, // 490: google.container.v1.ClusterManager.SetMaintenancePolicy:input_type -> google.container.v1.SetMaintenancePolicyRequest
+	237, // 491: google.container.v1.ClusterManager.ListUsableSubnetworks:input_type -> google.container.v1.ListUsableSubnetworksRequest
+	224, // 492: google.container.v1.ClusterManager.CheckAutopilotCompatibility:input_type -> google.container.v1.CheckAutopilotCompatibilityRequest
+	281, // 493: google.container.v1.ClusterManager.FetchClusterUpgradeInfo:input_type -> google.container.v1.FetchClusterUpgradeInfoRequest
+	284, // 494: google.container.v1.ClusterManager.FetchNodePoolUpgradeInfo:input_type -> google.container.v1.FetchNodePoolUpgradeInfoRequest
+	171, // 495: google.container.v1.ClusterManager.ListClusters:output_type -> google.container.v1.ListClustersResponse
+	137, // 496: google.container.v1.ClusterManager.GetCluster:output_type -> google.container.v1.Cluster
+	156, // 497: google.container.v1.ClusterManager.CreateCluster:output_type -> google.container.v1.Operation
+	156, // 498: google.container.v1.ClusterManager.UpdateCluster:output_type -> google.container.v1.Operation
+	156, // 499: google.container.v1.ClusterManager.UpdateNodePool:output_type -> google.container.v1.Operation
+	156, // 500: google.container.v1.ClusterManager.SetNodePoolAutoscaling:output_type -> google.container.v1.Operation
+	156, // 501: google.container.v1.ClusterManager.SetLoggingService:output_type -> google.container.v1.Operation
+	156, // 502: google.container.v1.ClusterManager.SetMonitoringService:output_type -> google.container.v1.Operation
+	156, // 503: google.container.v1.ClusterManager.SetAddonsConfig:output_type -> google.container.v1.Operation
+	156, // 504: google.container.v1.ClusterManager.SetLocations:output_type -> google.container.v1.Operation
+	156, // 505: google.container.v1.ClusterManager.UpdateMaster:output_type -> google.container.v1.Operation
+	156, // 506: google.container.v1.ClusterManager.SetMasterAuth:output_type -> google.container.v1.Operation
+	156, // 507: google.container.v1.ClusterManager.DeleteCluster:output_type -> google.container.v1.Operation
+	175, // 508: google.container.v1.ClusterManager.ListOperations:output_type -> google.container.v1.ListOperationsResponse
+	156, // 509: google.container.v1.ClusterManager.GetOperation:output_type -> google.container.v1.Operation
+	357, // 510: google.container.v1.ClusterManager.CancelOperation:output_type -> google.protobuf.Empty
+	177, // 511: google.container.v1.ClusterManager.GetServerConfig:output_type -> google.container.v1.ServerConfig
+	223, // 512: google.container.v1.ClusterManager.GetJSONWebKeys:output_type -> google.container.v1.GetJSONWebKeysResponse
+	199, // 513: google.container.v1.ClusterManager.ListNodePools:output_type -> google.container.v1.ListNodePoolsResponse
+	183, // 514: google.container.v1.ClusterManager.GetNodePool:output_type -> google.container.v1.NodePool
+	156, // 515: google.container.v1.ClusterManager.CreateNodePool:output_type -> google.container.v1.Operation
+	156, // 516: google.container.v1.ClusterManager.DeleteNodePool:output_type -> google.container.v1.Operation
+	357, // 517: google.container.v1.ClusterManager.CompleteNodePoolUpgrade:output_type -> google.protobuf.Empty
+	156, // 518: google.container.v1.ClusterManager.RollbackNodePoolUpgrade:output_type -> google.container.v1.Operation
+	156, // 519: google.container.v1.ClusterManager.SetNodePoolManagement:output_type -> google.container.v1.Operation
+	156, // 520: google.container.v1.ClusterManager.SetLabels:output_type -> google.container.v1.Operation
+	156, // 521: google.container.v1.ClusterManager.SetLegacyAbac:output_type -> google.container.v1.Operation
+	156, // 522: google.container.v1.ClusterManager.StartIPRotation:output_type -> google.container.v1.Operation
+	156, // 523: google.container.v1.ClusterManager.CompleteIPRotation:output_type -> google.container.v1.Operation
+	156, // 524: google.container.v1.ClusterManager.SetNodePoolSize:output_type -> google.container.v1.Operation
+	156, // 525: google.container.v1.ClusterManager.SetNetworkPolicy:output_type -> google.container.v1.Operation
+	156, // 526: google.container.v1.ClusterManager.SetMaintenancePolicy:output_type -> google.container.v1.Operation
+	238, // 527: google.container.v1.ClusterManager.ListUsableSubnetworks:output_type -> google.container.v1.ListUsableSubnetworksResponse
+	226, // 528: google.container.v1.ClusterManager.CheckAutopilotCompatibility:output_type -> google.container.v1.CheckAutopilotCompatibilityResponse
+	282, // 529: google.container.v1.ClusterManager.FetchClusterUpgradeInfo:output_type -> google.container.v1.ClusterUpgradeInfo
+	285, // 530: google.container.v1.ClusterManager.FetchNodePoolUpgradeInfo:output_type -> google.container.v1.NodePoolUpgradeInfo
+	495, // [495:531] is the sub-list for method output_type
+	459, // [459:495] is the sub-list for method input_type
+	459, // [459:459] is the sub-list for extension type_name
+	459, // [459:459] is the sub-list for extension extendee
+	0,   // [0:459] is the sub-list for field type_name
 }
 
 func init() { file_google_container_v1_cluster_service_proto_init() }
@@ -28098,89 +29858,97 @@ func file_google_container_v1_cluster_service_proto_init() {
 	file_google_container_v1_cluster_service_proto_msgTypes[8].OneofWrappers = []any{}
 	file_google_container_v1_cluster_service_proto_msgTypes[9].OneofWrappers = []any{}
 	file_google_container_v1_cluster_service_proto_msgTypes[10].OneofWrappers = []any{}
-	file_google_container_v1_cluster_service_proto_msgTypes[12].OneofWrappers = []any{}
-	file_google_container_v1_cluster_service_proto_msgTypes[17].OneofWrappers = []any{}
-	file_google_container_v1_cluster_service_proto_msgTypes[47].OneofWrappers = []any{}
-	file_google_container_v1_cluster_service_proto_msgTypes[53].OneofWrappers = []any{}
-	file_google_container_v1_cluster_service_proto_msgTypes[54].OneofWrappers = []any{}
-	file_google_container_v1_cluster_service_proto_msgTypes[57].OneofWrappers = []any{}
+	file_google_container_v1_cluster_service_proto_msgTypes[11].OneofWrappers = []any{}
+	file_google_container_v1_cluster_service_proto_msgTypes[13].OneofWrappers = []any{}
+	file_google_container_v1_cluster_service_proto_msgTypes[18].OneofWrappers = []any{}
+	file_google_container_v1_cluster_service_proto_msgTypes[50].OneofWrappers = []any{}
+	file_google_container_v1_cluster_service_proto_msgTypes[56].OneofWrappers = []any{}
 	file_google_container_v1_cluster_service_proto_msgTypes[59].OneofWrappers = []any{}
-	file_google_container_v1_cluster_service_proto_msgTypes[63].OneofWrappers = []any{}
-	file_google_container_v1_cluster_service_proto_msgTypes[67].OneofWrappers = []any{}
-	file_google_container_v1_cluster_service_proto_msgTypes[75].OneofWrappers = []any{}
-	file_google_container_v1_cluster_service_proto_msgTypes[96].OneofWrappers = []any{
+	file_google_container_v1_cluster_service_proto_msgTypes[62].OneofWrappers = []any{}
+	file_google_container_v1_cluster_service_proto_msgTypes[64].OneofWrappers = []any{}
+	file_google_container_v1_cluster_service_proto_msgTypes[68].OneofWrappers = []any{}
+	file_google_container_v1_cluster_service_proto_msgTypes[72].OneofWrappers = []any{}
+	file_google_container_v1_cluster_service_proto_msgTypes[80].OneofWrappers = []any{}
+	file_google_container_v1_cluster_service_proto_msgTypes[101].OneofWrappers = []any{
 		(*BlueGreenSettings_StandardRolloutPolicy_)(nil),
 		(*BlueGreenSettings_AutoscaledRolloutPolicy_)(nil),
 	}
-	file_google_container_v1_cluster_service_proto_msgTypes[102].OneofWrappers = []any{
+	file_google_container_v1_cluster_service_proto_msgTypes[108].OneofWrappers = []any{
 		(*MaintenanceWindow_DailyMaintenanceWindow)(nil),
 		(*MaintenanceWindow_RecurringWindow)(nil),
+		(*MaintenanceWindow_RecurringMaintenanceWindow)(nil),
 	}
-	file_google_container_v1_cluster_service_proto_msgTypes[103].OneofWrappers = []any{
+	file_google_container_v1_cluster_service_proto_msgTypes[109].OneofWrappers = []any{
 		(*TimeWindow_MaintenanceExclusionOptions)(nil),
 	}
-	file_google_container_v1_cluster_service_proto_msgTypes[113].OneofWrappers = []any{}
-	file_google_container_v1_cluster_service_proto_msgTypes[121].OneofWrappers = []any{}
-	file_google_container_v1_cluster_service_proto_msgTypes[122].OneofWrappers = []any{}
-	file_google_container_v1_cluster_service_proto_msgTypes[123].OneofWrappers = []any{}
+	file_google_container_v1_cluster_service_proto_msgTypes[112].OneofWrappers = []any{}
+	file_google_container_v1_cluster_service_proto_msgTypes[120].OneofWrappers = []any{}
 	file_google_container_v1_cluster_service_proto_msgTypes[128].OneofWrappers = []any{}
-	file_google_container_v1_cluster_service_proto_msgTypes[148].OneofWrappers = []any{}
-	file_google_container_v1_cluster_service_proto_msgTypes[159].OneofWrappers = []any{}
-	file_google_container_v1_cluster_service_proto_msgTypes[163].OneofWrappers = []any{}
-	file_google_container_v1_cluster_service_proto_msgTypes[164].OneofWrappers = []any{}
-	file_google_container_v1_cluster_service_proto_msgTypes[169].OneofWrappers = []any{}
-	file_google_container_v1_cluster_service_proto_msgTypes[174].OneofWrappers = []any{}
-	file_google_container_v1_cluster_service_proto_msgTypes[181].OneofWrappers = []any{}
-	file_google_container_v1_cluster_service_proto_msgTypes[188].OneofWrappers = []any{}
-	file_google_container_v1_cluster_service_proto_msgTypes[193].OneofWrappers = []any{}
-	file_google_container_v1_cluster_service_proto_msgTypes[194].OneofWrappers = []any{}
+	file_google_container_v1_cluster_service_proto_msgTypes[129].OneofWrappers = []any{}
+	file_google_container_v1_cluster_service_proto_msgTypes[130].OneofWrappers = []any{}
+	file_google_container_v1_cluster_service_proto_msgTypes[135].OneofWrappers = []any{}
+	file_google_container_v1_cluster_service_proto_msgTypes[155].OneofWrappers = []any{}
+	file_google_container_v1_cluster_service_proto_msgTypes[166].OneofWrappers = []any{}
+	file_google_container_v1_cluster_service_proto_msgTypes[170].OneofWrappers = []any{}
+	file_google_container_v1_cluster_service_proto_msgTypes[171].OneofWrappers = []any{}
+	file_google_container_v1_cluster_service_proto_msgTypes[175].OneofWrappers = []any{}
+	file_google_container_v1_cluster_service_proto_msgTypes[177].OneofWrappers = []any{}
+	file_google_container_v1_cluster_service_proto_msgTypes[182].OneofWrappers = []any{}
+	file_google_container_v1_cluster_service_proto_msgTypes[189].OneofWrappers = []any{}
 	file_google_container_v1_cluster_service_proto_msgTypes[196].OneofWrappers = []any{}
-	file_google_container_v1_cluster_service_proto_msgTypes[199].OneofWrappers = []any{}
-	file_google_container_v1_cluster_service_proto_msgTypes[200].OneofWrappers = []any{}
-	file_google_container_v1_cluster_service_proto_msgTypes[201].OneofWrappers = []any{
+	file_google_container_v1_cluster_service_proto_msgTypes[201].OneofWrappers = []any{}
+	file_google_container_v1_cluster_service_proto_msgTypes[202].OneofWrappers = []any{}
+	file_google_container_v1_cluster_service_proto_msgTypes[204].OneofWrappers = []any{}
+	file_google_container_v1_cluster_service_proto_msgTypes[208].OneofWrappers = []any{}
+	file_google_container_v1_cluster_service_proto_msgTypes[209].OneofWrappers = []any{}
+	file_google_container_v1_cluster_service_proto_msgTypes[210].OneofWrappers = []any{}
+	file_google_container_v1_cluster_service_proto_msgTypes[212].OneofWrappers = []any{}
+	file_google_container_v1_cluster_service_proto_msgTypes[214].OneofWrappers = []any{
 		(*LinuxNodeConfig_SwapConfig_BootDiskProfile_)(nil),
 		(*LinuxNodeConfig_SwapConfig_EphemeralLocalSsdProfile_)(nil),
 		(*LinuxNodeConfig_SwapConfig_DedicatedLocalSsdProfile_)(nil),
 	}
-	file_google_container_v1_cluster_service_proto_msgTypes[204].OneofWrappers = []any{}
-	file_google_container_v1_cluster_service_proto_msgTypes[205].OneofWrappers = []any{
+	file_google_container_v1_cluster_service_proto_msgTypes[216].OneofWrappers = []any{}
+	file_google_container_v1_cluster_service_proto_msgTypes[219].OneofWrappers = []any{}
+	file_google_container_v1_cluster_service_proto_msgTypes[220].OneofWrappers = []any{
 		(*LinuxNodeConfig_SwapConfig_BootDiskProfile_SwapSizeGib)(nil),
 		(*LinuxNodeConfig_SwapConfig_BootDiskProfile_SwapSizePercent)(nil),
 	}
-	file_google_container_v1_cluster_service_proto_msgTypes[206].OneofWrappers = []any{
+	file_google_container_v1_cluster_service_proto_msgTypes[221].OneofWrappers = []any{
 		(*LinuxNodeConfig_SwapConfig_EphemeralLocalSsdProfile_SwapSizeGib)(nil),
 		(*LinuxNodeConfig_SwapConfig_EphemeralLocalSsdProfile_SwapSizePercent)(nil),
 	}
-	file_google_container_v1_cluster_service_proto_msgTypes[211].OneofWrappers = []any{}
-	file_google_container_v1_cluster_service_proto_msgTypes[216].OneofWrappers = []any{
+	file_google_container_v1_cluster_service_proto_msgTypes[227].OneofWrappers = []any{}
+	file_google_container_v1_cluster_service_proto_msgTypes[232].OneofWrappers = []any{
 		(*ContainerdConfig_PrivateRegistryAccessConfig_CertificateAuthorityDomainConfig_GcpSecretManagerCertificateConfig)(nil),
 	}
-	file_google_container_v1_cluster_service_proto_msgTypes[218].OneofWrappers = []any{
+	file_google_container_v1_cluster_service_proto_msgTypes[234].OneofWrappers = []any{
 		(*ContainerdConfig_RegistryHostConfig_CertificateConfig_GcpSecretManagerSecretUri)(nil),
 	}
-	file_google_container_v1_cluster_service_proto_msgTypes[226].OneofWrappers = []any{}
-	file_google_container_v1_cluster_service_proto_msgTypes[227].OneofWrappers = []any{
+	file_google_container_v1_cluster_service_proto_msgTypes[242].OneofWrappers = []any{}
+	file_google_container_v1_cluster_service_proto_msgTypes[243].OneofWrappers = []any{
 		(*OperationProgress_Metric_IntValue)(nil),
 		(*OperationProgress_Metric_DoubleValue)(nil),
 		(*OperationProgress_Metric_StringValue)(nil),
 	}
-	file_google_container_v1_cluster_service_proto_msgTypes[229].OneofWrappers = []any{
+	file_google_container_v1_cluster_service_proto_msgTypes[245].OneofWrappers = []any{
 		(*BlueGreenSettings_StandardRolloutPolicy_BatchPercentage)(nil),
 		(*BlueGreenSettings_StandardRolloutPolicy_BatchNodeCount)(nil),
 	}
-	file_google_container_v1_cluster_service_proto_msgTypes[231].OneofWrappers = []any{}
-	file_google_container_v1_cluster_service_proto_msgTypes[235].OneofWrappers = []any{}
-	file_google_container_v1_cluster_service_proto_msgTypes[239].OneofWrappers = []any{}
-	file_google_container_v1_cluster_service_proto_msgTypes[246].OneofWrappers = []any{}
 	file_google_container_v1_cluster_service_proto_msgTypes[247].OneofWrappers = []any{}
-	file_google_container_v1_cluster_service_proto_msgTypes[249].OneofWrappers = []any{}
+	file_google_container_v1_cluster_service_proto_msgTypes[251].OneofWrappers = []any{}
+	file_google_container_v1_cluster_service_proto_msgTypes[257].OneofWrappers = []any{}
+	file_google_container_v1_cluster_service_proto_msgTypes[264].OneofWrappers = []any{}
+	file_google_container_v1_cluster_service_proto_msgTypes[265].OneofWrappers = []any{}
+	file_google_container_v1_cluster_service_proto_msgTypes[267].OneofWrappers = []any{}
+	file_google_container_v1_cluster_service_proto_msgTypes[268].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_container_v1_cluster_service_proto_rawDesc), len(file_google_container_v1_cluster_service_proto_rawDesc)),
-			NumEnums:      78,
-			NumMessages:   250,
+			NumEnums:      81,
+			NumMessages:   269,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
