@@ -752,7 +752,7 @@ func (c *cloudBillingGRPCClient) ListBillingAccounts(ctx context.Context, req *b
 	}
 	opts = append((*c.CallOptions).ListBillingAccounts[0:len((*c.CallOptions).ListBillingAccounts):len((*c.CallOptions).ListBillingAccounts)], opts...)
 	it := &BillingAccountIterator{}
-	req = proto.Clone(req).(*billingpb.ListBillingAccountsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*billingpb.BillingAccount, string, error) {
 		resp := &billingpb.ListBillingAccountsResponse{}
 		if pageToken != "" {
@@ -849,7 +849,7 @@ func (c *cloudBillingGRPCClient) ListProjectBillingInfo(ctx context.Context, req
 	}
 	opts = append((*c.CallOptions).ListProjectBillingInfo[0:len((*c.CallOptions).ListProjectBillingInfo):len((*c.CallOptions).ListProjectBillingInfo)], opts...)
 	it := &ProjectBillingInfoIterator{}
-	req = proto.Clone(req).(*billingpb.ListProjectBillingInfoRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*billingpb.ProjectBillingInfo, string, error) {
 		resp := &billingpb.ListProjectBillingInfoResponse{}
 		if pageToken != "" {
@@ -1093,7 +1093,7 @@ func (c *cloudBillingRESTClient) GetBillingAccount(ctx context.Context, req *bil
 // view (at https://cloud.google.com/billing/docs/how-to/billing-access).
 func (c *cloudBillingRESTClient) ListBillingAccounts(ctx context.Context, req *billingpb.ListBillingAccountsRequest, opts ...gax.CallOption) *BillingAccountIterator {
 	it := &BillingAccountIterator{}
-	req = proto.Clone(req).(*billingpb.ListBillingAccountsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*billingpb.BillingAccount, string, error) {
 		resp := &billingpb.ListBillingAccountsResponse{}
@@ -1334,7 +1334,7 @@ func (c *cloudBillingRESTClient) CreateBillingAccount(ctx context.Context, req *
 // viewers (at https://cloud.google.com/billing/docs/how-to/billing-access).
 func (c *cloudBillingRESTClient) ListProjectBillingInfo(ctx context.Context, req *billingpb.ListProjectBillingInfoRequest, opts ...gax.CallOption) *ProjectBillingInfoIterator {
 	it := &ProjectBillingInfoIterator{}
-	req = proto.Clone(req).(*billingpb.ListProjectBillingInfoRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*billingpb.ProjectBillingInfo, string, error) {
 		resp := &billingpb.ListProjectBillingInfoResponse{}

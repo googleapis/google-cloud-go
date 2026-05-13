@@ -507,7 +507,7 @@ func (c *regionHealthChecksRESTClient) Insert(ctx context.Context, req *computep
 // project.
 func (c *regionHealthChecksRESTClient) List(ctx context.Context, req *computepb.ListRegionHealthChecksRequest, opts ...gax.CallOption) *HealthCheckIterator {
 	it := &HealthCheckIterator{}
-	req = proto.Clone(req).(*computepb.ListRegionHealthChecksRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.HealthCheck, string, error) {
 		resp := &computepb.HealthCheckList{}

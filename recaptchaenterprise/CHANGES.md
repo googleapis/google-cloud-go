@@ -1,6 +1,10 @@
 # Changes
 
 
+## [2.26.0](https://github.com/googleapis/google-cloud-go/releases/tag/recaptchaenterprise%2Fv2.26.0) (2026-05-07)
+
+## [2.25.0](https://github.com/googleapis/google-cloud-go/releases/tag/recaptchaenterprise%2Fv2.25.0) (2026-04-30)
+
 ## [2.24.0](https://github.com/googleapis/google-cloud-go/releases/tag/recaptchaenterprise%2Fv2.24.0) (2026-04-13)
 
 ## [2.23.0](https://github.com/googleapis/google-cloud-go/releases/tag/recaptchaenterprise%2Fv2.23.0) (2026-04-09)

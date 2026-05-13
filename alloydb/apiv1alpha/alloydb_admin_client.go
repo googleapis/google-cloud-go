@@ -1387,7 +1387,7 @@ func (c *alloyDBAdminGRPCClient) ListClusters(ctx context.Context, req *alloydbp
 	}
 	opts = append((*c.CallOptions).ListClusters[0:len((*c.CallOptions).ListClusters):len((*c.CallOptions).ListClusters)], opts...)
 	it := &ClusterIterator{}
-	req = proto.Clone(req).(*alloydbpb.ListClustersRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*alloydbpb.Cluster, string, error) {
 		resp := &alloydbpb.ListClustersResponse{}
 		if pageToken != "" {
@@ -1720,7 +1720,7 @@ func (c *alloyDBAdminGRPCClient) ListInstances(ctx context.Context, req *alloydb
 	}
 	opts = append((*c.CallOptions).ListInstances[0:len((*c.CallOptions).ListInstances):len((*c.CallOptions).ListInstances)], opts...)
 	it := &InstanceIterator{}
-	req = proto.Clone(req).(*alloydbpb.ListInstancesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*alloydbpb.Instance, string, error) {
 		resp := &alloydbpb.ListInstancesResponse{}
 		if pageToken != "" {
@@ -2025,7 +2025,7 @@ func (c *alloyDBAdminGRPCClient) ListBackups(ctx context.Context, req *alloydbpb
 	}
 	opts = append((*c.CallOptions).ListBackups[0:len((*c.CallOptions).ListBackups):len((*c.CallOptions).ListBackups)], opts...)
 	it := &BackupIterator{}
-	req = proto.Clone(req).(*alloydbpb.ListBackupsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*alloydbpb.Backup, string, error) {
 		resp := &alloydbpb.ListBackupsResponse{}
 		if pageToken != "" {
@@ -2176,7 +2176,7 @@ func (c *alloyDBAdminGRPCClient) ListSupportedDatabaseFlags(ctx context.Context,
 	}
 	opts = append((*c.CallOptions).ListSupportedDatabaseFlags[0:len((*c.CallOptions).ListSupportedDatabaseFlags):len((*c.CallOptions).ListSupportedDatabaseFlags)], opts...)
 	it := &SupportedDatabaseFlagIterator{}
-	req = proto.Clone(req).(*alloydbpb.ListSupportedDatabaseFlagsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*alloydbpb.SupportedDatabaseFlag, string, error) {
 		resp := &alloydbpb.ListSupportedDatabaseFlagsResponse{}
 		if pageToken != "" {
@@ -2276,7 +2276,7 @@ func (c *alloyDBAdminGRPCClient) ListUsers(ctx context.Context, req *alloydbpb.L
 	}
 	opts = append((*c.CallOptions).ListUsers[0:len((*c.CallOptions).ListUsers):len((*c.CallOptions).ListUsers)], opts...)
 	it := &UserIterator{}
-	req = proto.Clone(req).(*alloydbpb.ListUsersRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*alloydbpb.User, string, error) {
 		resp := &alloydbpb.ListUsersResponse{}
 		if pageToken != "" {
@@ -2417,7 +2417,7 @@ func (c *alloyDBAdminGRPCClient) ListDatabases(ctx context.Context, req *alloydb
 	}
 	opts = append((*c.CallOptions).ListDatabases[0:len((*c.CallOptions).ListDatabases):len((*c.CallOptions).ListDatabases)], opts...)
 	it := &DatabaseIterator{}
-	req = proto.Clone(req).(*alloydbpb.ListDatabasesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*alloydbpb.Database, string, error) {
 		resp := &alloydbpb.ListDatabasesResponse{}
 		if pageToken != "" {
@@ -2511,7 +2511,7 @@ func (c *alloyDBAdminGRPCClient) ListLocations(ctx context.Context, req *locatio
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -2615,7 +2615,7 @@ func (c *alloyDBAdminGRPCClient) ListOperations(ctx context.Context, req *longru
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -2657,7 +2657,7 @@ func (c *alloyDBAdminGRPCClient) ListOperations(ctx context.Context, req *longru
 // ListClusters lists Clusters in a given project and location.
 func (c *alloyDBAdminRESTClient) ListClusters(ctx context.Context, req *alloydbpb.ListClustersRequest, opts ...gax.CallOption) *ClusterIterator {
 	it := &ClusterIterator{}
-	req = proto.Clone(req).(*alloydbpb.ListClustersRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*alloydbpb.Cluster, string, error) {
 		resp := &alloydbpb.ListClustersResponse{}
@@ -3508,7 +3508,7 @@ func (c *alloyDBAdminRESTClient) CreateSecondaryCluster(ctx context.Context, req
 // ListInstances lists Instances in a given project and location.
 func (c *alloyDBAdminRESTClient) ListInstances(ctx context.Context, req *alloydbpb.ListInstancesRequest, opts ...gax.CallOption) *InstanceIterator {
 	it := &InstanceIterator{}
-	req = proto.Clone(req).(*alloydbpb.ListInstancesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*alloydbpb.Instance, string, error) {
 		resp := &alloydbpb.ListInstancesResponse{}
@@ -4293,7 +4293,7 @@ func (c *alloyDBAdminRESTClient) ExecuteSql(ctx context.Context, req *alloydbpb.
 // ListBackups lists Backups in a given project and location.
 func (c *alloyDBAdminRESTClient) ListBackups(ctx context.Context, req *alloydbpb.ListBackupsRequest, opts ...gax.CallOption) *BackupIterator {
 	it := &BackupIterator{}
-	req = proto.Clone(req).(*alloydbpb.ListBackupsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*alloydbpb.Backup, string, error) {
 		resp := &alloydbpb.ListBackupsResponse{}
@@ -4657,7 +4657,7 @@ func (c *alloyDBAdminRESTClient) DeleteBackup(ctx context.Context, req *alloydbp
 // ListSupportedDatabaseFlags lists SupportedDatabaseFlags for a given project and location.
 func (c *alloyDBAdminRESTClient) ListSupportedDatabaseFlags(ctx context.Context, req *alloydbpb.ListSupportedDatabaseFlagsRequest, opts ...gax.CallOption) *SupportedDatabaseFlagIterator {
 	it := &SupportedDatabaseFlagIterator{}
-	req = proto.Clone(req).(*alloydbpb.ListSupportedDatabaseFlagsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*alloydbpb.SupportedDatabaseFlag, string, error) {
 		resp := &alloydbpb.ListSupportedDatabaseFlagsResponse{}
@@ -4865,7 +4865,7 @@ func (c *alloyDBAdminRESTClient) GetConnectionInfo(ctx context.Context, req *all
 // ListUsers lists Users in a given project and location.
 func (c *alloyDBAdminRESTClient) ListUsers(ctx context.Context, req *alloydbpb.ListUsersRequest, opts ...gax.CallOption) *UserIterator {
 	it := &UserIterator{}
-	req = proto.Clone(req).(*alloydbpb.ListUsersRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*alloydbpb.User, string, error) {
 		resp := &alloydbpb.ListUsersResponse{}
@@ -5202,7 +5202,7 @@ func (c *alloyDBAdminRESTClient) DeleteUser(ctx context.Context, req *alloydbpb.
 // ListDatabases lists Databases in a given project and location.
 func (c *alloyDBAdminRESTClient) ListDatabases(ctx context.Context, req *alloydbpb.ListDatabasesRequest, opts ...gax.CallOption) *DatabaseIterator {
 	it := &DatabaseIterator{}
-	req = proto.Clone(req).(*alloydbpb.ListDatabasesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*alloydbpb.Database, string, error) {
 		resp := &alloydbpb.ListDatabasesResponse{}
@@ -5402,7 +5402,7 @@ func (c *alloyDBAdminRESTClient) GetLocation(ctx context.Context, req *locationp
 // ListLocations lists information about the supported locations for this service.
 func (c *alloyDBAdminRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -5621,7 +5621,7 @@ func (c *alloyDBAdminRESTClient) GetOperation(ctx context.Context, req *longrunn
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *alloyDBAdminRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

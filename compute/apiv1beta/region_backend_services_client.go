@@ -711,7 +711,7 @@ func (c *regionBackendServicesRESTClient) Insert(ctx context.Context, req *compu
 // specified project in the given region.
 func (c *regionBackendServicesRESTClient) List(ctx context.Context, req *computepb.ListRegionBackendServicesRequest, opts ...gax.CallOption) *BackendServiceIterator {
 	it := &BackendServiceIterator{}
-	req = proto.Clone(req).(*computepb.ListRegionBackendServicesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.BackendService, string, error) {
 		resp := &computepb.BackendServiceList{}
@@ -798,7 +798,7 @@ func (c *regionBackendServicesRESTClient) List(ctx context.Context, req *compute
 // the given region.
 func (c *regionBackendServicesRESTClient) ListUsable(ctx context.Context, req *computepb.ListUsableRegionBackendServicesRequest, opts ...gax.CallOption) *BackendServiceIterator {
 	it := &BackendServiceIterator{}
-	req = proto.Clone(req).(*computepb.ListUsableRegionBackendServicesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.BackendService, string, error) {
 		resp := &computepb.BackendServiceListUsable{}

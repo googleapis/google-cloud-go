@@ -457,7 +457,7 @@ func (c *userListDirectLicenseGRPCClient) ListUserListDirectLicenses(ctx context
 	}
 	opts = append((*c.CallOptions).ListUserListDirectLicenses[0:len((*c.CallOptions).ListUserListDirectLicenses):len((*c.CallOptions).ListUserListDirectLicenses)], opts...)
 	it := &UserListDirectLicenseIterator{}
-	req = proto.Clone(req).(*datamanagerpb.ListUserListDirectLicensesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datamanagerpb.UserListDirectLicense, string, error) {
 		resp := &datamanagerpb.ListUserListDirectLicensesResponse{}
 		if pageToken != "" {
@@ -696,7 +696,7 @@ func (c *userListDirectLicenseRESTClient) UpdateUserListDirectLicense(ctx contex
 // This feature is only available to data partners.
 func (c *userListDirectLicenseRESTClient) ListUserListDirectLicenses(ctx context.Context, req *datamanagerpb.ListUserListDirectLicensesRequest, opts ...gax.CallOption) *UserListDirectLicenseIterator {
 	it := &UserListDirectLicenseIterator{}
-	req = proto.Clone(req).(*datamanagerpb.ListUserListDirectLicensesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datamanagerpb.UserListDirectLicense, string, error) {
 		resp := &datamanagerpb.ListUserListDirectLicensesResponse{}

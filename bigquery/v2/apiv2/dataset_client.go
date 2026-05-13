@@ -706,7 +706,7 @@ func (c *datasetGRPCClient) ListDatasets(ctx context.Context, req *bigquerypb.Li
 	}
 	opts = append((*c.CallOptions).ListDatasets[0:len((*c.CallOptions).ListDatasets):len((*c.CallOptions).ListDatasets)], opts...)
 	it := &ListFormatDatasetIterator{}
-	req = proto.Clone(req).(*bigquerypb.ListDatasetsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*bigquerypb.ListFormatDataset, string, error) {
 		resp := &bigquerypb.DatasetList{}
 		if pageToken != "" {
@@ -1093,7 +1093,7 @@ func (c *datasetRESTClient) DeleteDataset(ctx context.Context, req *bigquerypb.D
 // granted the READER dataset role.
 func (c *datasetRESTClient) ListDatasets(ctx context.Context, req *bigquerypb.ListDatasetsRequest, opts ...gax.CallOption) *ListFormatDatasetIterator {
 	it := &ListFormatDatasetIterator{}
-	req = proto.Clone(req).(*bigquerypb.ListDatasetsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*bigquerypb.ListFormatDataset, string, error) {
 		resp := &bigquerypb.DatasetList{}

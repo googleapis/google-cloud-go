@@ -530,7 +530,7 @@ func (c *dataTransferGRPCClient) ListMulticloudDataTransferConfigs(ctx context.C
 	}
 	opts = append((*c.CallOptions).ListMulticloudDataTransferConfigs[0:len((*c.CallOptions).ListMulticloudDataTransferConfigs):len((*c.CallOptions).ListMulticloudDataTransferConfigs)], opts...)
 	it := &MulticloudDataTransferConfigIterator{}
-	req = proto.Clone(req).(*networkconnectivitypb.ListMulticloudDataTransferConfigsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkconnectivitypb.MulticloudDataTransferConfig, string, error) {
 		resp := &networkconnectivitypb.ListMulticloudDataTransferConfigsResponse{}
 		if pageToken != "" {
@@ -681,7 +681,7 @@ func (c *dataTransferGRPCClient) ListDestinations(ctx context.Context, req *netw
 	}
 	opts = append((*c.CallOptions).ListDestinations[0:len((*c.CallOptions).ListDestinations):len((*c.CallOptions).ListDestinations)], opts...)
 	it := &DestinationIterator{}
-	req = proto.Clone(req).(*networkconnectivitypb.ListDestinationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkconnectivitypb.Destination, string, error) {
 		resp := &networkconnectivitypb.ListDestinationsResponse{}
 		if pageToken != "" {
@@ -856,7 +856,7 @@ func (c *dataTransferGRPCClient) ListMulticloudDataTransferSupportedServices(ctx
 	}
 	opts = append((*c.CallOptions).ListMulticloudDataTransferSupportedServices[0:len((*c.CallOptions).ListMulticloudDataTransferSupportedServices):len((*c.CallOptions).ListMulticloudDataTransferSupportedServices)], opts...)
 	it := &MulticloudDataTransferSupportedServiceIterator{}
-	req = proto.Clone(req).(*networkconnectivitypb.ListMulticloudDataTransferSupportedServicesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkconnectivitypb.MulticloudDataTransferSupportedService, string, error) {
 		resp := &networkconnectivitypb.ListMulticloudDataTransferSupportedServicesResponse{}
 		if pageToken != "" {
@@ -926,7 +926,7 @@ func (c *dataTransferGRPCClient) ListLocations(ctx context.Context, req *locatio
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -1102,7 +1102,7 @@ func (c *dataTransferGRPCClient) ListOperations(ctx context.Context, req *longru
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {

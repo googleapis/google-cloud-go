@@ -2763,7 +2763,7 @@ func (c *gRPCClient) ListMessages(ctx context.Context, req *chatpb.ListMessagesR
 	}
 	opts = append((*c.CallOptions).ListMessages[0:len((*c.CallOptions).ListMessages):len((*c.CallOptions).ListMessages)], opts...)
 	it := &MessageIterator{}
-	req = proto.Clone(req).(*chatpb.ListMessagesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*chatpb.Message, string, error) {
 		resp := &chatpb.ListMessagesResponse{}
 		if pageToken != "" {
@@ -2815,7 +2815,7 @@ func (c *gRPCClient) ListMemberships(ctx context.Context, req *chatpb.ListMember
 	}
 	opts = append((*c.CallOptions).ListMemberships[0:len((*c.CallOptions).ListMemberships):len((*c.CallOptions).ListMemberships)], opts...)
 	it := &MembershipIterator{}
-	req = proto.Clone(req).(*chatpb.ListMembershipsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*chatpb.Membership, string, error) {
 		resp := &chatpb.ListMembershipsResponse{}
 		if pageToken != "" {
@@ -2998,7 +2998,7 @@ func (c *gRPCClient) ListSpaces(ctx context.Context, req *chatpb.ListSpacesReque
 	}
 	opts = append((*c.CallOptions).ListSpaces[0:len((*c.CallOptions).ListSpaces):len((*c.CallOptions).ListSpaces)], opts...)
 	it := &SpaceIterator{}
-	req = proto.Clone(req).(*chatpb.ListSpacesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*chatpb.Space, string, error) {
 		resp := &chatpb.ListSpacesResponse{}
 		if pageToken != "" {
@@ -3044,7 +3044,7 @@ func (c *gRPCClient) SearchSpaces(ctx context.Context, req *chatpb.SearchSpacesR
 	}
 	opts = append((*c.CallOptions).SearchSpaces[0:len((*c.CallOptions).SearchSpaces):len((*c.CallOptions).SearchSpaces)], opts...)
 	it := &SpaceIterator{}
-	req = proto.Clone(req).(*chatpb.SearchSpacesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*chatpb.Space, string, error) {
 		resp := &chatpb.SearchSpacesResponse{}
 		if pageToken != "" {
@@ -3233,7 +3233,7 @@ func (c *gRPCClient) FindGroupChats(ctx context.Context, req *chatpb.FindGroupCh
 	}
 	opts = append((*c.CallOptions).FindGroupChats[0:len((*c.CallOptions).FindGroupChats):len((*c.CallOptions).FindGroupChats)], opts...)
 	it := &SpaceIterator{}
-	req = proto.Clone(req).(*chatpb.FindGroupChatsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*chatpb.Space, string, error) {
 		resp := &chatpb.FindGroupChatsResponse{}
 		if pageToken != "" {
@@ -3378,7 +3378,7 @@ func (c *gRPCClient) ListReactions(ctx context.Context, req *chatpb.ListReaction
 	}
 	opts = append((*c.CallOptions).ListReactions[0:len((*c.CallOptions).ListReactions):len((*c.CallOptions).ListReactions)], opts...)
 	it := &ReactionIterator{}
-	req = proto.Clone(req).(*chatpb.ListReactionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*chatpb.Reaction, string, error) {
 		resp := &chatpb.ListReactionsResponse{}
 		if pageToken != "" {
@@ -3486,7 +3486,7 @@ func (c *gRPCClient) ListCustomEmojis(ctx context.Context, req *chatpb.ListCusto
 	}
 	opts = append((*c.CallOptions).ListCustomEmojis[0:len((*c.CallOptions).ListCustomEmojis):len((*c.CallOptions).ListCustomEmojis)], opts...)
 	it := &CustomEmojiIterator{}
-	req = proto.Clone(req).(*chatpb.ListCustomEmojisRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*chatpb.CustomEmoji, string, error) {
 		resp := &chatpb.ListCustomEmojisResponse{}
 		if pageToken != "" {
@@ -3651,7 +3651,7 @@ func (c *gRPCClient) ListSpaceEvents(ctx context.Context, req *chatpb.ListSpaceE
 	}
 	opts = append((*c.CallOptions).ListSpaceEvents[0:len((*c.CallOptions).ListSpaceEvents):len((*c.CallOptions).ListSpaceEvents)], opts...)
 	it := &SpaceEventIterator{}
-	req = proto.Clone(req).(*chatpb.ListSpaceEventsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*chatpb.SpaceEvent, string, error) {
 		resp := &chatpb.ListSpaceEventsResponse{}
 		if pageToken != "" {
@@ -3813,7 +3813,7 @@ func (c *gRPCClient) ListSections(ctx context.Context, req *chatpb.ListSectionsR
 	}
 	opts = append((*c.CallOptions).ListSections[0:len((*c.CallOptions).ListSections):len((*c.CallOptions).ListSections)], opts...)
 	it := &SectionIterator{}
-	req = proto.Clone(req).(*chatpb.ListSectionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*chatpb.Section, string, error) {
 		resp := &chatpb.ListSectionsResponse{}
 		if pageToken != "" {
@@ -3889,7 +3889,7 @@ func (c *gRPCClient) ListSectionItems(ctx context.Context, req *chatpb.ListSecti
 	}
 	opts = append((*c.CallOptions).ListSectionItems[0:len((*c.CallOptions).ListSectionItems):len((*c.CallOptions).ListSectionItems)], opts...)
 	it := &SectionItemIterator{}
-	req = proto.Clone(req).(*chatpb.ListSectionItemsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*chatpb.SectionItem, string, error) {
 		resp := &chatpb.ListSectionItemsResponse{}
 		if pageToken != "" {
@@ -4104,7 +4104,7 @@ func (c *restClient) CreateMessage(ctx context.Context, req *chatpb.CreateMessag
 //	  only)
 func (c *restClient) ListMessages(ctx context.Context, req *chatpb.ListMessagesRequest, opts ...gax.CallOption) *MessageIterator {
 	it := &MessageIterator{}
-	req = proto.Clone(req).(*chatpb.ListMessagesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*chatpb.Message, string, error) {
 		resp := &chatpb.ListMessagesResponse{}
@@ -4232,7 +4232,7 @@ func (c *restClient) ListMessages(ctx context.Context, req *chatpb.ListMessagesR
 //	    https://www.googleapis.com/auth/chat.admin.memberships
 func (c *restClient) ListMemberships(ctx context.Context, req *chatpb.ListMembershipsRequest, opts ...gax.CallOption) *MembershipIterator {
 	it := &MembershipIterator{}
-	req = proto.Clone(req).(*chatpb.ListMembershipsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*chatpb.Membership, string, error) {
 		resp := &chatpb.ListMembershipsResponse{}
@@ -4838,7 +4838,7 @@ func (c *restClient) UploadAttachment(ctx context.Context, req *chatpb.UploadAtt
 // method using Workspace administrator privileges instead.
 func (c *restClient) ListSpaces(ctx context.Context, req *chatpb.ListSpacesRequest, opts ...gax.CallOption) *SpaceIterator {
 	it := &SpaceIterator{}
-	req = proto.Clone(req).(*chatpb.ListSpacesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*chatpb.Space, string, error) {
 		resp := &chatpb.ListSpacesResponse{}
@@ -4932,7 +4932,7 @@ func (c *restClient) ListSpaces(ctx context.Context, req *chatpb.ListSpacesReque
 //	https://www.googleapis.com/auth/chat.admin.spaces
 func (c *restClient) SearchSpaces(ctx context.Context, req *chatpb.SearchSpacesRequest, opts ...gax.CallOption) *SpaceIterator {
 	it := &SpaceIterator{}
-	req = proto.Clone(req).(*chatpb.SearchSpacesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*chatpb.Space, string, error) {
 		resp := &chatpb.SearchSpacesResponse{}
@@ -5704,7 +5704,7 @@ func (c *restClient) FindDirectMessage(ctx context.Context, req *chatpb.FindDire
 //	https://www.googleapis.com/auth/chat.memberships
 func (c *restClient) FindGroupChats(ctx context.Context, req *chatpb.FindGroupChatsRequest, opts ...gax.CallOption) *SpaceIterator {
 	it := &SpaceIterator{}
-	req = proto.Clone(req).(*chatpb.FindGroupChatsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*chatpb.Space, string, error) {
 		resp := &chatpb.FindGroupChatsResponse{}
@@ -6204,7 +6204,7 @@ func (c *restClient) CreateReaction(ctx context.Context, req *chatpb.CreateReact
 //	https://www.googleapis.com/auth/chat.messages
 func (c *restClient) ListReactions(ctx context.Context, req *chatpb.ListReactionsRequest, opts ...gax.CallOption) *ReactionIterator {
 	it := &ReactionIterator{}
-	req = proto.Clone(req).(*chatpb.ListReactionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*chatpb.Reaction, string, error) {
 		resp := &chatpb.ListReactionsResponse{}
@@ -6501,7 +6501,7 @@ func (c *restClient) GetCustomEmoji(ctx context.Context, req *chatpb.GetCustomEm
 //	https://www.googleapis.com/auth/chat.customemojis
 func (c *restClient) ListCustomEmojis(ctx context.Context, req *chatpb.ListCustomEmojisRequest, opts ...gax.CallOption) *CustomEmojiIterator {
 	it := &CustomEmojiIterator{}
-	req = proto.Clone(req).(*chatpb.ListCustomEmojisRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*chatpb.CustomEmoji, string, error) {
 		resp := &chatpb.ListCustomEmojisResponse{}
@@ -7025,7 +7025,7 @@ func (c *restClient) GetSpaceEvent(ctx context.Context, req *chatpb.GetSpaceEven
 // space (at https://developers.google.com/workspace/chat/list-space-events).
 func (c *restClient) ListSpaceEvents(ctx context.Context, req *chatpb.ListSpaceEventsRequest, opts ...gax.CallOption) *SpaceEventIterator {
 	it := &SpaceEventIterator{}
-	req = proto.Clone(req).(*chatpb.ListSpaceEventsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*chatpb.SpaceEvent, string, error) {
 		resp := &chatpb.ListSpaceEventsResponse{}
@@ -7466,7 +7466,7 @@ func (c *restClient) UpdateSection(ctx context.Context, req *chatpb.UpdateSectio
 //	https://www.googleapis.com/auth/chat.users.sections.readonly
 func (c *restClient) ListSections(ctx context.Context, req *chatpb.ListSectionsRequest, opts ...gax.CallOption) *SectionIterator {
 	it := &SectionIterator{}
-	req = proto.Clone(req).(*chatpb.ListSectionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*chatpb.Section, string, error) {
 		resp := &chatpb.ListSectionsResponse{}
@@ -7627,7 +7627,7 @@ func (c *restClient) PositionSection(ctx context.Context, req *chatpb.PositionSe
 //	https://www.googleapis.com/auth/chat.users.sections.readonly
 func (c *restClient) ListSectionItems(ctx context.Context, req *chatpb.ListSectionItemsRequest, opts ...gax.CallOption) *SectionItemIterator {
 	it := &SectionItemIterator{}
-	req = proto.Clone(req).(*chatpb.ListSectionItemsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*chatpb.SectionItem, string, error) {
 		resp := &chatpb.ListSectionItemsResponse{}

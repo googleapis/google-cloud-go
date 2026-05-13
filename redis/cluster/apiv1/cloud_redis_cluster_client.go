@@ -800,7 +800,7 @@ func (c *cloudRedisClusterGRPCClient) ListClusters(ctx context.Context, req *clu
 	}
 	opts = append((*c.CallOptions).ListClusters[0:len((*c.CallOptions).ListClusters):len((*c.CallOptions).ListClusters)], opts...)
 	it := &ClusterIterator{}
-	req = proto.Clone(req).(*clusterpb.ListClustersRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*clusterpb.Cluster, string, error) {
 		resp := &clusterpb.ListClustersResponse{}
 		if pageToken != "" {
@@ -1025,7 +1025,7 @@ func (c *cloudRedisClusterGRPCClient) ListBackupCollections(ctx context.Context,
 	}
 	opts = append((*c.CallOptions).ListBackupCollections[0:len((*c.CallOptions).ListBackupCollections):len((*c.CallOptions).ListBackupCollections)], opts...)
 	it := &BackupCollectionIterator{}
-	req = proto.Clone(req).(*clusterpb.ListBackupCollectionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*clusterpb.BackupCollection, string, error) {
 		resp := &clusterpb.ListBackupCollectionsResponse{}
 		if pageToken != "" {
@@ -1101,7 +1101,7 @@ func (c *cloudRedisClusterGRPCClient) ListBackups(ctx context.Context, req *clus
 	}
 	opts = append((*c.CallOptions).ListBackups[0:len((*c.CallOptions).ListBackups):len((*c.CallOptions).ListBackups)], opts...)
 	it := &BackupIterator{}
-	req = proto.Clone(req).(*clusterpb.ListBackupsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*clusterpb.Backup, string, error) {
 		resp := &clusterpb.ListBackupsResponse{}
 		if pageToken != "" {
@@ -1273,7 +1273,7 @@ func (c *cloudRedisClusterGRPCClient) ListLocations(ctx context.Context, req *lo
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -1377,7 +1377,7 @@ func (c *cloudRedisClusterGRPCClient) ListOperations(ctx context.Context, req *l
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -1427,7 +1427,7 @@ func (c *cloudRedisClusterGRPCClient) ListOperations(ctx context.Context, req *l
 // available to the project are queried, and the results are aggregated.
 func (c *cloudRedisClusterRESTClient) ListClusters(ctx context.Context, req *clusterpb.ListClustersRequest, opts ...gax.CallOption) *ClusterIterator {
 	it := &ClusterIterator{}
-	req = proto.Clone(req).(*clusterpb.ListClustersRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*clusterpb.Cluster, string, error) {
 		resp := &clusterpb.ListClustersResponse{}
@@ -1967,7 +1967,7 @@ func (c *cloudRedisClusterRESTClient) RescheduleClusterMaintenance(ctx context.C
 // available to the project are queried, and the results are aggregated.
 func (c *cloudRedisClusterRESTClient) ListBackupCollections(ctx context.Context, req *clusterpb.ListBackupCollectionsRequest, opts ...gax.CallOption) *BackupCollectionIterator {
 	it := &BackupCollectionIterator{}
-	req = proto.Clone(req).(*clusterpb.ListBackupCollectionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*clusterpb.BackupCollection, string, error) {
 		resp := &clusterpb.ListBackupCollectionsResponse{}
@@ -2102,7 +2102,7 @@ func (c *cloudRedisClusterRESTClient) GetBackupCollection(ctx context.Context, r
 // ListBackups lists all backups owned by a backup collection.
 func (c *cloudRedisClusterRESTClient) ListBackups(ctx context.Context, req *clusterpb.ListBackupsRequest, opts ...gax.CallOption) *BackupIterator {
 	it := &BackupIterator{}
-	req = proto.Clone(req).(*clusterpb.ListBackupsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*clusterpb.Backup, string, error) {
 		resp := &clusterpb.ListBackupsResponse{}
@@ -2497,7 +2497,7 @@ func (c *cloudRedisClusterRESTClient) GetLocation(ctx context.Context, req *loca
 // ListLocations lists information about the supported locations for this service.
 func (c *cloudRedisClusterRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -2710,7 +2710,7 @@ func (c *cloudRedisClusterRESTClient) GetOperation(ctx context.Context, req *lon
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *cloudRedisClusterRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

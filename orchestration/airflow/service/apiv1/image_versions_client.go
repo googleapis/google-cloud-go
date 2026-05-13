@@ -368,7 +368,7 @@ func (c *imageVersionsGRPCClient) ListImageVersions(ctx context.Context, req *se
 	}
 	opts = append((*c.CallOptions).ListImageVersions[0:len((*c.CallOptions).ListImageVersions):len((*c.CallOptions).ListImageVersions)], opts...)
 	it := &ImageVersionIterator{}
-	req = proto.Clone(req).(*servicepb.ListImageVersionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*servicepb.ImageVersion, string, error) {
 		resp := &servicepb.ListImageVersionsResponse{}
 		if pageToken != "" {
@@ -455,7 +455,7 @@ func (c *imageVersionsGRPCClient) ListOperations(ctx context.Context, req *longr
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -497,7 +497,7 @@ func (c *imageVersionsGRPCClient) ListOperations(ctx context.Context, req *longr
 // ListImageVersions list ImageVersions for provided location.
 func (c *imageVersionsRESTClient) ListImageVersions(ctx context.Context, req *servicepb.ListImageVersionsRequest, opts ...gax.CallOption) *ImageVersionIterator {
 	it := &ImageVersionIterator{}
-	req = proto.Clone(req).(*servicepb.ListImageVersionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*servicepb.ImageVersion, string, error) {
 		resp := &servicepb.ListImageVersionsResponse{}
@@ -671,7 +671,7 @@ func (c *imageVersionsRESTClient) GetOperation(ctx context.Context, req *longrun
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *imageVersionsRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

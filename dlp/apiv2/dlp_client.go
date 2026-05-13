@@ -2073,7 +2073,7 @@ func (c *gRPCClient) ListInspectTemplates(ctx context.Context, req *dlppb.ListIn
 	}
 	opts = append((*c.CallOptions).ListInspectTemplates[0:len((*c.CallOptions).ListInspectTemplates):len((*c.CallOptions).ListInspectTemplates)], opts...)
 	it := &InspectTemplateIterator{}
-	req = proto.Clone(req).(*dlppb.ListInspectTemplatesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dlppb.InspectTemplate, string, error) {
 		resp := &dlppb.ListInspectTemplatesResponse{}
 		if pageToken != "" {
@@ -2217,7 +2217,7 @@ func (c *gRPCClient) ListDeidentifyTemplates(ctx context.Context, req *dlppb.Lis
 	}
 	opts = append((*c.CallOptions).ListDeidentifyTemplates[0:len((*c.CallOptions).ListDeidentifyTemplates):len((*c.CallOptions).ListDeidentifyTemplates)], opts...)
 	it := &DeidentifyTemplateIterator{}
-	req = proto.Clone(req).(*dlppb.ListDeidentifyTemplatesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dlppb.DeidentifyTemplate, string, error) {
 		resp := &dlppb.ListDeidentifyTemplatesResponse{}
 		if pageToken != "" {
@@ -2385,7 +2385,7 @@ func (c *gRPCClient) ListJobTriggers(ctx context.Context, req *dlppb.ListJobTrig
 	}
 	opts = append((*c.CallOptions).ListJobTriggers[0:len((*c.CallOptions).ListJobTriggers):len((*c.CallOptions).ListJobTriggers)], opts...)
 	it := &JobTriggerIterator{}
-	req = proto.Clone(req).(*dlppb.ListJobTriggersRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dlppb.JobTrigger, string, error) {
 		resp := &dlppb.ListJobTriggersResponse{}
 		if pageToken != "" {
@@ -2553,7 +2553,7 @@ func (c *gRPCClient) ListDiscoveryConfigs(ctx context.Context, req *dlppb.ListDi
 	}
 	opts = append((*c.CallOptions).ListDiscoveryConfigs[0:len((*c.CallOptions).ListDiscoveryConfigs):len((*c.CallOptions).ListDiscoveryConfigs)], opts...)
 	it := &DiscoveryConfigIterator{}
-	req = proto.Clone(req).(*dlppb.ListDiscoveryConfigsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dlppb.DiscoveryConfig, string, error) {
 		resp := &dlppb.ListDiscoveryConfigsResponse{}
 		if pageToken != "" {
@@ -2649,7 +2649,7 @@ func (c *gRPCClient) ListDlpJobs(ctx context.Context, req *dlppb.ListDlpJobsRequ
 	}
 	opts = append((*c.CallOptions).ListDlpJobs[0:len((*c.CallOptions).ListDlpJobs):len((*c.CallOptions).ListDlpJobs)], opts...)
 	it := &DlpJobIterator{}
-	req = proto.Clone(req).(*dlppb.ListDlpJobsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dlppb.DlpJob, string, error) {
 		resp := &dlppb.ListDlpJobsResponse{}
 		if pageToken != "" {
@@ -2837,7 +2837,7 @@ func (c *gRPCClient) ListStoredInfoTypes(ctx context.Context, req *dlppb.ListSto
 	}
 	opts = append((*c.CallOptions).ListStoredInfoTypes[0:len((*c.CallOptions).ListStoredInfoTypes):len((*c.CallOptions).ListStoredInfoTypes)], opts...)
 	it := &StoredInfoTypeIterator{}
-	req = proto.Clone(req).(*dlppb.ListStoredInfoTypesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dlppb.StoredInfoType, string, error) {
 		resp := &dlppb.ListStoredInfoTypesResponse{}
 		if pageToken != "" {
@@ -2909,7 +2909,7 @@ func (c *gRPCClient) ListProjectDataProfiles(ctx context.Context, req *dlppb.Lis
 	}
 	opts = append((*c.CallOptions).ListProjectDataProfiles[0:len((*c.CallOptions).ListProjectDataProfiles):len((*c.CallOptions).ListProjectDataProfiles)], opts...)
 	it := &ProjectDataProfileIterator{}
-	req = proto.Clone(req).(*dlppb.ListProjectDataProfilesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dlppb.ProjectDataProfile, string, error) {
 		resp := &dlppb.ListProjectDataProfilesResponse{}
 		if pageToken != "" {
@@ -2961,7 +2961,7 @@ func (c *gRPCClient) ListTableDataProfiles(ctx context.Context, req *dlppb.ListT
 	}
 	opts = append((*c.CallOptions).ListTableDataProfiles[0:len((*c.CallOptions).ListTableDataProfiles):len((*c.CallOptions).ListTableDataProfiles)], opts...)
 	it := &TableDataProfileIterator{}
-	req = proto.Clone(req).(*dlppb.ListTableDataProfilesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dlppb.TableDataProfile, string, error) {
 		resp := &dlppb.ListTableDataProfilesResponse{}
 		if pageToken != "" {
@@ -3013,7 +3013,7 @@ func (c *gRPCClient) ListColumnDataProfiles(ctx context.Context, req *dlppb.List
 	}
 	opts = append((*c.CallOptions).ListColumnDataProfiles[0:len((*c.CallOptions).ListColumnDataProfiles):len((*c.CallOptions).ListColumnDataProfiles)], opts...)
 	it := &ColumnDataProfileIterator{}
-	req = proto.Clone(req).(*dlppb.ListColumnDataProfilesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dlppb.ColumnDataProfile, string, error) {
 		resp := &dlppb.ListColumnDataProfilesResponse{}
 		if pageToken != "" {
@@ -3089,7 +3089,7 @@ func (c *gRPCClient) ListFileStoreDataProfiles(ctx context.Context, req *dlppb.L
 	}
 	opts = append((*c.CallOptions).ListFileStoreDataProfiles[0:len((*c.CallOptions).ListFileStoreDataProfiles):len((*c.CallOptions).ListFileStoreDataProfiles)], opts...)
 	it := &FileStoreDataProfileIterator{}
-	req = proto.Clone(req).(*dlppb.ListFileStoreDataProfilesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dlppb.FileStoreDataProfile, string, error) {
 		resp := &dlppb.ListFileStoreDataProfilesResponse{}
 		if pageToken != "" {
@@ -3345,7 +3345,7 @@ func (c *gRPCClient) ListConnections(ctx context.Context, req *dlppb.ListConnect
 	}
 	opts = append((*c.CallOptions).ListConnections[0:len((*c.CallOptions).ListConnections):len((*c.CallOptions).ListConnections)], opts...)
 	it := &ConnectionIterator{}
-	req = proto.Clone(req).(*dlppb.ListConnectionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dlppb.Connection, string, error) {
 		resp := &dlppb.ListConnectionsResponse{}
 		if pageToken != "" {
@@ -3397,7 +3397,7 @@ func (c *gRPCClient) SearchConnections(ctx context.Context, req *dlppb.SearchCon
 	}
 	opts = append((*c.CallOptions).SearchConnections[0:len((*c.CallOptions).SearchConnections):len((*c.CallOptions).SearchConnections)], opts...)
 	it := &ConnectionIterator{}
-	req = proto.Clone(req).(*dlppb.SearchConnectionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dlppb.Connection, string, error) {
 		resp := &dlppb.SearchConnectionsResponse{}
 		if pageToken != "" {
@@ -4032,7 +4032,7 @@ func (c *restClient) GetInspectTemplate(ctx context.Context, req *dlppb.GetInspe
 // to learn more.
 func (c *restClient) ListInspectTemplates(ctx context.Context, req *dlppb.ListInspectTemplatesRequest, opts ...gax.CallOption) *InspectTemplateIterator {
 	it := &InspectTemplateIterator{}
-	req = proto.Clone(req).(*dlppb.ListInspectTemplatesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dlppb.InspectTemplate, string, error) {
 		resp := &dlppb.ListInspectTemplatesResponse{}
@@ -4357,7 +4357,7 @@ func (c *restClient) GetDeidentifyTemplate(ctx context.Context, req *dlppb.GetDe
 // to learn more.
 func (c *restClient) ListDeidentifyTemplates(ctx context.Context, req *dlppb.ListDeidentifyTemplatesRequest, opts ...gax.CallOption) *DeidentifyTemplateIterator {
 	it := &DeidentifyTemplateIterator{}
-	req = proto.Clone(req).(*dlppb.ListDeidentifyTemplatesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dlppb.DeidentifyTemplate, string, error) {
 		resp := &dlppb.ListDeidentifyTemplatesResponse{}
@@ -4747,7 +4747,7 @@ func (c *restClient) GetJobTrigger(ctx context.Context, req *dlppb.GetJobTrigger
 // to learn more.
 func (c *restClient) ListJobTriggers(ctx context.Context, req *dlppb.ListJobTriggersRequest, opts ...gax.CallOption) *JobTriggerIterator {
 	it := &JobTriggerIterator{}
-	req = proto.Clone(req).(*dlppb.ListJobTriggersRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dlppb.JobTrigger, string, error) {
 		resp := &dlppb.ListJobTriggersResponse{}
@@ -5129,7 +5129,7 @@ func (c *restClient) GetDiscoveryConfig(ctx context.Context, req *dlppb.GetDisco
 // ListDiscoveryConfigs lists discovery configurations.
 func (c *restClient) ListDiscoveryConfigs(ctx context.Context, req *dlppb.ListDiscoveryConfigsRequest, opts ...gax.CallOption) *DiscoveryConfigIterator {
 	it := &DiscoveryConfigIterator{}
-	req = proto.Clone(req).(*dlppb.ListDiscoveryConfigsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dlppb.DiscoveryConfig, string, error) {
 		resp := &dlppb.ListDiscoveryConfigsResponse{}
@@ -5329,7 +5329,7 @@ func (c *restClient) CreateDlpJob(ctx context.Context, req *dlppb.CreateDlpJobRe
 // to learn more.
 func (c *restClient) ListDlpJobs(ctx context.Context, req *dlppb.ListDlpJobsRequest, opts ...gax.CallOption) *DlpJobIterator {
 	it := &DlpJobIterator{}
-	req = proto.Clone(req).(*dlppb.ListDlpJobsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dlppb.DlpJob, string, error) {
 		resp := &dlppb.ListDlpJobsResponse{}
@@ -5781,7 +5781,7 @@ func (c *restClient) GetStoredInfoType(ctx context.Context, req *dlppb.GetStored
 // to learn more.
 func (c *restClient) ListStoredInfoTypes(ctx context.Context, req *dlppb.ListStoredInfoTypesRequest, opts ...gax.CallOption) *StoredInfoTypeIterator {
 	it := &StoredInfoTypeIterator{}
-	req = proto.Clone(req).(*dlppb.ListStoredInfoTypesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dlppb.StoredInfoType, string, error) {
 		resp := &dlppb.ListStoredInfoTypesResponse{}
@@ -5910,7 +5910,7 @@ func (c *restClient) DeleteStoredInfoType(ctx context.Context, req *dlppb.Delete
 // ListProjectDataProfiles lists project data profiles for an organization.
 func (c *restClient) ListProjectDataProfiles(ctx context.Context, req *dlppb.ListProjectDataProfilesRequest, opts ...gax.CallOption) *ProjectDataProfileIterator {
 	it := &ProjectDataProfileIterator{}
-	req = proto.Clone(req).(*dlppb.ListProjectDataProfilesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dlppb.ProjectDataProfile, string, error) {
 		resp := &dlppb.ListProjectDataProfilesResponse{}
@@ -5994,7 +5994,7 @@ func (c *restClient) ListProjectDataProfiles(ctx context.Context, req *dlppb.Lis
 // ListTableDataProfiles lists table data profiles for an organization.
 func (c *restClient) ListTableDataProfiles(ctx context.Context, req *dlppb.ListTableDataProfilesRequest, opts ...gax.CallOption) *TableDataProfileIterator {
 	it := &TableDataProfileIterator{}
-	req = proto.Clone(req).(*dlppb.ListTableDataProfilesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dlppb.TableDataProfile, string, error) {
 		resp := &dlppb.ListTableDataProfilesResponse{}
@@ -6078,7 +6078,7 @@ func (c *restClient) ListTableDataProfiles(ctx context.Context, req *dlppb.ListT
 // ListColumnDataProfiles lists column data profiles for an organization.
 func (c *restClient) ListColumnDataProfiles(ctx context.Context, req *dlppb.ListColumnDataProfilesRequest, opts ...gax.CallOption) *ColumnDataProfileIterator {
 	it := &ColumnDataProfileIterator{}
-	req = proto.Clone(req).(*dlppb.ListColumnDataProfilesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dlppb.ColumnDataProfile, string, error) {
 		resp := &dlppb.ListColumnDataProfilesResponse{}
@@ -6219,7 +6219,7 @@ func (c *restClient) GetProjectDataProfile(ctx context.Context, req *dlppb.GetPr
 // ListFileStoreDataProfiles lists file store data profiles for an organization.
 func (c *restClient) ListFileStoreDataProfiles(ctx context.Context, req *dlppb.ListFileStoreDataProfilesRequest, opts ...gax.CallOption) *FileStoreDataProfileIterator {
 	it := &FileStoreDataProfileIterator{}
-	req = proto.Clone(req).(*dlppb.ListFileStoreDataProfilesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dlppb.FileStoreDataProfile, string, error) {
 		resp := &dlppb.ListFileStoreDataProfilesResponse{}
@@ -6795,7 +6795,7 @@ func (c *restClient) GetConnection(ctx context.Context, req *dlppb.GetConnection
 // within an organization.
 func (c *restClient) ListConnections(ctx context.Context, req *dlppb.ListConnectionsRequest, opts ...gax.CallOption) *ConnectionIterator {
 	it := &ConnectionIterator{}
-	req = proto.Clone(req).(*dlppb.ListConnectionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dlppb.Connection, string, error) {
 		resp := &dlppb.ListConnectionsResponse{}
@@ -6876,7 +6876,7 @@ func (c *restClient) ListConnections(ctx context.Context, req *dlppb.ListConnect
 // SearchConnections searches for Connections in a parent.
 func (c *restClient) SearchConnections(ctx context.Context, req *dlppb.SearchConnectionsRequest, opts ...gax.CallOption) *ConnectionIterator {
 	it := &ConnectionIterator{}
-	req = proto.Clone(req).(*dlppb.SearchConnectionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dlppb.Connection, string, error) {
 		resp := &dlppb.SearchConnectionsResponse{}

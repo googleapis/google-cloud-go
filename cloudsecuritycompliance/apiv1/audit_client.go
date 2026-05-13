@@ -245,6 +245,21 @@ func (c *AuditClient) GetLocation(ctx context.Context, req *locationpb.GetLocati
 }
 
 // ListLocations lists information about the supported locations for this service.
+//
+// This method lists locations based on the resource scope provided in
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)][google.cloud.location.ListLocationsRequest.name (at http://google.cloud.location.ListLocationsRequest.name)] field: *
+// Global locations: If name is empty, the method lists the
+// public locations available to all projects. * Project-specific
+// locations: If name follows the format
+// projects/{project}, the method lists locations visible to that
+// specific project. This includes public, private, or other
+// project-specific locations enabled for the project.
+//
+// For gRPC and client library implementations, the resource name is
+// passed as the name field. For direct service calls, the resource
+// name is
+// incorporated into the request path based on the specific service
+// implementation and version.
 func (c *AuditClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	return c.internalClient.ListLocations(ctx, req, opts...)
 }
@@ -586,7 +601,7 @@ func (c *auditGRPCClient) ListFrameworkAudits(ctx context.Context, req *cloudsec
 	}
 	opts = append((*c.CallOptions).ListFrameworkAudits[0:len((*c.CallOptions).ListFrameworkAudits):len((*c.CallOptions).ListFrameworkAudits)], opts...)
 	it := &FrameworkAuditIterator{}
-	req = proto.Clone(req).(*cloudsecuritycompliancepb.ListFrameworkAuditsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cloudsecuritycompliancepb.FrameworkAudit, string, error) {
 		resp := &cloudsecuritycompliancepb.ListFrameworkAuditsResponse{}
 		if pageToken != "" {
@@ -680,7 +695,7 @@ func (c *auditGRPCClient) ListLocations(ctx context.Context, req *locationpb.Lis
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -784,7 +799,7 @@ func (c *auditGRPCClient) ListOperations(ctx context.Context, req *longrunningpb
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -956,7 +971,7 @@ func (c *auditRESTClient) CreateFrameworkAudit(ctx context.Context, req *cloudse
 // ListFrameworkAudits lists the framework audits for a given organization, folder, or project.
 func (c *auditRESTClient) ListFrameworkAudits(ctx context.Context, req *cloudsecuritycompliancepb.ListFrameworkAuditsRequest, opts ...gax.CallOption) *FrameworkAuditIterator {
 	it := &FrameworkAuditIterator{}
-	req = proto.Clone(req).(*cloudsecuritycompliancepb.ListFrameworkAuditsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cloudsecuritycompliancepb.FrameworkAudit, string, error) {
 		resp := &cloudsecuritycompliancepb.ListFrameworkAuditsResponse{}
@@ -1146,9 +1161,24 @@ func (c *auditRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLo
 }
 
 // ListLocations lists information about the supported locations for this service.
+//
+// This method lists locations based on the resource scope provided in
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)][google.cloud.location.ListLocationsRequest.name (at http://google.cloud.location.ListLocationsRequest.name)] field: *
+// Global locations: If name is empty, the method lists the
+// public locations available to all projects. * Project-specific
+// locations: If name follows the format
+// projects/{project}, the method lists locations visible to that
+// specific project. This includes public, private, or other
+// project-specific locations enabled for the project.
+//
+// For gRPC and client library implementations, the resource name is
+// passed as the name field. For direct service calls, the resource
+// name is
+// incorporated into the request path based on the specific service
+// implementation and version.
 func (c *auditRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -1367,7 +1397,7 @@ func (c *auditRESTClient) GetOperation(ctx context.Context, req *longrunningpb.G
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *auditRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

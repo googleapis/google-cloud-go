@@ -1318,7 +1318,7 @@ func (c *gRPCClient) ListAssets(ctx context.Context, req *migrationcenterpb.List
 	}
 	opts = append((*c.CallOptions).ListAssets[0:len((*c.CallOptions).ListAssets):len((*c.CallOptions).ListAssets)], opts...)
 	it := &AssetIterator{}
-	req = proto.Clone(req).(*migrationcenterpb.ListAssetsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*migrationcenterpb.Asset, string, error) {
 		resp := &migrationcenterpb.ListAssetsResponse{}
 		if pageToken != "" {
@@ -1550,7 +1550,7 @@ func (c *gRPCClient) ListImportJobs(ctx context.Context, req *migrationcenterpb.
 	}
 	opts = append((*c.CallOptions).ListImportJobs[0:len((*c.CallOptions).ListImportJobs):len((*c.CallOptions).ListImportJobs)], opts...)
 	it := &ImportJobIterator{}
-	req = proto.Clone(req).(*migrationcenterpb.ListImportJobsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*migrationcenterpb.ImportJob, string, error) {
 		resp := &migrationcenterpb.ListImportJobsResponse{}
 		if pageToken != "" {
@@ -1751,7 +1751,7 @@ func (c *gRPCClient) ListImportDataFiles(ctx context.Context, req *migrationcent
 	}
 	opts = append((*c.CallOptions).ListImportDataFiles[0:len((*c.CallOptions).ListImportDataFiles):len((*c.CallOptions).ListImportDataFiles)], opts...)
 	it := &ImportDataFileIterator{}
-	req = proto.Clone(req).(*migrationcenterpb.ListImportDataFilesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*migrationcenterpb.ImportDataFile, string, error) {
 		resp := &migrationcenterpb.ListImportDataFilesResponse{}
 		if pageToken != "" {
@@ -1855,7 +1855,7 @@ func (c *gRPCClient) ListGroups(ctx context.Context, req *migrationcenterpb.List
 	}
 	opts = append((*c.CallOptions).ListGroups[0:len((*c.CallOptions).ListGroups):len((*c.CallOptions).ListGroups)], opts...)
 	it := &GroupIterator{}
-	req = proto.Clone(req).(*migrationcenterpb.ListGroupsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*migrationcenterpb.Group, string, error) {
 		resp := &migrationcenterpb.ListGroupsResponse{}
 		if pageToken != "" {
@@ -2058,7 +2058,7 @@ func (c *gRPCClient) ListErrorFrames(ctx context.Context, req *migrationcenterpb
 	}
 	opts = append((*c.CallOptions).ListErrorFrames[0:len((*c.CallOptions).ListErrorFrames):len((*c.CallOptions).ListErrorFrames)], opts...)
 	it := &ErrorFrameIterator{}
-	req = proto.Clone(req).(*migrationcenterpb.ListErrorFramesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*migrationcenterpb.ErrorFrame, string, error) {
 		resp := &migrationcenterpb.ListErrorFramesResponse{}
 		if pageToken != "" {
@@ -2134,7 +2134,7 @@ func (c *gRPCClient) ListSources(ctx context.Context, req *migrationcenterpb.Lis
 	}
 	opts = append((*c.CallOptions).ListSources[0:len((*c.CallOptions).ListSources):len((*c.CallOptions).ListSources)], opts...)
 	it := &SourceIterator{}
-	req = proto.Clone(req).(*migrationcenterpb.ListSourcesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*migrationcenterpb.Source, string, error) {
 		resp := &migrationcenterpb.ListSourcesResponse{}
 		if pageToken != "" {
@@ -2285,7 +2285,7 @@ func (c *gRPCClient) ListPreferenceSets(ctx context.Context, req *migrationcente
 	}
 	opts = append((*c.CallOptions).ListPreferenceSets[0:len((*c.CallOptions).ListPreferenceSets):len((*c.CallOptions).ListPreferenceSets)], opts...)
 	it := &PreferenceSetIterator{}
-	req = proto.Clone(req).(*migrationcenterpb.ListPreferenceSetsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*migrationcenterpb.PreferenceSet, string, error) {
 		resp := &migrationcenterpb.ListPreferenceSetsResponse{}
 		if pageToken != "" {
@@ -2533,7 +2533,7 @@ func (c *gRPCClient) ListReportConfigs(ctx context.Context, req *migrationcenter
 	}
 	opts = append((*c.CallOptions).ListReportConfigs[0:len((*c.CallOptions).ListReportConfigs):len((*c.CallOptions).ListReportConfigs)], opts...)
 	it := &ReportConfigIterator{}
-	req = proto.Clone(req).(*migrationcenterpb.ListReportConfigsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*migrationcenterpb.ReportConfig, string, error) {
 		resp := &migrationcenterpb.ListReportConfigsResponse{}
 		if pageToken != "" {
@@ -2661,7 +2661,7 @@ func (c *gRPCClient) ListReports(ctx context.Context, req *migrationcenterpb.Lis
 	}
 	opts = append((*c.CallOptions).ListReports[0:len((*c.CallOptions).ListReports):len((*c.CallOptions).ListReports)], opts...)
 	it := &ReportIterator{}
-	req = proto.Clone(req).(*migrationcenterpb.ListReportsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*migrationcenterpb.Report, string, error) {
 		resp := &migrationcenterpb.ListReportsResponse{}
 		if pageToken != "" {
@@ -2757,7 +2757,7 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -2861,7 +2861,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -2903,7 +2903,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // ListAssets lists all the assets in a given project and location.
 func (c *restClient) ListAssets(ctx context.Context, req *migrationcenterpb.ListAssetsRequest, opts ...gax.CallOption) *AssetIterator {
 	it := &AssetIterator{}
-	req = proto.Clone(req).(*migrationcenterpb.ListAssetsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*migrationcenterpb.Asset, string, error) {
 		resp := &migrationcenterpb.ListAssetsResponse{}
@@ -3473,7 +3473,7 @@ func (c *restClient) CreateImportJob(ctx context.Context, req *migrationcenterpb
 // ListImportJobs lists all import jobs.
 func (c *restClient) ListImportJobs(ctx context.Context, req *migrationcenterpb.ListImportJobsRequest, opts ...gax.CallOption) *ImportJobIterator {
 	it := &ImportJobIterator{}
-	req = proto.Clone(req).(*migrationcenterpb.ListImportJobsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*migrationcenterpb.ImportJob, string, error) {
 		resp := &migrationcenterpb.ListImportJobsResponse{}
@@ -3949,7 +3949,7 @@ func (c *restClient) GetImportDataFile(ctx context.Context, req *migrationcenter
 // ListImportDataFiles list import data files.
 func (c *restClient) ListImportDataFiles(ctx context.Context, req *migrationcenterpb.ListImportDataFilesRequest, opts ...gax.CallOption) *ImportDataFileIterator {
 	it := &ImportDataFileIterator{}
-	req = proto.Clone(req).(*migrationcenterpb.ListImportDataFilesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*migrationcenterpb.ImportDataFile, string, error) {
 		resp := &migrationcenterpb.ListImportDataFilesResponse{}
@@ -4167,7 +4167,7 @@ func (c *restClient) DeleteImportDataFile(ctx context.Context, req *migrationcen
 // ListGroups lists all groups in a given project and location.
 func (c *restClient) ListGroups(ctx context.Context, req *migrationcenterpb.ListGroupsRequest, opts ...gax.CallOption) *GroupIterator {
 	it := &GroupIterator{}
-	req = proto.Clone(req).(*migrationcenterpb.ListGroupsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*migrationcenterpb.Group, string, error) {
 		resp := &migrationcenterpb.ListGroupsResponse{}
@@ -4648,7 +4648,7 @@ func (c *restClient) RemoveAssetsFromGroup(ctx context.Context, req *migrationce
 // ListErrorFrames lists all error frames in a given source and location.
 func (c *restClient) ListErrorFrames(ctx context.Context, req *migrationcenterpb.ListErrorFramesRequest, opts ...gax.CallOption) *ErrorFrameIterator {
 	it := &ErrorFrameIterator{}
-	req = proto.Clone(req).(*migrationcenterpb.ListErrorFramesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*migrationcenterpb.ErrorFrame, string, error) {
 		resp := &migrationcenterpb.ListErrorFramesResponse{}
@@ -4789,7 +4789,7 @@ func (c *restClient) GetErrorFrame(ctx context.Context, req *migrationcenterpb.G
 // ListSources lists all the sources in a given project and location.
 func (c *restClient) ListSources(ctx context.Context, req *migrationcenterpb.ListSourcesRequest, opts ...gax.CallOption) *SourceIterator {
 	it := &SourceIterator{}
-	req = proto.Clone(req).(*migrationcenterpb.ListSourcesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*migrationcenterpb.Source, string, error) {
 		resp := &migrationcenterpb.ListSourcesResponse{}
@@ -5138,7 +5138,7 @@ func (c *restClient) DeleteSource(ctx context.Context, req *migrationcenterpb.De
 // ListPreferenceSets lists all the preference sets in a given project and location.
 func (c *restClient) ListPreferenceSets(ctx context.Context, req *migrationcenterpb.ListPreferenceSetsRequest, opts ...gax.CallOption) *PreferenceSetIterator {
 	it := &PreferenceSetIterator{}
-	req = proto.Clone(req).(*migrationcenterpb.ListPreferenceSetsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*migrationcenterpb.PreferenceSet, string, error) {
 		resp := &migrationcenterpb.ListPreferenceSetsResponse{}
@@ -5743,7 +5743,7 @@ func (c *restClient) GetReportConfig(ctx context.Context, req *migrationcenterpb
 // ListReportConfigs lists ReportConfigs in a given project and location.
 func (c *restClient) ListReportConfigs(ctx context.Context, req *migrationcenterpb.ListReportConfigsRequest, opts ...gax.CallOption) *ReportConfigIterator {
 	it := &ReportConfigIterator{}
-	req = proto.Clone(req).(*migrationcenterpb.ListReportConfigsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*migrationcenterpb.ReportConfig, string, error) {
 		resp := &migrationcenterpb.ListReportConfigsResponse{}
@@ -6024,7 +6024,7 @@ func (c *restClient) GetReport(ctx context.Context, req *migrationcenterpb.GetRe
 // ListReports lists Reports in a given ReportConfig.
 func (c *restClient) ListReports(ctx context.Context, req *migrationcenterpb.ListReportsRequest, opts ...gax.CallOption) *ReportIterator {
 	it := &ReportIterator{}
-	req = proto.Clone(req).(*migrationcenterpb.ListReportsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*migrationcenterpb.Report, string, error) {
 		resp := &migrationcenterpb.ListReportsResponse{}
@@ -6228,7 +6228,7 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 // ListLocations lists information about the supported locations for this service.
 func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -6447,7 +6447,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

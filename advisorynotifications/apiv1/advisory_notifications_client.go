@@ -412,7 +412,7 @@ func (c *gRPCClient) ListNotifications(ctx context.Context, req *advisorynotific
 	}
 	opts = append((*c.CallOptions).ListNotifications[0:len((*c.CallOptions).ListNotifications):len((*c.CallOptions).ListNotifications)], opts...)
 	it := &NotificationIterator{}
-	req = proto.Clone(req).(*advisorynotificationspb.ListNotificationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*advisorynotificationspb.Notification, string, error) {
 		resp := &advisorynotificationspb.ListNotificationsResponse{}
 		if pageToken != "" {
@@ -523,7 +523,7 @@ func (c *gRPCClient) UpdateSettings(ctx context.Context, req *advisorynotificati
 // ListNotifications lists notifications under a given parent.
 func (c *restClient) ListNotifications(ctx context.Context, req *advisorynotificationspb.ListNotificationsRequest, opts ...gax.CallOption) *NotificationIterator {
 	it := &NotificationIterator{}
-	req = proto.Clone(req).(*advisorynotificationspb.ListNotificationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*advisorynotificationspb.Notification, string, error) {
 		resp := &advisorynotificationspb.ListNotificationsResponse{}

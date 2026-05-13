@@ -621,7 +621,7 @@ func (c *cloudControlsPartnerCoreGRPCClient) ListWorkloads(ctx context.Context, 
 	}
 	opts = append((*c.CallOptions).ListWorkloads[0:len((*c.CallOptions).ListWorkloads):len((*c.CallOptions).ListWorkloads)], opts...)
 	it := &WorkloadIterator{}
-	req = proto.Clone(req).(*cloudcontrolspartnerpb.ListWorkloadsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cloudcontrolspartnerpb.Workload, string, error) {
 		resp := &cloudcontrolspartnerpb.ListWorkloadsResponse{}
 		if pageToken != "" {
@@ -697,7 +697,7 @@ func (c *cloudControlsPartnerCoreGRPCClient) ListCustomers(ctx context.Context, 
 	}
 	opts = append((*c.CallOptions).ListCustomers[0:len((*c.CallOptions).ListCustomers):len((*c.CallOptions).ListCustomers)], opts...)
 	it := &CustomerIterator{}
-	req = proto.Clone(req).(*cloudcontrolspartnerpb.ListCustomersRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cloudcontrolspartnerpb.Customer, string, error) {
 		resp := &cloudcontrolspartnerpb.ListCustomersResponse{}
 		if pageToken != "" {
@@ -797,7 +797,7 @@ func (c *cloudControlsPartnerCoreGRPCClient) ListAccessApprovalRequests(ctx cont
 	}
 	opts = append((*c.CallOptions).ListAccessApprovalRequests[0:len((*c.CallOptions).ListAccessApprovalRequests):len((*c.CallOptions).ListAccessApprovalRequests)], opts...)
 	it := &AccessApprovalRequestIterator{}
-	req = proto.Clone(req).(*cloudcontrolspartnerpb.ListAccessApprovalRequestsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cloudcontrolspartnerpb.AccessApprovalRequest, string, error) {
 		resp := &cloudcontrolspartnerpb.ListAccessApprovalRequestsResponse{}
 		if pageToken != "" {
@@ -985,7 +985,7 @@ func (c *cloudControlsPartnerCoreRESTClient) GetWorkload(ctx context.Context, re
 // ListWorkloads lists customer workloads for a given customer org id
 func (c *cloudControlsPartnerCoreRESTClient) ListWorkloads(ctx context.Context, req *cloudcontrolspartnerpb.ListWorkloadsRequest, opts ...gax.CallOption) *WorkloadIterator {
 	it := &WorkloadIterator{}
-	req = proto.Clone(req).(*cloudcontrolspartnerpb.ListWorkloadsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cloudcontrolspartnerpb.Workload, string, error) {
 		resp := &cloudcontrolspartnerpb.ListWorkloadsResponse{}
@@ -1126,7 +1126,7 @@ func (c *cloudControlsPartnerCoreRESTClient) GetCustomer(ctx context.Context, re
 // ListCustomers lists customers of a partner identified by its Google Cloud organization ID
 func (c *cloudControlsPartnerCoreRESTClient) ListCustomers(ctx context.Context, req *cloudcontrolspartnerpb.ListCustomersRequest, opts ...gax.CallOption) *CustomerIterator {
 	it := &CustomerIterator{}
-	req = proto.Clone(req).(*cloudcontrolspartnerpb.ListCustomersRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cloudcontrolspartnerpb.Customer, string, error) {
 		resp := &cloudcontrolspartnerpb.ListCustomersResponse{}
@@ -1327,7 +1327,7 @@ func (c *cloudControlsPartnerCoreRESTClient) GetPartnerPermissions(ctx context.C
 // Deprecated: ListAccessApprovalRequests may be removed in a future version.
 func (c *cloudControlsPartnerCoreRESTClient) ListAccessApprovalRequests(ctx context.Context, req *cloudcontrolspartnerpb.ListAccessApprovalRequestsRequest, opts ...gax.CallOption) *AccessApprovalRequestIterator {
 	it := &AccessApprovalRequestIterator{}
-	req = proto.Clone(req).(*cloudcontrolspartnerpb.ListAccessApprovalRequestsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cloudcontrolspartnerpb.AccessApprovalRequest, string, error) {
 		resp := &cloudcontrolspartnerpb.ListAccessApprovalRequestsResponse{}

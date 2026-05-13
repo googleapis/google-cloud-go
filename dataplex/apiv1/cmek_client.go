@@ -643,7 +643,7 @@ func (c *cmekGRPCClient) ListEncryptionConfigs(ctx context.Context, req *dataple
 	}
 	opts = append((*c.CallOptions).ListEncryptionConfigs[0:len((*c.CallOptions).ListEncryptionConfigs):len((*c.CallOptions).ListEncryptionConfigs)], opts...)
 	it := &EncryptionConfigIterator{}
-	req = proto.Clone(req).(*dataplexpb.ListEncryptionConfigsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.EncryptionConfig, string, error) {
 		resp := &dataplexpb.ListEncryptionConfigsResponse{}
 		if pageToken != "" {
@@ -737,7 +737,7 @@ func (c *cmekGRPCClient) ListLocations(ctx context.Context, req *locationpb.List
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -913,7 +913,7 @@ func (c *cmekGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -1157,7 +1157,7 @@ func (c *cmekRESTClient) DeleteEncryptionConfig(ctx context.Context, req *datapl
 // ListEncryptionConfigs list EncryptionConfigs.
 func (c *cmekRESTClient) ListEncryptionConfigs(ctx context.Context, req *dataplexpb.ListEncryptionConfigsRequest, opts ...gax.CallOption) *EncryptionConfigIterator {
 	it := &EncryptionConfigIterator{}
-	req = proto.Clone(req).(*dataplexpb.ListEncryptionConfigsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.EncryptionConfig, string, error) {
 		resp := &dataplexpb.ListEncryptionConfigsResponse{}
@@ -1360,7 +1360,7 @@ func (c *cmekRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLoc
 //	to the project.
 func (c *cmekRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -1776,7 +1776,7 @@ func (c *cmekRESTClient) GetOperation(ctx context.Context, req *longrunningpb.Ge
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *cmekRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

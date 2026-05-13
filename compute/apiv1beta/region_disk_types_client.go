@@ -286,7 +286,7 @@ func (c *regionDiskTypesRESTClient) Get(ctx context.Context, req *computepb.GetR
 // List retrieves a list of regional disk types available to the specified project.
 func (c *regionDiskTypesRESTClient) List(ctx context.Context, req *computepb.ListRegionDiskTypesRequest, opts ...gax.CallOption) *DiskTypeIterator {
 	it := &DiskTypeIterator{}
-	req = proto.Clone(req).(*computepb.ListRegionDiskTypesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.DiskType, string, error) {
 		resp := &computepb.RegionDiskTypeList{}

@@ -1583,7 +1583,7 @@ func (c *backupForGKEGRPCClient) ListBackupPlans(ctx context.Context, req *gkeba
 	}
 	opts = append((*c.CallOptions).ListBackupPlans[0:len((*c.CallOptions).ListBackupPlans):len((*c.CallOptions).ListBackupPlans)], opts...)
 	it := &BackupPlanIterator{}
-	req = proto.Clone(req).(*gkebackuppb.ListBackupPlansRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*gkebackuppb.BackupPlan, string, error) {
 		resp := &gkebackuppb.ListBackupPlansResponse{}
 		if pageToken != "" {
@@ -1734,7 +1734,7 @@ func (c *backupForGKEGRPCClient) ListBackupChannels(ctx context.Context, req *gk
 	}
 	opts = append((*c.CallOptions).ListBackupChannels[0:len((*c.CallOptions).ListBackupChannels):len((*c.CallOptions).ListBackupChannels)], opts...)
 	it := &BackupChannelIterator{}
-	req = proto.Clone(req).(*gkebackuppb.ListBackupChannelsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*gkebackuppb.BackupChannel, string, error) {
 		resp := &gkebackuppb.ListBackupChannelsResponse{}
 		if pageToken != "" {
@@ -1859,7 +1859,7 @@ func (c *backupForGKEGRPCClient) ListBackupPlanBindings(ctx context.Context, req
 	}
 	opts = append((*c.CallOptions).ListBackupPlanBindings[0:len((*c.CallOptions).ListBackupPlanBindings):len((*c.CallOptions).ListBackupPlanBindings)], opts...)
 	it := &BackupPlanBindingIterator{}
-	req = proto.Clone(req).(*gkebackuppb.ListBackupPlanBindingsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*gkebackuppb.BackupPlanBinding, string, error) {
 		resp := &gkebackuppb.ListBackupPlanBindingsResponse{}
 		if pageToken != "" {
@@ -1961,7 +1961,7 @@ func (c *backupForGKEGRPCClient) ListBackups(ctx context.Context, req *gkebackup
 	}
 	opts = append((*c.CallOptions).ListBackups[0:len((*c.CallOptions).ListBackups):len((*c.CallOptions).ListBackups)], opts...)
 	it := &BackupIterator{}
-	req = proto.Clone(req).(*gkebackuppb.ListBackupsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*gkebackuppb.Backup, string, error) {
 		resp := &gkebackuppb.ListBackupsResponse{}
 		if pageToken != "" {
@@ -2086,7 +2086,7 @@ func (c *backupForGKEGRPCClient) ListVolumeBackups(ctx context.Context, req *gke
 	}
 	opts = append((*c.CallOptions).ListVolumeBackups[0:len((*c.CallOptions).ListVolumeBackups):len((*c.CallOptions).ListVolumeBackups)], opts...)
 	it := &VolumeBackupIterator{}
-	req = proto.Clone(req).(*gkebackuppb.ListVolumeBackupsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*gkebackuppb.VolumeBackup, string, error) {
 		resp := &gkebackuppb.ListVolumeBackupsResponse{}
 		if pageToken != "" {
@@ -2188,7 +2188,7 @@ func (c *backupForGKEGRPCClient) ListRestorePlans(ctx context.Context, req *gkeb
 	}
 	opts = append((*c.CallOptions).ListRestorePlans[0:len((*c.CallOptions).ListRestorePlans):len((*c.CallOptions).ListRestorePlans)], opts...)
 	it := &RestorePlanIterator{}
-	req = proto.Clone(req).(*gkebackuppb.ListRestorePlansRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*gkebackuppb.RestorePlan, string, error) {
 		resp := &gkebackuppb.ListRestorePlansResponse{}
 		if pageToken != "" {
@@ -2339,7 +2339,7 @@ func (c *backupForGKEGRPCClient) ListRestoreChannels(ctx context.Context, req *g
 	}
 	opts = append((*c.CallOptions).ListRestoreChannels[0:len((*c.CallOptions).ListRestoreChannels):len((*c.CallOptions).ListRestoreChannels)], opts...)
 	it := &RestoreChannelIterator{}
-	req = proto.Clone(req).(*gkebackuppb.ListRestoreChannelsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*gkebackuppb.RestoreChannel, string, error) {
 		resp := &gkebackuppb.ListRestoreChannelsResponse{}
 		if pageToken != "" {
@@ -2464,7 +2464,7 @@ func (c *backupForGKEGRPCClient) ListRestorePlanBindings(ctx context.Context, re
 	}
 	opts = append((*c.CallOptions).ListRestorePlanBindings[0:len((*c.CallOptions).ListRestorePlanBindings):len((*c.CallOptions).ListRestorePlanBindings)], opts...)
 	it := &RestorePlanBindingIterator{}
-	req = proto.Clone(req).(*gkebackuppb.ListRestorePlanBindingsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*gkebackuppb.RestorePlanBinding, string, error) {
 		resp := &gkebackuppb.ListRestorePlanBindingsResponse{}
 		if pageToken != "" {
@@ -2566,7 +2566,7 @@ func (c *backupForGKEGRPCClient) ListRestores(ctx context.Context, req *gkebacku
 	}
 	opts = append((*c.CallOptions).ListRestores[0:len((*c.CallOptions).ListRestores):len((*c.CallOptions).ListRestores)], opts...)
 	it := &RestoreIterator{}
-	req = proto.Clone(req).(*gkebackuppb.ListRestoresRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*gkebackuppb.Restore, string, error) {
 		resp := &gkebackuppb.ListRestoresResponse{}
 		if pageToken != "" {
@@ -2691,7 +2691,7 @@ func (c *backupForGKEGRPCClient) ListVolumeRestores(ctx context.Context, req *gk
 	}
 	opts = append((*c.CallOptions).ListVolumeRestores[0:len((*c.CallOptions).ListVolumeRestores):len((*c.CallOptions).ListVolumeRestores)], opts...)
 	it := &VolumeRestoreIterator{}
-	req = proto.Clone(req).(*gkebackuppb.ListVolumeRestoresRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*gkebackuppb.VolumeRestore, string, error) {
 		resp := &gkebackuppb.ListVolumeRestoresResponse{}
 		if pageToken != "" {
@@ -2809,7 +2809,7 @@ func (c *backupForGKEGRPCClient) ListLocations(ctx context.Context, req *locatio
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -2985,7 +2985,7 @@ func (c *backupForGKEGRPCClient) ListOperations(ctx context.Context, req *longru
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -3095,7 +3095,7 @@ func (c *backupForGKERESTClient) CreateBackupPlan(ctx context.Context, req *gkeb
 // ListBackupPlans lists BackupPlans in a given location.
 func (c *backupForGKERESTClient) ListBackupPlans(ctx context.Context, req *gkebackuppb.ListBackupPlansRequest, opts ...gax.CallOption) *BackupPlanIterator {
 	it := &BackupPlanIterator{}
-	req = proto.Clone(req).(*gkebackuppb.ListBackupPlansRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*gkebackuppb.BackupPlan, string, error) {
 		resp := &gkebackuppb.ListBackupPlansResponse{}
@@ -3440,7 +3440,7 @@ func (c *backupForGKERESTClient) CreateBackupChannel(ctx context.Context, req *g
 // ListBackupChannels lists BackupChannels in a given location.
 func (c *backupForGKERESTClient) ListBackupChannels(ctx context.Context, req *gkebackuppb.ListBackupChannelsRequest, opts ...gax.CallOption) *BackupChannelIterator {
 	it := &BackupChannelIterator{}
-	req = proto.Clone(req).(*gkebackuppb.ListBackupChannelsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*gkebackuppb.BackupChannel, string, error) {
 		resp := &gkebackuppb.ListBackupChannelsResponse{}
@@ -3718,7 +3718,7 @@ func (c *backupForGKERESTClient) DeleteBackupChannel(ctx context.Context, req *g
 // ListBackupPlanBindings lists BackupPlanBindings in a given location.
 func (c *backupForGKERESTClient) ListBackupPlanBindings(ctx context.Context, req *gkebackuppb.ListBackupPlanBindingsRequest, opts ...gax.CallOption) *BackupPlanBindingIterator {
 	it := &BackupPlanBindingIterator{}
-	req = proto.Clone(req).(*gkebackuppb.ListBackupPlanBindingsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*gkebackuppb.BackupPlanBinding, string, error) {
 		resp := &gkebackuppb.ListBackupPlanBindingsResponse{}
@@ -3929,7 +3929,7 @@ func (c *backupForGKERESTClient) CreateBackup(ctx context.Context, req *gkebacku
 // ListBackups lists the Backups for a given BackupPlan.
 func (c *backupForGKERESTClient) ListBackups(ctx context.Context, req *gkebackuppb.ListBackupsRequest, opts ...gax.CallOption) *BackupIterator {
 	it := &BackupIterator{}
-	req = proto.Clone(req).(*gkebackuppb.ListBackupsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*gkebackuppb.Backup, string, error) {
 		resp := &gkebackuppb.ListBackupsResponse{}
@@ -4210,7 +4210,7 @@ func (c *backupForGKERESTClient) DeleteBackup(ctx context.Context, req *gkebacku
 // ListVolumeBackups lists the VolumeBackups for a given Backup.
 func (c *backupForGKERESTClient) ListVolumeBackups(ctx context.Context, req *gkebackuppb.ListVolumeBackupsRequest, opts ...gax.CallOption) *VolumeBackupIterator {
 	it := &VolumeBackupIterator{}
-	req = proto.Clone(req).(*gkebackuppb.ListVolumeBackupsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*gkebackuppb.VolumeBackup, string, error) {
 		resp := &gkebackuppb.ListVolumeBackupsResponse{}
@@ -4419,7 +4419,7 @@ func (c *backupForGKERESTClient) CreateRestorePlan(ctx context.Context, req *gke
 // ListRestorePlans lists RestorePlans in a given location.
 func (c *backupForGKERESTClient) ListRestorePlans(ctx context.Context, req *gkebackuppb.ListRestorePlansRequest, opts ...gax.CallOption) *RestorePlanIterator {
 	it := &RestorePlanIterator{}
-	req = proto.Clone(req).(*gkebackuppb.ListRestorePlansRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*gkebackuppb.RestorePlan, string, error) {
 		resp := &gkebackuppb.ListRestorePlansResponse{}
@@ -4767,7 +4767,7 @@ func (c *backupForGKERESTClient) CreateRestoreChannel(ctx context.Context, req *
 // ListRestoreChannels lists RestoreChannels in a given location.
 func (c *backupForGKERESTClient) ListRestoreChannels(ctx context.Context, req *gkebackuppb.ListRestoreChannelsRequest, opts ...gax.CallOption) *RestoreChannelIterator {
 	it := &RestoreChannelIterator{}
-	req = proto.Clone(req).(*gkebackuppb.ListRestoreChannelsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*gkebackuppb.RestoreChannel, string, error) {
 		resp := &gkebackuppb.ListRestoreChannelsResponse{}
@@ -5042,7 +5042,7 @@ func (c *backupForGKERESTClient) DeleteRestoreChannel(ctx context.Context, req *
 // ListRestorePlanBindings lists RestorePlanBindings in a given location.
 func (c *backupForGKERESTClient) ListRestorePlanBindings(ctx context.Context, req *gkebackuppb.ListRestorePlanBindingsRequest, opts ...gax.CallOption) *RestorePlanBindingIterator {
 	it := &RestorePlanBindingIterator{}
-	req = proto.Clone(req).(*gkebackuppb.ListRestorePlanBindingsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*gkebackuppb.RestorePlanBinding, string, error) {
 		resp := &gkebackuppb.ListRestorePlanBindingsResponse{}
@@ -5251,7 +5251,7 @@ func (c *backupForGKERESTClient) CreateRestore(ctx context.Context, req *gkeback
 // ListRestores lists the Restores for a given RestorePlan.
 func (c *backupForGKERESTClient) ListRestores(ctx context.Context, req *gkebackuppb.ListRestoresRequest, opts ...gax.CallOption) *RestoreIterator {
 	it := &RestoreIterator{}
-	req = proto.Clone(req).(*gkebackuppb.ListRestoresRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*gkebackuppb.Restore, string, error) {
 		resp := &gkebackuppb.ListRestoresResponse{}
@@ -5529,7 +5529,7 @@ func (c *backupForGKERESTClient) DeleteRestore(ctx context.Context, req *gkeback
 // ListVolumeRestores lists the VolumeRestores for a given Restore.
 func (c *backupForGKERESTClient) ListVolumeRestores(ctx context.Context, req *gkebackuppb.ListVolumeRestoresRequest, opts ...gax.CallOption) *VolumeRestoreIterator {
 	it := &VolumeRestoreIterator{}
-	req = proto.Clone(req).(*gkebackuppb.ListVolumeRestoresRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*gkebackuppb.VolumeRestore, string, error) {
 		resp := &gkebackuppb.ListVolumeRestoresResponse{}
@@ -5781,7 +5781,7 @@ func (c *backupForGKERESTClient) GetLocation(ctx context.Context, req *locationp
 // ListLocations lists information about the supported locations for this service.
 func (c *backupForGKERESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -6197,7 +6197,7 @@ func (c *backupForGKERESTClient) GetOperation(ctx context.Context, req *longrunn
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *backupForGKERESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

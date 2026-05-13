@@ -369,7 +369,7 @@ func (c *urlMapsRESTClient) Connection() *grpc.ClientConn {
 // returnPartialSuccess parameter to true.
 func (c *urlMapsRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListUrlMapsRequest, opts ...gax.CallOption) *UrlMapsScopedListPairIterator {
 	it := &UrlMapsScopedListPairIterator{}
-	req = proto.Clone(req).(*computepb.AggregatedListUrlMapsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]UrlMapsScopedListPair, string, error) {
 		resp := &computepb.UrlMapsAggregatedList{}
@@ -738,7 +738,7 @@ func (c *urlMapsRESTClient) InvalidateCache(ctx context.Context, req *computepb.
 // project.
 func (c *urlMapsRESTClient) List(ctx context.Context, req *computepb.ListUrlMapsRequest, opts ...gax.CallOption) *UrlMapIterator {
 	it := &UrlMapIterator{}
-	req = proto.Clone(req).(*computepb.ListUrlMapsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.UrlMap, string, error) {
 		resp := &computepb.UrlMapList{}

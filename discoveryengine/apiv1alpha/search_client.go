@@ -458,7 +458,7 @@ func (c *searchGRPCClient) Search(ctx context.Context, req *discoveryenginepb.Se
 	}
 	opts = append((*c.CallOptions).Search[0:len((*c.CallOptions).Search):len((*c.CallOptions).Search)], opts...)
 	it := &SearchResponse_SearchResultIterator{}
-	req = proto.Clone(req).(*discoveryenginepb.SearchRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*discoveryenginepb.SearchResponse_SearchResult, string, error) {
 		resp := &discoveryenginepb.SearchResponse{}
 		if pageToken != "" {
@@ -545,7 +545,7 @@ func (c *searchGRPCClient) ListOperations(ctx context.Context, req *longrunningp
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -587,7 +587,7 @@ func (c *searchGRPCClient) ListOperations(ctx context.Context, req *longrunningp
 // Search performs a search.
 func (c *searchRESTClient) Search(ctx context.Context, req *discoveryenginepb.SearchRequest, opts ...gax.CallOption) *SearchResponse_SearchResultIterator {
 	it := &SearchResponse_SearchResultIterator{}
-	req = proto.Clone(req).(*discoveryenginepb.SearchRequest)
+	req = proto.CloneOf(req)
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*discoveryenginepb.SearchResponse_SearchResult, string, error) {
@@ -764,7 +764,7 @@ func (c *searchRESTClient) GetOperation(ctx context.Context, req *longrunningpb.
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *searchRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

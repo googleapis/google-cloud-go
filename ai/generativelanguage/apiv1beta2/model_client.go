@@ -407,7 +407,7 @@ func (c *modelGRPCClient) ListModels(ctx context.Context, req *generativelanguag
 	}
 	opts = append((*c.CallOptions).ListModels[0:len((*c.CallOptions).ListModels):len((*c.CallOptions).ListModels)], opts...)
 	it := &ModelIterator{}
-	req = proto.Clone(req).(*generativelanguagepb.ListModelsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*generativelanguagepb.Model, string, error) {
 		resp := &generativelanguagepb.ListModelsResponse{}
 		if pageToken != "" {
@@ -506,7 +506,7 @@ func (c *modelRESTClient) GetModel(ctx context.Context, req *generativelanguagep
 // ListModels lists models available through the API.
 func (c *modelRESTClient) ListModels(ctx context.Context, req *generativelanguagepb.ListModelsRequest, opts ...gax.CallOption) *ModelIterator {
 	it := &ModelIterator{}
-	req = proto.Clone(req).(*generativelanguagepb.ListModelsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*generativelanguagepb.Model, string, error) {
 		resp := &generativelanguagepb.ListModelsResponse{}

@@ -364,7 +364,7 @@ func (c *accountIssueGRPCClient) ListAccountIssues(ctx context.Context, req *acc
 	}
 	opts = append((*c.CallOptions).ListAccountIssues[0:len((*c.CallOptions).ListAccountIssues):len((*c.CallOptions).ListAccountIssues)], opts...)
 	it := &AccountIssueIterator{}
-	req = proto.Clone(req).(*accountspb.ListAccountIssuesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*accountspb.AccountIssue, string, error) {
 		resp := &accountspb.ListAccountIssuesResponse{}
 		if pageToken != "" {
@@ -413,7 +413,7 @@ func (c *accountIssueGRPCClient) ListAccountIssues(ctx context.Context, req *acc
 // accounts.issues.list for each sub-account individually.
 func (c *accountIssueRESTClient) ListAccountIssues(ctx context.Context, req *accountspb.ListAccountIssuesRequest, opts ...gax.CallOption) *AccountIssueIterator {
 	it := &AccountIssueIterator{}
-	req = proto.Clone(req).(*accountspb.ListAccountIssuesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*accountspb.AccountIssue, string, error) {
 		resp := &accountspb.ListAccountIssuesResponse{}

@@ -18,6 +18,8 @@ global_files_allowlist:
 # libraries have "release_blocked: true" so that releases are
 # explicitly initiated
 libraries:
+  - id: "agentplatform"
+    release_blocked: true
   - id: "auth"
     release_blocked: true
   - id: "auth/oauth2adapt"
@@ -45,4 +47,6 @@ libraries:
   - id: "spanner"
     release_blocked: true
   - id: "storage"
+    release_blocked: true
+  - id: "vertexai"
     release_blocked: true

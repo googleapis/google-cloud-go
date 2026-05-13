@@ -1199,7 +1199,7 @@ func (c *gRPCClient) ListInstances(ctx context.Context, req *baremetalsolutionpb
 	}
 	opts = append((*c.CallOptions).ListInstances[0:len((*c.CallOptions).ListInstances):len((*c.CallOptions).ListInstances)], opts...)
 	it := &InstanceIterator{}
-	req = proto.Clone(req).(*baremetalsolutionpb.ListInstancesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*baremetalsolutionpb.Instance, string, error) {
 		resp := &baremetalsolutionpb.ListInstancesResponse{}
 		if pageToken != "" {
@@ -1478,7 +1478,7 @@ func (c *gRPCClient) ListSSHKeys(ctx context.Context, req *baremetalsolutionpb.L
 	}
 	opts = append((*c.CallOptions).ListSSHKeys[0:len((*c.CallOptions).ListSSHKeys):len((*c.CallOptions).ListSSHKeys)], opts...)
 	it := &SSHKeyIterator{}
-	req = proto.Clone(req).(*baremetalsolutionpb.ListSSHKeysRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*baremetalsolutionpb.SSHKey, string, error) {
 		resp := &baremetalsolutionpb.ListSSHKeysResponse{}
 		if pageToken != "" {
@@ -1574,7 +1574,7 @@ func (c *gRPCClient) ListVolumes(ctx context.Context, req *baremetalsolutionpb.L
 	}
 	opts = append((*c.CallOptions).ListVolumes[0:len((*c.CallOptions).ListVolumes):len((*c.CallOptions).ListVolumes)], opts...)
 	it := &VolumeIterator{}
-	req = proto.Clone(req).(*baremetalsolutionpb.ListVolumesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*baremetalsolutionpb.Volume, string, error) {
 		resp := &baremetalsolutionpb.ListVolumesResponse{}
 		if pageToken != "" {
@@ -1749,7 +1749,7 @@ func (c *gRPCClient) ListNetworks(ctx context.Context, req *baremetalsolutionpb.
 	}
 	opts = append((*c.CallOptions).ListNetworks[0:len((*c.CallOptions).ListNetworks):len((*c.CallOptions).ListNetworks)], opts...)
 	it := &NetworkIterator{}
-	req = proto.Clone(req).(*baremetalsolutionpb.ListNetworksRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*baremetalsolutionpb.Network, string, error) {
 		resp := &baremetalsolutionpb.ListNetworksResponse{}
 		if pageToken != "" {
@@ -1966,7 +1966,7 @@ func (c *gRPCClient) ListVolumeSnapshots(ctx context.Context, req *baremetalsolu
 	}
 	opts = append((*c.CallOptions).ListVolumeSnapshots[0:len((*c.CallOptions).ListVolumeSnapshots):len((*c.CallOptions).ListVolumeSnapshots)], opts...)
 	it := &VolumeSnapshotIterator{}
-	req = proto.Clone(req).(*baremetalsolutionpb.ListVolumeSnapshotsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*baremetalsolutionpb.VolumeSnapshot, string, error) {
 		resp := &baremetalsolutionpb.ListVolumeSnapshotsResponse{}
 		if pageToken != "" {
@@ -2042,7 +2042,7 @@ func (c *gRPCClient) ListLuns(ctx context.Context, req *baremetalsolutionpb.List
 	}
 	opts = append((*c.CallOptions).ListLuns[0:len((*c.CallOptions).ListLuns):len((*c.CallOptions).ListLuns)], opts...)
 	it := &LunIterator{}
-	req = proto.Clone(req).(*baremetalsolutionpb.ListLunsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*baremetalsolutionpb.Lun, string, error) {
 		resp := &baremetalsolutionpb.ListLunsResponse{}
 		if pageToken != "" {
@@ -2144,7 +2144,7 @@ func (c *gRPCClient) ListNfsShares(ctx context.Context, req *baremetalsolutionpb
 	}
 	opts = append((*c.CallOptions).ListNfsShares[0:len((*c.CallOptions).ListNfsShares):len((*c.CallOptions).ListNfsShares)], opts...)
 	it := &NfsShareIterator{}
-	req = proto.Clone(req).(*baremetalsolutionpb.ListNfsSharesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*baremetalsolutionpb.NfsShare, string, error) {
 		resp := &baremetalsolutionpb.ListNfsSharesResponse{}
 		if pageToken != "" {
@@ -2295,7 +2295,7 @@ func (c *gRPCClient) ListProvisioningQuotas(ctx context.Context, req *baremetals
 	}
 	opts = append((*c.CallOptions).ListProvisioningQuotas[0:len((*c.CallOptions).ListProvisioningQuotas):len((*c.CallOptions).ListProvisioningQuotas)], opts...)
 	it := &ProvisioningQuotaIterator{}
-	req = proto.Clone(req).(*baremetalsolutionpb.ListProvisioningQuotasRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*baremetalsolutionpb.ProvisioningQuota, string, error) {
 		resp := &baremetalsolutionpb.ListProvisioningQuotasResponse{}
 		if pageToken != "" {
@@ -2464,7 +2464,7 @@ func (c *gRPCClient) ListOSImages(ctx context.Context, req *baremetalsolutionpb.
 	}
 	opts = append((*c.CallOptions).ListOSImages[0:len((*c.CallOptions).ListOSImages):len((*c.CallOptions).ListOSImages)], opts...)
 	it := &OSImageIterator{}
-	req = proto.Clone(req).(*baremetalsolutionpb.ListOSImagesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*baremetalsolutionpb.OSImage, string, error) {
 		resp := &baremetalsolutionpb.ListOSImagesResponse{}
 		if pageToken != "" {
@@ -2534,7 +2534,7 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -2576,7 +2576,7 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 // ListInstances list servers in a given project and location.
 func (c *restClient) ListInstances(ctx context.Context, req *baremetalsolutionpb.ListInstancesRequest, opts ...gax.CallOption) *InstanceIterator {
 	it := &InstanceIterator{}
-	req = proto.Clone(req).(*baremetalsolutionpb.ListInstancesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*baremetalsolutionpb.Instance, string, error) {
 		resp := &baremetalsolutionpb.ListInstancesResponse{}
@@ -3247,7 +3247,7 @@ func (c *restClient) DetachLun(ctx context.Context, req *baremetalsolutionpb.Det
 // These SSH keys are used only for the interactive serial console feature.
 func (c *restClient) ListSSHKeys(ctx context.Context, req *baremetalsolutionpb.ListSSHKeysRequest, opts ...gax.CallOption) *SSHKeyIterator {
 	it := &SSHKeyIterator{}
-	req = proto.Clone(req).(*baremetalsolutionpb.ListSSHKeysRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*baremetalsolutionpb.SSHKey, string, error) {
 		resp := &baremetalsolutionpb.ListSSHKeysResponse{}
@@ -3433,7 +3433,7 @@ func (c *restClient) DeleteSSHKey(ctx context.Context, req *baremetalsolutionpb.
 // ListVolumes list storage volumes in a given project and location.
 func (c *restClient) ListVolumes(ctx context.Context, req *baremetalsolutionpb.ListVolumesRequest, opts ...gax.CallOption) *VolumeIterator {
 	it := &VolumeIterator{}
-	req = proto.Clone(req).(*baremetalsolutionpb.ListVolumesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*baremetalsolutionpb.Volume, string, error) {
 		resp := &baremetalsolutionpb.ListVolumesResponse{}
@@ -3839,7 +3839,7 @@ func (c *restClient) ResizeVolume(ctx context.Context, req *baremetalsolutionpb.
 // ListNetworks list network in a given project and location.
 func (c *restClient) ListNetworks(ctx context.Context, req *baremetalsolutionpb.ListNetworksRequest, opts ...gax.CallOption) *NetworkIterator {
 	it := &NetworkIterator{}
-	req = proto.Clone(req).(*baremetalsolutionpb.ListNetworksRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*baremetalsolutionpb.Network, string, error) {
 		resp := &baremetalsolutionpb.ListNetworksResponse{}
@@ -4341,7 +4341,7 @@ func (c *restClient) GetVolumeSnapshot(ctx context.Context, req *baremetalsoluti
 // for a non-boot volume.
 func (c *restClient) ListVolumeSnapshots(ctx context.Context, req *baremetalsolutionpb.ListVolumeSnapshotsRequest, opts ...gax.CallOption) *VolumeSnapshotIterator {
 	it := &VolumeSnapshotIterator{}
-	req = proto.Clone(req).(*baremetalsolutionpb.ListVolumeSnapshotsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*baremetalsolutionpb.VolumeSnapshot, string, error) {
 		resp := &baremetalsolutionpb.ListVolumeSnapshotsResponse{}
@@ -4476,7 +4476,7 @@ func (c *restClient) GetLun(ctx context.Context, req *baremetalsolutionpb.GetLun
 // ListLuns list storage volume luns for given storage volume.
 func (c *restClient) ListLuns(ctx context.Context, req *baremetalsolutionpb.ListLunsRequest, opts ...gax.CallOption) *LunIterator {
 	it := &LunIterator{}
-	req = proto.Clone(req).(*baremetalsolutionpb.ListLunsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*baremetalsolutionpb.Lun, string, error) {
 		resp := &baremetalsolutionpb.ListLunsResponse{}
@@ -4678,7 +4678,7 @@ func (c *restClient) GetNfsShare(ctx context.Context, req *baremetalsolutionpb.G
 // ListNfsShares list NFS shares.
 func (c *restClient) ListNfsShares(ctx context.Context, req *baremetalsolutionpb.ListNfsSharesRequest, opts ...gax.CallOption) *NfsShareIterator {
 	it := &NfsShareIterator{}
-	req = proto.Clone(req).(*baremetalsolutionpb.ListNfsSharesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*baremetalsolutionpb.NfsShare, string, error) {
 		resp := &baremetalsolutionpb.ListNfsSharesResponse{}
@@ -5021,7 +5021,7 @@ func (c *restClient) DeleteNfsShare(ctx context.Context, req *baremetalsolutionp
 // ListProvisioningQuotas list the budget details to provision resources on a given project.
 func (c *restClient) ListProvisioningQuotas(ctx context.Context, req *baremetalsolutionpb.ListProvisioningQuotasRequest, opts ...gax.CallOption) *ProvisioningQuotaIterator {
 	it := &ProvisioningQuotaIterator{}
-	req = proto.Clone(req).(*baremetalsolutionpb.ListProvisioningQuotasRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*baremetalsolutionpb.ProvisioningQuota, string, error) {
 		resp := &baremetalsolutionpb.ListProvisioningQuotasResponse{}
@@ -5421,7 +5421,7 @@ func (c *restClient) RenameNetwork(ctx context.Context, req *baremetalsolutionpb
 // ListOSImages retrieves the list of OS images which are currently approved.
 func (c *restClient) ListOSImages(ctx context.Context, req *baremetalsolutionpb.ListOSImagesRequest, opts ...gax.CallOption) *OSImageIterator {
 	it := &OSImageIterator{}
-	req = proto.Clone(req).(*baremetalsolutionpb.ListOSImagesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*baremetalsolutionpb.OSImage, string, error) {
 		resp := &baremetalsolutionpb.ListOSImagesResponse{}
@@ -5553,7 +5553,7 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 // ListLocations lists information about the supported locations for this service.
 func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}

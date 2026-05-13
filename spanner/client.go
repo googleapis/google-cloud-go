@@ -528,11 +528,17 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 	var pool gtransport.ConnPool
 	var endpointClientOpts []option.ClientOption
 
+	isFallbackEnabled := true
+	if val, ok := os.LookupEnv("GOOGLE_SPANNER_ENABLE_GCP_FALLBACK"); ok {
+		if b, err := strconv.ParseBool(val); err == nil {
+			isFallbackEnabled = b
+		}
+	}
 	if gme != nil {
 		// Use GCPMultiEndpoint if provided.
 		pool = &gmeWrapper{gme}
 		endpointClientOpts = append(endpointClientOpts, opts...)
-	} else if isFallbackEnabled, _ := strconv.ParseBool(os.Getenv("GOOGLE_SPANNER_ENABLE_GCP_FALLBACK")); isFallbackEnabled && isDirectPathEnabled {
+	} else if isFallbackEnabled && isDirectPathEnabled {
 		var primaryConn gtransport.ConnPool
 		var fallbackConn gtransport.ConnPool
 		reqIDInjector := new(requestIDHeaderInjector)
@@ -564,6 +570,7 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 		fbOpts.EnableFallback = true
 		fbOpts.ErrorRateThreshold = 1
 		fbOpts.MinFailedCalls = 1
+		fbOpts.Period = time.Minute * 3
 
 		if metricsTracerFactory != nil && metricsTracerFactory.meterProvider != nil {
 			fbOpts.MeterProvider = metricsTracerFactory.meterProvider

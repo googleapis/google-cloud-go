@@ -323,7 +323,7 @@ func (c *futureReservationsRESTClient) Connection() *grpc.ClientConn {
 // returnPartialSuccess parameter to true.
 func (c *futureReservationsRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListFutureReservationsRequest, opts ...gax.CallOption) *FutureReservationsScopedListPairIterator {
 	it := &FutureReservationsScopedListPairIterator{}
-	req = proto.Clone(req).(*computepb.AggregatedListFutureReservationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]FutureReservationsScopedListPair, string, error) {
 		resp := &computepb.FutureReservationsAggregatedListResponse{}
@@ -683,7 +683,7 @@ func (c *futureReservationsRESTClient) Insert(ctx context.Context, req *computep
 // specified project in specified zone.
 func (c *futureReservationsRESTClient) List(ctx context.Context, req *computepb.ListFutureReservationsRequest, opts ...gax.CallOption) *FutureReservationIterator {
 	it := &FutureReservationIterator{}
-	req = proto.Clone(req).(*computepb.ListFutureReservationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.FutureReservation, string, error) {
 		resp := &computepb.FutureReservationsListResponse{}

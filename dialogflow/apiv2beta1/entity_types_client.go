@@ -885,7 +885,7 @@ func (c *entityTypesGRPCClient) ListEntityTypes(ctx context.Context, req *dialog
 	}
 	opts = append((*c.CallOptions).ListEntityTypes[0:len((*c.CallOptions).ListEntityTypes):len((*c.CallOptions).ListEntityTypes)], opts...)
 	it := &EntityTypeIterator{}
-	req = proto.Clone(req).(*dialogflowpb.ListEntityTypesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dialogflowpb.EntityType, string, error) {
 		resp := &dialogflowpb.ListEntityTypesResponse{}
 		if pageToken != "" {
@@ -1174,7 +1174,7 @@ func (c *entityTypesGRPCClient) ListLocations(ctx context.Context, req *location
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -1261,7 +1261,7 @@ func (c *entityTypesGRPCClient) ListOperations(ctx context.Context, req *longrun
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -1303,7 +1303,7 @@ func (c *entityTypesGRPCClient) ListOperations(ctx context.Context, req *longrun
 // ListEntityTypes returns the list of all entity types in the specified agent.
 func (c *entityTypesRESTClient) ListEntityTypes(ctx context.Context, req *dialogflowpb.ListEntityTypesRequest, opts ...gax.CallOption) *EntityTypeIterator {
 	it := &EntityTypeIterator{}
-	req = proto.Clone(req).(*dialogflowpb.ListEntityTypesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dialogflowpb.EntityType, string, error) {
 		resp := &dialogflowpb.ListEntityTypesResponse{}
@@ -2108,7 +2108,7 @@ func (c *entityTypesRESTClient) GetLocation(ctx context.Context, req *locationpb
 // implementation and version.
 func (c *entityTypesRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -2282,7 +2282,7 @@ func (c *entityTypesRESTClient) GetOperation(ctx context.Context, req *longrunni
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *entityTypesRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

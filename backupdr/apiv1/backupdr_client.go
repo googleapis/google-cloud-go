@@ -1290,7 +1290,7 @@ func (c *gRPCClient) ListManagementServers(ctx context.Context, req *backupdrpb.
 	}
 	opts = append((*c.CallOptions).ListManagementServers[0:len((*c.CallOptions).ListManagementServers):len((*c.CallOptions).ListManagementServers)], opts...)
 	it := &ManagementServerIterator{}
-	req = proto.Clone(req).(*backupdrpb.ListManagementServersRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*backupdrpb.ManagementServer, string, error) {
 		resp := &backupdrpb.ListManagementServersResponse{}
 		if pageToken != "" {
@@ -1444,7 +1444,7 @@ func (c *gRPCClient) ListBackupVaults(ctx context.Context, req *backupdrpb.ListB
 	}
 	opts = append((*c.CallOptions).ListBackupVaults[0:len((*c.CallOptions).ListBackupVaults):len((*c.CallOptions).ListBackupVaults)], opts...)
 	it := &BackupVaultIterator{}
-	req = proto.Clone(req).(*backupdrpb.ListBackupVaultsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*backupdrpb.BackupVault, string, error) {
 		resp := &backupdrpb.ListBackupVaultsResponse{}
 		if pageToken != "" {
@@ -1496,7 +1496,7 @@ func (c *gRPCClient) FetchUsableBackupVaults(ctx context.Context, req *backupdrp
 	}
 	opts = append((*c.CallOptions).FetchUsableBackupVaults[0:len((*c.CallOptions).FetchUsableBackupVaults):len((*c.CallOptions).FetchUsableBackupVaults)], opts...)
 	it := &BackupVaultIterator{}
-	req = proto.Clone(req).(*backupdrpb.FetchUsableBackupVaultsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*backupdrpb.BackupVault, string, error) {
 		resp := &backupdrpb.FetchUsableBackupVaultsResponse{}
 		if pageToken != "" {
@@ -1621,7 +1621,7 @@ func (c *gRPCClient) ListDataSources(ctx context.Context, req *backupdrpb.ListDa
 	}
 	opts = append((*c.CallOptions).ListDataSources[0:len((*c.CallOptions).ListDataSources):len((*c.CallOptions).ListDataSources)], opts...)
 	it := &DataSourceIterator{}
-	req = proto.Clone(req).(*backupdrpb.ListDataSourcesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*backupdrpb.DataSource, string, error) {
 		resp := &backupdrpb.ListDataSourcesResponse{}
 		if pageToken != "" {
@@ -1720,7 +1720,7 @@ func (c *gRPCClient) ListBackups(ctx context.Context, req *backupdrpb.ListBackup
 	}
 	opts = append((*c.CallOptions).ListBackups[0:len((*c.CallOptions).ListBackups):len((*c.CallOptions).ListBackups)], opts...)
 	it := &BackupIterator{}
-	req = proto.Clone(req).(*backupdrpb.ListBackupsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*backupdrpb.Backup, string, error) {
 		resp := &backupdrpb.ListBackupsResponse{}
 		if pageToken != "" {
@@ -1772,7 +1772,7 @@ func (c *gRPCClient) FetchBackupsForResourceType(ctx context.Context, req *backu
 	}
 	opts = append((*c.CallOptions).FetchBackupsForResourceType[0:len((*c.CallOptions).FetchBackupsForResourceType):len((*c.CallOptions).FetchBackupsForResourceType)], opts...)
 	it := &BackupIterator{}
-	req = proto.Clone(req).(*backupdrpb.FetchBackupsForResourceTypeRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*backupdrpb.Backup, string, error) {
 		resp := &backupdrpb.FetchBackupsForResourceTypeResponse{}
 		if pageToken != "" {
@@ -1996,7 +1996,7 @@ func (c *gRPCClient) ListBackupPlans(ctx context.Context, req *backupdrpb.ListBa
 	}
 	opts = append((*c.CallOptions).ListBackupPlans[0:len((*c.CallOptions).ListBackupPlans):len((*c.CallOptions).ListBackupPlans)], opts...)
 	it := &BackupPlanIterator{}
-	req = proto.Clone(req).(*backupdrpb.ListBackupPlansRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*backupdrpb.BackupPlan, string, error) {
 		resp := &backupdrpb.ListBackupPlansResponse{}
 		if pageToken != "" {
@@ -2098,7 +2098,7 @@ func (c *gRPCClient) ListBackupPlanRevisions(ctx context.Context, req *backupdrp
 	}
 	opts = append((*c.CallOptions).ListBackupPlanRevisions[0:len((*c.CallOptions).ListBackupPlanRevisions):len((*c.CallOptions).ListBackupPlanRevisions)], opts...)
 	it := &BackupPlanRevisionIterator{}
-	req = proto.Clone(req).(*backupdrpb.ListBackupPlanRevisionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*backupdrpb.BackupPlanRevision, string, error) {
 		resp := &backupdrpb.ListBackupPlanRevisionsResponse{}
 		if pageToken != "" {
@@ -2223,7 +2223,7 @@ func (c *gRPCClient) ListBackupPlanAssociations(ctx context.Context, req *backup
 	}
 	opts = append((*c.CallOptions).ListBackupPlanAssociations[0:len((*c.CallOptions).ListBackupPlanAssociations):len((*c.CallOptions).ListBackupPlanAssociations)], opts...)
 	it := &BackupPlanAssociationIterator{}
-	req = proto.Clone(req).(*backupdrpb.ListBackupPlanAssociationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*backupdrpb.BackupPlanAssociation, string, error) {
 		resp := &backupdrpb.ListBackupPlanAssociationsResponse{}
 		if pageToken != "" {
@@ -2275,7 +2275,7 @@ func (c *gRPCClient) FetchBackupPlanAssociationsForResourceType(ctx context.Cont
 	}
 	opts = append((*c.CallOptions).FetchBackupPlanAssociationsForResourceType[0:len((*c.CallOptions).FetchBackupPlanAssociationsForResourceType):len((*c.CallOptions).FetchBackupPlanAssociationsForResourceType)], opts...)
 	it := &BackupPlanAssociationIterator{}
-	req = proto.Clone(req).(*backupdrpb.FetchBackupPlanAssociationsForResourceTypeRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*backupdrpb.BackupPlanAssociation, string, error) {
 		resp := &backupdrpb.FetchBackupPlanAssociationsForResourceTypeResponse{}
 		if pageToken != "" {
@@ -2403,7 +2403,7 @@ func (c *gRPCClient) ListDataSourceReferences(ctx context.Context, req *backupdr
 	}
 	opts = append((*c.CallOptions).ListDataSourceReferences[0:len((*c.CallOptions).ListDataSourceReferences):len((*c.CallOptions).ListDataSourceReferences)], opts...)
 	it := &DataSourceReferenceIterator{}
-	req = proto.Clone(req).(*backupdrpb.ListDataSourceReferencesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*backupdrpb.DataSourceReference, string, error) {
 		resp := &backupdrpb.ListDataSourceReferencesResponse{}
 		if pageToken != "" {
@@ -2455,7 +2455,7 @@ func (c *gRPCClient) FetchDataSourceReferencesForResourceType(ctx context.Contex
 	}
 	opts = append((*c.CallOptions).FetchDataSourceReferencesForResourceType[0:len((*c.CallOptions).FetchDataSourceReferencesForResourceType):len((*c.CallOptions).FetchDataSourceReferencesForResourceType)], opts...)
 	it := &DataSourceReferenceIterator{}
-	req = proto.Clone(req).(*backupdrpb.FetchDataSourceReferencesForResourceTypeRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*backupdrpb.DataSourceReference, string, error) {
 		resp := &backupdrpb.FetchDataSourceReferencesForResourceTypeResponse{}
 		if pageToken != "" {
@@ -2548,7 +2548,7 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -2724,7 +2724,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -2766,7 +2766,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // ListManagementServers lists ManagementServers in a given project and location.
 func (c *restClient) ListManagementServers(ctx context.Context, req *backupdrpb.ListManagementServersRequest, opts ...gax.CallOption) *ManagementServerIterator {
 	it := &ManagementServerIterator{}
-	req = proto.Clone(req).(*backupdrpb.ListManagementServersRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*backupdrpb.ManagementServer, string, error) {
 		resp := &backupdrpb.ListManagementServersResponse{}
@@ -3115,7 +3115,7 @@ func (c *restClient) CreateBackupVault(ctx context.Context, req *backupdrpb.Crea
 // ListBackupVaults lists BackupVaults in a given project and location.
 func (c *restClient) ListBackupVaults(ctx context.Context, req *backupdrpb.ListBackupVaultsRequest, opts ...gax.CallOption) *BackupVaultIterator {
 	it := &BackupVaultIterator{}
-	req = proto.Clone(req).(*backupdrpb.ListBackupVaultsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*backupdrpb.BackupVault, string, error) {
 		resp := &backupdrpb.ListBackupVaultsResponse{}
@@ -3204,7 +3204,7 @@ func (c *restClient) ListBackupVaults(ctx context.Context, req *backupdrpb.ListB
 // backupdr.backupVaults.get permission.
 func (c *restClient) FetchUsableBackupVaults(ctx context.Context, req *backupdrpb.FetchUsableBackupVaultsRequest, opts ...gax.CallOption) *BackupVaultIterator {
 	it := &BackupVaultIterator{}
-	req = proto.Clone(req).(*backupdrpb.FetchUsableBackupVaultsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*backupdrpb.BackupVault, string, error) {
 		resp := &backupdrpb.FetchUsableBackupVaultsResponse{}
@@ -3509,7 +3509,7 @@ func (c *restClient) DeleteBackupVault(ctx context.Context, req *backupdrpb.Dele
 // ListDataSources lists DataSources in a given project and location.
 func (c *restClient) ListDataSources(ctx context.Context, req *backupdrpb.ListDataSourcesRequest, opts ...gax.CallOption) *DataSourceIterator {
 	it := &DataSourceIterator{}
-	req = proto.Clone(req).(*backupdrpb.ListDataSourcesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*backupdrpb.DataSource, string, error) {
 		resp := &backupdrpb.ListDataSourcesResponse{}
@@ -3727,7 +3727,7 @@ func (c *restClient) UpdateDataSource(ctx context.Context, req *backupdrpb.Updat
 // ListBackups lists Backups in a given project and location.
 func (c *restClient) ListBackups(ctx context.Context, req *backupdrpb.ListBackupsRequest, opts ...gax.CallOption) *BackupIterator {
 	it := &BackupIterator{}
-	req = proto.Clone(req).(*backupdrpb.ListBackupsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*backupdrpb.Backup, string, error) {
 		resp := &backupdrpb.ListBackupsResponse{}
@@ -3814,7 +3814,7 @@ func (c *restClient) ListBackups(ctx context.Context, req *backupdrpb.ListBackup
 // FetchBackupsForResourceType fetch Backups for a given resource type.
 func (c *restClient) FetchBackupsForResourceType(ctx context.Context, req *backupdrpb.FetchBackupsForResourceTypeRequest, opts ...gax.CallOption) *BackupIterator {
 	it := &BackupIterator{}
-	req = proto.Clone(req).(*backupdrpb.FetchBackupsForResourceTypeRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*backupdrpb.Backup, string, error) {
 		resp := &backupdrpb.FetchBackupsForResourceTypeResponse{}
@@ -4367,7 +4367,7 @@ func (c *restClient) GetBackupPlan(ctx context.Context, req *backupdrpb.GetBacku
 // ListBackupPlans lists BackupPlans in a given project and location.
 func (c *restClient) ListBackupPlans(ctx context.Context, req *backupdrpb.ListBackupPlansRequest, opts ...gax.CallOption) *BackupPlanIterator {
 	it := &BackupPlanIterator{}
-	req = proto.Clone(req).(*backupdrpb.ListBackupPlansRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*backupdrpb.BackupPlan, string, error) {
 		resp := &backupdrpb.ListBackupPlansResponse{}
@@ -4571,7 +4571,7 @@ func (c *restClient) GetBackupPlanRevision(ctx context.Context, req *backupdrpb.
 // ListBackupPlanRevisions lists BackupPlanRevisions in a given project and location.
 func (c *restClient) ListBackupPlanRevisions(ctx context.Context, req *backupdrpb.ListBackupPlanRevisionsRequest, opts ...gax.CallOption) *BackupPlanRevisionIterator {
 	it := &BackupPlanRevisionIterator{}
-	req = proto.Clone(req).(*backupdrpb.ListBackupPlanRevisionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*backupdrpb.BackupPlanRevision, string, error) {
 		resp := &backupdrpb.ListBackupPlanRevisionsResponse{}
@@ -4851,7 +4851,7 @@ func (c *restClient) GetBackupPlanAssociation(ctx context.Context, req *backupdr
 // ListBackupPlanAssociations lists BackupPlanAssociations in a given project and location.
 func (c *restClient) ListBackupPlanAssociations(ctx context.Context, req *backupdrpb.ListBackupPlanAssociationsRequest, opts ...gax.CallOption) *BackupPlanAssociationIterator {
 	it := &BackupPlanAssociationIterator{}
-	req = proto.Clone(req).(*backupdrpb.ListBackupPlanAssociationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*backupdrpb.BackupPlanAssociation, string, error) {
 		resp := &backupdrpb.ListBackupPlanAssociationsResponse{}
@@ -4932,7 +4932,7 @@ func (c *restClient) ListBackupPlanAssociations(ctx context.Context, req *backup
 // FetchBackupPlanAssociationsForResourceType list BackupPlanAssociations for a given resource type.
 func (c *restClient) FetchBackupPlanAssociationsForResourceType(ctx context.Context, req *backupdrpb.FetchBackupPlanAssociationsForResourceTypeRequest, opts ...gax.CallOption) *BackupPlanAssociationIterator {
 	it := &BackupPlanAssociationIterator{}
-	req = proto.Clone(req).(*backupdrpb.FetchBackupPlanAssociationsForResourceTypeRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*backupdrpb.BackupPlanAssociation, string, error) {
 		resp := &backupdrpb.FetchBackupPlanAssociationsForResourceTypeResponse{}
@@ -5203,7 +5203,7 @@ func (c *restClient) GetDataSourceReference(ctx context.Context, req *backupdrpb
 // ListDataSourceReferences lists DataSourceReferences for a given project and location.
 func (c *restClient) ListDataSourceReferences(ctx context.Context, req *backupdrpb.ListDataSourceReferencesRequest, opts ...gax.CallOption) *DataSourceReferenceIterator {
 	it := &DataSourceReferenceIterator{}
-	req = proto.Clone(req).(*backupdrpb.ListDataSourceReferencesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*backupdrpb.DataSourceReference, string, error) {
 		resp := &backupdrpb.ListDataSourceReferencesResponse{}
@@ -5287,7 +5287,7 @@ func (c *restClient) ListDataSourceReferences(ctx context.Context, req *backupdr
 // FetchDataSourceReferencesForResourceType fetch DataSourceReferences for a given project, location and resource type.
 func (c *restClient) FetchDataSourceReferencesForResourceType(ctx context.Context, req *backupdrpb.FetchDataSourceReferencesForResourceTypeRequest, opts ...gax.CallOption) *DataSourceReferenceIterator {
 	it := &DataSourceReferenceIterator{}
-	req = proto.Clone(req).(*backupdrpb.FetchDataSourceReferencesForResourceTypeRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*backupdrpb.DataSourceReference, string, error) {
 		resp := &backupdrpb.FetchDataSourceReferencesForResourceTypeResponse{}
@@ -5489,7 +5489,7 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 // ListLocations lists information about the supported locations for this service.
 func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -5905,7 +5905,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

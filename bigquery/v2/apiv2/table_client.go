@@ -671,7 +671,7 @@ func (c *tableGRPCClient) ListTables(ctx context.Context, req *bigquerypb.ListTa
 	}
 	opts = append((*c.CallOptions).ListTables[0:len((*c.CallOptions).ListTables):len((*c.CallOptions).ListTables)], opts...)
 	it := &ListFormatTableIterator{}
-	req = proto.Clone(req).(*bigquerypb.ListTablesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*bigquerypb.ListFormatTable, string, error) {
 		resp := &bigquerypb.TableList{}
 		if pageToken != "" {
@@ -1014,7 +1014,7 @@ func (c *tableRESTClient) DeleteTable(ctx context.Context, req *bigquerypb.Delet
 // role.
 func (c *tableRESTClient) ListTables(ctx context.Context, req *bigquerypb.ListTablesRequest, opts ...gax.CallOption) *ListFormatTableIterator {
 	it := &ListFormatTableIterator{}
-	req = proto.Clone(req).(*bigquerypb.ListTablesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*bigquerypb.ListFormatTable, string, error) {
 		resp := &bigquerypb.TableList{}

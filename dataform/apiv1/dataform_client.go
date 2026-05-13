@@ -1446,7 +1446,7 @@ func (c *gRPCClient) QueryTeamFolderContents(ctx context.Context, req *dataformp
 	}
 	opts = append((*c.CallOptions).QueryTeamFolderContents[0:len((*c.CallOptions).QueryTeamFolderContents):len((*c.CallOptions).QueryTeamFolderContents)], opts...)
 	it := &QueryTeamFolderContentsResponse_TeamFolderContentsEntryIterator{}
-	req = proto.Clone(req).(*dataformpb.QueryTeamFolderContentsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataformpb.QueryTeamFolderContentsResponse_TeamFolderContentsEntry, string, error) {
 		resp := &dataformpb.QueryTeamFolderContentsResponse{}
 		if pageToken != "" {
@@ -1498,7 +1498,7 @@ func (c *gRPCClient) SearchTeamFolders(ctx context.Context, req *dataformpb.Sear
 	}
 	opts = append((*c.CallOptions).SearchTeamFolders[0:len((*c.CallOptions).SearchTeamFolders):len((*c.CallOptions).SearchTeamFolders)], opts...)
 	it := &SearchTeamFoldersResponse_TeamFolderSearchResultIterator{}
-	req = proto.Clone(req).(*dataformpb.SearchTeamFoldersRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataformpb.SearchTeamFoldersResponse_TeamFolderSearchResult, string, error) {
 		resp := &dataformpb.SearchTeamFoldersResponse{}
 		if pageToken != "" {
@@ -1665,7 +1665,7 @@ func (c *gRPCClient) QueryFolderContents(ctx context.Context, req *dataformpb.Qu
 	}
 	opts = append((*c.CallOptions).QueryFolderContents[0:len((*c.CallOptions).QueryFolderContents):len((*c.CallOptions).QueryFolderContents)], opts...)
 	it := &QueryFolderContentsResponse_FolderContentsEntryIterator{}
-	req = proto.Clone(req).(*dataformpb.QueryFolderContentsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataformpb.QueryFolderContentsResponse_FolderContentsEntry, string, error) {
 		resp := &dataformpb.QueryFolderContentsResponse{}
 		if pageToken != "" {
@@ -1717,7 +1717,7 @@ func (c *gRPCClient) QueryUserRootContents(ctx context.Context, req *dataformpb.
 	}
 	opts = append((*c.CallOptions).QueryUserRootContents[0:len((*c.CallOptions).QueryUserRootContents):len((*c.CallOptions).QueryUserRootContents)], opts...)
 	it := &QueryUserRootContentsResponse_RootContentsEntryIterator{}
-	req = proto.Clone(req).(*dataformpb.QueryUserRootContentsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataformpb.QueryUserRootContentsResponse_RootContentsEntry, string, error) {
 		resp := &dataformpb.QueryUserRootContentsResponse{}
 		if pageToken != "" {
@@ -1795,7 +1795,7 @@ func (c *gRPCClient) ListRepositories(ctx context.Context, req *dataformpb.ListR
 	}
 	opts = append((*c.CallOptions).ListRepositories[0:len((*c.CallOptions).ListRepositories):len((*c.CallOptions).ListRepositories)], opts...)
 	it := &RepositoryIterator{}
-	req = proto.Clone(req).(*dataformpb.ListRepositoriesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataformpb.Repository, string, error) {
 		resp := &dataformpb.ListRepositoriesResponse{}
 		if pageToken != "" {
@@ -2010,7 +2010,7 @@ func (c *gRPCClient) QueryRepositoryDirectoryContents(ctx context.Context, req *
 	}
 	opts = append((*c.CallOptions).QueryRepositoryDirectoryContents[0:len((*c.CallOptions).QueryRepositoryDirectoryContents):len((*c.CallOptions).QueryRepositoryDirectoryContents)], opts...)
 	it := &DirectoryEntryIterator{}
-	req = proto.Clone(req).(*dataformpb.QueryRepositoryDirectoryContentsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataformpb.DirectoryEntry, string, error) {
 		resp := &dataformpb.QueryRepositoryDirectoryContentsResponse{}
 		if pageToken != "" {
@@ -2062,7 +2062,7 @@ func (c *gRPCClient) FetchRepositoryHistory(ctx context.Context, req *dataformpb
 	}
 	opts = append((*c.CallOptions).FetchRepositoryHistory[0:len((*c.CallOptions).FetchRepositoryHistory):len((*c.CallOptions).FetchRepositoryHistory)], opts...)
 	it := &CommitLogEntryIterator{}
-	req = proto.Clone(req).(*dataformpb.FetchRepositoryHistoryRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataformpb.CommitLogEntry, string, error) {
 		resp := &dataformpb.FetchRepositoryHistoryResponse{}
 		if pageToken != "" {
@@ -2162,7 +2162,7 @@ func (c *gRPCClient) ListWorkspaces(ctx context.Context, req *dataformpb.ListWor
 	}
 	opts = append((*c.CallOptions).ListWorkspaces[0:len((*c.CallOptions).ListWorkspaces):len((*c.CallOptions).ListWorkspaces)], opts...)
 	it := &WorkspaceIterator{}
-	req = proto.Clone(req).(*dataformpb.ListWorkspacesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataformpb.Workspace, string, error) {
 		resp := &dataformpb.ListWorkspacesResponse{}
 		if pageToken != "" {
@@ -2474,7 +2474,7 @@ func (c *gRPCClient) QueryDirectoryContents(ctx context.Context, req *dataformpb
 	}
 	opts = append((*c.CallOptions).QueryDirectoryContents[0:len((*c.CallOptions).QueryDirectoryContents):len((*c.CallOptions).QueryDirectoryContents)], opts...)
 	it := &DirectoryEntryIterator{}
-	req = proto.Clone(req).(*dataformpb.QueryDirectoryContentsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataformpb.DirectoryEntry, string, error) {
 		resp := &dataformpb.QueryDirectoryContentsResponse{}
 		if pageToken != "" {
@@ -2526,7 +2526,7 @@ func (c *gRPCClient) SearchFiles(ctx context.Context, req *dataformpb.SearchFile
 	}
 	opts = append((*c.CallOptions).SearchFiles[0:len((*c.CallOptions).SearchFiles):len((*c.CallOptions).SearchFiles)], opts...)
 	it := &SearchResultIterator{}
-	req = proto.Clone(req).(*dataformpb.SearchFilesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataformpb.SearchResult, string, error) {
 		resp := &dataformpb.SearchFilesResponse{}
 		if pageToken != "" {
@@ -2746,7 +2746,7 @@ func (c *gRPCClient) ListReleaseConfigs(ctx context.Context, req *dataformpb.Lis
 	}
 	opts = append((*c.CallOptions).ListReleaseConfigs[0:len((*c.CallOptions).ListReleaseConfigs):len((*c.CallOptions).ListReleaseConfigs)], opts...)
 	it := &ReleaseConfigIterator{}
-	req = proto.Clone(req).(*dataformpb.ListReleaseConfigsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataformpb.ReleaseConfig, string, error) {
 		resp := &dataformpb.ListReleaseConfigsResponse{}
 		if pageToken != "" {
@@ -2887,7 +2887,7 @@ func (c *gRPCClient) ListCompilationResults(ctx context.Context, req *dataformpb
 	}
 	opts = append((*c.CallOptions).ListCompilationResults[0:len((*c.CallOptions).ListCompilationResults):len((*c.CallOptions).ListCompilationResults)], opts...)
 	it := &CompilationResultIterator{}
-	req = proto.Clone(req).(*dataformpb.ListCompilationResultsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataformpb.CompilationResult, string, error) {
 		resp := &dataformpb.ListCompilationResultsResponse{}
 		if pageToken != "" {
@@ -2987,7 +2987,7 @@ func (c *gRPCClient) QueryCompilationResultActions(ctx context.Context, req *dat
 	}
 	opts = append((*c.CallOptions).QueryCompilationResultActions[0:len((*c.CallOptions).QueryCompilationResultActions):len((*c.CallOptions).QueryCompilationResultActions)], opts...)
 	it := &CompilationResultActionIterator{}
-	req = proto.Clone(req).(*dataformpb.QueryCompilationResultActionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataformpb.CompilationResultAction, string, error) {
 		resp := &dataformpb.QueryCompilationResultActionsResponse{}
 		if pageToken != "" {
@@ -3039,7 +3039,7 @@ func (c *gRPCClient) ListWorkflowConfigs(ctx context.Context, req *dataformpb.Li
 	}
 	opts = append((*c.CallOptions).ListWorkflowConfigs[0:len((*c.CallOptions).ListWorkflowConfigs):len((*c.CallOptions).ListWorkflowConfigs)], opts...)
 	it := &WorkflowConfigIterator{}
-	req = proto.Clone(req).(*dataformpb.ListWorkflowConfigsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataformpb.WorkflowConfig, string, error) {
 		resp := &dataformpb.ListWorkflowConfigsResponse{}
 		if pageToken != "" {
@@ -3180,7 +3180,7 @@ func (c *gRPCClient) ListWorkflowInvocations(ctx context.Context, req *dataformp
 	}
 	opts = append((*c.CallOptions).ListWorkflowInvocations[0:len((*c.CallOptions).ListWorkflowInvocations):len((*c.CallOptions).ListWorkflowInvocations)], opts...)
 	it := &WorkflowInvocationIterator{}
-	req = proto.Clone(req).(*dataformpb.ListWorkflowInvocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataformpb.WorkflowInvocation, string, error) {
 		resp := &dataformpb.ListWorkflowInvocationsResponse{}
 		if pageToken != "" {
@@ -3324,7 +3324,7 @@ func (c *gRPCClient) QueryWorkflowInvocationActions(ctx context.Context, req *da
 	}
 	opts = append((*c.CallOptions).QueryWorkflowInvocationActions[0:len((*c.CallOptions).QueryWorkflowInvocationActions):len((*c.CallOptions).QueryWorkflowInvocationActions)], opts...)
 	it := &WorkflowInvocationActionIterator{}
-	req = proto.Clone(req).(*dataformpb.QueryWorkflowInvocationActionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataformpb.WorkflowInvocationAction, string, error) {
 		resp := &dataformpb.QueryWorkflowInvocationActionsResponse{}
 		if pageToken != "" {
@@ -3511,7 +3511,7 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -3615,7 +3615,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -3955,7 +3955,7 @@ func (c *restClient) DeleteTeamFolderTree(ctx context.Context, req *dataformpb.D
 // QueryTeamFolderContents returns the contents of a given TeamFolder.
 func (c *restClient) QueryTeamFolderContents(ctx context.Context, req *dataformpb.QueryTeamFolderContentsRequest, opts ...gax.CallOption) *QueryTeamFolderContentsResponse_TeamFolderContentsEntryIterator {
 	it := &QueryTeamFolderContentsResponse_TeamFolderContentsEntryIterator{}
-	req = proto.Clone(req).(*dataformpb.QueryTeamFolderContentsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataformpb.QueryTeamFolderContentsResponse_TeamFolderContentsEntry, string, error) {
 		resp := &dataformpb.QueryTeamFolderContentsResponse{}
@@ -4040,7 +4040,7 @@ func (c *restClient) QueryTeamFolderContents(ctx context.Context, req *dataformp
 // and match the provided filter.
 func (c *restClient) SearchTeamFolders(ctx context.Context, req *dataformpb.SearchTeamFoldersRequest, opts ...gax.CallOption) *SearchTeamFoldersResponse_TeamFolderSearchResultIterator {
 	it := &SearchTeamFoldersResponse_TeamFolderSearchResultIterator{}
-	req = proto.Clone(req).(*dataformpb.SearchTeamFoldersRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataformpb.SearchTeamFoldersResponse_TeamFolderSearchResult, string, error) {
 		resp := &dataformpb.SearchTeamFoldersResponse{}
@@ -4422,7 +4422,7 @@ func (c *restClient) DeleteFolderTree(ctx context.Context, req *dataformpb.Delet
 // QueryFolderContents returns the contents of a given Folder.
 func (c *restClient) QueryFolderContents(ctx context.Context, req *dataformpb.QueryFolderContentsRequest, opts ...gax.CallOption) *QueryFolderContentsResponse_FolderContentsEntryIterator {
 	it := &QueryFolderContentsResponse_FolderContentsEntryIterator{}
-	req = proto.Clone(req).(*dataformpb.QueryFolderContentsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataformpb.QueryFolderContentsResponse_FolderContentsEntry, string, error) {
 		resp := &dataformpb.QueryFolderContentsResponse{}
@@ -4508,7 +4508,7 @@ func (c *restClient) QueryFolderContents(ctx context.Context, req *dataformpb.Qu
 // contained in any other folder.
 func (c *restClient) QueryUserRootContents(ctx context.Context, req *dataformpb.QueryUserRootContentsRequest, opts ...gax.CallOption) *QueryUserRootContentsResponse_RootContentsEntryIterator {
 	it := &QueryUserRootContentsResponse_RootContentsEntryIterator{}
-	req = proto.Clone(req).(*dataformpb.QueryUserRootContentsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataformpb.QueryUserRootContentsResponse_RootContentsEntry, string, error) {
 		resp := &dataformpb.QueryUserRootContentsResponse{}
@@ -4661,7 +4661,7 @@ func (c *restClient) MoveFolder(ctx context.Context, req *dataformpb.MoveFolderR
 // UI (at https://console.cloud.google.com/bigquery/dataform).
 func (c *restClient) ListRepositories(ctx context.Context, req *dataformpb.ListRepositoriesRequest, opts ...gax.CallOption) *RepositoryIterator {
 	it := &RepositoryIterator{}
-	req = proto.Clone(req).(*dataformpb.ListRepositoriesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataformpb.Repository, string, error) {
 		resp := &dataformpb.ListRepositoriesResponse{}
@@ -5178,7 +5178,7 @@ func (c *restClient) ReadRepositoryFile(ctx context.Context, req *dataformpb.Rea
 // not have a value for git_remote_settings.url.
 func (c *restClient) QueryRepositoryDirectoryContents(ctx context.Context, req *dataformpb.QueryRepositoryDirectoryContentsRequest, opts ...gax.CallOption) *DirectoryEntryIterator {
 	it := &DirectoryEntryIterator{}
-	req = proto.Clone(req).(*dataformpb.QueryRepositoryDirectoryContentsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataformpb.DirectoryEntry, string, error) {
 		resp := &dataformpb.QueryRepositoryDirectoryContentsResponse{}
@@ -5263,7 +5263,7 @@ func (c *restClient) QueryRepositoryDirectoryContents(ctx context.Context, req *
 // value for git_remote_settings.url.
 func (c *restClient) FetchRepositoryHistory(ctx context.Context, req *dataformpb.FetchRepositoryHistoryRequest, opts ...gax.CallOption) *CommitLogEntryIterator {
 	it := &CommitLogEntryIterator{}
-	req = proto.Clone(req).(*dataformpb.FetchRepositoryHistoryRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataformpb.CommitLogEntry, string, error) {
 		resp := &dataformpb.FetchRepositoryHistoryResponse{}
@@ -5455,7 +5455,7 @@ func (c *restClient) FetchRemoteBranches(ctx context.Context, req *dataformpb.Fe
 // ListWorkspaces lists Workspaces in a given Repository.
 func (c *restClient) ListWorkspaces(ctx context.Context, req *dataformpb.ListWorkspacesRequest, opts ...gax.CallOption) *WorkspaceIterator {
 	it := &WorkspaceIterator{}
-	req = proto.Clone(req).(*dataformpb.ListWorkspacesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataformpb.Workspace, string, error) {
 		resp := &dataformpb.ListWorkspacesResponse{}
@@ -6193,7 +6193,7 @@ func (c *restClient) FetchFileDiff(ctx context.Context, req *dataformpb.FetchFil
 // QueryDirectoryContents returns the contents of a given Workspace directory.
 func (c *restClient) QueryDirectoryContents(ctx context.Context, req *dataformpb.QueryDirectoryContentsRequest, opts ...gax.CallOption) *DirectoryEntryIterator {
 	it := &DirectoryEntryIterator{}
-	req = proto.Clone(req).(*dataformpb.QueryDirectoryContentsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataformpb.DirectoryEntry, string, error) {
 		resp := &dataformpb.QueryDirectoryContentsResponse{}
@@ -6277,7 +6277,7 @@ func (c *restClient) QueryDirectoryContents(ctx context.Context, req *dataformpb
 // SearchFiles finds the contents of a given Workspace directory by filter.
 func (c *restClient) SearchFiles(ctx context.Context, req *dataformpb.SearchFilesRequest, opts ...gax.CallOption) *SearchResultIterator {
 	it := &SearchResultIterator{}
-	req = proto.Clone(req).(*dataformpb.SearchFilesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataformpb.SearchResult, string, error) {
 		resp := &dataformpb.SearchFilesResponse{}
@@ -6798,7 +6798,7 @@ func (c *restClient) WriteFile(ctx context.Context, req *dataformpb.WriteFileReq
 // ListReleaseConfigs lists ReleaseConfigs in a given Repository.
 func (c *restClient) ListReleaseConfigs(ctx context.Context, req *dataformpb.ListReleaseConfigsRequest, opts ...gax.CallOption) *ReleaseConfigIterator {
 	it := &ReleaseConfigIterator{}
-	req = proto.Clone(req).(*dataformpb.ListReleaseConfigsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataformpb.ReleaseConfig, string, error) {
 		resp := &dataformpb.ListReleaseConfigsResponse{}
@@ -7113,7 +7113,7 @@ func (c *restClient) DeleteReleaseConfig(ctx context.Context, req *dataformpb.De
 // ListCompilationResults lists CompilationResults in a given Repository.
 func (c *restClient) ListCompilationResults(ctx context.Context, req *dataformpb.ListCompilationResultsRequest, opts ...gax.CallOption) *CompilationResultIterator {
 	it := &CompilationResultIterator{}
-	req = proto.Clone(req).(*dataformpb.ListCompilationResultsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataformpb.CompilationResult, string, error) {
 		resp := &dataformpb.ListCompilationResultsResponse{}
@@ -7318,7 +7318,7 @@ func (c *restClient) CreateCompilationResult(ctx context.Context, req *dataformp
 // QueryCompilationResultActions returns CompilationResultActions in a given CompilationResult.
 func (c *restClient) QueryCompilationResultActions(ctx context.Context, req *dataformpb.QueryCompilationResultActionsRequest, opts ...gax.CallOption) *CompilationResultActionIterator {
 	it := &CompilationResultActionIterator{}
-	req = proto.Clone(req).(*dataformpb.QueryCompilationResultActionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataformpb.CompilationResultAction, string, error) {
 		resp := &dataformpb.QueryCompilationResultActionsResponse{}
@@ -7399,7 +7399,7 @@ func (c *restClient) QueryCompilationResultActions(ctx context.Context, req *dat
 // ListWorkflowConfigs lists WorkflowConfigs in a given Repository.
 func (c *restClient) ListWorkflowConfigs(ctx context.Context, req *dataformpb.ListWorkflowConfigsRequest, opts ...gax.CallOption) *WorkflowConfigIterator {
 	it := &WorkflowConfigIterator{}
-	req = proto.Clone(req).(*dataformpb.ListWorkflowConfigsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataformpb.WorkflowConfig, string, error) {
 		resp := &dataformpb.ListWorkflowConfigsResponse{}
@@ -7714,7 +7714,7 @@ func (c *restClient) DeleteWorkflowConfig(ctx context.Context, req *dataformpb.D
 // ListWorkflowInvocations lists WorkflowInvocations in a given Repository.
 func (c *restClient) ListWorkflowInvocations(ctx context.Context, req *dataformpb.ListWorkflowInvocationsRequest, opts ...gax.CallOption) *WorkflowInvocationIterator {
 	it := &WorkflowInvocationIterator{}
-	req = proto.Clone(req).(*dataformpb.ListWorkflowInvocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataformpb.WorkflowInvocation, string, error) {
 		resp := &dataformpb.ListWorkflowInvocationsResponse{}
@@ -8024,7 +8024,7 @@ func (c *restClient) CancelWorkflowInvocation(ctx context.Context, req *dataform
 // QueryWorkflowInvocationActions returns WorkflowInvocationActions in a given WorkflowInvocation.
 func (c *restClient) QueryWorkflowInvocationActions(ctx context.Context, req *dataformpb.QueryWorkflowInvocationActionsRequest, opts ...gax.CallOption) *WorkflowInvocationActionIterator {
 	it := &WorkflowInvocationActionIterator{}
-	req = proto.Clone(req).(*dataformpb.QueryWorkflowInvocationActionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataformpb.WorkflowInvocationAction, string, error) {
 		resp := &dataformpb.QueryWorkflowInvocationActionsResponse{}
@@ -8499,7 +8499,7 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 // implementation and version.
 func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -8718,7 +8718,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

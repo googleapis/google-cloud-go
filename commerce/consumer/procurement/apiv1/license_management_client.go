@@ -475,7 +475,7 @@ func (c *licenseManagementGRPCClient) EnumerateLicensedUsers(ctx context.Context
 	}
 	opts = append((*c.CallOptions).EnumerateLicensedUsers[0:len((*c.CallOptions).EnumerateLicensedUsers):len((*c.CallOptions).EnumerateLicensedUsers)], opts...)
 	it := &LicensedUserIterator{}
-	req = proto.Clone(req).(*procurementpb.EnumerateLicensedUsersRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*procurementpb.LicensedUser, string, error) {
 		resp := &procurementpb.EnumerateLicensedUsersResponse{}
 		if pageToken != "" {
@@ -780,7 +780,7 @@ func (c *licenseManagementRESTClient) Unassign(ctx context.Context, req *procure
 // EnumerateLicensedUsers enumerates all users assigned a license.
 func (c *licenseManagementRESTClient) EnumerateLicensedUsers(ctx context.Context, req *procurementpb.EnumerateLicensedUsersRequest, opts ...gax.CallOption) *LicensedUserIterator {
 	it := &LicensedUserIterator{}
-	req = proto.Clone(req).(*procurementpb.EnumerateLicensedUsersRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*procurementpb.LicensedUser, string, error) {
 		resp := &procurementpb.EnumerateLicensedUsersResponse{}

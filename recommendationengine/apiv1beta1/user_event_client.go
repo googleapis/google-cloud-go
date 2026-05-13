@@ -611,7 +611,7 @@ func (c *userEventGRPCClient) ListUserEvents(ctx context.Context, req *recommend
 	}
 	opts = append((*c.CallOptions).ListUserEvents[0:len((*c.CallOptions).ListUserEvents):len((*c.CallOptions).ListUserEvents)], opts...)
 	it := &UserEventIterator{}
-	req = proto.Clone(req).(*recommendationenginepb.ListUserEventsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*recommendationenginepb.UserEvent, string, error) {
 		resp := &recommendationenginepb.ListUserEventsResponse{}
 		if pageToken != "" {
@@ -837,7 +837,7 @@ func (c *userEventRESTClient) CollectUserEvent(ctx context.Context, req *recomme
 // ListUserEvents gets a list of user events within a time range, with potential filtering.
 func (c *userEventRESTClient) ListUserEvents(ctx context.Context, req *recommendationenginepb.ListUserEventsRequest, opts ...gax.CallOption) *UserEventIterator {
 	it := &UserEventIterator{}
-	req = proto.Clone(req).(*recommendationenginepb.ListUserEventsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*recommendationenginepb.UserEvent, string, error) {
 		resp := &recommendationenginepb.ListUserEventsResponse{}

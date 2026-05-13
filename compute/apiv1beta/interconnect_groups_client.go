@@ -737,7 +737,7 @@ func (c *interconnectGroupsRESTClient) Insert(ctx context.Context, req *computep
 // List lists the InterconnectGroups for a project in the given scope.
 func (c *interconnectGroupsRESTClient) List(ctx context.Context, req *computepb.ListInterconnectGroupsRequest, opts ...gax.CallOption) *InterconnectGroupIterator {
 	it := &InterconnectGroupIterator{}
-	req = proto.Clone(req).(*computepb.ListInterconnectGroupsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.InterconnectGroup, string, error) {
 		resp := &computepb.InterconnectGroupsListResponse{}

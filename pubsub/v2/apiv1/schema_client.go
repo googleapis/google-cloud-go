@@ -743,7 +743,7 @@ func (c *schemaGRPCClient) ListSchemas(ctx context.Context, req *pubsubpb.ListSc
 	}
 	opts = append((*c.CallOptions).ListSchemas[0:len((*c.CallOptions).ListSchemas):len((*c.CallOptions).ListSchemas)], opts...)
 	it := &SchemaIterator{}
-	req = proto.Clone(req).(*pubsubpb.ListSchemasRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*pubsubpb.Schema, string, error) {
 		resp := &pubsubpb.ListSchemasResponse{}
 		if pageToken != "" {
@@ -795,7 +795,7 @@ func (c *schemaGRPCClient) ListSchemaRevisions(ctx context.Context, req *pubsubp
 	}
 	opts = append((*c.CallOptions).ListSchemaRevisions[0:len((*c.CallOptions).ListSchemaRevisions):len((*c.CallOptions).ListSchemaRevisions)], opts...)
 	it := &SchemaIterator{}
-	req = proto.Clone(req).(*pubsubpb.ListSchemaRevisionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*pubsubpb.Schema, string, error) {
 		resp := &pubsubpb.ListSchemaRevisionsResponse{}
 		if pageToken != "" {
@@ -1176,7 +1176,7 @@ func (c *schemaRESTClient) GetSchema(ctx context.Context, req *pubsubpb.GetSchem
 // ListSchemas lists schemas in a project.
 func (c *schemaRESTClient) ListSchemas(ctx context.Context, req *pubsubpb.ListSchemasRequest, opts ...gax.CallOption) *SchemaIterator {
 	it := &SchemaIterator{}
-	req = proto.Clone(req).(*pubsubpb.ListSchemasRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*pubsubpb.Schema, string, error) {
 		resp := &pubsubpb.ListSchemasResponse{}
@@ -1257,7 +1257,7 @@ func (c *schemaRESTClient) ListSchemas(ctx context.Context, req *pubsubpb.ListSc
 // ListSchemaRevisions lists all schema revisions for the named schema.
 func (c *schemaRESTClient) ListSchemaRevisions(ctx context.Context, req *pubsubpb.ListSchemaRevisionsRequest, opts ...gax.CallOption) *SchemaIterator {
 	it := &SchemaIterator{}
-	req = proto.Clone(req).(*pubsubpb.ListSchemaRevisionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*pubsubpb.Schema, string, error) {
 		resp := &pubsubpb.ListSchemaRevisionsResponse{}

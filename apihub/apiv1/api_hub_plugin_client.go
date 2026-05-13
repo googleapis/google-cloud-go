@@ -731,7 +731,7 @@ func (c *apiHubPluginRESTClient) CreatePlugin(ctx context.Context, req *apihubpb
 // ListPlugins list all the plugins in a given project and location.
 func (c *apiHubPluginRESTClient) ListPlugins(ctx context.Context, req *apihubpb.ListPluginsRequest, opts ...gax.CallOption) *PluginIterator {
 	it := &PluginIterator{}
-	req = proto.Clone(req).(*apihubpb.ListPluginsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apihubpb.Plugin, string, error) {
 		resp := &apihubpb.ListPluginsResponse{}
@@ -1067,7 +1067,7 @@ func (c *apiHubPluginRESTClient) GetPluginInstance(ctx context.Context, req *api
 // - can be used as wildcard value for {plugin_id}
 func (c *apiHubPluginRESTClient) ListPluginInstances(ctx context.Context, req *apihubpb.ListPluginInstancesRequest, opts ...gax.CallOption) *PluginInstanceIterator {
 	it := &PluginInstanceIterator{}
-	req = proto.Clone(req).(*apihubpb.ListPluginInstancesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apihubpb.PluginInstance, string, error) {
 		resp := &apihubpb.ListPluginInstancesResponse{}
@@ -1480,7 +1480,7 @@ func (c *apiHubPluginRESTClient) GetLocation(ctx context.Context, req *locationp
 // ListLocations lists information about the supported locations for this service.
 func (c *apiHubPluginRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -1699,7 +1699,7 @@ func (c *apiHubPluginRESTClient) GetOperation(ctx context.Context, req *longrunn
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *apiHubPluginRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

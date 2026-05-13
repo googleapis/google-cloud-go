@@ -1063,7 +1063,7 @@ func (c *configGRPCClient) ListBuckets(ctx context.Context, req *loggingpb.ListB
 	}
 	opts = append((*c.CallOptions).ListBuckets[0:len((*c.CallOptions).ListBuckets):len((*c.CallOptions).ListBuckets)], opts...)
 	it := &LogBucketIterator{}
-	req = proto.Clone(req).(*loggingpb.ListBucketsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*loggingpb.LogBucket, string, error) {
 		resp := &loggingpb.ListBucketsResponse{}
 		if pageToken != "" {
@@ -1276,7 +1276,7 @@ func (c *configGRPCClient) ListViews(ctx context.Context, req *loggingpb.ListVie
 	}
 	opts = append((*c.CallOptions).ListViews[0:len((*c.CallOptions).ListViews):len((*c.CallOptions).ListViews)], opts...)
 	it := &LogViewIterator{}
-	req = proto.Clone(req).(*loggingpb.ListViewsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*loggingpb.LogView, string, error) {
 		resp := &loggingpb.ListViewsResponse{}
 		if pageToken != "" {
@@ -1414,7 +1414,7 @@ func (c *configGRPCClient) ListSinks(ctx context.Context, req *loggingpb.ListSin
 	}
 	opts = append((*c.CallOptions).ListSinks[0:len((*c.CallOptions).ListSinks):len((*c.CallOptions).ListSinks)], opts...)
 	it := &LogSinkIterator{}
-	req = proto.Clone(req).(*loggingpb.ListSinksRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*loggingpb.LogSink, string, error) {
 		resp := &loggingpb.ListSinksResponse{}
 		if pageToken != "" {
@@ -1610,7 +1610,7 @@ func (c *configGRPCClient) ListLinks(ctx context.Context, req *loggingpb.ListLin
 	}
 	opts = append((*c.CallOptions).ListLinks[0:len((*c.CallOptions).ListLinks):len((*c.CallOptions).ListLinks)], opts...)
 	it := &LinkIterator{}
-	req = proto.Clone(req).(*loggingpb.ListLinksRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*loggingpb.Link, string, error) {
 		resp := &loggingpb.ListLinksResponse{}
 		if pageToken != "" {
@@ -1686,7 +1686,7 @@ func (c *configGRPCClient) ListExclusions(ctx context.Context, req *loggingpb.Li
 	}
 	opts = append((*c.CallOptions).ListExclusions[0:len((*c.CallOptions).ListExclusions):len((*c.CallOptions).ListExclusions)], opts...)
 	it := &LogExclusionIterator{}
-	req = proto.Clone(req).(*loggingpb.ListExclusionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*loggingpb.LogExclusion, string, error) {
 		resp := &loggingpb.ListExclusionsResponse{}
 		if pageToken != "" {
@@ -1975,7 +1975,7 @@ func (c *configGRPCClient) ListOperations(ctx context.Context, req *longrunningp
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -2017,7 +2017,7 @@ func (c *configGRPCClient) ListOperations(ctx context.Context, req *longrunningp
 // ListBuckets lists log buckets.
 func (c *configRESTClient) ListBuckets(ctx context.Context, req *loggingpb.ListBucketsRequest, opts ...gax.CallOption) *LogBucketIterator {
 	it := &LogBucketIterator{}
-	req = proto.Clone(req).(*loggingpb.ListBucketsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*loggingpb.LogBucket, string, error) {
 		resp := &loggingpb.ListBucketsResponse{}
@@ -2538,7 +2538,7 @@ func (c *configRESTClient) UndeleteBucket(ctx context.Context, req *loggingpb.Un
 // ListViews lists views on a log bucket.
 func (c *configRESTClient) ListViews(ctx context.Context, req *loggingpb.ListViewsRequest, opts ...gax.CallOption) *LogViewIterator {
 	it := &LogViewIterator{}
-	req = proto.Clone(req).(*loggingpb.ListViewsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*loggingpb.LogView, string, error) {
 		resp := &loggingpb.ListViewsResponse{}
@@ -2853,7 +2853,7 @@ func (c *configRESTClient) DeleteView(ctx context.Context, req *loggingpb.Delete
 // ListSinks lists sinks.
 func (c *configRESTClient) ListSinks(ctx context.Context, req *loggingpb.ListSinksRequest, opts ...gax.CallOption) *LogSinkIterator {
 	it := &LogSinkIterator{}
-	req = proto.Clone(req).(*loggingpb.ListSinksRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*loggingpb.LogSink, string, error) {
 		resp := &loggingpb.ListSinksResponse{}
@@ -3310,7 +3310,7 @@ func (c *configRESTClient) DeleteLink(ctx context.Context, req *loggingpb.Delete
 // ListLinks lists links.
 func (c *configRESTClient) ListLinks(ctx context.Context, req *loggingpb.ListLinksRequest, opts ...gax.CallOption) *LinkIterator {
 	it := &LinkIterator{}
-	req = proto.Clone(req).(*loggingpb.ListLinksRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*loggingpb.Link, string, error) {
 		resp := &loggingpb.ListLinksResponse{}
@@ -3445,7 +3445,7 @@ func (c *configRESTClient) GetLink(ctx context.Context, req *loggingpb.GetLinkRe
 // ListExclusions lists all the exclusions on the _Default sink in a parent resource.
 func (c *configRESTClient) ListExclusions(ctx context.Context, req *loggingpb.ListExclusionsRequest, opts ...gax.CallOption) *LogExclusionIterator {
 	it := &LogExclusionIterator{}
-	req = proto.Clone(req).(*loggingpb.ListExclusionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*loggingpb.LogExclusion, string, error) {
 		resp := &loggingpb.ListExclusionsResponse{}
@@ -4216,7 +4216,7 @@ func (c *configRESTClient) GetOperation(ctx context.Context, req *longrunningpb.
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *configRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

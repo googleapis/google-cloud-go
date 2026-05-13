@@ -783,7 +783,7 @@ func (c *gRPCClient) ListEvaluations(ctx context.Context, req *workloadmanagerpb
 	}
 	opts = append((*c.CallOptions).ListEvaluations[0:len((*c.CallOptions).ListEvaluations):len((*c.CallOptions).ListEvaluations)], opts...)
 	it := &EvaluationIterator{}
-	req = proto.Clone(req).(*workloadmanagerpb.ListEvaluationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*workloadmanagerpb.Evaluation, string, error) {
 		resp := &workloadmanagerpb.ListEvaluationsResponse{}
 		if pageToken != "" {
@@ -934,7 +934,7 @@ func (c *gRPCClient) ListExecutions(ctx context.Context, req *workloadmanagerpb.
 	}
 	opts = append((*c.CallOptions).ListExecutions[0:len((*c.CallOptions).ListExecutions):len((*c.CallOptions).ListExecutions)], opts...)
 	it := &ExecutionIterator{}
-	req = proto.Clone(req).(*workloadmanagerpb.ListExecutionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*workloadmanagerpb.Execution, string, error) {
 		resp := &workloadmanagerpb.ListExecutionsResponse{}
 		if pageToken != "" {
@@ -1059,7 +1059,7 @@ func (c *gRPCClient) ListExecutionResults(ctx context.Context, req *workloadmana
 	}
 	opts = append((*c.CallOptions).ListExecutionResults[0:len((*c.CallOptions).ListExecutionResults):len((*c.CallOptions).ListExecutionResults)], opts...)
 	it := &ExecutionResultIterator{}
-	req = proto.Clone(req).(*workloadmanagerpb.ListExecutionResultsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*workloadmanagerpb.ExecutionResult, string, error) {
 		resp := &workloadmanagerpb.ListExecutionResultsResponse{}
 		if pageToken != "" {
@@ -1132,7 +1132,7 @@ func (c *gRPCClient) ListScannedResources(ctx context.Context, req *workloadmana
 	}
 	opts = append((*c.CallOptions).ListScannedResources[0:len((*c.CallOptions).ListScannedResources):len((*c.CallOptions).ListScannedResources)], opts...)
 	it := &ScannedResourceIterator{}
-	req = proto.Clone(req).(*workloadmanagerpb.ListScannedResourcesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*workloadmanagerpb.ScannedResource, string, error) {
 		resp := &workloadmanagerpb.ListScannedResourcesResponse{}
 		if pageToken != "" {
@@ -1202,7 +1202,7 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -1306,7 +1306,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -1348,7 +1348,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // ListEvaluations lists Evaluations in a given project and location.
 func (c *restClient) ListEvaluations(ctx context.Context, req *workloadmanagerpb.ListEvaluationsRequest, opts ...gax.CallOption) *EvaluationIterator {
 	it := &EvaluationIterator{}
-	req = proto.Clone(req).(*workloadmanagerpb.ListEvaluationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*workloadmanagerpb.Evaluation, string, error) {
 		resp := &workloadmanagerpb.ListEvaluationsResponse{}
@@ -1700,7 +1700,7 @@ func (c *restClient) DeleteEvaluation(ctx context.Context, req *workloadmanagerp
 // ListExecutions lists Executions in a given project and location.
 func (c *restClient) ListExecutions(ctx context.Context, req *workloadmanagerpb.ListExecutionsRequest, opts ...gax.CallOption) *ExecutionIterator {
 	it := &ExecutionIterator{}
-	req = proto.Clone(req).(*workloadmanagerpb.ListExecutionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*workloadmanagerpb.Execution, string, error) {
 		resp := &workloadmanagerpb.ListExecutionsResponse{}
@@ -1970,7 +1970,7 @@ func (c *restClient) DeleteExecution(ctx context.Context, req *workloadmanagerpb
 // ListExecutionResults lists the result of a single evaluation.
 func (c *restClient) ListExecutionResults(ctx context.Context, req *workloadmanagerpb.ListExecutionResultsRequest, opts ...gax.CallOption) *ExecutionResultIterator {
 	it := &ExecutionResultIterator{}
-	req = proto.Clone(req).(*workloadmanagerpb.ListExecutionResultsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*workloadmanagerpb.ExecutionResult, string, error) {
 		resp := &workloadmanagerpb.ListExecutionResultsResponse{}
@@ -2123,7 +2123,7 @@ func (c *restClient) ListRules(ctx context.Context, req *workloadmanagerpb.ListR
 // ListScannedResources list all scanned resources for a single Execution.
 func (c *restClient) ListScannedResources(ctx context.Context, req *workloadmanagerpb.ListScannedResourcesRequest, opts ...gax.CallOption) *ScannedResourceIterator {
 	it := &ScannedResourceIterator{}
-	req = proto.Clone(req).(*workloadmanagerpb.ListScannedResourcesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*workloadmanagerpb.ScannedResource, string, error) {
 		resp := &workloadmanagerpb.ListScannedResourcesResponse{}
@@ -2272,7 +2272,7 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 //	to the project.
 func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -2491,7 +2491,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

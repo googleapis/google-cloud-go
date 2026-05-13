@@ -511,7 +511,7 @@ func (c *accountServicesGRPCClient) ListAccountServices(ctx context.Context, req
 	}
 	opts = append((*c.CallOptions).ListAccountServices[0:len((*c.CallOptions).ListAccountServices):len((*c.CallOptions).ListAccountServices)], opts...)
 	it := &AccountServiceIterator{}
-	req = proto.Clone(req).(*accountspb.ListAccountServicesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*accountspb.AccountService, string, error) {
 		resp := &accountspb.ListAccountServicesResponse{}
 		if pageToken != "" {
@@ -678,7 +678,7 @@ func (c *accountServicesRESTClient) GetAccountService(ctx context.Context, req *
 // ListAccountServices list account services for the specified accounts. Supports filtering.
 func (c *accountServicesRESTClient) ListAccountServices(ctx context.Context, req *accountspb.ListAccountServicesRequest, opts ...gax.CallOption) *AccountServiceIterator {
 	it := &AccountServiceIterator{}
-	req = proto.Clone(req).(*accountspb.ListAccountServicesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*accountspb.AccountService, string, error) {
 		resp := &accountspb.ListAccountServicesResponse{}

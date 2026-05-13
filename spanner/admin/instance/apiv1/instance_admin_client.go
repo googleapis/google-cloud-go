@@ -1296,7 +1296,7 @@ func (c *instanceAdminGRPCClient) ListInstanceConfigs(ctx context.Context, req *
 	}
 	opts = append((*c.CallOptions).ListInstanceConfigs[0:len((*c.CallOptions).ListInstanceConfigs):len((*c.CallOptions).ListInstanceConfigs)], opts...)
 	it := &InstanceConfigIterator{}
-	req = proto.Clone(req).(*instancepb.ListInstanceConfigsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*instancepb.InstanceConfig, string, error) {
 		resp := &instancepb.ListInstanceConfigsResponse{}
 		if pageToken != "" {
@@ -1441,7 +1441,7 @@ func (c *instanceAdminGRPCClient) ListInstanceConfigOperations(ctx context.Conte
 	}
 	opts = append((*c.CallOptions).ListInstanceConfigOperations[0:len((*c.CallOptions).ListInstanceConfigOperations):len((*c.CallOptions).ListInstanceConfigOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*instancepb.ListInstanceConfigOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &instancepb.ListInstanceConfigOperationsResponse{}
 		if pageToken != "" {
@@ -1493,7 +1493,7 @@ func (c *instanceAdminGRPCClient) ListInstances(ctx context.Context, req *instan
 	}
 	opts = append((*c.CallOptions).ListInstances[0:len((*c.CallOptions).ListInstances):len((*c.CallOptions).ListInstances)], opts...)
 	it := &InstanceIterator{}
-	req = proto.Clone(req).(*instancepb.ListInstancesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*instancepb.Instance, string, error) {
 		resp := &instancepb.ListInstancesResponse{}
 		if pageToken != "" {
@@ -1545,7 +1545,7 @@ func (c *instanceAdminGRPCClient) ListInstancePartitions(ctx context.Context, re
 	}
 	opts = append((*c.CallOptions).ListInstancePartitions[0:len((*c.CallOptions).ListInstancePartitions):len((*c.CallOptions).ListInstancePartitions)], opts...)
 	it := &InstancePartitionIterator{}
-	req = proto.Clone(req).(*instancepb.ListInstancePartitionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*instancepb.InstancePartition, string, error) {
 		resp := &instancepb.ListInstancePartitionsResponse{}
 		if pageToken != "" {
@@ -1855,7 +1855,7 @@ func (c *instanceAdminGRPCClient) ListInstancePartitionOperations(ctx context.Co
 	}
 	opts = append((*c.CallOptions).ListInstancePartitionOperations[0:len((*c.CallOptions).ListInstancePartitionOperations):len((*c.CallOptions).ListInstancePartitionOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*instancepb.ListInstancePartitionOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &instancepb.ListInstancePartitionOperationsResponse{}
 		if pageToken != "" {
@@ -1985,7 +1985,7 @@ func (c *instanceAdminGRPCClient) ListOperations(ctx context.Context, req *longr
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -2030,7 +2030,7 @@ func (c *instanceAdminGRPCClient) ListOperations(ctx context.Context, req *longr
 // configurations.
 func (c *instanceAdminRESTClient) ListInstanceConfigs(ctx context.Context, req *instancepb.ListInstanceConfigsRequest, opts ...gax.CallOption) *InstanceConfigIterator {
 	it := &InstanceConfigIterator{}
-	req = proto.Clone(req).(*instancepb.ListInstanceConfigsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*instancepb.InstanceConfig, string, error) {
 		resp := &instancepb.ListInstanceConfigsResponse{}
@@ -2448,7 +2448,7 @@ func (c *instanceAdminRESTClient) DeleteInstanceConfig(ctx context.Context, req 
 // from the most recently started operation.
 func (c *instanceAdminRESTClient) ListInstanceConfigOperations(ctx context.Context, req *instancepb.ListInstanceConfigOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*instancepb.ListInstanceConfigOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &instancepb.ListInstanceConfigOperationsResponse{}
@@ -2529,7 +2529,7 @@ func (c *instanceAdminRESTClient) ListInstanceConfigOperations(ctx context.Conte
 // ListInstances lists all instances in the given project.
 func (c *instanceAdminRESTClient) ListInstances(ctx context.Context, req *instancepb.ListInstancesRequest, opts ...gax.CallOption) *InstanceIterator {
 	it := &InstanceIterator{}
-	req = proto.Clone(req).(*instancepb.ListInstancesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*instancepb.Instance, string, error) {
 		resp := &instancepb.ListInstancesResponse{}
@@ -2617,7 +2617,7 @@ func (c *instanceAdminRESTClient) ListInstances(ctx context.Context, req *instan
 // ListInstancePartitions lists all instance partitions for the given instance.
 func (c *instanceAdminRESTClient) ListInstancePartitions(ctx context.Context, req *instancepb.ListInstancePartitionsRequest, opts ...gax.CallOption) *InstancePartitionIterator {
 	it := &InstancePartitionIterator{}
-	req = proto.Clone(req).(*instancepb.ListInstancePartitionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*instancepb.InstancePartition, string, error) {
 		resp := &instancepb.ListInstancePartitionsResponse{}
@@ -3566,7 +3566,7 @@ func (c *instanceAdminRESTClient) UpdateInstancePartition(ctx context.Context, r
 // parent.
 func (c *instanceAdminRESTClient) ListInstancePartitionOperations(ctx context.Context, req *instancepb.ListInstancePartitionOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*instancepb.ListInstancePartitionOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &instancepb.ListInstancePartitionOperationsResponse{}
@@ -3923,7 +3923,7 @@ func (c *instanceAdminRESTClient) GetOperation(ctx context.Context, req *longrun
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *instanceAdminRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

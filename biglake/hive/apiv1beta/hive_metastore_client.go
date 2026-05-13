@@ -1071,7 +1071,7 @@ func (c *hiveMetastoreGRPCClient) ListHiveCatalogs(ctx context.Context, req *hiv
 	}
 	opts = append((*c.CallOptions).ListHiveCatalogs[0:len((*c.CallOptions).ListHiveCatalogs):len((*c.CallOptions).ListHiveCatalogs)], opts...)
 	it := &HiveCatalogIterator{}
-	req = proto.Clone(req).(*hivepb.ListHiveCatalogsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*hivepb.HiveCatalog, string, error) {
 		resp := &hivepb.ListHiveCatalogsResponse{}
 		if pageToken != "" {
@@ -1212,7 +1212,7 @@ func (c *hiveMetastoreGRPCClient) ListHiveDatabases(ctx context.Context, req *hi
 	}
 	opts = append((*c.CallOptions).ListHiveDatabases[0:len((*c.CallOptions).ListHiveDatabases):len((*c.CallOptions).ListHiveDatabases)], opts...)
 	it := &HiveDatabaseIterator{}
-	req = proto.Clone(req).(*hivepb.ListHiveDatabasesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*hivepb.HiveDatabase, string, error) {
 		resp := &hivepb.ListHiveDatabasesResponse{}
 		if pageToken != "" {
@@ -1353,7 +1353,7 @@ func (c *hiveMetastoreGRPCClient) ListHiveTables(ctx context.Context, req *hivep
 	}
 	opts = append((*c.CallOptions).ListHiveTables[0:len((*c.CallOptions).ListHiveTables):len((*c.CallOptions).ListHiveTables)], opts...)
 	it := &HiveTableIterator{}
-	req = proto.Clone(req).(*hivepb.ListHiveTablesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*hivepb.HiveTable, string, error) {
 		resp := &hivepb.ListHiveTablesResponse{}
 		if pageToken != "" {
@@ -1653,7 +1653,7 @@ func (c *hiveMetastoreRESTClient) GetHiveCatalog(ctx context.Context, req *hivep
 // ListHiveCatalogs list all catalogs in a specified project.
 func (c *hiveMetastoreRESTClient) ListHiveCatalogs(ctx context.Context, req *hivepb.ListHiveCatalogsRequest, opts ...gax.CallOption) *HiveCatalogIterator {
 	it := &HiveCatalogIterator{}
-	req = proto.Clone(req).(*hivepb.ListHiveCatalogsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*hivepb.HiveCatalog, string, error) {
 		resp := &hivepb.ListHiveCatalogsResponse{}
@@ -1964,7 +1964,7 @@ func (c *hiveMetastoreRESTClient) GetHiveDatabase(ctx context.Context, req *hive
 // ListHiveDatabases list all databases in a specified catalog.
 func (c *hiveMetastoreRESTClient) ListHiveDatabases(ctx context.Context, req *hivepb.ListHiveDatabasesRequest, opts ...gax.CallOption) *HiveDatabaseIterator {
 	it := &HiveDatabaseIterator{}
-	req = proto.Clone(req).(*hivepb.ListHiveDatabasesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*hivepb.HiveDatabase, string, error) {
 		resp := &hivepb.ListHiveDatabasesResponse{}
@@ -2275,7 +2275,7 @@ func (c *hiveMetastoreRESTClient) GetHiveTable(ctx context.Context, req *hivepb.
 // database.
 func (c *hiveMetastoreRESTClient) ListHiveTables(ctx context.Context, req *hivepb.ListHiveTablesRequest, opts ...gax.CallOption) *HiveTableIterator {
 	it := &HiveTableIterator{}
-	req = proto.Clone(req).(*hivepb.ListHiveTablesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*hivepb.HiveTable, string, error) {
 		resp := &hivepb.ListHiveTablesResponse{}

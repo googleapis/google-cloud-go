@@ -328,7 +328,7 @@ func (c *regionHealthAggregationPoliciesRESTClient) Connection() *grpc.ClientCon
 // returnPartialSuccess parameter to true.
 func (c *regionHealthAggregationPoliciesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListRegionHealthAggregationPoliciesRequest, opts ...gax.CallOption) *HealthAggregationPoliciesScopedListPairIterator {
 	it := &HealthAggregationPoliciesScopedListPairIterator{}
-	req = proto.Clone(req).(*computepb.AggregatedListRegionHealthAggregationPoliciesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]HealthAggregationPoliciesScopedListPair, string, error) {
 		resp := &computepb.HealthAggregationPolicyAggregatedList{}
@@ -621,7 +621,7 @@ func (c *regionHealthAggregationPoliciesRESTClient) Insert(ctx context.Context, 
 // List lists the HealthAggregationPolicies for a project in the given region.
 func (c *regionHealthAggregationPoliciesRESTClient) List(ctx context.Context, req *computepb.ListRegionHealthAggregationPoliciesRequest, opts ...gax.CallOption) *HealthAggregationPolicyIterator {
 	it := &HealthAggregationPolicyIterator{}
-	req = proto.Clone(req).(*computepb.ListRegionHealthAggregationPoliciesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.HealthAggregationPolicy, string, error) {
 		resp := &computepb.HealthAggregationPolicyList{}

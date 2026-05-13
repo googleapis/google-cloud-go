@@ -779,7 +779,7 @@ func (c *gRPCClient) ListAuthorizationPolicies(ctx context.Context, req *network
 	}
 	opts = append((*c.CallOptions).ListAuthorizationPolicies[0:len((*c.CallOptions).ListAuthorizationPolicies):len((*c.CallOptions).ListAuthorizationPolicies)], opts...)
 	it := &AuthorizationPolicyIterator{}
-	req = proto.Clone(req).(*networksecuritypb.ListAuthorizationPoliciesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networksecuritypb.AuthorizationPolicy, string, error) {
 		resp := &networksecuritypb.ListAuthorizationPoliciesResponse{}
 		if pageToken != "" {
@@ -930,7 +930,7 @@ func (c *gRPCClient) ListServerTlsPolicies(ctx context.Context, req *networksecu
 	}
 	opts = append((*c.CallOptions).ListServerTlsPolicies[0:len((*c.CallOptions).ListServerTlsPolicies):len((*c.CallOptions).ListServerTlsPolicies)], opts...)
 	it := &ServerTlsPolicyIterator{}
-	req = proto.Clone(req).(*networksecuritypb.ListServerTlsPoliciesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networksecuritypb.ServerTlsPolicy, string, error) {
 		resp := &networksecuritypb.ListServerTlsPoliciesResponse{}
 		if pageToken != "" {
@@ -1081,7 +1081,7 @@ func (c *gRPCClient) ListClientTlsPolicies(ctx context.Context, req *networksecu
 	}
 	opts = append((*c.CallOptions).ListClientTlsPolicies[0:len((*c.CallOptions).ListClientTlsPolicies):len((*c.CallOptions).ListClientTlsPolicies)], opts...)
 	it := &ClientTlsPolicyIterator{}
-	req = proto.Clone(req).(*networksecuritypb.ListClientTlsPoliciesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networksecuritypb.ClientTlsPolicy, string, error) {
 		resp := &networksecuritypb.ListClientTlsPoliciesResponse{}
 		if pageToken != "" {
@@ -1250,7 +1250,7 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -1426,7 +1426,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -1468,7 +1468,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // ListAuthorizationPolicies lists AuthorizationPolicies in a given project and location.
 func (c *restClient) ListAuthorizationPolicies(ctx context.Context, req *networksecuritypb.ListAuthorizationPoliciesRequest, opts ...gax.CallOption) *AuthorizationPolicyIterator {
 	it := &AuthorizationPolicyIterator{}
-	req = proto.Clone(req).(*networksecuritypb.ListAuthorizationPoliciesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networksecuritypb.AuthorizationPolicy, string, error) {
 		resp := &networksecuritypb.ListAuthorizationPoliciesResponse{}
@@ -1802,7 +1802,7 @@ func (c *restClient) DeleteAuthorizationPolicy(ctx context.Context, req *network
 // ListServerTlsPolicies lists ServerTlsPolicies in a given project and location.
 func (c *restClient) ListServerTlsPolicies(ctx context.Context, req *networksecuritypb.ListServerTlsPoliciesRequest, opts ...gax.CallOption) *ServerTlsPolicyIterator {
 	it := &ServerTlsPolicyIterator{}
-	req = proto.Clone(req).(*networksecuritypb.ListServerTlsPoliciesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networksecuritypb.ServerTlsPolicy, string, error) {
 		resp := &networksecuritypb.ListServerTlsPoliciesResponse{}
@@ -2136,7 +2136,7 @@ func (c *restClient) DeleteServerTlsPolicy(ctx context.Context, req *networksecu
 // ListClientTlsPolicies lists ClientTlsPolicies in a given project and location.
 func (c *restClient) ListClientTlsPolicies(ctx context.Context, req *networksecuritypb.ListClientTlsPoliciesRequest, opts ...gax.CallOption) *ClientTlsPolicyIterator {
 	it := &ClientTlsPolicyIterator{}
-	req = proto.Clone(req).(*networksecuritypb.ListClientTlsPoliciesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networksecuritypb.ClientTlsPolicy, string, error) {
 		resp := &networksecuritypb.ListClientTlsPoliciesResponse{}
@@ -2524,7 +2524,7 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 // ListLocations lists information about the supported locations for this service.
 func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -2940,7 +2940,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

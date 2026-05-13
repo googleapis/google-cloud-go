@@ -624,7 +624,7 @@ func (c *ekmGRPCClient) ListEkmConnections(ctx context.Context, req *kmspb.ListE
 	}
 	opts = append((*c.CallOptions).ListEkmConnections[0:len((*c.CallOptions).ListEkmConnections):len((*c.CallOptions).ListEkmConnections)], opts...)
 	it := &EkmConnectionIterator{}
-	req = proto.Clone(req).(*kmspb.ListEkmConnectionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*kmspb.EkmConnection, string, error) {
 		resp := &kmspb.ListEkmConnectionsResponse{}
 		if pageToken != "" {
@@ -832,7 +832,7 @@ func (c *ekmGRPCClient) ListLocations(ctx context.Context, req *locationpb.ListL
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -967,7 +967,7 @@ func (c *ekmGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.Get
 // ListEkmConnections lists EkmConnections.
 func (c *ekmRESTClient) ListEkmConnections(ctx context.Context, req *kmspb.ListEkmConnectionsRequest, opts ...gax.CallOption) *EkmConnectionIterator {
 	it := &EkmConnectionIterator{}
-	req = proto.Clone(req).(*kmspb.ListEkmConnectionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*kmspb.EkmConnection, string, error) {
 		resp := &kmspb.ListEkmConnectionsResponse{}
@@ -1501,7 +1501,7 @@ func (c *ekmRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLoca
 // implementation and version.
 func (c *ekmRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}

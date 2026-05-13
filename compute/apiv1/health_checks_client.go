@@ -341,7 +341,7 @@ func (c *healthChecksRESTClient) Connection() *grpc.ClientConn {
 // returnPartialSuccess parameter to true.
 func (c *healthChecksRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListHealthChecksRequest, opts ...gax.CallOption) *HealthChecksScopedListPairIterator {
 	it := &HealthChecksScopedListPairIterator{}
-	req = proto.Clone(req).(*computepb.AggregatedListHealthChecksRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]HealthChecksScopedListPair, string, error) {
 		resp := &computepb.HealthChecksAggregatedList{}
@@ -633,7 +633,7 @@ func (c *healthChecksRESTClient) Insert(ctx context.Context, req *computepb.Inse
 // project.
 func (c *healthChecksRESTClient) List(ctx context.Context, req *computepb.ListHealthChecksRequest, opts ...gax.CallOption) *HealthCheckIterator {
 	it := &HealthCheckIterator{}
-	req = proto.Clone(req).(*computepb.ListHealthChecksRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.HealthCheck, string, error) {
 		resp := &computepb.HealthCheckList{}

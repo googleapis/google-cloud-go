@@ -879,7 +879,7 @@ func (c *gRPCClient) ListOrchestrationClusters(ctx context.Context, req *telcoau
 	}
 	opts = append((*c.CallOptions).ListOrchestrationClusters[0:len((*c.CallOptions).ListOrchestrationClusters):len((*c.CallOptions).ListOrchestrationClusters)], opts...)
 	it := &OrchestrationClusterIterator{}
-	req = proto.Clone(req).(*telcoautomationpb.ListOrchestrationClustersRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*telcoautomationpb.OrchestrationCluster, string, error) {
 		resp := &telcoautomationpb.ListOrchestrationClustersResponse{}
 		if pageToken != "" {
@@ -1007,7 +1007,7 @@ func (c *gRPCClient) ListEdgeSlms(ctx context.Context, req *telcoautomationpb.Li
 	}
 	opts = append((*c.CallOptions).ListEdgeSlms[0:len((*c.CallOptions).ListEdgeSlms):len((*c.CallOptions).ListEdgeSlms)], opts...)
 	it := &EdgeSlmIterator{}
-	req = proto.Clone(req).(*telcoautomationpb.ListEdgeSlmsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*telcoautomationpb.EdgeSlm, string, error) {
 		resp := &telcoautomationpb.ListEdgeSlmsResponse{}
 		if pageToken != "" {
@@ -1224,7 +1224,7 @@ func (c *gRPCClient) ListBlueprints(ctx context.Context, req *telcoautomationpb.
 	}
 	opts = append((*c.CallOptions).ListBlueprints[0:len((*c.CallOptions).ListBlueprints):len((*c.CallOptions).ListBlueprints)], opts...)
 	it := &BlueprintIterator{}
-	req = proto.Clone(req).(*telcoautomationpb.ListBlueprintsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*telcoautomationpb.Blueprint, string, error) {
 		resp := &telcoautomationpb.ListBlueprintsResponse{}
 		if pageToken != "" {
@@ -1348,7 +1348,7 @@ func (c *gRPCClient) ListBlueprintRevisions(ctx context.Context, req *telcoautom
 	}
 	opts = append((*c.CallOptions).ListBlueprintRevisions[0:len((*c.CallOptions).ListBlueprintRevisions):len((*c.CallOptions).ListBlueprintRevisions)], opts...)
 	it := &BlueprintIterator{}
-	req = proto.Clone(req).(*telcoautomationpb.ListBlueprintRevisionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*telcoautomationpb.Blueprint, string, error) {
 		resp := &telcoautomationpb.ListBlueprintRevisionsResponse{}
 		if pageToken != "" {
@@ -1400,7 +1400,7 @@ func (c *gRPCClient) SearchBlueprintRevisions(ctx context.Context, req *telcoaut
 	}
 	opts = append((*c.CallOptions).SearchBlueprintRevisions[0:len((*c.CallOptions).SearchBlueprintRevisions):len((*c.CallOptions).SearchBlueprintRevisions)], opts...)
 	it := &BlueprintIterator{}
-	req = proto.Clone(req).(*telcoautomationpb.SearchBlueprintRevisionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*telcoautomationpb.Blueprint, string, error) {
 		resp := &telcoautomationpb.SearchBlueprintRevisionsResponse{}
 		if pageToken != "" {
@@ -1452,7 +1452,7 @@ func (c *gRPCClient) SearchDeploymentRevisions(ctx context.Context, req *telcoau
 	}
 	opts = append((*c.CallOptions).SearchDeploymentRevisions[0:len((*c.CallOptions).SearchDeploymentRevisions):len((*c.CallOptions).SearchDeploymentRevisions)], opts...)
 	it := &DeploymentIterator{}
-	req = proto.Clone(req).(*telcoautomationpb.SearchDeploymentRevisionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*telcoautomationpb.Deployment, string, error) {
 		resp := &telcoautomationpb.SearchDeploymentRevisionsResponse{}
 		if pageToken != "" {
@@ -1528,7 +1528,7 @@ func (c *gRPCClient) ListPublicBlueprints(ctx context.Context, req *telcoautomat
 	}
 	opts = append((*c.CallOptions).ListPublicBlueprints[0:len((*c.CallOptions).ListPublicBlueprints):len((*c.CallOptions).ListPublicBlueprints)], opts...)
 	it := &PublicBlueprintIterator{}
-	req = proto.Clone(req).(*telcoautomationpb.ListPublicBlueprintsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*telcoautomationpb.PublicBlueprint, string, error) {
 		resp := &telcoautomationpb.ListPublicBlueprintsResponse{}
 		if pageToken != "" {
@@ -1693,7 +1693,7 @@ func (c *gRPCClient) ListDeployments(ctx context.Context, req *telcoautomationpb
 	}
 	opts = append((*c.CallOptions).ListDeployments[0:len((*c.CallOptions).ListDeployments):len((*c.CallOptions).ListDeployments)], opts...)
 	it := &DeploymentIterator{}
-	req = proto.Clone(req).(*telcoautomationpb.ListDeploymentsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*telcoautomationpb.Deployment, string, error) {
 		resp := &telcoautomationpb.ListDeploymentsResponse{}
 		if pageToken != "" {
@@ -1745,7 +1745,7 @@ func (c *gRPCClient) ListDeploymentRevisions(ctx context.Context, req *telcoauto
 	}
 	opts = append((*c.CallOptions).ListDeploymentRevisions[0:len((*c.CallOptions).ListDeploymentRevisions):len((*c.CallOptions).ListDeploymentRevisions)], opts...)
 	it := &DeploymentIterator{}
-	req = proto.Clone(req).(*telcoautomationpb.ListDeploymentRevisionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*telcoautomationpb.Deployment, string, error) {
 		resp := &telcoautomationpb.ListDeploymentRevisionsResponse{}
 		if pageToken != "" {
@@ -1917,7 +1917,7 @@ func (c *gRPCClient) ListHydratedDeployments(ctx context.Context, req *telcoauto
 	}
 	opts = append((*c.CallOptions).ListHydratedDeployments[0:len((*c.CallOptions).ListHydratedDeployments):len((*c.CallOptions).ListHydratedDeployments)], opts...)
 	it := &HydratedDeploymentIterator{}
-	req = proto.Clone(req).(*telcoautomationpb.ListHydratedDeploymentsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*telcoautomationpb.HydratedDeployment, string, error) {
 		resp := &telcoautomationpb.ListHydratedDeploymentsResponse{}
 		if pageToken != "" {
@@ -2032,7 +2032,7 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -2136,7 +2136,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -2178,7 +2178,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // ListOrchestrationClusters lists OrchestrationClusters in a given project and location.
 func (c *restClient) ListOrchestrationClusters(ctx context.Context, req *telcoautomationpb.ListOrchestrationClustersRequest, opts ...gax.CallOption) *OrchestrationClusterIterator {
 	it := &OrchestrationClusterIterator{}
-	req = proto.Clone(req).(*telcoautomationpb.ListOrchestrationClustersRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*telcoautomationpb.OrchestrationCluster, string, error) {
 		resp := &telcoautomationpb.ListOrchestrationClustersResponse{}
@@ -2453,7 +2453,7 @@ func (c *restClient) DeleteOrchestrationCluster(ctx context.Context, req *telcoa
 // ListEdgeSlms lists EdgeSlms in a given project and location.
 func (c *restClient) ListEdgeSlms(ctx context.Context, req *telcoautomationpb.ListEdgeSlmsRequest, opts ...gax.CallOption) *EdgeSlmIterator {
 	it := &EdgeSlmIterator{}
-	req = proto.Clone(req).(*telcoautomationpb.ListEdgeSlmsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*telcoautomationpb.EdgeSlm, string, error) {
 		resp := &telcoautomationpb.ListEdgeSlmsResponse{}
@@ -2965,7 +2965,7 @@ func (c *restClient) DeleteBlueprint(ctx context.Context, req *telcoautomationpb
 // ListBlueprints list all blueprints.
 func (c *restClient) ListBlueprints(ctx context.Context, req *telcoautomationpb.ListBlueprintsRequest, opts ...gax.CallOption) *BlueprintIterator {
 	it := &BlueprintIterator{}
-	req = proto.Clone(req).(*telcoautomationpb.ListBlueprintsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*telcoautomationpb.Blueprint, string, error) {
 		resp := &telcoautomationpb.ListBlueprintsResponse{}
@@ -3235,7 +3235,7 @@ func (c *restClient) RejectBlueprint(ctx context.Context, req *telcoautomationpb
 // ListBlueprintRevisions list blueprint revisions of a given blueprint.
 func (c *restClient) ListBlueprintRevisions(ctx context.Context, req *telcoautomationpb.ListBlueprintRevisionsRequest, opts ...gax.CallOption) *BlueprintIterator {
 	it := &BlueprintIterator{}
-	req = proto.Clone(req).(*telcoautomationpb.ListBlueprintRevisionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*telcoautomationpb.Blueprint, string, error) {
 		resp := &telcoautomationpb.ListBlueprintRevisionsResponse{}
@@ -3313,7 +3313,7 @@ func (c *restClient) ListBlueprintRevisions(ctx context.Context, req *telcoautom
 // SearchBlueprintRevisions searches across blueprint revisions.
 func (c *restClient) SearchBlueprintRevisions(ctx context.Context, req *telcoautomationpb.SearchBlueprintRevisionsRequest, opts ...gax.CallOption) *BlueprintIterator {
 	it := &BlueprintIterator{}
-	req = proto.Clone(req).(*telcoautomationpb.SearchBlueprintRevisionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*telcoautomationpb.Blueprint, string, error) {
 		resp := &telcoautomationpb.SearchBlueprintRevisionsResponse{}
@@ -3392,7 +3392,7 @@ func (c *restClient) SearchBlueprintRevisions(ctx context.Context, req *telcoaut
 // SearchDeploymentRevisions searches across deployment revisions.
 func (c *restClient) SearchDeploymentRevisions(ctx context.Context, req *telcoautomationpb.SearchDeploymentRevisionsRequest, opts ...gax.CallOption) *DeploymentIterator {
 	it := &DeploymentIterator{}
-	req = proto.Clone(req).(*telcoautomationpb.SearchDeploymentRevisionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*telcoautomationpb.Deployment, string, error) {
 		resp := &telcoautomationpb.SearchDeploymentRevisionsResponse{}
@@ -3537,7 +3537,7 @@ func (c *restClient) DiscardBlueprintChanges(ctx context.Context, req *telcoauto
 // Max Page Size = 100.
 func (c *restClient) ListPublicBlueprints(ctx context.Context, req *telcoautomationpb.ListPublicBlueprintsRequest, opts ...gax.CallOption) *PublicBlueprintIterator {
 	it := &PublicBlueprintIterator{}
-	req = proto.Clone(req).(*telcoautomationpb.ListPublicBlueprintsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*telcoautomationpb.PublicBlueprint, string, error) {
 		resp := &telcoautomationpb.ListPublicBlueprintsResponse{}
@@ -3916,7 +3916,7 @@ func (c *restClient) RemoveDeployment(ctx context.Context, req *telcoautomationp
 // ListDeployments list all deployments.
 func (c *restClient) ListDeployments(ctx context.Context, req *telcoautomationpb.ListDeploymentsRequest, opts ...gax.CallOption) *DeploymentIterator {
 	it := &DeploymentIterator{}
-	req = proto.Clone(req).(*telcoautomationpb.ListDeploymentsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*telcoautomationpb.Deployment, string, error) {
 		resp := &telcoautomationpb.ListDeploymentsResponse{}
@@ -3997,7 +3997,7 @@ func (c *restClient) ListDeployments(ctx context.Context, req *telcoautomationpb
 // ListDeploymentRevisions list deployment revisions of a given deployment.
 func (c *restClient) ListDeploymentRevisions(ctx context.Context, req *telcoautomationpb.ListDeploymentRevisionsRequest, opts ...gax.CallOption) *DeploymentIterator {
 	it := &DeploymentIterator{}
-	req = proto.Clone(req).(*telcoautomationpb.ListDeploymentRevisionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*telcoautomationpb.Deployment, string, error) {
 		resp := &telcoautomationpb.ListDeploymentRevisionsResponse{}
@@ -4381,7 +4381,7 @@ func (c *restClient) GetHydratedDeployment(ctx context.Context, req *telcoautoma
 // ListHydratedDeployments list all hydrated deployments present under a deployment.
 func (c *restClient) ListHydratedDeployments(ctx context.Context, req *telcoautomationpb.ListHydratedDeploymentsRequest, opts ...gax.CallOption) *HydratedDeploymentIterator {
 	it := &HydratedDeploymentIterator{}
-	req = proto.Clone(req).(*telcoautomationpb.ListHydratedDeploymentsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*telcoautomationpb.HydratedDeployment, string, error) {
 		resp := &telcoautomationpb.ListHydratedDeploymentsResponse{}
@@ -4644,7 +4644,7 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 // ListLocations lists information about the supported locations for this service.
 func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -4863,7 +4863,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

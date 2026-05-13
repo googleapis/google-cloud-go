@@ -490,7 +490,7 @@ func (c *tagHoldsGRPCClient) ListTagHolds(ctx context.Context, req *resourcemana
 	}
 	opts = append((*c.CallOptions).ListTagHolds[0:len((*c.CallOptions).ListTagHolds):len((*c.CallOptions).ListTagHolds)], opts...)
 	it := &TagHoldIterator{}
-	req = proto.Clone(req).(*resourcemanagerpb.ListTagHoldsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*resourcemanagerpb.TagHold, string, error) {
 		resp := &resourcemanagerpb.ListTagHoldsResponse{}
 		if pageToken != "" {
@@ -687,7 +687,7 @@ func (c *tagHoldsRESTClient) DeleteTagHold(ctx context.Context, req *resourceman
 // ListTagHolds lists TagHolds under a TagValue.
 func (c *tagHoldsRESTClient) ListTagHolds(ctx context.Context, req *resourcemanagerpb.ListTagHoldsRequest, opts ...gax.CallOption) *TagHoldIterator {
 	it := &TagHoldIterator{}
-	req = proto.Clone(req).(*resourcemanagerpb.ListTagHoldsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*resourcemanagerpb.TagHold, string, error) {
 		resp := &resourcemanagerpb.ListTagHoldsResponse{}

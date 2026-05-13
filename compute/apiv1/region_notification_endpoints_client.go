@@ -308,7 +308,7 @@ func (c *regionNotificationEndpointsRESTClient) Connection() *grpc.ClientConn {
 // regional and global, available to the specified project.
 func (c *regionNotificationEndpointsRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListRegionNotificationEndpointsRequest, opts ...gax.CallOption) *NotificationEndpointsScopedListPairIterator {
 	it := &NotificationEndpointsScopedListPairIterator{}
-	req = proto.Clone(req).(*computepb.AggregatedListRegionNotificationEndpointsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]NotificationEndpointsScopedListPair, string, error) {
 		resp := &computepb.NotificationEndpointAggregatedList{}
@@ -601,7 +601,7 @@ func (c *regionNotificationEndpointsRESTClient) Insert(ctx context.Context, req 
 // List lists the NotificationEndpoints for a project in the given region.
 func (c *regionNotificationEndpointsRESTClient) List(ctx context.Context, req *computepb.ListRegionNotificationEndpointsRequest, opts ...gax.CallOption) *NotificationEndpointIterator {
 	it := &NotificationEndpointIterator{}
-	req = proto.Clone(req).(*computepb.ListRegionNotificationEndpointsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.NotificationEndpoint, string, error) {
 		resp := &computepb.NotificationEndpointList{}

@@ -21,8 +21,6 @@
 // connectivity metadata. Apps can offer an interface for positioning,
 // connecting, and uploading user-generated Street View images.
 //
-//	NOTE: This package is in beta. It is not stable, and may be subject to changes.
-//
 // # General documentation
 //
 // For information that is relevant for all client libraries please reference

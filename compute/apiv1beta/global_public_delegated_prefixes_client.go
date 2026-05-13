@@ -480,7 +480,7 @@ func (c *globalPublicDelegatedPrefixesRESTClient) Insert(ctx context.Context, re
 // List lists the global PublicDelegatedPrefixes for a project.
 func (c *globalPublicDelegatedPrefixesRESTClient) List(ctx context.Context, req *computepb.ListGlobalPublicDelegatedPrefixesRequest, opts ...gax.CallOption) *PublicDelegatedPrefixIterator {
 	it := &PublicDelegatedPrefixIterator{}
-	req = proto.Clone(req).(*computepb.ListGlobalPublicDelegatedPrefixesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.PublicDelegatedPrefix, string, error) {
 		resp := &computepb.PublicDelegatedPrefixList{}

@@ -1230,7 +1230,7 @@ func (c *firewallPoliciesRESTClient) Insert(ctx context.Context, req *computepb.
 // folder or organization.
 func (c *firewallPoliciesRESTClient) List(ctx context.Context, req *computepb.ListFirewallPoliciesRequest, opts ...gax.CallOption) *FirewallPolicyIterator {
 	it := &FirewallPolicyIterator{}
-	req = proto.Clone(req).(*computepb.ListFirewallPoliciesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.FirewallPolicy, string, error) {
 		resp := &computepb.FirewallPolicyList{}

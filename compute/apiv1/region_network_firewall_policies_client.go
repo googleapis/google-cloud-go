@@ -1111,7 +1111,7 @@ func (c *regionNetworkFirewallPoliciesRESTClient) Insert(ctx context.Context, re
 // for the specified project in the given region.
 func (c *regionNetworkFirewallPoliciesRESTClient) List(ctx context.Context, req *computepb.ListRegionNetworkFirewallPoliciesRequest, opts ...gax.CallOption) *FirewallPolicyIterator {
 	it := &FirewallPolicyIterator{}
-	req = proto.Clone(req).(*computepb.ListRegionNetworkFirewallPoliciesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.FirewallPolicy, string, error) {
 		resp := &computepb.FirewallPolicyList{}

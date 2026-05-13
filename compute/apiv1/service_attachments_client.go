@@ -361,7 +361,7 @@ func (c *serviceAttachmentsRESTClient) Connection() *grpc.ClientConn {
 // returnPartialSuccess parameter to true.
 func (c *serviceAttachmentsRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListServiceAttachmentsRequest, opts ...gax.CallOption) *ServiceAttachmentsScopedListPairIterator {
 	it := &ServiceAttachmentsScopedListPairIterator{}
-	req = proto.Clone(req).(*computepb.AggregatedListServiceAttachmentsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]ServiceAttachmentsScopedListPair, string, error) {
 		resp := &computepb.ServiceAttachmentAggregatedList{}
@@ -721,7 +721,7 @@ func (c *serviceAttachmentsRESTClient) Insert(ctx context.Context, req *computep
 // List lists the ServiceAttachments for a project in the given scope.
 func (c *serviceAttachmentsRESTClient) List(ctx context.Context, req *computepb.ListServiceAttachmentsRequest, opts ...gax.CallOption) *ServiceAttachmentIterator {
 	it := &ServiceAttachmentIterator{}
-	req = proto.Clone(req).(*computepb.ListServiceAttachmentsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.ServiceAttachment, string, error) {
 		resp := &computepb.ServiceAttachmentList{}

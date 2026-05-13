@@ -295,6 +295,21 @@ func (c *MonitoringClient) GetLocation(ctx context.Context, req *locationpb.GetL
 }
 
 // ListLocations lists information about the supported locations for this service.
+//
+// This method lists locations based on the resource scope provided in
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)][google.cloud.location.ListLocationsRequest.name (at http://google.cloud.location.ListLocationsRequest.name)] field: *
+// Global locations: If name is empty, the method lists the
+// public locations available to all projects. * Project-specific
+// locations: If name follows the format
+// projects/{project}, the method lists locations visible to that
+// specific project. This includes public, private, or other
+// project-specific locations enabled for the project.
+//
+// For gRPC and client library implementations, the resource name is
+// passed as the name field. For direct service calls, the resource
+// name is
+// incorporated into the request path based on the specific service
+// implementation and version.
 func (c *MonitoringClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	return c.internalClient.ListLocations(ctx, req, opts...)
 }
@@ -560,7 +575,7 @@ func (c *monitoringGRPCClient) ListFrameworkComplianceSummaries(ctx context.Cont
 	}
 	opts = append((*c.CallOptions).ListFrameworkComplianceSummaries[0:len((*c.CallOptions).ListFrameworkComplianceSummaries):len((*c.CallOptions).ListFrameworkComplianceSummaries)], opts...)
 	it := &FrameworkComplianceSummaryIterator{}
-	req = proto.Clone(req).(*cloudsecuritycompliancepb.ListFrameworkComplianceSummariesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cloudsecuritycompliancepb.FrameworkComplianceSummary, string, error) {
 		resp := &cloudsecuritycompliancepb.ListFrameworkComplianceSummariesResponse{}
 		if pageToken != "" {
@@ -612,7 +627,7 @@ func (c *monitoringGRPCClient) ListFindingSummaries(ctx context.Context, req *cl
 	}
 	opts = append((*c.CallOptions).ListFindingSummaries[0:len((*c.CallOptions).ListFindingSummaries):len((*c.CallOptions).ListFindingSummaries)], opts...)
 	it := &FindingSummaryIterator{}
-	req = proto.Clone(req).(*cloudsecuritycompliancepb.ListFindingSummariesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cloudsecuritycompliancepb.FindingSummary, string, error) {
 		resp := &cloudsecuritycompliancepb.ListFindingSummariesResponse{}
 		if pageToken != "" {
@@ -688,7 +703,7 @@ func (c *monitoringGRPCClient) ListControlComplianceSummaries(ctx context.Contex
 	}
 	opts = append((*c.CallOptions).ListControlComplianceSummaries[0:len((*c.CallOptions).ListControlComplianceSummaries):len((*c.CallOptions).ListControlComplianceSummaries)], opts...)
 	it := &ControlComplianceSummaryIterator{}
-	req = proto.Clone(req).(*cloudsecuritycompliancepb.ListControlComplianceSummariesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cloudsecuritycompliancepb.ControlComplianceSummary, string, error) {
 		resp := &cloudsecuritycompliancepb.ListControlComplianceSummariesResponse{}
 		if pageToken != "" {
@@ -782,7 +797,7 @@ func (c *monitoringGRPCClient) ListLocations(ctx context.Context, req *locationp
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -886,7 +901,7 @@ func (c *monitoringGRPCClient) ListOperations(ctx context.Context, req *longrunn
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -928,7 +943,7 @@ func (c *monitoringGRPCClient) ListOperations(ctx context.Context, req *longrunn
 // ListFrameworkComplianceSummaries lists the framework compliance summary for a given scope.
 func (c *monitoringRESTClient) ListFrameworkComplianceSummaries(ctx context.Context, req *cloudsecuritycompliancepb.ListFrameworkComplianceSummariesRequest, opts ...gax.CallOption) *FrameworkComplianceSummaryIterator {
 	it := &FrameworkComplianceSummaryIterator{}
-	req = proto.Clone(req).(*cloudsecuritycompliancepb.ListFrameworkComplianceSummariesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cloudsecuritycompliancepb.FrameworkComplianceSummary, string, error) {
 		resp := &cloudsecuritycompliancepb.ListFrameworkComplianceSummariesResponse{}
@@ -956,6 +971,9 @@ func (c *monitoringRESTClient) ListFrameworkComplianceSummaries(ctx context.Cont
 		}
 		if req.GetPageToken() != "" {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req.GetView() != 0 {
+			params.Add("view", fmt.Sprintf("%v", req.GetView()))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -1009,7 +1027,7 @@ func (c *monitoringRESTClient) ListFrameworkComplianceSummaries(ctx context.Cont
 // ListFindingSummaries lists the finding summary by category for a given scope.
 func (c *monitoringRESTClient) ListFindingSummaries(ctx context.Context, req *cloudsecuritycompliancepb.ListFindingSummariesRequest, opts ...gax.CallOption) *FindingSummaryIterator {
 	it := &FindingSummaryIterator{}
-	req = proto.Clone(req).(*cloudsecuritycompliancepb.ListFindingSummariesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cloudsecuritycompliancepb.FindingSummary, string, error) {
 		resp := &cloudsecuritycompliancepb.ListFindingSummariesResponse{}
@@ -1111,6 +1129,9 @@ func (c *monitoringRESTClient) FetchFrameworkComplianceReport(ctx context.Contex
 		}
 		params.Add("endTime", string(field[1:len(field)-1]))
 	}
+	if req.GetFilter() != "" {
+		params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -1161,7 +1182,7 @@ func (c *monitoringRESTClient) FetchFrameworkComplianceReport(ctx context.Contex
 // ListControlComplianceSummaries lists the control compliance summary for a given scope.
 func (c *monitoringRESTClient) ListControlComplianceSummaries(ctx context.Context, req *cloudsecuritycompliancepb.ListControlComplianceSummariesRequest, opts ...gax.CallOption) *ControlComplianceSummaryIterator {
 	it := &ControlComplianceSummaryIterator{}
-	req = proto.Clone(req).(*cloudsecuritycompliancepb.ListControlComplianceSummariesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cloudsecuritycompliancepb.ControlComplianceSummary, string, error) {
 		resp := &cloudsecuritycompliancepb.ListControlComplianceSummariesResponse{}
@@ -1375,9 +1396,24 @@ func (c *monitoringRESTClient) GetLocation(ctx context.Context, req *locationpb.
 }
 
 // ListLocations lists information about the supported locations for this service.
+//
+// This method lists locations based on the resource scope provided in
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)][google.cloud.location.ListLocationsRequest.name (at http://google.cloud.location.ListLocationsRequest.name)] field: *
+// Global locations: If name is empty, the method lists the
+// public locations available to all projects. * Project-specific
+// locations: If name follows the format
+// projects/{project}, the method lists locations visible to that
+// specific project. This includes public, private, or other
+// project-specific locations enabled for the project.
+//
+// For gRPC and client library implementations, the resource name is
+// passed as the name field. For direct service calls, the resource
+// name is
+// incorporated into the request path based on the specific service
+// implementation and version.
 func (c *monitoringRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -1596,7 +1632,7 @@ func (c *monitoringRESTClient) GetOperation(ctx context.Context, req *longrunnin
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *monitoringRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

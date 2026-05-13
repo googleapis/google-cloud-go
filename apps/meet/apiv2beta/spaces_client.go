@@ -666,7 +666,7 @@ func (c *spacesGRPCClient) ListMembers(ctx context.Context, req *meetpb.ListMemb
 	}
 	opts = append((*c.CallOptions).ListMembers[0:len((*c.CallOptions).ListMembers):len((*c.CallOptions).ListMembers)], opts...)
 	it := &MemberIterator{}
-	req = proto.Clone(req).(*meetpb.ListMembersRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*meetpb.Member, string, error) {
 		resp := &meetpb.ListMembersResponse{}
 		if pageToken != "" {
@@ -1179,7 +1179,7 @@ func (c *spacesRESTClient) GetMember(ctx context.Context, req *meetpb.GetMemberR
 // “name,email,role,user”.
 func (c *spacesRESTClient) ListMembers(ctx context.Context, req *meetpb.ListMembersRequest, opts ...gax.CallOption) *MemberIterator {
 	it := &MemberIterator{}
-	req = proto.Clone(req).(*meetpb.ListMembersRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*meetpb.Member, string, error) {
 		resp := &meetpb.ListMembersResponse{}

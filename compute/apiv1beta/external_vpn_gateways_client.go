@@ -494,7 +494,7 @@ func (c *externalVpnGatewaysRESTClient) Insert(ctx context.Context, req *compute
 // project.
 func (c *externalVpnGatewaysRESTClient) List(ctx context.Context, req *computepb.ListExternalVpnGatewaysRequest, opts ...gax.CallOption) *ExternalVpnGatewayIterator {
 	it := &ExternalVpnGatewayIterator{}
-	req = proto.Clone(req).(*computepb.ListExternalVpnGatewaysRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.ExternalVpnGateway, string, error) {
 		resp := &computepb.ExternalVpnGatewayList{}

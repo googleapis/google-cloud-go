@@ -360,7 +360,7 @@ func (c *aggregateProductStatusesGRPCClient) ListAggregateProductStatuses(ctx co
 	}
 	opts = append((*c.CallOptions).ListAggregateProductStatuses[0:len((*c.CallOptions).ListAggregateProductStatuses):len((*c.CallOptions).ListAggregateProductStatuses)], opts...)
 	it := &AggregateProductStatusIterator{}
-	req = proto.Clone(req).(*issueresolutionpb.ListAggregateProductStatusesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*issueresolutionpb.AggregateProductStatus, string, error) {
 		resp := &issueresolutionpb.ListAggregateProductStatusesResponse{}
 		if pageToken != "" {
@@ -405,7 +405,7 @@ func (c *aggregateProductStatusesGRPCClient) ListAggregateProductStatuses(ctx co
 // additional results.
 func (c *aggregateProductStatusesRESTClient) ListAggregateProductStatuses(ctx context.Context, req *issueresolutionpb.ListAggregateProductStatusesRequest, opts ...gax.CallOption) *AggregateProductStatusIterator {
 	it := &AggregateProductStatusIterator{}
-	req = proto.Clone(req).(*issueresolutionpb.ListAggregateProductStatusesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*issueresolutionpb.AggregateProductStatus, string, error) {
 		resp := &issueresolutionpb.ListAggregateProductStatusesResponse{}

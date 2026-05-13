@@ -687,7 +687,7 @@ func (c *gRPCClient) ListAccounts(ctx context.Context, req *accountspb.ListAccou
 	}
 	opts = append((*c.CallOptions).ListAccounts[0:len((*c.CallOptions).ListAccounts):len((*c.CallOptions).ListAccounts)], opts...)
 	it := &AccountIterator{}
-	req = proto.Clone(req).(*accountspb.ListAccountsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*accountspb.Account, string, error) {
 		resp := &accountspb.ListAccountsResponse{}
 		if pageToken != "" {
@@ -739,7 +739,7 @@ func (c *gRPCClient) ListSubAccounts(ctx context.Context, req *accountspb.ListSu
 	}
 	opts = append((*c.CallOptions).ListSubAccounts[0:len((*c.CallOptions).ListSubAccounts):len((*c.CallOptions).ListSubAccounts)], opts...)
 	it := &AccountIterator{}
-	req = proto.Clone(req).(*accountspb.ListSubAccountsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*accountspb.Account, string, error) {
 		resp := &accountspb.ListSubAccountsResponse{}
 		if pageToken != "" {
@@ -1104,7 +1104,7 @@ func (c *restClient) UpdateAccount(ctx context.Context, req *accountspb.UpdateAc
 // accounts use case.
 func (c *restClient) ListAccounts(ctx context.Context, req *accountspb.ListAccountsRequest, opts ...gax.CallOption) *AccountIterator {
 	it := &AccountIterator{}
-	req = proto.Clone(req).(*accountspb.ListAccountsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*accountspb.Account, string, error) {
 		resp := &accountspb.ListAccountsResponse{}
@@ -1189,7 +1189,7 @@ func (c *restClient) ListAccounts(ctx context.Context, req *accountspb.ListAccou
 // relationship(providerId={parent} AND service(type="ACCOUNT_AGGREGATION"))
 func (c *restClient) ListSubAccounts(ctx context.Context, req *accountspb.ListSubAccountsRequest, opts ...gax.CallOption) *AccountIterator {
 	it := &AccountIterator{}
-	req = proto.Clone(req).(*accountspb.ListSubAccountsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*accountspb.Account, string, error) {
 		resp := &accountspb.ListSubAccountsResponse{}

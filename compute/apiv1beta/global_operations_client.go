@@ -291,7 +291,7 @@ func (c *globalOperationsRESTClient) Connection() *grpc.ClientConn {
 // returnPartialSuccess parameter to true.
 func (c *globalOperationsRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListGlobalOperationsRequest, opts ...gax.CallOption) *OperationsScopedListPairIterator {
 	it := &OperationsScopedListPairIterator{}
-	req = proto.Clone(req).(*computepb.AggregatedListGlobalOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]OperationsScopedListPair, string, error) {
 		resp := &computepb.OperationAggregatedList{}
@@ -495,7 +495,7 @@ func (c *globalOperationsRESTClient) Get(ctx context.Context, req *computepb.Get
 // project.
 func (c *globalOperationsRESTClient) List(ctx context.Context, req *computepb.ListGlobalOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*computepb.ListGlobalOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.Operation, string, error) {
 		resp := &computepb.OperationList{}

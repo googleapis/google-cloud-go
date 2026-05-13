@@ -794,7 +794,7 @@ func (c *videoStitcherGRPCClient) ListCdnKeys(ctx context.Context, req *stitcher
 	}
 	opts = append((*c.CallOptions).ListCdnKeys[0:len((*c.CallOptions).ListCdnKeys):len((*c.CallOptions).ListCdnKeys)], opts...)
 	it := &CdnKeyIterator{}
-	req = proto.Clone(req).(*stitcherpb.ListCdnKeysRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*stitcherpb.CdnKey, string, error) {
 		resp := &stitcherpb.ListCdnKeysResponse{}
 		if pageToken != "" {
@@ -967,7 +967,7 @@ func (c *videoStitcherGRPCClient) ListVodStitchDetails(ctx context.Context, req 
 	}
 	opts = append((*c.CallOptions).ListVodStitchDetails[0:len((*c.CallOptions).ListVodStitchDetails):len((*c.CallOptions).ListVodStitchDetails)], opts...)
 	it := &VodStitchDetailIterator{}
-	req = proto.Clone(req).(*stitcherpb.ListVodStitchDetailsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*stitcherpb.VodStitchDetail, string, error) {
 		resp := &stitcherpb.ListVodStitchDetailsResponse{}
 		if pageToken != "" {
@@ -1043,7 +1043,7 @@ func (c *videoStitcherGRPCClient) ListVodAdTagDetails(ctx context.Context, req *
 	}
 	opts = append((*c.CallOptions).ListVodAdTagDetails[0:len((*c.CallOptions).ListVodAdTagDetails):len((*c.CallOptions).ListVodAdTagDetails)], opts...)
 	it := &VodAdTagDetailIterator{}
-	req = proto.Clone(req).(*stitcherpb.ListVodAdTagDetailsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*stitcherpb.VodAdTagDetail, string, error) {
 		resp := &stitcherpb.ListVodAdTagDetailsResponse{}
 		if pageToken != "" {
@@ -1119,7 +1119,7 @@ func (c *videoStitcherGRPCClient) ListLiveAdTagDetails(ctx context.Context, req 
 	}
 	opts = append((*c.CallOptions).ListLiveAdTagDetails[0:len((*c.CallOptions).ListLiveAdTagDetails):len((*c.CallOptions).ListLiveAdTagDetails)], opts...)
 	it := &LiveAdTagDetailIterator{}
-	req = proto.Clone(req).(*stitcherpb.ListLiveAdTagDetailsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*stitcherpb.LiveAdTagDetail, string, error) {
 		resp := &stitcherpb.ListLiveAdTagDetailsResponse{}
 		if pageToken != "" {
@@ -1221,7 +1221,7 @@ func (c *videoStitcherGRPCClient) ListSlates(ctx context.Context, req *stitcherp
 	}
 	opts = append((*c.CallOptions).ListSlates[0:len((*c.CallOptions).ListSlates):len((*c.CallOptions).ListSlates)], opts...)
 	it := &SlateIterator{}
-	req = proto.Clone(req).(*stitcherpb.ListSlatesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*stitcherpb.Slate, string, error) {
 		resp := &stitcherpb.ListSlatesResponse{}
 		if pageToken != "" {
@@ -1420,7 +1420,7 @@ func (c *videoStitcherGRPCClient) ListLiveConfigs(ctx context.Context, req *stit
 	}
 	opts = append((*c.CallOptions).ListLiveConfigs[0:len((*c.CallOptions).ListLiveConfigs):len((*c.CallOptions).ListLiveConfigs)], opts...)
 	it := &LiveConfigIterator{}
-	req = proto.Clone(req).(*stitcherpb.ListLiveConfigsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*stitcherpb.LiveConfig, string, error) {
 		resp := &stitcherpb.ListLiveConfigsResponse{}
 		if pageToken != "" {
@@ -1571,7 +1571,7 @@ func (c *videoStitcherGRPCClient) ListVodConfigs(ctx context.Context, req *stitc
 	}
 	opts = append((*c.CallOptions).ListVodConfigs[0:len((*c.CallOptions).ListVodConfigs):len((*c.CallOptions).ListVodConfigs)], opts...)
 	it := &VodConfigIterator{}
-	req = proto.Clone(req).(*stitcherpb.ListVodConfigsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*stitcherpb.VodConfig, string, error) {
 		resp := &stitcherpb.ListVodConfigsResponse{}
 		if pageToken != "" {
@@ -1748,7 +1748,7 @@ func (c *videoStitcherGRPCClient) ListOperations(ctx context.Context, req *longr
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {

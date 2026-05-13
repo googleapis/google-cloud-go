@@ -655,7 +655,7 @@ func (c *dataAccessControlGRPCClient) ListDataAccessLabels(ctx context.Context, 
 	}
 	opts = append((*c.CallOptions).ListDataAccessLabels[0:len((*c.CallOptions).ListDataAccessLabels):len((*c.CallOptions).ListDataAccessLabels)], opts...)
 	it := &DataAccessLabelIterator{}
-	req = proto.Clone(req).(*chroniclepb.ListDataAccessLabelsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*chroniclepb.DataAccessLabel, string, error) {
 		resp := &chroniclepb.ListDataAccessLabelsResponse{}
 		if pageToken != "" {
@@ -796,7 +796,7 @@ func (c *dataAccessControlGRPCClient) ListDataAccessScopes(ctx context.Context, 
 	}
 	opts = append((*c.CallOptions).ListDataAccessScopes[0:len((*c.CallOptions).ListDataAccessScopes):len((*c.CallOptions).ListDataAccessScopes)], opts...)
 	it := &DataAccessScopeIterator{}
-	req = proto.Clone(req).(*chroniclepb.ListDataAccessScopesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*chroniclepb.DataAccessScope, string, error) {
 		resp := &chroniclepb.ListDataAccessScopesResponse{}
 		if pageToken != "" {
@@ -941,7 +941,7 @@ func (c *dataAccessControlGRPCClient) ListOperations(ctx context.Context, req *l
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -1110,7 +1110,7 @@ func (c *dataAccessControlRESTClient) GetDataAccessLabel(ctx context.Context, re
 // ListDataAccessLabels lists all data access labels for the customer.
 func (c *dataAccessControlRESTClient) ListDataAccessLabels(ctx context.Context, req *chroniclepb.ListDataAccessLabelsRequest, opts ...gax.CallOption) *DataAccessLabelIterator {
 	it := &DataAccessLabelIterator{}
-	req = proto.Clone(req).(*chroniclepb.ListDataAccessLabelsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*chroniclepb.DataAccessLabel, string, error) {
 		resp := &chroniclepb.ListDataAccessLabelsResponse{}
@@ -1430,7 +1430,7 @@ func (c *dataAccessControlRESTClient) GetDataAccessScope(ctx context.Context, re
 // ListDataAccessScopes lists all existing data access scopes for the customer.
 func (c *dataAccessControlRESTClient) ListDataAccessScopes(ctx context.Context, req *chroniclepb.ListDataAccessScopesRequest, opts ...gax.CallOption) *DataAccessScopeIterator {
 	it := &DataAccessScopeIterator{}
-	req = proto.Clone(req).(*chroniclepb.ListDataAccessScopesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*chroniclepb.DataAccessScope, string, error) {
 		resp := &chroniclepb.ListDataAccessScopesResponse{}
@@ -1759,7 +1759,7 @@ func (c *dataAccessControlRESTClient) GetOperation(ctx context.Context, req *lon
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *dataAccessControlRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

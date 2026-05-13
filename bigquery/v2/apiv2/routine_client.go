@@ -601,7 +601,7 @@ func (c *routineGRPCClient) ListRoutines(ctx context.Context, req *bigquerypb.Li
 	}
 	opts = append((*c.CallOptions).ListRoutines[0:len((*c.CallOptions).ListRoutines):len((*c.CallOptions).ListRoutines)], opts...)
 	it := &RoutineIterator{}
-	req = proto.Clone(req).(*bigquerypb.ListRoutinesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*bigquerypb.Routine, string, error) {
 		resp := &bigquerypb.ListRoutinesResponse{}
 		if pageToken != "" {
@@ -854,7 +854,7 @@ func (c *routineRESTClient) DeleteRoutine(ctx context.Context, req *bigquerypb.D
 // role.
 func (c *routineRESTClient) ListRoutines(ctx context.Context, req *bigquerypb.ListRoutinesRequest, opts ...gax.CallOption) *RoutineIterator {
 	it := &RoutineIterator{}
-	req = proto.Clone(req).(*bigquerypb.ListRoutinesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*bigquerypb.Routine, string, error) {
 		resp := &bigquerypb.ListRoutinesResponse{}

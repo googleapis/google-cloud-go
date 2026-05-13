@@ -1205,7 +1205,7 @@ func (c *gRPCClient) ListBuckets(ctx context.Context, req *storagepb.ListBuckets
 	}
 	opts = append((*c.CallOptions).ListBuckets[0:len((*c.CallOptions).ListBuckets):len((*c.CallOptions).ListBuckets)], opts...)
 	it := &BucketIterator{}
-	req = proto.Clone(req).(*storagepb.ListBucketsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*storagepb.Bucket, string, error) {
 		resp := &storagepb.ListBucketsResponse{}
 		if pageToken != "" {
@@ -1723,7 +1723,7 @@ func (c *gRPCClient) ListObjects(ctx context.Context, req *storagepb.ListObjects
 	}
 	opts = append((*c.CallOptions).ListObjects[0:len((*c.CallOptions).ListObjects):len((*c.CallOptions).ListObjects)], opts...)
 	it := &ObjectIterator{}
-	req = proto.Clone(req).(*storagepb.ListObjectsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*storagepb.Object, string, error) {
 		resp := &storagepb.ListObjectsResponse{}
 		if pageToken != "" {

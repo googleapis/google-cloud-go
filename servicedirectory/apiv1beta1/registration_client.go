@@ -1034,7 +1034,7 @@ func (c *registrationGRPCClient) ListNamespaces(ctx context.Context, req *servic
 	}
 	opts = append((*c.CallOptions).ListNamespaces[0:len((*c.CallOptions).ListNamespaces):len((*c.CallOptions).ListNamespaces)], opts...)
 	it := &NamespaceIterator{}
-	req = proto.Clone(req).(*servicedirectorypb.ListNamespacesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*servicedirectorypb.Namespace, string, error) {
 		resp := &servicedirectorypb.ListNamespacesResponse{}
 		if pageToken != "" {
@@ -1175,7 +1175,7 @@ func (c *registrationGRPCClient) ListServices(ctx context.Context, req *serviced
 	}
 	opts = append((*c.CallOptions).ListServices[0:len((*c.CallOptions).ListServices):len((*c.CallOptions).ListServices)], opts...)
 	it := &ServiceIterator{}
-	req = proto.Clone(req).(*servicedirectorypb.ListServicesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*servicedirectorypb.Service, string, error) {
 		resp := &servicedirectorypb.ListServicesResponse{}
 		if pageToken != "" {
@@ -1316,7 +1316,7 @@ func (c *registrationGRPCClient) ListEndpoints(ctx context.Context, req *service
 	}
 	opts = append((*c.CallOptions).ListEndpoints[0:len((*c.CallOptions).ListEndpoints):len((*c.CallOptions).ListEndpoints)], opts...)
 	it := &EndpointIterator{}
-	req = proto.Clone(req).(*servicedirectorypb.ListEndpointsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*servicedirectorypb.Endpoint, string, error) {
 		resp := &servicedirectorypb.ListEndpointsResponse{}
 		if pageToken != "" {
@@ -1523,7 +1523,7 @@ func (c *registrationGRPCClient) ListLocations(ctx context.Context, req *locatio
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -1630,7 +1630,7 @@ func (c *registrationRESTClient) CreateNamespace(ctx context.Context, req *servi
 // ListNamespaces lists all namespaces.
 func (c *registrationRESTClient) ListNamespaces(ctx context.Context, req *servicedirectorypb.ListNamespacesRequest, opts ...gax.CallOption) *NamespaceIterator {
 	it := &NamespaceIterator{}
-	req = proto.Clone(req).(*servicedirectorypb.ListNamespacesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*servicedirectorypb.Namespace, string, error) {
 		resp := &servicedirectorypb.ListNamespacesResponse{}
@@ -1947,7 +1947,7 @@ func (c *registrationRESTClient) CreateService(ctx context.Context, req *service
 // ListServices lists all services belonging to a namespace.
 func (c *registrationRESTClient) ListServices(ctx context.Context, req *servicedirectorypb.ListServicesRequest, opts ...gax.CallOption) *ServiceIterator {
 	it := &ServiceIterator{}
-	req = proto.Clone(req).(*servicedirectorypb.ListServicesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*servicedirectorypb.Service, string, error) {
 		resp := &servicedirectorypb.ListServicesResponse{}
@@ -2264,7 +2264,7 @@ func (c *registrationRESTClient) CreateEndpoint(ctx context.Context, req *servic
 // ListEndpoints lists all endpoints.
 func (c *registrationRESTClient) ListEndpoints(ctx context.Context, req *servicedirectorypb.ListEndpointsRequest, opts ...gax.CallOption) *EndpointIterator {
 	it := &EndpointIterator{}
-	req = proto.Clone(req).(*servicedirectorypb.ListEndpointsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*servicedirectorypb.Endpoint, string, error) {
 		resp := &servicedirectorypb.ListEndpointsResponse{}
@@ -2759,7 +2759,7 @@ func (c *registrationRESTClient) GetLocation(ctx context.Context, req *locationp
 // ListLocations lists information about the supported locations for this service.
 func (c *registrationRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}

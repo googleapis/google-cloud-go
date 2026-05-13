@@ -1,5 +1,11 @@
 # Changes
 
+## [1.0.0](https://github.com/googleapis/google-cloud-go/releases/tag/workloadmanager%2Fv1.0.0) (2026-05-08)
+
+## [0.6.0](https://github.com/googleapis/google-cloud-go/releases/tag/workloadmanager%2Fv0.6.0) (2026-05-07)
+
+## [0.5.0](https://github.com/googleapis/google-cloud-go/releases/tag/workloadmanager%2Fv0.5.0) (2026-04-30)
+
 ## [0.4.0](https://github.com/googleapis/google-cloud-go/releases/tag/workloadmanager%2Fv0.4.0) (2026-04-13)
 
 ## [0.3.0](https://github.com/googleapis/google-cloud-go/releases/tag/workloadmanager%2Fv0.3.0) (2026-04-09)

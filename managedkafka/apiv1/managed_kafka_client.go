@@ -854,7 +854,7 @@ func (c *gRPCClient) ListClusters(ctx context.Context, req *managedkafkapb.ListC
 	}
 	opts = append((*c.CallOptions).ListClusters[0:len((*c.CallOptions).ListClusters):len((*c.CallOptions).ListClusters)], opts...)
 	it := &ClusterIterator{}
-	req = proto.Clone(req).(*managedkafkapb.ListClustersRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*managedkafkapb.Cluster, string, error) {
 		resp := &managedkafkapb.ListClustersResponse{}
 		if pageToken != "" {
@@ -1005,7 +1005,7 @@ func (c *gRPCClient) ListTopics(ctx context.Context, req *managedkafkapb.ListTop
 	}
 	opts = append((*c.CallOptions).ListTopics[0:len((*c.CallOptions).ListTopics):len((*c.CallOptions).ListTopics)], opts...)
 	it := &TopicIterator{}
-	req = proto.Clone(req).(*managedkafkapb.ListTopicsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*managedkafkapb.Topic, string, error) {
 		resp := &managedkafkapb.ListTopicsResponse{}
 		if pageToken != "" {
@@ -1146,7 +1146,7 @@ func (c *gRPCClient) ListConsumerGroups(ctx context.Context, req *managedkafkapb
 	}
 	opts = append((*c.CallOptions).ListConsumerGroups[0:len((*c.CallOptions).ListConsumerGroups):len((*c.CallOptions).ListConsumerGroups)], opts...)
 	it := &ConsumerGroupIterator{}
-	req = proto.Clone(req).(*managedkafkapb.ListConsumerGroupsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*managedkafkapb.ConsumerGroup, string, error) {
 		resp := &managedkafkapb.ListConsumerGroupsResponse{}
 		if pageToken != "" {
@@ -1263,7 +1263,7 @@ func (c *gRPCClient) ListAcls(ctx context.Context, req *managedkafkapb.ListAclsR
 	}
 	opts = append((*c.CallOptions).ListAcls[0:len((*c.CallOptions).ListAcls):len((*c.CallOptions).ListAcls)], opts...)
 	it := &AclIterator{}
-	req = proto.Clone(req).(*managedkafkapb.ListAclsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*managedkafkapb.Acl, string, error) {
 		resp := &managedkafkapb.ListAclsResponse{}
 		if pageToken != "" {
@@ -1470,7 +1470,7 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -1574,7 +1574,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -1616,7 +1616,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // ListClusters lists the clusters in a given project and location.
 func (c *restClient) ListClusters(ctx context.Context, req *managedkafkapb.ListClustersRequest, opts ...gax.CallOption) *ClusterIterator {
 	it := &ClusterIterator{}
-	req = proto.Clone(req).(*managedkafkapb.ListClustersRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*managedkafkapb.Cluster, string, error) {
 		resp := &managedkafkapb.ListClustersResponse{}
@@ -1965,7 +1965,7 @@ func (c *restClient) DeleteCluster(ctx context.Context, req *managedkafkapb.Dele
 // ListTopics lists the topics in a given cluster.
 func (c *restClient) ListTopics(ctx context.Context, req *managedkafkapb.ListTopicsRequest, opts ...gax.CallOption) *TopicIterator {
 	it := &TopicIterator{}
-	req = proto.Clone(req).(*managedkafkapb.ListTopicsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*managedkafkapb.Topic, string, error) {
 		resp := &managedkafkapb.ListTopicsResponse{}
@@ -2275,7 +2275,7 @@ func (c *restClient) DeleteTopic(ctx context.Context, req *managedkafkapb.Delete
 // ListConsumerGroups lists the consumer groups in a given cluster.
 func (c *restClient) ListConsumerGroups(ctx context.Context, req *managedkafkapb.ListConsumerGroupsRequest, opts ...gax.CallOption) *ConsumerGroupIterator {
 	it := &ConsumerGroupIterator{}
-	req = proto.Clone(req).(*managedkafkapb.ListConsumerGroupsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*managedkafkapb.ConsumerGroup, string, error) {
 		resp := &managedkafkapb.ListConsumerGroupsResponse{}
@@ -2520,7 +2520,7 @@ func (c *restClient) DeleteConsumerGroup(ctx context.Context, req *managedkafkap
 // ListAcls lists the acls in a given cluster.
 func (c *restClient) ListAcls(ctx context.Context, req *managedkafkapb.ListAclsRequest, opts ...gax.CallOption) *AclIterator {
 	it := &AclIterator{}
-	req = proto.Clone(req).(*managedkafkapb.ListAclsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*managedkafkapb.Acl, string, error) {
 		resp := &managedkafkapb.ListAclsResponse{}
@@ -3015,7 +3015,7 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 // ListLocations lists information about the supported locations for this service.
 func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -3234,7 +3234,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

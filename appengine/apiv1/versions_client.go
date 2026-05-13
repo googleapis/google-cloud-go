@@ -503,7 +503,7 @@ func (c *versionsGRPCClient) ListVersions(ctx context.Context, req *appenginepb.
 	}
 	opts = append((*c.CallOptions).ListVersions[0:len((*c.CallOptions).ListVersions):len((*c.CallOptions).ListVersions)], opts...)
 	it := &VersionIterator{}
-	req = proto.Clone(req).(*appenginepb.ListVersionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*appenginepb.Version, string, error) {
 		resp := &appenginepb.ListVersionsResponse{}
 		if pageToken != "" {
@@ -635,7 +635,7 @@ func (c *versionsGRPCClient) DeleteVersion(ctx context.Context, req *appenginepb
 // ListVersions lists the versions of a service.
 func (c *versionsRESTClient) ListVersions(ctx context.Context, req *appenginepb.ListVersionsRequest, opts ...gax.CallOption) *VersionIterator {
 	it := &VersionIterator{}
-	req = proto.Clone(req).(*appenginepb.ListVersionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*appenginepb.Version, string, error) {
 		resp := &appenginepb.ListVersionsResponse{}

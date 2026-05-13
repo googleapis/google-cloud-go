@@ -522,7 +522,7 @@ func (c *gRPCClient) ListKeys(ctx context.Context, req *recaptchaenterprisepb.Li
 	}
 	opts = append((*c.CallOptions).ListKeys[0:len((*c.CallOptions).ListKeys):len((*c.CallOptions).ListKeys)], opts...)
 	it := &KeyIterator{}
-	req = proto.Clone(req).(*recaptchaenterprisepb.ListKeysRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*recaptchaenterprisepb.Key, string, error) {
 		resp := &recaptchaenterprisepb.ListKeysResponse{}
 		if pageToken != "" {
@@ -735,7 +735,7 @@ func (c *gRPCClient) ListIpOverrides(ctx context.Context, req *recaptchaenterpri
 	}
 	opts = append((*c.CallOptions).ListIpOverrides[0:len((*c.CallOptions).ListIpOverrides):len((*c.CallOptions).ListIpOverrides)], opts...)
 	it := &IpOverrideDataIterator{}
-	req = proto.Clone(req).(*recaptchaenterprisepb.ListIpOverridesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*recaptchaenterprisepb.IpOverrideData, string, error) {
 		resp := &recaptchaenterprisepb.ListIpOverridesResponse{}
 		if pageToken != "" {
@@ -835,7 +835,7 @@ func (c *gRPCClient) ListFirewallPolicies(ctx context.Context, req *recaptchaent
 	}
 	opts = append((*c.CallOptions).ListFirewallPolicies[0:len((*c.CallOptions).ListFirewallPolicies):len((*c.CallOptions).ListFirewallPolicies)], opts...)
 	it := &FirewallPolicyIterator{}
-	req = proto.Clone(req).(*recaptchaenterprisepb.ListFirewallPoliciesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*recaptchaenterprisepb.FirewallPolicy, string, error) {
 		resp := &recaptchaenterprisepb.ListFirewallPoliciesResponse{}
 		if pageToken != "" {
@@ -976,7 +976,7 @@ func (c *gRPCClient) ListRelatedAccountGroups(ctx context.Context, req *recaptch
 	}
 	opts = append((*c.CallOptions).ListRelatedAccountGroups[0:len((*c.CallOptions).ListRelatedAccountGroups):len((*c.CallOptions).ListRelatedAccountGroups)], opts...)
 	it := &RelatedAccountGroupIterator{}
-	req = proto.Clone(req).(*recaptchaenterprisepb.ListRelatedAccountGroupsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*recaptchaenterprisepb.RelatedAccountGroup, string, error) {
 		resp := &recaptchaenterprisepb.ListRelatedAccountGroupsResponse{}
 		if pageToken != "" {
@@ -1028,7 +1028,7 @@ func (c *gRPCClient) ListRelatedAccountGroupMemberships(ctx context.Context, req
 	}
 	opts = append((*c.CallOptions).ListRelatedAccountGroupMemberships[0:len((*c.CallOptions).ListRelatedAccountGroupMemberships):len((*c.CallOptions).ListRelatedAccountGroupMemberships)], opts...)
 	it := &RelatedAccountGroupMembershipIterator{}
-	req = proto.Clone(req).(*recaptchaenterprisepb.ListRelatedAccountGroupMembershipsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*recaptchaenterprisepb.RelatedAccountGroupMembership, string, error) {
 		resp := &recaptchaenterprisepb.ListRelatedAccountGroupMembershipsResponse{}
 		if pageToken != "" {
@@ -1080,7 +1080,7 @@ func (c *gRPCClient) SearchRelatedAccountGroupMemberships(ctx context.Context, r
 	}
 	opts = append((*c.CallOptions).SearchRelatedAccountGroupMemberships[0:len((*c.CallOptions).SearchRelatedAccountGroupMemberships):len((*c.CallOptions).SearchRelatedAccountGroupMemberships)], opts...)
 	it := &RelatedAccountGroupMembershipIterator{}
-	req = proto.Clone(req).(*recaptchaenterprisepb.SearchRelatedAccountGroupMembershipsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*recaptchaenterprisepb.RelatedAccountGroupMembership, string, error) {
 		resp := &recaptchaenterprisepb.SearchRelatedAccountGroupMembershipsResponse{}
 		if pageToken != "" {

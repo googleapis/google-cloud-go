@@ -718,7 +718,7 @@ func (c *sessionGRPCClient) ListSessions(ctx context.Context, req *discoveryengi
 	}
 	opts = append((*c.CallOptions).ListSessions[0:len((*c.CallOptions).ListSessions):len((*c.CallOptions).ListSessions)], opts...)
 	it := &SessionIterator{}
-	req = proto.Clone(req).(*discoveryenginepb.ListSessionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*discoveryenginepb.Session, string, error) {
 		resp := &discoveryenginepb.ListSessionsResponse{}
 		if pageToken != "" {
@@ -770,7 +770,7 @@ func (c *sessionGRPCClient) ListFiles(ctx context.Context, req *discoveryenginep
 	}
 	opts = append((*c.CallOptions).ListFiles[0:len((*c.CallOptions).ListFiles):len((*c.CallOptions).ListFiles)], opts...)
 	it := &FileMetadataIterator{}
-	req = proto.Clone(req).(*discoveryenginepb.ListFilesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*discoveryenginepb.FileMetadata, string, error) {
 		resp := &discoveryenginepb.ListFilesResponse{}
 		if pageToken != "" {
@@ -857,7 +857,7 @@ func (c *sessionGRPCClient) ListOperations(ctx context.Context, req *longrunning
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -1144,7 +1144,7 @@ func (c *sessionRESTClient) GetSession(ctx context.Context, req *discoveryengine
 // DataStore.
 func (c *sessionRESTClient) ListSessions(ctx context.Context, req *discoveryenginepb.ListSessionsRequest, opts ...gax.CallOption) *SessionIterator {
 	it := &SessionIterator{}
-	req = proto.Clone(req).(*discoveryenginepb.ListSessionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*discoveryenginepb.Session, string, error) {
 		resp := &discoveryenginepb.ListSessionsResponse{}
@@ -1228,7 +1228,7 @@ func (c *sessionRESTClient) ListSessions(ctx context.Context, req *discoveryengi
 // ListFiles lists metadata for all files in the current session.
 func (c *sessionRESTClient) ListFiles(ctx context.Context, req *discoveryenginepb.ListFilesRequest, opts ...gax.CallOption) *FileMetadataIterator {
 	it := &FileMetadataIterator{}
-	req = proto.Clone(req).(*discoveryenginepb.ListFilesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*discoveryenginepb.FileMetadata, string, error) {
 		resp := &discoveryenginepb.ListFilesResponse{}
@@ -1408,7 +1408,7 @@ func (c *sessionRESTClient) GetOperation(ctx context.Context, req *longrunningpb
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *sessionRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

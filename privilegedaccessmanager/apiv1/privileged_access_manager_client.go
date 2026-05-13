@@ -738,7 +738,7 @@ func (c *gRPCClient) ListEntitlements(ctx context.Context, req *privilegedaccess
 	}
 	opts = append((*c.CallOptions).ListEntitlements[0:len((*c.CallOptions).ListEntitlements):len((*c.CallOptions).ListEntitlements)], opts...)
 	it := &EntitlementIterator{}
-	req = proto.Clone(req).(*privilegedaccessmanagerpb.ListEntitlementsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*privilegedaccessmanagerpb.Entitlement, string, error) {
 		resp := &privilegedaccessmanagerpb.ListEntitlementsResponse{}
 		if pageToken != "" {
@@ -790,7 +790,7 @@ func (c *gRPCClient) SearchEntitlements(ctx context.Context, req *privilegedacce
 	}
 	opts = append((*c.CallOptions).SearchEntitlements[0:len((*c.CallOptions).SearchEntitlements):len((*c.CallOptions).SearchEntitlements)], opts...)
 	it := &EntitlementIterator{}
-	req = proto.Clone(req).(*privilegedaccessmanagerpb.SearchEntitlementsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*privilegedaccessmanagerpb.Entitlement, string, error) {
 		resp := &privilegedaccessmanagerpb.SearchEntitlementsResponse{}
 		if pageToken != "" {
@@ -941,7 +941,7 @@ func (c *gRPCClient) ListGrants(ctx context.Context, req *privilegedaccessmanage
 	}
 	opts = append((*c.CallOptions).ListGrants[0:len((*c.CallOptions).ListGrants):len((*c.CallOptions).ListGrants)], opts...)
 	it := &GrantIterator{}
-	req = proto.Clone(req).(*privilegedaccessmanagerpb.ListGrantsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*privilegedaccessmanagerpb.Grant, string, error) {
 		resp := &privilegedaccessmanagerpb.ListGrantsResponse{}
 		if pageToken != "" {
@@ -993,7 +993,7 @@ func (c *gRPCClient) SearchGrants(ctx context.Context, req *privilegedaccessmana
 	}
 	opts = append((*c.CallOptions).SearchGrants[0:len((*c.CallOptions).SearchGrants):len((*c.CallOptions).SearchGrants)], opts...)
 	it := &GrantIterator{}
-	req = proto.Clone(req).(*privilegedaccessmanagerpb.SearchGrantsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*privilegedaccessmanagerpb.Grant, string, error) {
 		resp := &privilegedaccessmanagerpb.SearchGrantsResponse{}
 		if pageToken != "" {
@@ -1185,7 +1185,7 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -1272,7 +1272,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -1373,7 +1373,7 @@ func (c *restClient) CheckOnboardingStatus(ctx context.Context, req *privilegeda
 // ListEntitlements lists entitlements in a given project/folder/organization and location.
 func (c *restClient) ListEntitlements(ctx context.Context, req *privilegedaccessmanagerpb.ListEntitlementsRequest, opts ...gax.CallOption) *EntitlementIterator {
 	it := &EntitlementIterator{}
-	req = proto.Clone(req).(*privilegedaccessmanagerpb.ListEntitlementsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*privilegedaccessmanagerpb.Entitlement, string, error) {
 		resp := &privilegedaccessmanagerpb.ListEntitlementsResponse{}
@@ -1458,7 +1458,7 @@ func (c *restClient) ListEntitlements(ctx context.Context, req *privilegedaccess
 // specified access.
 func (c *restClient) SearchEntitlements(ctx context.Context, req *privilegedaccessmanagerpb.SearchEntitlementsRequest, opts ...gax.CallOption) *EntitlementIterator {
 	it := &EntitlementIterator{}
-	req = proto.Clone(req).(*privilegedaccessmanagerpb.SearchEntitlementsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*privilegedaccessmanagerpb.Entitlement, string, error) {
 		resp := &privilegedaccessmanagerpb.SearchEntitlementsResponse{}
@@ -1833,7 +1833,7 @@ func (c *restClient) UpdateEntitlement(ctx context.Context, req *privilegedacces
 // ListGrants lists grants for a given entitlement.
 func (c *restClient) ListGrants(ctx context.Context, req *privilegedaccessmanagerpb.ListGrantsRequest, opts ...gax.CallOption) *GrantIterator {
 	it := &GrantIterator{}
-	req = proto.Clone(req).(*privilegedaccessmanagerpb.ListGrantsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*privilegedaccessmanagerpb.Grant, string, error) {
 		resp := &privilegedaccessmanagerpb.ListGrantsResponse{}
@@ -1918,7 +1918,7 @@ func (c *restClient) ListGrants(ctx context.Context, req *privilegedaccessmanage
 // specified way.
 func (c *restClient) SearchGrants(ctx context.Context, req *privilegedaccessmanagerpb.SearchGrantsRequest, opts ...gax.CallOption) *GrantIterator {
 	it := &GrantIterator{}
-	req = proto.Clone(req).(*privilegedaccessmanagerpb.SearchGrantsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*privilegedaccessmanagerpb.Grant, string, error) {
 		resp := &privilegedaccessmanagerpb.SearchGrantsResponse{}
@@ -2376,7 +2376,7 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 // ListLocations lists information about the supported locations for this service.
 func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -2550,7 +2550,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

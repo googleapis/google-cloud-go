@@ -442,7 +442,7 @@ func (c *regionalInventoryGRPCClient) ListRegionalInventories(ctx context.Contex
 	}
 	opts = append((*c.CallOptions).ListRegionalInventories[0:len((*c.CallOptions).ListRegionalInventories):len((*c.CallOptions).ListRegionalInventories)], opts...)
 	it := &RegionalInventoryIterator{}
-	req = proto.Clone(req).(*inventoriespb.ListRegionalInventoriesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*inventoriespb.RegionalInventory, string, error) {
 		resp := &inventoriespb.ListRegionalInventoriesResponse{}
 		if pageToken != "" {
@@ -533,7 +533,7 @@ func (c *regionalInventoryGRPCClient) DeleteRegionalInventory(ctx context.Contex
 // RegionalInventory resources are listed per product for a given account.
 func (c *regionalInventoryRESTClient) ListRegionalInventories(ctx context.Context, req *inventoriespb.ListRegionalInventoriesRequest, opts ...gax.CallOption) *RegionalInventoryIterator {
 	it := &RegionalInventoryIterator{}
-	req = proto.Clone(req).(*inventoriespb.ListRegionalInventoriesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*inventoriespb.RegionalInventory, string, error) {
 		resp := &inventoriespb.ListRegionalInventoriesResponse{}

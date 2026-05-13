@@ -602,7 +602,7 @@ func (c *gRPCClient) ListParameters(ctx context.Context, req *parametermanagerpb
 	}
 	opts = append((*c.CallOptions).ListParameters[0:len((*c.CallOptions).ListParameters):len((*c.CallOptions).ListParameters)], opts...)
 	it := &ParameterIterator{}
-	req = proto.Clone(req).(*parametermanagerpb.ListParametersRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*parametermanagerpb.Parameter, string, error) {
 		resp := &parametermanagerpb.ListParametersResponse{}
 		if pageToken != "" {
@@ -743,7 +743,7 @@ func (c *gRPCClient) ListParameterVersions(ctx context.Context, req *parameterma
 	}
 	opts = append((*c.CallOptions).ListParameterVersions[0:len((*c.CallOptions).ListParameterVersions):len((*c.CallOptions).ListParameterVersions)], opts...)
 	it := &ParameterVersionIterator{}
-	req = proto.Clone(req).(*parametermanagerpb.ListParameterVersionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*parametermanagerpb.ParameterVersion, string, error) {
 		resp := &parametermanagerpb.ListParameterVersionsResponse{}
 		if pageToken != "" {
@@ -926,7 +926,7 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -968,7 +968,7 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 // ListParameters lists Parameters in a given project and location.
 func (c *restClient) ListParameters(ctx context.Context, req *parametermanagerpb.ListParametersRequest, opts ...gax.CallOption) *ParameterIterator {
 	it := &ParameterIterator{}
-	req = proto.Clone(req).(*parametermanagerpb.ListParametersRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*parametermanagerpb.Parameter, string, error) {
 		resp := &parametermanagerpb.ListParametersResponse{}
@@ -1293,7 +1293,7 @@ func (c *restClient) DeleteParameter(ctx context.Context, req *parametermanagerp
 // ListParameterVersions lists ParameterVersions in a given project, location, and parameter.
 func (c *restClient) ListParameterVersions(ctx context.Context, req *parametermanagerpb.ListParameterVersionsRequest, opts ...gax.CallOption) *ParameterVersionIterator {
 	it := &ParameterVersionIterator{}
-	req = proto.Clone(req).(*parametermanagerpb.ListParameterVersionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*parametermanagerpb.ParameterVersion, string, error) {
 		resp := &parametermanagerpb.ListParameterVersionsResponse{}
@@ -1732,7 +1732,7 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 // ListLocations lists information about the supported locations for this service.
 func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}

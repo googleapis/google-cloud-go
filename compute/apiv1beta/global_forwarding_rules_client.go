@@ -521,7 +521,7 @@ func (c *globalForwardingRulesRESTClient) Insert(ctx context.Context, req *compu
 // specified project.
 func (c *globalForwardingRulesRESTClient) List(ctx context.Context, req *computepb.ListGlobalForwardingRulesRequest, opts ...gax.CallOption) *ForwardingRuleIterator {
 	it := &ForwardingRuleIterator{}
-	req = proto.Clone(req).(*computepb.ListGlobalForwardingRulesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.ForwardingRule, string, error) {
 		resp := &computepb.ForwardingRuleList{}

@@ -1063,7 +1063,7 @@ func (c *gRPCClient) ListConnections(ctx context.Context, req *developerconnectp
 	}
 	opts = append((*c.CallOptions).ListConnections[0:len((*c.CallOptions).ListConnections):len((*c.CallOptions).ListConnections)], opts...)
 	it := &ConnectionIterator{}
-	req = proto.Clone(req).(*developerconnectpb.ListConnectionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*developerconnectpb.Connection, string, error) {
 		resp := &developerconnectpb.ListConnectionsResponse{}
 		if pageToken != "" {
@@ -1266,7 +1266,7 @@ func (c *gRPCClient) ListGitRepositoryLinks(ctx context.Context, req *developerc
 	}
 	opts = append((*c.CallOptions).ListGitRepositoryLinks[0:len((*c.CallOptions).ListGitRepositoryLinks):len((*c.CallOptions).ListGitRepositoryLinks)], opts...)
 	it := &GitRepositoryLinkIterator{}
-	req = proto.Clone(req).(*developerconnectpb.ListGitRepositoryLinksRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*developerconnectpb.GitRepositoryLink, string, error) {
 		resp := &developerconnectpb.ListGitRepositoryLinksResponse{}
 		if pageToken != "" {
@@ -1390,7 +1390,7 @@ func (c *gRPCClient) FetchLinkableGitRepositories(ctx context.Context, req *deve
 	}
 	opts = append((*c.CallOptions).FetchLinkableGitRepositories[0:len((*c.CallOptions).FetchLinkableGitRepositories):len((*c.CallOptions).FetchLinkableGitRepositories)], opts...)
 	it := &LinkableGitRepositoryIterator{}
-	req = proto.Clone(req).(*developerconnectpb.FetchLinkableGitRepositoriesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*developerconnectpb.LinkableGitRepository, string, error) {
 		resp := &developerconnectpb.FetchLinkableGitRepositoriesResponse{}
 		if pageToken != "" {
@@ -1466,7 +1466,7 @@ func (c *gRPCClient) FetchGitRefs(ctx context.Context, req *developerconnectpb.F
 	}
 	opts = append((*c.CallOptions).FetchGitRefs[0:len((*c.CallOptions).FetchGitRefs):len((*c.CallOptions).FetchGitRefs)], opts...)
 	it := &StringIterator{}
-	req = proto.Clone(req).(*developerconnectpb.FetchGitRefsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]string, string, error) {
 		resp := &developerconnectpb.FetchGitRefsResponse{}
 		if pageToken != "" {
@@ -1518,7 +1518,7 @@ func (c *gRPCClient) ListAccountConnectors(ctx context.Context, req *developerco
 	}
 	opts = append((*c.CallOptions).ListAccountConnectors[0:len((*c.CallOptions).ListAccountConnectors):len((*c.CallOptions).ListAccountConnectors)], opts...)
 	it := &AccountConnectorIterator{}
-	req = proto.Clone(req).(*developerconnectpb.ListAccountConnectorsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*developerconnectpb.AccountConnector, string, error) {
 		resp := &developerconnectpb.ListAccountConnectorsResponse{}
 		if pageToken != "" {
@@ -1693,7 +1693,7 @@ func (c *gRPCClient) ListUsers(ctx context.Context, req *developerconnectpb.List
 	}
 	opts = append((*c.CallOptions).ListUsers[0:len((*c.CallOptions).ListUsers):len((*c.CallOptions).ListUsers)], opts...)
 	it := &UserIterator{}
-	req = proto.Clone(req).(*developerconnectpb.ListUsersRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*developerconnectpb.User, string, error) {
 		resp := &developerconnectpb.ListUsersResponse{}
 		if pageToken != "" {
@@ -1887,7 +1887,7 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -1991,7 +1991,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -2033,7 +2033,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // ListConnections lists Connections in a given project and location.
 func (c *restClient) ListConnections(ctx context.Context, req *developerconnectpb.ListConnectionsRequest, opts ...gax.CallOption) *ConnectionIterator {
 	it := &ConnectionIterator{}
-	req = proto.Clone(req).(*developerconnectpb.ListConnectionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*developerconnectpb.Connection, string, error) {
 		resp := &developerconnectpb.ListConnectionsResponse{}
@@ -2545,7 +2545,7 @@ func (c *restClient) DeleteGitRepositoryLink(ctx context.Context, req *developer
 // ListGitRepositoryLinks lists GitRepositoryLinks in a given project, location, and connection.
 func (c *restClient) ListGitRepositoryLinks(ctx context.Context, req *developerconnectpb.ListGitRepositoryLinksRequest, opts ...gax.CallOption) *GitRepositoryLinkIterator {
 	it := &GitRepositoryLinkIterator{}
-	req = proto.Clone(req).(*developerconnectpb.ListGitRepositoryLinksRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*developerconnectpb.GitRepositoryLink, string, error) {
 		resp := &developerconnectpb.ListGitRepositoryLinksResponse{}
@@ -2813,7 +2813,7 @@ func (c *restClient) FetchReadToken(ctx context.Context, req *developerconnectpb
 // that are available to be added to a Connection.
 func (c *restClient) FetchLinkableGitRepositories(ctx context.Context, req *developerconnectpb.FetchLinkableGitRepositoriesRequest, opts ...gax.CallOption) *LinkableGitRepositoryIterator {
 	it := &LinkableGitRepositoryIterator{}
-	req = proto.Clone(req).(*developerconnectpb.FetchLinkableGitRepositoriesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*developerconnectpb.LinkableGitRepository, string, error) {
 		resp := &developerconnectpb.FetchLinkableGitRepositoriesResponse{}
@@ -2951,7 +2951,7 @@ func (c *restClient) FetchGitHubInstallations(ctx context.Context, req *develope
 // FetchGitRefs fetch the list of branches or tags for a given repository.
 func (c *restClient) FetchGitRefs(ctx context.Context, req *developerconnectpb.FetchGitRefsRequest, opts ...gax.CallOption) *StringIterator {
 	it := &StringIterator{}
-	req = proto.Clone(req).(*developerconnectpb.FetchGitRefsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]string, string, error) {
 		resp := &developerconnectpb.FetchGitRefsResponse{}
@@ -3030,7 +3030,7 @@ func (c *restClient) FetchGitRefs(ctx context.Context, req *developerconnectpb.F
 // ListAccountConnectors lists AccountConnectors in a given project and location.
 func (c *restClient) ListAccountConnectors(ctx context.Context, req *developerconnectpb.ListAccountConnectorsRequest, opts ...gax.CallOption) *AccountConnectorIterator {
 	it := &AccountConnectorIterator{}
-	req = proto.Clone(req).(*developerconnectpb.ListAccountConnectorsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*developerconnectpb.AccountConnector, string, error) {
 		resp := &developerconnectpb.ListAccountConnectorsResponse{}
@@ -3460,7 +3460,7 @@ func (c *restClient) FetchAccessToken(ctx context.Context, req *developerconnect
 // ListUsers lists Users in a given project, location, and account_connector.
 func (c *restClient) ListUsers(ctx context.Context, req *developerconnectpb.ListUsersRequest, opts ...gax.CallOption) *UserIterator {
 	it := &UserIterator{}
-	req = proto.Clone(req).(*developerconnectpb.ListUsersRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*developerconnectpb.User, string, error) {
 		resp := &developerconnectpb.ListUsersResponse{}
@@ -3917,7 +3917,7 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 //	to the project.
 func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -4136,7 +4136,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

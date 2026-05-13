@@ -443,7 +443,7 @@ func (c *firewallGRPCClient) ListIngressRules(ctx context.Context, req *appengin
 	}
 	opts = append((*c.CallOptions).ListIngressRules[0:len((*c.CallOptions).ListIngressRules):len((*c.CallOptions).ListIngressRules)], opts...)
 	it := &FirewallRuleIterator{}
-	req = proto.Clone(req).(*appenginepb.ListIngressRulesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*appenginepb.FirewallRule, string, error) {
 		resp := &appenginepb.ListIngressRulesResponse{}
 		if pageToken != "" {
@@ -586,7 +586,7 @@ func (c *firewallGRPCClient) DeleteIngressRule(ctx context.Context, req *appengi
 // ListIngressRules lists the firewall rules of an application.
 func (c *firewallRESTClient) ListIngressRules(ctx context.Context, req *appenginepb.ListIngressRulesRequest, opts ...gax.CallOption) *FirewallRuleIterator {
 	it := &FirewallRuleIterator{}
-	req = proto.Clone(req).(*appenginepb.ListIngressRulesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*appenginepb.FirewallRule, string, error) {
 		resp := &appenginepb.ListIngressRulesResponse{}

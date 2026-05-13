@@ -939,7 +939,7 @@ func (c *gRPCClient) ListEffectiveSecurityHealthAnalyticsCustomModules(ctx conte
 	}
 	opts = append((*c.CallOptions).ListEffectiveSecurityHealthAnalyticsCustomModules[0:len((*c.CallOptions).ListEffectiveSecurityHealthAnalyticsCustomModules):len((*c.CallOptions).ListEffectiveSecurityHealthAnalyticsCustomModules)], opts...)
 	it := &EffectiveSecurityHealthAnalyticsCustomModuleIterator{}
-	req = proto.Clone(req).(*securitycentermanagementpb.ListEffectiveSecurityHealthAnalyticsCustomModulesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securitycentermanagementpb.EffectiveSecurityHealthAnalyticsCustomModule, string, error) {
 		resp := &securitycentermanagementpb.ListEffectiveSecurityHealthAnalyticsCustomModulesResponse{}
 		if pageToken != "" {
@@ -1015,7 +1015,7 @@ func (c *gRPCClient) ListSecurityHealthAnalyticsCustomModules(ctx context.Contex
 	}
 	opts = append((*c.CallOptions).ListSecurityHealthAnalyticsCustomModules[0:len((*c.CallOptions).ListSecurityHealthAnalyticsCustomModules):len((*c.CallOptions).ListSecurityHealthAnalyticsCustomModules)], opts...)
 	it := &SecurityHealthAnalyticsCustomModuleIterator{}
-	req = proto.Clone(req).(*securitycentermanagementpb.ListSecurityHealthAnalyticsCustomModulesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securitycentermanagementpb.SecurityHealthAnalyticsCustomModule, string, error) {
 		resp := &securitycentermanagementpb.ListSecurityHealthAnalyticsCustomModulesResponse{}
 		if pageToken != "" {
@@ -1067,7 +1067,7 @@ func (c *gRPCClient) ListDescendantSecurityHealthAnalyticsCustomModules(ctx cont
 	}
 	opts = append((*c.CallOptions).ListDescendantSecurityHealthAnalyticsCustomModules[0:len((*c.CallOptions).ListDescendantSecurityHealthAnalyticsCustomModules):len((*c.CallOptions).ListDescendantSecurityHealthAnalyticsCustomModules)], opts...)
 	it := &SecurityHealthAnalyticsCustomModuleIterator{}
-	req = proto.Clone(req).(*securitycentermanagementpb.ListDescendantSecurityHealthAnalyticsCustomModulesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securitycentermanagementpb.SecurityHealthAnalyticsCustomModule, string, error) {
 		resp := &securitycentermanagementpb.ListDescendantSecurityHealthAnalyticsCustomModulesResponse{}
 		if pageToken != "" {
@@ -1229,7 +1229,7 @@ func (c *gRPCClient) ListEffectiveEventThreatDetectionCustomModules(ctx context.
 	}
 	opts = append((*c.CallOptions).ListEffectiveEventThreatDetectionCustomModules[0:len((*c.CallOptions).ListEffectiveEventThreatDetectionCustomModules):len((*c.CallOptions).ListEffectiveEventThreatDetectionCustomModules)], opts...)
 	it := &EffectiveEventThreatDetectionCustomModuleIterator{}
-	req = proto.Clone(req).(*securitycentermanagementpb.ListEffectiveEventThreatDetectionCustomModulesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securitycentermanagementpb.EffectiveEventThreatDetectionCustomModule, string, error) {
 		resp := &securitycentermanagementpb.ListEffectiveEventThreatDetectionCustomModulesResponse{}
 		if pageToken != "" {
@@ -1305,7 +1305,7 @@ func (c *gRPCClient) ListEventThreatDetectionCustomModules(ctx context.Context, 
 	}
 	opts = append((*c.CallOptions).ListEventThreatDetectionCustomModules[0:len((*c.CallOptions).ListEventThreatDetectionCustomModules):len((*c.CallOptions).ListEventThreatDetectionCustomModules)], opts...)
 	it := &EventThreatDetectionCustomModuleIterator{}
-	req = proto.Clone(req).(*securitycentermanagementpb.ListEventThreatDetectionCustomModulesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securitycentermanagementpb.EventThreatDetectionCustomModule, string, error) {
 		resp := &securitycentermanagementpb.ListEventThreatDetectionCustomModulesResponse{}
 		if pageToken != "" {
@@ -1357,7 +1357,7 @@ func (c *gRPCClient) ListDescendantEventThreatDetectionCustomModules(ctx context
 	}
 	opts = append((*c.CallOptions).ListDescendantEventThreatDetectionCustomModules[0:len((*c.CallOptions).ListDescendantEventThreatDetectionCustomModules):len((*c.CallOptions).ListDescendantEventThreatDetectionCustomModules)], opts...)
 	it := &EventThreatDetectionCustomModuleIterator{}
-	req = proto.Clone(req).(*securitycentermanagementpb.ListDescendantEventThreatDetectionCustomModulesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securitycentermanagementpb.EventThreatDetectionCustomModule, string, error) {
 		resp := &securitycentermanagementpb.ListDescendantEventThreatDetectionCustomModulesResponse{}
 		if pageToken != "" {
@@ -1546,7 +1546,7 @@ func (c *gRPCClient) ListSecurityCenterServices(ctx context.Context, req *securi
 	}
 	opts = append((*c.CallOptions).ListSecurityCenterServices[0:len((*c.CallOptions).ListSecurityCenterServices):len((*c.CallOptions).ListSecurityCenterServices)], opts...)
 	it := &SecurityCenterServiceIterator{}
-	req = proto.Clone(req).(*securitycentermanagementpb.ListSecurityCenterServicesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securitycentermanagementpb.SecurityCenterService, string, error) {
 		resp := &securitycentermanagementpb.ListSecurityCenterServicesResponse{}
 		if pageToken != "" {
@@ -1637,7 +1637,7 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -1683,7 +1683,7 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 // organizations, folders, and projects (no descendants).
 func (c *restClient) ListEffectiveSecurityHealthAnalyticsCustomModules(ctx context.Context, req *securitycentermanagementpb.ListEffectiveSecurityHealthAnalyticsCustomModulesRequest, opts ...gax.CallOption) *EffectiveSecurityHealthAnalyticsCustomModuleIterator {
 	it := &EffectiveSecurityHealthAnalyticsCustomModuleIterator{}
-	req = proto.Clone(req).(*securitycentermanagementpb.ListEffectiveSecurityHealthAnalyticsCustomModulesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securitycentermanagementpb.EffectiveSecurityHealthAnalyticsCustomModule, string, error) {
 		resp := &securitycentermanagementpb.ListEffectiveSecurityHealthAnalyticsCustomModulesResponse{}
@@ -1823,7 +1823,7 @@ func (c *restClient) GetEffectiveSecurityHealthAnalyticsCustomModule(ctx context
 // organizations, folders, and projects (no descendants).
 func (c *restClient) ListSecurityHealthAnalyticsCustomModules(ctx context.Context, req *securitycentermanagementpb.ListSecurityHealthAnalyticsCustomModulesRequest, opts ...gax.CallOption) *SecurityHealthAnalyticsCustomModuleIterator {
 	it := &SecurityHealthAnalyticsCustomModuleIterator{}
-	req = proto.Clone(req).(*securitycentermanagementpb.ListSecurityHealthAnalyticsCustomModulesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securitycentermanagementpb.SecurityHealthAnalyticsCustomModule, string, error) {
 		resp := &securitycentermanagementpb.ListSecurityHealthAnalyticsCustomModulesResponse{}
@@ -1904,7 +1904,7 @@ func (c *restClient) ListSecurityHealthAnalyticsCustomModules(ctx context.Contex
 // descendants.
 func (c *restClient) ListDescendantSecurityHealthAnalyticsCustomModules(ctx context.Context, req *securitycentermanagementpb.ListDescendantSecurityHealthAnalyticsCustomModulesRequest, opts ...gax.CallOption) *SecurityHealthAnalyticsCustomModuleIterator {
 	it := &SecurityHealthAnalyticsCustomModuleIterator{}
-	req = proto.Clone(req).(*securitycentermanagementpb.ListDescendantSecurityHealthAnalyticsCustomModulesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securitycentermanagementpb.SecurityHealthAnalyticsCustomModule, string, error) {
 		resp := &securitycentermanagementpb.ListDescendantSecurityHealthAnalyticsCustomModulesResponse{}
@@ -2301,7 +2301,7 @@ func (c *restClient) SimulateSecurityHealthAnalyticsCustomModule(ctx context.Con
 // parent along with modules inherited from its ancestors.
 func (c *restClient) ListEffectiveEventThreatDetectionCustomModules(ctx context.Context, req *securitycentermanagementpb.ListEffectiveEventThreatDetectionCustomModulesRequest, opts ...gax.CallOption) *EffectiveEventThreatDetectionCustomModuleIterator {
 	it := &EffectiveEventThreatDetectionCustomModuleIterator{}
-	req = proto.Clone(req).(*securitycentermanagementpb.ListEffectiveEventThreatDetectionCustomModulesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securitycentermanagementpb.EffectiveEventThreatDetectionCustomModule, string, error) {
 		resp := &securitycentermanagementpb.ListEffectiveEventThreatDetectionCustomModulesResponse{}
@@ -2449,7 +2449,7 @@ func (c *restClient) GetEffectiveEventThreatDetectionCustomModule(ctx context.Co
 // the parent along with modules inherited from ancestors.
 func (c *restClient) ListEventThreatDetectionCustomModules(ctx context.Context, req *securitycentermanagementpb.ListEventThreatDetectionCustomModulesRequest, opts ...gax.CallOption) *EventThreatDetectionCustomModuleIterator {
 	it := &EventThreatDetectionCustomModuleIterator{}
-	req = proto.Clone(req).(*securitycentermanagementpb.ListEventThreatDetectionCustomModulesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securitycentermanagementpb.EventThreatDetectionCustomModule, string, error) {
 		resp := &securitycentermanagementpb.ListEventThreatDetectionCustomModulesResponse{}
@@ -2528,7 +2528,7 @@ func (c *restClient) ListEventThreatDetectionCustomModules(ctx context.Context, 
 // organization, folder, or project and its descendants.
 func (c *restClient) ListDescendantEventThreatDetectionCustomModules(ctx context.Context, req *securitycentermanagementpb.ListDescendantEventThreatDetectionCustomModulesRequest, opts ...gax.CallOption) *EventThreatDetectionCustomModuleIterator {
 	it := &EventThreatDetectionCustomModuleIterator{}
-	req = proto.Clone(req).(*securitycentermanagementpb.ListDescendantEventThreatDetectionCustomModulesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securitycentermanagementpb.EventThreatDetectionCustomModule, string, error) {
 		resp := &securitycentermanagementpb.ListDescendantEventThreatDetectionCustomModulesResponse{}
@@ -2980,7 +2980,7 @@ func (c *restClient) GetSecurityCenterService(ctx context.Context, req *security
 // parent.
 func (c *restClient) ListSecurityCenterServices(ctx context.Context, req *securitycentermanagementpb.ListSecurityCenterServicesRequest, opts ...gax.CallOption) *SecurityCenterServiceIterator {
 	it := &SecurityCenterServiceIterator{}
-	req = proto.Clone(req).(*securitycentermanagementpb.ListSecurityCenterServicesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securitycentermanagementpb.SecurityCenterService, string, error) {
 		resp := &securitycentermanagementpb.ListSecurityCenterServicesResponse{}
@@ -3186,7 +3186,7 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 // ListLocations lists information about the supported locations for this service.
 func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}

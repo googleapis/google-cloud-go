@@ -1408,7 +1408,7 @@ func (c *databaseAdminGRPCClient) ListDatabases(ctx context.Context, req *databa
 	}
 	opts = append((*c.CallOptions).ListDatabases[0:len((*c.CallOptions).ListDatabases):len((*c.CallOptions).ListDatabases)], opts...)
 	it := &DatabaseIterator{}
-	req = proto.Clone(req).(*databasepb.ListDatabasesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*databasepb.Database, string, error) {
 		resp := &databasepb.ListDatabasesResponse{}
 		if pageToken != "" {
@@ -1792,7 +1792,7 @@ func (c *databaseAdminGRPCClient) ListBackups(ctx context.Context, req *database
 	}
 	opts = append((*c.CallOptions).ListBackups[0:len((*c.CallOptions).ListBackups):len((*c.CallOptions).ListBackups)], opts...)
 	it := &BackupIterator{}
-	req = proto.Clone(req).(*databasepb.ListBackupsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*databasepb.Backup, string, error) {
 		resp := &databasepb.ListBackupsResponse{}
 		if pageToken != "" {
@@ -1870,7 +1870,7 @@ func (c *databaseAdminGRPCClient) ListDatabaseOperations(ctx context.Context, re
 	}
 	opts = append((*c.CallOptions).ListDatabaseOperations[0:len((*c.CallOptions).ListDatabaseOperations):len((*c.CallOptions).ListDatabaseOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*databasepb.ListDatabaseOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &databasepb.ListDatabaseOperationsResponse{}
 		if pageToken != "" {
@@ -1922,7 +1922,7 @@ func (c *databaseAdminGRPCClient) ListBackupOperations(ctx context.Context, req 
 	}
 	opts = append((*c.CallOptions).ListBackupOperations[0:len((*c.CallOptions).ListBackupOperations):len((*c.CallOptions).ListBackupOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*databasepb.ListBackupOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &databasepb.ListBackupOperationsResponse{}
 		if pageToken != "" {
@@ -1974,7 +1974,7 @@ func (c *databaseAdminGRPCClient) ListDatabaseRoles(ctx context.Context, req *da
 	}
 	opts = append((*c.CallOptions).ListDatabaseRoles[0:len((*c.CallOptions).ListDatabaseRoles):len((*c.CallOptions).ListDatabaseRoles)], opts...)
 	it := &DatabaseRoleIterator{}
-	req = proto.Clone(req).(*databasepb.ListDatabaseRolesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*databasepb.DatabaseRole, string, error) {
 		resp := &databasepb.ListDatabaseRolesResponse{}
 		if pageToken != "" {
@@ -2139,7 +2139,7 @@ func (c *databaseAdminGRPCClient) ListBackupSchedules(ctx context.Context, req *
 	}
 	opts = append((*c.CallOptions).ListBackupSchedules[0:len((*c.CallOptions).ListBackupSchedules):len((*c.CallOptions).ListBackupSchedules)], opts...)
 	it := &BackupScheduleIterator{}
-	req = proto.Clone(req).(*databasepb.ListBackupSchedulesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*databasepb.BackupSchedule, string, error) {
 		resp := &databasepb.ListBackupSchedulesResponse{}
 		if pageToken != "" {
@@ -2261,7 +2261,7 @@ func (c *databaseAdminGRPCClient) ListOperations(ctx context.Context, req *longr
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -2303,7 +2303,7 @@ func (c *databaseAdminGRPCClient) ListOperations(ctx context.Context, req *longr
 // ListDatabases lists Cloud Spanner databases.
 func (c *databaseAdminRESTClient) ListDatabases(ctx context.Context, req *databasepb.ListDatabasesRequest, opts ...gax.CallOption) *DatabaseIterator {
 	it := &DatabaseIterator{}
-	req = proto.Clone(req).(*databasepb.ListDatabasesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*databasepb.Database, string, error) {
 		resp := &databasepb.ListDatabasesResponse{}
@@ -3348,7 +3348,7 @@ func (c *databaseAdminRESTClient) DeleteBackup(ctx context.Context, req *databas
 // starting from the most recent create_time.
 func (c *databaseAdminRESTClient) ListBackups(ctx context.Context, req *databasepb.ListBackupsRequest, opts ...gax.CallOption) *BackupIterator {
 	it := &BackupIterator{}
-	req = proto.Clone(req).(*databasepb.ListBackupsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*databasepb.Backup, string, error) {
 		resp := &databasepb.ListBackupsResponse{}
@@ -3518,7 +3518,7 @@ func (c *databaseAdminRESTClient) RestoreDatabase(ctx context.Context, req *data
 // and pending operations.
 func (c *databaseAdminRESTClient) ListDatabaseOperations(ctx context.Context, req *databasepb.ListDatabaseOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*databasepb.ListDatabaseOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &databasepb.ListDatabaseOperationsResponse{}
@@ -3608,7 +3608,7 @@ func (c *databaseAdminRESTClient) ListDatabaseOperations(ctx context.Context, re
 // from the most recently started operation.
 func (c *databaseAdminRESTClient) ListBackupOperations(ctx context.Context, req *databasepb.ListBackupOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*databasepb.ListBackupOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &databasepb.ListBackupOperationsResponse{}
@@ -3689,7 +3689,7 @@ func (c *databaseAdminRESTClient) ListBackupOperations(ctx context.Context, req 
 // ListDatabaseRoles lists Cloud Spanner database roles.
 func (c *databaseAdminRESTClient) ListDatabaseRoles(ctx context.Context, req *databasepb.ListDatabaseRolesRequest, opts ...gax.CallOption) *DatabaseRoleIterator {
 	it := &DatabaseRoleIterator{}
-	req = proto.Clone(req).(*databasepb.ListDatabaseRolesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*databasepb.DatabaseRole, string, error) {
 		resp := &databasepb.ListDatabaseRolesResponse{}
@@ -4062,7 +4062,7 @@ func (c *databaseAdminRESTClient) DeleteBackupSchedule(ctx context.Context, req 
 // ListBackupSchedules lists all the backup schedules for the database.
 func (c *databaseAdminRESTClient) ListBackupSchedules(ctx context.Context, req *databasepb.ListBackupSchedulesRequest, opts ...gax.CallOption) *BackupScheduleIterator {
 	it := &BackupScheduleIterator{}
-	req = proto.Clone(req).(*databasepb.ListBackupSchedulesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*databasepb.BackupSchedule, string, error) {
 		resp := &databasepb.ListBackupSchedulesResponse{}
@@ -4335,7 +4335,7 @@ func (c *databaseAdminRESTClient) GetOperation(ctx context.Context, req *longrun
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *databaseAdminRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

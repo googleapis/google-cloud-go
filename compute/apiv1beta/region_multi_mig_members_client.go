@@ -286,7 +286,7 @@ func (c *regionMultiMigMembersRESTClient) Get(ctx context.Context, req *computep
 // List retrieves a list of members of a specific multi-MIG.
 func (c *regionMultiMigMembersRESTClient) List(ctx context.Context, req *computepb.ListRegionMultiMigMembersRequest, opts ...gax.CallOption) *MultiMigMemberIterator {
 	it := &MultiMigMemberIterator{}
-	req = proto.Clone(req).(*computepb.ListRegionMultiMigMembersRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.MultiMigMember, string, error) {
 		resp := &computepb.MultiMigMemberList{}

@@ -346,7 +346,7 @@ func (c *nodeTemplatesRESTClient) Connection() *grpc.ClientConn {
 // returnPartialSuccess parameter to true.
 func (c *nodeTemplatesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListNodeTemplatesRequest, opts ...gax.CallOption) *NodeTemplatesScopedListPairIterator {
 	it := &NodeTemplatesScopedListPairIterator{}
-	req = proto.Clone(req).(*computepb.AggregatedListNodeTemplatesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]NodeTemplatesScopedListPair, string, error) {
 		resp := &computepb.NodeTemplateAggregatedList{}
@@ -700,7 +700,7 @@ func (c *nodeTemplatesRESTClient) Insert(ctx context.Context, req *computepb.Ins
 // project.
 func (c *nodeTemplatesRESTClient) List(ctx context.Context, req *computepb.ListNodeTemplatesRequest, opts ...gax.CallOption) *NodeTemplateIterator {
 	it := &NodeTemplateIterator{}
-	req = proto.Clone(req).(*computepb.ListNodeTemplatesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.NodeTemplate, string, error) {
 		resp := &computepb.NodeTemplateList{}

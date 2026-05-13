@@ -435,7 +435,7 @@ func (c *servicesGRPCClient) ListServices(ctx context.Context, req *appenginepb.
 	}
 	opts = append((*c.CallOptions).ListServices[0:len((*c.CallOptions).ListServices):len((*c.CallOptions).ListServices)], opts...)
 	it := &ServiceIterator{}
-	req = proto.Clone(req).(*appenginepb.ListServicesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*appenginepb.Service, string, error) {
 		resp := &appenginepb.ListServicesResponse{}
 		if pageToken != "" {
@@ -544,7 +544,7 @@ func (c *servicesGRPCClient) DeleteService(ctx context.Context, req *appenginepb
 // ListServices lists all the services in the application.
 func (c *servicesRESTClient) ListServices(ctx context.Context, req *appenginepb.ListServicesRequest, opts ...gax.CallOption) *ServiceIterator {
 	it := &ServiceIterator{}
-	req = proto.Clone(req).(*appenginepb.ListServicesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*appenginepb.Service, string, error) {
 		resp := &appenginepb.ListServicesResponse{}

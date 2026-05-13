@@ -286,7 +286,7 @@ func (c *zonesRESTClient) Get(ctx context.Context, req *computepb.GetZoneRequest
 // List retrieves the list of Zone resources available to the specified project.
 func (c *zonesRESTClient) List(ctx context.Context, req *computepb.ListZonesRequest, opts ...gax.CallOption) *ZoneIterator {
 	it := &ZoneIterator{}
-	req = proto.Clone(req).(*computepb.ListZonesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.Zone, string, error) {
 		resp := &computepb.ZoneList{}

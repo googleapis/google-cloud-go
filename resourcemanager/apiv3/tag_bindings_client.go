@@ -469,7 +469,7 @@ func (c *tagBindingsGRPCClient) ListTagBindings(ctx context.Context, req *resour
 	}
 	opts = append((*c.CallOptions).ListTagBindings[0:len((*c.CallOptions).ListTagBindings):len((*c.CallOptions).ListTagBindings)], opts...)
 	it := &TagBindingIterator{}
-	req = proto.Clone(req).(*resourcemanagerpb.ListTagBindingsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*resourcemanagerpb.TagBinding, string, error) {
 		resp := &resourcemanagerpb.ListTagBindingsResponse{}
 		if pageToken != "" {
@@ -561,7 +561,7 @@ func (c *tagBindingsGRPCClient) ListEffectiveTags(ctx context.Context, req *reso
 	}
 	opts = append((*c.CallOptions).ListEffectiveTags[0:len((*c.CallOptions).ListEffectiveTags):len((*c.CallOptions).ListEffectiveTags)], opts...)
 	it := &EffectiveTagIterator{}
-	req = proto.Clone(req).(*resourcemanagerpb.ListEffectiveTagsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*resourcemanagerpb.EffectiveTag, string, error) {
 		resp := &resourcemanagerpb.ListEffectiveTagsResponse{}
 		if pageToken != "" {
@@ -628,7 +628,7 @@ func (c *tagBindingsGRPCClient) GetOperation(ctx context.Context, req *longrunni
 // https://cloud.google.com/apis/design/resource_names#full_resource_name (at https://cloud.google.com/apis/design/resource_names#full_resource_name)
 func (c *tagBindingsRESTClient) ListTagBindings(ctx context.Context, req *resourcemanagerpb.ListTagBindingsRequest, opts ...gax.CallOption) *TagBindingIterator {
 	it := &TagBindingIterator{}
-	req = proto.Clone(req).(*resourcemanagerpb.ListTagBindingsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*resourcemanagerpb.TagBinding, string, error) {
 		resp := &resourcemanagerpb.ListTagBindingsResponse{}
@@ -832,7 +832,7 @@ func (c *tagBindingsRESTClient) DeleteTagBinding(ctx context.Context, req *resou
 // specified in parent.
 func (c *tagBindingsRESTClient) ListEffectiveTags(ctx context.Context, req *resourcemanagerpb.ListEffectiveTagsRequest, opts ...gax.CallOption) *EffectiveTagIterator {
 	it := &EffectiveTagIterator{}
-	req = proto.Clone(req).(*resourcemanagerpb.ListEffectiveTagsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*resourcemanagerpb.EffectiveTag, string, error) {
 		resp := &resourcemanagerpb.ListEffectiveTagsResponse{}

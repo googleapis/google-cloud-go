@@ -1025,7 +1025,7 @@ func (c *dataMigrationGRPCClient) ListMigrationJobs(ctx context.Context, req *cl
 	}
 	opts = append((*c.CallOptions).ListMigrationJobs[0:len((*c.CallOptions).ListMigrationJobs):len((*c.CallOptions).ListMigrationJobs)], opts...)
 	it := &MigrationJobIterator{}
-	req = proto.Clone(req).(*clouddmspb.ListMigrationJobsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*clouddmspb.MigrationJob, string, error) {
 		resp := &clouddmspb.ListMigrationJobsResponse{}
 		if pageToken != "" {
@@ -1380,7 +1380,7 @@ func (c *dataMigrationGRPCClient) ListConnectionProfiles(ctx context.Context, re
 	}
 	opts = append((*c.CallOptions).ListConnectionProfiles[0:len((*c.CallOptions).ListConnectionProfiles):len((*c.CallOptions).ListConnectionProfiles)], opts...)
 	it := &ConnectionProfileIterator{}
-	req = proto.Clone(req).(*clouddmspb.ListConnectionProfilesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*clouddmspb.ConnectionProfile, string, error) {
 		resp := &clouddmspb.ListConnectionProfilesResponse{}
 		if pageToken != "" {
@@ -1581,7 +1581,7 @@ func (c *dataMigrationGRPCClient) ListPrivateConnections(ctx context.Context, re
 	}
 	opts = append((*c.CallOptions).ListPrivateConnections[0:len((*c.CallOptions).ListPrivateConnections):len((*c.CallOptions).ListPrivateConnections)], opts...)
 	it := &PrivateConnectionIterator{}
-	req = proto.Clone(req).(*clouddmspb.ListPrivateConnectionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*clouddmspb.PrivateConnection, string, error) {
 		resp := &clouddmspb.ListPrivateConnectionsResponse{}
 		if pageToken != "" {
@@ -1683,7 +1683,7 @@ func (c *dataMigrationGRPCClient) ListConversionWorkspaces(ctx context.Context, 
 	}
 	opts = append((*c.CallOptions).ListConversionWorkspaces[0:len((*c.CallOptions).ListConversionWorkspaces):len((*c.CallOptions).ListConversionWorkspaces)], opts...)
 	it := &ConversionWorkspaceIterator{}
-	req = proto.Clone(req).(*clouddmspb.ListConversionWorkspacesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*clouddmspb.ConversionWorkspace, string, error) {
 		resp := &clouddmspb.ListConversionWorkspacesResponse{}
 		if pageToken != "" {
@@ -1854,7 +1854,7 @@ func (c *dataMigrationGRPCClient) ListMappingRules(ctx context.Context, req *clo
 	}
 	opts = append((*c.CallOptions).ListMappingRules[0:len((*c.CallOptions).ListMappingRules):len((*c.CallOptions).ListMappingRules)], opts...)
 	it := &MappingRuleIterator{}
-	req = proto.Clone(req).(*clouddmspb.ListMappingRulesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*clouddmspb.MappingRule, string, error) {
 		resp := &clouddmspb.ListMappingRulesResponse{}
 		if pageToken != "" {
@@ -2086,7 +2086,7 @@ func (c *dataMigrationGRPCClient) DescribeDatabaseEntities(ctx context.Context, 
 	}
 	opts = append((*c.CallOptions).DescribeDatabaseEntities[0:len((*c.CallOptions).DescribeDatabaseEntities):len((*c.CallOptions).DescribeDatabaseEntities)], opts...)
 	it := &DatabaseEntityIterator{}
-	req = proto.Clone(req).(*clouddmspb.DescribeDatabaseEntitiesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*clouddmspb.DatabaseEntity, string, error) {
 		resp := &clouddmspb.DescribeDatabaseEntitiesResponse{}
 		if pageToken != "" {
@@ -2186,7 +2186,7 @@ func (c *dataMigrationGRPCClient) FetchStaticIps(ctx context.Context, req *cloud
 	}
 	opts = append((*c.CallOptions).FetchStaticIps[0:len((*c.CallOptions).FetchStaticIps):len((*c.CallOptions).FetchStaticIps)], opts...)
 	it := &StringIterator{}
-	req = proto.Clone(req).(*clouddmspb.FetchStaticIpsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]string, string, error) {
 		resp := &clouddmspb.FetchStaticIpsResponse{}
 		if pageToken != "" {
@@ -2256,7 +2256,7 @@ func (c *dataMigrationGRPCClient) ListLocations(ctx context.Context, req *locati
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -2432,7 +2432,7 @@ func (c *dataMigrationGRPCClient) ListOperations(ctx context.Context, req *longr
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {

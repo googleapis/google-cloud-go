@@ -31,7 +31,9 @@ import (
 	"google.golang.org/api/option"
 	gtransport "google.golang.org/api/transport/grpc"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/peer"
+	"google.golang.org/grpc/status"
 )
 
 var legacyUseProd string
@@ -133,6 +135,12 @@ func NewIntegrationEnv() (IntegrationEnv, error) {
 	universeDomain := os.Getenv("GCLOUD_TESTS_BIGTABLE_UNIVERSE_DOMAIN")
 	c.ClientOpts = append(c.ClientOpts, option.WithUniverseDomain(universeDomain))
 
+	if c.AttemptDirectPath {
+		os.Unsetenv("GOOGLE_CLOUD_DISABLE_DIRECT_PATH")
+	} else {
+		os.Setenv("GOOGLE_CLOUD_DISABLE_DIRECT_PATH", "true")
+	}
+
 	if legacyUseProd != "" {
 		fmt.Println("WARNING: using legacy commandline arg -use_prod, please switch to -it.*")
 		parts := strings.SplitN(legacyUseProd, ",", 3)
@@ -224,6 +232,7 @@ func (e *EmulatedEnv) AdminClientOptions() (context.Context, []option.ClientOpti
 	_ = cancel // ignore for test
 
 	o = append(o, option.WithGRPCDialOption(grpc.WithBlock()))
+	o = append(o, option.WithGRPCDialOption(grpc.WithUnaryInterceptor(adminUnaryRetryInterceptor())))
 	conn, err := gtransport.DialInsecure(ctx, o...)
 	if err != nil {
 		return nil, nil, err
@@ -328,6 +337,7 @@ func (e *ProdEnv) AdminClientOptions() (context.Context, []option.ClientOption, 
 		clientOpts = append(clientOpts, option.WithEndpoint(endpoint))
 	}
 	clientOpts = append(clientOpts, e.config.ClientOpts...)
+	clientOpts = append(clientOpts, option.WithGRPCDialOption(grpc.WithUnaryInterceptor(adminUnaryRetryInterceptor())))
 	return context.Background(), clientOpts, nil
 }
 
@@ -371,4 +381,31 @@ func (e *ProdEnv) newProdClient(config ClientConfig) (*Client, error) {
 	}
 	clientOpts = append(clientOpts, e.config.ClientOpts...)
 	return NewClientWithConfig(context.Background(), e.config.Project, e.config.Instance, config, clientOpts...)
+}
+
+func adminUnaryRetryInterceptor() grpc.UnaryClientInterceptor {
+	return func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
+		var err error
+		for i := 0; i < 10; i++ {
+			err = invoker(ctx, method, req, reply, cc, opts...)
+			if err == nil {
+				return nil
+			}
+			s, ok := status.FromError(err)
+			if !ok {
+				return err
+			}
+			code := s.Code()
+			if code == codes.Unavailable || code == codes.Aborted || code == codes.Internal || code == codes.Unknown || code == codes.ResourceExhausted {
+				select {
+				case <-time.After(time.Duration(1<<i) * 500 * time.Millisecond):
+				case <-ctx.Done():
+					return ctx.Err()
+				}
+				continue
+			}
+			return err
+		}
+		return err
+	}
 }

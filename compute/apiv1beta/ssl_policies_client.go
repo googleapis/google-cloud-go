@@ -348,7 +348,7 @@ func (c *sslPoliciesRESTClient) Connection() *grpc.ClientConn {
 // returnPartialSuccess parameter to true.
 func (c *sslPoliciesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListSslPoliciesRequest, opts ...gax.CallOption) *SslPoliciesScopedListPairIterator {
 	it := &SslPoliciesScopedListPairIterator{}
-	req = proto.Clone(req).(*computepb.AggregatedListSslPoliciesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]SslPoliciesScopedListPair, string, error) {
 		resp := &computepb.SslPoliciesAggregatedList{}
@@ -641,7 +641,7 @@ func (c *sslPoliciesRESTClient) Insert(ctx context.Context, req *computepb.Inser
 // project.
 func (c *sslPoliciesRESTClient) List(ctx context.Context, req *computepb.ListSslPoliciesRequest, opts ...gax.CallOption) *SslPolicyIterator {
 	it := &SslPolicyIterator{}
-	req = proto.Clone(req).(*computepb.ListSslPoliciesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.SslPolicy, string, error) {
 		resp := &computepb.SslPoliciesList{}

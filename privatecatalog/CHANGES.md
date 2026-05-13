@@ -1,5 +1,9 @@
 # Changes
 
+## [0.15.0](https://github.com/googleapis/google-cloud-go/releases/tag/privatecatalog%2Fv0.15.0) (2026-05-07)
+
+## [0.14.0](https://github.com/googleapis/google-cloud-go/releases/tag/privatecatalog%2Fv0.14.0) (2026-04-30)
+
 ## [0.13.0](https://github.com/googleapis/google-cloud-go/releases/tag/privatecatalog%2Fv0.13.0) (2026-04-13)
 
 ## [0.12.0](https://github.com/googleapis/google-cloud-go/releases/tag/privatecatalog%2Fv0.12.0) (2026-04-09)

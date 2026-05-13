@@ -389,7 +389,7 @@ func (c *cursorGRPCClient) ListPartitionCursors(ctx context.Context, req *pubsub
 	}
 	opts = append((*c.CallOptions).ListPartitionCursors[0:len((*c.CallOptions).ListPartitionCursors):len((*c.CallOptions).ListPartitionCursors)], opts...)
 	it := &PartitionCursorIterator{}
-	req = proto.Clone(req).(*pubsublitepb.ListPartitionCursorsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*pubsublitepb.PartitionCursor, string, error) {
 		resp := &pubsublitepb.ListPartitionCursorsResponse{}
 		if pageToken != "" {
@@ -493,7 +493,7 @@ func (c *cursorGRPCClient) ListOperations(ctx context.Context, req *longrunningp
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {

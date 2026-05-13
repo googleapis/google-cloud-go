@@ -1143,7 +1143,7 @@ func (c *restClient) GetApi(ctx context.Context, req *apihubpb.GetApiRequest, op
 // ListApis list API resources in the API hub.
 func (c *restClient) ListApis(ctx context.Context, req *apihubpb.ListApisRequest, opts ...gax.CallOption) *ApiIterator {
 	it := &ApiIterator{}
-	req = proto.Clone(req).(*apihubpb.ListApisRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apihubpb.Api, string, error) {
 		resp := &apihubpb.ListApisResponse{}
@@ -1492,7 +1492,7 @@ func (c *restClient) GetVersion(ctx context.Context, req *apihubpb.GetVersionReq
 // ListVersions list API versions of an API resource in the API hub.
 func (c *restClient) ListVersions(ctx context.Context, req *apihubpb.ListVersionsRequest, opts ...gax.CallOption) *VersionIterator {
 	it := &VersionIterator{}
-	req = proto.Clone(req).(*apihubpb.ListVersionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apihubpb.Version, string, error) {
 		resp := &apihubpb.ListVersionsResponse{}
@@ -1912,7 +1912,7 @@ func (c *restClient) GetSpecContents(ctx context.Context, req *apihubpb.GetSpecC
 // ListSpecs list specs corresponding to a particular API resource.
 func (c *restClient) ListSpecs(ctx context.Context, req *apihubpb.ListSpecsRequest, opts ...gax.CallOption) *SpecIterator {
 	it := &SpecIterator{}
-	req = proto.Clone(req).(*apihubpb.ListSpecsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apihubpb.Spec, string, error) {
 		resp := &apihubpb.ListSpecsResponse{}
@@ -2260,7 +2260,7 @@ func (c *restClient) GetApiOperation(ctx context.Context, req *apihubpb.GetApiOp
 // ListApiOperations list operations in an API version.
 func (c *restClient) ListApiOperations(ctx context.Context, req *apihubpb.ListApiOperationsRequest, opts ...gax.CallOption) *ApiOperationIterator {
 	it := &ApiOperationIterator{}
-	req = proto.Clone(req).(*apihubpb.ListApiOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apihubpb.ApiOperation, string, error) {
 		resp := &apihubpb.ListApiOperationsResponse{}
@@ -2659,7 +2659,7 @@ func (c *restClient) GetDeployment(ctx context.Context, req *apihubpb.GetDeploym
 // ListDeployments list deployment resources in the API hub.
 func (c *restClient) ListDeployments(ctx context.Context, req *apihubpb.ListDeploymentsRequest, opts ...gax.CallOption) *DeploymentIterator {
 	it := &DeploymentIterator{}
-	req = proto.Clone(req).(*apihubpb.ListDeploymentsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apihubpb.Deployment, string, error) {
 		resp := &apihubpb.ListDeploymentsResponse{}
@@ -3151,7 +3151,7 @@ func (c *restClient) DeleteAttribute(ctx context.Context, req *apihubpb.DeleteAt
 // ListAttributes list all attributes.
 func (c *restClient) ListAttributes(ctx context.Context, req *apihubpb.ListAttributesRequest, opts ...gax.CallOption) *AttributeIterator {
 	it := &AttributeIterator{}
-	req = proto.Clone(req).(*apihubpb.ListAttributesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apihubpb.Attribute, string, error) {
 		resp := &apihubpb.ListAttributesResponse{}
@@ -3232,7 +3232,7 @@ func (c *restClient) ListAttributes(ctx context.Context, req *apihubpb.ListAttri
 // SearchResources search across API-Hub resources.
 func (c *restClient) SearchResources(ctx context.Context, req *apihubpb.SearchResourcesRequest, opts ...gax.CallOption) *SearchResultIterator {
 	it := &SearchResultIterator{}
-	req = proto.Clone(req).(*apihubpb.SearchResourcesRequest)
+	req = proto.CloneOf(req)
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apihubpb.SearchResult, string, error) {
@@ -3559,7 +3559,7 @@ func (c *restClient) DeleteExternalApi(ctx context.Context, req *apihubpb.Delete
 // ListExternalApis list External API resources in the API hub.
 func (c *restClient) ListExternalApis(ctx context.Context, req *apihubpb.ListExternalApisRequest, opts ...gax.CallOption) *ExternalApiIterator {
 	it := &ExternalApiIterator{}
-	req = proto.Clone(req).(*apihubpb.ListExternalApisRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apihubpb.ExternalApi, string, error) {
 		resp := &apihubpb.ListExternalApisResponse{}
@@ -3691,7 +3691,7 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 // ListLocations lists information about the supported locations for this service.
 func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -3910,7 +3910,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

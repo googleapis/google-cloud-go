@@ -1062,7 +1062,7 @@ func (c *securityCenterSettingsGRPCClient) ListDetectors(ctx context.Context, re
 	}
 	opts = append((*c.CallOptions).ListDetectors[0:len((*c.CallOptions).ListDetectors):len((*c.CallOptions).ListDetectors)], opts...)
 	it := &DetectorIterator{}
-	req = proto.Clone(req).(*settingspb.ListDetectorsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*settingspb.Detector, string, error) {
 		resp := &settingspb.ListDetectorsResponse{}
 		if pageToken != "" {
@@ -1114,7 +1114,7 @@ func (c *securityCenterSettingsGRPCClient) ListComponents(ctx context.Context, r
 	}
 	opts = append((*c.CallOptions).ListComponents[0:len((*c.CallOptions).ListComponents):len((*c.CallOptions).ListComponents)], opts...)
 	it := &StringIterator{}
-	req = proto.Clone(req).(*settingspb.ListComponentsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]string, string, error) {
 		resp := &settingspb.ListComponentsResponse{}
 		if pageToken != "" {
@@ -1790,7 +1790,7 @@ func (c *securityCenterSettingsRESTClient) CalculateEffectiveComponentSettings(c
 // ListDetectors retrieves an unordered list of available detectors.
 func (c *securityCenterSettingsRESTClient) ListDetectors(ctx context.Context, req *settingspb.ListDetectorsRequest, opts ...gax.CallOption) *DetectorIterator {
 	it := &DetectorIterator{}
-	req = proto.Clone(req).(*settingspb.ListDetectorsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*settingspb.Detector, string, error) {
 		resp := &settingspb.ListDetectorsResponse{}
@@ -1870,7 +1870,7 @@ func (c *securityCenterSettingsRESTClient) ListDetectors(ctx context.Context, re
 // ListComponents retrieves an unordered list of available SCC components.
 func (c *securityCenterSettingsRESTClient) ListComponents(ctx context.Context, req *settingspb.ListComponentsRequest, opts ...gax.CallOption) *StringIterator {
 	it := &StringIterator{}
-	req = proto.Clone(req).(*settingspb.ListComponentsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]string, string, error) {
 		resp := &settingspb.ListComponentsResponse{}

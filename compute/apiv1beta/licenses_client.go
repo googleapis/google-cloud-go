@@ -628,7 +628,7 @@ func (c *licensesRESTClient) Insert(ctx context.Context, req *computepb.InsertLi
 // images.
 func (c *licensesRESTClient) List(ctx context.Context, req *computepb.ListLicensesRequest, opts ...gax.CallOption) *LicenseIterator {
 	it := &LicenseIterator{}
-	req = proto.Clone(req).(*computepb.ListLicensesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.License, string, error) {
 		resp := &computepb.LicensesListResponse{}

@@ -1017,7 +1017,7 @@ func (c *conversationalSearchGRPCClient) ListConversations(ctx context.Context, 
 	}
 	opts = append((*c.CallOptions).ListConversations[0:len((*c.CallOptions).ListConversations):len((*c.CallOptions).ListConversations)], opts...)
 	it := &ConversationIterator{}
-	req = proto.Clone(req).(*discoveryenginepb.ListConversationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*discoveryenginepb.Conversation, string, error) {
 		resp := &discoveryenginepb.ListConversationsResponse{}
 		if pageToken != "" {
@@ -1232,7 +1232,7 @@ func (c *conversationalSearchGRPCClient) ListSessions(ctx context.Context, req *
 	}
 	opts = append((*c.CallOptions).ListSessions[0:len((*c.CallOptions).ListSessions):len((*c.CallOptions).ListSessions)], opts...)
 	it := &SessionIterator{}
-	req = proto.Clone(req).(*discoveryenginepb.ListSessionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*discoveryenginepb.Session, string, error) {
 		resp := &discoveryenginepb.ListSessionsResponse{}
 		if pageToken != "" {
@@ -1319,7 +1319,7 @@ func (c *conversationalSearchGRPCClient) ListOperations(ctx context.Context, req
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -1667,7 +1667,7 @@ func (c *conversationalSearchRESTClient) GetConversation(ctx context.Context, re
 // DataStore.
 func (c *conversationalSearchRESTClient) ListConversations(ctx context.Context, req *discoveryenginepb.ListConversationsRequest, opts ...gax.CallOption) *ConversationIterator {
 	it := &ConversationIterator{}
-	req = proto.Clone(req).(*discoveryenginepb.ListConversationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*discoveryenginepb.Conversation, string, error) {
 		resp := &discoveryenginepb.ListConversationsResponse{}
@@ -2231,7 +2231,7 @@ func (c *conversationalSearchRESTClient) GetSession(ctx context.Context, req *di
 // DataStore.
 func (c *conversationalSearchRESTClient) ListSessions(ctx context.Context, req *discoveryenginepb.ListSessionsRequest, opts ...gax.CallOption) *SessionIterator {
 	it := &SessionIterator{}
-	req = proto.Clone(req).(*discoveryenginepb.ListSessionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*discoveryenginepb.Session, string, error) {
 		resp := &discoveryenginepb.ListSessionsResponse{}
@@ -2414,7 +2414,7 @@ func (c *conversationalSearchRESTClient) GetOperation(ctx context.Context, req *
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *conversationalSearchRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

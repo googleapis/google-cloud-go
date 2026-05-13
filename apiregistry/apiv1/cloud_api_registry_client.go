@@ -506,7 +506,7 @@ func (c *cloudApiRegistryGRPCClient) ListMcpServers(ctx context.Context, req *ap
 	}
 	opts = append((*c.CallOptions).ListMcpServers[0:len((*c.CallOptions).ListMcpServers):len((*c.CallOptions).ListMcpServers)], opts...)
 	it := &McpServerIterator{}
-	req = proto.Clone(req).(*apiregistrypb.ListMcpServersRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apiregistrypb.McpServer, string, error) {
 		resp := &apiregistrypb.ListMcpServersResponse{}
 		if pageToken != "" {
@@ -582,7 +582,7 @@ func (c *cloudApiRegistryGRPCClient) ListMcpTools(ctx context.Context, req *apir
 	}
 	opts = append((*c.CallOptions).ListMcpTools[0:len((*c.CallOptions).ListMcpTools):len((*c.CallOptions).ListMcpTools)], opts...)
 	it := &McpToolIterator{}
-	req = proto.Clone(req).(*apiregistrypb.ListMcpToolsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apiregistrypb.McpTool, string, error) {
 		resp := &apiregistrypb.ListMcpToolsResponse{}
 		if pageToken != "" {
@@ -652,7 +652,7 @@ func (c *cloudApiRegistryGRPCClient) ListLocations(ctx context.Context, req *loc
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -751,7 +751,7 @@ func (c *cloudApiRegistryRESTClient) GetMcpServer(ctx context.Context, req *apir
 // ListMcpServers lists McpServers in a given Project.
 func (c *cloudApiRegistryRESTClient) ListMcpServers(ctx context.Context, req *apiregistrypb.ListMcpServersRequest, opts ...gax.CallOption) *McpServerIterator {
 	it := &McpServerIterator{}
-	req = proto.Clone(req).(*apiregistrypb.ListMcpServersRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apiregistrypb.McpServer, string, error) {
 		resp := &apiregistrypb.ListMcpServersResponse{}
@@ -892,7 +892,7 @@ func (c *cloudApiRegistryRESTClient) GetMcpTool(ctx context.Context, req *apireg
 // ListMcpTools lists McpTools in a given McpServer.
 func (c *cloudApiRegistryRESTClient) ListMcpTools(ctx context.Context, req *apiregistrypb.ListMcpToolsRequest, opts ...gax.CallOption) *McpToolIterator {
 	it := &McpToolIterator{}
-	req = proto.Clone(req).(*apiregistrypb.ListMcpToolsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apiregistrypb.McpTool, string, error) {
 		resp := &apiregistrypb.ListMcpToolsResponse{}
@@ -1030,7 +1030,7 @@ func (c *cloudApiRegistryRESTClient) GetLocation(ctx context.Context, req *locat
 // ListLocations lists information about the supported locations for this service.
 func (c *cloudApiRegistryRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}

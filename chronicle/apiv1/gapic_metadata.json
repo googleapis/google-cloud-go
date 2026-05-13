@@ -5,6 +5,238 @@
   "protoPackage": "google.cloud.chronicle.v1",
   "libraryPackage": "cloud.google.com/go/chronicle/apiv1",
   "services": {
+    "BigQueryExportService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "BigQueryExportClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetBigQueryExport": {
+              "methods": [
+                "GetBigQueryExport"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ProvisionBigQueryExport": {
+              "methods": [
+                "ProvisionBigQueryExport"
+              ]
+            },
+            "UpdateBigQueryExport": {
+              "methods": [
+                "UpdateBigQueryExport"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "BigQueryExportClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetBigQueryExport": {
+              "methods": [
+                "GetBigQueryExport"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ProvisionBigQueryExport": {
+              "methods": [
+                "ProvisionBigQueryExport"
+              ]
+            },
+            "UpdateBigQueryExport": {
+              "methods": [
+                "UpdateBigQueryExport"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "DashboardChartService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "DashboardChartClient",
+          "rpcs": {
+            "BatchGetDashboardCharts": {
+              "methods": [
+                "BatchGetDashboardCharts"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetDashboardChart": {
+              "methods": [
+                "GetDashboardChart"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "DashboardChartClient",
+          "rpcs": {
+            "BatchGetDashboardCharts": {
+              "methods": [
+                "BatchGetDashboardCharts"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetDashboardChart": {
+              "methods": [
+                "GetDashboardChart"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "DashboardQueryService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "DashboardQueryClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "ExecuteDashboardQuery": {
+              "methods": [
+                "ExecuteDashboardQuery"
+              ]
+            },
+            "GetDashboardQuery": {
+              "methods": [
+                "GetDashboardQuery"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "DashboardQueryClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "ExecuteDashboardQuery": {
+              "methods": [
+                "ExecuteDashboardQuery"
+              ]
+            },
+            "GetDashboardQuery": {
+              "methods": [
+                "GetDashboardQuery"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            }
+          }
+        }
+      }
+    },
     "DataAccessControlService": {
       "clients": {
         "grpc": {
@@ -467,6 +699,90 @@
         }
       }
     },
+    "FeaturedContentNativeDashboardService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "FeaturedContentNativeDashboardClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetFeaturedContentNativeDashboard": {
+              "methods": [
+                "GetFeaturedContentNativeDashboard"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "InstallFeaturedContentNativeDashboard": {
+              "methods": [
+                "InstallFeaturedContentNativeDashboard"
+              ]
+            },
+            "ListFeaturedContentNativeDashboards": {
+              "methods": [
+                "ListFeaturedContentNativeDashboards"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "FeaturedContentNativeDashboardClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetFeaturedContentNativeDashboard": {
+              "methods": [
+                "GetFeaturedContentNativeDashboard"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "InstallFeaturedContentNativeDashboard": {
+              "methods": [
+                "InstallFeaturedContentNativeDashboard"
+              ]
+            },
+            "ListFeaturedContentNativeDashboards": {
+              "methods": [
+                "ListFeaturedContentNativeDashboards"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            }
+          }
+        }
+      }
+    },
     "InstanceService": {
       "clients": {
         "grpc": {
@@ -525,6 +841,180 @@
             "ListOperations": {
               "methods": [
                 "ListOperations"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "NativeDashboardService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "NativeDashboardClient",
+          "rpcs": {
+            "AddChart": {
+              "methods": [
+                "AddChart"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateNativeDashboard": {
+              "methods": [
+                "CreateNativeDashboard"
+              ]
+            },
+            "DeleteNativeDashboard": {
+              "methods": [
+                "DeleteNativeDashboard"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DuplicateChart": {
+              "methods": [
+                "DuplicateChart"
+              ]
+            },
+            "DuplicateNativeDashboard": {
+              "methods": [
+                "DuplicateNativeDashboard"
+              ]
+            },
+            "EditChart": {
+              "methods": [
+                "EditChart"
+              ]
+            },
+            "ExportNativeDashboards": {
+              "methods": [
+                "ExportNativeDashboards"
+              ]
+            },
+            "GetNativeDashboard": {
+              "methods": [
+                "GetNativeDashboard"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ImportNativeDashboards": {
+              "methods": [
+                "ImportNativeDashboards"
+              ]
+            },
+            "ListNativeDashboards": {
+              "methods": [
+                "ListNativeDashboards"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "RemoveChart": {
+              "methods": [
+                "RemoveChart"
+              ]
+            },
+            "UpdateNativeDashboard": {
+              "methods": [
+                "UpdateNativeDashboard"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "NativeDashboardClient",
+          "rpcs": {
+            "AddChart": {
+              "methods": [
+                "AddChart"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateNativeDashboard": {
+              "methods": [
+                "CreateNativeDashboard"
+              ]
+            },
+            "DeleteNativeDashboard": {
+              "methods": [
+                "DeleteNativeDashboard"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DuplicateChart": {
+              "methods": [
+                "DuplicateChart"
+              ]
+            },
+            "DuplicateNativeDashboard": {
+              "methods": [
+                "DuplicateNativeDashboard"
+              ]
+            },
+            "EditChart": {
+              "methods": [
+                "EditChart"
+              ]
+            },
+            "ExportNativeDashboards": {
+              "methods": [
+                "ExportNativeDashboards"
+              ]
+            },
+            "GetNativeDashboard": {
+              "methods": [
+                "GetNativeDashboard"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ImportNativeDashboards": {
+              "methods": [
+                "ImportNativeDashboards"
+              ]
+            },
+            "ListNativeDashboards": {
+              "methods": [
+                "ListNativeDashboards"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "RemoveChart": {
+              "methods": [
+                "RemoveChart"
+              ]
+            },
+            "UpdateNativeDashboard": {
+              "methods": [
+                "UpdateNativeDashboard"
               ]
             }
           }

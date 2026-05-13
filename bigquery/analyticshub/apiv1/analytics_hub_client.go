@@ -1399,7 +1399,7 @@ func (c *gRPCClient) ListDataExchanges(ctx context.Context, req *analyticshubpb.
 	}
 	opts = append((*c.CallOptions).ListDataExchanges[0:len((*c.CallOptions).ListDataExchanges):len((*c.CallOptions).ListDataExchanges)], opts...)
 	it := &DataExchangeIterator{}
-	req = proto.Clone(req).(*analyticshubpb.ListDataExchangesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*analyticshubpb.DataExchange, string, error) {
 		resp := &analyticshubpb.ListDataExchangesResponse{}
 		if pageToken != "" {
@@ -1451,7 +1451,7 @@ func (c *gRPCClient) ListOrgDataExchanges(ctx context.Context, req *analyticshub
 	}
 	opts = append((*c.CallOptions).ListOrgDataExchanges[0:len((*c.CallOptions).ListOrgDataExchanges):len((*c.CallOptions).ListOrgDataExchanges)], opts...)
 	it := &DataExchangeIterator{}
-	req = proto.Clone(req).(*analyticshubpb.ListOrgDataExchangesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*analyticshubpb.DataExchange, string, error) {
 		resp := &analyticshubpb.ListOrgDataExchangesResponse{}
 		if pageToken != "" {
@@ -1595,7 +1595,7 @@ func (c *gRPCClient) ListListings(ctx context.Context, req *analyticshubpb.ListL
 	}
 	opts = append((*c.CallOptions).ListListings[0:len((*c.CallOptions).ListListings):len((*c.CallOptions).ListListings)], opts...)
 	it := &ListingIterator{}
-	req = proto.Clone(req).(*analyticshubpb.ListListingsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*analyticshubpb.Listing, string, error) {
 		resp := &analyticshubpb.ListListingsResponse{}
 		if pageToken != "" {
@@ -1839,7 +1839,7 @@ func (c *gRPCClient) ListSubscriptions(ctx context.Context, req *analyticshubpb.
 	}
 	opts = append((*c.CallOptions).ListSubscriptions[0:len((*c.CallOptions).ListSubscriptions):len((*c.CallOptions).ListSubscriptions)], opts...)
 	it := &SubscriptionIterator{}
-	req = proto.Clone(req).(*analyticshubpb.ListSubscriptionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*analyticshubpb.Subscription, string, error) {
 		resp := &analyticshubpb.ListSubscriptionsResponse{}
 		if pageToken != "" {
@@ -1891,7 +1891,7 @@ func (c *gRPCClient) ListSharedResourceSubscriptions(ctx context.Context, req *a
 	}
 	opts = append((*c.CallOptions).ListSharedResourceSubscriptions[0:len((*c.CallOptions).ListSharedResourceSubscriptions):len((*c.CallOptions).ListSharedResourceSubscriptions)], opts...)
 	it := &SubscriptionIterator{}
-	req = proto.Clone(req).(*analyticshubpb.ListSharedResourceSubscriptionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*analyticshubpb.Subscription, string, error) {
 		resp := &analyticshubpb.ListSharedResourceSubscriptionsResponse{}
 		if pageToken != "" {
@@ -2113,7 +2113,7 @@ func (c *gRPCClient) ListQueryTemplates(ctx context.Context, req *analyticshubpb
 	}
 	opts = append((*c.CallOptions).ListQueryTemplates[0:len((*c.CallOptions).ListQueryTemplates):len((*c.CallOptions).ListQueryTemplates)], opts...)
 	it := &QueryTemplateIterator{}
-	req = proto.Clone(req).(*analyticshubpb.ListQueryTemplatesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*analyticshubpb.QueryTemplate, string, error) {
 		resp := &analyticshubpb.ListQueryTemplatesResponse{}
 		if pageToken != "" {
@@ -2247,7 +2247,7 @@ func (c *gRPCClient) ApproveQueryTemplate(ctx context.Context, req *analyticshub
 // ListDataExchanges lists all data exchanges in a given project and location.
 func (c *restClient) ListDataExchanges(ctx context.Context, req *analyticshubpb.ListDataExchangesRequest, opts ...gax.CallOption) *DataExchangeIterator {
 	it := &DataExchangeIterator{}
-	req = proto.Clone(req).(*analyticshubpb.ListDataExchangesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*analyticshubpb.DataExchange, string, error) {
 		resp := &analyticshubpb.ListDataExchangesResponse{}
@@ -2325,7 +2325,7 @@ func (c *restClient) ListDataExchanges(ctx context.Context, req *analyticshubpb.
 // location.
 func (c *restClient) ListOrgDataExchanges(ctx context.Context, req *analyticshubpb.ListOrgDataExchangesRequest, opts ...gax.CallOption) *DataExchangeIterator {
 	it := &DataExchangeIterator{}
-	req = proto.Clone(req).(*analyticshubpb.ListOrgDataExchangesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*analyticshubpb.DataExchange, string, error) {
 		resp := &analyticshubpb.ListOrgDataExchangesResponse{}
@@ -2625,7 +2625,7 @@ func (c *restClient) DeleteDataExchange(ctx context.Context, req *analyticshubpb
 // ListListings lists all listings in a given project and location.
 func (c *restClient) ListListings(ctx context.Context, req *analyticshubpb.ListListingsRequest, opts ...gax.CallOption) *ListingIterator {
 	it := &ListingIterator{}
-	req = proto.Clone(req).(*analyticshubpb.ListListingsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*analyticshubpb.Listing, string, error) {
 		resp := &analyticshubpb.ListListingsResponse{}
@@ -3174,7 +3174,7 @@ func (c *restClient) GetSubscription(ctx context.Context, req *analyticshubpb.Ge
 // ListSubscriptions lists all subscriptions in a given project and location.
 func (c *restClient) ListSubscriptions(ctx context.Context, req *analyticshubpb.ListSubscriptionsRequest, opts ...gax.CallOption) *SubscriptionIterator {
 	it := &SubscriptionIterator{}
-	req = proto.Clone(req).(*analyticshubpb.ListSubscriptionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*analyticshubpb.Subscription, string, error) {
 		resp := &analyticshubpb.ListSubscriptionsResponse{}
@@ -3254,7 +3254,7 @@ func (c *restClient) ListSubscriptions(ctx context.Context, req *analyticshubpb.
 // ListSharedResourceSubscriptions lists all subscriptions on a given Data Exchange or Listing.
 func (c *restClient) ListSharedResourceSubscriptions(ctx context.Context, req *analyticshubpb.ListSharedResourceSubscriptionsRequest, opts ...gax.CallOption) *SubscriptionIterator {
 	it := &SubscriptionIterator{}
-	req = proto.Clone(req).(*analyticshubpb.ListSharedResourceSubscriptionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*analyticshubpb.Subscription, string, error) {
 		resp := &analyticshubpb.ListSharedResourceSubscriptionsResponse{}
@@ -3737,7 +3737,7 @@ func (c *restClient) GetQueryTemplate(ctx context.Context, req *analyticshubpb.G
 // ListQueryTemplates lists all QueryTemplates in a given project and location.
 func (c *restClient) ListQueryTemplates(ctx context.Context, req *analyticshubpb.ListQueryTemplatesRequest, opts ...gax.CallOption) *QueryTemplateIterator {
 	it := &QueryTemplateIterator{}
-	req = proto.Clone(req).(*analyticshubpb.ListQueryTemplatesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*analyticshubpb.QueryTemplate, string, error) {
 		resp := &analyticshubpb.ListQueryTemplatesResponse{}

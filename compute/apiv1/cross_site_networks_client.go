@@ -483,7 +483,7 @@ func (c *crossSiteNetworksRESTClient) Insert(ctx context.Context, req *computepb
 // List lists the cross-site networks for a project in the given scope.
 func (c *crossSiteNetworksRESTClient) List(ctx context.Context, req *computepb.ListCrossSiteNetworksRequest, opts ...gax.CallOption) *CrossSiteNetworkIterator {
 	it := &CrossSiteNetworkIterator{}
-	req = proto.Clone(req).(*computepb.ListCrossSiteNetworksRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.CrossSiteNetwork, string, error) {
 		resp := &computepb.CrossSiteNetworkList{}

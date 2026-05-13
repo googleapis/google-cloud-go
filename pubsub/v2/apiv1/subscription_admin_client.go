@@ -1080,7 +1080,7 @@ func (c *subscriptionAdminGRPCClient) ListSubscriptions(ctx context.Context, req
 	}
 	opts = append((*c.CallOptions).ListSubscriptions[0:len((*c.CallOptions).ListSubscriptions):len((*c.CallOptions).ListSubscriptions)], opts...)
 	it := &SubscriptionIterator{}
-	req = proto.Clone(req).(*pubsubpb.ListSubscriptionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*pubsubpb.Subscription, string, error) {
 		resp := &pubsubpb.ListSubscriptionsResponse{}
 		if pageToken != "" {
@@ -1280,7 +1280,7 @@ func (c *subscriptionAdminGRPCClient) ListSnapshots(ctx context.Context, req *pu
 	}
 	opts = append((*c.CallOptions).ListSnapshots[0:len((*c.CallOptions).ListSnapshots):len((*c.CallOptions).ListSnapshots)], opts...)
 	it := &SnapshotIterator{}
-	req = proto.Clone(req).(*pubsubpb.ListSnapshotsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*pubsubpb.Snapshot, string, error) {
 		resp := &pubsubpb.ListSnapshotsResponse{}
 		if pageToken != "" {
@@ -1675,7 +1675,7 @@ func (c *subscriptionAdminRESTClient) UpdateSubscription(ctx context.Context, re
 // ListSubscriptions lists matching subscriptions.
 func (c *subscriptionAdminRESTClient) ListSubscriptions(ctx context.Context, req *pubsubpb.ListSubscriptionsRequest, opts ...gax.CallOption) *SubscriptionIterator {
 	it := &SubscriptionIterator{}
-	req = proto.Clone(req).(*pubsubpb.ListSubscriptionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*pubsubpb.Subscription, string, error) {
 		resp := &pubsubpb.ListSubscriptionsResponse{}
@@ -2098,7 +2098,7 @@ func (c *subscriptionAdminRESTClient) GetSnapshot(ctx context.Context, req *pubs
 // state captured by a snapshot.
 func (c *subscriptionAdminRESTClient) ListSnapshots(ctx context.Context, req *pubsubpb.ListSnapshotsRequest, opts ...gax.CallOption) *SnapshotIterator {
 	it := &SnapshotIterator{}
-	req = proto.Clone(req).(*pubsubpb.ListSnapshotsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*pubsubpb.Snapshot, string, error) {
 		resp := &pubsubpb.ListSnapshotsResponse{}

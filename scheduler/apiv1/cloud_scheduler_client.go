@@ -561,7 +561,7 @@ func (c *cloudSchedulerGRPCClient) ListJobs(ctx context.Context, req *schedulerp
 	}
 	opts = append((*c.CallOptions).ListJobs[0:len((*c.CallOptions).ListJobs):len((*c.CallOptions).ListJobs)], opts...)
 	it := &JobIterator{}
-	req = proto.Clone(req).(*schedulerpb.ListJobsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*schedulerpb.Job, string, error) {
 		resp := &schedulerpb.ListJobsResponse{}
 		if pageToken != "" {
@@ -792,7 +792,7 @@ func (c *cloudSchedulerGRPCClient) ListLocations(ctx context.Context, req *locat
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -834,7 +834,7 @@ func (c *cloudSchedulerGRPCClient) ListLocations(ctx context.Context, req *locat
 // ListJobs lists jobs.
 func (c *cloudSchedulerRESTClient) ListJobs(ctx context.Context, req *schedulerpb.ListJobsRequest, opts ...gax.CallOption) *JobIterator {
 	it := &JobIterator{}
-	req = proto.Clone(req).(*schedulerpb.ListJobsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*schedulerpb.Job, string, error) {
 		resp := &schedulerpb.ListJobsResponse{}
@@ -1415,7 +1415,7 @@ func (c *cloudSchedulerRESTClient) GetLocation(ctx context.Context, req *locatio
 // ListLocations lists information about the supported locations for this service.
 func (c *cloudSchedulerRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}

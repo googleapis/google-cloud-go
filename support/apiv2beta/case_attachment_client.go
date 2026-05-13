@@ -368,7 +368,7 @@ func (c *caseAttachmentGRPCClient) ListAttachments(ctx context.Context, req *sup
 	}
 	opts = append((*c.CallOptions).ListAttachments[0:len((*c.CallOptions).ListAttachments):len((*c.CallOptions).ListAttachments)], opts...)
 	it := &AttachmentIterator{}
-	req = proto.Clone(req).(*supportpb.ListAttachmentsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*supportpb.Attachment, string, error) {
 		resp := &supportpb.ListAttachmentsResponse{}
 		if pageToken != "" {
@@ -434,7 +434,7 @@ func (c *caseAttachmentGRPCClient) GetAttachment(ctx context.Context, req *suppo
 // ListAttachments list all the attachments associated with a support case.
 func (c *caseAttachmentRESTClient) ListAttachments(ctx context.Context, req *supportpb.ListAttachmentsRequest, opts ...gax.CallOption) *AttachmentIterator {
 	it := &AttachmentIterator{}
-	req = proto.Clone(req).(*supportpb.ListAttachmentsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*supportpb.Attachment, string, error) {
 		resp := &supportpb.ListAttachmentsResponse{}

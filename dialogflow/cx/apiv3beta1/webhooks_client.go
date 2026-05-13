@@ -565,7 +565,7 @@ func (c *webhooksGRPCClient) ListWebhooks(ctx context.Context, req *cxpb.ListWeb
 	}
 	opts = append((*c.CallOptions).ListWebhooks[0:len((*c.CallOptions).ListWebhooks):len((*c.CallOptions).ListWebhooks)], opts...)
 	it := &WebhookIterator{}
-	req = proto.Clone(req).(*cxpb.ListWebhooksRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cxpb.Webhook, string, error) {
 		resp := &cxpb.ListWebhooksResponse{}
 		if pageToken != "" {
@@ -724,7 +724,7 @@ func (c *webhooksGRPCClient) ListLocations(ctx context.Context, req *locationpb.
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -811,7 +811,7 @@ func (c *webhooksGRPCClient) ListOperations(ctx context.Context, req *longrunnin
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -853,7 +853,7 @@ func (c *webhooksGRPCClient) ListOperations(ctx context.Context, req *longrunnin
 // ListWebhooks returns the list of all webhooks in the specified agent.
 func (c *webhooksRESTClient) ListWebhooks(ctx context.Context, req *cxpb.ListWebhooksRequest, opts ...gax.CallOption) *WebhookIterator {
 	it := &WebhookIterator{}
-	req = proto.Clone(req).(*cxpb.ListWebhooksRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cxpb.Webhook, string, error) {
 		resp := &cxpb.ListWebhooksResponse{}
@@ -1235,7 +1235,7 @@ func (c *webhooksRESTClient) GetLocation(ctx context.Context, req *locationpb.Ge
 // implementation and version.
 func (c *webhooksRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -1409,7 +1409,7 @@ func (c *webhooksRESTClient) GetOperation(ctx context.Context, req *longrunningp
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *webhooksRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

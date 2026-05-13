@@ -835,7 +835,7 @@ func (c *gRPCClient) ListConstraints(ctx context.Context, req *orgpolicypb.ListC
 	}
 	opts = append((*c.CallOptions).ListConstraints[0:len((*c.CallOptions).ListConstraints):len((*c.CallOptions).ListConstraints)], opts...)
 	it := &ConstraintIterator{}
-	req = proto.Clone(req).(*orgpolicypb.ListConstraintsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*orgpolicypb.Constraint, string, error) {
 		resp := &orgpolicypb.ListConstraintsResponse{}
 		if pageToken != "" {
@@ -887,7 +887,7 @@ func (c *gRPCClient) ListPolicies(ctx context.Context, req *orgpolicypb.ListPoli
 	}
 	opts = append((*c.CallOptions).ListPolicies[0:len((*c.CallOptions).ListPolicies):len((*c.CallOptions).ListPolicies)], opts...)
 	it := &PolicyIterator{}
-	req = proto.Clone(req).(*orgpolicypb.ListPoliciesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*orgpolicypb.Policy, string, error) {
 		resp := &orgpolicypb.ListPoliciesResponse{}
 		if pageToken != "" {
@@ -1121,7 +1121,7 @@ func (c *gRPCClient) ListCustomConstraints(ctx context.Context, req *orgpolicypb
 	}
 	opts = append((*c.CallOptions).ListCustomConstraints[0:len((*c.CallOptions).ListCustomConstraints):len((*c.CallOptions).ListCustomConstraints)], opts...)
 	it := &CustomConstraintIterator{}
-	req = proto.Clone(req).(*orgpolicypb.ListCustomConstraintsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*orgpolicypb.CustomConstraint, string, error) {
 		resp := &orgpolicypb.ListCustomConstraintsResponse{}
 		if pageToken != "" {
@@ -1183,7 +1183,7 @@ func (c *gRPCClient) DeleteCustomConstraint(ctx context.Context, req *orgpolicyp
 // ListConstraints lists constraints that could be applied on the specified resource.
 func (c *restClient) ListConstraints(ctx context.Context, req *orgpolicypb.ListConstraintsRequest, opts ...gax.CallOption) *ConstraintIterator {
 	it := &ConstraintIterator{}
-	req = proto.Clone(req).(*orgpolicypb.ListConstraintsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*orgpolicypb.Constraint, string, error) {
 		resp := &orgpolicypb.ListConstraintsResponse{}
@@ -1261,7 +1261,7 @@ func (c *restClient) ListConstraints(ctx context.Context, req *orgpolicypb.ListC
 // ListPolicies retrieves all of the policies that exist on a particular resource.
 func (c *restClient) ListPolicies(ctx context.Context, req *orgpolicypb.ListPoliciesRequest, opts ...gax.CallOption) *PolicyIterator {
 	it := &PolicyIterator{}
-	req = proto.Clone(req).(*orgpolicypb.ListPoliciesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*orgpolicypb.Policy, string, error) {
 		resp := &orgpolicypb.ListPoliciesResponse{}
@@ -1852,7 +1852,7 @@ func (c *restClient) GetCustomConstraint(ctx context.Context, req *orgpolicypb.G
 // organization resource.
 func (c *restClient) ListCustomConstraints(ctx context.Context, req *orgpolicypb.ListCustomConstraintsRequest, opts ...gax.CallOption) *CustomConstraintIterator {
 	it := &CustomConstraintIterator{}
-	req = proto.Clone(req).(*orgpolicypb.ListCustomConstraintsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*orgpolicypb.CustomConstraint, string, error) {
 		resp := &orgpolicypb.ListCustomConstraintsResponse{}

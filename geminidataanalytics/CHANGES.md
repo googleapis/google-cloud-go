@@ -1,5 +1,15 @@
 # Changes
 
+## [1.0.0](https://github.com/googleapis/google-cloud-go/releases/tag/geminidataanalytics%2Fv1.0.0) (2026-05-08)
+
+## [0.13.0](https://github.com/googleapis/google-cloud-go/releases/tag/geminidataanalytics%2Fv0.13.0) (2026-05-07)
+
+### Features
+
+* generate v1 client (#14542) ([fd34e97](https://github.com/googleapis/google-cloud-go/commit/fd34e97401e8089d5af765b7664778a3038906d9))
+
+## [0.12.0](https://github.com/googleapis/google-cloud-go/releases/tag/geminidataanalytics%2Fv0.12.0) (2026-04-30)
+
 ## [0.11.0](https://github.com/googleapis/google-cloud-go/releases/tag/geminidataanalytics%2Fv0.11.0) (2026-04-13)
 
 ## [0.10.0](https://github.com/googleapis/google-cloud-go/releases/tag/geminidataanalytics%2Fv0.10.0) (2026-04-09)

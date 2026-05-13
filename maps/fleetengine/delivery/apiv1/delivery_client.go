@@ -968,7 +968,7 @@ func (c *gRPCClient) ListTasks(ctx context.Context, req *deliverypb.ListTasksReq
 	}
 	opts = append((*c.CallOptions).ListTasks[0:len((*c.CallOptions).ListTasks):len((*c.CallOptions).ListTasks)], opts...)
 	it := &TaskIterator{}
-	req = proto.Clone(req).(*deliverypb.ListTasksRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*deliverypb.Task, string, error) {
 		resp := &deliverypb.ListTasksResponse{}
 		if pageToken != "" {
@@ -1062,7 +1062,7 @@ func (c *gRPCClient) ListDeliveryVehicles(ctx context.Context, req *deliverypb.L
 	}
 	opts = append((*c.CallOptions).ListDeliveryVehicles[0:len((*c.CallOptions).ListDeliveryVehicles):len((*c.CallOptions).ListDeliveryVehicles)], opts...)
 	it := &DeliveryVehicleIterator{}
-	req = proto.Clone(req).(*deliverypb.ListDeliveryVehiclesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*deliverypb.DeliveryVehicle, string, error) {
 		resp := &deliverypb.ListDeliveryVehiclesResponse{}
 		if pageToken != "" {
@@ -1990,7 +1990,7 @@ func (c *restClient) UpdateTask(ctx context.Context, req *deliverypb.UpdateTaskR
 // ListTasks gets all Tasks that meet the specified filtering criteria.
 func (c *restClient) ListTasks(ctx context.Context, req *deliverypb.ListTasksRequest, opts ...gax.CallOption) *TaskIterator {
 	it := &TaskIterator{}
-	req = proto.Clone(req).(*deliverypb.ListTasksRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*deliverypb.Task, string, error) {
 		resp := &deliverypb.ListTasksResponse{}
@@ -2205,7 +2205,7 @@ func (c *restClient) GetTaskTrackingInfo(ctx context.Context, req *deliverypb.Ge
 // ListDeliveryVehicles gets all DeliveryVehicles that meet the specified filtering criteria.
 func (c *restClient) ListDeliveryVehicles(ctx context.Context, req *deliverypb.ListDeliveryVehiclesRequest, opts ...gax.CallOption) *DeliveryVehicleIterator {
 	it := &DeliveryVehicleIterator{}
-	req = proto.Clone(req).(*deliverypb.ListDeliveryVehiclesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*deliverypb.DeliveryVehicle, string, error) {
 		resp := &deliverypb.ListDeliveryVehiclesResponse{}

@@ -751,7 +751,7 @@ func (c *metadataGRPCClient) ListEntities(ctx context.Context, req *dataplexpb.L
 	}
 	opts = append((*c.CallOptions).ListEntities[0:len((*c.CallOptions).ListEntities):len((*c.CallOptions).ListEntities)], opts...)
 	it := &EntityIterator{}
-	req = proto.Clone(req).(*dataplexpb.ListEntitiesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.Entity, string, error) {
 		resp := &dataplexpb.ListEntitiesResponse{}
 		if pageToken != "" {
@@ -871,7 +871,7 @@ func (c *metadataGRPCClient) ListPartitions(ctx context.Context, req *dataplexpb
 	}
 	opts = append((*c.CallOptions).ListPartitions[0:len((*c.CallOptions).ListPartitions):len((*c.CallOptions).ListPartitions)], opts...)
 	it := &PartitionIterator{}
-	req = proto.Clone(req).(*dataplexpb.ListPartitionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.Partition, string, error) {
 		resp := &dataplexpb.ListPartitionsResponse{}
 		if pageToken != "" {
@@ -941,7 +941,7 @@ func (c *metadataGRPCClient) ListLocations(ctx context.Context, req *locationpb.
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -1117,7 +1117,7 @@ func (c *metadataGRPCClient) ListOperations(ctx context.Context, req *longrunnin
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -1393,7 +1393,7 @@ func (c *metadataRESTClient) GetEntity(ctx context.Context, req *dataplexpb.GetE
 // ListEntities list metadata entities in a zone.
 func (c *metadataRESTClient) ListEntities(ctx context.Context, req *dataplexpb.ListEntitiesRequest, opts ...gax.CallOption) *EntityIterator {
 	it := &EntityIterator{}
-	req = proto.Clone(req).(*dataplexpb.ListEntitiesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.Entity, string, error) {
 		resp := &dataplexpb.ListEntitiesResponse{}
@@ -1644,7 +1644,7 @@ func (c *metadataRESTClient) GetPartition(ctx context.Context, req *dataplexpb.G
 // ListPartitions list metadata partitions of an entity.
 func (c *metadataRESTClient) ListPartitions(ctx context.Context, req *dataplexpb.ListPartitionsRequest, opts ...gax.CallOption) *PartitionIterator {
 	it := &PartitionIterator{}
-	req = proto.Clone(req).(*dataplexpb.ListPartitionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.Partition, string, error) {
 		resp := &dataplexpb.ListPartitionsResponse{}
@@ -1787,7 +1787,7 @@ func (c *metadataRESTClient) GetLocation(ctx context.Context, req *locationpb.Ge
 //	to the project.
 func (c *metadataRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -2203,7 +2203,7 @@ func (c *metadataRESTClient) GetOperation(ctx context.Context, req *longrunningp
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *metadataRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

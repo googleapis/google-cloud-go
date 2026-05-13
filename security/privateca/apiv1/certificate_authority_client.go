@@ -1727,7 +1727,7 @@ func (c *certificateAuthorityGRPCClient) ListCertificates(ctx context.Context, r
 	}
 	opts = append((*c.CallOptions).ListCertificates[0:len((*c.CallOptions).ListCertificates):len((*c.CallOptions).ListCertificates)], opts...)
 	it := &CertificateIterator{}
-	req = proto.Clone(req).(*privatecapb.ListCertificatesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*privatecapb.Certificate, string, error) {
 		resp := &privatecapb.ListCertificatesResponse{}
 		if pageToken != "" {
@@ -1976,7 +1976,7 @@ func (c *certificateAuthorityGRPCClient) ListCertificateAuthorities(ctx context.
 	}
 	opts = append((*c.CallOptions).ListCertificateAuthorities[0:len((*c.CallOptions).ListCertificateAuthorities):len((*c.CallOptions).ListCertificateAuthorities)], opts...)
 	it := &CertificateAuthorityIterator{}
-	req = proto.Clone(req).(*privatecapb.ListCertificateAuthoritiesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*privatecapb.CertificateAuthority, string, error) {
 		resp := &privatecapb.ListCertificateAuthoritiesResponse{}
 		if pageToken != "" {
@@ -2176,7 +2176,7 @@ func (c *certificateAuthorityGRPCClient) ListCaPools(ctx context.Context, req *p
 	}
 	opts = append((*c.CallOptions).ListCaPools[0:len((*c.CallOptions).ListCaPools):len((*c.CallOptions).ListCaPools)], opts...)
 	it := &CaPoolIterator{}
-	req = proto.Clone(req).(*privatecapb.ListCaPoolsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*privatecapb.CaPool, string, error) {
 		resp := &privatecapb.ListCaPoolsResponse{}
 		if pageToken != "" {
@@ -2302,7 +2302,7 @@ func (c *certificateAuthorityGRPCClient) ListCertificateRevocationLists(ctx cont
 	}
 	opts = append((*c.CallOptions).ListCertificateRevocationLists[0:len((*c.CallOptions).ListCertificateRevocationLists):len((*c.CallOptions).ListCertificateRevocationLists)], opts...)
 	it := &CertificateRevocationListIterator{}
-	req = proto.Clone(req).(*privatecapb.ListCertificateRevocationListsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*privatecapb.CertificateRevocationList, string, error) {
 		resp := &privatecapb.ListCertificateRevocationListsResponse{}
 		if pageToken != "" {
@@ -2453,7 +2453,7 @@ func (c *certificateAuthorityGRPCClient) ListCertificateTemplates(ctx context.Co
 	}
 	opts = append((*c.CallOptions).ListCertificateTemplates[0:len((*c.CallOptions).ListCertificateTemplates):len((*c.CallOptions).ListCertificateTemplates)], opts...)
 	it := &CertificateTemplateIterator{}
-	req = proto.Clone(req).(*privatecapb.ListCertificateTemplatesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*privatecapb.CertificateTemplate, string, error) {
 		resp := &privatecapb.ListCertificateTemplatesResponse{}
 		if pageToken != "" {
@@ -2546,7 +2546,7 @@ func (c *certificateAuthorityGRPCClient) ListLocations(ctx context.Context, req 
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -2722,7 +2722,7 @@ func (c *certificateAuthorityGRPCClient) ListOperations(ctx context.Context, req
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -2899,7 +2899,7 @@ func (c *certificateAuthorityRESTClient) GetCertificate(ctx context.Context, req
 // ListCertificates lists Certificates.
 func (c *certificateAuthorityRESTClient) ListCertificates(ctx context.Context, req *privatecapb.ListCertificatesRequest, opts ...gax.CallOption) *CertificateIterator {
 	it := &CertificateIterator{}
-	req = proto.Clone(req).(*privatecapb.ListCertificatesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*privatecapb.Certificate, string, error) {
 		resp := &privatecapb.ListCertificatesResponse{}
@@ -3527,7 +3527,7 @@ func (c *certificateAuthorityRESTClient) GetCertificateAuthority(ctx context.Con
 // CertificateAuthorities.
 func (c *certificateAuthorityRESTClient) ListCertificateAuthorities(ctx context.Context, req *privatecapb.ListCertificateAuthoritiesRequest, opts ...gax.CallOption) *CertificateAuthorityIterator {
 	it := &CertificateAuthorityIterator{}
-	req = proto.Clone(req).(*privatecapb.ListCertificateAuthoritiesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*privatecapb.CertificateAuthority, string, error) {
 		resp := &privatecapb.ListCertificateAuthoritiesResponse{}
@@ -4029,7 +4029,7 @@ func (c *certificateAuthorityRESTClient) GetCaPool(ctx context.Context, req *pri
 // ListCaPools lists CaPools.
 func (c *certificateAuthorityRESTClient) ListCaPools(ctx context.Context, req *privatecapb.ListCaPoolsRequest, opts ...gax.CallOption) *CaPoolIterator {
 	it := &CaPoolIterator{}
-	req = proto.Clone(req).(*privatecapb.ListCaPoolsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*privatecapb.CaPool, string, error) {
 		resp := &privatecapb.ListCaPoolsResponse{}
@@ -4304,7 +4304,7 @@ func (c *certificateAuthorityRESTClient) GetCertificateRevocationList(ctx contex
 // CertificateRevocationLists.
 func (c *certificateAuthorityRESTClient) ListCertificateRevocationLists(ctx context.Context, req *privatecapb.ListCertificateRevocationListsRequest, opts ...gax.CallOption) *CertificateRevocationListIterator {
 	it := &CertificateRevocationListIterator{}
-	req = proto.Clone(req).(*privatecapb.ListCertificateRevocationListsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*privatecapb.CertificateRevocationList, string, error) {
 		resp := &privatecapb.ListCertificateRevocationListsResponse{}
@@ -4659,7 +4659,7 @@ func (c *certificateAuthorityRESTClient) GetCertificateTemplate(ctx context.Cont
 // CertificateTemplates.
 func (c *certificateAuthorityRESTClient) ListCertificateTemplates(ctx context.Context, req *privatecapb.ListCertificateTemplatesRequest, opts ...gax.CallOption) *CertificateTemplateIterator {
 	it := &CertificateTemplateIterator{}
-	req = proto.Clone(req).(*privatecapb.ListCertificateTemplatesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*privatecapb.CertificateTemplate, string, error) {
 		resp := &privatecapb.ListCertificateTemplatesResponse{}
@@ -4872,7 +4872,7 @@ func (c *certificateAuthorityRESTClient) GetLocation(ctx context.Context, req *l
 // ListLocations lists information about the supported locations for this service.
 func (c *certificateAuthorityRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -5288,7 +5288,7 @@ func (c *certificateAuthorityRESTClient) GetOperation(ctx context.Context, req *
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *certificateAuthorityRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

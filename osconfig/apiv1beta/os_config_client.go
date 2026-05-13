@@ -976,7 +976,7 @@ func (c *gRPCClient) ListPatchJobs(ctx context.Context, req *osconfigpb.ListPatc
 	}
 	opts = append((*c.CallOptions).ListPatchJobs[0:len((*c.CallOptions).ListPatchJobs):len((*c.CallOptions).ListPatchJobs)], opts...)
 	it := &PatchJobIterator{}
-	req = proto.Clone(req).(*osconfigpb.ListPatchJobsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*osconfigpb.PatchJob, string, error) {
 		resp := &osconfigpb.ListPatchJobsResponse{}
 		if pageToken != "" {
@@ -1025,7 +1025,7 @@ func (c *gRPCClient) ListPatchJobInstanceDetails(ctx context.Context, req *oscon
 	}
 	opts = append((*c.CallOptions).ListPatchJobInstanceDetails[0:len((*c.CallOptions).ListPatchJobInstanceDetails):len((*c.CallOptions).ListPatchJobInstanceDetails)], opts...)
 	it := &PatchJobInstanceDetailsIterator{}
-	req = proto.Clone(req).(*osconfigpb.ListPatchJobInstanceDetailsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*osconfigpb.PatchJobInstanceDetails, string, error) {
 		resp := &osconfigpb.ListPatchJobInstanceDetailsResponse{}
 		if pageToken != "" {
@@ -1116,7 +1116,7 @@ func (c *gRPCClient) ListPatchDeployments(ctx context.Context, req *osconfigpb.L
 	}
 	opts = append((*c.CallOptions).ListPatchDeployments[0:len((*c.CallOptions).ListPatchDeployments):len((*c.CallOptions).ListPatchDeployments)], opts...)
 	it := &PatchDeploymentIterator{}
-	req = proto.Clone(req).(*osconfigpb.ListPatchDeploymentsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*osconfigpb.PatchDeployment, string, error) {
 		resp := &osconfigpb.ListPatchDeploymentsResponse{}
 		if pageToken != "" {
@@ -1302,7 +1302,7 @@ func (c *gRPCClient) ListGuestPolicies(ctx context.Context, req *osconfigpb.List
 	}
 	opts = append((*c.CallOptions).ListGuestPolicies[0:len((*c.CallOptions).ListGuestPolicies):len((*c.CallOptions).ListGuestPolicies)], opts...)
 	it := &GuestPolicyIterator{}
-	req = proto.Clone(req).(*osconfigpb.ListGuestPoliciesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*osconfigpb.GuestPolicy, string, error) {
 		resp := &osconfigpb.ListGuestPoliciesResponse{}
 		if pageToken != "" {
@@ -1582,7 +1582,7 @@ func (c *restClient) CancelPatchJob(ctx context.Context, req *osconfigpb.CancelP
 // ListPatchJobs get a list of patch jobs.
 func (c *restClient) ListPatchJobs(ctx context.Context, req *osconfigpb.ListPatchJobsRequest, opts ...gax.CallOption) *PatchJobIterator {
 	it := &PatchJobIterator{}
-	req = proto.Clone(req).(*osconfigpb.ListPatchJobsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*osconfigpb.PatchJob, string, error) {
 		resp := &osconfigpb.ListPatchJobsResponse{}
@@ -1663,7 +1663,7 @@ func (c *restClient) ListPatchJobs(ctx context.Context, req *osconfigpb.ListPatc
 // ListPatchJobInstanceDetails get a list of instance details for a given patch job.
 func (c *restClient) ListPatchJobInstanceDetails(ctx context.Context, req *osconfigpb.ListPatchJobInstanceDetailsRequest, opts ...gax.CallOption) *PatchJobInstanceDetailsIterator {
 	it := &PatchJobInstanceDetailsIterator{}
-	req = proto.Clone(req).(*osconfigpb.ListPatchJobInstanceDetailsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*osconfigpb.PatchJobInstanceDetails, string, error) {
 		resp := &osconfigpb.ListPatchJobInstanceDetailsResponse{}
@@ -1860,7 +1860,7 @@ func (c *restClient) GetPatchDeployment(ctx context.Context, req *osconfigpb.Get
 // ListPatchDeployments get a page of OS Config patch deployments.
 func (c *restClient) ListPatchDeployments(ctx context.Context, req *osconfigpb.ListPatchDeploymentsRequest, opts ...gax.CallOption) *PatchDeploymentIterator {
 	it := &PatchDeploymentIterator{}
-	req = proto.Clone(req).(*osconfigpb.ListPatchDeploymentsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*osconfigpb.PatchDeployment, string, error) {
 		resp := &osconfigpb.ListPatchDeploymentsResponse{}
@@ -2295,7 +2295,7 @@ func (c *restClient) GetGuestPolicy(ctx context.Context, req *osconfigpb.GetGues
 // ListGuestPolicies get a page of OS Config guest policies.
 func (c *restClient) ListGuestPolicies(ctx context.Context, req *osconfigpb.ListGuestPoliciesRequest, opts ...gax.CallOption) *GuestPolicyIterator {
 	it := &GuestPolicyIterator{}
-	req = proto.Clone(req).(*osconfigpb.ListGuestPoliciesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*osconfigpb.GuestPolicy, string, error) {
 		resp := &osconfigpb.ListGuestPoliciesResponse{}

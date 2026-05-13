@@ -667,7 +667,7 @@ func (c *principalAccessBoundaryPoliciesGRPCClient) ListPrincipalAccessBoundaryP
 	}
 	opts = append((*c.CallOptions).ListPrincipalAccessBoundaryPolicies[0:len((*c.CallOptions).ListPrincipalAccessBoundaryPolicies):len((*c.CallOptions).ListPrincipalAccessBoundaryPolicies)], opts...)
 	it := &PrincipalAccessBoundaryPolicyIterator{}
-	req = proto.Clone(req).(*iampb.ListPrincipalAccessBoundaryPoliciesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*iampb.PrincipalAccessBoundaryPolicy, string, error) {
 		resp := &iampb.ListPrincipalAccessBoundaryPoliciesResponse{}
 		if pageToken != "" {
@@ -719,7 +719,7 @@ func (c *principalAccessBoundaryPoliciesGRPCClient) SearchPrincipalAccessBoundar
 	}
 	opts = append((*c.CallOptions).SearchPrincipalAccessBoundaryPolicyBindings[0:len((*c.CallOptions).SearchPrincipalAccessBoundaryPolicyBindings):len((*c.CallOptions).SearchPrincipalAccessBoundaryPolicyBindings)], opts...)
 	it := &PolicyBindingIterator{}
-	req = proto.Clone(req).(*iampb.SearchPrincipalAccessBoundaryPolicyBindingsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*iampb.PolicyBinding, string, error) {
 		resp := &iampb.SearchPrincipalAccessBoundaryPolicyBindingsResponse{}
 		if pageToken != "" {
@@ -1054,7 +1054,7 @@ func (c *principalAccessBoundaryPoliciesRESTClient) DeletePrincipalAccessBoundar
 // ListPrincipalAccessBoundaryPolicies lists principal access boundary policies.
 func (c *principalAccessBoundaryPoliciesRESTClient) ListPrincipalAccessBoundaryPolicies(ctx context.Context, req *iampb.ListPrincipalAccessBoundaryPoliciesRequest, opts ...gax.CallOption) *PrincipalAccessBoundaryPolicyIterator {
 	it := &PrincipalAccessBoundaryPolicyIterator{}
-	req = proto.Clone(req).(*iampb.ListPrincipalAccessBoundaryPoliciesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*iampb.PrincipalAccessBoundaryPolicy, string, error) {
 		resp := &iampb.ListPrincipalAccessBoundaryPoliciesResponse{}
@@ -1133,7 +1133,7 @@ func (c *principalAccessBoundaryPoliciesRESTClient) ListPrincipalAccessBoundaryP
 // searchPolicyBindings permission on that policy.
 func (c *principalAccessBoundaryPoliciesRESTClient) SearchPrincipalAccessBoundaryPolicyBindings(ctx context.Context, req *iampb.SearchPrincipalAccessBoundaryPolicyBindingsRequest, opts ...gax.CallOption) *PolicyBindingIterator {
 	it := &PolicyBindingIterator{}
-	req = proto.Clone(req).(*iampb.SearchPrincipalAccessBoundaryPolicyBindingsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*iampb.PolicyBinding, string, error) {
 		resp := &iampb.SearchPrincipalAccessBoundaryPolicyBindingsResponse{}

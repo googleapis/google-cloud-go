@@ -724,7 +724,7 @@ func (c *dataProductGRPCClient) ListDataProducts(ctx context.Context, req *datap
 	}
 	opts = append((*c.CallOptions).ListDataProducts[0:len((*c.CallOptions).ListDataProducts):len((*c.CallOptions).ListDataProducts)], opts...)
 	it := &DataProductIterator{}
-	req = proto.Clone(req).(*dataplexpb.ListDataProductsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.DataProduct, string, error) {
 		resp := &dataplexpb.ListDataProductsResponse{}
 		if pageToken != "" {
@@ -898,7 +898,7 @@ func (c *dataProductGRPCClient) ListDataAssets(ctx context.Context, req *dataple
 	}
 	opts = append((*c.CallOptions).ListDataAssets[0:len((*c.CallOptions).ListDataAssets):len((*c.CallOptions).ListDataAssets)], opts...)
 	it := &DataAssetIterator{}
-	req = proto.Clone(req).(*dataplexpb.ListDataAssetsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.DataAsset, string, error) {
 		resp := &dataplexpb.ListDataAssetsResponse{}
 		if pageToken != "" {
@@ -968,7 +968,7 @@ func (c *dataProductGRPCClient) ListLocations(ctx context.Context, req *location
 	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -1144,7 +1144,7 @@ func (c *dataProductGRPCClient) ListOperations(ctx context.Context, req *longrun
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -1383,7 +1383,7 @@ func (c *dataProductRESTClient) GetDataProduct(ctx context.Context, req *dataple
 // ListDataProducts lists data products for a given project.
 func (c *dataProductRESTClient) ListDataProducts(ctx context.Context, req *dataplexpb.ListDataProductsRequest, opts ...gax.CallOption) *DataProductIterator {
 	it := &DataProductIterator{}
-	req = proto.Clone(req).(*dataplexpb.ListDataProductsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.DataProduct, string, error) {
 		resp := &dataplexpb.ListDataProductsResponse{}
@@ -1811,7 +1811,7 @@ func (c *dataProductRESTClient) GetDataAsset(ctx context.Context, req *dataplexp
 // ListDataAssets lists data assets for a given data product.
 func (c *dataProductRESTClient) ListDataAssets(ctx context.Context, req *dataplexpb.ListDataAssetsRequest, opts ...gax.CallOption) *DataAssetIterator {
 	it := &DataAssetIterator{}
-	req = proto.Clone(req).(*dataplexpb.ListDataAssetsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.DataAsset, string, error) {
 		resp := &dataplexpb.ListDataAssetsResponse{}
@@ -1957,7 +1957,7 @@ func (c *dataProductRESTClient) GetLocation(ctx context.Context, req *locationpb
 //	to the project.
 func (c *dataProductRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -2373,7 +2373,7 @@ func (c *dataProductRESTClient) GetOperation(ctx context.Context, req *longrunni
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *dataProductRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

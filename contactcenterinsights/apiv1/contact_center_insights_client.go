@@ -3058,7 +3058,7 @@ func (c *gRPCClient) ListConversations(ctx context.Context, req *contactcenterin
 	}
 	opts = append((*c.CallOptions).ListConversations[0:len((*c.CallOptions).ListConversations):len((*c.CallOptions).ListConversations)], opts...)
 	it := &ConversationIterator{}
-	req = proto.Clone(req).(*contactcenterinsightspb.ListConversationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*contactcenterinsightspb.Conversation, string, error) {
 		resp := &contactcenterinsightspb.ListConversationsResponse{}
 		if pageToken != "" {
@@ -3180,7 +3180,7 @@ func (c *gRPCClient) ListAnalyses(ctx context.Context, req *contactcenterinsight
 	}
 	opts = append((*c.CallOptions).ListAnalyses[0:len((*c.CallOptions).ListAnalyses):len((*c.CallOptions).ListAnalyses)], opts...)
 	it := &AnalysisIterator{}
-	req = proto.Clone(req).(*contactcenterinsightspb.ListAnalysesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*contactcenterinsightspb.Analysis, string, error) {
 		resp := &contactcenterinsightspb.ListAnalysesResponse{}
 		if pageToken != "" {
@@ -3742,7 +3742,7 @@ func (c *gRPCClient) ListPhraseMatchers(ctx context.Context, req *contactcenteri
 	}
 	opts = append((*c.CallOptions).ListPhraseMatchers[0:len((*c.CallOptions).ListPhraseMatchers):len((*c.CallOptions).ListPhraseMatchers)], opts...)
 	it := &PhraseMatcherIterator{}
-	req = proto.Clone(req).(*contactcenterinsightspb.ListPhraseMatchersRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*contactcenterinsightspb.PhraseMatcher, string, error) {
 		resp := &contactcenterinsightspb.ListPhraseMatchersResponse{}
 		if pageToken != "" {
@@ -3952,7 +3952,7 @@ func (c *gRPCClient) ListAnalysisRules(ctx context.Context, req *contactcenterin
 	}
 	opts = append((*c.CallOptions).ListAnalysisRules[0:len((*c.CallOptions).ListAnalysisRules):len((*c.CallOptions).ListAnalysisRules)], opts...)
 	it := &AnalysisRuleIterator{}
-	req = proto.Clone(req).(*contactcenterinsightspb.ListAnalysisRulesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*contactcenterinsightspb.AnalysisRule, string, error) {
 		resp := &contactcenterinsightspb.ListAnalysisRulesResponse{}
 		if pageToken != "" {
@@ -4140,7 +4140,7 @@ func (c *gRPCClient) ListViews(ctx context.Context, req *contactcenterinsightspb
 	}
 	opts = append((*c.CallOptions).ListViews[0:len((*c.CallOptions).ListViews):len((*c.CallOptions).ListViews)], opts...)
 	it := &ViewIterator{}
-	req = proto.Clone(req).(*contactcenterinsightspb.ListViewsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*contactcenterinsightspb.View, string, error) {
 		resp := &contactcenterinsightspb.ListViewsResponse{}
 		if pageToken != "" {
@@ -4348,7 +4348,7 @@ func (c *gRPCClient) ListQaQuestions(ctx context.Context, req *contactcenterinsi
 	}
 	opts = append((*c.CallOptions).ListQaQuestions[0:len((*c.CallOptions).ListQaQuestions):len((*c.CallOptions).ListQaQuestions)], opts...)
 	it := &QaQuestionIterator{}
-	req = proto.Clone(req).(*contactcenterinsightspb.ListQaQuestionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*contactcenterinsightspb.QaQuestion, string, error) {
 		resp := &contactcenterinsightspb.ListQaQuestionsResponse{}
 		if pageToken != "" {
@@ -4489,7 +4489,7 @@ func (c *gRPCClient) ListQaScorecards(ctx context.Context, req *contactcenterins
 	}
 	opts = append((*c.CallOptions).ListQaScorecards[0:len((*c.CallOptions).ListQaScorecards):len((*c.CallOptions).ListQaScorecards)], opts...)
 	it := &QaScorecardIterator{}
-	req = proto.Clone(req).(*contactcenterinsightspb.ListQaScorecardsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*contactcenterinsightspb.QaScorecard, string, error) {
 		resp := &contactcenterinsightspb.ListQaScorecardsResponse{}
 		if pageToken != "" {
@@ -4683,7 +4683,7 @@ func (c *gRPCClient) ListQaScorecardRevisions(ctx context.Context, req *contactc
 	}
 	opts = append((*c.CallOptions).ListQaScorecardRevisions[0:len((*c.CallOptions).ListQaScorecardRevisions):len((*c.CallOptions).ListQaScorecardRevisions)], opts...)
 	it := &QaScorecardRevisionIterator{}
-	req = proto.Clone(req).(*contactcenterinsightspb.ListQaScorecardRevisionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*contactcenterinsightspb.QaScorecardRevision, string, error) {
 		resp := &contactcenterinsightspb.ListQaScorecardRevisionsResponse{}
 		if pageToken != "" {
@@ -4759,7 +4759,7 @@ func (c *gRPCClient) ListFeedbackLabels(ctx context.Context, req *contactcenteri
 	}
 	opts = append((*c.CallOptions).ListFeedbackLabels[0:len((*c.CallOptions).ListFeedbackLabels):len((*c.CallOptions).ListFeedbackLabels)], opts...)
 	it := &FeedbackLabelIterator{}
-	req = proto.Clone(req).(*contactcenterinsightspb.ListFeedbackLabelsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*contactcenterinsightspb.FeedbackLabel, string, error) {
 		resp := &contactcenterinsightspb.ListFeedbackLabelsResponse{}
 		if pageToken != "" {
@@ -4876,7 +4876,7 @@ func (c *gRPCClient) ListAllFeedbackLabels(ctx context.Context, req *contactcent
 	}
 	opts = append((*c.CallOptions).ListAllFeedbackLabels[0:len((*c.CallOptions).ListAllFeedbackLabels):len((*c.CallOptions).ListAllFeedbackLabels)], opts...)
 	it := &FeedbackLabelIterator{}
-	req = proto.Clone(req).(*contactcenterinsightspb.ListAllFeedbackLabelsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*contactcenterinsightspb.FeedbackLabel, string, error) {
 		resp := &contactcenterinsightspb.ListAllFeedbackLabelsResponse{}
 		if pageToken != "" {
@@ -5015,7 +5015,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -5322,7 +5322,7 @@ func (c *restClient) GetConversation(ctx context.Context, req *contactcenterinsi
 // ListConversations lists conversations.
 func (c *restClient) ListConversations(ctx context.Context, req *contactcenterinsightspb.ListConversationsRequest, opts ...gax.CallOption) *ConversationIterator {
 	it := &ConversationIterator{}
-	req = proto.Clone(req).(*contactcenterinsightspb.ListConversationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*contactcenterinsightspb.Conversation, string, error) {
 		resp := &contactcenterinsightspb.ListConversationsResponse{}
@@ -5579,7 +5579,7 @@ func (c *restClient) GetAnalysis(ctx context.Context, req *contactcenterinsights
 // ListAnalyses lists analyses.
 func (c *restClient) ListAnalyses(ctx context.Context, req *contactcenterinsightspb.ListAnalysesRequest, opts ...gax.CallOption) *AnalysisIterator {
 	it := &AnalysisIterator{}
-	req = proto.Clone(req).(*contactcenterinsightspb.ListAnalysesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*contactcenterinsightspb.Analysis, string, error) {
 		resp := &contactcenterinsightspb.ListAnalysesResponse{}
@@ -6944,7 +6944,7 @@ func (c *restClient) GetPhraseMatcher(ctx context.Context, req *contactcenterins
 // ListPhraseMatchers lists phrase matchers.
 func (c *restClient) ListPhraseMatchers(ctx context.Context, req *contactcenterinsightspb.ListPhraseMatchersRequest, opts ...gax.CallOption) *PhraseMatcherIterator {
 	it := &PhraseMatcherIterator{}
-	req = proto.Clone(req).(*contactcenterinsightspb.ListPhraseMatchersRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*contactcenterinsightspb.PhraseMatcher, string, error) {
 		resp := &contactcenterinsightspb.ListPhraseMatchersResponse{}
@@ -7441,7 +7441,7 @@ func (c *restClient) GetAnalysisRule(ctx context.Context, req *contactcenterinsi
 // ListAnalysisRules lists analysis rules.
 func (c *restClient) ListAnalysisRules(ctx context.Context, req *contactcenterinsightspb.ListAnalysisRulesRequest, opts ...gax.CallOption) *AnalysisRuleIterator {
 	it := &AnalysisRuleIterator{}
-	req = proto.Clone(req).(*contactcenterinsightspb.ListAnalysisRulesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*contactcenterinsightspb.AnalysisRule, string, error) {
 		resp := &contactcenterinsightspb.ListAnalysisRulesResponse{}
@@ -7874,7 +7874,7 @@ func (c *restClient) GetView(ctx context.Context, req *contactcenterinsightspb.G
 // ListViews lists views.
 func (c *restClient) ListViews(ctx context.Context, req *contactcenterinsightspb.ListViewsRequest, opts ...gax.CallOption) *ViewIterator {
 	it := &ViewIterator{}
-	req = proto.Clone(req).(*contactcenterinsightspb.ListViewsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*contactcenterinsightspb.View, string, error) {
 		resp := &contactcenterinsightspb.ListViewsResponse{}
@@ -8362,7 +8362,7 @@ func (c *restClient) DeleteQaQuestion(ctx context.Context, req *contactcenterins
 // ListQaQuestions lists QaQuestions.
 func (c *restClient) ListQaQuestions(ctx context.Context, req *contactcenterinsightspb.ListQaQuestionsRequest, opts ...gax.CallOption) *QaQuestionIterator {
 	it := &QaQuestionIterator{}
-	req = proto.Clone(req).(*contactcenterinsightspb.ListQaQuestionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*contactcenterinsightspb.QaQuestion, string, error) {
 		resp := &contactcenterinsightspb.ListQaQuestionsResponse{}
@@ -8677,7 +8677,7 @@ func (c *restClient) DeleteQaScorecard(ctx context.Context, req *contactcenterin
 // ListQaScorecards lists QaScorecards.
 func (c *restClient) ListQaScorecards(ctx context.Context, req *contactcenterinsightspb.ListQaScorecardsRequest, opts ...gax.CallOption) *QaScorecardIterator {
 	it := &QaScorecardIterator{}
-	req = proto.Clone(req).(*contactcenterinsightspb.ListQaScorecardsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*contactcenterinsightspb.QaScorecard, string, error) {
 		resp := &contactcenterinsightspb.ListQaScorecardsResponse{}
@@ -9116,7 +9116,7 @@ func (c *restClient) DeleteQaScorecardRevision(ctx context.Context, req *contact
 // ListQaScorecardRevisions lists all revisions under the parent QaScorecard.
 func (c *restClient) ListQaScorecardRevisions(ctx context.Context, req *contactcenterinsightspb.ListQaScorecardRevisionsRequest, opts ...gax.CallOption) *QaScorecardRevisionIterator {
 	it := &QaScorecardRevisionIterator{}
-	req = proto.Clone(req).(*contactcenterinsightspb.ListQaScorecardRevisionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*contactcenterinsightspb.QaScorecardRevision, string, error) {
 		resp := &contactcenterinsightspb.ListQaScorecardRevisionsResponse{}
@@ -9264,7 +9264,7 @@ func (c *restClient) CreateFeedbackLabel(ctx context.Context, req *contactcenter
 // ListFeedbackLabels list feedback labels.
 func (c *restClient) ListFeedbackLabels(ctx context.Context, req *contactcenterinsightspb.ListFeedbackLabelsRequest, opts ...gax.CallOption) *FeedbackLabelIterator {
 	it := &FeedbackLabelIterator{}
-	req = proto.Clone(req).(*contactcenterinsightspb.ListFeedbackLabelsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*contactcenterinsightspb.FeedbackLabel, string, error) {
 		resp := &contactcenterinsightspb.ListFeedbackLabelsResponse{}
@@ -9512,7 +9512,7 @@ func (c *restClient) DeleteFeedbackLabel(ctx context.Context, req *contactcenter
 // ListAllFeedbackLabels list all feedback labels by project number.
 func (c *restClient) ListAllFeedbackLabels(ctx context.Context, req *contactcenterinsightspb.ListAllFeedbackLabelsRequest, opts ...gax.CallOption) *FeedbackLabelIterator {
 	it := &FeedbackLabelIterator{}
-	req = proto.Clone(req).(*contactcenterinsightspb.ListAllFeedbackLabelsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*contactcenterinsightspb.FeedbackLabel, string, error) {
 		resp := &contactcenterinsightspb.ListAllFeedbackLabelsResponse{}
@@ -9818,7 +9818,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}

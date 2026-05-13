@@ -162,6 +162,8 @@ project.
 project.
 - `GCLOUD_TESTS_BIGTABLE_PRI_PROJ_SEC_CLUSTER`: Optional. Cluster ID of Bigtable
 secondary cluster in general project
+- `GCLOUD_TESTS_BIGTABLE_TAG_KEY`: The display name of the Resource Manager tag key.
+- `GCLOUD_TESTS_BIGTABLE_TAG_VALUE`: The display name of the tag value.
 - `TEST_UNIVERSE_DOMAIN`: Optional. Universe domain to test universe domain
 functionality against.
 - `TEST_UNIVERSE_PROJECT_ID`: Optional. Project ID within the universe domain

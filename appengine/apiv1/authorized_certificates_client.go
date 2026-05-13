@@ -404,7 +404,7 @@ func (c *authorizedCertificatesGRPCClient) ListAuthorizedCertificates(ctx contex
 	}
 	opts = append((*c.CallOptions).ListAuthorizedCertificates[0:len((*c.CallOptions).ListAuthorizedCertificates):len((*c.CallOptions).ListAuthorizedCertificates)], opts...)
 	it := &AuthorizedCertificateIterator{}
-	req = proto.Clone(req).(*appenginepb.ListAuthorizedCertificatesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*appenginepb.AuthorizedCertificate, string, error) {
 		resp := &appenginepb.ListAuthorizedCertificatesResponse{}
 		if pageToken != "" {
@@ -526,7 +526,7 @@ func (c *authorizedCertificatesGRPCClient) DeleteAuthorizedCertificate(ctx conte
 // ListAuthorizedCertificates lists all SSL certificates the user is authorized to administer.
 func (c *authorizedCertificatesRESTClient) ListAuthorizedCertificates(ctx context.Context, req *appenginepb.ListAuthorizedCertificatesRequest, opts ...gax.CallOption) *AuthorizedCertificateIterator {
 	it := &AuthorizedCertificateIterator{}
-	req = proto.Clone(req).(*appenginepb.ListAuthorizedCertificatesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*appenginepb.AuthorizedCertificate, string, error) {
 		resp := &appenginepb.ListAuthorizedCertificatesResponse{}
