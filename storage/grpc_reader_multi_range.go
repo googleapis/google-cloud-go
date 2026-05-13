@@ -621,7 +621,10 @@ func (m *multiRangeDownloaderManager) cleanup() {
 sessionDrainLoop:
 	for {
 		select {
-		case result := <-m.sessionResps:
+		case result, ok := <-m.sessionResps:
+			if !ok {
+				break sessionDrainLoop
+			}
 			if result.decoder != nil {
 				result.decoder.databufs.Free()
 			}
@@ -648,7 +651,10 @@ sessionDrainLoop:
 cmdDrainLoop:
 	for {
 		select {
-		case cmd := <-m.cmds:
+		case cmd, ok := <-m.cmds:
+			if !ok {
+				break cmdDrainLoop
+			}
 			// Parse type of command.
 			switch cmd := cmd.(type) {
 			case *mrdCloseCmd:
