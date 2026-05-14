@@ -703,7 +703,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/channel/v1
   - name: chat
-    version: 1.0.0
+    version: 1.1.0
     apis:
       - path: google/chat/v1
     go:
@@ -842,7 +842,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/commerce/consumer/procurement/v1
   - name: compute
-    version: 1.62.0
+    version: 1.63.0
     apis:
       - path: google/cloud/compute/v1
       - path: google/cloud/compute/v1beta
@@ -918,7 +918,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/contactcenterinsights/v1
   - name: container
-    version: 1.51.0
+    version: 1.52.0
     apis:
       - path: google/container/v1
     go:
@@ -946,7 +946,7 @@ libraries:
           no_metadata: true
           path: google/devtools/containeranalysis/v1beta1
   - name: datacatalog
-    version: 1.31.0
+    version: 1.32.0
     apis:
       - path: google/cloud/datacatalog/v1
       - path: google/cloud/datacatalog/lineage/v1
@@ -1040,7 +1040,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/dataplex/v1
   - name: dataproc
-    version: 2.21.0
+    version: 2.22.0
     apis:
       - path: google/cloud/dataproc/v1
     go:
@@ -1333,7 +1333,7 @@ libraries:
             - F_proto_cloneof
           path: google/cloud/functions/v2beta
   - name: geminidataanalytics
-    version: 1.0.0
+    version: 1.1.0
     apis:
       - path: google/cloud/geminidataanalytics/v1
       - path: google/cloud/geminidataanalytics/v1beta
