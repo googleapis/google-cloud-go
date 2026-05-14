@@ -55,7 +55,9 @@ type KafkaPublisher struct {
 
 // NewKafkaPublisher creates a new KafkaPublisher wrapping the given
 // AsyncProducer. The producer must have Return.Successes and Return.Errors
-// enabled.
+// enabled — pscompat verifies this on the *sarama.Config before constructing
+// the producer (see validateKafkaPublisherConfig); the AsyncProducer interface
+// itself does not expose its config.
 func NewKafkaPublisher(producer sarama.AsyncProducer, topicName string) *KafkaPublisher {
 	return &KafkaPublisher{
 		topicName:      topicName,

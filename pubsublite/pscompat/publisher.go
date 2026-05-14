@@ -147,6 +147,9 @@ func newManagedKafkaPublisherClient(ctx context.Context, settings PublishSetting
 			return nil, fmt.Errorf("gmk: failed to create Sarama config: %w", err)
 		}
 	}
+	if err := validateKafkaPublisherConfig(saramaCfg); err != nil {
+		return nil, err
+	}
 
 	producer, err := sarama.NewAsyncProducer([]string{kafkaCfg.BootstrapServers}, saramaCfg)
 	if err != nil {

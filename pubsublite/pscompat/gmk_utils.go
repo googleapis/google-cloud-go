@@ -72,6 +72,36 @@ func BuildGMKBootstrapServer(projectID, region, clusterID string) string {
 		clusterID, region, projectID)
 }
 
+// validateKafkaPublisherConfig asserts the Sarama settings KafkaPublisher
+// relies on. The publisher reads from producer.Successes() and producer.Errors()
+// to deliver per-message results; if either return channel is disabled the
+// dispatchers will block forever or never observe failures.
+func validateKafkaPublisherConfig(cfg *sarama.Config) error {
+	if cfg == nil {
+		return fmt.Errorf("gmk: sarama config must not be nil")
+	}
+	if !cfg.Producer.Return.Successes {
+		return fmt.Errorf("gmk: sarama config must have Producer.Return.Successes = true")
+	}
+	if !cfg.Producer.Return.Errors {
+		return fmt.Errorf("gmk: sarama config must have Producer.Return.Errors = true")
+	}
+	return nil
+}
+
+// validateKafkaSubscriberConfig asserts the Sarama settings KafkaSubscriber
+// relies on. Auto-commit must be off so cursor commits stay under explicit
+// control (matching PSL semantics).
+func validateKafkaSubscriberConfig(cfg *sarama.Config) error {
+	if cfg == nil {
+		return fmt.Errorf("gmk: sarama config must not be nil")
+	}
+	if cfg.Consumer.Offsets.AutoCommit.Enable {
+		return fmt.Errorf("gmk: sarama config must have Consumer.Offsets.AutoCommit.Enable = false")
+	}
+	return nil
+}
+
 // NewGMKSaramaConfig creates a Sarama configuration pre-configured for Google
 // Managed Kafka with SASL_SSL/OAUTHBEARER authentication using GCP default
 // credentials.

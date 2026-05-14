@@ -334,6 +334,9 @@ func (f *kafkaWireSubscriberFactory) New(_ context.Context, receiver wire.Messag
 	}
 	// Disable auto-commit so Ack() controls offset commits.
 	saramaCfg.Consumer.Offsets.AutoCommit.Enable = false
+	if err := validateKafkaSubscriberConfig(saramaCfg); err != nil {
+		return nil, err
+	}
 
 	group, err := sarama.NewConsumerGroup([]string{f.config.BootstrapServers}, f.config.SubscriptionName, saramaCfg)
 	if err != nil {
