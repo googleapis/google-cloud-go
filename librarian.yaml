@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 language: go
-version: v0.13.0
+version: v0.13.2-0.20260514223035-a22d6b5a1329
 repo: googleapis/google-cloud-go
 sources:
   googleapis:
@@ -37,33 +37,27 @@ libraries:
     version: 1.13.0
     apis:
       - path: google/cloud/accessapproval/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/accessapproval/v1
   - name: accesscontextmanager
     version: 1.14.0
     apis:
       - path: google/identity/accesscontextmanager/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
           import_path: accesscontextmanager/apiv1
-          path: google/identity/accesscontextmanager/v1
   - name: advisorynotifications
     version: 1.10.0
     apis:
       - path: google/cloud/advisorynotifications/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/advisorynotifications/v1
   - name: agentplatform
     version: 0.20.0
     skip_generate: true
@@ -72,291 +66,253 @@ libraries:
     version: 1.0.0
     apis:
       - path: google/ai/generativelanguage/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/ai/generativelanguage/v1beta2
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/ai/generativelanguage/v1beta
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/ai/generativelanguage/v1alpha
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/ai/generativelanguage/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/ai/generativelanguage/v1beta2
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/ai/generativelanguage/v1beta
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/ai/generativelanguage/v1alpha
   - name: aiplatform
     version: 1.125.0
     apis:
       - path: google/cloud/aiplatform/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/aiplatform/v1beta1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
     skip_generate: true
-    go:
-      go_apis:
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/aiplatform/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/aiplatform/v1beta1
   - name: alloydb
     version: 1.26.0
     apis:
       - path: google/cloud/alloydb/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/alloydb/connectors/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
+          proto_only: true
       - path: google/cloud/alloydb/v1beta
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/alloydb/connectors/v1beta
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
+          proto_only: true
       - path: google/cloud/alloydb/v1alpha
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/alloydb/connectors/v1alpha
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/alloydb/connectors/v1
           proto_only: true
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/alloydb/connectors/v1beta
-          proto_only: true
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/alloydb/connectors/v1alpha
-          proto_only: true
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/alloydb/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/alloydb/v1beta
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/alloydb/v1alpha
   - name: analytics
     version: 0.35.0
     apis:
       - path: google/analytics/admin/v1alpha
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/analytics/admin/v1alpha
   - name: apigateway
     version: 1.12.0
     apis:
       - path: google/cloud/apigateway/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/apigateway/v1
   - name: apigeeconnect
     version: 1.12.0
     apis:
       - path: google/cloud/apigeeconnect/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/apigeeconnect/v1
   - name: apigeeregistry
     version: 1.0.0
     apis:
       - path: google/cloud/apigeeregistry/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/apigeeregistry/v1
   - name: apihub
     version: 1.0.0
     apis:
       - path: google/cloud/apihub/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/apihub/v1
   - name: apikeys
     version: 1.7.0
     apis:
       - path: google/api/apikeys/v2
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
           import_path: apikeys/apiv2
-          path: google/api/apikeys/v2
   - name: apiregistry
     version: 1.0.0
     apis:
       - path: google/cloud/apiregistry/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/apiregistry/v1beta
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/apiregistry/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/apiregistry/v1beta
   - name: appengine
     version: 1.14.0
     apis:
       - path: google/appengine/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/appengine/v1
   - name: apphub
     version: 1.0.0
     apis:
       - path: google/cloud/apphub/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/apphub/v1
   - name: appoptimize
     version: 0.4.0
     apis:
       - path: google/cloud/appoptimize/v1beta
-    copyright_year: "2026"
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/appoptimize/v1beta
+    copyright_year: "2026"
   - name: apps
     version: 1.0.0
     apis:
       - path: google/apps/meet/v2
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/apps/events/subscriptions/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/apps/meet/v2beta
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/apps/events/subscriptions/v1beta
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/apps/meet/v2
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/apps/events/subscriptions/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/apps/meet/v2beta
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/apps/events/subscriptions/v1beta
   - name: area120
     version: 0.15.0
     apis:
       - path: google/area120/tables/v1alpha1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
           no_metadata: true
-          path: google/area120/tables/v1alpha1
   - name: artifactregistry
     version: 1.25.0
     apis:
       - path: google/devtools/artifactregistry/v1
-      - path: google/devtools/artifactregistry/v1beta2
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
           import_path: artifactregistry/apiv1
-          path: google/devtools/artifactregistry/v1
-        - enabled_generator_features:
+      - path: google/devtools/artifactregistry/v1beta2
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
           import_path: artifactregistry/apiv1beta2
-          path: google/devtools/artifactregistry/v1beta2
   - name: asset
     version: 1.27.0
     apis:
       - path: google/cloud/asset/v1
+        go:
+          enabled_generator_features:
+            - F_mtls_hard_bound_tokens
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
+          no_metadata: true
       - path: google/cloud/asset/v1p5beta1
+        go:
+          enabled_generator_features:
+            - F_mtls_hard_bound_tokens
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
+          no_metadata: true
       - path: google/cloud/asset/v1p2beta1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          no_metadata: true
-          path: google/cloud/asset/v1
-        - enabled_generator_features:
-            - F_mtls_hard_bound_tokens
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/asset/v1p2beta1
-        - enabled_generator_features:
-            - F_mtls_hard_bound_tokens
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          no_metadata: true
-          path: google/cloud/asset/v1p5beta1
   - name: assuredworkloads
     version: 1.18.0
     apis:
       - path: google/cloud/assuredworkloads/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/assuredworkloads/v1beta1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/assuredworkloads/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/assuredworkloads/v1beta1
   - name: auditmanager
     version: 1.0.0
     apis:
       - path: google/cloud/auditmanager/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/auditmanager/v1
   - name: auth
     version: 0.20.0
     keep:
@@ -372,494 +328,444 @@ libraries:
     version: 1.20.0
     apis:
       - path: google/cloud/automl/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/automl/v1beta1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/automl/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/automl/v1beta1
   - name: backupdr
     version: 1.14.0
     apis:
       - path: google/cloud/backupdr/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/backupdr/v1
   - name: baremetalsolution
     version: 1.9.0
     apis:
       - path: google/cloud/baremetalsolution/v2
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/baremetalsolution/v2
   - name: batch
     version: 1.19.0
     apis:
       - path: google/cloud/batch/v1
-    keep:
-      - apiv1/iam_policy_client.go
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/batch/v1
+    keep:
+      - apiv1/iam_policy_client.go
   - name: beyondcorp
     version: 1.7.0
     apis:
       - path: google/cloud/beyondcorp/appconnections/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/beyondcorp/appconnectors/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/beyondcorp/appgateways/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/beyondcorp/clientconnectorservices/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/beyondcorp/clientgateways/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/beyondcorp/appconnections/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/beyondcorp/appconnectors/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/beyondcorp/appgateways/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/beyondcorp/clientconnectorservices/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/beyondcorp/clientgateways/v1
   - name: biglake
     version: 1.0.0
     apis:
       - path: google/cloud/biglake/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/biglake/hive/v1beta
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
     copyright_year: "2026"
-    go:
-      go_apis:
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/biglake/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/biglake/hive/v1beta
   - name: bigquery
     version: 1.77.0
     apis:
       - path: google/cloud/bigquery/migration/v2
+        go:
+          enabled_generator_features:
+            - F_dynamic_resource_heuristics
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/bigquery/datapolicies/v2
+        go:
+          enabled_generator_features:
+            - F_dynamic_resource_heuristics
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/bigquery/datatransfer/v1
+        go:
+          enabled_generator_features:
+            - F_dynamic_resource_heuristics
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/bigquery/biglake/v1
+        go:
+          enabled_generator_features:
+            - F_dynamic_resource_heuristics
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/bigquery/storage/v1
+        go:
+          enabled_generator_features:
+            - F_dynamic_resource_heuristics
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/bigquery/connection/v1
+        go:
+          enabled_generator_features:
+            - F_dynamic_resource_heuristics
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/bigquery/reservation/v1
+        go:
+          enabled_generator_features:
+            - F_dynamic_resource_heuristics
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/bigquery/analyticshub/v1
+        go:
+          enabled_generator_features:
+            - F_dynamic_resource_heuristics
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/bigquery/datapolicies/v1
+        go:
+          enabled_generator_features:
+            - F_dynamic_resource_heuristics
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/bigquery/datapolicies/v2beta1
+        go:
+          enabled_generator_features:
+            - F_dynamic_resource_heuristics
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/bigquery/migration/v2alpha
+        go:
+          enabled_generator_features:
+            - F_dynamic_resource_heuristics
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/bigquery/storage/v1beta2
+        go:
+          enabled_generator_features:
+            - F_dynamic_resource_heuristics
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/bigquery/datapolicies/v1beta1
+        go:
+          enabled_generator_features:
+            - F_dynamic_resource_heuristics
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/bigquery/dataexchange/v1beta1
+        go:
+          enabled_generator_features:
+            - F_dynamic_resource_heuristics
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/bigquery/connection/v1beta1
+        go:
+          enabled_generator_features:
+            - F_dynamic_resource_heuristics
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/bigquery/storage/v1beta1
+        go:
+          enabled_generator_features:
+            - F_dynamic_resource_heuristics
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/bigquery/storage/v1beta
+        go:
+          enabled_generator_features:
+            - F_dynamic_resource_heuristics
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/bigquery/biglake/v1alpha1
+        go:
+          enabled_generator_features:
+            - F_dynamic_resource_heuristics
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/bigquery/storage/v1alpha
+        go:
+          enabled_generator_features:
+            - F_dynamic_resource_heuristics
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
     keep:
       - README.md
     skip_release: true
     go:
-      go_apis:
-        - enabled_generator_features:
-            - F_dynamic_resource_heuristics
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/bigquery/migration/v2
-        - enabled_generator_features:
-            - F_dynamic_resource_heuristics
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/bigquery/datapolicies/v2
-        - enabled_generator_features:
-            - F_dynamic_resource_heuristics
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/bigquery/datatransfer/v1
-        - enabled_generator_features:
-            - F_dynamic_resource_heuristics
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/bigquery/biglake/v1
-        - enabled_generator_features:
-            - F_dynamic_resource_heuristics
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/bigquery/storage/v1
-        - enabled_generator_features:
-            - F_dynamic_resource_heuristics
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/bigquery/connection/v1
-        - enabled_generator_features:
-            - F_dynamic_resource_heuristics
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/bigquery/reservation/v1
-        - enabled_generator_features:
-            - F_dynamic_resource_heuristics
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/bigquery/analyticshub/v1
-        - enabled_generator_features:
-            - F_dynamic_resource_heuristics
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/bigquery/datapolicies/v1
-        - enabled_generator_features:
-            - F_dynamic_resource_heuristics
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/bigquery/datapolicies/v2beta1
-        - enabled_generator_features:
-            - F_dynamic_resource_heuristics
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/bigquery/migration/v2alpha
-        - enabled_generator_features:
-            - F_dynamic_resource_heuristics
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/bigquery/storage/v1beta2
-        - enabled_generator_features:
-            - F_dynamic_resource_heuristics
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/bigquery/datapolicies/v1beta1
-        - enabled_generator_features:
-            - F_dynamic_resource_heuristics
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/bigquery/dataexchange/v1beta1
-        - enabled_generator_features:
-            - F_dynamic_resource_heuristics
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/bigquery/connection/v1beta1
-        - enabled_generator_features:
-            - F_dynamic_resource_heuristics
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/bigquery/storage/v1beta1
-        - enabled_generator_features:
-            - F_dynamic_resource_heuristics
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/bigquery/storage/v1beta
-        - enabled_generator_features:
-            - F_dynamic_resource_heuristics
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/bigquery/biglake/v1alpha1
-        - enabled_generator_features:
-            - F_dynamic_resource_heuristics
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/bigquery/storage/v1alpha
       nested_module: v2
   - name: bigquery/v2
     version: 0.0.0
     apis:
       - path: google/cloud/bigquery/v2
-    keep:
-      - README.md
-    skip_release: true
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
             - F_wrapper_types_for_page_size
             - F_proto_cloneof
           import_path: bigquery/v2/apiv2
-          path: google/cloud/bigquery/v2
+    keep:
+      - README.md
+    skip_release: true
   - name: bigtable
     version: 1.47.0
     apis:
       - path: google/bigtable/v2
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
+          no_metadata: true
+          proto_only: true
       - path: google/bigtable/admin/v2
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
+          no_metadata: true
+          proto_only: true
     keep:
       - README.md
     skip_release: true
-    go:
-      go_apis:
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          no_metadata: true
-          path: google/bigtable/admin/v2
-          proto_only: true
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          no_metadata: true
-          path: google/bigtable/v2
-          proto_only: true
   - name: billing
     version: 1.26.0
     apis:
       - path: google/cloud/billing/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/billing/budgets/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/billing/budgets/v1beta1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/billing/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/billing/budgets/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/billing/budgets/v1beta1
   - name: binaryauthorization
     version: 1.15.0
     apis:
       - path: google/cloud/binaryauthorization/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/binaryauthorization/v1beta1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/binaryauthorization/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/binaryauthorization/v1beta1
   - name: capacityplanner
     version: 0.6.0
     apis:
       - path: google/cloud/capacityplanner/v1beta
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/capacityplanner/v1beta
   - name: certificatemanager
     version: 1.14.0
     apis:
       - path: google/cloud/certificatemanager/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/certificatemanager/v1
   - name: ces
     version: 1.0.0
     apis:
       - path: google/cloud/ces/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/ces/v1beta
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/ces/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/ces/v1beta
   - name: channel
     version: 1.26.0
     apis:
       - path: google/cloud/channel/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/channel/v1
   - name: chat
     version: 1.1.0
     apis:
       - path: google/chat/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/chat/v1
   - name: chronicle
     version: 1.0.0
     apis:
       - path: google/cloud/chronicle/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/chronicle/v1
   - name: cloudbuild
     version: 1.30.0
     apis:
       - path: google/devtools/cloudbuild/v2
-      - path: google/devtools/cloudbuild/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          import_path: cloudbuild/apiv1/v2
-          path: google/devtools/cloudbuild/v1
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
           import_path: cloudbuild/apiv2
-          path: google/devtools/cloudbuild/v2
+      - path: google/devtools/cloudbuild/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
+          import_path: cloudbuild/apiv1/v2
   - name: cloudcontrolspartner
     version: 1.10.0
     apis:
       - path: google/cloud/cloudcontrolspartner/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/cloudcontrolspartner/v1beta
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/cloudcontrolspartner/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/cloudcontrolspartner/v1beta
   - name: clouddms
     version: 1.13.0
     apis:
       - path: google/cloud/clouddms/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/clouddms/v1
   - name: cloudprofiler
     version: 1.0.0
     apis:
       - path: google/devtools/cloudprofiler/v2
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
           import_path: cloudprofiler/apiv2
-          path: google/devtools/cloudprofiler/v2
   - name: cloudquotas
     version: 1.11.0
     apis:
       - path: google/api/cloudquotas/v1
-      - path: google/api/cloudquotas/v1beta
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
           import_path: cloudquotas/apiv1
-          path: google/api/cloudquotas/v1
-        - enabled_generator_features:
+      - path: google/api/cloudquotas/v1beta
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
           import_path: cloudquotas/apiv1beta
-          path: google/api/cloudquotas/v1beta
   - name: cloudsecuritycompliance
     version: 1.0.0
     apis:
       - path: google/cloud/cloudsecuritycompliance/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/cloudsecuritycompliance/v1
   - name: cloudtasks
     version: 1.18.0
     apis:
       - path: google/cloud/tasks/v2
-      - path: google/cloud/tasks/v2beta3
-      - path: google/cloud/tasks/v2beta2
-    go:
-      go_apis:
-        - client_package: cloudtasks
+        go:
+          client_package: cloudtasks
           enabled_generator_features:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
             - F_proto_cloneof
           import_path: cloudtasks/apiv2
-          path: google/cloud/tasks/v2
-        - client_package: cloudtasks
-          enabled_generator_features:
-            - F_mtls_hard_bound_tokens
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          import_path: cloudtasks/apiv2beta2
-          path: google/cloud/tasks/v2beta2
-        - client_package: cloudtasks
+      - path: google/cloud/tasks/v2beta3
+        go:
+          client_package: cloudtasks
           enabled_generator_features:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
             - F_proto_cloneof
           import_path: cloudtasks/apiv2beta3
-          path: google/cloud/tasks/v2beta3
+      - path: google/cloud/tasks/v2beta2
+        go:
+          client_package: cloudtasks
+          enabled_generator_features:
+            - F_mtls_hard_bound_tokens
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
+          import_path: cloudtasks/apiv2beta2
   - name: commerce
     version: 1.7.0
     apis:
       - path: google/cloud/commerce/consumer/procurement/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/commerce/consumer/procurement/v1
   - name: compute
     version: 1.63.0
     apis:
       - path: google/cloud/compute/v1
+        go:
+          diregapic: true
+          enabled_generator_features:
+            - F_dynamic_resource_heuristics
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/compute/v1beta
+        go:
+          diregapic: true
+          enabled_generator_features:
+            - F_dynamic_resource_heuristics
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
     go:
-      go_apis:
-        - diregapic: true
-          enabled_generator_features:
-            - F_dynamic_resource_heuristics
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/compute/v1
-        - diregapic: true
-          enabled_generator_features:
-            - F_dynamic_resource_heuristics
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/compute/v1beta
       nested_module: metadata
   - name: compute/metadata
     version: 0.9.0
@@ -871,537 +777,459 @@ libraries:
     version: 1.16.0
     apis:
       - path: google/cloud/confidentialcomputing/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/confidentialcomputing/v1alpha1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/confidentialcomputing/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/confidentialcomputing/v1alpha1
   - name: config
     version: 1.11.0
     apis:
       - path: google/cloud/config/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/config/v1
   - name: configdelivery
     version: 1.0.0
     apis:
       - path: google/cloud/configdelivery/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/configdelivery/v1beta
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/configdelivery/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/configdelivery/v1beta
   - name: contactcenterinsights
     version: 1.22.0
     apis:
       - path: google/cloud/contactcenterinsights/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/contactcenterinsights/v1
   - name: container
     version: 1.52.0
     apis:
       - path: google/container/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/container/v1
   - name: containeranalysis
     version: 0.19.0
     apis:
       - path: google/devtools/containeranalysis/v1beta1
-    keep:
-      - apiv1beta1/grafeas/grafeaspb/grafeas.pb.go
-    go:
-      delete_generation_output_paths:
-        - google.golang.org
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
           import_path: containeranalysis/apiv1beta1
           nested_protos:
             - grafeas/grafeas.proto
           no_metadata: true
-          path: google/devtools/containeranalysis/v1beta1
+    keep:
+      - apiv1beta1/grafeas/grafeaspb/grafeas.pb.go
+    go:
+      delete_generation_output_paths:
+        - google.golang.org
   - name: datacatalog
     version: 1.32.0
     apis:
       - path: google/cloud/datacatalog/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/datacatalog/lineage/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/datacatalog/lineage/configmanagement/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/datacatalog/v1beta1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
     keep:
       - apiv1/iam_policy_client.go
-    go:
-      go_apis:
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/datacatalog/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/datacatalog/lineage/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/datacatalog/lineage/configmanagement/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/datacatalog/v1beta1
   - name: dataflow
     version: 0.16.0
     apis:
       - path: google/dataflow/v1beta3
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/dataflow/v1beta3
   - name: dataform
     version: 1.0.0
     apis:
       - path: google/cloud/dataform/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/dataform/v1beta1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/dataform/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/dataform/v1beta1
   - name: datafusion
     version: 1.13.0
     apis:
       - path: google/cloud/datafusion/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/datafusion/v1
   - name: datalabeling
     version: 0.14.0
     apis:
       - path: google/cloud/datalabeling/v1beta1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/datalabeling/v1beta1
   - name: datamanager
     version: 1.0.0
     apis:
       - path: google/ads/datamanager/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
           import_path: datamanager/apiv1
-          path: google/ads/datamanager/v1
   - name: dataplex
     version: 1.34.0
     apis:
       - path: google/cloud/dataplex/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/dataplex/v1
   - name: dataproc
     version: 2.22.0
     apis:
       - path: google/cloud/dataproc/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
           import_path: dataproc/v2/apiv1
-          path: google/cloud/dataproc/v1
+    go:
       module_path_version: v2
   - name: dataqna
     version: 0.13.0
     apis:
       - path: google/cloud/dataqna/v1alpha
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/dataqna/v1alpha
   - name: datastore
     version: 1.23.0
     apis:
       - path: google/datastore/v1
-      - path: google/datastore/admin/v1
-    skip_release: true
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/datastore/admin/v1
-        - enabled_generator_features:
-            - F_mtls_hard_bound_tokens
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/datastore/v1
           proto_only: true
+      - path: google/datastore/admin/v1
+        go:
+          enabled_generator_features:
+            - F_mtls_hard_bound_tokens
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
+    skip_release: true
   - name: datastream
     version: 1.20.0
     apis:
       - path: google/cloud/datastream/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/datastream/v1alpha1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
     keep:
       - apiv1/iam_policy_client.go
-    go:
-      go_apis:
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/datastream/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/datastream/v1alpha1
   - name: deploy
     version: 1.32.0
     apis:
       - path: google/cloud/deploy/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/deploy/v1
   - name: developerconnect
     version: 1.0.0
     apis:
       - path: google/cloud/developerconnect/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/developerconnect/v1
   - name: devicestreaming
     version: 1.0.0
     apis:
       - path: google/cloud/devicestreaming/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/devicestreaming/v1
   - name: dialogflow
     version: 1.82.0
     apis:
       - path: google/cloud/dialogflow/v2
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/dialogflow/cx/v3
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/dialogflow/cx/v3beta1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/dialogflow/v2beta1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/dialogflow/v2
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/dialogflow/cx/v3
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/dialogflow/cx/v3beta1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/dialogflow/v2beta1
   - name: discoveryengine
     version: 1.29.0
     apis:
       - path: google/cloud/discoveryengine/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/discoveryengine/v1beta
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/discoveryengine/v1alpha
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/discoveryengine/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/discoveryengine/v1beta
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/discoveryengine/v1alpha
   - name: dlp
     version: 1.34.0
     apis:
       - path: google/privacy/dlp/v2
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
           import_path: dlp/apiv2
           no_metadata: true
-          path: google/privacy/dlp/v2
   - name: documentai
     version: 1.48.0
     apis:
       - path: google/cloud/documentai/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/documentai/v1beta3
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/documentai/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/documentai/v1beta3
   - name: domains
     version: 0.15.0
     apis:
       - path: google/cloud/domains/v1beta1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/domains/v1beta1
   - name: edgecontainer
     version: 1.9.0
     apis:
       - path: google/cloud/edgecontainer/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/edgecontainer/v1
   - name: edgenetwork
     version: 1.8.0
     apis:
       - path: google/cloud/edgenetwork/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/edgenetwork/v1
   - name: errorreporting
     version: 0.9.0
     apis:
       - path: google/devtools/clouderrorreporting/v1beta1
-    go:
-      go_apis:
-        - client_package: errorreporting
+        go:
+          client_package: errorreporting
           enabled_generator_features:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
             - F_proto_cloneof
           import_path: errorreporting/apiv1beta1
-          path: google/devtools/clouderrorreporting/v1beta1
   - name: essentialcontacts
     version: 1.12.0
     apis:
       - path: google/cloud/essentialcontacts/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/essentialcontacts/v1
   - name: eventarc
     version: 1.23.0
     apis:
       - path: google/cloud/eventarc/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/eventarc/publishing/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/eventarc/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/eventarc/publishing/v1
   - name: filestore
     version: 1.15.0
     apis:
       - path: google/cloud/filestore/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/filestore/v1
   - name: financialservices
     version: 1.0.0
     apis:
       - path: google/cloud/financialservices/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/financialservices/v1
   - name: firestore
     version: 1.22.0
     apis:
       - path: google/firestore/v1
+        go:
+          enabled_generator_features:
+            - F_mtls_hard_bound_tokens
+            - F_open_telemetry_attributes
+            - F_ordered_routing_headers
+            - F_proto_cloneof
       - path: google/firestore/admin/v1
-    keep:
-      - README.md
-    skip_release: true
-    go:
-      go_apis:
-        - client_package: apiv1
+        go:
+          client_package: apiv1
           enabled_generator_features:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
             - F_ordered_routing_headers
             - F_proto_cloneof
           import_path: firestore/apiv1/admin
-          path: google/firestore/admin/v1
-        - enabled_generator_features:
-            - F_mtls_hard_bound_tokens
-            - F_open_telemetry_attributes
-            - F_ordered_routing_headers
-            - F_proto_cloneof
-          path: google/firestore/v1
+    keep:
+      - README.md
+    skip_release: true
   - name: functions
     version: 1.24.0
     apis:
       - path: google/cloud/functions/v2
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/functions/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/functions/v2beta
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/functions/v2
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/functions/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/functions/v2beta
   - name: geminidataanalytics
     version: 1.1.0
     apis:
       - path: google/cloud/geminidataanalytics/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/geminidataanalytics/v1beta
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/geminidataanalytics/v1beta
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/geminidataanalytics/v1
   - name: gkebackup
     version: 1.13.0
     apis:
       - path: google/cloud/gkebackup/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/gkebackup/v1
   - name: gkeconnect
     version: 1.0.0
     apis:
       - path: google/cloud/gkeconnect/gateway/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/gkeconnect/gateway/v1beta1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/gkeconnect/gateway/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/gkeconnect/gateway/v1beta1
   - name: gkehub
     version: 0.21.0
     apis:
       - path: google/cloud/gkehub/v1beta1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/gkehub/v1beta1
   - name: gkemulticloud
     version: 1.11.0
     apis:
       - path: google/cloud/gkemulticloud/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/gkemulticloud/v1
   - name: gkerecommender
     version: 1.0.0
     apis:
       - path: google/cloud/gkerecommender/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/gkerecommender/v1
   - name: grafeas
     version: 0.5.0
     keep:
@@ -1411,670 +1239,582 @@ libraries:
     version: 1.12.0
     apis:
       - path: google/cloud/gsuiteaddons/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/gsuiteaddons/v1
   - name: hypercomputecluster
     version: 1.0.0
     apis:
       - path: google/cloud/hypercomputecluster/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/hypercomputecluster/v1beta
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/hypercomputecluster/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/hypercomputecluster/v1beta
   - name: iam
     version: 1.11.0
     apis:
       - path: google/iam/v3
+        go:
+          enabled_generator_features:
+            - F_mtls_hard_bound_tokens
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/iam/v2
+        go:
+          enabled_generator_features:
+            - F_mtls_hard_bound_tokens
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/iam/v1
+        go:
+          enabled_generator_features:
+            - F_mtls_hard_bound_tokens
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/iam/credentials/v1
-      - path: google/iam/v3beta
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
             - F_proto_cloneof
           no_metadata: true
-          path: google/iam/credentials/v1
-        - enabled_generator_features:
+      - path: google/iam/v3beta
+        go:
+          enabled_generator_features:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/iam/v1
-        - enabled_generator_features:
-            - F_mtls_hard_bound_tokens
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/iam/v2
-        - enabled_generator_features:
-            - F_mtls_hard_bound_tokens
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/iam/v3
-        - enabled_generator_features:
-            - F_mtls_hard_bound_tokens
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/iam/v3beta
+    go:
       nested_module: admin
   - name: iap
     version: 1.17.0
     apis:
       - path: google/cloud/iap/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/iap/v1
   - name: identitytoolkit
     version: 1.0.0
     apis:
       - path: google/cloud/identitytoolkit/v2
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/identitytoolkit/v2
   - name: ids
     version: 1.10.0
     apis:
       - path: google/cloud/ids/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/ids/v1
   - name: iot
     version: 1.13.0
     apis:
       - path: google/cloud/iot/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/iot/v1
   - name: kms
     version: 1.31.0
     apis:
       - path: google/cloud/kms/v1
+        go:
+          enabled_generator_features:
+            - F_mtls_hard_bound_tokens
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/kms/inventory/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/kms/inventory/v1
-        - enabled_generator_features:
-            - F_mtls_hard_bound_tokens
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/kms/v1
   - name: language
     version: 1.18.0
     apis:
       - path: google/cloud/language/v2
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/language/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/language/v1beta2
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/language/v2
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/language/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/language/v1beta2
   - name: licensemanager
     version: 1.0.0
     apis:
       - path: google/cloud/licensemanager/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/licensemanager/v1
   - name: lifesciences
     version: 0.15.0
     apis:
       - path: google/cloud/lifesciences/v2beta
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/lifesciences/v2beta
   - name: locationfinder
     version: 1.0.0
     apis:
       - path: google/cloud/locationfinder/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/locationfinder/v1
   - name: logging
     version: 1.18.0
     apis:
       - path: google/logging/v2
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/logging/v2
+    go:
       nested_module: logadmin
   - name: longrunning
     version: 1.0.0
     apis:
       - path: google/longrunning
-    go:
-      go_apis:
-        - client_package: longrunning
+        go:
+          client_package: longrunning
           enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
           import_path: longrunning/autogen
-          path: google/longrunning
   - name: lustre
     version: 1.0.0
     apis:
       - path: google/cloud/lustre/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/lustre/v1
   - name: maintenance
     version: 1.0.0
     apis:
       - path: google/cloud/maintenance/api/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/maintenance/api/v1beta
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/maintenance/api/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/maintenance/api/v1beta
   - name: managedidentities
     version: 1.12.0
     apis:
       - path: google/cloud/managedidentities/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/managedidentities/v1
   - name: managedkafka
     version: 1.0.0
     apis:
       - path: google/cloud/managedkafka/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/managedkafka/schemaregistry/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/managedkafka/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/managedkafka/schemaregistry/v1
   - name: maps
     version: 1.35.0
     apis:
       - path: google/maps/geocode/v4
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/maps/routing/v2
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/maps/addressvalidation/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/maps/areainsights/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/maps/fleetengine/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
+          proto_package: maps.fleetengine.v1
       - path: google/maps/places/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/maps/routeoptimization/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/maps/solar/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/maps/fleetengine/delivery/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
+          proto_package: maps.fleetengine.delivery.v1
       - path: google/maps/mapmanagement/v2beta
     title_override: Google Maps Platform
-    go:
-      go_apis:
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/maps/fleetengine/delivery/v1
-          proto_package: maps.fleetengine.delivery.v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/maps/fleetengine/v1
-          proto_package: maps.fleetengine.v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/maps/geocode/v4
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/maps/routing/v2
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/maps/addressvalidation/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/maps/areainsights/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/maps/places/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/maps/routeoptimization/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/maps/solar/v1
   - name: mediatranslation
     version: 0.13.0
     apis:
       - path: google/cloud/mediatranslation/v1beta1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/mediatranslation/v1beta1
   - name: memcache
     version: 1.16.0
     apis:
       - path: google/cloud/memcache/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/memcache/v1beta2
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/memcache/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/memcache/v1beta2
   - name: memorystore
     version: 1.0.0
     apis:
       - path: google/cloud/memorystore/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/memorystore/v1beta
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/memorystore/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/memorystore/v1beta
   - name: metastore
     version: 1.19.0
     apis:
       - path: google/cloud/metastore/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/metastore/v1beta
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/metastore/v1alpha
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/metastore/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/metastore/v1beta
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/metastore/v1alpha
   - name: migrationcenter
     version: 1.6.0
     apis:
       - path: google/cloud/migrationcenter/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/migrationcenter/v1
   - name: modelarmor
     version: 1.0.0
     apis:
       - path: google/cloud/modelarmor/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/modelarmor/v1beta
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/modelarmor/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/modelarmor/v1beta
   - name: monitoring
     version: 1.29.0
     apis:
       - path: google/monitoring/v3
-      - path: google/monitoring/dashboard/v1
-      - path: google/monitoring/metricsscope/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
-            - F_mtls_hard_bound_tokens
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/monitoring/dashboard/v1
-        - enabled_generator_features:
-            - F_mtls_hard_bound_tokens
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/monitoring/metricsscope/v1
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
             - F_proto_cloneof
           import_path: monitoring/apiv3/v2
-          path: google/monitoring/v3
+      - path: google/monitoring/dashboard/v1
+        go:
+          enabled_generator_features:
+            - F_mtls_hard_bound_tokens
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
+      - path: google/monitoring/metricsscope/v1
+        go:
+          enabled_generator_features:
+            - F_mtls_hard_bound_tokens
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
   - name: netapp
     version: 1.17.0
     apis:
       - path: google/cloud/netapp/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/netapp/v1
   - name: networkconnectivity
     version: 1.26.0
     apis:
       - path: google/cloud/networkconnectivity/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/networkconnectivity/v1beta
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/networkconnectivity/v1alpha1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/networkconnectivity/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/networkconnectivity/v1beta
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/networkconnectivity/v1alpha1
   - name: networkmanagement
     version: 1.28.0
     apis:
       - path: google/cloud/networkmanagement/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/networkmanagement/v1
   - name: networksecurity
     version: 0.16.0
     apis:
       - path: google/cloud/networksecurity/v1beta1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/networksecurity/v1beta1
   - name: networkservices
     version: 1.0.0
     apis:
       - path: google/cloud/networkservices/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/networkservices/v1
   - name: notebooks
     version: 1.17.0
     apis:
       - path: google/cloud/notebooks/v2
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/notebooks/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/notebooks/v1beta1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/notebooks/v2
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/notebooks/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/notebooks/v1beta1
   - name: optimization
     version: 1.11.0
     apis:
       - path: google/cloud/optimization/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/optimization/v1
   - name: oracledatabase
     version: 1.0.0
     apis:
       - path: google/cloud/oracledatabase/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/oracledatabase/v1
   - name: orchestration
     version: 1.16.0
     apis:
       - path: google/cloud/orchestration/airflow/service/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/orchestration/airflow/service/v1
   - name: orgpolicy
     version: 1.20.0
     apis:
       - path: google/cloud/orgpolicy/v2
+        go:
+          enabled_generator_features:
+            - F_mtls_hard_bound_tokens
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/orgpolicy/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/orgpolicy/v1
           proto_only: true
-        - enabled_generator_features:
-            - F_mtls_hard_bound_tokens
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/orgpolicy/v2
   - name: osconfig
     version: 1.21.0
     apis:
       - path: google/cloud/osconfig/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/osconfig/agentendpoint/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/osconfig/agentendpoint/v1beta
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/osconfig/v1beta
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/osconfig/v1alpha
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/osconfig/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/osconfig/agentendpoint/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/osconfig/agentendpoint/v1beta
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/osconfig/v1beta
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/osconfig/v1alpha
   - name: oslogin
     version: 1.18.0
     apis:
       - path: google/cloud/oslogin/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
+          no_metadata: true
       - path: google/cloud/oslogin/v1beta
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
+          no_metadata: true
       - path: google/cloud/oslogin/common
-    go:
-      go_apis:
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          no_metadata: true
-          path: google/cloud/oslogin/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          no_metadata: true
-          path: google/cloud/oslogin/v1beta
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
           import_path: oslogin/common
-          path: google/cloud/oslogin/common
           proto_only: true
   - name: parallelstore
     version: 1.0.0
     apis:
       - path: google/cloud/parallelstore/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/parallelstore/v1beta
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/parallelstore/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/parallelstore/v1beta
   - name: parametermanager
     version: 1.0.0
     apis:
       - path: google/cloud/parametermanager/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/parametermanager/v1
   - name: phishingprotection
     version: 0.13.0
     apis:
       - path: google/cloud/phishingprotection/v1beta1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/phishingprotection/v1beta1
   - name: policysimulator
     version: 1.0.0
     apis:
       - path: google/cloud/policysimulator/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/policysimulator/v1
   - name: policytroubleshooter
     version: 1.15.0
     apis:
       - path: google/cloud/policytroubleshooter/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/policytroubleshooter/iam/v3
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/policytroubleshooter/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/policytroubleshooter/iam/v3
   - name: privatecatalog
     version: 0.15.0
     apis:
       - path: google/cloud/privatecatalog/v1beta1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/privatecatalog/v1beta1
   - name: privilegedaccessmanager
     version: 1.0.0
     apis:
       - path: google/cloud/privilegedaccessmanager/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/privilegedaccessmanager/v1
   - name: profiler
     version: 0.6.0
     keep:
@@ -2092,141 +1832,124 @@ libraries:
     version: 2.6.0
     apis:
       - path: google/pubsub/v1
-    keep:
-      - README.md
-    skip_release: true
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
             - F_proto_cloneof
           import_path: pubsub/v2/apiv1
           no_metadata: true
-          path: google/pubsub/v1
+    keep:
+      - README.md
+    skip_release: true
   - name: pubsublite
     version: 1.8.2
     apis:
       - path: google/cloud/pubsublite/v1
-    skip_release: true
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/pubsublite/v1
+    skip_release: true
   - name: rapidmigrationassessment
     version: 1.6.0
     apis:
       - path: google/cloud/rapidmigrationassessment/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/rapidmigrationassessment/v1
   - name: recaptchaenterprise
     version: 2.26.0
     apis:
       - path: google/cloud/recaptchaenterprise/v1
-      - path: google/cloud/recaptchaenterprise/v1beta1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
           import_path: recaptchaenterprise/v2/apiv1
-          path: google/cloud/recaptchaenterprise/v1
-        - enabled_generator_features:
+      - path: google/cloud/recaptchaenterprise/v1beta1
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
           import_path: recaptchaenterprise/v2/apiv1beta1
-          path: google/cloud/recaptchaenterprise/v1beta1
+    go:
       module_path_version: v2
   - name: recommendationengine
     version: 0.14.0
     apis:
       - path: google/cloud/recommendationengine/v1beta1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/recommendationengine/v1beta1
   - name: recommender
     version: 1.18.0
     apis:
       - path: google/cloud/recommender/v1
+        go:
+          enabled_generator_features:
+            - F_mtls_hard_bound_tokens
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/recommender/v1beta1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/recommender/v1
-        - enabled_generator_features:
-            - F_mtls_hard_bound_tokens
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/recommender/v1beta1
   - name: redis
     version: 1.23.0
     apis:
       - path: google/cloud/redis/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/redis/cluster/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/redis/v1beta1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/redis/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/redis/cluster/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/redis/v1beta1
   - name: resourcemanager
     version: 1.15.0
     apis:
       - path: google/cloud/resourcemanager/v3
+        go:
+          enabled_generator_features:
+            - F_mtls_hard_bound_tokens
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/resourcemanager/v2
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/resourcemanager/v2
-        - enabled_generator_features:
-            - F_mtls_hard_bound_tokens
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/resourcemanager/v3
   - name: retail
     version: 1.31.0
     apis:
       - path: google/cloud/retail/v2
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/retail/v2beta
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/retail/v2alpha
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/retail/v2
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/retail/v2beta
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/retail/v2alpha
   - name: root-module
     version: 0.123.0
     keep:
@@ -2238,576 +1961,515 @@ libraries:
     version: 1.21.0
     apis:
       - path: google/cloud/run/v2
-    keep:
-      - apiv2/locations_client.go
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/run/v2
+    keep:
+      - apiv2/locations_client.go
   - name: saasplatform
     version: 0.7.0
     apis:
       - path: google/cloud/saasplatform/saasservicemgmt/v1beta1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/saasplatform/saasservicemgmt/v1beta1
   - name: scheduler
     version: 1.16.0
     apis:
       - path: google/cloud/scheduler/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/scheduler/v1beta1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/scheduler/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/scheduler/v1beta1
   - name: secretmanager
     version: 1.20.0
     apis:
       - path: google/cloud/secretmanager/v1
+        go:
+          enabled_generator_features:
+            - F_mtls_hard_bound_tokens
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/secretmanager/v1beta2
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/secretmanager/v1
-        - enabled_generator_features:
-            - F_mtls_hard_bound_tokens
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/secretmanager/v1beta2
   - name: securesourcemanager
     version: 1.9.0
     apis:
       - path: google/cloud/securesourcemanager/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/securesourcemanager/v1
   - name: security
     version: 1.24.0
     apis:
       - path: google/cloud/security/privateca/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/security/publicca/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/security/publicca/v1beta1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/security/privateca/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/security/publicca/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/security/publicca/v1beta1
   - name: securitycenter
     version: 1.44.0
     apis:
       - path: google/cloud/securitycenter/v2
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/securitycenter/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/securitycenter/v1p1beta1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/securitycenter/settings/v1beta1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/securitycenter/v1beta1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/securitycenter/v2
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/securitycenter/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/securitycenter/v1p1beta1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/securitycenter/settings/v1beta1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/securitycenter/v1beta1
   - name: securitycentermanagement
     version: 1.6.0
     apis:
       - path: google/cloud/securitycentermanagement/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/securitycentermanagement/v1
   - name: securityposture
     version: 1.0.0
     apis:
       - path: google/cloud/securityposture/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/securityposture/v1
   - name: servicecontrol
     version: 1.18.0
     apis:
       - path: google/api/servicecontrol/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
           import_path: servicecontrol/apiv1
-          path: google/api/servicecontrol/v1
   - name: servicedirectory
     version: 1.17.0
     apis:
       - path: google/cloud/servicedirectory/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/servicedirectory/v1beta1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/servicedirectory/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/servicedirectory/v1beta1
   - name: servicehealth
     version: 1.7.0
     apis:
       - path: google/cloud/servicehealth/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/servicehealth/v1
   - name: servicemanagement
     version: 1.15.0
     apis:
       - path: google/api/servicemanagement/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
           import_path: servicemanagement/apiv1
-          path: google/api/servicemanagement/v1
   - name: serviceusage
     version: 1.14.0
     apis:
       - path: google/api/serviceusage/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
           import_path: serviceusage/apiv1
-          path: google/api/serviceusage/v1
   - name: shell
     version: 1.12.0
     apis:
       - path: google/cloud/shell/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/shell/v1
   - name: shopping
     version: 1.11.0
     apis:
       - path: google/shopping/css/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/shopping/merchant/promotions/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/shopping/merchant/quota/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/shopping/merchant/conversions/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/shopping/merchant/accounts/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/shopping/merchant/datasources/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/shopping/merchant/reports/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/shopping/merchant/notifications/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/shopping/merchant/lfp/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/shopping/merchant/ordertracking/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/shopping/merchant/issueresolution/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/shopping/merchant/products/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/shopping/merchant/inventories/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/shopping/merchant/notifications/v1beta
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/shopping/merchant/ordertracking/v1beta
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/shopping/merchant/products/v1beta
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/shopping/merchant/accounts/v1beta
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/shopping/merchant/quota/v1beta
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/shopping/merchant/promotions/v1beta
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/shopping/merchant/inventories/v1beta
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/shopping/merchant/reports/v1beta
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/shopping/merchant/issueresolution/v1beta
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/shopping/merchant/reviews/v1beta
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/shopping/merchant/lfp/v1beta
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/shopping/merchant/datasources/v1beta
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/shopping/merchant/conversions/v1beta
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/shopping/merchant/productstudio/v1alpha
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/shopping/type
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
           import_path: shopping/type
-          path: google/shopping/type
           proto_only: true
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/shopping/css/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/shopping/merchant/promotions/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/shopping/merchant/quota/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/shopping/merchant/conversions/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/shopping/merchant/accounts/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/shopping/merchant/datasources/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/shopping/merchant/reports/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/shopping/merchant/notifications/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/shopping/merchant/lfp/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/shopping/merchant/ordertracking/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/shopping/merchant/issueresolution/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/shopping/merchant/products/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/shopping/merchant/inventories/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/shopping/merchant/notifications/v1beta
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/shopping/merchant/ordertracking/v1beta
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/shopping/merchant/products/v1beta
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/shopping/merchant/accounts/v1beta
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/shopping/merchant/quota/v1beta
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/shopping/merchant/promotions/v1beta
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/shopping/merchant/inventories/v1beta
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/shopping/merchant/reports/v1beta
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/shopping/merchant/issueresolution/v1beta
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/shopping/merchant/reviews/v1beta
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/shopping/merchant/lfp/v1beta
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/shopping/merchant/datasources/v1beta
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/shopping/merchant/conversions/v1beta
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/shopping/merchant/productstudio/v1alpha
   - name: spanner
     version: 1.91.0
     apis:
       - path: google/spanner/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
+          no_metadata: true
       - path: google/spanner/adapter/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/spanner/executor/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/spanner/admin/database/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
+          no_metadata: true
       - path: google/spanner/admin/instance/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
+          no_metadata: true
     keep:
       - README.md
     skip_release: true
-    go:
-      go_apis:
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          no_metadata: true
-          path: google/spanner/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          no_metadata: true
-          path: google/spanner/admin/database/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          no_metadata: true
-          path: google/spanner/admin/instance/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/spanner/adapter/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/spanner/executor/v1
   - name: speech
     version: 1.35.0
     apis:
       - path: google/cloud/speech/v2
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/speech/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/speech/v1p1beta1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/speech/v2
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/speech/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/speech/v1p1beta1
   - name: storage
     version: 1.62.1
     apis:
       - path: google/storage/v2
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
+          import_path: storage/internal/apiv2
       - path: google/storage/control/v2
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
     keep:
       - README.md
     skip_release: true
     go:
       delete_generation_output_paths:
         - ../internal/generated/snippets/storage/internal
-      go_apis:
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          import_path: storage/internal/apiv2
-          path: google/storage/v2
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/storage/control/v2
   - name: storagebatchoperations
     version: 1.0.0
     apis:
       - path: google/cloud/storagebatchoperations/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/storagebatchoperations/v1
   - name: storageinsights
     version: 1.7.0
     apis:
       - path: google/cloud/storageinsights/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/storageinsights/v1
   - name: storagetransfer
     version: 1.18.0
     apis:
       - path: google/storagetransfer/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/storagetransfer/v1
   - name: streetview
     version: 1.0.0
     apis:
       - path: google/streetview/publish/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/streetview/publish/v1
   - name: support
     version: 1.10.0
     apis:
       - path: google/cloud/support/v2
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/support/v2beta
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/support/v2
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/support/v2beta
   - name: talent
     version: 1.13.0
     apis:
       - path: google/cloud/talent/v4
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/talent/v4beta1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/talent/v4
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/talent/v4beta1
   - name: telcoautomation
     version: 1.6.0
     apis:
       - path: google/cloud/telcoautomation/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/telcoautomation/v1
   - name: texttospeech
     version: 1.21.0
     apis:
       - path: google/cloud/texttospeech/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/texttospeech/v1
   - name: tpu
     version: 1.13.0
     apis:
       - path: google/cloud/tpu/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/tpu/v1
   - name: trace
     version: 1.16.0
     apis:
       - path: google/devtools/cloudtrace/v2
+        go:
+          client_package: trace
+          enabled_generator_features:
+            - F_mtls_hard_bound_tokens
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
+          import_path: trace/apiv2
       - path: google/devtools/cloudtrace/v1
-    go:
-      go_apis:
-        - client_package: trace
+        go:
+          client_package: trace
           enabled_generator_features:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
             - F_proto_cloneof
           import_path: trace/apiv1
           no_metadata: true
-          path: google/devtools/cloudtrace/v1
-        - client_package: trace
-          enabled_generator_features:
-            - F_mtls_hard_bound_tokens
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          import_path: trace/apiv2
-          path: google/devtools/cloudtrace/v2
   - name: translate
     version: 1.17.0
     apis:
       - path: google/cloud/translate/v3
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/translate/v3
           proto_package: google.cloud.translation.v3
   - name: vectorsearch
     version: 1.0.0
     apis:
       - path: google/cloud/vectorsearch/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/vectorsearch/v1beta
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/vectorsearch/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/vectorsearch/v1beta
   - name: vertexai
     version: 0.19.0
     keep:
@@ -2818,175 +2480,152 @@ libraries:
     version: 1.32.0
     apis:
       - path: google/cloud/video/livestream/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/video/transcoder/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/video/stitcher/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/video/livestream/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/video/transcoder/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/video/stitcher/v1
   - name: videointelligence
     version: 1.16.0
     apis:
       - path: google/cloud/videointelligence/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/videointelligence/v1p3beta1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/videointelligence/v1beta2
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/videointelligence/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/videointelligence/v1p3beta1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/videointelligence/v1beta2
   - name: vision
     version: 2.14.0
     apis:
       - path: google/cloud/vision/v1
-      - path: google/cloud/vision/v1p1beta1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
           import_path: vision/v2/apiv1
-          path: google/cloud/vision/v1
-        - enabled_generator_features:
+      - path: google/cloud/vision/v1p1beta1
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
           import_path: vision/v2/apiv1p1beta1
           no_metadata: true
-          path: google/cloud/vision/v1p1beta1
+    go:
       module_path_version: v2
   - name: visionai
     version: 1.0.0
     apis:
       - path: google/cloud/visionai/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/visionai/v1
   - name: vmmigration
     version: 1.15.0
     apis:
       - path: google/cloud/vmmigration/v1
-    keep:
-      - apiv1/iam_policy_client.go
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/vmmigration/v1
+    keep:
+      - apiv1/iam_policy_client.go
   - name: vmwareengine
     version: 1.8.0
     apis:
       - path: google/cloud/vmwareengine/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/vmwareengine/v1
   - name: vpcaccess
     version: 1.13.0
     apis:
       - path: google/cloud/vpcaccess/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/vpcaccess/v1
   - name: webrisk
     version: 1.16.0
     apis:
       - path: google/cloud/webrisk/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/webrisk/v1beta1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/webrisk/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/webrisk/v1beta1
   - name: websecurityscanner
     version: 1.12.0
     apis:
       - path: google/cloud/websecurityscanner/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/websecurityscanner/v1
   - name: workflows
     version: 1.19.0
     apis:
       - path: google/cloud/workflows/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/workflows/executions/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/workflows/executions/v1beta
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/workflows/v1beta
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/workflows/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/workflows/executions/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/workflows/executions/v1beta
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/workflows/v1beta
   - name: workloadmanager
     version: 1.0.0
     apis:
       - path: google/cloud/workloadmanager/v1
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/workloadmanager/v1
   - name: workstations
     version: 1.6.0
     apis:
       - path: google/cloud/workstations/v1
+        go:
+          enabled_generator_features:
+            - F_open_telemetry_attributes
+            - F_proto_cloneof
       - path: google/cloud/workstations/v1beta
-    go:
-      go_apis:
-        - enabled_generator_features:
+        go:
+          enabled_generator_features:
             - F_open_telemetry_attributes
             - F_proto_cloneof
-          path: google/cloud/workstations/v1
-        - enabled_generator_features:
-            - F_open_telemetry_attributes
-            - F_proto_cloneof
-          path: google/cloud/workstations/v1beta
