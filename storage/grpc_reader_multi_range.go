@@ -19,6 +19,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"hash/crc32"
 	"io"
 	"sync"
 
@@ -403,6 +404,10 @@ type rangeRequest struct {
 	readID       int64
 	bytesWritten int64
 	completed    bool
+
+	wantChunkCRC    uint32
+	gotChunkCRC     uint32
+	chunkCRCPresent bool
 }
 
 // Methods implementing internalMultiRangeDownloader
@@ -1057,12 +1062,31 @@ func (m *multiRangeDownloaderManager) processDataRanges(result mrdSessionResult,
 		if !exists || req.completed {
 			continue
 		}
-		written, _, err := result.decoder.writeToAndUpdateCRC(req.output, readID, nil)
+		if dataRange.GetChecksummedData() != nil && dataRange.GetChecksummedData().Crc32C != nil {
+			req.gotChunkCRC = 0
+			req.chunkCRCPresent = true
+			req.wantChunkCRC = *dataRange.GetChecksummedData().Crc32C
+		}
+		written, _, err := result.decoder.writeToAndUpdateCRC(req.output, readID, func(b []byte) {
+			if req.chunkCRCPresent {
+				req.gotChunkCRC = crc32.Update(req.gotChunkCRC, crc32cTable, b)
+			}
+		})
 		req.bytesWritten += written
 		mrdStream.updateCapacity(m, 0, -written)
 		if err != nil {
 			m.failRange(mrdStream, req, err)
 			continue
+		}
+
+		if req.chunkCRCPresent {
+			if req.gotChunkCRC != req.wantChunkCRC {
+				m.failRange(mrdStream, req, fmt.Errorf("storage: bad CRC on chunk read: got %d, want %d", req.gotChunkCRC, req.wantChunkCRC))
+				continue
+			}
+			req.gotChunkCRC = 0
+			req.wantChunkCRC = 0
+			req.chunkCRCPresent = false
 		}
 
 		if dataRange.GetRangeEnd() {
