@@ -1864,6 +1864,136 @@ func TestNewRangeReaderUnfinalizedEmulated(t *testing.T) {
 	// metadata.remain is likely inaccurate
 }
 
+// customChunkCRCReadStream intercepts ReadObjectResponse and BidiReadObjectResponse
+// messages and injects an invalid CRC32C checksum on the second data chunk.
+type customChunkCRCReadStream struct {
+	grpc.ClientStream
+	chunkCount int
+	isBidi     bool
+}
+
+func (s *customChunkCRCReadStream) RecvMsg(m any) error {
+	err := s.ClientStream.RecvMsg(m)
+	if err != nil {
+		return err
+	}
+
+	databufs, ok := m.(*mem.BufferSlice)
+	if !ok {
+		return errors.New("unable to cast received message to mem.BufferSlice")
+	}
+
+	if s.isBidi {
+		var resp storagepb.BidiReadObjectResponse
+		if uErr := proto.Unmarshal(databufs.Materialize(), &resp); uErr != nil {
+			return fmt.Errorf("failed to unmarshal BidiReadObjectResponse: %w", uErr)
+		}
+		if len(resp.ObjectDataRanges) > 0 && resp.ObjectDataRanges[0].ChecksummedData != nil && len(resp.ObjectDataRanges[0].ChecksummedData.Content) > 0 {
+			s.chunkCount++
+			if s.chunkCount == 2 {
+				var badCRC uint32 = 12345
+				resp.ObjectDataRanges[0].ChecksummedData.Crc32C = &badCRC
+			}
+		}
+		marshalled, mErr := proto.Marshal(&resp)
+		if mErr != nil {
+			return fmt.Errorf("failed to marshal modified BidiReadObjectResponse: %w", mErr)
+		}
+		updatedMsg := mem.BufferSlice{mem.SliceBuffer(marshalled)}
+		if ptr, ok := m.(*mem.BufferSlice); ok {
+			*ptr = updatedMsg
+		}
+	} else {
+		var resp storagepb.ReadObjectResponse
+		if uErr := proto.Unmarshal(databufs.Materialize(), &resp); uErr != nil {
+			return fmt.Errorf("failed to unmarshal ReadObjectResponse: %w", uErr)
+		}
+		if resp.ChecksummedData != nil && len(resp.ChecksummedData.Content) > 0 {
+			s.chunkCount++
+			if s.chunkCount == 2 {
+				var badCRC uint32 = 12345
+				resp.ChecksummedData.Crc32C = &badCRC
+			}
+		}
+		marshalled, mErr := proto.Marshal(&resp)
+		if mErr != nil {
+			return fmt.Errorf("failed to marshal modified ReadObjectResponse: %w", mErr)
+		}
+		updatedMsg := mem.BufferSlice{mem.SliceBuffer(marshalled)}
+		if ptr, ok := m.(*mem.BufferSlice); ok {
+			*ptr = updatedMsg
+		}
+	}
+
+	return nil
+}
+
+func TestReadObjectWrongChunkChecksumEmulated(t *testing.T) {
+	checkEmulatorEnvironment(t)
+
+	for _, bidiReads := range []bool{false, true} {
+		t.Run(fmt.Sprintf("bidiReads=%v", bidiReads), func(t *testing.T) {
+			ctx := context.Background()
+
+			streamInterceptor := grpc.WithStreamInterceptor(
+				func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
+					clientStream, err := streamer(ctx, desc, cc, method, opts...)
+
+					switch method {
+					case "/google.storage.v2.Storage/ReadObject":
+						clientStream = &customChunkCRCReadStream{ClientStream: clientStream, isBidi: false}
+					case "/google.storage.v2.Storage/BidiReadObject":
+						clientStream = &customChunkCRCReadStream{ClientStream: clientStream, isBidi: true}
+					}
+					return clientStream, err
+				})
+
+			var clientOpts []option.ClientOption
+			clientOpts = append(clientOpts, option.WithGRPCDialOption(streamInterceptor))
+			if bidiReads {
+				clientOpts = append(clientOpts, experimental.WithGRPCBidiReads())
+			}
+
+			client, err := NewGRPCClient(ctx, clientOpts...)
+			if err != nil {
+				t.Fatalf("NewGRPCClient: %v", err)
+			}
+
+			var (
+				contents = randomBytes9MiB
+				prefix   = time.Now().Nanosecond()
+				bucket   = fmt.Sprintf("bucket-%d", prefix)
+				objName  = fmt.Sprintf("%d-object", prefix)
+				o        = client.Bucket(bucket).Object(objName)
+			)
+
+			if err := client.Bucket(bucket).Create(ctx, "project", nil); err != nil {
+				t.Fatalf("creating test bucket: %v", err)
+			}
+			w := o.NewWriter(ctx)
+			if _, err = w.Write(contents); err != nil {
+				t.Fatalf("writing test data: got %v; want ok", err)
+			}
+			if err := w.Close(); err != nil {
+				t.Fatalf("closing test data writer: got %v; want ok", err)
+			}
+
+			// Download content and validate that it fails due to bad chunk CRC.
+			r, err := o.NewReader(ctx)
+			if err != nil {
+				t.Fatalf("NewReader: %v", err)
+			}
+			_, err = io.Copy(io.Discard, r)
+			if err == nil {
+				t.Fatalf("expected error due to bad chunk CRC, got nil")
+			}
+			if got, want := err.Error(), "bad CRC on chunk read"; !strings.Contains(got, want) {
+				t.Errorf("error mismatch: got %q, want to contain %q", got, want)
+			}
+		})
+	}
+}
+
 func TestListNotificationsEmulated(t *testing.T) {
 	transportClientTest(skipGRPC("notifications not implemented"), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
 		// Populate test object.
