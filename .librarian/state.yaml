@@ -657,7 +657,7 @@ libraries:
       - internal/generated/snippets/channel/
     tag_format: '{id}/v{version}'
   - id: chat
-    version: 1.0.0
+    version: 1.1.0
     last_generated_commit: ""
     apis:
       - path: google/chat/v1
@@ -807,7 +807,7 @@ libraries:
       - internal/generated/snippets/commerce/
     tag_format: '{id}/v{version}'
   - id: compute
-    version: 1.62.0
+    version: 1.63.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/compute/v1
@@ -893,7 +893,7 @@ libraries:
       - internal/generated/snippets/contactcenterinsights/
     tag_format: '{id}/v{version}'
   - id: container
-    version: 1.51.0
+    version: 1.52.0
     last_generated_commit: ""
     apis:
       - path: google/container/v1
@@ -921,7 +921,7 @@ libraries:
       - internal/generated/snippets/containeranalysis/
     tag_format: '{id}/v{version}'
   - id: datacatalog
-    version: 1.31.0
+    version: 1.32.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/datacatalog/lineage/v1
@@ -1027,7 +1027,7 @@ libraries:
       - internal/generated/snippets/dataplex/
     tag_format: '{id}/v{version}'
   - id: dataproc
-    version: 2.21.0
+    version: 2.22.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/dataproc/v1
@@ -1346,7 +1346,7 @@ libraries:
       - internal/generated/snippets/functions/
     tag_format: '{id}/v{version}'
   - id: geminidataanalytics
-    version: 1.0.0
+    version: 1.1.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/geminidataanalytics/v1beta
