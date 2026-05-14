@@ -17,6 +17,7 @@ package wire
 import (
 	"fmt"
 	"sync"
+	"sync/atomic"
 
 	"github.com/IBM/sarama"
 
@@ -36,6 +37,15 @@ const (
 // KafkaPublisher implements the Publisher interface backed by a Sarama
 // AsyncProducer. It converts PubSubMessage protos to Kafka ProducerMessages and
 // dispatches results via PublishResultFunc callbacks.
+//
+// Concurrency model:
+//   - status is an atomic so Publish/Start/Stop need no mutex to inspect or
+//     transition lifecycle state.
+//   - inFlight counts Publish calls that have passed the status gate but not
+//     yet completed their producer.Input() send. Stop waits on this WaitGroup
+//     before calling AsyncClose so we never send on a closed channel.
+//   - errMu protects err only; it is written from the error dispatcher
+//     goroutine and read via Error().
 type KafkaPublisher struct {
 	// Immutable after creation.
 	topicName string
@@ -45,12 +55,15 @@ type KafkaPublisher struct {
 	waitStarted    chan struct{}
 	waitTerminated chan struct{}
 
-	// WaitGroup for dispatcher goroutines.
-	wg sync.WaitGroup
+	// status holds a kafkaPublisherStatus value. Stored as int32 for atomic
+	// access — see CompareAndSwap calls in Start and Stop.
+	status atomic.Int32
 
-	mu     sync.Mutex
-	status kafkaPublisherStatus
-	err    error
+	wg       sync.WaitGroup // dispatcher goroutines
+	inFlight sync.WaitGroup // Publish calls between status check and channel send
+
+	errMu sync.Mutex
+	err   error
 }
 
 // NewKafkaPublisher creates a new KafkaPublisher wrapping the given
@@ -59,12 +72,12 @@ type KafkaPublisher struct {
 // the producer (see validateKafkaPublisherConfig); the AsyncProducer interface
 // itself does not expose its config.
 func NewKafkaPublisher(producer sarama.AsyncProducer, topicName string) *KafkaPublisher {
+	// status defaults to 0 == kafkaPublisherUninitialized via atomic.Int32 zero value.
 	return &KafkaPublisher{
 		topicName:      topicName,
 		producer:       producer,
 		waitStarted:    make(chan struct{}),
 		waitTerminated: make(chan struct{}),
-		status:         kafkaPublisherUninitialized,
 	}
 }
 
@@ -72,13 +85,17 @@ func NewKafkaPublisher(producer sarama.AsyncProducer, topicName string) *KafkaPu
 // asynchronously. The onResult callback is invoked when the message is
 // acknowledged by Kafka or fails.
 func (kp *KafkaPublisher) Publish(msg *pb.PubSubMessage, onResult PublishResultFunc) {
-	kp.mu.Lock()
-	if kp.status != kafkaPublisherActive {
-		kp.mu.Unlock()
+	// Add to inFlight before checking status so Stop's Wait() observes us.
+	// Without this guard, Stop could call AsyncClose() (which closes the
+	// producer's Input channel) between our status check and our channel send,
+	// causing a "send on closed channel" panic.
+	kp.inFlight.Add(1)
+	defer kp.inFlight.Done()
+
+	if kp.status.Load() != int32(kafkaPublisherActive) {
 		onResult(nil, ErrServiceStopped)
 		return
 	}
-	kp.mu.Unlock()
 
 	pm := pubsubMessageToProducerMessage(kp.topicName, msg)
 	pm.Metadata = onResult // Store callback for correlation in result dispatchers.
@@ -88,13 +105,9 @@ func (kp *KafkaPublisher) Publish(msg *pb.PubSubMessage, onResult PublishResultF
 
 // Start initializes the publisher and starts result dispatcher goroutines.
 func (kp *KafkaPublisher) Start() {
-	kp.mu.Lock()
-	defer kp.mu.Unlock()
-
-	if kp.status != kafkaPublisherUninitialized {
-		return
+	if !kp.status.CompareAndSwap(int32(kafkaPublisherUninitialized), int32(kafkaPublisherActive)) {
+		return // already started (or beyond)
 	}
-	kp.status = kafkaPublisherActive
 	close(kp.waitStarted)
 
 	// Dispatcher for successful publishes.
@@ -135,9 +148,7 @@ func (kp *KafkaPublisher) Start() {
 	// AsyncClose, then marks the publisher as terminated.
 	go func() {
 		kp.wg.Wait()
-		kp.mu.Lock()
-		kp.status = kafkaPublisherTerminated
-		kp.mu.Unlock()
+		kp.status.Store(int32(kafkaPublisherTerminated))
 		close(kp.waitTerminated)
 	}()
 }
@@ -151,14 +162,17 @@ func (kp *KafkaPublisher) WaitStarted() error {
 // Stop initiates a graceful shutdown. Pending messages are flushed before the
 // producer channels are closed.
 func (kp *KafkaPublisher) Stop() {
-	kp.mu.Lock()
-	if kp.status >= kafkaPublisherTerminating {
-		kp.mu.Unlock()
+	// Only the first transition to terminating proceeds. Active → terminating
+	// is the only valid edge here; if we're uninitialized or already past
+	// terminating, return.
+	if !kp.status.CompareAndSwap(int32(kafkaPublisherActive), int32(kafkaPublisherTerminating)) {
 		return
 	}
-	kp.status = kafkaPublisherTerminating
-	kp.mu.Unlock()
 
+	// Wait for any Publish that already passed the status gate to finish its
+	// send to producer.Input(); only then is it safe to AsyncClose, which
+	// closes the Input channel.
+	kp.inFlight.Wait()
 	kp.producer.AsyncClose()
 }
 
@@ -170,14 +184,14 @@ func (kp *KafkaPublisher) WaitStopped() error {
 
 // Error returns the first error that caused the publisher to fail, or nil.
 func (kp *KafkaPublisher) Error() error {
-	kp.mu.Lock()
-	defer kp.mu.Unlock()
+	kp.errMu.Lock()
+	defer kp.errMu.Unlock()
 	return kp.err
 }
 
 func (kp *KafkaPublisher) setError(err error) {
-	kp.mu.Lock()
-	defer kp.mu.Unlock()
+	kp.errMu.Lock()
+	defer kp.errMu.Unlock()
 	if kp.err == nil {
 		kp.err = err
 	}
