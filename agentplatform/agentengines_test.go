@@ -16,6 +16,7 @@ package agentplatform
 
 import (
 	"fmt"
+	"net/http"
 	"testing"
 	"time"
 
@@ -25,13 +26,29 @@ import (
 	"google.golang.org/genai"
 )
 
-func TestAgentEngines(t *testing.T) {
-	if *mode != apiMode {
-		t.Skipf("Skipping %s. We only tun these in the api mode.", t.Name())
+func createClient(t *testing.T) (*Client, *MockServer) {
+	t.Helper()
+	config := &genai.ClientConfig{}
+	mockServer := NewMockServer(t)
+	if *mode == unitMode {
+		config = &genai.ClientConfig{
+			HTTPOptions: genai.HTTPOptions{
+				BaseURL: mockServer.Server.URL,
+			},
+			HTTPClient: mockServer.Server.Client(),
+		}
 	}
+	return newTestClientWithConfig(t, config), mockServer
+}
 
+func TestAgentEngines(t *testing.T) {
 	t.Run("Create", func(tt *testing.T) {
-		client := newTestClient(tt)
+		if *mode != apiMode && *mode != unitMode {
+			tt.Skipf("Skipping %s. [%s] mode is not supported for this test.", t.Name(), *mode)
+		}
+
+		client, mockServer := createClient(t)
+
 		l := client.AgentEngines.apiClient.ClientConfig().Location
 		p := client.AgentEngines.apiClient.ClientConfig().Project
 		model := fmt.Sprintf("projects/%s/locations/%s/publishers/google/models/gemini-2.0-flash-001", p, l)
@@ -77,6 +94,50 @@ func TestAgentEngines(t *testing.T) {
 				},
 			},
 		}
+
+		mockServer.AddResponses(
+			&MockResponse{
+				StatusCode: http.StatusOK,
+				Body: &types.AgentEngineOperation{
+					Name: "projects/test-project/locations/global/agentEngines/test-agent-engine/operations/test-operation",
+					Done: false,
+				},
+			},
+			&MockResponse{
+				StatusCode: http.StatusOK,
+				Body: &types.AgentEngineOperation{
+					Name: "projects/test-project/locations/global/agentEngines/test-agent-engine/operations/test-operation",
+					Done: true,
+					Response: &types.ReasoningEngine{
+						Name:        "projects/test-project/locations/global/agentEngines/test-agent-engine",
+						DisplayName: "TestAgentEngines/Create",
+						Description: "You can remove this agent engine if it is older than 10 minutes. It must be an orphan AE.",
+					},
+				},
+			},
+			&MockResponse{
+				StatusCode: http.StatusOK,
+				Body: &types.AgentEngineOperation{
+					Name: "projects/test-project/locations/global/agentEngines/test-agent-engine/operations/test-operation",
+					Done: true,
+				},
+			},
+			&MockResponse{
+				StatusCode: http.StatusOK,
+				Body: &types.DeleteAgentEngineOperation{
+					Name: "projects/test-project/locations/global/agentEngines/test-agent-engine/operations/test-operation",
+					Done: true,
+				},
+			},
+			&MockResponse{
+				StatusCode: http.StatusOK,
+				Body: &types.AgentEngineOperation{
+					Name: "projects/test-project/locations/global/agentEngines/test-agent-engine/operations/test-operation",
+					Done: true,
+				},
+			},
+		)
+
 		re := createAgentEngineAndWait(t, tt, client, request)
 		if got, want := re.DisplayName, request.DisplayName; got != want {
 			tt.Errorf("create() returned DisplayName %v, want %v", got, want)
@@ -87,6 +148,10 @@ func TestAgentEngines(t *testing.T) {
 	})
 
 	t.Run("Delete", func(tt *testing.T) {
+		if *mode != apiMode {
+			tt.Skipf("Skipping %s. [%s] mode is not supported for this test.", t.Name(), *mode)
+		}
+
 		ctx := tt.Context()
 		client := newTestClient(t)
 		re := createAgentEngineAndWait(t, tt, client, nil)
@@ -105,6 +170,10 @@ func TestAgentEngines(t *testing.T) {
 	})
 
 	t.Run("Get", func(tt *testing.T) {
+		if *mode != apiMode {
+			tt.Skipf("Skipping %s. [%s] mode is not supported for this test.", t.Name(), *mode)
+		}
+
 		ctx := tt.Context()
 		client := newTestClient(tt)
 		want := &types.ReasoningEngine{
@@ -130,6 +199,10 @@ func TestAgentEngines(t *testing.T) {
 	})
 
 	t.Run("List", func(tt *testing.T) {
+		if *mode != apiMode {
+			tt.Skipf("Skipping %s. [%s] mode is not supported for this test.", t.Name(), *mode)
+		}
+
 		ctx := tt.Context()
 		client := newTestClient(tt)
 		createAgentEngineAndWait(t, tt, client, nil)
@@ -143,6 +216,10 @@ func TestAgentEngines(t *testing.T) {
 	})
 
 	t.Run("Update", func(tt *testing.T) {
+		if *mode != apiMode {
+			tt.Skipf("Skipping %s. [%s] mode is not supported for this test.", t.Name(), *mode)
+		}
+
 		ctx := tt.Context()
 		client := newTestClient(tt)
 		re := createAgentEngineAndWait(t, tt, client, nil)
