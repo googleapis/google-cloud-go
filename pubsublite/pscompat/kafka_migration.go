@@ -109,13 +109,13 @@ type MigrationConfig struct {
 // Kafka offset via publish-time timestamps and commits the resolved offsets
 // to the Kafka consumer group in a single batch. The implementation mirrors
 // Java's OffsetMigrationHelper and runs in five steps:
-//   1. List PSL committed offsets for the subscription.
-//   2. For each partition, look up the message at that PSL offset and read its
-//      publish timestamp.
-//   3. Resolve the corresponding Kafka offset by timestamp lookup on the
-//      Kafka topic.
-//   4. Commit the resolved offsets to the Kafka consumer group in one batch.
-//   5. Optionally re-read the committed offsets to confirm.
+//  1. List PSL committed offsets for the subscription.
+//  2. For each partition, look up the message at that PSL offset and read its
+//     publish timestamp.
+//  3. Resolve the corresponding Kafka offset by timestamp lookup on the
+//     Kafka topic.
+//  4. Commit the resolved offsets to the Kafka consumer group in one batch.
+//  5. Optionally re-read the committed offsets to confirm.
 func MigrateOffsets(ctx context.Context, cfg *MigrationConfig) (map[int32]MigrationResult, error) {
 	if err := validateMigrationConfig(cfg); err != nil {
 		return nil, err
