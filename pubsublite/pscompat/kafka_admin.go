@@ -186,7 +186,18 @@ func (c *KafkaAdminClient) UpdateTopic(_ context.Context, topic string) error {
 
 // IncreasePartitions grows a topic's partition count. Kafka only supports
 // monotonically increasing partition counts; shrinking is not possible.
+//
+// Note: increasing partitions on a live topic does not redistribute existing
+// data. Producers using the default partitioner will start routing keys to
+// the new partition layout immediately, which can break per-key ordering
+// guarantees for keys whose hash now maps to a different partition. Existing
+// records remain on their original partitions and are not rebalanced. Most
+// callers will want to coordinate this with their producers/consumers (and
+// any downstream stateful processors) before calling.
 func (c *KafkaAdminClient) IncreasePartitions(_ context.Context, topic string, newCount int32) error {
+	log.Printf("WARNING: gmk: IncreasePartitions(%q, %d): existing data is not rebalanced across the new partitions, "+
+		"and key→partition assignments will change for any keys whose hash now maps to a different partition; "+
+		"per-key ordering may be broken until you manually rebalance", topic, newCount)
 	return c.admin.CreatePartitions(topic, newCount, nil, false)
 }
 
