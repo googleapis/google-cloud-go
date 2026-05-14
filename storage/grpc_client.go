@@ -1612,8 +1612,8 @@ func (r *gRPCReader) runCRCCheck() error {
 	if r.checkCRC && r.gotCRC != r.wantCRC {
 		return fmt.Errorf("storage: bad CRC on read: got %d, want %d", r.gotCRC, r.wantCRC)
 	}
-	if r.chunkCRCPresent && r.gotChunkCRC != r.wantChunkCRC {
-		return fmt.Errorf("storage: bad CRC on read chunk: got %d, want %d", r.gotChunkCRC, r.wantChunkCRC)
+	if err := r.checkAndResetChunkCRC(); err != nil {
+		return err
 	}
 	return nil
 }
@@ -1662,10 +1662,10 @@ func (r *gRPCReader) Read(p []byte) (int, error) {
 			}
 			// If we are done reading the current msg, validate chunk checksum and free buffers.
 			if r.currMsg.done {
+				r.currMsg.databufs.Free()
 				if err := r.checkAndResetChunkCRC(); err != nil {
 					return n, err
 				}
-				r.currMsg.databufs.Free()
 			}
 
 			// If data for our readID was found, we can return.

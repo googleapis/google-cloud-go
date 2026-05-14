@@ -341,10 +341,8 @@ func (r *gRPCReadObjectReader) Read(p []byte) (int, error) {
 			}
 		}
 		return n, nil
-	} else {
-		if err := r.checkAndResetChunkCRC(); err != nil {
-			return 0, err
-		}
+	} else if err := r.checkAndResetChunkCRC(); err != nil {
+		return 0, err
 	}
 
 	// Attempt to Recv the next message on the stream.
