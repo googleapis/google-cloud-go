@@ -146,6 +146,29 @@ func TestStage(t *testing.T) {
 			wantSnippetVersion:  `"version": "1.16.0"`,
 		},
 		{
+			name: "success-preview",
+			requestJSON: `{ 
+				"libraries": [{ 
+					"id": "secretmanager-preview", "version": "1.16.0-preview.1", "release_triggered": true,
+					"source_roots": ["preview/internal/secretmanager"],
+					"apis": [{"path": "google/cloud/secretmanager/v1"}],
+					"changes": [
+						{"type": "feat", "subject": "another feature", "commit_hash": "zxcvbn098765"},
+						{"type": "fix", "subject": "correct typo in documentation", "commit_hash": "123456abcdef"},
+						{"type": "feat", "subject": "add new GetSecret API", "commit_hash": "abcdef123456"}
+					],
+					"tag_format": "{id}/v{version}"
+				}]
+			}`,
+			initialRepoContent: map[string]string{
+				"preview/internal/secretmanager/CHANGES.md":          "# Changes\n\n## [1.15.0]\n- Old stuff.",
+				"preview/internal/secretmanager/internal/version.go": `package internal; const Version = "1.15.0"`,
+			},
+			moduleRootPath:      "preview/internal/secretmanager",
+			wantChangelogSubstr: "## [1.16.0-preview.1](https://github.com/googleapis/google-cloud-go/releases/tag/secretmanager%2Fv1.16.0-preview.1) (2025-09-11)\n\n### Features\n\n* add new GetSecret API ([abcdef1](https://github.com/googleapis/google-cloud-go/commit/abcdef123456))\n* another feature ([zxcvbn0](https://github.com/googleapis/google-cloud-go/commit/zxcvbn098765))\n\n### Bug Fixes\n\n* correct typo in documentation ([123456a](https://github.com/googleapis/google-cloud-go/commit/123456abcdef))\n\n",
+			wantVersion:         "1.16.0-preview.1",
+		},
+		{
 			name:                "release not triggered",
 			requestJSON:         `{ "libraries": [{"id": "secretmanager", "version": "1.16.0", "release_triggered": false}] }`,
 			releaseNotTriggered: true,

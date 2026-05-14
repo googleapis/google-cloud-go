@@ -66,19 +66,30 @@ func Stage(ctx context.Context, cfg *Config) error {
 			continue
 		}
 		moduleConfig := repoConfig.GetModuleConfig(lib.ID)
+		var previewModule string
+		if strings.HasSuffix(lib.ID, "-preview") {
+			previewModule = strings.TrimSuffix(lib.ID, "-preview")
+		}
 
 		var moduleDir string
 		if isRootRepoModule(lib) {
 			moduleDir = cfg.OutputDir
 		} else {
 			moduleDir = filepath.Join(cfg.OutputDir, lib.ID)
+			if previewModule != "" {
+				moduleDir = filepath.Join(cfg.OutputDir, "preview", "internal", previewModule)
+			}
 		}
 		slog.Info("librariangen: processing library for release", "id", lib.ID, "version", lib.Version)
-		if err := updateChangelog(cfg, lib, now().UTC()); err != nil {
+		if err := updateChangelog(cfg, lib, now().UTC(), previewModule); err != nil {
 			return writeErrorResponse(cfg.LibrarianDir, fmt.Errorf("librariangen: failed to update changelog for %s: %w", lib.ID, err))
 		}
 		if err := module.GenerateInternalVersionFile(moduleDir, lib.Version); err != nil {
 			return writeErrorResponse(cfg.LibrarianDir, fmt.Errorf("librariangen: failed to update version for %s: %w", lib.ID, err))
+		}
+		if previewModule != "" {
+			// Skip snippet updates for preview modules, which don't have snippets.
+			continue
 		}
 		if err := module.UpdateSnippetsMetadata(lib, cfg.RepoDir, cfg.OutputDir, moduleConfig); err != nil {
 			return writeErrorResponse(cfg.LibrarianDir, fmt.Errorf("librariangen: failed to update snippet version for %s: %w", lib.ID, err))
@@ -99,10 +110,12 @@ var changelogSections = []struct {
 	{Type: "docs", Section: "Documentation"},
 }
 
-func updateChangelog(cfg *Config, lib *request.Library, t time.Time) error {
+func updateChangelog(cfg *Config, lib *request.Library, t time.Time, previewModule string) error {
 	var relativeChangelogPath string
 	if isRootRepoModule(lib) {
 		relativeChangelogPath = "CHANGES.md"
+	} else if previewModule != "" {
+		relativeChangelogPath = filepath.Join("preview", "internal", previewModule, "CHANGES.md")
 	} else {
 		relativeChangelogPath = filepath.Join(lib.ID, "CHANGES.md")
 	}
@@ -122,7 +135,11 @@ func updateChangelog(cfg *Config, lib *request.Library, t time.Time) error {
 
 	var newEntry bytes.Buffer
 
-	tag := strings.NewReplacer("{id}", lib.ID, "{version}", lib.Version).Replace(lib.TagFormat)
+	moduleName := lib.ID
+	if previewModule != "" {
+		moduleName = previewModule
+	}
+	tag := strings.NewReplacer("{id}", moduleName, "{version}", lib.Version).Replace(lib.TagFormat)
 	encodedTag := strings.ReplaceAll(tag, "/", "%2F")
 	releaseURL := "https://github.com/googleapis/google-cloud-go/releases/tag/" + encodedTag
 	date := t.Format("2006-01-02")
