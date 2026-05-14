@@ -286,9 +286,6 @@ func (r *gRPCReadObjectReader) runCRCCheck() error {
 	if r.checkCRC && r.gotCRC != r.wantCRC {
 		return fmt.Errorf("storage: bad CRC on read: got %d, want %d", r.gotCRC, r.wantCRC)
 	}
-	if err := r.checkAndResetChunkCRC(); err != nil {
-		return err
-	}
 	return nil
 }
 
@@ -305,12 +302,9 @@ func (r *gRPCReadObjectReader) checkAndResetChunkCRC() error {
 
 // Read reads bytes into the user's buffer from an open gRPC stream.
 func (r *gRPCReadObjectReader) Read(p []byte) (int, error) {
-	if r.zeroRange {
-		return 0, io.EOF
-	}
 	// The entire object has been read by this reader, check the checksum if
 	// necessary and return EOF.
-	if r.size == r.seen {
+	if r.size == r.seen || r.zeroRange {
 		if err := r.runCRCCheck(); err != nil {
 			return 0, err
 		}
@@ -349,12 +343,6 @@ func (r *gRPCReadObjectReader) Read(p []byte) (int, error) {
 	// This will update r.currMsg with the decoder for the new message.
 	err := r.recv()
 	if err != nil {
-		if err == io.EOF {
-			// We are done; check the checksum if necessary and return.
-			if checksumErr := r.runCRCCheck(); checksumErr != nil {
-				return 0, checksumErr
-			}
-		}
 		return 0, err
 	}
 
@@ -388,12 +376,9 @@ func (r *gRPCReadObjectReader) Read(p []byte) (int, error) {
 // WriteTo writes all the data requested by the Reader into w, implementing
 // io.WriterTo.
 func (r *gRPCReadObjectReader) WriteTo(w io.Writer) (int64, error) {
-	if r.zeroRange {
-		return 0, nil
-	}
 	// The entire object has been read by this reader, check the checksum if
 	// necessary and return nil.
-	if r.size == r.seen {
+	if r.size == r.seen || r.zeroRange {
 		if err := r.runCRCCheck(); err != nil {
 			return 0, err
 		}
