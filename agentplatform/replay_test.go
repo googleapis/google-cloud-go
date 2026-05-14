@@ -36,14 +36,26 @@ var (
 	embeddingModel  = fmt.Sprintf("%s/publishers/google/models/text-embedding-005", parent)
 )
 
-func newTestClientWithConfig(t testing.TB, config *genai.ClientConfig) *Client {
-	config.Backend = genai.BackendVertexAI
+func newTestClientWithReplay(t *testing.T, replayGroup, replay string) (*Client, *genai.InternalReplayAPIClient) {
 	t.Helper()
+	config := &genai.ClientConfig{
+		Backend: genai.BackendVertexAI,
+	}
+	replayAPIClient := createReplayAPIClient(t, replayGroup, replay)
+	if *mode == replayMode {
+		config = &genai.ClientConfig{
+			HTTPOptions: genai.HTTPOptions{
+				BaseURL: replayAPIClient.GetBaseURL(),
+			},
+			HTTPClient: replayAPIClient.GetTestServer().Client(),
+		}
+	}
+
 	client, err := NewClient(t.Context(), config)
 	if err != nil {
 		t.Fatal(err)
 	}
-	return client
+	return client, replayAPIClient
 }
 
 func readRequestFromReplayFile[T any](t *testing.T, replayClient *genai.InternalReplayAPIClient) *T {
@@ -75,12 +87,8 @@ func createReplayAPIClient(t *testing.T, testGroup string, replayFileName string
 	return replayAPIClient
 }
 
-func TestCreateAgentEngine_WithReplay(t *testing.T) {
-	if *mode != replayMode && *mode != apiMode {
-		t.Skipf("Skipping %s. We only run these tests in the %s and %s modes.", t.Name(), replayMode, apiMode)
-	}
-
-	testCases := []struct {
+func TestReplays(t *testing.T) {
+	createAgentEngineTestCases := []struct {
 		replay string
 	}{
 		{
@@ -94,19 +102,14 @@ func TestCreateAgentEngine_WithReplay(t *testing.T) {
 		},
 	}
 
-	for _, tc := range testCases {
-		t.Run(tc.replay, func(t *testing.T) {
-			replayAPIClient := createReplayAPIClient(t, "create_agent_engine", tc.replay)
-			config := &genai.ClientConfig{}
-			if *mode == replayMode {
-				config = &genai.ClientConfig{
-					HTTPOptions: genai.HTTPOptions{
-						BaseURL: replayAPIClient.GetBaseURL(),
-					},
-					HTTPClient: replayAPIClient.GetTestServer().Client(),
-				}
+	for _, tc := range createAgentEngineTestCases {
+		t.Run(fmt.Sprintf("create_agent_engine/%s", tc.replay), func(t *testing.T) {
+			if *mode != replayMode {
+				t.Skipf("unsupported mode: %s", *mode)
 			}
-			client := newTestClientWithConfig(t, config)
+
+			// Create the client and replay API client.
+			client, replayAPIClient := newTestClientWithReplay(t, "create_agent_engine", tc.replay)
 
 			// Create the AgentEngine.
 			request := readRequestFromReplayFile[types.CreateAgentEngineConfig](t, replayAPIClient)
@@ -142,4 +145,48 @@ func TestCreateAgentEngine_WithReplay(t *testing.T) {
 			}
 		})
 	}
+
+	t.Run("ae_memories_private_create/test_private_create_memory", func(tt *testing.T) {
+		if *mode != replayMode {
+			tt.Skipf("unsupported mode: %s", *mode)
+		}
+
+		// Create the client and replay API client.
+		client, _ := newTestClientWithReplay(tt, "ae_memories_private_create", "test_private_create_memory")
+
+		// Create the AgentEngineMemory
+		name := "projects/964831358985/locations/us-central1/reasoningEngines/2886612747586371584"
+		fact := "memory_fact"
+		scope := map[string]string{"user_id": "123"}
+		createOp, err := client.AgentEngines.Memories.Create(tt.Context(), name, fact, scope, nil)
+		if err != nil {
+			tt.Fatalf("create() failed unexpectedly: %v", err)
+		}
+
+		// Assert that the operation is of type AgentEngineMemoryOperation
+		if createOp.Name == "" {
+			tt.Errorf("create(), want not empty, got empty, createOp: %v", createOp)
+		}
+	})
+
+	t.Run("ae_memories_delete/test_delete_memory", func(tt *testing.T) {
+		if *mode != replayMode {
+			tt.Skipf("unsupported mode: %s", *mode)
+		}
+
+		// Create the client and replay API client.
+		client, _ := newTestClientWithReplay(tt, "ae_memories_delete", "test_delete_memory")
+
+		// Create the AgentEngineMemory
+		name := "projects/964831358985/locations/us-central1/reasoningEngines/2886612747586371584/memories/5605466683931099136"
+		deleteOp, err := client.AgentEngines.Memories.Delete(tt.Context(), name, nil)
+		if err != nil {
+			tt.Fatalf("delete() failed unexpectedly: %v", err)
+		}
+
+		// Assert that the operation is of type AgentEngineMemoryOperation
+		if deleteOp.Name == "" {
+			tt.Errorf("delete(), want not empty, got empty, deleteOp: %v", deleteOp)
+		}
+	})
 }

@@ -28,7 +28,9 @@ import (
 
 func createClient(t *testing.T) (*Client, *MockServer) {
 	t.Helper()
-	config := &genai.ClientConfig{}
+	config := &genai.ClientConfig{
+		Backend: genai.BackendVertexAI,
+	}
 	mockServer := NewMockServer(t)
 	if *mode == unitMode {
 		config = &genai.ClientConfig{
@@ -38,7 +40,11 @@ func createClient(t *testing.T) (*Client, *MockServer) {
 			HTTPClient: mockServer.Server.Client(),
 		}
 	}
-	return newTestClientWithConfig(t, config), mockServer
+	client, err := NewClient(t.Context(), config)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return client, mockServer
 }
 
 func TestAgentEngines(t *testing.T) {
