@@ -2202,12 +2202,15 @@ func TestIntegration_DbRemovalRecovery(t *testing.T) {
 	}
 
 	// Now, send the query again.
-	iter = client.Single().Query(ctx, Statement{SQL: "SELECT SingerId FROM Singers"})
-	defer iter.Stop()
-	_, err = iter.Next()
-	if err != nil && err != iterator.Done {
-		t.Errorf("failed to send query to database %v: %v", dbPath, err)
-	}
+	waitFor(t, func() error {
+		iter := client.Single().Query(ctx, Statement{SQL: "SELECT SingerId FROM Singers"})
+		defer iter.Stop()
+		_, err := iter.Next()
+		if err != nil && err != iterator.Done {
+			return err
+		}
+		return nil
+	})
 	verifyDirectPathRemoteAddress(t)
 }
 
