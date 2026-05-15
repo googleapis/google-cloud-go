@@ -101,6 +101,10 @@ func parseDatabases() map[string]firestoreEdition {
 		DefaultDatabaseID: editionStandard,
 	}
 
+	if os.Getenv(envEmulator) != "" {
+		return databases
+	}
+
 	databasesStr, ok := os.LookupEnv(envDatabases)
 	if ok {
 		for _, databaseID := range strings.Split(databasesStr, ",") {
@@ -3134,6 +3138,17 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 					wantErr = tc.wantErr[currentEdition]
 				}
 				wantResult := tc.wantResult[currentEdition]
+
+				if useEmulator {
+					// Emulator behaves differently for "Aggregation on non existent key"
+					if tc.desc == "Aggregation on non existent key" {
+						wantErr = false
+						wantResult = AggregationResult{
+							"key_avg1": &pb.Value{ValueType: &pb.Value_NullValue{NullValue: structpb.NullValue_NULL_VALUE}},
+							"key_sum1": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(0)}},
+						}
+					}
+				}
 
 				// Compare expected and actual results
 				if err != nil && !wantErr {
