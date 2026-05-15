@@ -331,3 +331,27 @@ func Benchmark_Client_ReadLargeResultSet_Reuse(b *testing.B) {
 		}
 	}
 }
+
+func Benchmark_Client_ReadLargeResultSet_FastCodec(b *testing.B) {
+	server, client, teardown := createBenchmarkServer()
+	defer teardown()
+
+	server.TestSpanner.PutStatementResult(SelectSingerIDAlbumIDAlbumTitleFromAlbums, server.CreateSingersResults(100000, true))
+
+	b.ResetTimer()
+	for n := 0; n < b.N; n++ {
+		iter := client.Single().QueryWithOptions(context.Background(), NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums), QueryOptions{FastDecoding: true})
+		var singerID, albumID int64
+		var albumTitle string
+		err := iter.DoWithReuse(func(row *Row) error {
+			singerID, _ = row.Int64(0)
+			albumID, _ = row.Int64(1)
+			albumTitle, _ = row.StringVal(2)
+			return nil
+		})
+		if err != nil {
+			b.Fatal(err)
+		}
+		_, _, _ = singerID, albumID, albumTitle
+	}
+}

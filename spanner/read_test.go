@@ -822,6 +822,7 @@ func TestRsdNonblockingStates(t *testing.T) {
 				mc.(*grpcSpannerClient),
 				false,
 				false,
+				nil,
 			)
 			st := []resumableStreamDecoderState{}
 			var lastErr error
@@ -1129,6 +1130,7 @@ func TestRsdBlockingStates(t *testing.T) {
 				mc.(*grpcSpannerClient),
 				false,
 				false,
+				nil,
 			)
 			// Override backoff to make the test run faster.
 			r.backoff = gax.Backoff{
@@ -1314,6 +1316,7 @@ func TestQueueBytes(t *testing.T) {
 		mc.(*grpcSpannerClient),
 		false,
 		false,
+		nil,
 	)
 
 	sizeOfPRS := proto.Size(&sppb.PartialResultSet{

@@ -80,6 +80,7 @@ func TestAllHeadersForwardedAppropriately(t *testing.T) {
 	clientConfig := ClientConfig{
 		EnableEndToEndTracing: true,
 		DisableRouteToLeader:  false,
+		QueryOptions:          QueryOptions{DisableFastDecoding: true},
 	}
 	formattedDatabase := fmt.Sprintf("projects/%s/instances/%s/databases/%s", "[PROJECT]", "[INSTANCE]", "[DATABASE]")
 	sc, err := NewClientWithConfig(context.Background(), formattedDatabase, clientConfig, clientOpts...)

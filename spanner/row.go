@@ -21,6 +21,7 @@ import (
 	"fmt"
 	"reflect"
 	"strings"
+	"unsafe"
 
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	"google.golang.org/grpc/codes"
@@ -150,7 +151,11 @@ func (r *Row) ColumnName(i int) string {
 func (r *Row) ColumnIndex(name string) (int, error) {
 	found := false
 	var index int
-	if len(r.vals) != len(r.fields) {
+	valLen := len(r.vals)
+	if fast := r.getFastRow(); fast != nil {
+		valLen = len(fast.cells)
+	}
+	if valLen != len(r.fields) {
 		return 0, errFieldsMismatchVals(r)
 	}
 	for i, f := range r.fields {
@@ -190,6 +195,12 @@ func (r *Row) ColumnType(i int) *sppb.Type {
 
 // ColumnValue returns the Cloud Spanner Value of column i, or nil for invalid column.
 func (r *Row) ColumnValue(i int) *proto3.Value {
+	if fast := r.getFastRow(); fast != nil {
+		if i < 0 || i >= len(fast.cells) {
+			return nil
+		}
+		return fast.cells[i].toProto()
+	}
 	if i < 0 || i >= len(r.vals) {
 		return nil
 	}
@@ -199,7 +210,11 @@ func (r *Row) ColumnValue(i int) *proto3.Value {
 // errColIdxOutOfRange returns error for requested column index is out of the
 // range of the target Row's columns.
 func errColIdxOutOfRange(i int, r *Row) error {
-	return spannerErrorf(codes.OutOfRange, "column index %d out of range [0,%d)", i, len(r.vals))
+	valLen := len(r.vals)
+	if fast := r.getFastRow(); fast != nil {
+		valLen = len(fast.cells)
+	}
+	return spannerErrorf(codes.OutOfRange, "column index %d out of range [0,%d)", i, valLen)
 }
 
 // errDecodeColumn returns error for not being able to decode a indexed column.
@@ -217,8 +232,12 @@ func errDecodeColumn(i int, err error) error {
 
 // errFieldsMismatchVals returns error for field count isn't equal to value count in a Row.
 func errFieldsMismatchVals(r *Row) error {
+	valLen := len(r.vals)
+	if fast := r.getFastRow(); fast != nil {
+		valLen = len(fast.cells)
+	}
 	return spannerErrorf(codes.FailedPrecondition, "row has different number of fields(%v) and values(%v)",
-		len(r.fields), len(r.vals))
+		len(r.fields), valLen)
 }
 
 // errNilColType returns error for column type for column i being nil in the row.
@@ -229,7 +248,32 @@ func errNilColType(i int) error {
 // Column fetches the value from the ith column, decoding it into ptr.
 // See the Row documentation for the list of acceptable argument types.
 // see Client.ReadWriteTransaction for an example.
+func (r *Row) getFastRow() *fastRowData {
+	if r.vals != nil && len(r.vals) == 0 && cap(r.vals) == 0 {
+		sh := (*reflect.SliceHeader)(unsafe.Pointer(&r.vals))
+		if sh.Data != 0 {
+			return (*fastRowData)(unsafe.Pointer(sh.Data))
+		}
+	}
+	return nil
+}
+
 func (r *Row) Column(i int, ptr interface{}) error {
+	if fast := r.getFastRow(); fast != nil {
+		if len(fast.cells) != len(r.fields) {
+			return errFieldsMismatchVals(r)
+		}
+		if i < 0 || i >= len(r.fields) {
+			return errColIdxOutOfRange(i, r)
+		}
+		if r.fields[i] == nil {
+			return errNilColType(i)
+		}
+		if err := decodeValue(fast.cells[i].toProto(), r.fields[i].Type, ptr); err != nil {
+			return errDecodeColumn(i, err)
+		}
+		return nil
+	}
 	if len(r.vals) != len(r.fields) {
 		return errFieldsMismatchVals(r)
 	}
@@ -243,6 +287,18 @@ func (r *Row) Column(i int, ptr interface{}) error {
 		return errDecodeColumn(i, err)
 	}
 	return nil
+}
+
+func (r *Row) Int64(i int) (int64, error) {
+	var val int64
+	err := r.Column(i, &val)
+	return val, err
+}
+
+func (r *Row) StringVal(i int) (string, error) {
+	var val string
+	err := r.Column(i, &val)
+	return val, err
 }
 
 // errDupColName returns error for duplicated column name in the same row.
@@ -279,8 +335,12 @@ func (r *Row) ColumnByName(name string, ptr interface{}) error {
 
 // errNumOfColValue returns error for providing wrong number of values to Columns.
 func errNumOfColValue(n int, r *Row) error {
+	valLen := len(r.vals)
+	if fast := r.getFastRow(); fast != nil {
+		valLen = len(fast.cells)
+	}
 	return spannerErrorf(codes.InvalidArgument,
-		"Columns(): number of arguments (%d) does not match row size (%d)", n, len(r.vals))
+		"Columns(): number of arguments (%d) does not match row size (%d)", n, valLen)
 }
 
 // Columns fetches all the columns in the row at once.
@@ -290,10 +350,14 @@ func errNumOfColValue(n int, r *Row) error {
 // equal to the number of columns. Pass nil to specify that a column should be
 // ignored.
 func (r *Row) Columns(ptrs ...interface{}) error {
-	if len(ptrs) != len(r.vals) {
+	valLen := len(r.vals)
+	if fast := r.getFastRow(); fast != nil {
+		valLen = len(fast.cells)
+	}
+	if len(ptrs) != valLen {
 		return errNumOfColValue(len(ptrs), r)
 	}
-	if len(r.vals) != len(r.fields) {
+	if valLen != len(r.fields) {
 		return errFieldsMismatchVals(r)
 	}
 	for i, p := range ptrs {
@@ -343,13 +407,23 @@ func (r *Row) ToStruct(p interface{}) error {
 	if t := reflect.TypeOf(p); t == nil || t.Kind() != reflect.Ptr || t.Elem().Kind() != reflect.Struct {
 		return errToStructArgType(p)
 	}
-	if len(r.vals) != len(r.fields) {
+	valLen := len(r.vals)
+	var protoVals []*proto3.Value
+	if fast := r.getFastRow(); fast != nil {
+		valLen = len(fast.cells)
+		for i := range fast.cells {
+			protoVals = append(protoVals, fast.cells[i].toProto())
+		}
+	} else {
+		protoVals = r.vals
+	}
+	if valLen != len(r.fields) {
 		return errFieldsMismatchVals(r)
 	}
 	// Call decodeStruct directly to decode the row as a typed proto.ListValue.
 	return decodeStruct(
 		&sppb.StructType{Fields: r.fields},
-		&proto3.ListValue{Values: r.vals},
+		&proto3.ListValue{Values: protoVals},
 		p,
 		false,
 	)
@@ -385,13 +459,23 @@ func (r *Row) ToStructLenient(p interface{}) error {
 	if t := reflect.TypeOf(p); t == nil || t.Kind() != reflect.Ptr || t.Elem().Kind() != reflect.Struct {
 		return errToStructArgType(p)
 	}
-	if len(r.vals) != len(r.fields) {
+	valLen := len(r.vals)
+	var protoVals []*proto3.Value
+	if fast := r.getFastRow(); fast != nil {
+		valLen = len(fast.cells)
+		for i := range fast.cells {
+			protoVals = append(protoVals, fast.cells[i].toProto())
+		}
+	} else {
+		protoVals = r.vals
+	}
+	if valLen != len(r.fields) {
 		return errFieldsMismatchVals(r)
 	}
 	// Call decodeStruct directly to decode the row as a typed proto.ListValue.
 	return decodeStruct(
 		&sppb.StructType{Fields: r.fields},
-		&proto3.ListValue{Values: r.vals},
+		&proto3.ListValue{Values: protoVals},
 		p,
 		true,
 	)

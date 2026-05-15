@@ -1632,6 +1632,7 @@ func TestRequestIDHeader_SingleUseReadOnly_ExecuteStreamingSql_InvalidArgument(t
 			WriteSessions: 0.2,
 		},
 		DisableNativeMetrics: true,
+		QueryOptions:         QueryOptions{DisableFastDecoding: true},
 	}
 
 	server, sc, tearDown := setupMockedTestServerWithConfigAndClientOptions(t, clientConfig, clientOpts)
@@ -1763,6 +1764,7 @@ func TestRequestIDHeader_VerifyChannelNumber(t *testing.T) {
 	clientConfig := ClientConfig{
 		DisableNativeMetrics: true,
 		NumChannels:          4,
+		QueryOptions:         QueryOptions{DisableFastDecoding: true},
 	}
 
 	_, sc, tearDown := setupMockedTestServerWithConfigAndClientOptions(t, clientConfig, clientOpts)

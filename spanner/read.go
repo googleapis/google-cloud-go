@@ -31,6 +31,7 @@ import (
 	otcodes "go.opentelemetry.io/otel/codes"
 	otrace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
@@ -89,6 +90,8 @@ func stream(
 		gsc,
 		true,
 		false,
+		false,
+		true,
 	)
 }
 
@@ -107,19 +110,23 @@ func streamWithTransactionCallbacks(
 	gsc *grpcSpannerClient,
 	retryResourceExhausted bool,
 	allowRetryResourceExhaustedWithoutDelay bool,
+	fastDecoding bool,
+	disableRowRecycling bool,
 ) *RowIterator {
 	ctx, cancel := context.WithCancel(ctx)
 	ctx, _ = startSpan(ctx, "RowIterator")
+	rowd := &partialResultSetDecoder{fastDecoding: fastDecoding}
 	return &RowIterator{
 		meterTracerFactory:   meterTracerFactory,
-		streamd:              newResumableStreamDecoder(ctx, cancel, logger, rpc, gsc, retryResourceExhausted, allowRetryResourceExhaustedWithoutDelay),
-		rowd:                 &partialResultSetDecoder{},
+		streamd:              newResumableStreamDecoder(ctx, cancel, logger, rpc, gsc, retryResourceExhausted, allowRetryResourceExhaustedWithoutDelay, rowd),
+		rowd:                 rowd,
 		setTransactionID:     setTransactionID,
 		updatePrecommitToken: updatePrecommitToken,
 		updateTxState:        updateTxState,
 		setTimestamp:         setTimestamp,
 		release:              release,
 		cancel:               cancel,
+		disableRowRecycling:  disableRowRecycling,
 	}
 }
 
@@ -164,6 +171,8 @@ type RowIterator struct {
 	err                  error
 	rows                 []*Row
 	sawStats             bool
+	lastRow              *Row
+	disableRowRecycling  bool
 }
 
 // this is for safety from future changes to RowIterator making sure that it implements rowIterator interface.
@@ -177,6 +186,15 @@ func (r *RowIterator) Next() (*Row, error) {
 	if r.err != nil {
 		return nil, r.err
 	}
+
+	if !r.disableRowRecycling && r.lastRow != nil && r.rowd != nil {
+		if fast := r.lastRow.getFastRow(); fast != nil {
+			r.rowd.fastPool = append(r.rowd.fastPool, fast)
+		}
+		r.rowd.rowPool = append(r.rowd.rowPool, r.lastRow)
+		r.lastRow = nil
+	}
+
 	// Start new attempt
 	mt.currOp.incrementAttemptCount()
 	mt.currOp.currAttempt = &attemptTracer{
@@ -245,6 +263,9 @@ func (r *RowIterator) Next() (*Row, error) {
 	if len(r.rows) > 0 {
 		row := r.rows[0]
 		r.rows = r.rows[1:]
+		if !r.disableRowRecycling {
+			r.lastRow = row
+		}
 		return row, nil
 	}
 	if err := r.streamd.lastErr(); err != nil {
@@ -321,6 +342,9 @@ func (r *RowIterator) DoWithReuse(f func(r *Row) error) error {
 				return err
 			}
 			if r.rowd != nil {
+				if fast := row.getFastRow(); fast != nil {
+					r.rowd.fastPool = append(r.rowd.fastPool, fast)
+				}
 				r.rowd.rowPool = append(r.rowd.rowPool, row)
 			}
 		default:
@@ -511,12 +535,14 @@ type resumableStreamDecoder struct {
 	// retryAttempt is is incremented whenever a retry happens, and it is
 	// reset whenever a new reqIDInjector is created afresh.
 	retryAttempt uint32
+
+	rowd *partialResultSetDecoder
 }
 
 // newResumableStreamDecoder creates a new resumeableStreamDecoder instance.
 // Parameter rpc should be a function that creates a new stream beginning at the
 // restartToken if non-nil.
-func newResumableStreamDecoder(ctx context.Context, cancel func(), logger *log.Logger, rpc func(ct context.Context, restartToken []byte, opts ...gax.CallOption) (streamingReceiver, error), gsc *grpcSpannerClient, retryResourceExhausted bool, allowRetryResourceExhaustedWithoutDelay bool) *resumableStreamDecoder {
+func newResumableStreamDecoder(ctx context.Context, cancel func(), logger *log.Logger, rpc func(ct context.Context, restartToken []byte, opts ...gax.CallOption) (streamingReceiver, error), gsc *grpcSpannerClient, retryResourceExhausted bool, allowRetryResourceExhaustedWithoutDelay bool, rowd *partialResultSetDecoder) *resumableStreamDecoder {
 	return &resumableStreamDecoder{
 		ctx:                                     ctx,
 		cancel:                                  cancel,
@@ -527,6 +553,7 @@ func newResumableStreamDecoder(ctx context.Context, cancel func(), logger *log.L
 		gsc:                                     gsc,
 		retryResourceExhausted:                  retryResourceExhausted,
 		allowRetryResourceExhaustedWithoutDelay: allowRetryResourceExhaustedWithoutDelay,
+		rowd:                                    rowd,
 	}
 }
 
@@ -631,7 +658,11 @@ func (d *resumableStreamDecoder) next(mt *builtinMetricsTracer) bool {
 		case unConnected:
 			d.retryAttempt++
 			// If no gRPC stream is available, try to initiate one.
-			d.stream, d.err = d.rpc(context.WithValue(d.ctx, metricsTracerKey, mt), d.resumeToken, riw.withNextRetryAttempt(d.retryAttempt))
+			callOpts := []gax.CallOption{riw.withNextRetryAttempt(d.retryAttempt)}
+			if d.rowd != nil && d.rowd.fastDecoding {
+				callOpts = append(callOpts, gax.WithGRPCOptions(grpc.ForceCodec(newCustomSpannerCodec(d.rowd))))
+			}
+			d.stream, d.err = d.rpc(context.WithValue(d.ctx, metricsTracerKey, mt), d.resumeToken, callOpts...)
 			if d.err == nil {
 				d.changeState(queueingRetryable)
 				continue
@@ -810,7 +841,14 @@ type partialResultSetDecoder struct {
 	// entry.
 	ts      time.Time // read timestamp
 	rowPool []*Row
+
+	fastDecoding      bool
+	fastPool          []*fastRowData
+	curFastRow        *fastRowData
+	completedFastRows []*fastRowData
 }
+
+
 
 // yield checks we have a complete row, and if so returns it.  A row is not
 // complete if it doesn't have enough columns, or if this is a chunked response
@@ -859,6 +897,9 @@ func errChunkedEmptyRow() error {
 // add tries to merge a new PartialResultSet into buffered Row. It returns any
 // rows that have been completed as a result.
 func (p *partialResultSetDecoder) add(r *sppb.PartialResultSet) ([]*Row, *sppb.ResultSetMetadata, error) {
+	if p.fastDecoding {
+		return p.addFast(r)
+	}
 	var rows []*Row
 	if r.Metadata != nil {
 		// Metadata should only be returned in the first result.

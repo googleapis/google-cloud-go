@@ -255,6 +255,12 @@ type ReadOptions struct {
 
 	// ClientContext contains client-owned context information to be passed with the read request.
 	ClientContext *sppb.RequestOptions_ClientContext
+
+	// DisableFastDecoding disables custom gRPC wire-level codec and fast columnar decoding.
+	DisableFastDecoding bool
+
+	// DisableRowRecycling disables automatic row memory recycling during iteration.
+	DisableRowRecycling bool
 }
 
 // merge combines two ReadOptions that the input parameter will have higher
@@ -270,6 +276,8 @@ func (ro ReadOptions) merge(opts ReadOptions) ReadOptions {
 		OrderBy:             ro.OrderBy,
 		LockHint:            ro.LockHint,
 		ClientContext:       mergeClientContext(ro.ClientContext, opts.ClientContext),
+		DisableFastDecoding: ro.DisableFastDecoding || opts.DisableFastDecoding,
+		DisableRowRecycling: ro.DisableRowRecycling || opts.DisableRowRecycling,
 	}
 	if opts.Index != "" {
 		merged.Index = opts.Index
@@ -336,6 +344,8 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 	orderBy := t.ro.OrderBy
 	lockHint := t.ro.LockHint
 	clientContext := t.ro.ClientContext
+	disableFastDecoding := t.ro.DisableFastDecoding
+	disableRowRecycling := t.ro.DisableRowRecycling
 	if opts != nil {
 		index = opts.Index
 		if opts.Limit > 0 {
@@ -356,6 +366,12 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 			lockHint = opts.LockHint
 		}
 		clientContext = mergeClientContext(clientContext, opts.ClientContext)
+		if opts.DisableFastDecoding {
+			disableFastDecoding = true
+		}
+		if opts.DisableRowRecycling {
+			disableRowRecycling = true
+		}
 	}
 	var setTransactionID func(transactionID)
 	if _, ok := ts.Selector.(*sppb.TransactionSelector_Begin); ok {
@@ -369,7 +385,7 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 		contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader),
 		sh.session.logger,
 		t.sm.sc.metricsTracerFactory,
-		func(ctx context.Context, resumeToken []byte, opts ...gax.CallOption) (streamingReceiver, error) {
+		func(ctx context.Context, resumeToken []byte, callOpts ...gax.CallOption) (streamingReceiver, error) {
 			req := &sppb.ReadRequest{
 				Session:             t.sh.getID(),
 				Transaction:         t.getTransactionSelector(),
@@ -385,7 +401,7 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 				OrderBy:             orderBy,
 				LockHint:            lockHint,
 			}
-			client, err := client.StreamingRead(ctx, req, opts...)
+			client, err := client.StreamingRead(ctx, req, callOpts...)
 			if err != nil {
 				if _, ok := t.getTransactionSelector().GetSelector().(*sppb.TransactionSelector_Begin); ok {
 					t.setTransactionID(nil)
@@ -414,6 +430,8 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 		asGRPCSpannerClient(client),
 		retryResourceExhausted,
 		allowRetryResourceExhaustedWithoutDelay,
+		!disableFastDecoding,
+		disableRowRecycling,
 	)
 }
 
@@ -581,6 +599,15 @@ type QueryOptions struct {
 
 	// ClientContext contains client-owned context information to be passed with the query.
 	ClientContext *sppb.RequestOptions_ClientContext
+
+	// FastDecoding enables custom gRPC wire-level codec and fast columnar decoding.
+	FastDecoding bool
+
+	// DisableFastDecoding disables custom gRPC wire-level codec and fast columnar decoding.
+	DisableFastDecoding bool
+
+	// DisableRowRecycling disables automatic row memory recycling during iteration.
+	DisableRowRecycling bool
 }
 
 // merge combines two QueryOptions that the input parameter will have higher
@@ -596,6 +623,9 @@ func (qo QueryOptions) merge(opts QueryOptions) QueryOptions {
 		ExcludeTxnFromChangeStreams: qo.ExcludeTxnFromChangeStreams || opts.ExcludeTxnFromChangeStreams,
 		LastStatement:               qo.LastStatement || opts.LastStatement,
 		ClientContext:               mergeClientContext(qo.ClientContext, opts.ClientContext),
+		FastDecoding:                qo.FastDecoding || opts.FastDecoding,
+		DisableFastDecoding:         qo.DisableFastDecoding || opts.DisableFastDecoding,
+		DisableRowRecycling:         qo.DisableRowRecycling || opts.DisableRowRecycling,
 	}
 	if opts.Mode != nil {
 		merged.Mode = opts.Mode
@@ -659,6 +689,8 @@ func (t *txReadOnly) Query(ctx context.Context, statement Statement) *RowIterato
 		Options:             t.qo.Options,
 		Priority:            t.qo.Priority,
 		DirectedReadOptions: t.qo.DirectedReadOptions,
+		DisableFastDecoding: t.qo.DisableFastDecoding,
+		DisableRowRecycling: t.qo.DisableRowRecycling,
 	})
 }
 
@@ -679,6 +711,8 @@ func (t *txReadOnly) QueryWithStats(ctx context.Context, statement Statement) *R
 		Options:             t.qo.Options,
 		Priority:            t.qo.Priority,
 		DirectedReadOptions: t.qo.DirectedReadOptions,
+		DisableFastDecoding: t.qo.DisableFastDecoding,
+		DisableRowRecycling: t.qo.DisableRowRecycling,
 	})
 }
 
@@ -690,6 +724,8 @@ func (t *txReadOnly) AnalyzeQuery(ctx context.Context, statement Statement) (*sp
 		Options:             t.qo.Options,
 		Priority:            t.qo.Priority,
 		DirectedReadOptions: t.qo.DirectedReadOptions,
+		DisableFastDecoding: t.qo.DisableFastDecoding,
+		DisableRowRecycling: t.qo.DisableRowRecycling,
 	})
 	defer iter.Stop()
 	for {
@@ -768,7 +804,9 @@ func (t *txReadOnly) query(ctx context.Context, statement Statement, options Que
 		t.release,
 		asGRPCSpannerClient(client),
 		retryResourceExhausted,
-		allowRetryResourceExhaustedWithoutDelay)
+		allowRetryResourceExhaustedWithoutDelay,
+		options.FastDecoding || !options.DisableFastDecoding,
+		options.DisableRowRecycling)
 }
 
 func (t *txReadOnly) prepareExecuteSQL(ctx context.Context, stmt Statement, options QueryOptions) (*sppb.ExecuteSqlRequest, *sessionHandle, error) {

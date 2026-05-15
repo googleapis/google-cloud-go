@@ -373,6 +373,8 @@ func (t *BatchReadOnlyTransaction) Execute(ctx context.Context, p *Partition) *R
 		asGRPCSpannerClient(client),
 		true,
 		false,
+		false,
+		false,
 	)
 }
 
