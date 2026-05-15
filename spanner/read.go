@@ -781,7 +781,11 @@ func (d *resumableStreamDecoder) tryRecv(mt *builtinMetricsTracer, retryer gax.R
 			return
 		}
 		if d.state == queueingRetryable && !d.isNewResumeToken(res.ResumeToken) {
-			d.bytesBetweenResumeTokens += int32(proto.Size(res))
+			if d.rowd != nil && d.rowd.fastDecoding {
+				d.bytesBetweenResumeTokens += d.rowd.lastChunkSize
+			} else {
+				d.bytesBetweenResumeTokens += int32(proto.Size(res))
+			}
 		}
 		d.changeState(d.state)
 		return
@@ -846,6 +850,7 @@ type partialResultSetDecoder struct {
 	fastPool          []*fastRowData
 	curFastRow        *fastRowData
 	completedFastRows []*fastRowData
+	lastChunkSize     int32 // Tracks true wire size for flow control
 }
 
 
