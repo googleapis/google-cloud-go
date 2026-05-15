@@ -2703,54 +2703,54 @@ func TestParseDML(t *testing.T) {
 			DELETE FROM FooBar WHERE Name = "foo"; -- This is another comment.
 		-- This is an isolated comment.
 		`, &DML{
-			Filename: "filename",
-			List: []DMLStmt{
-				&Update{
-					Table: "FooBar",
-					Items: []UpdateItem{
-						{Column: "Name", Value: StringLiteral("foo")},
+				Filename: "filename",
+				List: []DMLStmt{
+					&Update{
+						Table: "FooBar",
+						Items: []UpdateItem{
+							{Column: "Name", Value: StringLiteral("foo")},
+						},
+						Where: ComparisonOp{Op: 4, LHS: ID("ID"), RHS: IntegerLiteral(0), RHS2: nil},
 					},
-					Where: ComparisonOp{Op: 4, LHS: ID("ID"), RHS: IntegerLiteral(0), RHS2: nil},
-				},
-				&Update{
-					Table: "FooBar",
-					Items: []UpdateItem{
-						{Column: "Name", Value: StringLiteral("foo")},
+					&Update{
+						Table: "FooBar",
+						Items: []UpdateItem{
+							{Column: "Name", Value: StringLiteral("foo")},
+						},
+						Where: ComparisonOp{Op: 4, LHS: ID("ID"), RHS: IntegerLiteral(0), RHS2: nil},
 					},
-					Where: ComparisonOp{Op: 4, LHS: ID("ID"), RHS: IntegerLiteral(0), RHS2: nil},
+					&Insert{
+						Table:   "FooBar",
+						Columns: []ID{"ID", "Name"},
+						Input:   Values{[]Expr{IntegerLiteral(0), StringLiteral("foo")}},
+					},
+					&Delete{
+						Table: "FooBar",
+						Where: ComparisonOp{Op: 4, LHS: ID("Name"), RHS: StringLiteral("foo"), RHS2: nil},
+					},
 				},
-				&Insert{
-					Table:   "FooBar",
-					Columns: []ID{"ID", "Name"},
-					Input:   Values{[]Expr{IntegerLiteral(0), StringLiteral("foo")}},
+				Comments: []*Comment{
+					{
+						Marker: "#", Start: line(2), End: line(2),
+						Text: []string{"This is a comment."},
+					},
+					{
+						Marker: "/*", Start: line(3), End: line(4),
+						Text:     []string{" This is a", "\t\t\t\t\t\t\t\t\t        * multiline comment."},
+						Isolated: false,
+					},
+					{
+						Marker: "--", Start: line(7), End: line(7),
+						Text:     []string{"This is another comment."},
+						Isolated: false,
+					},
+					{
+						Marker: "--", Start: line(8), End: line(8),
+						Text:     []string{"This is an isolated comment."},
+						Isolated: true,
+					},
 				},
-				&Delete{
-					Table: "FooBar",
-					Where: ComparisonOp{Op: 4, LHS: ID("Name"), RHS: StringLiteral("foo"), RHS2: nil},
-				},
-			},
-			Comments: []*Comment{
-				{
-					Marker: "#", Start: line(2), End: line(2),
-					Text: []string{"This is a comment."},
-				},
-				{
-					Marker: "/*", Start: line(3), End: line(4),
-					Text:     []string{" This is a", "\t\t\t\t\t\t\t\t\t        * multiline comment."},
-					Isolated: false,
-				},
-				{
-					Marker: "--", Start: line(7), End: line(7),
-					Text:     []string{"This is another comment."},
-					Isolated: false,
-				},
-				{
-					Marker: "--", Start: line(8), End: line(8),
-					Text:     []string{"This is an isolated comment."},
-					Isolated: true,
-				},
-			},
-		}},
+			}},
 		// No trailing comma:
 		{`Update FooBar SET Name = "foo" WHERE ID = 0`, &DML{
 			Filename: "filename", List: []DMLStmt{
