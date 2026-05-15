@@ -161,8 +161,8 @@ func TestStage(t *testing.T) {
 				}]
 			}`,
 			initialRepoContent: map[string]string{
-				"preview/internal/secretmanager/CHANGES.md":          "# Changes\n\n## [1.15.0]\n- Old stuff.",
-				"preview/internal/secretmanager/internal/version.go": `package internal; const Version = "1.15.0"`,
+				"preview/internal/secretmanager/CHANGES.md":          "# Changes\n\n## [1.15.0-preview.1]\n- Old stuff.",
+				"preview/internal/secretmanager/internal/version.go": `package internal; const Version = "1.15.0-preview.1"`,
 			},
 			moduleRootPath:      "preview/internal/secretmanager",
 			wantChangelogSubstr: "## [1.16.0-preview.1](https://github.com/googleapis/google-cloud-go/releases/tag/secretmanager%2Fv1.16.0-preview.1) (2025-09-11)\n\n### Features\n\n* add new GetSecret API ([abcdef1](https://github.com/googleapis/google-cloud-go/commit/abcdef123456))\n* another feature ([zxcvbn0](https://github.com/googleapis/google-cloud-go/commit/zxcvbn098765))\n\n### Bug Fixes\n\n* correct typo in documentation ([123456a](https://github.com/googleapis/google-cloud-go/commit/123456abcdef))\n\n",
