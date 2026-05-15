@@ -940,7 +940,7 @@ libraries:
             - F_open_telemetry_attributes
             - F_proto_cloneof
   - name: datastore
-    version: 1.23.0
+    version: 1.24.0
     apis:
       - path: google/datastore/v1
         go:
