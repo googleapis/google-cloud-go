@@ -1062,33 +1062,31 @@ func (m *multiRangeDownloaderManager) processDataRanges(result mrdSessionResult,
 		if !exists || req.completed {
 			continue
 		}
-		if dataRange.GetChecksummedData() != nil && dataRange.GetChecksummedData().Crc32C != nil {
+
+		var updateCRC func(b []byte)
+		// If checksum is enabled and data has checksum, validate it.
+		if !m.params.disableReadChecksum &&
+			dataRange.GetChecksummedData() != nil &&
+			dataRange.GetChecksummedData().Crc32C != nil {
 			req.gotChunkCRC = 0
 			req.chunkCRCPresent = true
 			req.wantChunkCRC = *dataRange.GetChecksummedData().Crc32C
-		}
-		written, _, err := result.decoder.writeToAndUpdateCRC(req.output, readID, func(b []byte) {
-			if req.chunkCRCPresent {
+			updateCRC = func(b []byte) {
 				req.gotChunkCRC = crc32.Update(req.gotChunkCRC, crc32cTable, b)
 			}
-		})
+		}
+		written, _, err := result.decoder.writeToAndUpdateCRC(req.output, readID, updateCRC)
 		req.bytesWritten += written
 		mrdStream.updateCapacity(m, 0, -written)
 		if err != nil {
 			m.failRange(mrdStream, req, err)
 			continue
 		}
-
-		if req.chunkCRCPresent {
-			if req.gotChunkCRC != req.wantChunkCRC {
-				m.failRange(mrdStream, req, fmt.Errorf("storage: bad CRC on chunk read: got %d, want %d", req.gotChunkCRC, req.wantChunkCRC))
-				continue
-			}
-			req.gotChunkCRC = 0
-			req.wantChunkCRC = 0
-			req.chunkCRCPresent = false
+		err = m.checkAndResetChunkCRC(req)
+		if err != nil {
+			m.failRange(mrdStream, req, err)
+			continue
 		}
-
 		if dataRange.GetRangeEnd() {
 			req.completed = true
 			delete(mrdStream.pendingRanges, req.readID)
@@ -1096,6 +1094,18 @@ func (m *multiRangeDownloaderManager) processDataRanges(result mrdSessionResult,
 			m.runCallback(req.origOffset, req.bytesWritten, nil, req.callback)
 		}
 	}
+}
+
+func (m *multiRangeDownloaderManager) checkAndResetChunkCRC(req *rangeRequest) error {
+	if !m.params.disableReadChecksum && req.chunkCRCPresent {
+		if req.gotChunkCRC != req.wantChunkCRC {
+			return fmt.Errorf("storage: bad CRC on chunk read: got %d, want %d", req.gotChunkCRC, req.wantChunkCRC)
+		}
+		req.gotChunkCRC = 0
+		req.wantChunkCRC = 0
+		req.chunkCRCPresent = false
+	}
+	return nil
 }
 
 // ensureSession is now only for reconnecting *after* the initial session is up.

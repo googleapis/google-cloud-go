@@ -1994,64 +1994,82 @@ func TestReadObjectWrongChunkChecksumEmulated(t *testing.T) {
 func TestMRDWrongChunkChecksumEmulated(t *testing.T) {
 	checkEmulatorEnvironment(t)
 
-	ctx := context.Background()
+	for _, disableChecksum := range []bool{false, true} {
+		t.Run(fmt.Sprintf("disableChecksum=%v", disableChecksum), func(t *testing.T) {
+			ctx := context.Background()
 
-	streamInterceptor := grpc.WithStreamInterceptor(
-		func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
-			clientStream, err := streamer(ctx, desc, cc, method, opts...)
+			streamInterceptor := grpc.WithStreamInterceptor(
+				func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
+					clientStream, err := streamer(ctx, desc, cc, method, opts...)
 
-			if method == "/google.storage.v2.Storage/BidiReadObject" {
-				clientStream = &customChunkCRCReadStream{ClientStream: clientStream, isBidi: true}
+					if method == "/google.storage.v2.Storage/BidiReadObject" {
+						clientStream = &customChunkCRCReadStream{ClientStream: clientStream, isBidi: true}
+					}
+					return clientStream, err
+				})
+
+			client, err := NewGRPCClient(ctx, option.WithGRPCDialOption(streamInterceptor), experimental.WithGRPCBidiReads())
+			if err != nil {
+				t.Fatalf("NewGRPCClient: %v", err)
 			}
-			return clientStream, err
+
+			var (
+				contents = randomBytes9MiB
+				prefix   = time.Now().Nanosecond()
+				bucket   = fmt.Sprintf("bucket-%d", prefix)
+				objName  = fmt.Sprintf("%d-object", prefix)
+				o        = client.Bucket(bucket).Object(objName)
+			)
+
+			if err := client.Bucket(bucket).Create(ctx, "project", nil); err != nil {
+				t.Fatalf("creating test bucket: %v", err)
+			}
+			w := o.NewWriter(ctx)
+			if _, err = w.Write(contents); err != nil {
+				t.Fatalf("writing test data: got %v; want ok", err)
+			}
+			if err := w.Close(); err != nil {
+				t.Fatalf("closing test data writer: got %v; want ok", err)
+			}
+
+			var opts []MRDOption
+			if disableChecksum {
+				opts = append(opts, WithDisableReadChecksum())
+			}
+
+			reader, err := o.NewMultiRangeDownloader(ctx, opts...)
+			if err != nil {
+				t.Fatalf("error opening multirangedownloader: %v", err)
+			}
+
+			buf := new(bytes.Buffer)
+			var callbackErr error
+			callback := func(x, y int64, err error) {
+				callbackErr = err
+			}
+			reader.Add(buf, 0, 5<<20, callback)
+			reader.Wait()
+
+			if disableChecksum {
+				if callbackErr != nil {
+					t.Fatalf("expected nil error with checksum disabled, got %v", callbackErr)
+				}
+				if got, want := buf.Bytes(), contents[:5<<20]; !bytes.Equal(got, want) {
+					t.Errorf("content mismatch: got %v bytes, want %v bytes", len(got), len(want))
+				}
+			} else {
+				if callbackErr == nil {
+					t.Fatalf("expected error due to bad chunk CRC, got nil")
+				}
+				if got, want := callbackErr.Error(), "bad CRC on chunk read"; !strings.Contains(got, want) {
+					t.Errorf("error mismatch: got %q, want to contain %q", got, want)
+				}
+			}
+
+			if err = reader.Close(); err != nil {
+				t.Fatalf("reader.Close() error: %v", err)
+			}
 		})
-
-	client, err := NewGRPCClient(ctx, option.WithGRPCDialOption(streamInterceptor), experimental.WithGRPCBidiReads())
-	if err != nil {
-		t.Fatalf("NewGRPCClient: %v", err)
-	}
-
-	var (
-		contents = randomBytes9MiB
-		prefix   = time.Now().Nanosecond()
-		bucket   = fmt.Sprintf("bucket-%d", prefix)
-		objName  = fmt.Sprintf("%d-object", prefix)
-		o        = client.Bucket(bucket).Object(objName)
-	)
-
-	if err := client.Bucket(bucket).Create(ctx, "project", nil); err != nil {
-		t.Fatalf("creating test bucket: %v", err)
-	}
-	w := o.NewWriter(ctx)
-	if _, err = w.Write(contents); err != nil {
-		t.Fatalf("writing test data: got %v; want ok", err)
-	}
-	if err := w.Close(); err != nil {
-		t.Fatalf("closing test data writer: got %v; want ok", err)
-	}
-
-	reader, err := o.NewMultiRangeDownloader(ctx)
-	if err != nil {
-		t.Fatalf("error opening multirangedownloader: %v", err)
-	}
-
-	buf := new(bytes.Buffer)
-	var callbackErr error
-	callback := func(x, y int64, err error) {
-		callbackErr = err
-	}
-	reader.Add(buf, 0, 5<<20, callback)
-	reader.Wait()
-
-	if callbackErr == nil {
-		t.Fatalf("expected error due to bad chunk CRC, got nil")
-	}
-	if got, want := callbackErr.Error(), "bad CRC on chunk read"; !strings.Contains(got, want) {
-		t.Errorf("error mismatch: got %q, want to contain %q", got, want)
-	}
-
-	if err = reader.Close(); err != nil {
-		t.Fatalf("reader.Close() error: %v", err)
 	}
 }
 
