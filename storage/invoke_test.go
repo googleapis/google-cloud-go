@@ -469,6 +469,16 @@ func TestShouldRetry(t *testing.T) {
 			inputErr:    fmt.Errorf("wrapped error: %w", &url.Error{Op: "blah", URL: "blah", Err: errors.New("http2: client connection lost")}),
 			shouldRetry: true,
 		},
+		{
+			desc:        "server closed idle connection",
+			inputErr:    &url.Error{Op: "blah", URL: "blah", Err: errors.New("http: server closed idle connection")},
+			shouldRetry: true,
+		},
+		{
+			desc:        "wrapped server closed idle connection",
+			inputErr:    fmt.Errorf("wrapped error: %w", &url.Error{Op: "blah", URL: "blah", Err: errors.New("http: server closed idle connection")}),
+			shouldRetry: true,
+		},
 	} {
 		t.Run(test.desc, func(s *testing.T) {
 			got := ShouldRetry(test.inputErr)
