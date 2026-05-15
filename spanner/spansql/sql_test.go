@@ -95,6 +95,7 @@ func TestSQL(t *testing.T) {
 					{Name: "Cn", Type: Type{Base: JSON}, Position: line(15)},
 					{Name: "Co", Type: Type{Base: Int64}, Default: IntegerLiteral(1), Position: line(16)},
 					{Name: "Cp", Type: Type{Base: Proto, ProtoRef: "a.b.c"}, Position: line(17)},
+					{Name: "Cq", Type: Type{Base: UUID}, Position: line(18)},
 				},
 				PrimaryKey: []KeyPart{
 					{Column: "Ca"},
@@ -119,6 +120,7 @@ func TestSQL(t *testing.T) {
   Cn JSON,
   Co INT64 DEFAULT (1),
   Cp ` + "`a.b.c`" + `,
+  Cq UUID,
 ) PRIMARY KEY(Ca, Cb DESC)`,
 			reparseDDL,
 		},

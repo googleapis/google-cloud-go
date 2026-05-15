@@ -594,6 +594,7 @@ const (
 	Proto
 	Enum // Enum used in CAST expressions
 	Tokenlist
+	UUID
 )
 
 type PrivilegeType int
