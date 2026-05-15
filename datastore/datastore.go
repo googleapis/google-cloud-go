@@ -22,6 +22,7 @@ import (
 	"os"
 	"reflect"
 	"regexp"
+	"strings"
 	"time"
 
 	pb "cloud.google.com/go/datastore/apiv1/datastorepb"
@@ -46,22 +47,37 @@ const (
 // retryPolicy is based on https://github.com/googleapis/googleapis/blob/master/google/datastore/v1/datastore_grpc_service_config.json
 // but updated to include INTERNAL and RESOURCE_EXHAUSTED for the data plane.
 const retryPolicy = `{
-  "methodConfig": [{
-    "name": [
-      {"service": "google.datastore.v1.Datastore", "method": "Lookup"},
-      {"service": "google.datastore.v1.Datastore", "method": "RunQuery"},
-      {"service": "google.datastore.v1.Datastore", "method": "RunAggregationQuery"},
-      {"service": "google.datastore.v1.Datastore", "method": "ReserveIds"}
-    ],
-    "timeout": "60s",
-    "retryPolicy": {
-      "maxAttempts": 5,
-      "initialBackoff": "0.100s",
-      "maxBackoff": "60s",
-      "backoffMultiplier": 1.3,
-      "retryableStatusCodes": ["UNAVAILABLE", "DEADLINE_EXCEEDED", "INTERNAL", "RESOURCE_EXHAUSTED"]
+  "methodConfig": [
+    {
+      "name": [{"service": "google.datastore.v1.Datastore"}],
+      "timeout": "60s",
+			"waitForReady": true,
+      "retryPolicy": {
+        "maxAttempts": 5,
+        "initialBackoff": "0.100s",
+        "maxBackoff": "60s",
+        "backoffMultiplier": 1.3,
+        "retryableStatusCodes": ["UNAVAILABLE"]
+      }
+    },
+    {
+      "name": [
+        {"service": "google.datastore.v1.Datastore", "method": "Lookup"},
+        {"service": "google.datastore.v1.Datastore", "method": "RunQuery"},
+        {"service": "google.datastore.v1.Datastore", "method": "RunAggregationQuery"},
+        {"service": "google.datastore.v1.Datastore", "method": "ReserveIds"}
+      ],
+      "timeout": "60s",
+			"waitForReady": true,
+      "retryPolicy": {
+        "maxAttempts": 5,
+        "initialBackoff": "0.100s",
+        "maxBackoff": "60s",
+        "backoffMultiplier": 1.3,
+        "retryableStatusCodes": ["UNAVAILABLE", "DEADLINE_EXCEEDED", "INTERNAL", "RESOURCE_EXHAUSTED"]
+      }
     }
-  }]
+  ]
 }`
 
 // ScopeDatastore grants permissions to view and/or manage datastore entities
@@ -126,15 +142,28 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 // Call (*Client).Close() when done with the client.
 func NewClientWithDatabase(ctx context.Context, projectID, databaseID string, opts ...option.ClientOption) (*Client, error) {
 	var o []option.ClientOption
+	keepaliveParams := keepalive.ClientParameters{
+		Time:                1 * time.Minute,
+		Timeout:             20 * time.Second,
+		PermitWithoutStream: true,
+	}
+
 	// Environment variables for gcd emulator:
 	// https://cloud.google.com/datastore/docs/tools/datastore-emulator
 	// If the emulator is available, dial it without passing any credentials.
 	if addr := os.Getenv("DATASTORE_EMULATOR_HOST"); addr != "" {
-		addr = schemeRegexp.ReplaceAllString(addr, "")
+		// If it's already a valid gRPC target with a non-HTTP scheme (like unix:///), leave it.
+		// Otherwise, strip legacy schemes and force passthrough for performance.
+		if !(strings.Contains(addr, "://") && !strings.HasPrefix(addr, "http")) {
+			addr = schemeRegexp.ReplaceAllString(addr, "")
+			addr = "passthrough:///" + addr
+		}
 		o = []option.ClientOption{
-			option.WithEndpoint("passthrough:///" + addr),
+			option.WithEndpoint(addr),
 			option.WithoutAuthentication(),
 			option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+			option.WithGRPCDialOption(grpc.WithDefaultServiceConfig(retryPolicy)),
+			option.WithGRPCDialOption(grpc.WithKeepaliveParams(keepaliveParams)),
 		}
 		if projectID == DetectProjectID {
 			projectID, _ = detectProjectIDFn(ctx, opts...)
@@ -153,11 +182,7 @@ func NewClientWithDatabase(ctx context.Context, projectID, databaseID string, op
 			// Add the Service Config for retries
 			option.WithGRPCDialOption(grpc.WithDefaultServiceConfig(retryPolicy)),
 			// Add Keepalives to prune zombie connections
-			option.WithGRPCDialOption(grpc.WithKeepaliveParams(keepalive.ClientParameters{
-				Time:                1 * time.Minute,
-				Timeout:             20 * time.Second,
-				PermitWithoutStream: true,
-			})),
+			option.WithGRPCDialOption(grpc.WithKeepaliveParams(keepaliveParams)),
 		}
 	}
 	// Warn if we see the legacy emulator environment variables.
