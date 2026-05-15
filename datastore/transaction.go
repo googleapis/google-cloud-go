@@ -475,6 +475,21 @@ func (t *Transaction) Commit() (c *Commit, err error) {
 // Returns last attempt rollback error if rollback fails even after retries
 func (t *Transaction) rollbackWithRetry() error {
 	var rollbackErr error
+	// Use a detached context for rollback so that if the parent context is cancelled/timed out,
+	// the rollback RPCs can still be sent to the server to release locks.
+	// We set a timeout of 5 seconds on the rollback context.
+	rollbackCtx, cancel := context.WithTimeout(context.WithoutCancel(t.ctx), 5*time.Second)
+	defer cancel()
+
+	// Temporarily override the transaction context for the rollback operation.
+	// Since Rollback and rollbackWithRetry are only called once at the end of a transaction,
+	// this is clean and safe.
+	origCtx := t.ctx
+	t.ctx = rollbackCtx
+	defer func() {
+		t.ctx = origCtx
+	}()
+
 	retryer := gax.OnCodes(rollbackRetryCodes, txnBackoff)
 	for rollbackAttempt := 0; rollbackAttempt < maxIndividualReqTxnRetry; rollbackAttempt++ {
 		rollbackErr = t.Rollback()
