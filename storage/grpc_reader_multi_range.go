@@ -1097,14 +1097,15 @@ func (m *multiRangeDownloaderManager) processDataRanges(result mrdSessionResult,
 }
 
 func (m *multiRangeDownloaderManager) checkAndResetChunkCRC(req *rangeRequest) error {
-	if !m.params.disableReadChecksum && req.chunkCRCPresent {
-		if req.gotChunkCRC != req.wantChunkCRC {
-			return fmt.Errorf("storage: bad CRC on chunk read: got %d, want %d", req.gotChunkCRC, req.wantChunkCRC)
-		}
-		req.gotChunkCRC = 0
-		req.wantChunkCRC = 0
-		req.chunkCRCPresent = false
+	if m.params.disableReadChecksum || !req.chunkCRCPresent {
+		return nil
 	}
+	if req.gotChunkCRC != req.wantChunkCRC {
+		return fmt.Errorf("storage: bad CRC on chunk read: got %d, want %d", req.gotChunkCRC, req.wantChunkCRC)
+	}
+	req.gotChunkCRC = 0
+	req.wantChunkCRC = 0
+	req.chunkCRCPresent = false
 	return nil
 }
 
