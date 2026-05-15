@@ -1402,10 +1402,12 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 	remain := length - startOffset
 
 	var chunkCRC uint32
-	chunkCRCPresent := false
-	if len(msg.GetObjectDataRanges()) > 0 && msg.GetObjectDataRanges()[0].GetChecksummedData() != nil && msg.GetObjectDataRanges()[0].GetChecksummedData().Crc32C != nil {
-		chunkCRCPresent = true
-		chunkCRC = *msg.GetObjectDataRanges()[0].GetChecksummedData().Crc32C
+	var chunkCRCPresent bool
+	if ranges := msg.GetObjectDataRanges(); len(ranges) > 0 {
+		if cs := ranges[0].GetChecksummedData(); cs != nil && cs.Crc32C != nil {
+			chunkCRCPresent = true
+			chunkCRC = *cs.Crc32C
+		}
 	}
 
 	metadata := obj.GetMetadata()

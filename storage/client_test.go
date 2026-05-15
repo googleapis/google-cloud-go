@@ -1732,6 +1732,7 @@ func (s *customObjSizeReadStream) RecvMsg(m any) error {
 	}
 
 	// Set the message on the pointer to be decoded by the normal read flow.
+	databufs.Free()
 	updatedMsg := mem.BufferSlice{mem.SliceBuffer(marshalled)}
 	if ptr, ok := m.(*mem.BufferSlice); ok {
 		*ptr = updatedMsg
@@ -1883,46 +1884,42 @@ func (s *customChunkCRCReadStream) RecvMsg(m any) error {
 		return errors.New("unable to cast received message to mem.BufferSlice")
 	}
 
+	var respMsg proto.Message
+	var cs *storagepb.ChecksummedData
+
 	if s.isBidi {
-		var resp storagepb.BidiReadObjectResponse
-		if uErr := proto.Unmarshal(databufs.Materialize(), &resp); uErr != nil {
+		resp := &storagepb.BidiReadObjectResponse{}
+		if uErr := proto.Unmarshal(databufs.Materialize(), resp); uErr != nil {
 			return fmt.Errorf("failed to unmarshal BidiReadObjectResponse: %w", uErr)
 		}
-		if len(resp.ObjectDataRanges) > 0 && resp.ObjectDataRanges[0].ChecksummedData != nil && len(resp.ObjectDataRanges[0].ChecksummedData.Content) > 0 {
-			s.chunkCount++
-			if s.chunkCount == 2 {
-				var badCRC uint32 = 12345
-				resp.ObjectDataRanges[0].ChecksummedData.Crc32C = &badCRC
-			}
+		if len(resp.ObjectDataRanges) > 0 {
+			cs = resp.ObjectDataRanges[0].ChecksummedData
 		}
-		marshalled, mErr := proto.Marshal(&resp)
-		if mErr != nil {
-			return fmt.Errorf("failed to marshal modified BidiReadObjectResponse: %w", mErr)
-		}
-		updatedMsg := mem.BufferSlice{mem.SliceBuffer(marshalled)}
-		if ptr, ok := m.(*mem.BufferSlice); ok {
-			*ptr = updatedMsg
-		}
+		respMsg = resp
 	} else {
-		var resp storagepb.ReadObjectResponse
-		if uErr := proto.Unmarshal(databufs.Materialize(), &resp); uErr != nil {
+		resp := &storagepb.ReadObjectResponse{}
+		if uErr := proto.Unmarshal(databufs.Materialize(), resp); uErr != nil {
 			return fmt.Errorf("failed to unmarshal ReadObjectResponse: %w", uErr)
 		}
-		if resp.ChecksummedData != nil && len(resp.ChecksummedData.Content) > 0 {
-			s.chunkCount++
-			if s.chunkCount == 2 {
-				var badCRC uint32 = 12345
-				resp.ChecksummedData.Crc32C = &badCRC
-			}
+		cs = resp.ChecksummedData
+		respMsg = resp
+	}
+
+	if cs != nil && len(cs.Content) > 0 {
+		s.chunkCount++
+		if s.chunkCount == 2 {
+			var badCRC uint32 = 12345
+			cs.Crc32C = &badCRC
 		}
-		marshalled, mErr := proto.Marshal(&resp)
-		if mErr != nil {
-			return fmt.Errorf("failed to marshal modified ReadObjectResponse: %w", mErr)
-		}
-		updatedMsg := mem.BufferSlice{mem.SliceBuffer(marshalled)}
-		if ptr, ok := m.(*mem.BufferSlice); ok {
-			*ptr = updatedMsg
-		}
+	}
+
+	marshalled, mErr := proto.Marshal(respMsg)
+	if mErr != nil {
+		return fmt.Errorf("failed to marshal modified response: %w", mErr)
+	}
+	databufs.Free()
+	if ptr, ok := m.(*mem.BufferSlice); ok {
+		*ptr = mem.BufferSlice{mem.SliceBuffer(marshalled)}
 	}
 
 	return nil
