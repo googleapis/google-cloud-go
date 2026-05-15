@@ -3148,6 +3148,24 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 					r.Errorf("got: %v, want: %v", gotResult, wantResult)
 					return
 				}
+
+				if !wantErr {
+					// Verify Data()
+					gotNative := gotResult.Data()
+					wantNative := wantResult.Data()
+					if diff := testutil.Diff(gotNative, wantNative); diff != "" {
+						r.Errorf("Data() mismatch (-got, +want):\n%s", diff)
+					}
+
+					// Verify DataTo()
+					var gotDataTo map[string]interface{}
+					if err := gotResult.DataTo(&gotDataTo); err != nil {
+						r.Errorf("DataTo() failed: %v", err)
+					}
+					if diff := testutil.Diff(gotDataTo, wantNative); diff != "" {
+						r.Errorf("DataTo() map mismatch (-got, +want):\n%s", diff)
+					}
+				}
 			})
 		})
 	}
