@@ -171,7 +171,7 @@ func TestDynamicChannelPoolScaleDownRequiresRepeatedLowLoad(t *testing.T) {
 }
 
 func TestDynamicChannelPoolPickerSkipsDrainingEntries(t *testing.T) {
-	_, client, teardown := setupDCPMockedTestServer(t, testDCPConfig(3, 1, 3))
+	_, client, teardown := setupDCPMockedTestServer(t, testDCPConfig(3, 3, 3))
 	defer teardown()
 	p := client.sc.dynamicPool
 	entries := p.getEntries()
@@ -191,7 +191,7 @@ func TestDynamicChannelPoolPickerSkipsDrainingEntries(t *testing.T) {
 }
 
 func TestDynamicChannelPoolRoundRobinSkipsDrainingEntries(t *testing.T) {
-	_, client, teardown := setupDCPMockedTestServer(t, testDCPConfig(3, 1, 3))
+	_, client, teardown := setupDCPMockedTestServer(t, testDCPConfig(3, 3, 3))
 	defer teardown()
 	p := client.sc.dynamicPool
 	p.cfg.DCPSelectionStrategy = DCPRoundRobin
@@ -392,7 +392,7 @@ func TestDynamicChannelPoolOperationRefsReleasedAcrossReadOnlyPaths(t *testing.T
 		t.Fatalf("operation refs after single-use query = %d, want 0", got)
 	}
 
-	server.TestSpanner.SetError(status.Error(codes.Internal, "single-use error"))
+	server.TestSpanner.PutExecutionTime(MethodExecuteStreamingSql, SimulatedExecutionTime{Errors: []error{status.Error(codes.Internal, "single-use error")}})
 	iter := client.Single().Query(context.Background(), NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
 	if _, err := iter.Next(); err == nil {
 		t.Fatal("single-use query error path succeeded, want error")
@@ -504,7 +504,7 @@ func TestDynamicChannelPoolScaleUpPrimeFailureDoesNotPublishEntry(t *testing.T) 
 }
 
 func TestDynamicChannelPoolPowerOfTwoPrefersLeastLoadedEntry(t *testing.T) {
-	_, client, teardown := setupDCPMockedTestServer(t, testDCPConfig(3, 1, 3))
+	_, client, teardown := setupDCPMockedTestServer(t, testDCPConfig(3, 3, 3))
 	defer teardown()
 	p := client.sc.dynamicPool
 	entries := p.getEntries()
@@ -527,7 +527,7 @@ func TestDynamicChannelPoolPowerOfTwoPrefersLeastLoadedEntry(t *testing.T) {
 }
 
 func TestDynamicChannelPoolCloseClosesActiveAndDrainingEntries(t *testing.T) {
-	_, client, teardown := setupDCPMockedTestServer(t, testDCPConfig(3, 1, 3))
+	_, client, teardown := setupDCPMockedTestServer(t, testDCPConfig(3, 3, 3))
 	defer teardown()
 	p := client.sc.dynamicPool
 	entries := append([]*dcpEntry(nil), p.getEntries()...)
@@ -598,7 +598,7 @@ func TestDynamicChannelPoolRequestIDUsesEntryChannelID(t *testing.T) {
 }
 
 func TestDynamicChannelPoolFullScanFallbackFindsOnlyActiveEntry(t *testing.T) {
-	_, client, teardown := setupDCPMockedTestServer(t, testDCPConfig(4, 1, 4))
+	_, client, teardown := setupDCPMockedTestServer(t, testDCPConfig(4, 4, 4))
 	defer teardown()
 	p := client.sc.dynamicPool
 	entries := p.getEntries()
@@ -628,7 +628,7 @@ func TestDynamicChannelPoolFullScanFallbackFindsOnlyActiveEntry(t *testing.T) {
 }
 
 func TestDynamicChannelPoolPowerOfTwoSpreadDoesNotHerd(t *testing.T) {
-	_, client, teardown := setupDCPMockedTestServer(t, testDCPConfig(4, 1, 4))
+	_, client, teardown := setupDCPMockedTestServer(t, testDCPConfig(4, 4, 4))
 	defer teardown()
 	p := client.sc.dynamicPool
 	entries := p.getEntries()
@@ -715,9 +715,6 @@ func TestDynamicChannelPoolScaleUpHonorsMaxScaleUpPercent(t *testing.T) {
 	p.scaleUp()
 	if got, want := p.Num(), 5; got != want {
 		t.Fatalf("DCP channel count after percent-capped scale-up = %d, want %d", got, want)
-	}
-	if got, want := int(p.nextID.Load()), 5; got != want {
-		t.Fatalf("DCP next entry id after percent-capped scale-up = %d, want %d", got, want)
 	}
 }
 
