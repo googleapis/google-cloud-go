@@ -216,7 +216,7 @@ func TestDynamicChannelPoolRoundRobinSkipsDrainingEntries(t *testing.T) {
 }
 
 func TestDynamicChannelPoolErrorPenaltyAllowlist(t *testing.T) {
-	_, client, teardown := setupDCPMockedTestServer(t, testDCPConfig(2, 1, 2))
+	_, client, teardown := setupDCPMockedTestServer(t, testDCPConfig(2, 2, 2))
 	defer teardown()
 	p := client.sc.dynamicPool
 	entries := p.getEntries()
