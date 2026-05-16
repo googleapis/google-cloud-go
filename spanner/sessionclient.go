@@ -99,6 +99,7 @@ type sessionClient struct {
 	disableRouteToLeader bool
 
 	connPool             gtransport.ConnPool
+	dynamicPool          *dynamicChannelPool
 	database             string
 	id                   string
 	userAgent            string
@@ -280,6 +281,13 @@ func (sc *sessionClient) sessionWithID(id string) (*session, error) {
 // session. Using the same channel for all gRPC calls for a session ensures the
 // optimal usage of server side caches.
 func (sc *sessionClient) nextClient() (spannerClient, error) {
+	if sc.dynamicPool != nil {
+		entry, _, err := sc.dynamicPool.pick(context.Background(), false)
+		if err != nil {
+			return nil, err
+		}
+		return entry.client, nil
+	}
 	var clientOpt option.ClientOption
 	var channelID uint64
 	if _, ok := sc.connPool.(*gmeWrapper); ok {
