@@ -452,10 +452,10 @@ var errInvalidSession = spannerErrorf(codes.InvalidArgument, "invalid session")
 
 // newSessionHandleLocked creates a new session handle for the given session.
 // The caller must hold p.mu.
-func (p *sessionManager) newSessionHandleLocked(s *session) (*sessionHandle, error) {
+func (p *sessionManager) newSessionHandleLocked(ctx context.Context, s *session) (*sessionHandle, error) {
 	sh := &sessionHandle{session: s}
 	if p.sc.dynamicPool != nil && p.locationAwareState == nil {
-		entry, release, err := p.sc.dynamicPool.pick(context.Background(), true)
+		entry, release, err := p.sc.dynamicPool.pick(ctx, true)
 		if err != nil {
 			return nil, err
 		}
@@ -534,7 +534,7 @@ func (p *sessionManager) takeMultiplexed(ctx context.Context) (*sessionHandle, e
 			s = p.multiplexedSession
 			trace.TracePrintf(ctx, map[string]interface{}{"sessionID": s.getID()},
 				"Acquired multiplexed session")
-			sh, err := p.newSessionHandleLocked(s)
+			sh, err := p.newSessionHandleLocked(ctx, s)
 			if err != nil {
 				p.mu.Unlock()
 				return nil, err

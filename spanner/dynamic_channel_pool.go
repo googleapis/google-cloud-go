@@ -114,11 +114,15 @@ func DefaultDynamicChannelPoolConfig() DynamicChannelPoolConfig {
 // normalizeDCPConfig fills zero-value knobs and validates internal consistency.
 func normalizeDCPConfig(cfg DynamicChannelPoolConfig) (DynamicChannelPoolConfig, error) {
 	def := DefaultDynamicChannelPoolConfig()
-	if cfg.DCPInitialChannels == 0 {
-		cfg.DCPInitialChannels = def.DCPInitialChannels
-	}
+	initialChannelsSet := cfg.DCPInitialChannels != 0
 	if cfg.DCPMinChannels == 0 {
 		cfg.DCPMinChannels = def.DCPMinChannels
+	}
+	if cfg.DCPInitialChannels == 0 {
+		cfg.DCPInitialChannels = def.DCPInitialChannels
+		if cfg.DCPInitialChannels < cfg.DCPMinChannels {
+			cfg.DCPInitialChannels = cfg.DCPMinChannels
+		}
 	}
 	if cfg.DCPMaxChannels == 0 {
 		cfg.DCPMaxChannels = def.DCPMaxChannels
@@ -169,8 +173,10 @@ func normalizeDCPConfig(cfg DynamicChannelPoolConfig) (DynamicChannelPoolConfig,
 		return cfg, fmt.Errorf("DCPMinChannels must be positive")
 	case cfg.DCPMaxChannels < cfg.DCPMinChannels:
 		return cfg, fmt.Errorf("DCPMaxChannels must be >= DCPMinChannels")
-	case cfg.DCPInitialChannels < cfg.DCPMinChannels || cfg.DCPInitialChannels > cfg.DCPMaxChannels:
-		return cfg, fmt.Errorf("DCPInitialChannels must be between DCPMinChannels and DCPMaxChannels")
+	case initialChannelsSet && cfg.DCPInitialChannels < cfg.DCPMinChannels:
+		return cfg, fmt.Errorf("DCPInitialChannels must be >= DCPMinChannels when explicitly set")
+	case cfg.DCPInitialChannels > cfg.DCPMaxChannels:
+		return cfg, fmt.Errorf("DCPInitialChannels must be <= DCPMaxChannels")
 	case cfg.DCPMinRPCPerChannel >= cfg.DCPMaxRPCPerChannel:
 		return cfg, fmt.Errorf("DCPMinRPCPerChannel must be less than DCPMaxRPCPerChannel")
 	case cfg.DCPMaxScaleUpPercent <= 0 || cfg.DCPMaxScaleUpPercent > 100:

@@ -850,3 +850,20 @@ func TestDynamicChannelPoolOperationRefsReleasedOnCanceledQuery(t *testing.T) {
 		return nil
 	})
 }
+
+func TestDynamicChannelPoolConfigDefaultsInitialChannelsToMinWhenInitialUnset(t *testing.T) {
+	cfg, err := normalizeDCPConfig(DynamicChannelPoolConfig{DCPEnabled: true, DCPMinChannels: 8, DCPMaxChannels: 10})
+	if err != nil {
+		t.Fatalf("normalizeDCPConfig failed: %v", err)
+	}
+	if got, want := cfg.DCPInitialChannels, 8; got != want {
+		t.Fatalf("DCPInitialChannels = %d, want min channels %d", got, want)
+	}
+}
+
+func TestDynamicChannelPoolConfigRejectsExplicitInitialBelowMin(t *testing.T) {
+	_, err := normalizeDCPConfig(DynamicChannelPoolConfig{DCPEnabled: true, DCPInitialChannels: 4, DCPMinChannels: 8, DCPMaxChannels: 10})
+	if err == nil {
+		t.Fatal("normalizeDCPConfig succeeded, want error")
+	}
+}
