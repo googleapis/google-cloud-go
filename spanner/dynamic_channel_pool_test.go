@@ -834,12 +834,12 @@ func TestDynamicChannelPoolOperationRefsReleasedOnCanceledQuery(t *testing.T) {
 		return nil
 	})
 	cancel()
-	iter.Stop()
 	select {
 	case <-done:
 	case <-time.After(2 * time.Second):
 		t.Fatal("canceled query did not return")
 	}
+	iter.Stop()
 	waitFor(t, func() error {
 		if got := totalDCPOperationRefs(client.sc.dynamicPool); got != 0 {
 			return fmt.Errorf("operation refs after canceled query = %d, want 0", got)
