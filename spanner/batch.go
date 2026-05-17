@@ -25,6 +25,7 @@ import (
 	"cloud.google.com/go/internal/trace"
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	"github.com/googleapis/gax-go/v2"
+	oteltrace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"
@@ -315,16 +316,23 @@ func (t *BatchReadOnlyTransaction) Execute(ctx context.Context, p *Partition) *R
 			if err != nil {
 				return client, err
 			}
-			md, err := client.Header()
-			if getGFELatencyMetricsFlag() && md != nil && t.ct != nil {
-				if err := createContextAndCaptureGFELatencyMetrics(ctx, t.ct, md, "Execute"); err != nil {
-					trace.TracePrintf(ctx, nil, "Error in recording GFE Latency. Try disabling and rerunning. Error: %v", err)
-				}
+			if shouldCaptureStreamingHeaderMetrics(t.ct, t.otConfig) {
+				client = wrapStreamingReadClient(
+					client,
+					oteltrace.SpanFromContext(ctx),
+					nil,
+					streamingHeaderMetrics{
+						ctx:      ctx,
+						ct:       t.ct,
+						otConfig: t.otConfig,
+						method:   "Execute",
+						traceErrf: func(err error) {
+							trace.TracePrintf(ctx, nil, "Error in recording GFE Latency. Try disabling and rerunning. Error: %v", err)
+						},
+					},
+				)
 			}
-			if metricErr := recordGFELatencyMetricsOT(ctx, md, "Execute", t.otConfig); metricErr != nil {
-				trace.TracePrintf(ctx, nil, "Error in recording GFE Latency through OpenTelemetry. Error: %v", metricErr)
-			}
-			return client, err
+			return client, nil
 		}
 	} else {
 		rpc = func(ctx context.Context, resumeToken []byte, opts ...gax.CallOption) (streamingReceiver, error) {
@@ -345,17 +353,23 @@ func (t *BatchReadOnlyTransaction) Execute(ctx context.Context, p *Partition) *R
 			if err != nil {
 				return client, err
 			}
-			md, err := client.Header()
-
-			if getGFELatencyMetricsFlag() && md != nil && t.ct != nil {
-				if err := createContextAndCaptureGFELatencyMetrics(ctx, t.ct, md, "Execute"); err != nil {
-					trace.TracePrintf(ctx, nil, "Error in recording GFE Latency. Try disabling and rerunning. Error: %v", err)
-				}
+			if shouldCaptureStreamingHeaderMetrics(t.ct, t.otConfig) {
+				client = wrapExecuteStreamingSqlClient(
+					client,
+					oteltrace.SpanFromContext(ctx),
+					nil,
+					streamingHeaderMetrics{
+						ctx:      ctx,
+						ct:       t.ct,
+						otConfig: t.otConfig,
+						method:   "Execute",
+						traceErrf: func(err error) {
+							trace.TracePrintf(ctx, nil, "Error in recording GFE Latency. Try disabling and rerunning. Error: %v", err)
+						},
+					},
+				)
 			}
-			if metricErr := recordGFELatencyMetricsOT(ctx, md, "Execute", t.otConfig); metricErr != nil {
-				trace.TracePrintf(ctx, nil, "Error in recording GFE Latency through OpenTelemetry. Error: %v", metricErr)
-			}
-			return client, err
+			return client, nil
 		}
 	}
 	return streamWithTransactionCallbacks(

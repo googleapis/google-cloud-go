@@ -19,8 +19,8 @@ package spanner
 import (
 	"context"
 	"strings"
+	"sync"
 	"sync/atomic"
-	"time"
 
 	vkit "cloud.google.com/go/spanner/apiv1"
 	"cloud.google.com/go/spanner/apiv1/spannerpb"
@@ -30,6 +30,7 @@ import (
 	oteltrace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/peer"
 	"google.golang.org/grpc/status"
 )
@@ -37,6 +38,212 @@ import (
 type contextKey string
 
 const metricsTracerKey contextKey = "metricsTracer"
+
+type streamingHeaderMetrics struct {
+	ctx       context.Context
+	ct        *commonTags
+	otConfig  *openTelemetryConfig
+	method    string
+	traceErrf func(error)
+}
+
+func (h streamingHeaderMetrics) enabled() bool {
+	return (getGFELatencyMetricsFlag() && h.ct != nil) || (h.otConfig != nil && h.otConfig.enabled)
+}
+
+func (h streamingHeaderMetrics) capture(md metadata.MD) {
+	if getGFELatencyMetricsFlag() && md != nil && h.ct != nil {
+		if err := createContextAndCaptureGFELatencyMetrics(h.ctx, h.ct, md, h.method); err != nil && h.traceErrf != nil {
+			h.traceErrf(err)
+		}
+	}
+	if metricErr := recordGFELatencyMetricsOT(h.ctx, md, h.method, h.otConfig); metricErr != nil && h.traceErrf != nil {
+		h.traceErrf(metricErr)
+	}
+}
+
+type metricsExecuteStreamingSqlClient struct {
+	spannerpb.Spanner_ExecuteStreamingSqlClient
+	span          oteltrace.Span
+	mt            *builtinMetricsTracer
+	headerMetrics streamingHeaderMetrics
+	once          sync.Once
+}
+
+func wrapExecuteStreamingSqlClient(
+	client spannerpb.Spanner_ExecuteStreamingSqlClient,
+	span oteltrace.Span,
+	mt *builtinMetricsTracer,
+	headerMetrics streamingHeaderMetrics,
+) spannerpb.Spanner_ExecuteStreamingSqlClient {
+	if client == nil {
+		return nil
+	}
+	if metricsClient, ok := client.(*metricsExecuteStreamingSqlClient); ok {
+		if mt != nil {
+			metricsClient.mt = mt
+		}
+		if span != nil {
+			metricsClient.span = span
+		}
+		if headerMetrics.enabled() {
+			metricsClient.headerMetrics = headerMetrics
+		}
+		return metricsClient
+	}
+	return &metricsExecuteStreamingSqlClient{
+		Spanner_ExecuteStreamingSqlClient: client,
+		span:                              span,
+		mt:                                mt,
+		headerMetrics:                     headerMetrics,
+	}
+}
+
+func (c *metricsExecuteStreamingSqlClient) Recv() (*spannerpb.PartialResultSet, error) {
+	resp, err := c.Spanner_ExecuteStreamingSqlClient.Recv()
+	c.capture()
+	return resp, err
+}
+
+func (c *metricsExecuteStreamingSqlClient) finish() {
+	if finalizer, ok := c.Spanner_ExecuteStreamingSqlClient.(streamingFinalizer); ok {
+		finalizer.finish()
+	}
+}
+
+func (c *metricsExecuteStreamingSqlClient) capture() {
+	c.once.Do(func() {
+		md, _ := c.Spanner_ExecuteStreamingSqlClient.Header()
+		c.headerMetrics.capture(md)
+		if c.mt == nil || c.mt.currOp == nil || c.mt.currOp.currAttempt == nil {
+			return
+		}
+		latencies := parseServerTimingHeaderMetrics(md)
+		setGFEAndAFESpanAttributes(c.span, latencies)
+		c.mt.currOp.currAttempt.setServerTimingMetrics(latencies)
+		c.mt.currOp.currAttempt.setDirectPathUsed(c.Spanner_ExecuteStreamingSqlClient.Context())
+	})
+}
+
+type metricsStreamingReadClient struct {
+	spannerpb.Spanner_StreamingReadClient
+	span          oteltrace.Span
+	mt            *builtinMetricsTracer
+	headerMetrics streamingHeaderMetrics
+	once          sync.Once
+}
+
+func wrapStreamingReadClient(
+	client spannerpb.Spanner_StreamingReadClient,
+	span oteltrace.Span,
+	mt *builtinMetricsTracer,
+	headerMetrics streamingHeaderMetrics,
+) spannerpb.Spanner_StreamingReadClient {
+	if client == nil {
+		return nil
+	}
+	if metricsClient, ok := client.(*metricsStreamingReadClient); ok {
+		if mt != nil {
+			metricsClient.mt = mt
+		}
+		if span != nil {
+			metricsClient.span = span
+		}
+		if headerMetrics.enabled() {
+			metricsClient.headerMetrics = headerMetrics
+		}
+		return metricsClient
+	}
+	return &metricsStreamingReadClient{
+		Spanner_StreamingReadClient: client,
+		span:                        span,
+		mt:                          mt,
+		headerMetrics:               headerMetrics,
+	}
+}
+
+func (c *metricsStreamingReadClient) Recv() (*spannerpb.PartialResultSet, error) {
+	resp, err := c.Spanner_StreamingReadClient.Recv()
+	c.capture()
+	return resp, err
+}
+
+func (c *metricsStreamingReadClient) finish() {
+	if finalizer, ok := c.Spanner_StreamingReadClient.(streamingFinalizer); ok {
+		finalizer.finish()
+	}
+}
+
+func (c *metricsStreamingReadClient) capture() {
+	c.once.Do(func() {
+		md, _ := c.Spanner_StreamingReadClient.Header()
+		c.headerMetrics.capture(md)
+		if c.mt == nil || c.mt.currOp == nil || c.mt.currOp.currAttempt == nil {
+			return
+		}
+		latencies := parseServerTimingHeaderMetrics(md)
+		setGFEAndAFESpanAttributes(c.span, latencies)
+		c.mt.currOp.currAttempt.setServerTimingMetrics(latencies)
+		c.mt.currOp.currAttempt.setDirectPathUsed(c.Spanner_StreamingReadClient.Context())
+	})
+}
+
+type metricsBatchWriteClient struct {
+	spannerpb.Spanner_BatchWriteClient
+	span          oteltrace.Span
+	mt            *builtinMetricsTracer
+	headerMetrics streamingHeaderMetrics
+	once          sync.Once
+}
+
+func wrapBatchWriteClient(
+	client spannerpb.Spanner_BatchWriteClient,
+	span oteltrace.Span,
+	mt *builtinMetricsTracer,
+	headerMetrics streamingHeaderMetrics,
+) spannerpb.Spanner_BatchWriteClient {
+	if client == nil {
+		return nil
+	}
+	if metricsClient, ok := client.(*metricsBatchWriteClient); ok {
+		if mt != nil {
+			metricsClient.mt = mt
+		}
+		if span != nil {
+			metricsClient.span = span
+		}
+		if headerMetrics.enabled() {
+			metricsClient.headerMetrics = headerMetrics
+		}
+		return metricsClient
+	}
+	return &metricsBatchWriteClient{
+		Spanner_BatchWriteClient: client,
+		span:                     span,
+		mt:                       mt,
+		headerMetrics:            headerMetrics,
+	}
+}
+
+func (c *metricsBatchWriteClient) Recv() (*spannerpb.BatchWriteResponse, error) {
+	resp, err := c.Spanner_BatchWriteClient.Recv()
+	c.capture()
+	return resp, err
+}
+
+func (c *metricsBatchWriteClient) capture() {
+	c.once.Do(func() {
+		md, _ := c.Spanner_BatchWriteClient.Header()
+		c.headerMetrics.capture(md)
+		if c.mt == nil || c.mt.currOp == nil || c.mt.currOp.currAttempt == nil {
+			return
+		}
+		latencies := parseServerTimingHeaderMetrics(md)
+		setGFEAndAFESpanAttributes(c.span, latencies)
+		c.mt.currOp.currAttempt.setServerTimingMetrics(latencies)
+		c.mt.currOp.currAttempt.setDirectPathUsed(c.Spanner_BatchWriteClient.Context())
+	})
+}
 
 // spannerClient is an interface that defines the methods available from Cloud Spanner API.
 type spannerClient interface {
@@ -213,16 +420,15 @@ func setSpanAttributes[T any](span oteltrace.Span, req T) {
 	span.SetAttributes(attrs...)
 }
 
-func setGFEAndAFESpanAttributes(span oteltrace.Span, latencyMap map[string]time.Duration) {
+func setGFEAndAFESpanAttributes(span oteltrace.Span, latencies serverTimingMetrics) {
 	if !span.IsRecording() {
 		return
 	}
-	for t, v := range latencyMap {
-		if t == gfeTimingHeader || t == afeTimingHeader {
-			span.SetAttributes(
-				attribute.Float64(t[:3]+".latency_ms", float64(v.Nanoseconds())/1e6),
-			)
-		}
+	if latencies.hasGFE {
+		span.SetAttributes(attribute.Float64("gfe.latency_ms", float64(latencies.gfeLatency.Nanoseconds())/1e6))
+	}
+	if latencies.hasAFE {
+		span.SetAttributes(attribute.Float64("afe.latency_ms", float64(latencies.afeLatency.Nanoseconds())/1e6))
 	}
 }
 
@@ -245,15 +451,8 @@ func (g *grpcSpannerClient) ExecuteStreamingSql(ctx context.Context, req *spanne
 	// as it is already manually added when creating Stream iterators for ExecuteStreamingSql.
 	client, err := g.raw.ExecuteStreamingSql(peer.NewContext(ctx, &peer.Peer{}), req, opts...)
 	mt, ok := ctx.Value(metricsTracerKey).(*builtinMetricsTracer)
-	if !ok {
-		return client, err
-	}
-	if mt != nil && client != nil && mt.currOp.currAttempt != nil {
-		md, _ := client.Header()
-		latencyMap := parseServerTimingHeader(md)
-		setGFEAndAFESpanAttributes(span, latencyMap)
-		mt.currOp.currAttempt.setServerTimingMetrics(latencyMap)
-		mt.currOp.currAttempt.setDirectPathUsed(client.Context())
+	if ok && mt != nil && client != nil && mt.currOp.currAttempt != nil && (mt.builtInEnabled || span.IsRecording()) {
+		client = wrapExecuteStreamingSqlClient(client, span, mt, streamingHeaderMetrics{})
 	}
 	return client, err
 }
@@ -289,15 +488,8 @@ func (g *grpcSpannerClient) StreamingRead(ctx context.Context, req *spannerpb.Re
 	setSpanAttributes(span, req)
 	client, err := g.raw.StreamingRead(peer.NewContext(ctx, &peer.Peer{}), req, opts...)
 	mt, ok := ctx.Value(metricsTracerKey).(*builtinMetricsTracer)
-	if !ok {
-		return client, err
-	}
-	if mt != nil && client != nil && mt.currOp.currAttempt != nil {
-		md, _ := client.Header()
-		latencyMap := parseServerTimingHeader(md)
-		setGFEAndAFESpanAttributes(span, latencyMap)
-		mt.currOp.currAttempt.setServerTimingMetrics(latencyMap)
-		mt.currOp.currAttempt.setDirectPathUsed(client.Context())
+	if ok && mt != nil && client != nil && mt.currOp.currAttempt != nil && (mt.builtInEnabled || span.IsRecording()) {
+		client = wrapStreamingReadClient(client, span, mt, streamingHeaderMetrics{})
 	}
 	return client, err
 }
@@ -366,12 +558,8 @@ func (g *grpcSpannerClient) BatchWrite(ctx context.Context, req *spannerpb.Batch
 	if !ok {
 		return client, err
 	}
-	if mt != nil && client != nil && mt.currOp.currAttempt != nil {
-		md, _ := client.Header()
-		latencyMap := parseServerTimingHeader(md)
-		setGFEAndAFESpanAttributes(span, latencyMap)
-		mt.currOp.currAttempt.setServerTimingMetrics(latencyMap)
-		mt.currOp.currAttempt.setDirectPathUsed(client.Context())
+	if mt != nil && client != nil {
+		client = wrapBatchWriteClient(client, span, mt, streamingHeaderMetrics{})
 	}
 	return client, err
 }
