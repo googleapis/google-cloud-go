@@ -358,8 +358,11 @@ type Reader struct {
 
 // Close closes the Reader. It must be called when done reading.
 func (r *Reader) Close() error {
-	if r.remain < 0 {
-		log.Printf("storage: received %d more bytes than requested from GCS for bucket %q, object %q", -r.remain, r.bucket, r.object)
+	r.mu.Lock()
+	rem := r.remain
+	r.mu.Unlock()
+	if rem < 0 {
+		log.Printf("storage: received %d more bytes than requested from GCS for bucket %q, object %q", -rem, r.bucket, r.object)
 	}
 	err := r.reader.Close()
 	endSpan(r.ctx, err)
@@ -368,9 +371,11 @@ func (r *Reader) Close() error {
 
 func (r *Reader) Read(p []byte) (int, error) {
 	n, err := r.reader.Read(p)
+	r.mu.Lock()
 	if r.remain != -1 {
 		r.remain -= int64(n)
 	}
+	r.mu.Unlock()
 	return n, err
 }
 
@@ -380,9 +385,11 @@ func (r *Reader) WriteTo(w io.Writer) (int64, error) {
 	// This implicitly calls r.reader.WriteTo for gRPC only. JSON and XML don't have an
 	// implementation of WriteTo.
 	n, err := io.Copy(w, r.reader)
+	r.mu.Lock()
 	if r.remain != -1 {
 		r.remain -= int64(n)
 	}
+	r.mu.Unlock()
 	return n, err
 }
 
@@ -402,6 +409,8 @@ func (r *Reader) Remain() int64 {
 	if r.unfinalized {
 		return -1
 	}
+	r.mu.Lock()
+	defer r.mu.Unlock()
 	if r.remain < 0 {
 		return 0
 	}
