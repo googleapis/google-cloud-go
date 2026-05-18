@@ -82,6 +82,12 @@
 
 * Update documentation for `BidiReadObject`, `ReadObjectRequest`, and `ObjectContexts` ([611f239](https://github.com/googleapis/google-cloud-go/commit/611f239219225fb03f6475c7238f497a349961e2))
 
+## [1.59.3](https://github.com/googleapis/google-cloud-go/releases/tag/storage%2Fv1.59.3) (2026-05-05)
+
+### Bug Fixes
+
+* handle MRD hang corner case (#14509) ([1ca3b6f](https://github.com/googleapis/google-cloud-go/commit/1ca3b6f02d35f87c336e34358e16985557c7fd58))
+
 ## [1.59.2](https://github.com/googleapis/google-cloud-go/releases/tag/storage%2Fv1.59.2) (2026-01-28)
 
 ### Bug Fixes
