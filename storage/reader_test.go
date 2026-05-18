@@ -628,6 +628,8 @@ func TestReaderExtraBytesLogging(t *testing.T) {
 	r := &Reader{
 		reader: m,
 		remain: 5, // We pretend we only requested 5 bytes
+		bucket: "my-bucket",
+		object: "my-object",
 	}
 
 	buf := make([]byte, 100)
@@ -656,7 +658,7 @@ func TestReaderExtraBytesLogging(t *testing.T) {
 	}
 
 	logStr := logOutput.String()
-	expectedLog := "storage: received 7 more bytes than requested from GCS"
+	expectedLog := `storage: received 7 more bytes than requested from GCS for bucket "my-bucket", object "my-object"`
 	if !strings.Contains(logStr, expectedLog) {
 		t.Errorf("expected log output to contain %q, but got %q", expectedLog, logStr)
 	}
@@ -672,6 +674,8 @@ func TestReaderWriteToExtraBytesLogging(t *testing.T) {
 	r := &Reader{
 		reader: m,
 		remain: 5, // We pretend we only requested 5 bytes
+		bucket: "my-bucket",
+		object: "my-object",
 	}
 
 	var dst bytes.Buffer
@@ -700,7 +704,7 @@ func TestReaderWriteToExtraBytesLogging(t *testing.T) {
 	}
 
 	logStr := logOutput.String()
-	expectedLog := "storage: received 7 more bytes than requested from GCS"
+	expectedLog := `storage: received 7 more bytes than requested from GCS for bucket "my-bucket", object "my-object"`
 	if !strings.Contains(logStr, expectedLog) {
 		t.Errorf("expected log output to contain %q, but got %q", expectedLog, logStr)
 	}

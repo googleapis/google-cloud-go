@@ -1652,6 +1652,8 @@ func parseReadResponse(res *http.Response, params *newRangeReaderParams, reopen 
 			wantCRC:  crc,
 			checkCRC: checkCRC,
 		},
+		bucket: params.bucket,
+		object: params.object,
 	}, nil
 }
 

@@ -222,6 +222,8 @@ func (c *grpcStorageClient) NewRangeReaderReadObject(ctx context.Context, params
 			checkCRC:  checkCRC,
 		},
 		checkCRC: checkCRC,
+		bucket:   params.bucket,
+		object:   params.object,
 	}
 
 	cr := msg.GetContentRange()
