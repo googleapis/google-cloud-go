@@ -2485,6 +2485,9 @@ func TestMultiRangeDownloaderRetryLimitEmulated(t *testing.T) {
 	streamInterceptor := grpc.WithStreamInterceptor(
 		func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
 			clientStream, err := streamer(ctx, desc, cc, method, opts...)
+			if err != nil {
+				return nil, err
+			}
 			if method == "/google.storage.v2.Storage/BidiReadObject" {
 				clientStream = &customFailingBidiStream{
 					ClientStream: clientStream,
@@ -2493,7 +2496,7 @@ func TestMultiRangeDownloaderRetryLimitEmulated(t *testing.T) {
 					maxFailures:  3,
 				}
 			}
-			return clientStream, err
+			return clientStream, nil
 		},
 	)
 
@@ -2506,7 +2509,7 @@ func TestMultiRangeDownloaderRetryLimitEmulated(t *testing.T) {
 	setBidiReads(t, client)
 
 	project := "grpc-project"
-	bucket := fmt.Sprintf("grpc-bucket-%d", time.Now().Nanosecond())
+	bucket := fmt.Sprintf("grpc-bucket-%d", time.Now().UnixNano())
 	content := make([]byte, 10000)
 	rand.New(rand.NewSource(0)).Read(content)
 
@@ -2515,7 +2518,7 @@ func TestMultiRangeDownloaderRetryLimitEmulated(t *testing.T) {
 		t.Fatalf("client.CreateBucket: %v", err)
 	}
 
-	objectName := fmt.Sprintf("object-%d", time.Now().Nanosecond())
+	objectName := fmt.Sprintf("object-%d", time.Now().UnixNano())
 	vc := &Client{tc: client}
 	// Configure veneer client with MaxAttempts retry limit of 2
 	vc.SetRetry(WithMaxAttempts(2))
@@ -2535,39 +2538,27 @@ func TestMultiRangeDownloaderRetryLimitEmulated(t *testing.T) {
 	defer reader.Close()
 
 	// Add Range 1. It should fail after 2 attempts.
-	var (
-		range1Err  error
-		range1Done bool
-		r1Mu       sync.Mutex
-	)
+	doneChan := make(chan struct{})
+	var range1Err error
 	buf1 := new(bytes.Buffer)
 	reader.Add(buf1, 0, 1000, func(offset, length int64, err error) {
-		r1Mu.Lock()
-		defer r1Mu.Unlock()
 		range1Err = err
-		range1Done = true
+		close(doneChan)
 	})
 
-	// Wait for Range 1 to fail.
-	for i := 0; i < 100; i++ {
-		r1Mu.Lock()
-		done := range1Done
-		r1Mu.Unlock()
-		if done {
-			break
-		}
-		time.Sleep(50 * time.Millisecond)
+	// Wait for Range 1 to fail with a timeout.
+	select {
+	case <-doneChan:
+		// Callback completed.
+	case <-time.After(5 * time.Second):
+		t.Fatalf("timed out waiting for Range 1 to fail")
 	}
 
-	r1Mu.Lock()
-	err1 := range1Err
-	r1Mu.Unlock()
-
-	if err1 == nil {
+	if range1Err == nil {
 		t.Fatalf("expected Range 1 to fail, but it succeeded")
 	}
-	if !strings.Contains(err1.Error(), "retry failed after 2 attempts") {
-		t.Errorf("expected error to contain 'retry failed after 2 attempts', got: %v", err1)
+	if !strings.Contains(range1Err.Error(), "retry failed after 2 attempts") {
+		t.Errorf("expected error to contain 'retry failed after 2 attempts', got: %v", range1Err)
 	}
 }
 
