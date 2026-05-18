@@ -19,6 +19,7 @@ import (
 	"fmt"
 	"hash/crc32"
 	"io"
+	"log"
 	"net/http"
 	"strings"
 	"sync"
@@ -354,6 +355,9 @@ type Reader struct {
 
 // Close closes the Reader. It must be called when done reading.
 func (r *Reader) Close() error {
+	if r.remain < 0 {
+		log.Printf("storage: received %d more bytes than requested from GCS", -r.remain)
+	}
 	err := r.reader.Close()
 	endSpan(r.ctx, err)
 	return err
@@ -394,6 +398,9 @@ func (r *Reader) Size() int64 {
 func (r *Reader) Remain() int64 {
 	if r.unfinalized {
 		return -1
+	}
+	if r.remain < 0 {
+		return 0
 	}
 	return r.remain
 }

@@ -21,9 +21,11 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"os"
 	"strconv"
 	"strings"
 	"testing"
@@ -595,5 +597,111 @@ func multiReaderTest(ctx context.Context, t *testing.T, test func(*testing.T, *C
 
 			test(t, client)
 		})
+	}
+}
+
+type mockReadCloserExtraBytes struct {
+	content []byte
+	pos     int
+}
+
+func (m *mockReadCloserExtraBytes) Read(p []byte) (n int, err error) {
+	if m.pos >= len(m.content) {
+		return 0, io.EOF
+	}
+	n = copy(p, m.content[m.pos:])
+	m.pos += n
+	return n, nil
+}
+
+func (m *mockReadCloserExtraBytes) Close() error {
+	return nil
+}
+
+func TestReaderExtraBytesLogging(t *testing.T) {
+	var logOutput bytes.Buffer
+	log.SetOutput(&logOutput)
+	defer log.SetOutput(os.Stderr)
+
+	m := &mockReadCloserExtraBytes{content: []byte("hello world!")} // 12 bytes
+
+	r := &Reader{
+		reader: m,
+		remain: 5, // We pretend we only requested 5 bytes
+	}
+
+	buf := make([]byte, 100)
+	n, err := r.Read(buf)
+	if err != nil && err != io.EOF {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if n != 12 {
+		t.Fatalf("expected 12 bytes read, got %d", n)
+	}
+
+	// Logging should not have occurred yet during reads
+	if logOutput.Len() > 0 {
+		t.Errorf("expected no logging during reads, but got: %q", logOutput.String())
+	}
+
+	// Remain() should be 0 because we have fully read our requested range (and more)
+	if rem := r.Remain(); rem != 0 {
+		t.Errorf("expected Remain() to be 0, got %d", rem)
+	}
+
+	// Close should trigger the log
+	if err := r.Close(); err != nil {
+		t.Fatalf("unexpected error on Close(): %v", err)
+	}
+
+	logStr := logOutput.String()
+	expectedLog := "storage: received 7 more bytes than requested from GCS"
+	if !strings.Contains(logStr, expectedLog) {
+		t.Errorf("expected log output to contain %q, but got %q", expectedLog, logStr)
+	}
+}
+
+func TestReaderWriteToExtraBytesLogging(t *testing.T) {
+	var logOutput bytes.Buffer
+	log.SetOutput(&logOutput)
+	defer log.SetOutput(os.Stderr)
+
+	m := &mockReadCloserExtraBytes{content: []byte("hello world!")} // 12 bytes
+
+	r := &Reader{
+		reader: m,
+		remain: 5, // We pretend we only requested 5 bytes
+	}
+
+	var dst bytes.Buffer
+	n, err := r.WriteTo(&dst)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if n != 12 {
+		t.Fatalf("expected 12 bytes copied, got %d", n)
+	}
+
+	// Logging should not have occurred yet during writes
+	if logOutput.Len() > 0 {
+		t.Errorf("expected no logging during WriteTo, but got: %q", logOutput.String())
+	}
+
+	// Remain() should be 0 because we have fully read our requested range (and more)
+	if rem := r.Remain(); rem != 0 {
+		t.Errorf("expected Remain() to be 0, got %d", rem)
+	}
+
+	// Close should trigger the log
+	if err := r.Close(); err != nil {
+		t.Fatalf("unexpected error on Close(): %v", err)
+	}
+
+	logStr := logOutput.String()
+	expectedLog := "storage: received 7 more bytes than requested from GCS"
+	if !strings.Contains(logStr, expectedLog) {
+		t.Errorf("expected log output to contain %q, but got %q", expectedLog, logStr)
 	}
 }

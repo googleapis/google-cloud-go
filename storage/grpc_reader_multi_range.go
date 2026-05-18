@@ -20,6 +20,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log"
 	"sync"
 
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
@@ -979,6 +980,9 @@ func (m *multiRangeDownloaderManager) processDataRanges(result mrdSessionResult,
 			req.completed = true
 			delete(mrdStream.pendingRanges, req.readID)
 			mrdStream.updateCapacity(m, -1, 0)
+			if req.length >= 0 && req.bytesWritten > req.length {
+				log.Printf("storage: received %d more bytes than requested from GCS", req.bytesWritten-req.length)
+			}
 			m.runCallback(req.origOffset, req.bytesWritten, nil, req.callback)
 		}
 	}
@@ -1050,6 +1054,9 @@ func (m *multiRangeDownloaderManager) failRange(mrdStream *mrdStream, req *range
 			delete(mrdStream.pendingRanges, req.readID)
 			mrdStream.updateCapacity(m, -1, -(req.length - req.bytesWritten))
 		}
+	}
+	if req.length >= 0 && req.bytesWritten > req.length {
+		log.Printf("storage: received %d more bytes than requested from GCS", req.bytesWritten-req.length)
 	}
 	m.runCallback(req.origOffset, req.bytesWritten, err, req.callback)
 }
