@@ -2327,7 +2327,7 @@ libraries:
             - F_open_telemetry_attributes
             - F_proto_cloneof
   - name: storage
-    version: 1.62.1
+    version: 1.63.0
     apis:
       - path: google/storage/v2
         go:
