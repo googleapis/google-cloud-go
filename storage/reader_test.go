@@ -25,7 +25,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
-	"os"
 	"strconv"
 	"strings"
 	"testing"
@@ -620,8 +619,9 @@ func (m *mockReadCloserExtraBytes) Close() error {
 
 func TestReaderExtraBytesLogging(t *testing.T) {
 	var logOutput bytes.Buffer
+	old := log.Writer()
 	log.SetOutput(&logOutput)
-	defer log.SetOutput(os.Stderr)
+	defer log.SetOutput(old)
 
 	m := &mockReadCloserExtraBytes{content: []byte("hello world!")} // 12 bytes
 
@@ -666,8 +666,9 @@ func TestReaderExtraBytesLogging(t *testing.T) {
 
 func TestReaderWriteToExtraBytesLogging(t *testing.T) {
 	var logOutput bytes.Buffer
+	old := log.Writer()
 	log.SetOutput(&logOutput)
-	defer log.SetOutput(os.Stderr)
+	defer log.SetOutput(old)
 
 	m := &mockReadCloserExtraBytes{content: []byte("hello world!")} // 12 bytes
 
