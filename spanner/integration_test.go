@@ -2202,15 +2202,23 @@ func TestIntegration_DbRemovalRecovery(t *testing.T) {
 	}
 
 	// Now, send the query again.
-	waitFor(t, func() error {
+	// In real Cloud Spanner, after dropping and recreating a database, GFE location/directory
+	// cache propagation across all zones and workers can take up to several minutes.
+	// Retry sending the query until the context deadline.
+	for {
 		iter := client.Single().Query(ctx, Statement{SQL: "SELECT SingerId FROM Singers"})
-		defer iter.Stop()
 		_, err := iter.Next()
-		if err != nil && err != iterator.Done {
-			return err
+		iter.Stop()
+		if err == nil || err == iterator.Done {
+			break
 		}
-		return nil
-	})
+
+		select {
+		case <-ctx.Done():
+			t.Fatalf("timeout waiting for recreated database to be reachable: %v", ctx.Err())
+		case <-time.After(time.Second):
+		}
+	}
 	verifyDirectPathRemoteAddress(t)
 }
 
