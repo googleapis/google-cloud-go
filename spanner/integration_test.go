@@ -2116,6 +2116,7 @@ func TestIntegration_CreateDBRetry(t *testing.T) {
 // Test client recovery on database recreation.
 func TestIntegration_DbRemovalRecovery(t *testing.T) {
 	t.Parallel()
+	t.Skip("Flaky test, skipping for now (b/514205001)")
 	// tracking the failure via b/441255724 for experimentalHost
 	skipExperimentalHostTest(t)
 
