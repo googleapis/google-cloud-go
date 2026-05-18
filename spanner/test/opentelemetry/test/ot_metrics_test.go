@@ -20,7 +20,9 @@ package test
 
 import (
 	"context"
+	"fmt"
 	"testing"
+	"time"
 
 	"cloud.google.com/go/spanner"
 	"cloud.google.com/go/spanner/apiv1/spannerpb"
@@ -29,6 +31,7 @@ import (
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/sdk/metric/metricdata"
 	"go.opentelemetry.io/otel/sdk/metric/metricdata/metricdatatest"
+	"golang.org/x/sync/errgroup"
 	"google.golang.org/api/iterator"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 )
@@ -201,4 +204,139 @@ func validateOTMetric(ctx context.Context, t *testing.T, te *openTelemetryTestEx
 		t.Fatalf("Metric Name %s not found", metricName)
 	}
 	metricdatatest.AssertEqual(t, expectedMetric, resourceMetrics.ScopeMetrics[0].Metrics[idx], metricdatatest.IgnoreTimestamp(), metricdatatest.IgnoreExemplars())
+}
+
+func TestOTMetrics_DynamicChannelPoolMetrics(t *testing.T) {
+	ctx := context.Background()
+	te := newOpenTelemetryTestExporter(false, false)
+	t.Cleanup(func() { te.Unregister(ctx) })
+	spanner.EnableOpenTelemetryMetrics()
+
+	server, client, teardown := setupMockedTestServerWithConfig(t, spanner.ClientConfig{
+		OpenTelemetryMeterProvider: te.mp,
+		DynamicChannelPoolConfig: spanner.DynamicChannelPoolConfig{
+			DCPEnabled:                           true,
+			DCPInitialChannels:                   1,
+			DCPMinChannels:                       1,
+			DCPMaxChannels:                       3,
+			DCPMaxRPCPerChannel:                  1,
+			DCPMinRPCPerChannel:                  0.5,
+			DCPScaleDownCheckInterval:            30 * time.Millisecond,
+			DCPScaleUpCooldown:                   time.Millisecond,
+			DCPDownscaleConsecutiveLowLoadChecks: 2,
+			DCPMaxScaleUpPercent:                 100,
+			DCPMaxRemoveChannels:                 2,
+			DCPDrainIdleGrace:                    time.Second,
+			DCPMaxDrainTimeout:                   time.Second,
+			DCPPrimeTimeout:                      time.Second,
+			DCPPrimeMaxAttempts:                  3,
+		},
+	})
+	defer teardown()
+	putSelect1Result(t, server)
+	server.TestSpanner.PutExecutionTime(stestutil.MethodExecuteStreamingSql, stestutil.SimulatedExecutionTime{MinimumExecutionTime: 300 * time.Millisecond})
+
+	var g errgroup.Group
+	for i := 0; i < 3; i++ {
+		g.Go(func() error {
+			iter := client.Single().Query(ctx, spanner.NewStatement(stestutil.SelectSingerIDAlbumIDAlbumTitleFromAlbums))
+			defer iter.Stop()
+			for {
+				_, err := iter.Next()
+				if err == iterator.Done {
+					return nil
+				}
+				if err != nil {
+					return err
+				}
+			}
+		})
+	}
+	if err := g.Wait(); err != nil {
+		t.Fatalf("query workload failed: %v", err)
+	}
+
+	var metrics []metricdata.Metrics
+	waitFor(t, func() error {
+		resourceMetrics, err := te.metrics(ctx)
+		if err != nil {
+			return err
+		}
+		if resourceMetrics == nil || len(resourceMetrics.ScopeMetrics) == 0 {
+			return fmt.Errorf("missing resource metrics")
+		}
+		metrics = resourceMetrics.ScopeMetrics[0].Metrics
+		for _, name := range []string{
+			"spanner/dcp/active_channel_count",
+			"spanner/dcp/draining_channel_count",
+			"spanner/dcp/channel_unary_load",
+			"spanner/dcp/channel_stream_load",
+			"spanner/dcp/channel_operation_refs",
+			"spanner/dcp/selection_count",
+			"spanner/dcp/scale_up_count",
+			"spanner/dcp/scale_up_added_channels",
+			"spanner/dcp/prime_success_count",
+		} {
+			if getMetricIndex(metrics, name) == -1 {
+				return fmt.Errorf("DCP metric %q not found", name)
+			}
+		}
+		for _, name := range []string{"spanner/dcp/selection_count", "spanner/dcp/scale_up_count", "spanner/dcp/scale_up_added_channels", "spanner/dcp/prime_success_count"} {
+			v, err := int64SumMetricValue(metrics, name)
+			if err != nil {
+				return err
+			}
+			if v == 0 {
+				return fmt.Errorf("DCP metric %q value = 0, want > 0", name)
+			}
+		}
+		return nil
+	})
+
+	selectionMetric := metrics[getMetricIndex(metrics, "spanner/dcp/selection_count")]
+	selectionData, ok := selectionMetric.Data.(metricdata.Sum[int64])
+	if !ok {
+		t.Fatalf("selection_count data type = %T, want Sum[int64]", selectionMetric.Data)
+	}
+	if len(selectionData.DataPoints) == 0 || selectionData.DataPoints[0].Value == 0 {
+		t.Fatalf("selection_count datapoints = %+v, want non-zero", selectionData.DataPoints)
+	}
+	metricdatatest.AssertHasAttributes[metricdata.DataPoint[int64]](t, selectionData.DataPoints[0], getAttributes(client.ClientID())...)
+	if _, ok := selectionData.DataPoints[0].Attributes.Value(attribute.Key("channel_slot")); !ok {
+		t.Fatalf("selection_count datapoint missing channel_slot attribute: %+v", selectionData.DataPoints[0].Attributes)
+	}
+
+}
+
+func int64SumMetricValue(metrics []metricdata.Metrics, metricName string) (int64, error) {
+	idx := getMetricIndex(metrics, metricName)
+	if idx == -1 {
+		return 0, fmt.Errorf("metric %q not found", metricName)
+	}
+	data, ok := metrics[idx].Data.(metricdata.Sum[int64])
+	if !ok {
+		return 0, fmt.Errorf("metric %q data type = %T, want Sum[int64]", metricName, metrics[idx].Data)
+	}
+	var total int64
+	for _, dp := range data.DataPoints {
+		total += dp.Value
+	}
+	return total, nil
+}
+
+func putSelect1Result(t *testing.T, server *stestutil.MockedSpannerInMemTestServer) {
+	t.Helper()
+	if err := server.TestSpanner.PutStatementResult("SELECT 1", &stestutil.StatementResult{
+		Type: stestutil.StatementResultResultSet,
+		ResultSet: &spannerpb.ResultSet{
+			Metadata: &spannerpb.ResultSetMetadata{
+				RowType: &spannerpb.StructType{
+					Fields: []*spannerpb.StructType_Field{{Name: "Col1", Type: &spannerpb.Type{Code: spannerpb.TypeCode_INT64}}},
+				},
+			},
+			Rows: []*structpb.ListValue{{Values: []*structpb.Value{{Kind: &structpb.Value_StringValue{StringValue: "1"}}}}},
+		},
+	}); err != nil {
+		t.Fatalf("could not add SELECT 1 result: %v", err)
+	}
 }

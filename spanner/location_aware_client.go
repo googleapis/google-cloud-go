@@ -96,6 +96,9 @@ func asGRPCSpannerClient(c spannerClient) *grpcSpannerClient {
 	if lac, ok := c.(*locationAwareSpannerClient); ok {
 		return asGRPCSpannerClient(lac.defaultClient)
 	}
+	if dcp, ok := c.(*dcpSpannerClient); ok {
+		return asGRPCSpannerClient(dcp.delegate)
+	}
 	return nil
 }
 
