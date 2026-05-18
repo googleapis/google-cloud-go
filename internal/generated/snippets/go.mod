@@ -29,6 +29,7 @@ require (
 	cloud.google.com/go/billing v1.21.0
 	cloud.google.com/go/binaryauthorization v1.10.0
 	cloud.google.com/go/certificatemanager v1.9.6
+	cloud.google.com/go/ces v0.1.0
 	cloud.google.com/go/channel v1.21.0
 	cloud.google.com/go/cloudbuild v1.25.0
 	cloud.google.com/go/clouddms v1.8.8
