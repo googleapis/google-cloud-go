@@ -101,6 +101,10 @@ func parseDatabases() map[string]firestoreEdition {
 		DefaultDatabaseID: editionStandard,
 	}
 
+	if os.Getenv(envEmulator) != "" {
+		return databases
+	}
+
 	databasesStr, ok := os.LookupEnv(envDatabases)
 	if ok {
 		for _, databaseID := range strings.Split(databasesStr, ",") {
@@ -3135,6 +3139,17 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 				}
 				wantResult := tc.wantResult[currentEdition]
 
+				if useEmulator {
+					// Emulator behaves differently for "Aggregation on non existent key"
+					if tc.desc == "Aggregation on non existent key" {
+						wantErr = false
+						wantResult = AggregationResult{
+							"key_avg1": &pb.Value{ValueType: &pb.Value_NullValue{NullValue: structpb.NullValue_NULL_VALUE}},
+							"key_sum1": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(0)}},
+						}
+					}
+				}
+
 				// Compare expected and actual results
 				if err != nil && !wantErr {
 					r.Errorf("got: %v, want: nil", err)
@@ -3147,6 +3162,24 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 				if !aggResultsEquals(r, gotResult, wantResult) {
 					r.Errorf("got: %v, want: %v", gotResult, wantResult)
 					return
+				}
+
+				if !wantErr {
+					// Verify Data()
+					gotNative := gotResult.Data()
+					wantNative := wantResult.Data()
+					if diff := testutil.Diff(gotNative, wantNative); diff != "" {
+						r.Errorf("Data() mismatch (-got, +want):\n%s", diff)
+					}
+
+					// Verify DataTo()
+					var gotDataTo map[string]interface{}
+					if err := gotResult.DataTo(&gotDataTo); err != nil {
+						r.Errorf("DataTo() failed: %v", err)
+					}
+					if diff := testutil.Diff(gotDataTo, wantNative); diff != "" {
+						r.Errorf("DataTo() map mismatch (-got, +want):\n%s", diff)
+					}
 				}
 			})
 		})
