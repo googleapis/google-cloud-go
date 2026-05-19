@@ -439,6 +439,17 @@ func TestDCPResolvingClientRebindsDrainingEntry(t *testing.T) {
 	}
 }
 
+func TestDCPResolvingRequestIDReturnsErrorWhenNoEntry(t *testing.T) {
+	p := &dynamicChannelPool{cfg: testDCPConfig(1, 1, 1)}
+	entries := []*dcpEntry{}
+	p.entries.Store(&entries)
+	resolver := newDCPResolvingSpannerClient(p, 1)
+
+	if _, err := resolver.requestIDHeaderInjector(context.Background()); err == nil {
+		t.Fatal("requestIDHeaderInjector succeeded, want error")
+	}
+}
+
 func TestDynamicChannelPoolDrainWaitsForActiveStreamLoad(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -474,6 +485,25 @@ func TestDynamicChannelPoolDrainWaitsForActiveStreamLoad(t *testing.T) {
 	if got := entry.state.Load(); got != dcpStateClosed {
 		t.Fatalf("entry state = %d, want closed", got)
 	}
+}
+
+func TestDCPStreamContextCancelReleasesStreamLoad(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	p := &dynamicChannelPool{cfg: testDCPConfig(1, 1, 1)}
+	entry := &dcpEntry{id: 1, parent: p}
+	client := &dcpSpannerClient{entry: entry}
+
+	_ = client.startStream(ctx)
+	if got := entry.streamLoad.Load(); got != 1 {
+		t.Fatalf("stream load after start = %d, want 1", got)
+	}
+	cancel()
+	waitFor(t, func() error {
+		if got := entry.streamLoad.Load(); got != 0 {
+			return fmt.Errorf("stream load after context cancel = %d, want 0", got)
+		}
+		return nil
+	})
 }
 
 func TestDynamicChannelPoolPowerOfTwoSpreadDoesNotHerd(t *testing.T) {
@@ -531,9 +561,9 @@ func TestDynamicChannelPoolPowerOfTwoSpreadDoesNotHerd(t *testing.T) {
 	wg.Wait()
 }
 
-func TestDynamicChannelPoolScaleUpHonorsMaxScaleUpPercent(t *testing.T) {
+func TestDynamicChannelPoolScaleUpFloorsCapAtTwo(t *testing.T) {
 	cfg := testDCPConfig(4, 1, 10)
-	cfg.DCPMaxScaleUpPercent = 25
+	cfg.DCPMaxScaleUpPercent = 25 // ceil(4*0.25)=1, floored to 2.
 	_, client, teardown := setupDCPMockedTestServer(t, cfg)
 	defer teardown()
 	p := client.sc.dynamicPool
@@ -543,7 +573,24 @@ func TestDynamicChannelPoolScaleUpHonorsMaxScaleUpPercent(t *testing.T) {
 	}
 
 	p.scaleUp()
-	if got, want := p.Num(), 5; got != want {
+	if got, want := p.Num(), 6; got != want {
+		t.Fatalf("DCP channel count after floored scale-up = %d, want %d", got, want)
+	}
+}
+
+func TestDynamicChannelPoolScaleUpHonorsMaxScaleUpPercent(t *testing.T) {
+	cfg := testDCPConfig(12, 1, 30)
+	cfg.DCPMaxScaleUpPercent = 25 // ceil(12*0.25)=3, above floor.
+	_, client, teardown := setupDCPMockedTestServer(t, cfg)
+	defer teardown()
+	p := client.sc.dynamicPool
+	p.setPrimeSession(client.sm.multiplexedSession.id)
+	for _, e := range p.getEntries() {
+		e.unaryLoad.Store(10)
+	}
+
+	p.scaleUp()
+	if got, want := p.Num(), 15; got != want {
 		t.Fatalf("DCP channel count after percent-capped scale-up = %d, want %d", got, want)
 	}
 }

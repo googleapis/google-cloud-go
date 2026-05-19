@@ -158,6 +158,9 @@ func normalizeDCPConfig(cfg DynamicChannelPoolConfig) (DynamicChannelPoolConfig,
 		return cfg, fmt.Errorf("DCPInitialChannels must be >= DCPMinChannels when explicitly set")
 	case cfg.DCPInitialChannels > cfg.DCPMaxChannels:
 		return cfg, fmt.Errorf("DCPInitialChannels must be <= DCPMaxChannels")
+	// Equality rejected: needs non-empty hysteresis band. Otherwise scale-up
+	// settles target at the same boundary that triggers it, risking immediate
+	// scale-down qualification and flapping.
 	case cfg.DCPMinRPCPerChannel >= cfg.DCPMaxRPCPerChannel:
 		return cfg, fmt.Errorf("DCPMinRPCPerChannel must be less than DCPMaxRPCPerChannel")
 	case cfg.DCPMaxScaleUpPercent <= 0 || cfg.DCPMaxScaleUpPercent > 100:
@@ -647,6 +650,12 @@ func (p *dynamicChannelPool) scaleUp() {
 	desired := int(math.Ceil(float64(load) / p.targetRPCPerChannel))
 	add := desired - active
 	capPct := int(math.Ceil(float64(active) * float64(p.cfg.DCPMaxScaleUpPercent) / 100))
+	// Floor the percent cap so small pools can ramp during burst recovery.
+	// Floor raises the %-cap only; final add is still clamped to desired and
+	// to DCPMaxChannels headroom below.
+	if capPct < 2 {
+		capPct = 2
+	}
 	if add > capPct {
 		add = capPct
 	}
@@ -911,16 +920,38 @@ func (c *dcpSpannerClient) startUnary(ctx context.Context) func(error) {
 }
 
 type dcpStreamRef struct {
-	once   sync.Once
-	finish func(error)
-	closed chan struct{}
+	once       sync.Once
+	finish     func(error)
+	closed     chan struct{}
+	stopMu     sync.Mutex
+	stop       func() bool
+	doneCalled bool
 }
 
 func (r *dcpStreamRef) done(err error) {
 	r.once.Do(func() {
+		r.stopMu.Lock()
+		r.doneCalled = true
+		stop := r.stop
+		r.stopMu.Unlock()
+		if stop != nil {
+			stop()
+		}
 		r.finish(err)
 		close(r.closed)
 	})
+}
+
+func (r *dcpStreamRef) setStop(stop func() bool) {
+	r.stopMu.Lock()
+	doneCalled := r.doneCalled
+	if !doneCalled {
+		r.stop = stop
+	}
+	r.stopMu.Unlock()
+	if doneCalled && stop != nil {
+		stop()
+	}
 }
 
 func (c *dcpSpannerClient) startStream(ctx context.Context) *dcpStreamRef {
@@ -937,13 +968,13 @@ func (c *dcpSpannerClient) startStream(ctx context.Context) *dcpStreamRef {
 		}
 	}}
 	if ctx != nil && ctx.Done() != nil {
-		go func() {
-			select {
-			case <-ctx.Done():
-				ref.done(ctx.Err())
-			case <-ref.closed:
-			}
-		}()
+		if err := ctx.Err(); err != nil {
+			ref.done(err)
+			return ref
+		}
+		ref.setStop(context.AfterFunc(ctx, func() {
+			ref.done(ctx.Err())
+		}))
 	}
 	return ref
 }
@@ -1094,6 +1125,9 @@ func (c *dcpExecuteStreamingSqlClient) CloseSend() error {
 	if err != nil {
 		c.ref.done(err)
 	}
+	// Successful CloseSend only half-closes the client send side. The stream is
+	// still active until Recv returns a terminal error/EOF or the context is
+	// canceled, so do not release stream load here.
 	return err
 }
 
@@ -1115,6 +1149,9 @@ func (c *dcpStreamingReadClient) CloseSend() error {
 	if err != nil {
 		c.ref.done(err)
 	}
+	// Successful CloseSend only half-closes the client send side. The stream is
+	// still active until Recv returns a terminal error/EOF or the context is
+	// canceled, so do not release stream load here.
 	return err
 }
 
@@ -1136,6 +1173,9 @@ func (c *dcpBatchWriteClient) CloseSend() error {
 	if err != nil {
 		c.ref.done(err)
 	}
+	// Successful CloseSend only half-closes the client send side. The stream is
+	// still active until Recv returns a terminal error/EOF or the context is
+	// canceled, so do not release stream load here.
 	return err
 }
 
@@ -1175,6 +1215,8 @@ func (c *dcpResolvingSpannerClient) CallOptions() *vkit.CallOptions {
 	return client.CallOptions()
 }
 
+// Close is intentionally a no-op. The resolver is a session-handle view over a
+// DCP entry id; dynamicChannelPool owns and closes the underlying clients.
 func (c *dcpResolvingSpannerClient) Close() error { return nil }
 
 func (c *dcpResolvingSpannerClient) Connection() *grpc.ClientConn {
@@ -1185,16 +1227,19 @@ func (c *dcpResolvingSpannerClient) Connection() *grpc.ClientConn {
 	return client.Connection()
 }
 
-func (c *dcpResolvingSpannerClient) generateRequestIDHeaderInjector() *requestIDWrap {
-	client, err := c.resolve(context.Background())
-	if err != nil || client == nil {
-		return nil
+func (c *dcpResolvingSpannerClient) requestIDHeaderInjector(ctx context.Context) (*requestIDWrap, error) {
+	client, err := c.resolve(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if client == nil {
+		return nil, errDCPNoEntries
 	}
 	gsc := asGRPCSpannerClient(client)
 	if gsc == nil {
-		return nil
+		return nil, spannerErrorf(codes.Internal, "request-id header provider is unavailable for %T", client)
 	}
-	return gsc.generateRequestIDHeaderInjector()
+	return gsc.generateRequestIDHeaderInjector(), nil
 }
 
 func (c *dcpResolvingSpannerClient) CreateSession(ctx context.Context, req *spannerpb.CreateSessionRequest, opts ...gax.CallOption) (*spannerpb.Session, error) {

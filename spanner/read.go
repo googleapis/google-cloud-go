@@ -49,7 +49,7 @@ type streamingFinalizer interface {
 }
 
 type requestIDHeaderProvider interface {
-	generateRequestIDHeaderInjector() *requestIDWrap
+	requestIDHeaderInjector(context.Context) (*requestIDWrap, error)
 }
 
 func shouldRetryResourceExhaustedInStreaming(_ spannerClient) bool {
@@ -501,12 +501,22 @@ func newResumableStreamDecoder(ctx context.Context, cancel func(), logger *log.L
 	}
 }
 
-func (d *resumableStreamDecoder) reqIDInjectorOrNew() *requestIDWrap {
+func (d *resumableStreamDecoder) reqIDInjectorOrNew() (*requestIDWrap, error) {
 	if d.reqIDInjector == nil {
-		d.reqIDInjector = d.reqIDProvider.generateRequestIDHeaderInjector()
+		if d.reqIDProvider == nil {
+			return nil, spannerErrorf(codes.Internal, "request-id header provider is unavailable")
+		}
+		riw, err := d.reqIDProvider.requestIDHeaderInjector(d.ctx)
+		if err != nil {
+			return nil, err
+		}
+		if riw == nil {
+			return nil, spannerErrorf(codes.Internal, "request-id header injector is unavailable")
+		}
+		d.reqIDInjector = riw
 		d.retryAttempt = 0
 	}
-	return d.reqIDInjector
+	return d.reqIDInjector, nil
 }
 
 // changeState fulfills state transition for resumableStateDecoder.
@@ -595,7 +605,12 @@ func (d *resumableStreamDecoder) next(mt *builtinMetricsTracer) bool {
 	retryer := onCodesWithResourceExhaustedRetryOption(d.backoff, d.allowRetryResourceExhaustedWithoutDelay, retryCodes...)
 
 	// Setup and track x-goog-request-id in the manual retries for ExecuteStreamingSql.
-	riw := d.reqIDInjectorOrNew()
+	riw, err := d.reqIDInjectorOrNew()
+	if err != nil {
+		d.err = err
+		d.changeState(aborted)
+		return false
+	}
 
 	for {
 		switch d.state {

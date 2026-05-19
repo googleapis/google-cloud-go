@@ -99,12 +99,6 @@ func asGRPCSpannerClient(c spannerClient) *grpcSpannerClient {
 	if dcp, ok := c.(*dcpSpannerClient); ok {
 		return asGRPCSpannerClient(dcp.delegate)
 	}
-	if dcp, ok := c.(*dcpResolvingSpannerClient); ok {
-		client, err := dcp.resolve(context.Background())
-		if err == nil {
-			return asGRPCSpannerClient(client)
-		}
-	}
 	return nil
 }
 
