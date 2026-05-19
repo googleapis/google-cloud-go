@@ -75,7 +75,7 @@ require (
 	cloud.google.com/go/language v1.15.0
 	cloud.google.com/go/lifesciences v0.11.0
 	cloud.google.com/go/logging v1.14.0
-	cloud.google.com/go/longrunning v0.13.0
+	cloud.google.com/go/longrunning v1.0.0
 	cloud.google.com/go/managedidentities v1.8.0
 	cloud.google.com/go/maps v1.31.0
 	cloud.google.com/go/mediatranslation v0.10.0

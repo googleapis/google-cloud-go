@@ -5,7 +5,7 @@ go 1.25.0
 retract v0.1.0 // Contains incorrectly generated go proto code.
 
 require (
-	cloud.google.com/go/longrunning v0.13.0
+	cloud.google.com/go/longrunning v1.0.0
 	github.com/googleapis/gax-go/v2 v2.22.0
 	google.golang.org/api v0.279.0
 	google.golang.org/genproto v0.0.0-20260319201613-d00831a3d3e7

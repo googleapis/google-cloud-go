@@ -8,7 +8,7 @@ require (
 	cloud.google.com/go v0.123.0
 	cloud.google.com/go/compute/metadata v0.9.0
 	cloud.google.com/go/iam v1.11.0
-	cloud.google.com/go/longrunning v0.13.0
+	cloud.google.com/go/longrunning v1.0.0
 	cloud.google.com/go/monitoring v1.29.0
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/metric v0.56.0
 	github.com/envoyproxy/go-control-plane/envoy v1.37.0
