@@ -1055,7 +1055,7 @@ libraries:
       - internal/generated/snippets/dataqna/
     tag_format: '{id}/v{version}'
   - id: datastore
-    version: 1.23.0
+    version: 1.24.0
     last_generated_commit: ""
     apis:
       - path: google/datastore/admin/v1
