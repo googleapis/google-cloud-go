@@ -698,6 +698,11 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 	sc.otConfig = otConfig
 	sc.metricsTracerFactory = metricsTracerFactory
 	sc.mu.Unlock()
+	if sc.dynamicPool != nil {
+		if err := registerDynamicChannelPoolOTMetrics(sc.dynamicPool); err != nil {
+			logf(config.Logger, "Error registering DCP metrics in OpenTelemetry: %v", err)
+		}
+	}
 
 	var locationRouter *locationRouter
 	var sharedLocationAwareState *locationAwareState
