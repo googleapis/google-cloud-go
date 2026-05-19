@@ -18,7 +18,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io"
 	"math"
 	"math/rand/v2"
 	"sort"
@@ -211,7 +210,6 @@ type dcpEntry struct {
 	parent       *dynamicChannelPool
 	unaryLoad    atomic.Int32
 	streamLoad   atomic.Int32
-	errorCount   atomic.Int64 // errors since process start; used for debug/diagnostics
 	state        atomic.Int32 // dcpState*
 	createdAt    atomic.Int64 // UnixNano creation time
 	lastActivity atomic.Int64 // UnixNano last pick/RPC/release time
@@ -281,9 +279,6 @@ func (p *dynamicChannelPool) Invoke(ctx context.Context, method string, args, re
 		e.lastActivity.Store(time.Now().UnixNano())
 	}()
 	err = e.pool.Invoke(ctx, method, args, reply, opts...)
-	if err != nil {
-		e.errorCount.Add(1)
-	}
 	return err
 }
 
@@ -300,7 +295,6 @@ func (p *dynamicChannelPool) NewStream(ctx context.Context, desc *grpc.StreamDes
 	if err != nil {
 		e.streamLoad.Add(-1)
 		p.totalRPCLoad.Add(-1)
-		e.errorCount.Add(1)
 		return nil, err
 	}
 	return &dcpConnPoolTrackedStream{ClientStream: stream, entry: e}, nil
@@ -398,7 +392,6 @@ func (p *dynamicChannelPool) prime(ctx context.Context, e *dcpEntry) error {
 		_, last = e.delegate.ExecuteSql(contextWithOutgoingMetadata(primeCtx, p.sc.md, p.disableRouteToLeader), stmt)
 		cancel()
 		if last == nil {
-			p.recordPrimeSuccess()
 			return nil
 		}
 		if i < p.cfg.DCPPrimeMaxAttempts-1 {
@@ -411,7 +404,6 @@ func (p *dynamicChannelPool) prime(ctx context.Context, e *dcpEntry) error {
 			}
 		}
 	}
-	p.recordPrimeFailure()
 	return last
 }
 
@@ -427,7 +419,6 @@ func (p *dynamicChannelPool) pick(ctx context.Context) (*dcpEntry, error) {
 	if err != nil {
 		return nil, err
 	}
-	p.recordSelection(ctx, e)
 	e.lastActivity.Store(time.Now().UnixNano())
 	return e, nil
 }
@@ -473,9 +464,6 @@ func (s *dcpConnPoolTrackedStream) finish(err error) {
 		s.entry.streamLoad.Add(-1)
 		s.entry.parent.totalRPCLoad.Add(-1)
 		s.entry.lastActivity.Store(time.Now().UnixNano())
-		if err != nil && !errors.Is(err, io.EOF) {
-			s.entry.errorCount.Add(1)
-		}
 	})
 }
 
@@ -646,7 +634,6 @@ func (p *dynamicChannelPool) scaleUp() {
 	combined = append(combined, newEntries...)
 	p.entries.Store(&combined)
 	p.lastScaleUp.Store(now.UnixNano())
-	p.recordScaleUp(len(newEntries))
 }
 
 // scaleDownMonitor periodically evaluates whether sustained low load can drain
@@ -772,7 +759,6 @@ func (p *dynamicChannelPool) removeEntries(count int) {
 	p.entries.Store(&keep)
 	p.dialMu.Unlock()
 	p.drainingCount.Add(int64(len(toDrain)))
-	p.recordScaleDown(len(toDrain))
 	for e := range toDrain {
 		go p.waitForDrainAndClose(e)
 	}
@@ -781,7 +767,6 @@ func (p *dynamicChannelPool) removeEntries(count int) {
 // waitForDrainAndClose waits until a draining entry has no RPC load and has
 // been idle for DCPDrainIdleGrace.
 func (p *dynamicChannelPool) waitForDrainAndClose(e *dcpEntry) {
-	start := time.Now()
 	t := time.NewTicker(250 * time.Millisecond)
 	defer t.Stop()
 	for {
@@ -790,7 +775,6 @@ func (p *dynamicChannelPool) waitForDrainAndClose(e *dcpEntry) {
 			if e.rpcLoad() == 0 && time.Since(time.Unix(0, e.lastActivity.Load())) >= p.cfg.DCPDrainIdleGrace {
 				e.close()
 				p.drainingCount.Add(-1)
-				p.recordDrainWait(time.Since(start))
 				return
 			}
 		case <-p.ctx.Done():
@@ -800,7 +784,6 @@ func (p *dynamicChannelPool) waitForDrainAndClose(e *dcpEntry) {
 				e.pool.Close()
 			}
 			p.drainingCount.Add(-1)
-			p.recordDrainWait(time.Since(start))
 			return
 		}
 	}
@@ -842,22 +825,6 @@ func (e *dcpEntry) rpcLoad() int32 { return e.unaryLoad.Load() + e.streamLoad.Lo
 // weightedLoad returns the current in-flight RPC load for this entry.
 func (e *dcpEntry) weightedLoad() int32 { return e.rpcLoad() }
 
-func (e *dcpEntry) applyPenalty(ctx context.Context, err error) {}
-
-func (p *dynamicChannelPool) recordScaleUp(added int) {}
-
-func (p *dynamicChannelPool) recordScaleDown(draining int) {}
-
-func (p *dynamicChannelPool) recordDrainWait(d time.Duration) {}
-
-func (p *dynamicChannelPool) recordSelection(ctx context.Context, e *dcpEntry) {}
-
-func (p *dynamicChannelPool) recordErrorPenalty(ctx context.Context) {}
-
-func (p *dynamicChannelPool) recordPrimeSuccess() {}
-
-func (p *dynamicChannelPool) recordPrimeFailure() {}
-
 type dcpSpannerClient struct {
 	entry    *dcpEntry
 	delegate spannerClient
@@ -876,9 +843,6 @@ func (c *dcpSpannerClient) startUnary(ctx context.Context) func(error) {
 		c.entry.unaryLoad.Add(-1)
 		c.entry.parent.totalRPCLoad.Add(-1)
 		c.entry.lastActivity.Store(time.Now().UnixNano())
-		if err != nil {
-			c.entry.errorCount.Add(1)
-		}
 	}
 }
 
@@ -926,9 +890,6 @@ func (c *dcpSpannerClient) startStream(ctx context.Context) *dcpStreamRef {
 		c.entry.streamLoad.Add(-1)
 		c.entry.parent.totalRPCLoad.Add(-1)
 		c.entry.lastActivity.Store(time.Now().UnixNano())
-		if err != nil && !errors.Is(err, io.EOF) {
-			c.entry.errorCount.Add(1)
-		}
 	}}
 	if ctx != nil && ctx.Done() != nil {
 		if err := ctx.Err(); err != nil {
@@ -1158,7 +1119,6 @@ func (c *dcpResolvingSpannerClient) resolve(ctx context.Context) (spannerClient,
 		return nil, errDCPNoEntries
 	}
 	if e := c.pool.lookupActive(c.entryID.Load()); e != nil {
-		c.pool.recordSelection(ctx, e)
 		e.lastActivity.Store(time.Now().UnixNano())
 		return e.client, nil
 	}
