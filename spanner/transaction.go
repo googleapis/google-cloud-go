@@ -411,7 +411,7 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 		t.updatePrecommitToken,
 		t.setTimestamp,
 		t.release,
-		asGRPCSpannerClient(client),
+		requestIDHeaderProviderFromSpannerClient(client),
 		retryResourceExhausted,
 		allowRetryResourceExhaustedWithoutDelay,
 	)
@@ -766,7 +766,7 @@ func (t *txReadOnly) query(ctx context.Context, statement Statement, options Que
 		t.updatePrecommitToken,
 		t.setTimestamp,
 		t.release,
-		asGRPCSpannerClient(client),
+		requestIDHeaderProviderFromSpannerClient(client),
 		retryResourceExhausted,
 		allowRetryResourceExhaustedWithoutDelay)
 }

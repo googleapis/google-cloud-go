@@ -96,7 +96,23 @@ func asGRPCSpannerClient(c spannerClient) *grpcSpannerClient {
 	if lac, ok := c.(*locationAwareSpannerClient); ok {
 		return asGRPCSpannerClient(lac.defaultClient)
 	}
+	if dcp, ok := c.(*dcpSpannerClient); ok {
+		return asGRPCSpannerClient(dcp.delegate)
+	}
+	if dcp, ok := c.(*dcpResolvingSpannerClient); ok {
+		client, err := dcp.resolve(context.Background())
+		if err == nil {
+			return asGRPCSpannerClient(client)
+		}
+	}
 	return nil
+}
+
+func requestIDHeaderProviderFromSpannerClient(c spannerClient) requestIDHeaderProvider {
+	if dcp, ok := c.(*dcpResolvingSpannerClient); ok {
+		return dcp
+	}
+	return asGRPCSpannerClient(c)
 }
 
 func newLocationAwareSpannerClient(defaultClient spannerClient, router *locationRouter, endpointCache channelEndpointCache) *locationAwareSpannerClient {
