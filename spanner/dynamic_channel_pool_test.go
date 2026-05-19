@@ -259,6 +259,30 @@ func (f *fakeDCPConnPool) NewStream(ctx context.Context, desc *grpc.StreamDesc, 
 	return nil, f.invokeErr
 }
 
+func TestDynamicChannelPoolDirectPathFallbackUsesSharedState(t *testing.T) {
+	state := &dcpFallbackState{}
+	primary1 := &fakeDCPConnPool{invokeErr: status.Error(codes.Unavailable, "directpath unavailable")}
+	cloud1 := &fakeDCPConnPool{}
+	primary2 := &fakeDCPConnPool{}
+	cloud2 := &fakeDCPConnPool{}
+	slot1 := &dcpFallbackSlot{id: 1, direct: primary1, cloud: cloud1, state: state}
+	slot2 := &dcpFallbackSlot{id: 2, direct: primary2, cloud: cloud2, state: state}
+
+	_ = slot1.Invoke(context.Background(), "/test", nil, nil)
+	if !state.fallbackActive.Load() {
+		t.Fatal("shared fallback state inactive after DirectPath failure threshold")
+	}
+	if err := slot2.Invoke(context.Background(), "/test", nil, nil); err != nil {
+		t.Fatalf("fallback slot invoke failed: %v", err)
+	}
+	if got := primary2.invokeCount; got != 0 {
+		t.Fatalf("slot2 primary invoke count = %d, want 0 after shared fallback", got)
+	}
+	if got := cloud2.invokeCount; got != 1 {
+		t.Fatalf("slot2 cloud invoke count = %d, want 1 after shared fallback", got)
+	}
+}
+
 func TestDynamicChannelPoolScaleUpPrimeFailureDoesNotPublishEntry(t *testing.T) {
 	server, client, teardown := setupDCPMockedTestServer(t, testDCPConfig(1, 1, 2))
 	defer teardown()
@@ -573,6 +597,53 @@ func TestDynamicChannelPoolScaleUpDialFailureDoesNotPublishEntry(t *testing.T) {
 		if e.state.Load() != dcpStateActive {
 			t.Fatalf("active slice contains non-active entry state=%d", e.state.Load())
 		}
+	}
+}
+
+func TestDynamicChannelPoolDirectPathFallbackSlotStaysPinnedAcrossFallback(t *testing.T) {
+	state := &dcpFallbackState{}
+	direct1 := &fakeDCPConnPool{}
+	cloud1 := &fakeDCPConnPool{}
+	direct2 := &fakeDCPConnPool{}
+	cloud2 := &fakeDCPConnPool{}
+	slot1 := &dcpFallbackSlot{id: 7, direct: direct1, cloud: cloud1, state: state}
+	slot2 := &dcpFallbackSlot{id: 8, direct: direct2, cloud: cloud2, state: state}
+	p := &dynamicChannelPool{cfg: testDCPConfig(2, 1, 2)}
+	entry1 := &dcpEntry{id: slot1.id, pool: slot1, parent: p}
+	entry2 := &dcpEntry{id: slot2.id, pool: slot2, parent: p}
+	entry1.state.Store(dcpStateActive)
+	entry2.state.Store(dcpStateActive)
+	entries := []*dcpEntry{entry1, entry2}
+	p.entries.Store(&entries)
+
+	picked, err := p.pick(context.Background())
+	if err != nil {
+		t.Fatalf("pick failed: %v", err)
+	}
+	if err := picked.pool.Invoke(context.Background(), "/test", nil, nil); err != nil {
+		t.Fatalf("direct invoke failed: %v", err)
+	}
+	state.fallbackActive.Store(true)
+	if err := picked.pool.Invoke(context.Background(), "/test", nil, nil); err != nil {
+		t.Fatalf("fallback invoke failed: %v", err)
+	}
+
+	var pickedDirect, pickedCloud, otherDirect, otherCloud *fakeDCPConnPool
+	if picked.id == slot1.id {
+		pickedDirect, pickedCloud, otherDirect, otherCloud = direct1, cloud1, direct2, cloud2
+	} else if picked.id == slot2.id {
+		pickedDirect, pickedCloud, otherDirect, otherCloud = direct2, cloud2, direct1, cloud1
+	} else {
+		t.Fatalf("picked unexpected slot id %d", picked.id)
+	}
+	if got, want := pickedDirect.invokeCount, 1; got != want {
+		t.Fatalf("picked direct invoke count = %d, want %d", got, want)
+	}
+	if got, want := pickedCloud.invokeCount, 1; got != want {
+		t.Fatalf("picked cloud invoke count = %d, want %d", got, want)
+	}
+	if got := otherDirect.invokeCount + otherCloud.invokeCount; got != 0 {
+		t.Fatalf("other slot invoke count = %d, want 0", got)
 	}
 }
 
