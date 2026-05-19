@@ -21,6 +21,7 @@ import (
 	"io"
 	"net/url"
 	"os"
+	"regexp"
 	"strings"
 	"time"
 
@@ -39,6 +40,8 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
+
+var schemeRegexp = regexp.MustCompile("^(http://|https://|passthrough:///)")
 
 // resourcePrefixHeader is the name of the metadata header used to indicate
 // the resource being operated on.
@@ -91,6 +94,11 @@ func newClient(ctx context.Context, projectID string, createClient func(ctx cont
 			return nil, fmt.Errorf("firestore: emulator is not supported for this client type")
 		}
 
+		// Strip legacy schemes and force passthrough for performance.
+		if !(strings.Contains(addr, "://") && !strings.HasPrefix(addr, "http")) {
+			addr = schemeRegexp.ReplaceAllString(addr, "")
+			addr = "passthrough:///" + addr
+		}
 		conn, err := grpc.Dial(addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithPerRPCCredentials(emulatorCreds{}))
 		if err != nil {
 			return nil, fmt.Errorf("firestore: dialing address from env var FIRESTORE_EMULATOR_HOST: %s", err)
