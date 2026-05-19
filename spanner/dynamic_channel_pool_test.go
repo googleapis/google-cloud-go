@@ -204,6 +204,31 @@ func TestDynamicChannelPoolRoundRobinSkipsDrainingEntries(t *testing.T) {
 	}
 }
 
+func TestDynamicChannelPoolErrorPenaltyAllowlist(t *testing.T) {
+	_, client, teardown := setupDCPMockedTestServer(t, testDCPConfig(2, 2, 2))
+	defer teardown()
+	p := client.sc.dynamicPool
+	entries := p.getEntries()
+	base := entries[0].weightedLoad()
+
+	entries[0].applyPenalty(context.Background(), status.Error(codes.Internal, "query bug"))
+	if got := entries[0].weightedLoad(); got != base {
+		t.Fatalf("Internal penalty weighted load = %d, want %d", got, base)
+	}
+	entries[0].applyPenalty(context.Background(), status.Error(codes.DeadlineExceeded, "slow query"))
+	if got := entries[0].weightedLoad(); got != base {
+		t.Fatalf("DeadlineExceeded penalty weighted load = %d, want %d", got, base)
+	}
+	entries[0].applyPenalty(context.Background(), status.Error(codes.Unavailable, "transport unavailable"))
+	if got, wantMin := entries[0].weightedLoad(), base+p.cfg.DCPErrorPenaltyLoad; got < wantMin {
+		t.Fatalf("Unavailable penalty weighted load = %d, want >= %d", got, wantMin)
+	}
+	entries[1].applyPenalty(context.Background(), status.Error(codes.ResourceExhausted, "overload"))
+	if got, wantMin := entries[1].weightedLoad(), p.cfg.DCPErrorPenaltyLoad; got < wantMin {
+		t.Fatalf("ResourceExhausted penalty weighted load = %d, want >= %d", got, wantMin)
+	}
+}
+
 func TestDynamicChannelPoolMaxChannelsCapsScaleUp(t *testing.T) {
 	server, client, teardown := setupDCPMockedTestServer(t, testDCPConfig(1, 1, 2))
 	defer teardown()
@@ -257,6 +282,26 @@ func (f *fakeDCPConnPool) Invoke(ctx context.Context, method string, args, reply
 }
 func (f *fakeDCPConnPool) NewStream(ctx context.Context, desc *grpc.StreamDesc, method string, opts ...grpc.CallOption) (grpc.ClientStream, error) {
 	return nil, f.invokeErr
+}
+
+func TestDynamicChannelPoolErrorPenaltyExpires(t *testing.T) {
+	_, client, teardown := setupDCPMockedTestServer(t, testDCPConfig(1, 1, 1))
+	defer teardown()
+	p := client.sc.dynamicPool
+	p.cfg.DCPErrorPenaltyDuration = 20 * time.Millisecond
+	entry := p.getEntries()[0]
+
+	base := entry.weightedLoad()
+	entry.applyPenalty(context.Background(), status.Error(codes.Unavailable, "temporary"))
+	if got := entry.weightedLoad(); got <= base {
+		t.Fatalf("weighted load after penalty = %d, want > %d", got, base)
+	}
+	waitFor(t, func() error {
+		if got := entry.weightedLoad(); got != base {
+			return fmt.Errorf("weighted load after penalty expiry = %d, want %d", got, base)
+		}
+		return nil
+	})
 }
 
 func TestDynamicChannelPoolDirectPathFallbackUsesSharedState(t *testing.T) {

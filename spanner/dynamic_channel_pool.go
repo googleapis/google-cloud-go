@@ -80,6 +80,8 @@ type DynamicChannelPoolConfig struct {
 	DCPMaxScaleUpPercent                 int           // DCPMaxScaleUpPercent caps channels added per scale-up event.
 	DCPMaxRemoveChannels                 int           // DCPMaxRemoveChannels caps channels marked draining per scale-down.
 	DCPDrainIdleGrace                    time.Duration // DCPDrainIdleGrace keeps an idle drained entry briefly before close.
+	DCPErrorPenaltyLoad                  int32         // DCPErrorPenaltyLoad adds temporary artificial load after target errors.
+	DCPErrorPenaltyDuration              time.Duration // DCPErrorPenaltyDuration controls how long artificial load applies.
 	DCPPrimeTimeout                      time.Duration // DCPPrimeTimeout bounds the SELECT 1 priming attempt for scaled-up channels.
 	DCPPrimeMaxAttempts                  int           // DCPPrimeMaxAttempts bounds scaled-up channel priming retries.
 	DCPSelectionStrategy                 DynamicChannelSelectionStrategy
@@ -99,6 +101,8 @@ func DefaultDynamicChannelPoolConfig() DynamicChannelPoolConfig {
 		DCPMaxScaleUpPercent:                 30,
 		DCPMaxRemoveChannels:                 2,
 		DCPDrainIdleGrace:                    time.Minute,
+		DCPErrorPenaltyLoad:                  10,
+		DCPErrorPenaltyDuration:              5 * time.Second,
 		DCPPrimeTimeout:                      10 * time.Second,
 		DCPPrimeMaxAttempts:                  3,
 		DCPSelectionStrategy:                 DCPPowerOfTwoLeastBusy,
@@ -144,6 +148,12 @@ func normalizeDCPConfig(cfg DynamicChannelPoolConfig) (DynamicChannelPoolConfig,
 	}
 	if cfg.DCPDrainIdleGrace == 0 {
 		cfg.DCPDrainIdleGrace = def.DCPDrainIdleGrace
+	}
+	if cfg.DCPErrorPenaltyLoad == 0 {
+		cfg.DCPErrorPenaltyLoad = def.DCPErrorPenaltyLoad
+	}
+	if cfg.DCPErrorPenaltyDuration == 0 {
+		cfg.DCPErrorPenaltyDuration = def.DCPErrorPenaltyDuration
 	}
 	if cfg.DCPPrimeTimeout == 0 {
 		cfg.DCPPrimeTimeout = def.DCPPrimeTimeout
@@ -225,6 +235,7 @@ type dynamicChannelPoolOTMetrics struct {
 	scaleDownDrainingChannels metric.Int64Counter
 	drainWaitDuration         metric.Int64Histogram
 	selectionCount            metric.Int64Counter
+	errorPenaltyCount         metric.Int64Counter
 	primeSuccessCount         metric.Int64Counter
 	primeFailureCount         metric.Int64Counter
 }
@@ -248,6 +259,7 @@ type dcpEntry struct {
 	state        atomic.Int32 // dcpState*
 	createdAt    atomic.Int64 // UnixNano creation time
 	lastActivity atomic.Int64 // UnixNano last pick/RPC/release time
+	penaltyUntil atomic.Int64 // UnixNano expiry for artificial error load
 }
 
 // newDynamicChannelPool creates the initial channel set and starts scale workers.
@@ -318,6 +330,7 @@ func (p *dynamicChannelPool) Invoke(ctx context.Context, method string, args, re
 	err = e.pool.Invoke(ctx, method, args, reply, opts...)
 	if err != nil {
 		e.errorCount.Add(1)
+		e.applyPenalty(ctx, err)
 	}
 	return err
 }
@@ -336,6 +349,7 @@ func (p *dynamicChannelPool) NewStream(ctx context.Context, desc *grpc.StreamDes
 		e.streamLoad.Add(-1)
 		p.totalRPCLoad.Add(-1)
 		e.errorCount.Add(1)
+		e.applyPenalty(ctx, err)
 		return nil, err
 	}
 	return &dcpConnPoolTrackedStream{ClientStream: stream, entry: e}, nil
@@ -561,6 +575,7 @@ func (s *dcpConnPoolTrackedStream) finish(err error) {
 		s.entry.lastActivity.Store(time.Now().UnixNano())
 		if err != nil && !errors.Is(err, io.EOF) {
 			s.entry.errorCount.Add(1)
+			s.entry.applyPenalty(s.ClientStream.Context(), err)
 		}
 	})
 }
@@ -918,10 +933,34 @@ func (e *dcpEntry) isDraining() bool { return e.state.Load() == dcpStateDraining
 // rpcLoad returns the current in-flight RPC load for this entry.
 func (e *dcpEntry) rpcLoad() int32 { return e.unaryLoad.Load() + e.streamLoad.Load() }
 
-// weightedLoad returns the current in-flight RPC load for this entry.
-func (e *dcpEntry) weightedLoad() int32 { return e.rpcLoad() }
+// weightedLoad returns RPC load plus any temporary error penalty. Expired
+// penalties are cleared opportunistically.
+func (e *dcpEntry) weightedLoad() int32 {
+	l := e.rpcLoad()
+	exp := e.penaltyUntil.Load()
+	if exp > 0 {
+		if time.Now().UnixNano() < exp {
+			l += e.parent.cfg.DCPErrorPenaltyLoad
+		} else {
+			e.penaltyUntil.CompareAndSwap(exp, 0)
+		}
+	}
+	return l
+}
 
-func (e *dcpEntry) applyPenalty(ctx context.Context, err error) {}
+// applyPenalty adds temporary artificial load for errors that usually indicate
+// target-specific health or capacity issues. The penalty steers new picks away
+// from a potentially lame-duck channel without closing it.
+func (e *dcpEntry) applyPenalty(ctx context.Context, err error) {
+	if err == nil {
+		return
+	}
+	c := status.Code(err)
+	if c == codes.Unavailable || c == codes.ResourceExhausted {
+		e.penaltyUntil.Store(time.Now().Add(e.parent.cfg.DCPErrorPenaltyDuration).UnixNano())
+		e.parent.recordErrorPenalty(ctx)
+	}
+}
 
 // dcpFallbackState is shared by all DirectPath fallback slots in the pool so a
 // primary DirectPath outage can move the whole DCP wrapper pool to CloudPath.
@@ -1089,6 +1128,12 @@ func (p *dynamicChannelPool) recordSelection(ctx context.Context, e *dcpEntry) {
 	}
 }
 
+func (p *dynamicChannelPool) recordErrorPenalty(ctx context.Context) {
+	if m := p.otMetrics.Load(); m != nil && m.errorPenaltyCount != nil {
+		m.errorPenaltyCount.Add(metricContext(ctx), 1, metric.WithAttributes(p.dcpOTAttributes()...))
+	}
+}
+
 func metricContext(ctx context.Context) context.Context {
 	if ctx == nil {
 		return context.Background()
@@ -1190,6 +1235,9 @@ func registerDynamicChannelPoolOTMetrics(p *dynamicChannelPool) error {
 	if m.selectionCount, err = meter.Int64Counter(metricsPrefix+"dcp/selection_count", metric.WithDescription("Number of DCP selections by channel."), metric.WithUnit("1")); err != nil {
 		return err
 	}
+	if m.errorPenaltyCount, err = meter.Int64Counter(metricsPrefix+"dcp/error_penalty_count", metric.WithDescription("Number of DCP error penalties applied."), metric.WithUnit("1")); err != nil {
+		return err
+	}
 	if m.primeSuccessCount, err = meter.Int64Counter(metricsPrefix+"dcp/prime_success_count", metric.WithDescription("Number of DCP channel priming successes."), metric.WithUnit("1")); err != nil {
 		return err
 	}
@@ -1259,6 +1307,7 @@ func (c *dcpSpannerClient) startUnary(ctx context.Context) func(error) {
 		c.entry.lastActivity.Store(time.Now().UnixNano())
 		if err != nil {
 			c.entry.errorCount.Add(1)
+			c.entry.applyPenalty(ctx, err)
 		}
 	}
 }
@@ -1287,6 +1336,7 @@ func (c *dcpSpannerClient) startStream(ctx context.Context) *dcpStreamRef {
 		c.entry.lastActivity.Store(time.Now().UnixNano())
 		if err != nil && !errors.Is(err, io.EOF) {
 			c.entry.errorCount.Add(1)
+			c.entry.applyPenalty(ctx, err)
 		}
 	}}
 	if ctx != nil && ctx.Done() != nil {
