@@ -186,21 +186,18 @@ type dynamicChannelPool struct {
 	database             string
 	disableRouteToLeader bool
 
-	dial           func(context.Context) (gtransport.ConnPool, error)
-	rrIndex        atomic.Uint64
-	nextID         atomic.Uint64
-	totalRPCLoad   atomic.Int32
-	dialMu         sync.Mutex
-	metricSlotMu   sync.Mutex
-	freeMetricSlot []int64
-	nextMetricSlot int64
-	lastScaleUp    atomic.Int64
-	scaleUpSignal  chan struct{}
-	done           chan struct{}
-	stopOnce       sync.Once
-	lowLoadRuns    int
-	monitorMu      sync.Mutex
-	primeSession   atomic.Value // string
+	dial          func(context.Context) (gtransport.ConnPool, error)
+	rrIndex       atomic.Uint64
+	nextID        atomic.Uint64
+	totalRPCLoad  atomic.Int32
+	dialMu        sync.Mutex
+	lastScaleUp   atomic.Int64
+	scaleUpSignal chan struct{}
+	done          chan struct{}
+	stopOnce      sync.Once
+	lowLoadRuns   int
+	monitorMu     sync.Mutex
+	primeSession  atomic.Value // string
 
 	drainingCount atomic.Int64
 }
@@ -208,7 +205,6 @@ type dynamicChannelPool struct {
 // dcpEntry represents one logical DCP slot.
 type dcpEntry struct {
 	id           uint64
-	metricSlot   int64 // bounded slot id used for metric cardinality
 	pool         gtransport.ConnPool
 	delegate     spannerClient
 	client       spannerClient
@@ -356,54 +352,20 @@ func (p *dynamicChannelPool) hasPrimeSession() bool {
 	return sid != ""
 }
 
-// allocateMetricSlot returns a bounded per-entry metric slot. Slots are reused
-// after channel close to avoid unbounded OTel attribute cardinality.
-func (p *dynamicChannelPool) allocateMetricSlot() (int64, error) {
-	p.metricSlotMu.Lock()
-	defer p.metricSlotMu.Unlock()
-	n := len(p.freeMetricSlot)
-	if n > 0 {
-		slot := p.freeMetricSlot[n-1]
-		p.freeMetricSlot = p.freeMetricSlot[:n-1]
-		return slot, nil
-	}
-	if p.nextMetricSlot < int64(p.cfg.DCPMaxChannels) {
-		p.nextMetricSlot++
-		return p.nextMetricSlot, nil
-	}
-	return 0, spannerErrorf(codes.ResourceExhausted, "spanner_dcp: no metric slots available")
-}
-
-// releaseMetricSlot returns a bounded metric slot for later reuse.
-func (p *dynamicChannelPool) releaseMetricSlot(slot int64) {
-	if slot <= 0 {
-		return
-	}
-	p.metricSlotMu.Lock()
-	p.freeMetricSlot = append(p.freeMetricSlot, slot)
-	p.metricSlotMu.Unlock()
-}
-
 // newEntry dials one DCP entry.
 func (p *dynamicChannelPool) newEntry(ctx context.Context, prime bool) (*dcpEntry, error) {
 	id := p.nextID.Add(1)
-	metricSlot, err := p.allocateMetricSlot()
-	if err != nil {
-		return nil, err
-	}
 	entryPool, err := p.dial(ctx)
 	if err != nil {
-		p.releaseMetricSlot(metricSlot)
 		return nil, err
 	}
-	e := &dcpEntry{id: id, metricSlot: metricSlot, pool: entryPool, parent: p}
+	e := &dcpEntry{id: id, pool: entryPool, parent: p}
 	now := time.Now().UnixNano()
 	e.createdAt.Store(now)
 	e.lastActivity.Store(now)
 	client, err := newGRPCSpannerClient(ctx, p.sc, id, gtransport.WithConnPool(e))
 	if err != nil {
 		entryPool.Close()
-		p.releaseMetricSlot(metricSlot)
 		return nil, err
 	}
 	e.delegate = client
@@ -865,7 +827,6 @@ func (e *dcpEntry) close() error {
 	if e.pool != nil {
 		errs = append(errs, e.pool.Close())
 	}
-	e.parent.releaseMetricSlot(e.metricSlot)
 	return errors.Join(errs...)
 }
 
