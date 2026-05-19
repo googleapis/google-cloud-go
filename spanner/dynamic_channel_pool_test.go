@@ -562,12 +562,17 @@ func TestDynamicChannelPoolPowerOfTwoSpreadDoesNotHerd(t *testing.T) {
 }
 
 func TestDynamicChannelPoolScaleUpFloorsCapAtTwo(t *testing.T) {
-	cfg := testDCPConfig(4, 1, 10)
+	// max=8 leaves room above the floor (maxAdd=4), so the floor stays the
+	// binding constraint and the assertion is robust to background
+	// scaleUpWorker firing before or after the test's explicit scaleUp call.
+	// Cooldown=Hour blocks any second scaleUp.
+	cfg := testDCPConfig(4, 1, 8)
 	cfg.DCPMaxScaleUpPercent = 25 // ceil(4*0.25)=1, floored to 2.
+	cfg.DCPScaleUpCooldown = time.Hour
 	_, client, teardown := setupDCPMockedTestServer(t, cfg)
 	defer teardown()
 	p := client.sc.dynamicPool
-	p.setPrimeSession(client.sm.multiplexedSession.id)
+	waitForDCPScaleUpWorkerIdle(p)
 	for _, e := range p.getEntries() {
 		e.unaryLoad.Store(10)
 	}
@@ -579,12 +584,16 @@ func TestDynamicChannelPoolScaleUpFloorsCapAtTwo(t *testing.T) {
 }
 
 func TestDynamicChannelPoolScaleUpHonorsMaxScaleUpPercent(t *testing.T) {
-	cfg := testDCPConfig(12, 1, 30)
+	// max=20 leaves room above the percent cap (maxAdd=8), so the percent cap
+	// stays the binding constraint regardless of worker race ordering.
+	// Cooldown=Hour blocks any second scaleUp.
+	cfg := testDCPConfig(12, 1, 20)
 	cfg.DCPMaxScaleUpPercent = 25 // ceil(12*0.25)=3, above floor.
+	cfg.DCPScaleUpCooldown = time.Hour
 	_, client, teardown := setupDCPMockedTestServer(t, cfg)
 	defer teardown()
 	p := client.sc.dynamicPool
-	p.setPrimeSession(client.sm.multiplexedSession.id)
+	waitForDCPScaleUpWorkerIdle(p)
 	for _, e := range p.getEntries() {
 		e.unaryLoad.Store(10)
 	}
@@ -593,6 +602,19 @@ func TestDynamicChannelPoolScaleUpHonorsMaxScaleUpPercent(t *testing.T) {
 	if got, want := p.Num(), 15; got != want {
 		t.Fatalf("DCP channel count after percent-capped scale-up = %d, want %d", got, want)
 	}
+}
+
+func waitForDCPScaleUpWorkerIdle(p *dynamicChannelPool) {
+	for {
+		select {
+		case <-p.scaleUpSignal:
+			continue
+		default:
+		}
+		break
+	}
+	p.dialMu.Lock()
+	p.dialMu.Unlock()
 }
 
 func TestDynamicChannelPoolScaleUpDialFailureDoesNotPublishEntry(t *testing.T) {

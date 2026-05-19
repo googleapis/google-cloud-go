@@ -584,13 +584,15 @@ func (p *dynamicChannelPool) scaleUp() {
 		return
 	default:
 	}
+	p.dialMu.Lock()
+	defer p.dialMu.Unlock()
+	// Cooldown check inside dialMu so concurrent callers cannot both pass the
+	// gate before either records lastScaleUp.
 	now := time.Now()
 	last := time.Unix(0, p.lastScaleUp.Load())
 	if !last.IsZero() && now.Sub(last) < p.cfg.DCPScaleUpCooldown {
 		return
 	}
-	p.dialMu.Lock()
-	defer p.dialMu.Unlock()
 	if p.ctx.Err() != nil {
 		return
 	}
