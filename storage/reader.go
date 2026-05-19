@@ -221,17 +221,6 @@ func WithTargetPendingBytes(c int) MRDOption {
 	return targetPendingBytes(c)
 }
 
-type disableReadChecksum struct{}
-
-func (c disableReadChecksum) apply(params *newMultiRangeDownloaderParams) {
-	params.disableReadChecksum = true
-}
-
-// WithDisableReadChecksum returns an MRDOption that disables read checksum validation for the MRD range downloads.
-func WithDisableReadChecksum() MRDOption {
-	return disableReadChecksum{}
-}
-
 // NewMultiRangeDownloader creates a multi-range reader for an object.
 // Must be called on a gRPC client created using [NewGRPCClient].
 //
