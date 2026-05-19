@@ -32,6 +32,7 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 const (
@@ -183,7 +184,10 @@ type dynamicChannelPool struct {
 	database             string
 	disableRouteToLeader bool
 
-	dial           func(context.Context) (gtransport.ConnPool, error)
+	dial          func(context.Context) (gtransport.ConnPool, error)
+	fallbackDial  func(context.Context) (gtransport.ConnPool, error)
+	fallbackState *dcpFallbackState
+
 	rrIndex        atomic.Uint64
 	nextID         atomic.Uint64
 	totalRPCLoad   atomic.Int32
@@ -202,7 +206,9 @@ type dynamicChannelPool struct {
 	drainingCount atomic.Int64
 }
 
-// dcpEntry represents one logical DCP slot.
+// dcpEntry represents one logical DCP slot. In DirectPath fallback mode the
+// entry pool is a wrapper containing one DirectPath channel and one CloudPath
+// fallback channel.
 type dcpEntry struct {
 	id           uint64
 	metricSlot   int64 // bounded slot id used for metric cardinality
@@ -219,7 +225,7 @@ type dcpEntry struct {
 }
 
 // newDynamicChannelPool creates the initial channel set and starts scale workers.
-func newDynamicChannelPool(ctx context.Context, sc *sessionClient, cfg DynamicChannelPoolConfig, initial int, dial func(context.Context) (gtransport.ConnPool, error)) (*dynamicChannelPool, error) {
+func newDynamicChannelPool(ctx context.Context, sc *sessionClient, cfg DynamicChannelPoolConfig, initial int, dial func(context.Context) (gtransport.ConnPool, error), fallbackDial func(context.Context) (gtransport.ConnPool, error)) (*dynamicChannelPool, error) {
 	cfg, err := normalizeDCPConfig(cfg)
 	if err != nil {
 		return nil, err
@@ -237,6 +243,8 @@ func newDynamicChannelPool(ctx context.Context, sc *sessionClient, cfg DynamicCh
 		database:             sc.database,
 		disableRouteToLeader: sc.disableRouteToLeader,
 		dial:                 dial,
+		fallbackDial:         fallbackDial,
+		fallbackState:        &dcpFallbackState{},
 		scaleUpSignal:        make(chan struct{}, 1),
 		done:                 make(chan struct{}),
 	}
@@ -381,17 +389,28 @@ func (p *dynamicChannelPool) releaseMetricSlot(slot int64) {
 	p.metricSlotMu.Unlock()
 }
 
-// newEntry dials one DCP entry.
+// newEntry dials one DCP entry. When fallbackDial is set, the entry uses a
+// DirectPath/CloudPath wrapper but still appears as one logical DCP slot.
 func (p *dynamicChannelPool) newEntry(ctx context.Context, prime bool) (*dcpEntry, error) {
 	id := p.nextID.Add(1)
 	metricSlot, err := p.allocateMetricSlot()
 	if err != nil {
 		return nil, err
 	}
-	entryPool, err := p.dial(ctx)
+	primary, err := p.dial(ctx)
 	if err != nil {
 		p.releaseMetricSlot(metricSlot)
 		return nil, err
+	}
+	var entryPool gtransport.ConnPool = primary
+	if p.fallbackDial != nil {
+		fallback, err := p.fallbackDial(ctx)
+		if err != nil {
+			primary.Close()
+			p.releaseMetricSlot(metricSlot)
+			return nil, err
+		}
+		entryPool = &dcpFallbackSlot{id: id, direct: primary, cloud: fallback, state: p.fallbackState}
 	}
 	e := &dcpEntry{id: id, metricSlot: metricSlot, pool: entryPool, parent: p}
 	now := time.Now().UnixNano()
@@ -871,6 +890,148 @@ func (e *dcpEntry) rpcLoad() int32 { return e.unaryLoad.Load() + e.streamLoad.Lo
 func (e *dcpEntry) weightedLoad() int32 { return e.rpcLoad() }
 
 func (e *dcpEntry) applyPenalty(ctx context.Context, err error) {}
+
+// dcpFallbackState is shared by all DirectPath fallback slots in the pool so a
+// primary DirectPath outage can move the whole DCP wrapper pool to CloudPath.
+type dcpFallbackState struct {
+	fallbackActive   atomic.Bool
+	primarySuccesses atomic.Uint64
+	primaryFailures  atomic.Uint64
+	lastPrimaryReset atomic.Int64
+}
+
+// dcpFallbackSlot is one logical DCP slot backed by two physical channels:
+// DirectPath for the primary path and CloudPath for fallback.
+type dcpFallbackSlot struct {
+	id     uint64
+	direct gtransport.ConnPool
+	cloud  gtransport.ConnPool
+	state  *dcpFallbackState
+}
+
+func (s *dcpFallbackSlot) Conn() *grpc.ClientConn {
+	if s.state.fallbackActive.Load() {
+		return s.cloud.Conn()
+	}
+	return s.direct.Conn()
+}
+
+func (s *dcpFallbackSlot) Num() int { return 1 }
+
+func (s *dcpFallbackSlot) Close() error {
+	e1 := s.direct.Close()
+	e2 := s.cloud.Close()
+	return errors.Join(e1, e2)
+}
+
+func (s *dcpFallbackSlot) Invoke(ctx context.Context, method string, args, reply interface{}, opts ...grpc.CallOption) error {
+	if s.state.fallbackActive.Load() {
+		err := s.cloud.Invoke(ctx, method, args, reply, opts...)
+		s.recordFallback(err)
+		return err
+	}
+	err := s.direct.Invoke(ctx, method, args, reply, opts...)
+	s.recordPrimary(err)
+	return err
+}
+
+func (s *dcpFallbackSlot) NewStream(ctx context.Context, desc *grpc.StreamDesc, method string, opts ...grpc.CallOption) (grpc.ClientStream, error) {
+	if s.state.fallbackActive.Load() {
+		st, err := s.cloud.NewStream(ctx, desc, method, opts...)
+		if err != nil {
+			s.recordFallback(err)
+			return st, err
+		}
+		return &dcpFallbackMonitoredStream{ClientStream: st, record: s.recordFallback}, nil
+	}
+	st, err := s.direct.NewStream(ctx, desc, method, opts...)
+	if err != nil {
+		s.recordPrimary(err)
+		return st, err
+	}
+	return &dcpFallbackMonitoredStream{ClientStream: st, record: s.recordPrimary}, nil
+}
+
+// recordPrimary updates shared DirectPath health counters.
+func (s *dcpFallbackSlot) recordPrimary(err error) {
+	s.resetPrimaryFallbackWindowIfNeeded()
+	if isDCPFallbackFailure(err) {
+		s.state.primaryFailures.Add(1)
+		s.maybeActivateFallback()
+	} else {
+		s.state.primarySuccesses.Add(1)
+	}
+}
+
+// resetPrimaryFallbackWindowIfNeeded keeps DCP fallback activation counters on
+// the same time window as the non-DCP grpc-gcp fallback Period.
+func (s *dcpFallbackSlot) resetPrimaryFallbackWindowIfNeeded() {
+	now := time.Now().UnixNano()
+	last := s.state.lastPrimaryReset.Load()
+	if last == 0 {
+		s.state.lastPrimaryReset.CompareAndSwap(0, now)
+		return
+	}
+	if time.Duration(now-last) < directPathFallbackPeriod {
+		return
+	}
+	if s.state.lastPrimaryReset.CompareAndSwap(last, now) {
+		s.state.primaryFailures.Store(0)
+		s.state.primarySuccesses.Store(0)
+	}
+}
+
+// recordFallback is intentionally a no-op. DCP DirectPath fallback is sticky
+// once activated, matching non-DCP grpc-gcp fallback behavior.
+func (s *dcpFallbackSlot) recordFallback(err error) {
+}
+
+// maybeActivateFallback enables CloudPath after enough DirectPath samples show a
+// sustained Unavailable rate. The activation threshold, minimum failed calls,
+// and counter window intentionally mirror the non-DCP grpc-gcp fallback config.
+func (s *dcpFallbackSlot) maybeActivateFallback() {
+	failures := s.state.primaryFailures.Load()
+	successes := s.state.primarySuccesses.Load()
+	total := failures + successes
+	if total == 0 || failures < uint64(directPathFallbackMinFailedCalls) {
+		return
+	}
+	if float32(failures)/float32(total) < directPathFallbackErrorRateThreshold {
+		return
+	}
+	s.state.fallbackActive.Store(true)
+}
+
+// isDCPFallbackFailure returns true for errors that should move DirectPath
+// traffic to CloudPath fallback.
+func isDCPFallbackFailure(err error) bool {
+	c := status.Code(err)
+	return c == codes.Unavailable
+}
+
+type dcpFallbackMonitoredStream struct {
+	grpc.ClientStream
+	once   sync.Once
+	record func(error)
+}
+
+func (s *dcpFallbackMonitoredStream) RecvMsg(m interface{}) error {
+	err := s.ClientStream.RecvMsg(m)
+	if err != nil {
+		s.once.Do(func() {
+			if errors.Is(err, io.EOF) {
+				s.record(nil)
+			} else {
+				s.record(err)
+			}
+		})
+	}
+	return err
+}
+
+func (s *dcpFallbackMonitoredStream) CloseSend() error {
+	return s.ClientStream.CloseSend()
+}
 
 func (p *dynamicChannelPool) recordScaleUp(added int) {}
 

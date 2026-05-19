@@ -82,6 +82,12 @@ const (
 
 	// MinSessions for Experimental Host connection
 	experimentalHostMinSessions = 0
+
+	// DirectPath fallback policy used by both non-DCP grpc-gcp fallback and the
+	// DCP DirectPath/CloudPath wrapper.
+	directPathFallbackErrorRateThreshold = float32(1)
+	directPathFallbackMinFailedCalls     = 1
+	directPathFallbackPeriod             = time.Minute * 3
 )
 
 const (
@@ -579,7 +585,13 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 		dial := func(dialCtx context.Context) (gtransport.ConnPool, error) {
 			return gtransport.DialPool(dialCtx, allClientOpts(1, config.Compression, config.EnableDirectAccess, dcpOpts...)...)
 		}
-		dcp, err := newDynamicChannelPool(ctx, sc, config.DynamicChannelPoolConfig, 0, dial)
+		var fallbackDial func(context.Context) (gtransport.ConnPool, error)
+		if isFallbackEnabled && isDirectPathEnabled {
+			fallbackDial = func(dialCtx context.Context) (gtransport.ConnPool, error) {
+				return gtransport.DialPool(dialCtx, append(allClientOpts(1, config.Compression, config.EnableDirectAccess, dcpOpts...), internaloption.EnableDirectPath(false))...)
+			}
+		}
+		dcp, err := newDynamicChannelPool(ctx, sc, config.DynamicChannelPoolConfig, 0, dial, fallbackDial)
 		if err != nil {
 			return nil, err
 		}
@@ -620,9 +632,9 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 
 		fbOpts := grpcgcp.NewGCPFallbackOptions()
 		fbOpts.EnableFallback = true
-		fbOpts.ErrorRateThreshold = 1
-		fbOpts.MinFailedCalls = 1
-		fbOpts.Period = time.Minute * 3
+		fbOpts.ErrorRateThreshold = directPathFallbackErrorRateThreshold
+		fbOpts.MinFailedCalls = directPathFallbackMinFailedCalls
+		fbOpts.Period = directPathFallbackPeriod
 
 		if metricsTracerFactory != nil && metricsTracerFactory.meterProvider != nil {
 			fbOpts.MeterProvider = metricsTracerFactory.meterProvider
