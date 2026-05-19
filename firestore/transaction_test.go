@@ -24,6 +24,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
@@ -740,3 +741,89 @@ func TestRunTransaction_VectorQuery(t *testing.T) {
 		t.Fatal(err)
 	}
 }
+
+func TestTransaction_TransactionReadTime_Success(t *testing.T) {
+	ctx := context.Background()
+	c, srv, cleanup := newMock(t)
+	defer cleanup()
+
+	const db = "projects/projectID/databases/(default)"
+	tm := time.Date(2021, time.February, 20, 0, 0, 0, 0, time.UTC)
+	ts := timestamppb.New(tm)
+	tid := []byte{1}
+
+	beginReq := &pb.BeginTransactionRequest{
+		Database: db,
+		Options: &pb.TransactionOptions{
+			Mode: &pb.TransactionOptions_ReadOnly_{
+				ReadOnly: &pb.TransactionOptions_ReadOnly{
+					ConsistencySelector: &pb.TransactionOptions_ReadOnly_ReadTime{
+						ReadTime: ts,
+					},
+				},
+			},
+		},
+	}
+	beginRes := &pb.BeginTransactionResponse{Transaction: tid}
+
+	srv.reset()
+	srv.addRPC(beginReq, beginRes)
+	srv.addRPC(
+		&pb.CommitRequest{
+			Database:    db,
+			Transaction: tid,
+		},
+		&pb.CommitResponse{CommitTime: ts},
+	)
+
+	err := c.RunTransaction(ctx, func(ctx2 context.Context, tx *Transaction) error {
+		return nil
+	}, ReadOnly, TransactionReadTime(tm))
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestTransaction_WithReadOptions_Empty_AfterTransactionReadTime(t *testing.T) {
+	ctx := context.Background()
+	c, srv, cleanup := newMock(t)
+	defer cleanup()
+
+	const db = "projects/projectID/databases/(default)"
+	tm := time.Date(2021, time.February, 20, 0, 0, 0, 0, time.UTC)
+	ts := timestamppb.New(tm)
+	tid := []byte{1}
+
+	beginReq := &pb.BeginTransactionRequest{
+		Database: db,
+		Options: &pb.TransactionOptions{
+			Mode: &pb.TransactionOptions_ReadOnly_{
+				ReadOnly: &pb.TransactionOptions_ReadOnly{
+					ConsistencySelector: &pb.TransactionOptions_ReadOnly_ReadTime{
+						ReadTime: ts,
+					},
+				},
+			},
+		},
+	}
+	beginRes := &pb.BeginTransactionResponse{Transaction: tid}
+
+	srv.reset()
+	srv.addRPC(beginReq, beginRes)
+	srv.addRPC(
+		&pb.CommitRequest{
+			Database:    db,
+			Transaction: tid,
+		},
+		&pb.CommitResponse{CommitTime: ts},
+	)
+
+	err := c.RunTransaction(ctx, func(ctx2 context.Context, tx *Transaction) error {
+		tx.WithReadOptions()
+		return nil
+	}, ReadOnly, TransactionReadTime(tm))
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+

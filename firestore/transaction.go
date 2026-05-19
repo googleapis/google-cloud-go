@@ -396,10 +396,11 @@ func (t *Transaction) WithReadOptions(opts ...ReadOption) *Transaction {
 		return t
 	}
 	for _, ro := range opts {
+		if _, ok := ro.(readTime); ok {
+			t.err = errInvalidReadTime
+			return t
+		}
 		ro.apply(t.readSettings)
-	}
-	if !t.readSettings.readTime.IsZero() {
-		t.err = errInvalidReadTime
 	}
 	return t
 }
