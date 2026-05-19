@@ -5,7 +5,7 @@ go 1.25.0
 require (
 	cloud.google.com/go/accesscontextmanager v1.14.0
 	cloud.google.com/go/iam v1.11.0
-	cloud.google.com/go/longrunning v0.13.0
+	cloud.google.com/go/longrunning v1.0.0
 	cloud.google.com/go/orgpolicy v1.20.0
 	cloud.google.com/go/osconfig v1.21.0
 	github.com/googleapis/gax-go/v2 v2.22.0
