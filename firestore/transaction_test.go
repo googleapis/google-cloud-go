@@ -24,7 +24,6 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
-	"google.golang.org/protobuf/types/known/timestamppb"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
@@ -651,7 +650,6 @@ func TestTransaction_WithReadOptions(t *testing.T) {
 
 	const db = "projects/projectID/databases/(default)"
 	tm := time.Date(2021, time.February, 20, 0, 0, 0, 0, time.UTC)
-	ts := &timestamppb.Timestamp{Nanos: int32(tm.UnixNano())}
 	tid := []byte{1}
 
 	beginReq := &pb.BeginTransactionRequest{Database: db}
@@ -659,29 +657,21 @@ func TestTransaction_WithReadOptions(t *testing.T) {
 
 	srv.reset()
 	srv.addRPC(beginReq, beginRes)
-
 	srv.addRPC(
-		&pb.CommitRequest{
+		&pb.RollbackRequest{
 			Database:    db,
 			Transaction: tid,
 		},
-		&pb.CommitResponse{CommitTime: ts},
+		&emptypb.Empty{},
 	)
 
-	srv.addRPC(
-		&pb.CommitRequest{
-			Database:    db,
-			Transaction: tid,
-		},
-		&pb.CommitResponse{CommitTime: ts},
-	)
-
-	if err := c.RunTransaction(ctx, func(ctx2 context.Context, tx *Transaction) error {
+	err := c.RunTransaction(ctx, func(ctx2 context.Context, tx *Transaction) error {
 		docref := c.Collection("C").Doc("a")
 		tx.WithReadOptions(ReadTime(tm)).Get(docref)
 		return nil
-	}); err != nil {
-		t.Fatal(err)
+	})
+	if err != errInvalidReadTime {
+		t.Fatalf("got err %v, want %v", err, errInvalidReadTime)
 	}
 }
 
