@@ -17,6 +17,7 @@ package credentials
 import (
 	"errors"
 	"fmt"
+	"os"
 
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/credentials/internal/externalaccount"
@@ -126,7 +127,10 @@ func resolveUniverseDomain(optsUniverseDomain, fileUniverseDomain string) string
 	if optsUniverseDomain != "" {
 		return optsUniverseDomain
 	}
-	return fileUniverseDomain
+	if fileUniverseDomain != "" {
+		return fileUniverseDomain
+	}
+	return os.Getenv(internalauth.UniverseDomainEnvVar)
 }
 
 func handleServiceAccount(f *credsfile.ServiceAccountFile, opts *DetectOptions) (auth.TokenProvider, error) {

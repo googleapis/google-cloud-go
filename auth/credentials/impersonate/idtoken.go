@@ -101,6 +101,7 @@ func NewIDTokenCredentials(opts *IDTokenOptions) (*auth.Credentials, error) {
 				Scopes:           []string{defaultScope},
 				UseSelfSignedJWT: true,
 				Logger:           logger,
+				UniverseDomain:   opts.UniverseDomain,
 			})
 			if err != nil {
 				return nil, err

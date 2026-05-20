@@ -36,6 +36,8 @@ func TestNewCredentials_serviceAccount(t *testing.T) {
 		config             CredentialsOptions
 		wantErr            error
 		wantUniverseDomain string
+		setup              func(*testing.T)
+		skipTokenCall      bool
 	}{
 		{
 			name:    "missing targetPrincipal",
@@ -97,11 +99,41 @@ func TestNewCredentials_serviceAccount(t *testing.T) {
 			wantErr:            nil,
 			wantUniverseDomain: "example.com",
 		},
+		{
+			name: "universe domain from env var (detected)",
+			config: CredentialsOptions{
+				TargetPrincipal: "foo@project-id.iam.gserviceaccount.com",
+				Scopes:          []string{"scope"},
+			},
+			setup: func(t *testing.T) {
+				t.Setenv("GOOGLE_APPLICATION_CREDENTIALS", "../../internal/testdata/sa.json")
+				t.Setenv("GOOGLE_CLOUD_UNIVERSE_DOMAIN", "env-universe.com")
+			},
+			wantUniverseDomain: "env-universe.com",
+			skipTokenCall:      true,
+		},
+		{
+			name: "universe domain from options (detected override)",
+			config: CredentialsOptions{
+				TargetPrincipal: "foo@project-id.iam.gserviceaccount.com",
+				Scopes:          []string{"scope"},
+				UniverseDomain:  "options-universe.com",
+			},
+			setup: func(t *testing.T) {
+				t.Setenv("GOOGLE_APPLICATION_CREDENTIALS", "../../internal/testdata/sa.json")
+				t.Setenv("GOOGLE_CLOUD_UNIVERSE_DOMAIN", "env-universe.com")
+			},
+			wantUniverseDomain: "options-universe.com",
+			skipTokenCall:      true,
+		},
 	}
 
 	for _, tt := range tests {
 		name := tt.name
 		t.Run(name, func(t *testing.T) {
+			if tt.setup != nil {
+				tt.setup(t)
+			}
 			saTok := "sa-token"
 			client := &http.Client{
 				Transport: RoundTripFn(func(req *http.Request) *http.Response {
@@ -142,7 +174,7 @@ func TestNewCredentials_serviceAccount(t *testing.T) {
 					}
 				}),
 			}
-			if tt.config.Credentials == nil {
+			if tt.config.Credentials == nil && !tt.skipTokenCall {
 				tt.config.Client = client
 			}
 			creds, err := NewCredentials(&tt.config)
@@ -150,8 +182,8 @@ func TestNewCredentials_serviceAccount(t *testing.T) {
 				if err != tt.wantErr {
 					t.Fatalf("err: %v", err)
 				}
-			} else if tt.config.Credentials != nil {
-				// config.Credentials is invalid for Token request, just assert universe domain.
+			} else if tt.config.Credentials != nil || tt.skipTokenCall {
+				// config.Credentials is invalid for Token request, or we want to skip Token call, just assert universe domain.
 				if got, _ := creds.UniverseDomain(ctx); got != tt.wantUniverseDomain {
 					t.Errorf("got %q, want %q", got, tt.wantUniverseDomain)
 				}

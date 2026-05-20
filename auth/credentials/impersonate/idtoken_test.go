@@ -33,6 +33,8 @@ func TestNewIDTokenCredentials(t *testing.T) {
 		config             IDTokenOptions
 		wantErr            bool
 		wantUniverseDomain string
+		setup              func(*testing.T)
+		skipTokenCall      bool
 	}{
 		{
 			name: "missing aud",
@@ -84,11 +86,41 @@ func TestNewIDTokenCredentials(t *testing.T) {
 			},
 			wantUniverseDomain: "example.com",
 		},
+		{
+			name: "universe domain from env var (detected)",
+			config: IDTokenOptions{
+				Audience:        "http://example.com/",
+				TargetPrincipal: "foo@project-id.iam.gserviceaccount.com",
+			},
+			setup: func(t *testing.T) {
+				t.Setenv("GOOGLE_APPLICATION_CREDENTIALS", "../../internal/testdata/sa.json")
+				t.Setenv("GOOGLE_CLOUD_UNIVERSE_DOMAIN", "env-universe.com")
+			},
+			wantUniverseDomain: "env-universe.com",
+			skipTokenCall:      true,
+		},
+		{
+			name: "universe domain from options (detected override)",
+			config: IDTokenOptions{
+				Audience:        "http://example.com/",
+				TargetPrincipal: "foo@project-id.iam.gserviceaccount.com",
+				UniverseDomain:  "options-universe.com",
+			},
+			setup: func(t *testing.T) {
+				t.Setenv("GOOGLE_APPLICATION_CREDENTIALS", "../../internal/testdata/sa.json")
+				t.Setenv("GOOGLE_CLOUD_UNIVERSE_DOMAIN", "env-universe.com")
+			},
+			wantUniverseDomain: "options-universe.com",
+			skipTokenCall:      true,
+		},
 	}
 
 	for _, tt := range tests {
 		name := tt.name
 		t.Run(name, func(t *testing.T) {
+			if tt.setup != nil {
+				tt.setup(t)
+			}
 			idTok := "id-token"
 			client := &http.Client{
 				Transport: RoundTripFn(func(req *http.Request) *http.Response {
@@ -128,7 +160,7 @@ func TestNewIDTokenCredentials(t *testing.T) {
 					}
 				}),
 			}
-			if tt.config.Credentials == nil {
+			if tt.config.Credentials == nil && !tt.skipTokenCall {
 				tt.config.Client = client
 			}
 			creds, err := NewIDTokenCredentials(&tt.config)
@@ -139,7 +171,7 @@ func TestNewIDTokenCredentials(t *testing.T) {
 				return
 			}
 			// Static config.Credentials is invalid for Token request, skip.
-			if tt.config.Credentials == nil {
+			if tt.config.Credentials == nil && !tt.skipTokenCall {
 				tok, err := creds.Token(ctx)
 				if err != nil {
 					t.Error(err)

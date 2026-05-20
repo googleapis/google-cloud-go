@@ -175,7 +175,8 @@ func DetectDefault(opts *DetectOptions) (*auth.Credentials, error) {
 			UseDefaultClient: true,
 		})
 		gceUniverseDomainProvider := &internal.ComputeUniverseDomainProvider{
-			MetadataClient: metadataClient,
+			MetadataClient:         metadataClient,
+			UniverseDomainOverride: opts.UniverseDomain,
 		}
 
 		tp := computeTokenProvider(opts, metadataClient)
@@ -379,6 +380,16 @@ func (o *DetectOptions) validate() error {
 		return errors.New("credentials: both credentials file and JSON were provided")
 	}
 	return nil
+}
+
+func (o *DetectOptions) universeDomain() string {
+	if o == nil {
+		return ""
+	}
+	if o.UniverseDomain != "" {
+		return o.UniverseDomain
+	}
+	return os.Getenv(internal.UniverseDomainEnvVar)
 }
 
 func (o *DetectOptions) tokenURL() string {

@@ -869,9 +869,10 @@ func TestDefaultCredentials_Validate(t *testing.T) {
 func TestDefaultCredentials_UniverseDomain(t *testing.T) {
 	ctx := context.Background()
 	tests := []struct {
-		name string
-		opts *DetectOptions
-		want string
+		name  string
+		opts  *DetectOptions
+		want  string
+		setup func(*testing.T)
 	}{
 		{
 			name: "service account json",
@@ -1037,9 +1038,46 @@ func TestDefaultCredentials_UniverseDomain(t *testing.T) {
 			},
 			want: "foo.com",
 		},
+		{
+			name: "service account json with env var universe domain",
+			opts: &DetectOptions{
+				CredentialsFile: "../internal/testdata/sa.json",
+				Scopes:          []string{"https://www.googleapis.com/auth/cloud-platform"},
+			},
+			setup: func(t *testing.T) {
+				t.Setenv("GOOGLE_CLOUD_UNIVERSE_DOMAIN", "env-universe.com")
+			},
+			want: "env-universe.com",
+		},
+		{
+			name: "service account json with file and env var universe domain",
+			opts: &DetectOptions{
+				CredentialsFile: "../internal/testdata/sa_universe_domain.json",
+				Scopes:          []string{"https://www.googleapis.com/auth/cloud-platform"},
+			},
+			setup: func(t *testing.T) {
+				t.Setenv("GOOGLE_CLOUD_UNIVERSE_DOMAIN", "env-universe.com")
+			},
+			want: "example.com", // file wins
+		},
+		{
+			name: "service account json with options and env var universe domain",
+			opts: &DetectOptions{
+				CredentialsFile: "../internal/testdata/sa.json",
+				Scopes:          []string{"https://www.googleapis.com/auth/cloud-platform"},
+				UniverseDomain:  "foo.com",
+			},
+			setup: func(t *testing.T) {
+				t.Setenv("GOOGLE_CLOUD_UNIVERSE_DOMAIN", "env-universe.com")
+			},
+			want: "foo.com", // options win
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			if tt.setup != nil {
+				tt.setup(t)
+			}
 			creds, err := DetectDefault(tt.opts)
 			if err != nil {
 				t.Fatalf("%v", err)
@@ -1115,5 +1153,45 @@ func TestDefaultCredentials_OnGCE(t *testing.T) {
 	}
 	if !strings.Contains(logBuf.String(), "metadata request") {
 		t.Errorf("log output missing 'metadata request': got %q", logBuf.String())
+	}
+}
+
+func TestDefaultCredentials_OnGCE_UniverseDomainEnvVar(t *testing.T) {
+	t.Setenv("GOOGLE_CLOUD_UNIVERSE_DOMAIN", "env-universe.com")
+	ctx := context.Background()
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.URL.Path {
+		case "/computeMetadata/v1/project/project-id":
+			fmt.Fprint(w, "fake-project")
+		case "/computeMetadata/v1/instance/service-accounts/default/token":
+			w.Header().Set("Content-Type", "application/json")
+			resp := &tokResp{
+				AccessToken: "a_fake_token",
+				TokenType:   internal.TokenTypeBearer,
+				ExpiresIn:   60,
+			}
+			if err := json.NewEncoder(w).Encode(&resp); err != nil {
+				t.Fatal(err)
+			}
+		default:
+			http.NotFound(w, r)
+		}
+	}))
+	defer ts.Close()
+	t.Setenv("GCE_METADATA_HOST", strings.TrimPrefix(ts.URL, "http://"))
+	t.Setenv(credsfile.GoogleAppCredsEnvVar, "")
+	t.Setenv("HOME", "nothingToSeeHere")
+	t.Setenv("APPDATA", "nothingToSeeHere")
+
+	creds, err := DetectDefault(&DetectOptions{})
+	if err != nil {
+		t.Fatalf("DetectDefault() = %v, want nil", err)
+	}
+	ud, err := creds.UniverseDomain(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if want := "env-universe.com"; ud != want {
+		t.Errorf("creds.UniverseDomain() = %q, want %q", ud, want)
 	}
 }

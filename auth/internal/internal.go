@@ -185,15 +185,22 @@ func (p StaticProperty) GetProperty(context.Context) (string, error) {
 // ComputeUniverseDomainProvider fetches the credentials universe domain from
 // the google cloud metadata service.
 type ComputeUniverseDomainProvider struct {
-	MetadataClient     *metadata.Client
-	universeDomainOnce sync.Once
-	universeDomain     string
-	universeDomainErr  error
+	MetadataClient         *metadata.Client
+	UniverseDomainOverride string
+	universeDomainOnce     sync.Once
+	universeDomain         string
+	universeDomainErr      error
 }
 
 // GetProperty fetches the credentials universe domain from the google cloud
 // metadata service.
 func (c *ComputeUniverseDomainProvider) GetProperty(ctx context.Context) (string, error) {
+	if c.UniverseDomainOverride != "" {
+		return c.UniverseDomainOverride, nil
+	}
+	if envUD := os.Getenv(UniverseDomainEnvVar); envUD != "" {
+		return envUD, nil
+	}
 	c.universeDomainOnce.Do(func() {
 		c.universeDomain, c.universeDomainErr = getMetadataUniverseDomain(ctx, c.MetadataClient)
 	})
