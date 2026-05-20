@@ -174,7 +174,7 @@ func initIntegrationTest() {
 			},
 		},
 	}
-	copts := append(ti.CallOptions(), option.WithTokenSource(ts), option.WithEndpoint("test-firestore.sandbox.googleapis.com:443"))
+	copts := append(ti.CallOptions(), option.WithTokenSource(ts))
 	c, err := NewClientWithDatabase(ctx, testProjectID, databaseID, copts...)
 	if err != nil {
 		log.Fatalf("NewClient: %v", err)
@@ -3595,19 +3595,19 @@ func TestIntegration_BSONTypes(t *testing.T) {
 		deleteDocuments([]*DocumentRef{doc})
 	})
 
-	oid, err := ParseObjectID("0123456789abcdef01234567")
+	oid, err := ParseBSONObjectID("0123456789abcdef01234567")
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	data := map[string]interface{}{
 		"oid":        oid,
-		"regex":      Regex{Pattern: "foo", Options: "im"},
+		"regex":      BSONRegex{Pattern: "foo", Options: "im"},
 		"timestamp":  BSONTimestamp{Seconds: 123, Increment: 456},
-		"decimal128": Decimal128{String: "123.45"},
-		"minkey":     MinKey{},
-		"maxkey":     MaxKey{},
-		"binary":     Binary{Subtype: 0x02, Data: []byte{1, 2, 3}},
+		"decimal128": BSONDecimal128("123.45"),
+		"minkey":     BSONMinKey{},
+		"maxkey":     BSONMaxKey{},
+		"binary":     BSONBinary{Subtype: 0x02, Data: []byte{1, 2, 3}},
 		"bson_int":   BSONInt32(42),
 	}
 
@@ -3635,14 +3635,14 @@ func TestIntegration_BSONTypes(t *testing.T) {
 
 	// Also test decoding into a struct.
 	type bsonStruct struct {
-		Oid        ObjectID      `firestore:"oid"`
-		Regex      Regex         `firestore:"regex"`
-		Timestamp  BSONTimestamp `firestore:"timestamp"`
-		Decimal128 Decimal128    `firestore:"decimal128"`
-		MinKey     MinKey        `firestore:"minkey"`
-		MaxKey     MaxKey        `firestore:"maxkey"`
-		Binary     Binary        `firestore:"binary"`
-		BsonInt    BSONInt32     `firestore:"bson_int"`
+		Oid        BSONObjectID   `firestore:"oid"`
+		Regex      BSONRegex      `firestore:"regex"`
+		Timestamp  BSONTimestamp  `firestore:"timestamp"`
+		Decimal128 BSONDecimal128 `firestore:"decimal128"`
+		MinKey     BSONMinKey     `firestore:"minkey"`
+		MaxKey     BSONMaxKey     `firestore:"maxkey"`
+		Binary     BSONBinary     `firestore:"binary"`
+		BsonInt    BSONInt32      `firestore:"bson_int"`
 	}
 
 	var gotStruct bsonStruct
@@ -3652,12 +3652,12 @@ func TestIntegration_BSONTypes(t *testing.T) {
 
 	wantStruct := bsonStruct{
 		Oid:        oid,
-		Regex:      Regex{Pattern: "foo", Options: "im"},
+		Regex:      BSONRegex{Pattern: "foo", Options: "im"},
 		Timestamp:  BSONTimestamp{Seconds: 123, Increment: 456},
-		Decimal128: Decimal128{String: "123.45"},
-		MinKey:     MinKey{},
-		MaxKey:     MaxKey{},
-		Binary:     Binary{Subtype: 0x02, Data: []byte{1, 2, 3}},
+		Decimal128: BSONDecimal128("123.45"),
+		MinKey:     BSONMinKey{},
+		MaxKey:     BSONMaxKey{},
+		Binary:     BSONBinary{Subtype: 0x02, Data: []byte{1, 2, 3}},
 		BsonInt:    BSONInt32(42),
 	}
 

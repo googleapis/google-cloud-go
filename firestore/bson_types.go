@@ -21,25 +21,25 @@ import (
 	"strings"
 )
 
-// ObjectID represents a BSON ObjectID (12 bytes).
-type ObjectID [12]byte
+// BSONObjectID represents a BSON ObjectID (12 bytes).
+type BSONObjectID [12]byte
 
-// String returns the 24-character lowercase hex string representation of the ObjectID.
-func (id ObjectID) String() string {
+// String returns the 24-character lowercase hex string representation of the BSONObjectID.
+func (id BSONObjectID) String() string {
 	return hex.EncodeToString(id[:])
 }
 
-// ParseObjectID parses a 24-character lowercase hex string into an ObjectID.
-func ParseObjectID(s string) (ObjectID, error) {
-	var id ObjectID
+// ParseBSONObjectID parses a 24-character lowercase hex string into a BSONObjectID.
+func ParseBSONObjectID(s string) (BSONObjectID, error) {
+	var id BSONObjectID
 	if len(s) != 24 {
-		return id, fmt.Errorf("firestore: invalid ObjectID length: %d (expected 24)", len(s))
+		return id, fmt.Errorf("firestore: invalid BSONObjectID length: %d (expected 24)", len(s))
 	}
 	// Check if all characters are lowercase hex.
 	for i := 0; i < len(s); i++ {
 		c := s[i]
 		if !((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f')) {
-			return id, fmt.Errorf("firestore: invalid ObjectID character at %d: %c", i, c)
+			return id, fmt.Errorf("firestore: invalid BSONObjectID character at %d: %c", i, c)
 		}
 	}
 	b, err := hex.DecodeString(s)
@@ -50,35 +50,35 @@ func ParseObjectID(s string) (ObjectID, error) {
 	return id, nil
 }
 
-// Regex represents a BSON Regular Expression.
-type Regex struct {
+// BSONRegex represents a BSON Regular Expression.
+type BSONRegex struct {
 	Pattern string
 	Options string
 }
 
-// Validate validates the Regex.
+// Validate validates the BSONRegex.
 // - Pattern must not contain null bytes.
 // - Options must only contain characters 'i', 'm', 's', 'u', 'x', sorted alphabetically, no repeats.
-func (r Regex) Validate() error {
+func (r BSONRegex) Validate() error {
 	if strings.ContainsRune(r.Pattern, 0) {
-		return fmt.Errorf("firestore: Regex Pattern cannot contain null bytes")
+		return fmt.Errorf("firestore: BSONRegex Pattern cannot contain null bytes")
 	}
 	// Validate options.
 	validOptions := map[rune]bool{'i': true, 'm': true, 's': true, 'u': true, 'x': true}
 	seen := map[rune]bool{}
 	for _, c := range r.Options {
 		if !validOptions[c] {
-			return fmt.Errorf("firestore: invalid Regex Option: %c", c)
+			return fmt.Errorf("firestore: invalid BSONRegex Option: %c", c)
 		}
 		if seen[c] {
-			return fmt.Errorf("firestore: duplicate Regex Option: %c", c)
+			return fmt.Errorf("firestore: duplicate BSONRegex Option: %c", c)
 		}
 		seen[c] = true
 	}
 	// Check if sorted.
 	runes := []rune(r.Options)
 	if !sort.SliceIsSorted(runes, func(i, j int) bool { return runes[i] < runes[j] }) {
-		return fmt.Errorf("firestore: Regex Options must be sorted alphabetically: %s", r.Options)
+		return fmt.Errorf("firestore: BSONRegex Options must be sorted alphabetically: %s", r.Options)
 	}
 	return nil
 }
@@ -89,31 +89,25 @@ type BSONTimestamp struct {
 	Increment uint32
 }
 
-// Decimal128 represents a BSON Decimal128.
-type Decimal128 struct {
-	String string
-}
+// BSONDecimal128 represents a BSON Decimal128.
+type BSONDecimal128 string
 
-// Validate validates the Decimal128 string representation.
-// For now we just check it is not empty. Real validation might need a library,
-// but the backend will validate it anyway.
-func (d Decimal128) Validate() error {
-	if d.String == "" {
-		return fmt.Errorf("firestore: Decimal128 string cannot be empty")
+// Validate validates the BSONDecimal128 string representation.
+func (d BSONDecimal128) Validate() error {
+	if d == "" {
+		return fmt.Errorf("firestore: BSONDecimal128 string cannot be empty")
 	}
-	// Basic regex check for decimal128-like string if possible, or just trust the backend.
-	// BSON decimal128 spec is complex.
 	return nil
 }
 
-// MinKey represents BSON MinKey.
-type MinKey struct{}
+// BSONMinKey represents BSON MinKey.
+type BSONMinKey struct{}
 
-// MaxKey represents BSON MaxKey.
-type MaxKey struct{}
+// BSONMaxKey represents BSON MaxKey.
+type BSONMaxKey struct{}
 
-// Binary represents BSON Binary data with subtype != 0.
-type Binary struct {
+// BSONBinary represents BSON Binary data with subtype != 0.
+type BSONBinary struct {
 	Subtype byte
 	Data    []byte
 }

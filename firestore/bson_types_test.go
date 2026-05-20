@@ -18,24 +18,24 @@ import (
 	"testing"
 )
 
-func TestObjectID_ParseErrors(t *testing.T) {
-	_, err := ParseObjectID("0123456789abcdef0123456") // too short
+func TestBSONObjectID_ParseErrors(t *testing.T) {
+	_, err := ParseBSONObjectID("0123456789abcdef0123456") // too short
 	if err == nil {
-		t.Errorf("expected error for too short ObjectID string")
+		t.Errorf("expected error for too short BSONObjectID string")
 	}
 
-	_, err = ParseObjectID("0123456789abcdef012345678") // too long
+	_, err = ParseBSONObjectID("0123456789abcdef012345678") // too long
 	if err == nil {
-		t.Errorf("expected error for too long ObjectID string")
+		t.Errorf("expected error for too long BSONObjectID string")
 	}
 
-	_, err = ParseObjectID("0123456789abcdef0123456g") // invalid char 'g'
+	_, err = ParseBSONObjectID("0123456789abcdef0123456g") // invalid char 'g'
 	if err == nil {
-		t.Errorf("expected error for invalid character in ObjectID string")
+		t.Errorf("expected error for invalid character in BSONObjectID string")
 	}
 
-	_, err = ParseObjectID("0123456789ABCDEF01234567") // uppercase
+	_, err = ParseBSONObjectID("0123456789ABCDEF01234567") // uppercase
 	if err == nil {
-		t.Errorf("expected error for uppercase character in ObjectID string")
+		t.Errorf("expected error for uppercase character in BSONObjectID string")
 	}
 }

@@ -36,13 +36,13 @@ var (
 	typeOfProtoTimestamp = reflect.TypeOf((*ts.Timestamp)(nil))
 	typeOfVector64       = reflect.TypeOf(Vector64{})
 	typeOfVector32       = reflect.TypeOf(Vector32{})
-	typeOfObjectID       = reflect.TypeOf(ObjectID{})
-	typeOfRegex          = reflect.TypeOf(Regex{})
+	typeOfBSONObjectID   = reflect.TypeOf(BSONObjectID{})
+	typeOfBSONRegex      = reflect.TypeOf(BSONRegex{})
 	typeOfBSONTimestamp  = reflect.TypeOf(BSONTimestamp{})
-	typeOfDecimal128     = reflect.TypeOf(Decimal128{})
-	typeOfMinKey         = reflect.TypeOf(MinKey{})
-	typeOfMaxKey         = reflect.TypeOf(MaxKey{})
-	typeOfBinary         = reflect.TypeOf(Binary{})
+	typeOfBSONDecimal128 = reflect.TypeOf(BSONDecimal128(""))
+	typeOfBSONMinKey     = reflect.TypeOf(BSONMinKey{})
+	typeOfBSONMaxKey     = reflect.TypeOf(BSONMaxKey{})
+	typeOfBSONBinary     = reflect.TypeOf(BSONBinary{})
 	typeOfBSONInt32      = reflect.TypeOf(BSONInt32(0))
 	isZeroerType         = reflect.TypeOf((*isZeroer)(nil)).Elem()
 )
@@ -112,22 +112,22 @@ func toProtoValue(v reflect.Value) (pbv *pb.Value, sawTransform bool, err error)
 			return nullValue, false, nil
 		}
 		return &pb.Value{ValueType: &pb.Value_ReferenceValue{ReferenceValue: x.Path}}, false, nil
-	case ObjectID:
-		return objectIDToProtoValue(x), false, nil
-	case Regex:
-		pbVal, err := regexToProtoValue(x)
+	case BSONObjectID:
+		return bsonObjectIDToProtoValue(x), false, nil
+	case BSONRegex:
+		pbVal, err := bsonRegexToProtoValue(x)
 		return pbVal, false, err
 	case BSONTimestamp:
 		return bsonTimestampToProtoValue(x), false, nil
-	case Decimal128:
-		pbVal, err := decimal128ToProtoValue(x)
+	case BSONDecimal128:
+		pbVal, err := bsonDecimal128ToProtoValue(x)
 		return pbVal, false, err
-	case MinKey:
-		return minKeyToProtoValue(), false, nil
-	case MaxKey:
-		return maxKeyToProtoValue(), false, nil
-	case Binary:
-		return binaryToProtoValue(x), false, nil
+	case BSONMinKey:
+		return bsonMinKeyToProtoValue(), false, nil
+	case BSONMaxKey:
+		return bsonMaxKeyToProtoValue(), false, nil
+	case BSONBinary:
+		return bsonBinaryToProtoValue(x), false, nil
 	case BSONInt32:
 		return bsonInt32ToProtoValue(x), false, nil
 		// Do not add bool, string, int, etc. to this switch; leave them in the
@@ -393,7 +393,7 @@ func isZeroValue(v reflect.Value) bool {
 	return v.IsZero()
 }
 
-func objectIDToProtoValue(id ObjectID) *pb.Value {
+func bsonObjectIDToProtoValue(id BSONObjectID) *pb.Value {
 	return &pb.Value{
 		ValueType: &pb.Value_MapValue{
 			MapValue: &pb.MapValue{
@@ -405,7 +405,7 @@ func objectIDToProtoValue(id ObjectID) *pb.Value {
 	}
 }
 
-func regexToProtoValue(r Regex) (*pb.Value, error) {
+func bsonRegexToProtoValue(r BSONRegex) (*pb.Value, error) {
 	if err := r.Validate(); err != nil {
 		return nil, err
 	}
@@ -450,7 +450,7 @@ func bsonTimestampToProtoValue(t BSONTimestamp) *pb.Value {
 	}
 }
 
-func decimal128ToProtoValue(d Decimal128) (*pb.Value, error) {
+func bsonDecimal128ToProtoValue(d BSONDecimal128) (*pb.Value, error) {
 	if err := d.Validate(); err != nil {
 		return nil, err
 	}
@@ -458,14 +458,14 @@ func decimal128ToProtoValue(d Decimal128) (*pb.Value, error) {
 		ValueType: &pb.Value_MapValue{
 			MapValue: &pb.MapValue{
 				Fields: map[string]*pb.Value{
-					"__decimal128__": stringToProtoValue(d.String),
+					"__decimal128__": stringToProtoValue(string(d)),
 				},
 			},
 		},
 	}, nil
 }
 
-func minKeyToProtoValue() *pb.Value {
+func bsonMinKeyToProtoValue() *pb.Value {
 	return &pb.Value{
 		ValueType: &pb.Value_MapValue{
 			MapValue: &pb.MapValue{
@@ -477,7 +477,7 @@ func minKeyToProtoValue() *pb.Value {
 	}
 }
 
-func maxKeyToProtoValue() *pb.Value {
+func bsonMaxKeyToProtoValue() *pb.Value {
 	return &pb.Value{
 		ValueType: &pb.Value_MapValue{
 			MapValue: &pb.MapValue{
@@ -489,7 +489,7 @@ func maxKeyToProtoValue() *pb.Value {
 	}
 }
 
-func binaryToProtoValue(b Binary) *pb.Value {
+func bsonBinaryToProtoValue(b BSONBinary) *pb.Value {
 	payload := make([]byte, len(b.Data)+1)
 	payload[0] = b.Subtype
 	copy(payload[1:], b.Data)

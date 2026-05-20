@@ -702,7 +702,7 @@ func TestPopulateMap(t *testing.T) {
 }
 
 func TestBSONTypes_RoundTrip(t *testing.T) {
-	oid, err := ParseObjectID("0123456789abcdef01234567")
+	oid, err := ParseBSONObjectID("0123456789abcdef01234567")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -713,15 +713,15 @@ func TestBSONTypes_RoundTrip(t *testing.T) {
 		pb   *pb.Value
 	}{
 		{
-			desc: "ObjectID",
+			desc: "BSONObjectID",
 			val:  oid,
 			pb: mapval(map[string]*pb.Value{
 				"__oid__": strval("0123456789abcdef01234567"),
 			}),
 		},
 		{
-			desc: "Regex",
-			val:  Regex{Pattern: "foo", Options: "im"},
+			desc: "BSONRegex",
+			val:  BSONRegex{Pattern: "foo", Options: "im"},
 			pb: mapval(map[string]*pb.Value{
 				"__regex__": mapval(map[string]*pb.Value{
 					"pattern": strval("foo"),
@@ -740,29 +740,29 @@ func TestBSONTypes_RoundTrip(t *testing.T) {
 			}),
 		},
 		{
-			desc: "Decimal128",
-			val:  Decimal128{String: "123.45"},
+			desc: "BSONDecimal128",
+			val:  BSONDecimal128("123.45"),
 			pb: mapval(map[string]*pb.Value{
 				"__decimal128__": strval("123.45"),
 			}),
 		},
 		{
-			desc: "MinKey",
-			val:  MinKey{},
+			desc: "BSONMinKey",
+			val:  BSONMinKey{},
 			pb: mapval(map[string]*pb.Value{
 				"__min__": nullValue,
 			}),
 		},
 		{
-			desc: "MaxKey",
-			val:  MaxKey{},
+			desc: "BSONMaxKey",
+			val:  BSONMaxKey{},
 			pb: mapval(map[string]*pb.Value{
 				"__max__": nullValue,
 			}),
 		},
 		{
-			desc: "Binary",
-			val:  Binary{Subtype: 0x02, Data: []byte{1, 2, 3}},
+			desc: "BSONBinary",
+			val:  BSONBinary{Subtype: 0x02, Data: []byte{1, 2, 3}},
 			pb: mapval(map[string]*pb.Value{
 				"__binary__": bytesval([]byte{0x02, 1, 2, 3}),
 			}),

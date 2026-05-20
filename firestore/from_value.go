@@ -113,15 +113,15 @@ func setReflectFromProtoValue(vDest reflect.Value, vprotoSrc *pb.Value, c *Clien
 		}
 		vDest.Set(reflect.ValueOf(val))
 		return nil
-	case typeOfObjectID:
-		val, err := objectIDFromProtoValue(vprotoSrc)
+	case typeOfBSONObjectID:
+		val, err := bsonObjectIDFromProtoValue(vprotoSrc)
 		if err != nil {
 			return err
 		}
 		vDest.Set(reflect.ValueOf(val))
 		return nil
-	case typeOfRegex:
-		val, err := regexFromProtoValue(vprotoSrc)
+	case typeOfBSONRegex:
+		val, err := bsonRegexFromProtoValue(vprotoSrc)
 		if err != nil {
 			return err
 		}
@@ -134,29 +134,29 @@ func setReflectFromProtoValue(vDest reflect.Value, vprotoSrc *pb.Value, c *Clien
 		}
 		vDest.Set(reflect.ValueOf(val))
 		return nil
-	case typeOfDecimal128:
-		val, err := decimal128FromProtoValue(vprotoSrc)
+	case typeOfBSONDecimal128:
+		val, err := bsonDecimal128FromProtoValue(vprotoSrc)
 		if err != nil {
 			return err
 		}
 		vDest.Set(reflect.ValueOf(val))
 		return nil
-	case typeOfMinKey:
-		val, err := minKeyFromProtoValue(vprotoSrc)
+	case typeOfBSONMinKey:
+		val, err := bsonMinKeyFromProtoValue(vprotoSrc)
 		if err != nil {
 			return err
 		}
 		vDest.Set(reflect.ValueOf(val))
 		return nil
-	case typeOfMaxKey:
-		val, err := maxKeyFromProtoValue(vprotoSrc)
+	case typeOfBSONMaxKey:
+		val, err := bsonMaxKeyFromProtoValue(vprotoSrc)
 		if err != nil {
 			return err
 		}
 		vDest.Set(reflect.ValueOf(val))
 		return nil
-	case typeOfBinary:
-		val, err := binaryFromProtoValue(vprotoSrc)
+	case typeOfBSONBinary:
+		val, err := bsonBinaryFromProtoValue(vprotoSrc)
 		if err != nil {
 			return err
 		}
@@ -569,8 +569,8 @@ func overflowErr(v reflect.Value, x interface{}) error {
 	return fmt.Errorf("firestore: value %v overflows type %s", x, v.Type())
 }
 
-func objectIDFromProtoValue(v *pb.Value) (ObjectID, error) {
-	var id ObjectID
+func bsonObjectIDFromProtoValue(v *pb.Value) (BSONObjectID, error) {
+	var id BSONObjectID
 	m, err := assertMapWithValueKey(v, "__oid__")
 	if err != nil {
 		return id, err
@@ -579,11 +579,11 @@ func objectIDFromProtoValue(v *pb.Value) (ObjectID, error) {
 	if err != nil {
 		return id, err
 	}
-	return ParseObjectID(s)
+	return ParseBSONObjectID(s)
 }
 
-func regexFromProtoValue(v *pb.Value) (Regex, error) {
-	var r Regex
+func bsonRegexFromProtoValue(v *pb.Value) (BSONRegex, error) {
+	var r BSONRegex
 	m, err := assertMapWithValueKey(v, "__regex__")
 	if err != nil {
 		return r, err
@@ -602,7 +602,7 @@ func regexFromProtoValue(v *pb.Value) (Regex, error) {
 	if err != nil {
 		return r, err
 	}
-	r = Regex{Pattern: pattern, Options: options}
+	r = BSONRegex{Pattern: pattern, Options: options}
 	if err := r.Validate(); err != nil {
 		return r, err
 	}
@@ -650,8 +650,8 @@ func bsonTimestampFromProtoValue(v *pb.Value) (BSONTimestamp, error) {
 	return BSONTimestamp{Seconds: uint32(sv.IntegerValue), Increment: uint32(iv.IntegerValue)}, nil
 }
 
-func decimal128FromProtoValue(v *pb.Value) (Decimal128, error) {
-	var d Decimal128
+func bsonDecimal128FromProtoValue(v *pb.Value) (BSONDecimal128, error) {
+	var d BSONDecimal128
 	m, err := assertMapWithValueKey(v, "__decimal128__")
 	if err != nil {
 		return d, err
@@ -660,15 +660,15 @@ func decimal128FromProtoValue(v *pb.Value) (Decimal128, error) {
 	if err != nil {
 		return d, err
 	}
-	d = Decimal128{String: s}
+	d = BSONDecimal128(s)
 	if err := d.Validate(); err != nil {
 		return d, err
 	}
 	return d, nil
 }
 
-func minKeyFromProtoValue(v *pb.Value) (MinKey, error) {
-	var m MinKey
+func bsonMinKeyFromProtoValue(v *pb.Value) (BSONMinKey, error) {
+	var m BSONMinKey
 	_, err := assertMapWithValueKey(v, "__min__")
 	if err != nil {
 		return m, err
@@ -676,8 +676,8 @@ func minKeyFromProtoValue(v *pb.Value) (MinKey, error) {
 	return m, nil
 }
 
-func maxKeyFromProtoValue(v *pb.Value) (MaxKey, error) {
-	var m MaxKey
+func bsonMaxKeyFromProtoValue(v *pb.Value) (BSONMaxKey, error) {
+	var m BSONMaxKey
 	_, err := assertMapWithValueKey(v, "__max__")
 	if err != nil {
 		return m, err
@@ -685,8 +685,8 @@ func maxKeyFromProtoValue(v *pb.Value) (MaxKey, error) {
 	return m, nil
 }
 
-func binaryFromProtoValue(v *pb.Value) (Binary, error) {
-	var b Binary
+func bsonBinaryFromProtoValue(v *pb.Value) (BSONBinary, error) {
+	var b BSONBinary
 	m, err := assertMapWithValueKey(v, "__binary__")
 	if err != nil {
 		return b, err
@@ -700,7 +700,7 @@ func binaryFromProtoValue(v *pb.Value) (Binary, error) {
 	if len(payload) == 0 {
 		return b, fmt.Errorf("firestore: empty binary payload")
 	}
-	return Binary{Subtype: payload[0], Data: payload[1:]}, nil
+	return BSONBinary{Subtype: payload[0], Data: payload[1:]}, nil
 }
 
 func bsonInt32FromProtoValue(v *pb.Value) (BSONInt32, error) {
@@ -745,7 +745,7 @@ func tryConvertMapToBSONType(m map[string]interface{}) (interface{}, bool, error
 			if !ok {
 				return nil, false, fmt.Errorf("firestore: __oid__ value is not string: %T", v)
 			}
-			id, err := ParseObjectID(s)
+			id, err := ParseBSONObjectID(s)
 			if err != nil {
 				return nil, false, err
 			}
@@ -764,7 +764,7 @@ func tryConvertMapToBSONType(m map[string]interface{}) (interface{}, bool, error
 			if !ok {
 				return nil, false, fmt.Errorf("firestore: regex options is not string")
 			}
-			r := Regex{Pattern: pattern, Options: options}
+			r := BSONRegex{Pattern: pattern, Options: options}
 			if err := r.Validate(); err != nil {
 				return nil, false, err
 			}
@@ -806,7 +806,7 @@ func tryConvertMapToBSONType(m map[string]interface{}) (interface{}, bool, error
 			if !ok {
 				return nil, false, fmt.Errorf("firestore: __decimal128__ value is not string: %T", v)
 			}
-			d := Decimal128{String: s}
+			d := BSONDecimal128(s)
 			if err := d.Validate(); err != nil {
 				return nil, false, err
 			}
@@ -816,13 +816,13 @@ func tryConvertMapToBSONType(m map[string]interface{}) (interface{}, bool, error
 			if v != nil {
 				return nil, false, fmt.Errorf("firestore: __min__ value must be null")
 			}
-			return MinKey{}, true, nil
+			return BSONMinKey{}, true, nil
 
 		case "__max__":
 			if v != nil {
 				return nil, false, fmt.Errorf("firestore: __max__ value must be null")
 			}
-			return MaxKey{}, true, nil
+			return BSONMaxKey{}, true, nil
 
 		case "__binary__":
 			b, ok := v.([]byte)
@@ -832,7 +832,7 @@ func tryConvertMapToBSONType(m map[string]interface{}) (interface{}, bool, error
 			if len(b) == 0 {
 				return nil, false, fmt.Errorf("firestore: empty binary payload")
 			}
-			return Binary{Subtype: b[0], Data: b[1:]}, true, nil
+			return BSONBinary{Subtype: b[0], Data: b[1:]}, true, nil
 		}
 	}
 	return nil, false, nil

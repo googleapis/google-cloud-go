@@ -539,31 +539,31 @@ func TestIsEmpty(t *testing.T) {
 }
 
 func TestBSONTypes_ValidationErrors(t *testing.T) {
-	invalidRegexOpt := Regex{Pattern: "foo", Options: "mi"} // not sorted
+	invalidRegexOpt := BSONRegex{Pattern: "foo", Options: "mi"} // not sorted
 	_, _, err := toProtoValue(reflect.ValueOf(invalidRegexOpt))
 	if err == nil {
 		t.Errorf("expected error for unsorted regex options")
 	}
 
-	invalidRegexOptDup := Regex{Pattern: "foo", Options: "ii"} // duplicates
+	invalidRegexOptDup := BSONRegex{Pattern: "foo", Options: "ii"} // duplicates
 	_, _, err = toProtoValue(reflect.ValueOf(invalidRegexOptDup))
 	if err == nil {
 		t.Errorf("expected error for duplicate regex options")
 	}
 
-	invalidRegexOptChar := Regex{Pattern: "foo", Options: "a"} // invalid char
+	invalidRegexOptChar := BSONRegex{Pattern: "foo", Options: "a"} // invalid char
 	_, _, err = toProtoValue(reflect.ValueOf(invalidRegexOptChar))
 	if err == nil {
 		t.Errorf("expected error for invalid regex option character")
 	}
 
-	invalidRegexPattern := Regex{Pattern: "foo\x00bar", Options: "i"} // null byte
+	invalidRegexPattern := BSONRegex{Pattern: "foo\x00bar", Options: "i"} // null byte
 	_, _, err = toProtoValue(reflect.ValueOf(invalidRegexPattern))
 	if err == nil {
 		t.Errorf("expected error for regex pattern with null byte")
 	}
 
-	invalidDecimal128 := Decimal128{String: ""} // empty
+	invalidDecimal128 := BSONDecimal128("") // empty
 	_, _, err = toProtoValue(reflect.ValueOf(invalidDecimal128))
 	if err == nil {
 		t.Errorf("expected error for empty decimal128 string")
