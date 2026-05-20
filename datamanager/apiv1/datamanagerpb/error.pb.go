@@ -261,6 +261,42 @@ const (
 	// The customer contains non-exempt campaigns without the EU political
 	// advertising declaration.
 	ErrorReason_EU_POLITICAL_ADVERTISING_DECLARATION_REQUIRED ErrorReason = 101
+	// Account is not eligible for Store Sales.
+	ErrorReason_ACCOUNT_INELIGIBLE_FOR_STORE_SALES ErrorReason = 102
+	// The merchant feed language code is not valid.
+	ErrorReason_INVALID_MERCHANT_FEED_LANGUAGE_CODE ErrorReason = 103
+	// The region code is not valid.
+	ErrorReason_INVALID_REGION_CODE ErrorReason = 104
+	// The subdivision code is not valid.
+	ErrorReason_INVALID_SUBDIVISION_CODE ErrorReason = 107
+	// The subcontinent code is not valid.
+	ErrorReason_INVALID_SUBCONTINENT_CODE ErrorReason = 108
+	// The continent code is not valid.
+	ErrorReason_INVALID_CONTINENT_CODE ErrorReason = 109
+	// The device category is not valid.
+	ErrorReason_INVALID_DEVICE_CATEGORY ErrorReason = 110
+	// Both app_instance_id and client_id are set.
+	ErrorReason_BOTH_CLIENT_ID_AND_APP_INSTANCE_ID_NOT_ALLOWED ErrorReason = 111
+	// The Google Analytics property is a subproperty or rollup property.
+	ErrorReason_GOOGLE_ANALYTICS_SUBPROPERTY_OR_ROLLUP_PROPERTY_NOT_ALLOWED ErrorReason = 112
+	// Third party user data can only be set by data partners.
+	ErrorReason_THIRD_PARTY_USER_DATA_NOT_ALLOWED ErrorReason = 113
+	// The coupon code is not valid.
+	ErrorReason_INVALID_COUPON_CODE ErrorReason = 114
+	// The event source type does not match the destination type.
+	ErrorReason_EVENT_SOURCE_AND_DESTINATION_MISMATCH ErrorReason = 115
+	// The destination account type does not match the specified account id.
+	ErrorReason_DESTINATION_ACCOUNT_TYPE_MISMATCH ErrorReason = 116
+	// The custom variable value contains personally identifiable information
+	// (PII).
+	ErrorReason_CUSTOM_VARIABLE_VALUE_CONTAINS_PII ErrorReason = 117
+	// The custom variable is not enabled.
+	ErrorReason_CUSTOM_VARIABLE_NOT_ENABLED ErrorReason = 118
+	// The custom variable's value is invalid.
+	ErrorReason_INVALID_CUSTOM_VARIABLE_VALUE ErrorReason = 119
+	// The destination does not have a custom variable with a name that matches
+	// the specified `variable`.
+	ErrorReason_CUSTOM_VARIABLE_NOT_FOUND ErrorReason = 120
 )
 
 // Enum value maps for ErrorReason.
@@ -368,6 +404,23 @@ var (
 		99:  "MEMBERSHIP_DURATION_TOO_LONG",
 		100: "INVALID_MERCHANT_ID",
 		101: "EU_POLITICAL_ADVERTISING_DECLARATION_REQUIRED",
+		102: "ACCOUNT_INELIGIBLE_FOR_STORE_SALES",
+		103: "INVALID_MERCHANT_FEED_LANGUAGE_CODE",
+		104: "INVALID_REGION_CODE",
+		107: "INVALID_SUBDIVISION_CODE",
+		108: "INVALID_SUBCONTINENT_CODE",
+		109: "INVALID_CONTINENT_CODE",
+		110: "INVALID_DEVICE_CATEGORY",
+		111: "BOTH_CLIENT_ID_AND_APP_INSTANCE_ID_NOT_ALLOWED",
+		112: "GOOGLE_ANALYTICS_SUBPROPERTY_OR_ROLLUP_PROPERTY_NOT_ALLOWED",
+		113: "THIRD_PARTY_USER_DATA_NOT_ALLOWED",
+		114: "INVALID_COUPON_CODE",
+		115: "EVENT_SOURCE_AND_DESTINATION_MISMATCH",
+		116: "DESTINATION_ACCOUNT_TYPE_MISMATCH",
+		117: "CUSTOM_VARIABLE_VALUE_CONTAINS_PII",
+		118: "CUSTOM_VARIABLE_NOT_ENABLED",
+		119: "INVALID_CUSTOM_VARIABLE_VALUE",
+		120: "CUSTOM_VARIABLE_NOT_FOUND",
 	}
 	ErrorReason_value = map[string]int32{
 		"ERROR_REASON_UNSPECIFIED":                              0,
@@ -472,6 +525,23 @@ var (
 		"MEMBERSHIP_DURATION_TOO_LONG":                                   99,
 		"INVALID_MERCHANT_ID":                                            100,
 		"EU_POLITICAL_ADVERTISING_DECLARATION_REQUIRED":                  101,
+		"ACCOUNT_INELIGIBLE_FOR_STORE_SALES":                             102,
+		"INVALID_MERCHANT_FEED_LANGUAGE_CODE":                            103,
+		"INVALID_REGION_CODE":                                            104,
+		"INVALID_SUBDIVISION_CODE":                                       107,
+		"INVALID_SUBCONTINENT_CODE":                                      108,
+		"INVALID_CONTINENT_CODE":                                         109,
+		"INVALID_DEVICE_CATEGORY":                                        110,
+		"BOTH_CLIENT_ID_AND_APP_INSTANCE_ID_NOT_ALLOWED":                 111,
+		"GOOGLE_ANALYTICS_SUBPROPERTY_OR_ROLLUP_PROPERTY_NOT_ALLOWED":    112,
+		"THIRD_PARTY_USER_DATA_NOT_ALLOWED":                              113,
+		"INVALID_COUPON_CODE":                                            114,
+		"EVENT_SOURCE_AND_DESTINATION_MISMATCH":                          115,
+		"DESTINATION_ACCOUNT_TYPE_MISMATCH":                              116,
+		"CUSTOM_VARIABLE_VALUE_CONTAINS_PII":                             117,
+		"CUSTOM_VARIABLE_NOT_ENABLED":                                    118,
+		"INVALID_CUSTOM_VARIABLE_VALUE":                                  119,
+		"CUSTOM_VARIABLE_NOT_FOUND":                                      120,
 	}
 )
 
@@ -506,7 +576,7 @@ var File_google_ads_datamanager_v1_error_proto protoreflect.FileDescriptor
 
 const file_google_ads_datamanager_v1_error_proto_rawDesc = "" +
 	"\n" +
-	"%google/ads/datamanager/v1/error.proto\x12\x19google.ads.datamanager.v1*\x87\x1c\n" +
+	"%google/ads/datamanager/v1/error.proto\x12\x19google.ads.datamanager.v1*\xf9 \n" +
 	"\vErrorReason\x12\x1c\n" +
 	"\x18ERROR_REASON_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0eINTERNAL_ERROR\x10\x01\x12\x15\n" +
@@ -610,7 +680,24 @@ const file_google_ads_datamanager_v1_error_proto_rawDesc = "" +
 	")UNSUPPORTED_ACCOUNT_TYPE_FOR_PARTNER_LINK\x10b\x12 \n" +
 	"\x1cMEMBERSHIP_DURATION_TOO_LONG\x10c\x12\x17\n" +
 	"\x13INVALID_MERCHANT_ID\x10d\x121\n" +
-	"-EU_POLITICAL_ADVERTISING_DECLARATION_REQUIRED\x10eB\xc7\x01\n" +
+	"-EU_POLITICAL_ADVERTISING_DECLARATION_REQUIRED\x10e\x12&\n" +
+	"\"ACCOUNT_INELIGIBLE_FOR_STORE_SALES\x10f\x12'\n" +
+	"#INVALID_MERCHANT_FEED_LANGUAGE_CODE\x10g\x12\x17\n" +
+	"\x13INVALID_REGION_CODE\x10h\x12\x1c\n" +
+	"\x18INVALID_SUBDIVISION_CODE\x10k\x12\x1d\n" +
+	"\x19INVALID_SUBCONTINENT_CODE\x10l\x12\x1a\n" +
+	"\x16INVALID_CONTINENT_CODE\x10m\x12\x1b\n" +
+	"\x17INVALID_DEVICE_CATEGORY\x10n\x122\n" +
+	".BOTH_CLIENT_ID_AND_APP_INSTANCE_ID_NOT_ALLOWED\x10o\x12?\n" +
+	";GOOGLE_ANALYTICS_SUBPROPERTY_OR_ROLLUP_PROPERTY_NOT_ALLOWED\x10p\x12%\n" +
+	"!THIRD_PARTY_USER_DATA_NOT_ALLOWED\x10q\x12\x17\n" +
+	"\x13INVALID_COUPON_CODE\x10r\x12)\n" +
+	"%EVENT_SOURCE_AND_DESTINATION_MISMATCH\x10s\x12%\n" +
+	"!DESTINATION_ACCOUNT_TYPE_MISMATCH\x10t\x12&\n" +
+	"\"CUSTOM_VARIABLE_VALUE_CONTAINS_PII\x10u\x12\x1f\n" +
+	"\x1bCUSTOM_VARIABLE_NOT_ENABLED\x10v\x12!\n" +
+	"\x1dINVALID_CUSTOM_VARIABLE_VALUE\x10w\x12\x1d\n" +
+	"\x19CUSTOM_VARIABLE_NOT_FOUND\x10xB\xc7\x01\n" +
 	"\x1dcom.google.ads.datamanager.v1B\n" +
 	"ErrorProtoP\x01ZAcloud.google.com/go/datamanager/apiv1/datamanagerpb;datamanagerpb\xaa\x02\x19Google.Ads.DataManager.V1\xca\x02\x19Google\\Ads\\DataManager\\V1\xea\x02\x1cGoogle::Ads::DataManager::V1b\x06proto3"
 

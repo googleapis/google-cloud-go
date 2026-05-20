@@ -771,8 +771,12 @@ type SizeInfo struct {
 	// google.com domain. These are the members available for targeting in Search
 	// campaigns.
 	SearchNetworkMembersCount int64 `protobuf:"varint,2,opt,name=search_network_members_count,json=searchNetworkMembersCount,proto3" json:"search_network_members_count,omitempty"`
-	unknownFields             protoimpl.UnknownFields
-	sizeCache                 protoimpl.SizeCache
+	// Output only. Estimated number of members in this user list on YouTube.
+	YoutubeMembersCount int64 `protobuf:"varint,3,opt,name=youtube_members_count,json=youtubeMembersCount,proto3" json:"youtube_members_count,omitempty"`
+	// Output only. Estimated number of members in this user list on Gmail.
+	GmailMembersCount int64 `protobuf:"varint,4,opt,name=gmail_members_count,json=gmailMembersCount,proto3" json:"gmail_members_count,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
 }
 
 func (x *SizeInfo) Reset() {
@@ -815,6 +819,20 @@ func (x *SizeInfo) GetDisplayNetworkMembersCount() int64 {
 func (x *SizeInfo) GetSearchNetworkMembersCount() int64 {
 	if x != nil {
 		return x.SearchNetworkMembersCount
+	}
+	return 0
+}
+
+func (x *SizeInfo) GetYoutubeMembersCount() int64 {
+	if x != nil {
+		return x.YoutubeMembersCount
+	}
+	return 0
+}
+
+func (x *SizeInfo) GetGmailMembersCount() int64 {
+	if x != nil {
+		return x.GmailMembersCount
 	}
 	return 0
 }
@@ -1412,10 +1430,12 @@ const file_google_ads_datamanager_v1_user_list_proto_rawDesc = "" +
 	"\x12_membership_statusB\x13\n" +
 	"\x11_integration_codeB\x11\n" +
 	"\x0f_closing_reasonB\x18\n" +
-	"\x16_account_access_status\"\x98\x01\n" +
+	"\x16_account_access_status\"\x86\x02\n" +
 	"\bSizeInfo\x12F\n" +
 	"\x1ddisplay_network_members_count\x18\x01 \x01(\x03B\x03\xe0A\x03R\x1adisplayNetworkMembersCount\x12D\n" +
-	"\x1csearch_network_members_count\x18\x02 \x01(\x03B\x03\xe0A\x03R\x19searchNetworkMembersCount\"\x9c\x01\n" +
+	"\x1csearch_network_members_count\x18\x02 \x01(\x03B\x03\xe0A\x03R\x19searchNetworkMembersCount\x127\n" +
+	"\x15youtube_members_count\x18\x03 \x01(\x03B\x03\xe0A\x03R\x13youtubeMembersCount\x123\n" +
+	"\x13gmail_members_count\x18\x04 \x01(\x03B\x03\xe0A\x03R\x11gmailMembersCount\"\x9c\x01\n" +
 	"\x11TargetNetworkInfo\x125\n" +
 	"\x14eligible_for_display\x18\x01 \x01(\bB\x03\xe0A\x03R\x12eligibleForDisplay\x128\n" +
 	"\x13eligible_for_search\x18\x02 \x01(\bB\x03\xe0A\x01H\x00R\x11eligibleForSearch\x88\x01\x01B\x16\n" +

@@ -109,6 +109,52 @@ func (x *ListAttachmentsRequest) GetPageToken() string {
 	return ""
 }
 
+// Request for getting an attachment.
+type GetAttachmentRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The name of the attachment to get.
+	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetAttachmentRequest) Reset() {
+	*x = GetAttachmentRequest{}
+	mi := &file_google_cloud_support_v2_attachment_service_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetAttachmentRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetAttachmentRequest) ProtoMessage() {}
+
+func (x *GetAttachmentRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_support_v2_attachment_service_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetAttachmentRequest.ProtoReflect.Descriptor instead.
+func (*GetAttachmentRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_support_v2_attachment_service_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *GetAttachmentRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
 // The response message for the ListAttachments endpoint.
 type ListAttachmentsResponse struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -124,7 +170,7 @@ type ListAttachmentsResponse struct {
 
 func (x *ListAttachmentsResponse) Reset() {
 	*x = ListAttachmentsResponse{}
-	mi := &file_google_cloud_support_v2_attachment_service_proto_msgTypes[1]
+	mi := &file_google_cloud_support_v2_attachment_service_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -136,7 +182,7 @@ func (x *ListAttachmentsResponse) String() string {
 func (*ListAttachmentsResponse) ProtoMessage() {}
 
 func (x *ListAttachmentsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_support_v2_attachment_service_proto_msgTypes[1]
+	mi := &file_google_cloud_support_v2_attachment_service_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -149,7 +195,7 @@ func (x *ListAttachmentsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListAttachmentsResponse.ProtoReflect.Descriptor instead.
 func (*ListAttachmentsResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_support_v2_attachment_service_proto_rawDescGZIP(), []int{1}
+	return file_google_cloud_support_v2_attachment_service_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *ListAttachmentsResponse) GetAttachments() []*Attachment {
@@ -176,12 +222,16 @@ const file_google_cloud_support_v2_attachment_service_proto_rawDesc = "" +
 	" cloudsupport.googleapis.com/CaseR\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tR\tpageToken\"\x88\x01\n" +
+	"page_token\x18\x03 \x01(\tR\tpageToken\"Z\n" +
+	"\x14GetAttachmentRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
+	"&cloudsupport.googleapis.com/AttachmentR\x04name\"\x88\x01\n" +
 	"\x17ListAttachmentsResponse\x12E\n" +
 	"\vattachments\x18\x01 \x03(\v2#.google.cloud.support.v2.AttachmentR\vattachments\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken2\xd1\x02\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken2\xec\x03\n" +
 	"\x15CaseAttachmentService\x12\xe6\x01\n" +
-	"\x0fListAttachments\x12/.google.cloud.support.v2.ListAttachmentsRequest\x1a0.google.cloud.support.v2.ListAttachmentsResponse\"p\xdaA\x06parent\x82\xd3\xe4\x93\x02aZ2\x120/v2/{parent=organizations/*/cases/*}/attachments\x12+/v2/{parent=projects/*/cases/*}/attachments\x1aO\xcaA\x1bcloudsupport.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\xbf\x01\n" +
+	"\x0fListAttachments\x12/.google.cloud.support.v2.ListAttachmentsRequest\x1a0.google.cloud.support.v2.ListAttachmentsResponse\"p\xdaA\x06parent\x82\xd3\xe4\x93\x02aZ2\x120/v2/{parent=organizations/*/cases/*}/attachments\x12+/v2/{parent=projects/*/cases/*}/attachments\x12\x98\x01\n" +
+	"\rGetAttachment\x12-.google.cloud.support.v2.GetAttachmentRequest\x1a#.google.cloud.support.v2.Attachment\"3\xdaA\x04name\x82\xd3\xe4\x93\x02&\x12$/v2/{name=*/*/cases/*/attachments/*}\x1aO\xcaA\x1bcloudsupport.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\xbf\x01\n" +
 	"\x1bcom.google.cloud.support.v2B\x16AttachmentServiceProtoP\x01Z5cloud.google.com/go/support/apiv2/supportpb;supportpb\xaa\x02\x17Google.Cloud.Support.V2\xca\x02\x17Google\\Cloud\\Support\\V2\xea\x02\x1aGoogle::Cloud::Support::V2b\x06proto3"
 
 var (
@@ -196,18 +246,21 @@ func file_google_cloud_support_v2_attachment_service_proto_rawDescGZIP() []byte 
 	return file_google_cloud_support_v2_attachment_service_proto_rawDescData
 }
 
-var file_google_cloud_support_v2_attachment_service_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_google_cloud_support_v2_attachment_service_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
 var file_google_cloud_support_v2_attachment_service_proto_goTypes = []any{
 	(*ListAttachmentsRequest)(nil),  // 0: google.cloud.support.v2.ListAttachmentsRequest
-	(*ListAttachmentsResponse)(nil), // 1: google.cloud.support.v2.ListAttachmentsResponse
-	(*Attachment)(nil),              // 2: google.cloud.support.v2.Attachment
+	(*GetAttachmentRequest)(nil),    // 1: google.cloud.support.v2.GetAttachmentRequest
+	(*ListAttachmentsResponse)(nil), // 2: google.cloud.support.v2.ListAttachmentsResponse
+	(*Attachment)(nil),              // 3: google.cloud.support.v2.Attachment
 }
 var file_google_cloud_support_v2_attachment_service_proto_depIdxs = []int32{
-	2, // 0: google.cloud.support.v2.ListAttachmentsResponse.attachments:type_name -> google.cloud.support.v2.Attachment
+	3, // 0: google.cloud.support.v2.ListAttachmentsResponse.attachments:type_name -> google.cloud.support.v2.Attachment
 	0, // 1: google.cloud.support.v2.CaseAttachmentService.ListAttachments:input_type -> google.cloud.support.v2.ListAttachmentsRequest
-	1, // 2: google.cloud.support.v2.CaseAttachmentService.ListAttachments:output_type -> google.cloud.support.v2.ListAttachmentsResponse
-	2, // [2:3] is the sub-list for method output_type
-	1, // [1:2] is the sub-list for method input_type
+	1, // 2: google.cloud.support.v2.CaseAttachmentService.GetAttachment:input_type -> google.cloud.support.v2.GetAttachmentRequest
+	2, // 3: google.cloud.support.v2.CaseAttachmentService.ListAttachments:output_type -> google.cloud.support.v2.ListAttachmentsResponse
+	3, // 4: google.cloud.support.v2.CaseAttachmentService.GetAttachment:output_type -> google.cloud.support.v2.Attachment
+	3, // [3:5] is the sub-list for method output_type
+	1, // [1:3] is the sub-list for method input_type
 	1, // [1:1] is the sub-list for extension type_name
 	1, // [1:1] is the sub-list for extension extendee
 	0, // [0:1] is the sub-list for field type_name
@@ -225,7 +278,7 @@ func file_google_cloud_support_v2_attachment_service_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_support_v2_attachment_service_proto_rawDesc), len(file_google_cloud_support_v2_attachment_service_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   2,
+			NumMessages:   3,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
