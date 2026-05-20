@@ -700,3 +700,112 @@ func TestPopulateMap(t *testing.T) {
 		})
 	}
 }
+
+func TestBSONTypes_RoundTrip(t *testing.T) {
+	oid, err := ParseObjectID("0123456789abcdef01234567")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	tests := []struct {
+		desc string
+		val  interface{}
+		pb   *pb.Value
+	}{
+		{
+			desc: "ObjectID",
+			val:  oid,
+			pb: mapval(map[string]*pb.Value{
+				"__oid__": strval("0123456789abcdef01234567"),
+			}),
+		},
+		{
+			desc: "Regex",
+			val:  Regex{Pattern: "foo", Options: "im"},
+			pb: mapval(map[string]*pb.Value{
+				"__regex__": mapval(map[string]*pb.Value{
+					"pattern": strval("foo"),
+					"options": strval("im"),
+				}),
+			}),
+		},
+		{
+			desc: "BSONTimestamp",
+			val:  BSONTimestamp{Seconds: 123, Increment: 456},
+			pb: mapval(map[string]*pb.Value{
+				"__request_timestamp__": mapval(map[string]*pb.Value{
+					"seconds":   int64val(123),
+					"increment": int64val(456),
+				}),
+			}),
+		},
+		{
+			desc: "Decimal128",
+			val:  Decimal128{String: "123.45"},
+			pb: mapval(map[string]*pb.Value{
+				"__decimal128__": strval("123.45"),
+			}),
+		},
+		{
+			desc: "MinKey",
+			val:  MinKey{},
+			pb: mapval(map[string]*pb.Value{
+				"__min__": nullValue,
+			}),
+		},
+		{
+			desc: "MaxKey",
+			val:  MaxKey{},
+			pb: mapval(map[string]*pb.Value{
+				"__max__": nullValue,
+			}),
+		},
+		{
+			desc: "Binary",
+			val:  Binary{Subtype: 0x02, Data: []byte{1, 2, 3}},
+			pb: mapval(map[string]*pb.Value{
+				"__binary__": bytesval([]byte{0x02, 1, 2, 3}),
+			}),
+		},
+		{
+			desc: "BSONInt32",
+			val:  BSONInt32(42),
+			pb: mapval(map[string]*pb.Value{
+				"__int__": int64val(42),
+			}),
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.desc, func(t *testing.T) {
+			// Test serialization
+			gotPB, _, err := toProtoValue(reflect.ValueOf(test.val))
+			if err != nil {
+				t.Fatalf("toProtoValue failed: %v", err)
+			}
+			if !testEqual(gotPB, test.pb) {
+				t.Fatalf("toProtoValue got:\n%v\nwant:\n%v", gotPB, test.pb)
+			}
+
+			// Test deserialization (specific type)
+			dest := reflect.New(reflect.TypeOf(test.val)).Interface()
+			err = setFromProtoValue(dest, gotPB, nil)
+			if err != nil {
+				t.Fatalf("setFromProtoValue failed: %v", err)
+			}
+			gotVal := reflect.ValueOf(dest).Elem().Interface()
+			if !testEqual(gotVal, test.val) {
+				t.Fatalf("setFromProtoValue got:\n%v\nwant:\n%v", gotVal, test.val)
+			}
+
+			// Test deserialization (generic interface{})
+			gotInterface, err := createFromProtoValue(gotPB, nil)
+			if err != nil {
+				t.Fatalf("createFromProtoValue failed: %v", err)
+			}
+			if !testEqual(gotInterface, test.val) {
+				t.Fatalf("createFromProtoValue got:\n%v (%T)\nwant:\n%v (%T)", gotInterface, gotInterface, test.val, test.val)
+			}
+		})
+	}
+}

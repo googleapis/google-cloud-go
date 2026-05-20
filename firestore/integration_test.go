@@ -174,7 +174,7 @@ func initIntegrationTest() {
 			},
 		},
 	}
-	copts := append(ti.CallOptions(), option.WithTokenSource(ts))
+	copts := append(ti.CallOptions(), option.WithTokenSource(ts), option.WithEndpoint("test-firestore.sandbox.googleapis.com:443"))
 	c, err := NewClientWithDatabase(ctx, testProjectID, databaseID, copts...)
 	if err != nil {
 		log.Fatalf("NewClient: %v", err)
@@ -3584,5 +3584,84 @@ func TestIntegration_FindNearest(t *testing.T) {
 				}
 			})
 		})
+	}
+}
+
+func TestIntegration_BSONTypes(t *testing.T) {
+	ctx := context.Background()
+	coll := integrationColl(t)
+	doc := coll.NewDoc()
+	t.Cleanup(func() {
+		deleteDocuments([]*DocumentRef{doc})
+	})
+
+	oid, err := ParseObjectID("0123456789abcdef01234567")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	data := map[string]interface{}{
+		"oid":        oid,
+		"regex":      Regex{Pattern: "foo", Options: "im"},
+		"timestamp":  BSONTimestamp{Seconds: 123, Increment: 456},
+		"decimal128": Decimal128{String: "123.45"},
+		"minkey":     MinKey{},
+		"maxkey":     MaxKey{},
+		"binary":     Binary{Subtype: 0x02, Data: []byte{1, 2, 3}},
+		"bson_int":   BSONInt32(42),
+	}
+
+	// We try to write. If the backend doesn't support BSON types, this might fail.
+	_, err = doc.Create(ctx, data)
+	if err != nil {
+		// Check if it is "not allowed" error and skip if so.
+		if strings.Contains(err.Error(), "is not allowed") || strings.Contains(err.Error(), "not supported") {
+			t.Skipf("Skipping BSON integration test: backend does not support BSON types: %v", err)
+		}
+		t.Fatalf("failed to create doc with BSON types: %v", err)
+	}
+
+	// If write succeeded, we try to read back and verify.
+	ds, err := doc.Get(ctx)
+	if err != nil {
+		t.Fatalf("failed to get doc: %v", err)
+	}
+
+	got := ds.Data()
+
+	if !testEqual(got, data) {
+		t.Errorf("got vs want diff:\n%s", testDiff(got, data))
+	}
+
+	// Also test decoding into a struct.
+	type bsonStruct struct {
+		Oid        ObjectID      `firestore:"oid"`
+		Regex      Regex         `firestore:"regex"`
+		Timestamp  BSONTimestamp `firestore:"timestamp"`
+		Decimal128 Decimal128    `firestore:"decimal128"`
+		MinKey     MinKey        `firestore:"minkey"`
+		MaxKey     MaxKey        `firestore:"maxkey"`
+		Binary     Binary        `firestore:"binary"`
+		BsonInt    BSONInt32     `firestore:"bson_int"`
+	}
+
+	var gotStruct bsonStruct
+	if err := ds.DataTo(&gotStruct); err != nil {
+		t.Fatalf("DataTo failed: %v", err)
+	}
+
+	wantStruct := bsonStruct{
+		Oid:        oid,
+		Regex:      Regex{Pattern: "foo", Options: "im"},
+		Timestamp:  BSONTimestamp{Seconds: 123, Increment: 456},
+		Decimal128: Decimal128{String: "123.45"},
+		MinKey:     MinKey{},
+		MaxKey:     MaxKey{},
+		Binary:     Binary{Subtype: 0x02, Data: []byte{1, 2, 3}},
+		BsonInt:    BSONInt32(42),
+	}
+
+	if !testEqual(gotStruct, wantStruct) {
+		t.Errorf("got struct vs want struct diff:\n%s", testDiff(gotStruct, wantStruct))
 	}
 }

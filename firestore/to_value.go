@@ -36,6 +36,14 @@ var (
 	typeOfProtoTimestamp = reflect.TypeOf((*ts.Timestamp)(nil))
 	typeOfVector64       = reflect.TypeOf(Vector64{})
 	typeOfVector32       = reflect.TypeOf(Vector32{})
+	typeOfObjectID       = reflect.TypeOf(ObjectID{})
+	typeOfRegex          = reflect.TypeOf(Regex{})
+	typeOfBSONTimestamp  = reflect.TypeOf(BSONTimestamp{})
+	typeOfDecimal128     = reflect.TypeOf(Decimal128{})
+	typeOfMinKey         = reflect.TypeOf(MinKey{})
+	typeOfMaxKey         = reflect.TypeOf(MaxKey{})
+	typeOfBinary         = reflect.TypeOf(Binary{})
+	typeOfBSONInt32      = reflect.TypeOf(BSONInt32(0))
 	isZeroerType         = reflect.TypeOf((*isZeroer)(nil)).Elem()
 )
 
@@ -104,6 +112,24 @@ func toProtoValue(v reflect.Value) (pbv *pb.Value, sawTransform bool, err error)
 			return nullValue, false, nil
 		}
 		return &pb.Value{ValueType: &pb.Value_ReferenceValue{ReferenceValue: x.Path}}, false, nil
+	case ObjectID:
+		return objectIDToProtoValue(x), false, nil
+	case Regex:
+		pbVal, err := regexToProtoValue(x)
+		return pbVal, false, err
+	case BSONTimestamp:
+		return bsonTimestampToProtoValue(x), false, nil
+	case Decimal128:
+		pbVal, err := decimal128ToProtoValue(x)
+		return pbVal, false, err
+	case MinKey:
+		return minKeyToProtoValue(), false, nil
+	case MaxKey:
+		return maxKeyToProtoValue(), false, nil
+	case Binary:
+		return binaryToProtoValue(x), false, nil
+	case BSONInt32:
+		return bsonInt32ToProtoValue(x), false, nil
 		// Do not add bool, string, int, etc. to this switch; leave them in the
 		// reflect-based switch below. Moving them here would drop support for
 		// types whose underlying types are those primitives.
@@ -365,4 +391,127 @@ func isZeroValue(v reflect.Value) bool {
 		return v2.Addr().Interface().(isZeroer).IsZero()
 	}
 	return v.IsZero()
+}
+
+func objectIDToProtoValue(id ObjectID) *pb.Value {
+	return &pb.Value{
+		ValueType: &pb.Value_MapValue{
+			MapValue: &pb.MapValue{
+				Fields: map[string]*pb.Value{
+					"__oid__": stringToProtoValue(id.String()),
+				},
+			},
+		},
+	}
+}
+
+func regexToProtoValue(r Regex) (*pb.Value, error) {
+	if err := r.Validate(); err != nil {
+		return nil, err
+	}
+	return &pb.Value{
+		ValueType: &pb.Value_MapValue{
+			MapValue: &pb.MapValue{
+				Fields: map[string]*pb.Value{
+					"__regex__": {
+						ValueType: &pb.Value_MapValue{
+							MapValue: &pb.MapValue{
+								Fields: map[string]*pb.Value{
+									"pattern": stringToProtoValue(r.Pattern),
+									"options": stringToProtoValue(r.Options),
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	}, nil
+}
+
+func bsonTimestampToProtoValue(t BSONTimestamp) *pb.Value {
+	return &pb.Value{
+		ValueType: &pb.Value_MapValue{
+			MapValue: &pb.MapValue{
+				Fields: map[string]*pb.Value{
+					"__request_timestamp__": {
+						ValueType: &pb.Value_MapValue{
+							MapValue: &pb.MapValue{
+								Fields: map[string]*pb.Value{
+									"seconds":   {ValueType: &pb.Value_IntegerValue{IntegerValue: int64(t.Seconds)}},
+									"increment": {ValueType: &pb.Value_IntegerValue{IntegerValue: int64(t.Increment)}},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+}
+
+func decimal128ToProtoValue(d Decimal128) (*pb.Value, error) {
+	if err := d.Validate(); err != nil {
+		return nil, err
+	}
+	return &pb.Value{
+		ValueType: &pb.Value_MapValue{
+			MapValue: &pb.MapValue{
+				Fields: map[string]*pb.Value{
+					"__decimal128__": stringToProtoValue(d.String),
+				},
+			},
+		},
+	}, nil
+}
+
+func minKeyToProtoValue() *pb.Value {
+	return &pb.Value{
+		ValueType: &pb.Value_MapValue{
+			MapValue: &pb.MapValue{
+				Fields: map[string]*pb.Value{
+					"__min__": nullValue,
+				},
+			},
+		},
+	}
+}
+
+func maxKeyToProtoValue() *pb.Value {
+	return &pb.Value{
+		ValueType: &pb.Value_MapValue{
+			MapValue: &pb.MapValue{
+				Fields: map[string]*pb.Value{
+					"__max__": nullValue,
+				},
+			},
+		},
+	}
+}
+
+func binaryToProtoValue(b Binary) *pb.Value {
+	payload := make([]byte, len(b.Data)+1)
+	payload[0] = b.Subtype
+	copy(payload[1:], b.Data)
+	return &pb.Value{
+		ValueType: &pb.Value_MapValue{
+			MapValue: &pb.MapValue{
+				Fields: map[string]*pb.Value{
+					"__binary__": {ValueType: &pb.Value_BytesValue{BytesValue: payload}},
+				},
+			},
+		},
+	}
+}
+
+func bsonInt32ToProtoValue(i BSONInt32) *pb.Value {
+	return &pb.Value{
+		ValueType: &pb.Value_MapValue{
+			MapValue: &pb.MapValue{
+				Fields: map[string]*pb.Value{
+					"__int__": {ValueType: &pb.Value_IntegerValue{IntegerValue: int64(i)}},
+				},
+			},
+		},
+	}
 }

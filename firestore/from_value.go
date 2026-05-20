@@ -113,6 +113,62 @@ func setReflectFromProtoValue(vDest reflect.Value, vprotoSrc *pb.Value, c *Clien
 		}
 		vDest.Set(reflect.ValueOf(val))
 		return nil
+	case typeOfObjectID:
+		val, err := objectIDFromProtoValue(vprotoSrc)
+		if err != nil {
+			return err
+		}
+		vDest.Set(reflect.ValueOf(val))
+		return nil
+	case typeOfRegex:
+		val, err := regexFromProtoValue(vprotoSrc)
+		if err != nil {
+			return err
+		}
+		vDest.Set(reflect.ValueOf(val))
+		return nil
+	case typeOfBSONTimestamp:
+		val, err := bsonTimestampFromProtoValue(vprotoSrc)
+		if err != nil {
+			return err
+		}
+		vDest.Set(reflect.ValueOf(val))
+		return nil
+	case typeOfDecimal128:
+		val, err := decimal128FromProtoValue(vprotoSrc)
+		if err != nil {
+			return err
+		}
+		vDest.Set(reflect.ValueOf(val))
+		return nil
+	case typeOfMinKey:
+		val, err := minKeyFromProtoValue(vprotoSrc)
+		if err != nil {
+			return err
+		}
+		vDest.Set(reflect.ValueOf(val))
+		return nil
+	case typeOfMaxKey:
+		val, err := maxKeyFromProtoValue(vprotoSrc)
+		if err != nil {
+			return err
+		}
+		vDest.Set(reflect.ValueOf(val))
+		return nil
+	case typeOfBinary:
+		val, err := binaryFromProtoValue(vprotoSrc)
+		if err != nil {
+			return err
+		}
+		vDest.Set(reflect.ValueOf(val))
+		return nil
+	case typeOfBSONInt32:
+		val, err := bsonInt32FromProtoValue(vprotoSrc)
+		if err != nil {
+			return err
+		}
+		vDest.Set(reflect.ValueOf(val))
+		return nil
 	}
 
 	switch vDest.Kind() {
@@ -130,7 +186,7 @@ func setReflectFromProtoValue(vDest reflect.Value, vprotoSrc *pb.Value, c *Clien
 		}
 		vDest.SetString(x.StringValue)
 
-	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int64:
 		var i int64
 		switch x := valTypeSrc.(type) {
 		case *pb.Value_IntegerValue:
@@ -141,6 +197,31 @@ func setReflectFromProtoValue(vDest reflect.Value, vprotoSrc *pb.Value, c *Clien
 			if float64(i) != f {
 				return fmt.Errorf("firestore: float %f does not fit into %s", f, vDest.Type())
 			}
+		default:
+			return typeErr()
+		}
+		if vDest.OverflowInt(i) {
+			return overflowErr(vDest, i)
+		}
+		vDest.SetInt(i)
+
+	case reflect.Int32:
+		var i int64
+		switch x := valTypeSrc.(type) {
+		case *pb.Value_IntegerValue:
+			i = x.IntegerValue
+		case *pb.Value_DoubleValue:
+			f := x.DoubleValue
+			i = int64(f)
+			if float64(i) != f {
+				return fmt.Errorf("firestore: float %f does not fit into %s", f, vDest.Type())
+			}
+		case *pb.Value_MapValue:
+			val, err := bsonInt32FromProtoValue(vprotoSrc)
+			if err != nil {
+				return err
+			}
+			i = int64(val)
 		default:
 			return typeErr()
 		}
@@ -415,13 +496,17 @@ func createFromProtoValue(vproto *pb.Value, c *Client) (interface{}, error) {
 		}
 
 		typeVal, ok := ret[typeKey]
-		if !ok || typeVal != typeValVector {
-			// Map is not a vector. Return the map
-			return ret, nil
+		if ok && typeVal == typeValVector {
+			return vector64FromProtoValue(vproto)
 		}
 
-		// Special handling for vector
-		return vector64FromProtoValue(vproto)
+		if bsonVal, ok, err := tryConvertMapToBSONType(ret); err != nil {
+			return nil, err
+		} else if ok {
+			return bsonVal, nil
+		}
+
+		return ret, nil
 	default:
 		return nil, fmt.Errorf("firestore: unknown value type %T", v)
 	}
@@ -482,4 +567,273 @@ func typeString(vproto *pb.Value) string {
 
 func overflowErr(v reflect.Value, x interface{}) error {
 	return fmt.Errorf("firestore: value %v overflows type %s", x, v.Type())
+}
+
+func objectIDFromProtoValue(v *pb.Value) (ObjectID, error) {
+	var id ObjectID
+	m, err := assertMapWithValueKey(v, "__oid__")
+	if err != nil {
+		return id, err
+	}
+	s, err := stringFromProtoValue(m["__oid__"])
+	if err != nil {
+		return id, err
+	}
+	return ParseObjectID(s)
+}
+
+func regexFromProtoValue(v *pb.Value) (Regex, error) {
+	var r Regex
+	m, err := assertMapWithValueKey(v, "__regex__")
+	if err != nil {
+		return r, err
+	}
+	regexMapVal := m["__regex__"]
+	regexMap, ok := regexMapVal.ValueType.(*pb.Value_MapValue)
+	if !ok {
+		return r, fmt.Errorf("firestore: failed to convert regex value %v to map", regexMapVal.ValueType)
+	}
+	rm := regexMap.MapValue.Fields
+	pattern, err := stringFromProtoValue(rm["pattern"])
+	if err != nil {
+		return r, err
+	}
+	options, err := stringFromProtoValue(rm["options"])
+	if err != nil {
+		return r, err
+	}
+	r = Regex{Pattern: pattern, Options: options}
+	if err := r.Validate(); err != nil {
+		return r, err
+	}
+	return r, nil
+}
+
+func bsonTimestampFromProtoValue(v *pb.Value) (BSONTimestamp, error) {
+	var t BSONTimestamp
+	m, err := assertMapWithValueKey(v, "__request_timestamp__")
+	if err != nil {
+		return t, err
+	}
+	tsMapVal := m["__request_timestamp__"]
+	tsMap, ok := tsMapVal.ValueType.(*pb.Value_MapValue)
+	if !ok {
+		return t, fmt.Errorf("firestore: failed to convert timestamp value %v to map", tsMapVal.ValueType)
+	}
+	tm := tsMap.MapValue.Fields
+
+	secondsVal, ok := tm["seconds"]
+	if !ok {
+		return t, fmt.Errorf("firestore: seconds missing in timestamp")
+	}
+	sv, ok := secondsVal.ValueType.(*pb.Value_IntegerValue)
+	if !ok {
+		return t, fmt.Errorf("firestore: seconds is not integer: %v", secondsVal.ValueType)
+	}
+
+	incrementVal, ok := tm["increment"]
+	if !ok {
+		return t, fmt.Errorf("firestore: increment missing in timestamp")
+	}
+	iv, ok := incrementVal.ValueType.(*pb.Value_IntegerValue)
+	if !ok {
+		return t, fmt.Errorf("firestore: increment is not integer: %v", incrementVal.ValueType)
+	}
+
+	if sv.IntegerValue < 0 || sv.IntegerValue > 0xffffffff {
+		return t, fmt.Errorf("firestore: BSON timestamp seconds out of range: %d", sv.IntegerValue)
+	}
+	if iv.IntegerValue < 0 || iv.IntegerValue > 0xffffffff {
+		return t, fmt.Errorf("firestore: BSON timestamp increment out of range: %d", iv.IntegerValue)
+	}
+
+	return BSONTimestamp{Seconds: uint32(sv.IntegerValue), Increment: uint32(iv.IntegerValue)}, nil
+}
+
+func decimal128FromProtoValue(v *pb.Value) (Decimal128, error) {
+	var d Decimal128
+	m, err := assertMapWithValueKey(v, "__decimal128__")
+	if err != nil {
+		return d, err
+	}
+	s, err := stringFromProtoValue(m["__decimal128__"])
+	if err != nil {
+		return d, err
+	}
+	d = Decimal128{String: s}
+	if err := d.Validate(); err != nil {
+		return d, err
+	}
+	return d, nil
+}
+
+func minKeyFromProtoValue(v *pb.Value) (MinKey, error) {
+	var m MinKey
+	_, err := assertMapWithValueKey(v, "__min__")
+	if err != nil {
+		return m, err
+	}
+	return m, nil
+}
+
+func maxKeyFromProtoValue(v *pb.Value) (MaxKey, error) {
+	var m MaxKey
+	_, err := assertMapWithValueKey(v, "__max__")
+	if err != nil {
+		return m, err
+	}
+	return m, nil
+}
+
+func binaryFromProtoValue(v *pb.Value) (Binary, error) {
+	var b Binary
+	m, err := assertMapWithValueKey(v, "__binary__")
+	if err != nil {
+		return b, err
+	}
+	payloadVal := m["__binary__"]
+	bv, ok := payloadVal.ValueType.(*pb.Value_BytesValue)
+	if !ok {
+		return b, fmt.Errorf("firestore: binary value is not bytes: %v", payloadVal.ValueType)
+	}
+	payload := bv.BytesValue
+	if len(payload) == 0 {
+		return b, fmt.Errorf("firestore: empty binary payload")
+	}
+	return Binary{Subtype: payload[0], Data: payload[1:]}, nil
+}
+
+func bsonInt32FromProtoValue(v *pb.Value) (BSONInt32, error) {
+	m, err := assertMapWithValueKey(v, "__int__")
+	if err != nil {
+		return 0, err
+	}
+	intVal := m["__int__"]
+	iv, ok := intVal.ValueType.(*pb.Value_IntegerValue)
+	if !ok {
+		return 0, fmt.Errorf("firestore: int32 value is not integer: %v", intVal.ValueType)
+	}
+	if iv.IntegerValue < -2147483648 || iv.IntegerValue > 2147483647 {
+		return 0, fmt.Errorf("firestore: int32 value out of range: %d", iv.IntegerValue)
+	}
+	return BSONInt32(iv.IntegerValue), nil
+}
+
+func assertMapWithValueKey(v *pb.Value, key string) (map[string]*pb.Value, error) {
+	if v == nil {
+		return nil, fmt.Errorf("firestore: value is nil")
+	}
+	pbMap, ok := v.ValueType.(*pb.Value_MapValue)
+	if !ok {
+		return nil, fmt.Errorf("firestore: cannot convert %v to *pb.Value_MapValue", v.ValueType)
+	}
+	m := pbMap.MapValue.Fields
+	if _, ok := m[key]; !ok {
+		return nil, fmt.Errorf("firestore: missing key %q in map %v", key, m)
+	}
+	return m, nil
+}
+
+func tryConvertMapToBSONType(m map[string]interface{}) (interface{}, bool, error) {
+	if len(m) != 1 {
+		return nil, false, nil
+	}
+	for k, v := range m {
+		switch k {
+		case "__oid__":
+			s, ok := v.(string)
+			if !ok {
+				return nil, false, fmt.Errorf("firestore: __oid__ value is not string: %T", v)
+			}
+			id, err := ParseObjectID(s)
+			if err != nil {
+				return nil, false, err
+			}
+			return id, true, nil
+
+		case "__regex__":
+			subMap, ok := v.(map[string]interface{})
+			if !ok {
+				return nil, false, fmt.Errorf("firestore: __regex__ value is not map: %T", v)
+			}
+			pattern, ok := subMap["pattern"].(string)
+			if !ok {
+				return nil, false, fmt.Errorf("firestore: regex pattern is not string")
+			}
+			options, ok := subMap["options"].(string)
+			if !ok {
+				return nil, false, fmt.Errorf("firestore: regex options is not string")
+			}
+			r := Regex{Pattern: pattern, Options: options}
+			if err := r.Validate(); err != nil {
+				return nil, false, err
+			}
+			return r, true, nil
+
+		case "__int__":
+			i, ok := v.(int64)
+			if !ok {
+				return nil, false, fmt.Errorf("firestore: __int__ value is not int64: %T", v)
+			}
+			if i < -2147483648 || i > 2147483647 {
+				return nil, false, fmt.Errorf("firestore: BSON int32 value out of range: %d", i)
+			}
+			return BSONInt32(i), true, nil
+
+		case "__request_timestamp__":
+			subMap, ok := v.(map[string]interface{})
+			if !ok {
+				return nil, false, fmt.Errorf("firestore: __request_timestamp__ value is not map: %T", v)
+			}
+			seconds, ok := subMap["seconds"].(int64)
+			if !ok {
+				return nil, false, fmt.Errorf("firestore: timestamp seconds is not int64")
+			}
+			increment, ok := subMap["increment"].(int64)
+			if !ok {
+				return nil, false, fmt.Errorf("firestore: timestamp increment is not int64")
+			}
+			if seconds < 0 || seconds > 0xffffffff {
+				return nil, false, fmt.Errorf("firestore: BSON timestamp seconds out of range: %d", seconds)
+			}
+			if increment < 0 || increment > 0xffffffff {
+				return nil, false, fmt.Errorf("firestore: BSON timestamp increment out of range: %d", increment)
+			}
+			return BSONTimestamp{Seconds: uint32(seconds), Increment: uint32(increment)}, true, nil
+
+		case "__decimal128__":
+			s, ok := v.(string)
+			if !ok {
+				return nil, false, fmt.Errorf("firestore: __decimal128__ value is not string: %T", v)
+			}
+			d := Decimal128{String: s}
+			if err := d.Validate(); err != nil {
+				return nil, false, err
+			}
+			return d, true, nil
+
+		case "__min__":
+			if v != nil {
+				return nil, false, fmt.Errorf("firestore: __min__ value must be null")
+			}
+			return MinKey{}, true, nil
+
+		case "__max__":
+			if v != nil {
+				return nil, false, fmt.Errorf("firestore: __max__ value must be null")
+			}
+			return MaxKey{}, true, nil
+
+		case "__binary__":
+			b, ok := v.([]byte)
+			if !ok {
+				return nil, false, fmt.Errorf("firestore: __binary__ value is not bytes: %T", v)
+			}
+			if len(b) == 0 {
+				return nil, false, fmt.Errorf("firestore: empty binary payload")
+			}
+			return Binary{Subtype: b[0], Data: b[1:]}, true, nil
+		}
+	}
+	return nil, false, nil
 }
