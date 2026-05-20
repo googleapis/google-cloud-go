@@ -22,6 +22,7 @@ import (
 	"net/url"
 	"os"
 	"strings"
+	"syscall"
 	"time"
 
 	vkit "cloud.google.com/go/firestore/apiv1"
@@ -297,65 +298,135 @@ func (c *Client) getAll(ctx context.Context, docRefs []*DocumentRef, tid []byte,
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/firestore.Client.BatchGetDocuments")
 	defer func() { trace.EndSpan(ctx, err) }()
 
-	var docNames []string
 	docIndices := map[string][]int{} // doc name to positions in docRefs
 	for i, dr := range docRefs {
 		if err := dr.isValid(); err != nil {
 			return nil, err
 		}
-		docNames = append(docNames, dr.Path)
 		docIndices[dr.Path] = append(docIndices[dr.Path], i)
 	}
-	req := &pb.BatchGetDocumentsRequest{
-		Database:  c.path(),
-		Documents: docNames,
+
+	// Keep track of doc refs that still need to be fetched.
+	remainingDocRefs := make([]*DocumentRef, len(docRefs))
+	copy(remainingDocRefs, docRefs)
+
+	// Map of document path to response.
+	respsMap := make(map[string]*pb.BatchGetDocumentsResponse)
+
+	// Default backoff settings.
+	backoff := gax.Backoff{
+		Initial:    100 * time.Millisecond,
+		Max:        60000 * time.Millisecond,
+		Multiplier: 1.30,
 	}
 
-	// Note that transaction ID and other consistency selectors are mutually exclusive.
-	// We respect the transaction first, any read options passed by the caller second,
-	// and any read options stored in the client third.
-	if rt, hasOpts := parseReadTime(c, rs); hasOpts {
-		req.ConsistencySelector = &pb.BatchGetDocumentsRequest_ReadTime{ReadTime: rt}
-	}
-
+	// We only retry if we are not in a transaction.
+	// If tid != nil, we only attempt once.
+	maxAttempts := 5
 	if tid != nil {
-		req.ConsistencySelector = &pb.BatchGetDocumentsRequest_Transaction{Transaction: tid}
+		maxAttempts = 1
 	}
 
-	batchGetDocsCtx := withResourceHeader(ctx, req.Database)
-	batchGetDocsCtx = withRequestParamsHeader(batchGetDocsCtx, reqParamsHeaderVal(c.path()))
-	streamClient, err := c.c.BatchGetDocuments(batchGetDocsCtx, req)
-	if err != nil {
-		return nil, err
-	}
-
-	// Read and remember all results from the stream.
-	var resps []*pb.BatchGetDocumentsResponse
-	for {
-		resp, err := streamClient.Recv()
-		if err == io.EOF {
+	for attempt := 0; attempt < maxAttempts; attempt++ {
+		if len(remainingDocRefs) == 0 {
 			break
 		}
+
+		var docNames []string
+		for _, dr := range remainingDocRefs {
+			docNames = append(docNames, dr.Path)
+		}
+
+		req := &pb.BatchGetDocumentsRequest{
+			Database:  c.path(),
+			Documents: docNames,
+		}
+
+		// Note that transaction ID and other consistency selectors are mutually exclusive.
+		// We respect the transaction first, any read options passed by the caller second,
+		// and any read options stored in the client third.
+		if rt, hasOpts := parseReadTime(c, rs); hasOpts {
+			req.ConsistencySelector = &pb.BatchGetDocumentsRequest_ReadTime{ReadTime: rt}
+		}
+		if tid != nil {
+			req.ConsistencySelector = &pb.BatchGetDocumentsRequest_Transaction{Transaction: tid}
+		}
+
+		batchGetDocsCtx := withResourceHeader(ctx, req.Database)
+		batchGetDocsCtx = withRequestParamsHeader(batchGetDocsCtx, reqParamsHeaderVal(c.path()))
+		streamClient, err := c.c.BatchGetDocuments(batchGetDocsCtx, req)
 		if err != nil {
+			if tid == nil && isRetryable(err) && attempt < maxAttempts-1 {
+				if sleepErr := sleep(ctx, backoff.Pause()); sleepErr != nil {
+					return nil, sleepErr
+				}
+				continue
+			}
 			return nil, err
 		}
-		resps = append(resps, resp)
+
+		var attemptFailed bool
+		for {
+			resp, err := streamClient.Recv()
+			if err == io.EOF {
+				break
+			}
+			if err != nil {
+				if tid == nil && isRetryable(err) && attempt < maxAttempts-1 {
+					attemptFailed = true
+					break
+				}
+				return nil, err
+			}
+
+			// Remember the response and check for duplicates.
+			var path string
+			switch r := resp.Result.(type) {
+			case *pb.BatchGetDocumentsResponse_Found:
+				path = r.Found.Name
+			case *pb.BatchGetDocumentsResponse_Missing:
+				path = r.Missing
+			default:
+				return nil, errors.New("firestore: unknown BatchGetDocumentsResponse result type")
+			}
+			if _, exists := respsMap[path]; exists {
+				return nil, fmt.Errorf("firestore: %q seen twice", path)
+			}
+			respsMap[path] = resp
+		}
+
+		if attemptFailed {
+			// Filter remainingDocRefs to exclude what we already received.
+			var newRemaining []*DocumentRef
+			for _, dr := range remainingDocRefs {
+				if _, ok := respsMap[dr.Path]; !ok {
+					newRemaining = append(newRemaining, dr)
+				}
+			}
+			remainingDocRefs = newRemaining
+
+			if sleepErr := sleep(ctx, backoff.Pause()); sleepErr != nil {
+				return nil, sleepErr
+			}
+			continue
+		}
+
+		// If we finished the stream successfully (io.EOF), we should have all docs.
+		break
 	}
 
 	// Results may arrive out of order. Put each at the right indices.
-	docs := make([]*DocumentSnapshot, len(docNames))
-	for _, resp := range resps {
-		var (
-			indices []int
-			doc     *pb.Document
-			err     error
-		)
+	docs := make([]*DocumentSnapshot, len(docRefs))
+	for path, resp := range respsMap {
+		indices, ok := docIndices[path]
+		if !ok {
+			return nil, fmt.Errorf("firestore: received unexpected document %q", path)
+		}
+		var doc *pb.Document
 		switch r := resp.Result.(type) {
 		case *pb.BatchGetDocumentsResponse_Found:
-			indices = docIndices[r.Found.Name]
 			doc = r.Found
 		case *pb.BatchGetDocumentsResponse_Missing:
-			indices = docIndices[r.Missing]
 			doc = nil
 		default:
 			return nil, errors.New("firestore: unknown BatchGetDocumentsResponse result type")
@@ -364,12 +435,21 @@ func (c *Client) getAll(ctx context.Context, docRefs []*DocumentRef, tid []byte,
 			if docs[index] != nil {
 				return nil, fmt.Errorf("firestore: %q seen twice", docRefs[index].Path)
 			}
-			docs[index], err = newDocumentSnapshot(docRefs[index], doc, c, resp.ReadTime)
+			ds, err := newDocumentSnapshot(docRefs[index], doc, c, resp.ReadTime)
 			if err != nil {
 				return nil, err
 			}
+			docs[index] = ds
 		}
 	}
+
+	// Check if we missed any documents.
+	for i, ds := range docs {
+		if ds == nil {
+			return nil, fmt.Errorf("firestore: missing response for %q", docRefs[i].Path)
+		}
+	}
+
 	return docs, nil
 }
 
@@ -535,4 +615,33 @@ func parseReadTime(c *Client, rs *readSettings) (*timestamppb.Timestamp, bool) {
 		return &timestamppb.Timestamp{Seconds: int64(c.readSettings.readTime.Unix())}, true
 	}
 	return nil, false
+}
+
+// isRetryable returns true if the error is transient and should be retried.
+// It checks gRPC status codes, explicit syscall errors, and falls back to
+// string matching for connection errors.
+func isRetryable(err error) bool {
+	if err == nil {
+		return false
+	}
+	s, ok := status.FromError(err)
+	if ok {
+		switch s.Code() {
+		case codes.Unknown, codes.DeadlineExceeded, codes.ResourceExhausted,
+			codes.Internal, codes.Unavailable, codes.Unauthenticated:
+			return true
+		default:
+			return false
+		}
+	}
+	if errors.Is(err, syscall.ECONNRESET) || errors.Is(err, syscall.ECONNREFUSED) {
+		return true
+	}
+	// Fallback to string matching as in storage package
+	msg := err.Error()
+	if strings.Contains(msg, "connection reset by peer") ||
+		strings.Contains(msg, "connection refused") {
+		return true
+	}
+	return false
 }

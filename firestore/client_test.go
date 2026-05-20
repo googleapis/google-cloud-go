@@ -489,13 +489,15 @@ func TestGetAllErrors(t *testing.T) {
 	}
 
 	// Internal server error.
-	srv.addRPC(
-		&pb.BatchGetDocumentsRequest{
-			Database:  dbPath,
-			Documents: []string{docPath},
-		},
-		[]interface{}{status.Errorf(codes.Internal, "")},
-	)
+	for i := 0; i < 5; i++ {
+		srv.addRPC(
+			&pb.BatchGetDocumentsRequest{
+				Database:  dbPath,
+				Documents: []string{docPath},
+			},
+			[]interface{}{status.Errorf(codes.Internal, "")},
+		)
+	}
 	_, err := c.GetAll(ctx, []*DocumentRef{c.Doc("C/a")})
 	codeEq(t, "GetAll #1", codes.Internal, err)
 
@@ -555,7 +557,11 @@ func TestClient_WithReadOptions(t *testing.T) {
 		&pb.BatchGetDocumentsResponse{
 			ReadTime: &tspb.Timestamp{Seconds: tm.Unix()},
 			Result: &pb.BatchGetDocumentsResponse_Found{
-				Found: &pb.Document{},
+				Found: &pb.Document{
+					Name:       docPath,
+					CreateTime: aTimestamp,
+					UpdateTime: aTimestamp,
+				},
 			},
 		},
 	})
@@ -582,5 +588,44 @@ func TestClient_UsesEmulator(t *testing.T) {
 	defer cleanup()
 	if !c.UsesEmulator {
 		t.Error("got false, want true")
+	}
+}
+
+func TestGetAllRetryOnUnavailable_Recv(t *testing.T) {
+	c, srv, cleanup := newMock(t)
+	defer cleanup()
+
+	const dbPath = "projects/projectID/databases/(default)"
+	const docPath = dbPath + "/documents/C/a"
+	req := &pb.BatchGetDocumentsRequest{
+		Database:  dbPath,
+		Documents: []string{docPath},
+	}
+
+	// First call: stream starts, but Recv returns Unavailable.
+	srv.addRPC(req, []interface{}{
+		status.Errorf(codes.Unavailable, "transient connection reset"),
+	})
+
+	// If client retries, it will make a second call.
+	// Second call: succeeds.
+	srv.addRPC(req, []interface{}{
+		&pb.BatchGetDocumentsResponse{
+			Result: &pb.BatchGetDocumentsResponse_Found{Found: &pb.Document{
+				Name:       docPath,
+				CreateTime: aTimestamp,
+				UpdateTime: aTimestamp,
+			}},
+			ReadTime: aTimestamp,
+		},
+	})
+
+	ctx := context.Background()
+	docs, err := c.GetAll(ctx, []*DocumentRef{c.Doc("C/a")})
+	if err != nil {
+		t.Fatalf("GetAll failed: %v", err)
+	}
+	if len(docs) != 1 {
+		t.Errorf("got %d docs, want 1", len(docs))
 	}
 }

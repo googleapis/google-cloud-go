@@ -535,11 +535,5 @@ func isPermanentWatchError(err error) bool {
 		// Retry on normal end-of-stream.
 		return false
 	}
-	switch status.Code(err) {
-	case codes.Unknown, codes.DeadlineExceeded, codes.ResourceExhausted,
-		codes.Internal, codes.Unavailable, codes.Unauthenticated:
-		return false
-	default:
-		return true
-	}
+	return !isRetryable(err)
 }

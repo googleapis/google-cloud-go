@@ -750,3 +750,39 @@ func TestRunTransaction_VectorQuery(t *testing.T) {
 		t.Fatal(err)
 	}
 }
+
+func TestBeginTransactionRetryOnUnavailable(t *testing.T) {
+	c, srv, cleanup := newMock(t)
+	defer cleanup()
+
+	const dbPath = "projects/projectID/databases/(default)"
+	req := &pb.BeginTransactionRequest{
+		Database: dbPath,
+	}
+
+	// First call: returns Unavailable.
+	srv.addRPC(req, status.Errorf(codes.Unavailable, "transient connection reset"))
+
+	// Second call: succeeds.
+	srv.addRPC(req, &pb.BeginTransactionResponse{
+		Transaction: []byte("tid"),
+	})
+
+	// Mock Commit to avoid panic
+	srv.addRPC(&pb.CommitRequest{
+		Database:    dbPath,
+		Transaction: []byte("tid"),
+	}, &pb.CommitResponse{
+		CommitTime: aTimestamp,
+	})
+
+	ctx := context.Background()
+	// RunTransaction with MaxAttempts(1).
+	// If gax retries, this should succeed.
+	err := c.RunTransaction(ctx, func(ctx context.Context, tx *Transaction) error {
+		return nil
+	}, MaxAttempts(1))
+	if err != nil {
+		t.Fatalf("RunTransaction failed: %v", err)
+	}
+}

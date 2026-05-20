@@ -26,6 +26,8 @@ import (
 	"cloud.google.com/go/internal/pretty"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/testing/protocmp"
 	tspb "google.golang.org/protobuf/types/known/timestamppb"
@@ -2757,5 +2759,114 @@ func TestVectorQueryFromProtoRoundTrip(t *testing.T) {
 
 	if diff := cmp.Diff(want, got, protocmp.Transform()); diff != "" {
 		t.Errorf("mismatch (-want, +got)\n: %s", diff)
+	}
+}
+
+func TestQueryNextRetryOnUnavailable_Recv(t *testing.T) {
+	c, srv, cleanup := newMock(t)
+	defer cleanup()
+
+	const dbPath = "projects/projectID/databases/(default)"
+	req := &pb.RunQueryRequest{
+		Parent: dbPath + "/documents",
+		QueryType: &pb.RunQueryRequest_StructuredQuery{
+			StructuredQuery: &pb.StructuredQuery{
+				From: []*pb.StructuredQuery_CollectionSelector{
+					{CollectionId: "C"},
+				},
+			},
+		},
+	}
+
+	// First call: stream starts, but Recv returns Unavailable.
+	srv.addRPC(req, []interface{}{
+		status.Errorf(codes.Unavailable, "transient connection reset"),
+	})
+
+	// If client retries, it will make a second call.
+	// Second call: succeeds.
+	srv.addRPC(req, []interface{}{
+		&pb.RunQueryResponse{
+			Document: &pb.Document{
+				Name:       dbPath + "/documents/C/a",
+				CreateTime: aTimestamp,
+				UpdateTime: aTimestamp,
+				Fields:     map[string]*pb.Value{"f": intval(2)},
+			},
+			ReadTime: aTimestamp,
+		},
+	})
+
+	ctx := context.Background()
+	q := c.Collection("C")
+	it := q.Documents(ctx)
+	defer it.Stop()
+
+	doc, err := it.Next()
+	if err != nil {
+		t.Fatalf("Next failed: %v", err)
+	}
+	if doc.Ref.ID != "a" {
+		t.Errorf("got doc %v, want a", doc.Ref.ID)
+	}
+}
+
+func TestAggregationQueryRetryOnUnavailable_Recv(t *testing.T) {
+	c, srv, cleanup := newMock(t)
+	defer cleanup()
+
+	const dbPath = "projects/projectID/databases/(default)"
+	req := &pb.RunAggregationQueryRequest{
+		Parent: dbPath + "/documents",
+		QueryType: &pb.RunAggregationQueryRequest_StructuredAggregationQuery{
+			StructuredAggregationQuery: &pb.StructuredAggregationQuery{
+				QueryType: &pb.StructuredAggregationQuery_StructuredQuery{
+					StructuredQuery: &pb.StructuredQuery{
+						From: []*pb.StructuredQuery_CollectionSelector{
+							{CollectionId: "C"},
+						},
+					},
+				},
+				Aggregations: []*pb.StructuredAggregationQuery_Aggregation{
+					{
+						Alias:    "count",
+						Operator: &pb.StructuredAggregationQuery_Aggregation_Count_{},
+					},
+				},
+			},
+		},
+	}
+
+	// First call: stream starts, but Recv returns Unavailable.
+	srv.addRPC(req, []interface{}{
+		status.Errorf(codes.Unavailable, "transient connection reset"),
+	})
+
+	// If client retries, it will make a second call.
+	// Second call: succeeds.
+	srv.addRPC(req, []interface{}{
+		&pb.RunAggregationQueryResponse{
+			Result: &pb.AggregationResult{
+				AggregateFields: map[string]*pb.Value{
+					"count": intval(5),
+				},
+			},
+			ReadTime: aTimestamp,
+		},
+	})
+
+	ctx := context.Background()
+	q := c.Collection("C")
+	aq := q.NewAggregationQuery().WithCount("count")
+	res, err := aq.Get(ctx)
+	if err != nil {
+		t.Fatalf("Get failed: %v", err)
+	}
+	count, ok := res["count"]
+	if !ok {
+		t.Fatalf("count not found in results")
+	}
+	if count.(*pb.Value).GetIntegerValue() != 5 {
+		t.Errorf("got count %v, want 5", count)
 	}
 }

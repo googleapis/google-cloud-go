@@ -29,6 +29,7 @@ import (
 	"cloud.google.com/go/internal/btree"
 	"cloud.google.com/go/internal/protostruct"
 	"cloud.google.com/go/internal/trace"
+	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/wrapperspb"
@@ -1450,6 +1451,11 @@ type queryDocumentIterator struct {
 
 	// Query explain metrics. This is only present when ExplainOptions is used.
 	explainMetrics *ExplainMetrics
+
+	// Fields for retry support
+	lastDoc       *DocumentSnapshot
+	returnedCount int
+	backoff       gax.Backoff
 }
 
 func newQueryDocumentIterator(ctx context.Context, q *Query, tid []byte, rs *readSettings) *queryDocumentIterator {
@@ -1466,60 +1472,133 @@ func newQueryDocumentIterator(ctx context.Context, q *Query, tid []byte, rs *rea
 // opts override the options stored in it.q.runQuerySettings
 func (it *queryDocumentIterator) next() (_ *DocumentSnapshot, err error) {
 	client := it.q.c
-	if it.streamClient == nil {
-		it.ctx = trace.StartSpan(it.ctx, "cloud.google.com/go/firestore.Query.RunQuery")
-		defer func() {
+
+	if it.backoff.Initial == 0 {
+		it.backoff = gax.Backoff{
+			Initial:    100 * time.Millisecond,
+			Max:        60000 * time.Millisecond,
+			Multiplier: 1.30,
+		}
+	}
+
+	maxAttempts := 5
+	// Do not retry if in transaction, limitToLast, or explainOptions are set.
+	if it.tid != nil || it.q.limitToLast || (it.q.runQuerySettings != nil && it.q.runQuerySettings.explainOptions != nil) {
+		maxAttempts = 1
+	}
+
+	var activeSpanCtx context.Context
+	defer func() {
+		if activeSpanCtx != nil {
 			if errors.Is(err, iterator.Done) {
-				trace.EndSpan(it.ctx, nil)
+				trace.EndSpan(activeSpanCtx, nil)
 			} else {
-				trace.EndSpan(it.ctx, err)
+				trace.EndSpan(activeSpanCtx, err)
 			}
-		}()
+		}
+	}()
 
-		req, err := it.q.toRunQueryRequestProto()
-		if err != nil {
-			return nil, err
+	for attempt := 0; attempt < maxAttempts; attempt++ {
+		if it.streamClient == nil {
+			activeSpanCtx = trace.StartSpan(it.ctx, "cloud.google.com/go/firestore.Query.RunQuery")
+
+			q := *it.q
+			if it.lastDoc != nil {
+				q = q.StartAfter(it.lastDoc)
+				q = q.Offset(0) // Clear offset on resume
+			}
+			if q.limit != nil {
+				newLimit := q.limit.Value - int32(it.returnedCount)
+				if newLimit <= 0 {
+					trace.EndSpan(activeSpanCtx, nil)
+					activeSpanCtx = nil
+					return nil, iterator.Done
+				}
+				q = q.Limit(int(newLimit))
+			}
+
+			req, err := q.toRunQueryRequestProto()
+			if err != nil {
+				trace.EndSpan(activeSpanCtx, err)
+				activeSpanCtx = nil
+				return nil, err
+			}
+
+			// Respect transactions first and read options (read time) second
+			if rt, hasOpts := parseReadTime(client, it.readSettings); hasOpts {
+				req.ConsistencySelector = &pb.RunQueryRequest_ReadTime{ReadTime: rt}
+			}
+			if it.tid != nil {
+				req.ConsistencySelector = &pb.RunQueryRequest_Transaction{Transaction: it.tid}
+			}
+			it.streamClient, err = client.c.RunQuery(activeSpanCtx, req)
+			if err != nil {
+				trace.EndSpan(activeSpanCtx, err)
+				activeSpanCtx = nil
+				if isRetryable(err) && attempt < maxAttempts-1 {
+					if sleepErr := sleep(it.ctx, it.backoff.Pause()); sleepErr != nil {
+						return nil, sleepErr
+					}
+					continue
+				}
+				return nil, err
+			}
 		}
 
-		// Respect transactions first and read options (read time) second
-		if rt, hasOpts := parseReadTime(client, it.readSettings); hasOpts {
-			req.ConsistencySelector = &pb.RunQueryRequest_ReadTime{ReadTime: rt}
+		var res *pb.RunQueryResponse
+		var recvErr error
+		for {
+			res, recvErr = it.streamClient.Recv()
+			if recvErr == io.EOF {
+				return nil, iterator.Done
+			}
+			if recvErr != nil {
+				break
+			}
+			if res.Document != nil {
+				break
+			}
+			it.explainMetrics = fromExplainMetricsProto(res.GetExplainMetrics())
 		}
-		if it.tid != nil {
-			req.ConsistencySelector = &pb.RunQueryRequest_Transaction{Transaction: it.tid}
+
+		if recvErr != nil {
+			if isRetryable(recvErr) && attempt < maxAttempts-1 {
+				it.streamClient = nil
+				if activeSpanCtx != nil {
+					trace.EndSpan(activeSpanCtx, recvErr)
+					activeSpanCtx = nil
+				}
+				if sleepErr := sleep(it.ctx, it.backoff.Pause()); sleepErr != nil {
+					return nil, sleepErr
+				}
+				continue
+			}
+			return nil, recvErr
 		}
-		it.streamClient, err = client.c.RunQuery(it.ctx, req)
-		if err != nil {
-			return nil, err
-		}
-	}
-	var res *pb.RunQueryResponse
-	for {
-		res, err = it.streamClient.Recv()
-		if err == io.EOF {
-			return nil, iterator.Done
-		}
-		if err != nil {
-			return nil, err
-		}
-		if res.Document != nil {
-			break
-		}
-		// No document => partial progress; keep receiving.
+
 		it.explainMetrics = fromExplainMetricsProto(res.GetExplainMetrics())
+
+		docRef, err := pathToDoc(res.Document.Name, client)
+		if err != nil {
+			return nil, err
+		}
+		doc, err := newDocumentSnapshot(docRef, res.Document, client, res.ReadTime)
+		if err != nil {
+			return nil, err
+		}
+
+		it.lastDoc = doc
+		it.returnedCount++
+		it.backoff = gax.Backoff{
+			Initial:    100 * time.Millisecond,
+			Max:        60000 * time.Millisecond,
+			Multiplier: 1.30,
+		}
+
+		return doc, nil
 	}
 
-	it.explainMetrics = fromExplainMetricsProto(res.GetExplainMetrics())
-
-	docRef, err := pathToDoc(res.Document.Name, client)
-	if err != nil {
-		return nil, err
-	}
-	doc, err := newDocumentSnapshot(docRef, res.Document, client, res.ReadTime)
-	if err != nil {
-		return nil, err
-	}
-	return doc, nil
+	return nil, fmt.Errorf("firestore: unexpected exit from retry loop")
 }
 
 func (it *queryDocumentIterator) getExplainMetrics() (*ExplainMetrics, error) {
@@ -1807,36 +1886,71 @@ func (a *AggregationQuery) GetResponse(ctx context.Context) (aro *AggregationRes
 	}
 
 	ctx = withResourceHeader(ctx, a.query.c.path())
-	stream, err := client.RunAggregationQuery(ctx, req)
-	if err != nil {
-		return nil, err
+
+	backoff := gax.Backoff{
+		Initial:    100 * time.Millisecond,
+		Max:        60000 * time.Millisecond,
+		Multiplier: 1.30,
 	}
 
-	aro = &AggregationResponse{}
-	var resp AggregationResult
+	maxAttempts := 5
+	if a.tx != nil || (a.query.runQuerySettings != nil && a.query.runQuerySettings.explainOptions != nil) {
+		maxAttempts = 1
+	}
 
-	for {
-		res, err := stream.Recv()
-		if err == io.EOF {
-			break
-		}
+	for attempt := 0; attempt < maxAttempts; attempt++ {
+		stream, err := client.RunAggregationQuery(ctx, req)
 		if err != nil {
+			if a.tx == nil && isRetryable(err) && attempt < maxAttempts-1 {
+				if sleepErr := sleep(ctx, backoff.Pause()); sleepErr != nil {
+					return nil, sleepErr
+				}
+				continue
+			}
 			return nil, err
 		}
-		if res.Result != nil {
-			if resp == nil {
-				resp = make(AggregationResult)
-			}
-			f := res.Result.AggregateFields
 
-			for k, v := range f {
-				resp[k] = v
+		aro = &AggregationResponse{}
+		var resp AggregationResult
+		var attemptFailed bool
+
+		for {
+			res, err := stream.Recv()
+			if err == io.EOF {
+				break
 			}
+			if err != nil {
+				if a.tx == nil && isRetryable(err) && attempt < maxAttempts-1 {
+					attemptFailed = true
+					break
+				}
+				return nil, err
+			}
+			if res.Result != nil {
+				if resp == nil {
+					resp = make(AggregationResult)
+				}
+				f := res.Result.AggregateFields
+
+				for k, v := range f {
+					resp[k] = v
+				}
+			}
+			aro.ExplainMetrics = fromExplainMetricsProto(res.GetExplainMetrics())
 		}
-		aro.ExplainMetrics = fromExplainMetricsProto(res.GetExplainMetrics())
+
+		if attemptFailed {
+			if sleepErr := sleep(ctx, backoff.Pause()); sleepErr != nil {
+				return nil, sleepErr
+			}
+			continue
+		}
+
+		aro.Result = resp
+		return aro, nil
 	}
-	aro.Result = resp
-	return aro, nil
+
+	return nil, fmt.Errorf("firestore: unexpected exit from retry loop")
 }
 
 // AggregationResult contains the results of an aggregation query.
