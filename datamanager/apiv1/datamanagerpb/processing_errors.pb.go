@@ -105,6 +105,8 @@ const (
 	// The user attempted to ingest events with an ad identifier that isn't
 	// from the operating account's ads.
 	ProcessingErrorReason_PROCESSING_ERROR_OPERATING_ACCOUNT_MISMATCH_FOR_AD_IDENTIFIER ProcessingErrorReason = 26
+	// One-per-click conversion actions cannot be used with BRAIDs.
+	ProcessingErrorReason_PROCESSING_ERROR_REASON_ONE_PER_CLICK_CONVERSION_ACTION_NOT_PERMITTED_WITH_BRAID ProcessingErrorReason = 28
 )
 
 // Enum value maps for ProcessingErrorReason.
@@ -138,6 +140,7 @@ var (
 		27: "PROCESSING_ERROR_REASON_AWS_AUTH_FAILED",
 		25: "PROCESSING_ERROR_REASON_USER_IDENTIFIER_DECRYPTION_ERROR",
 		26: "PROCESSING_ERROR_OPERATING_ACCOUNT_MISMATCH_FOR_AD_IDENTIFIER",
+		28: "PROCESSING_ERROR_REASON_ONE_PER_CLICK_CONVERSION_ACTION_NOT_PERMITTED_WITH_BRAID",
 	}
 	ProcessingErrorReason_value = map[string]int32{
 		"PROCESSING_ERROR_REASON_UNSPECIFIED":                                               0,
@@ -168,6 +171,7 @@ var (
 		"PROCESSING_ERROR_REASON_AWS_AUTH_FAILED":                                           27,
 		"PROCESSING_ERROR_REASON_USER_IDENTIFIER_DECRYPTION_ERROR":                          25,
 		"PROCESSING_ERROR_OPERATING_ACCOUNT_MISMATCH_FOR_AD_IDENTIFIER":                     26,
+		"PROCESSING_ERROR_REASON_ONE_PER_CLICK_CONVERSION_ACTION_NOT_PERMITTED_WITH_BRAID":  28,
 	}
 )
 
@@ -218,7 +222,7 @@ const (
 	// The KEK cannot decrypt data because it is the wrong KEK, or it does not
 	// exist.
 	ProcessingWarningReason_PROCESSING_WARNING_REASON_INVALID_KEK ProcessingWarningReason = 6
-	// Failed to decrypt th
+	// Failed to decrypt the
 	// [UserIdentifier][google.ads.datamanager.v1.UserIdentifier] data using the
 	// DEK.
 	ProcessingWarningReason_PROCESSING_WARNING_REASON_USER_IDENTIFIER_DECRYPTION_ERROR ProcessingWarningReason = 7
@@ -501,7 +505,7 @@ const file_google_ads_datamanager_v1_processing_errors_proto_rawDesc = "" +
 	"\x0ewarning_counts\x18\x01 \x03(\v2'.google.ads.datamanager.v1.WarningCountR\rwarningCounts\"}\n" +
 	"\fWarningCount\x12!\n" +
 	"\frecord_count\x18\x01 \x01(\x03R\vrecordCount\x12J\n" +
-	"\x06reason\x18\x02 \x01(\x0e22.google.ads.datamanager.v1.ProcessingWarningReasonR\x06reason*\x81\v\n" +
+	"\x06reason\x18\x02 \x01(\x0e22.google.ads.datamanager.v1.ProcessingWarningReasonR\x06reason*\xd7\v\n" +
 	"\x15ProcessingErrorReason\x12'\n" +
 	"#PROCESSING_ERROR_REASON_UNSPECIFIED\x10\x00\x123\n" +
 	"/PROCESSING_ERROR_REASON_INVALID_CUSTOM_VARIABLE\x10\x01\x127\n" +
@@ -531,7 +535,8 @@ const file_google_ads_datamanager_v1_processing_errors_proto_rawDesc = "" +
 	"-PROCESSING_ERROR_REASON_KEK_PERMISSION_DENIED\x10\x18\x12+\n" +
 	"'PROCESSING_ERROR_REASON_AWS_AUTH_FAILED\x10\x1b\x12<\n" +
 	"8PROCESSING_ERROR_REASON_USER_IDENTIFIER_DECRYPTION_ERROR\x10\x19\x12A\n" +
-	"=PROCESSING_ERROR_OPERATING_ACCOUNT_MISMATCH_FOR_AD_IDENTIFIER\x10\x1a*\xff\x03\n" +
+	"=PROCESSING_ERROR_OPERATING_ACCOUNT_MISMATCH_FOR_AD_IDENTIFIER\x10\x1a\x12T\n" +
+	"PPROCESSING_ERROR_REASON_ONE_PER_CLICK_CONVERSION_ACTION_NOT_PERMITTED_WITH_BRAID\x10\x1c*\xff\x03\n" +
 	"\x17ProcessingWarningReason\x12)\n" +
 	"%PROCESSING_WARNING_REASON_UNSPECIFIED\x10\x00\x123\n" +
 	"/PROCESSING_WARNING_REASON_KEK_PERMISSION_DENIED\x10\x01\x122\n" +

@@ -214,6 +214,52 @@ func (x *CreateCommentRequest) GetComment() *Comment {
 	return nil
 }
 
+// The request message for the GetComment endpoint.
+type GetCommentRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The name of the comment to retrieve.
+	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetCommentRequest) Reset() {
+	*x = GetCommentRequest{}
+	mi := &file_google_cloud_support_v2_comment_service_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetCommentRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetCommentRequest) ProtoMessage() {}
+
+func (x *GetCommentRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_support_v2_comment_service_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetCommentRequest.ProtoReflect.Descriptor instead.
+func (*GetCommentRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_support_v2_comment_service_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *GetCommentRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
 var File_google_cloud_support_v2_comment_service_proto protoreflect.FileDescriptor
 
 const file_google_cloud_support_v2_comment_service_proto_rawDesc = "" +
@@ -231,10 +277,15 @@ const file_google_cloud_support_v2_comment_service_proto_rawDesc = "" +
 	"\x14CreateCommentRequest\x12@\n" +
 	"\x06parent\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
 	" cloudsupport.googleapis.com/CaseR\x06parent\x12?\n" +
-	"\acomment\x18\x02 \x01(\v2 .google.cloud.support.v2.CommentB\x03\xe0A\x02R\acomment2\xa5\x04\n" +
+	"\acomment\x18\x02 \x01(\v2 .google.cloud.support.v2.CommentB\x03\xe0A\x02R\acomment\"T\n" +
+	"\x11GetCommentRequest\x12?\n" +
+	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
+	"#cloudsupport.googleapis.com/CommentR\x04name2\xb4\x05\n" +
 	"\x0eCommentService\x12\xd7\x01\n" +
 	"\fListComments\x12,.google.cloud.support.v2.ListCommentsRequest\x1a-.google.cloud.support.v2.ListCommentsResponse\"j\xdaA\x06parent\x82\xd3\xe4\x93\x02[Z/\x12-/v2/{parent=organizations/*/cases/*}/comments\x12(/v2/{parent=projects/*/cases/*}/comments\x12\xe7\x01\n" +
-	"\rCreateComment\x12-.google.cloud.support.v2.CreateCommentRequest\x1a .google.cloud.support.v2.Comment\"\x84\x01\xdaA\x0eparent,comment\x82\xd3\xe4\x93\x02m:\acommentZ8:\acomment\"-/v2/{parent=organizations/*/cases/*}/comments\"(/v2/{parent=projects/*/cases/*}/comments\x1aO\xcaA\x1bcloudsupport.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\xbc\x01\n" +
+	"\rCreateComment\x12-.google.cloud.support.v2.CreateCommentRequest\x1a .google.cloud.support.v2.Comment\"\x84\x01\xdaA\x0eparent,comment\x82\xd3\xe4\x93\x02m:\acommentZ8:\acomment\"-/v2/{parent=organizations/*/cases/*}/comments\"(/v2/{parent=projects/*/cases/*}/comments\x12\x8c\x01\n" +
+	"\n" +
+	"GetComment\x12*.google.cloud.support.v2.GetCommentRequest\x1a .google.cloud.support.v2.Comment\"0\xdaA\x04name\x82\xd3\xe4\x93\x02#\x12!/v2/{name=*/*/cases/*/comments/*}\x1aO\xcaA\x1bcloudsupport.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\xbc\x01\n" +
 	"\x1bcom.google.cloud.support.v2B\x13CommentServiceProtoP\x01Z5cloud.google.com/go/support/apiv2/supportpb;supportpb\xaa\x02\x17Google.Cloud.Support.V2\xca\x02\x17Google\\Cloud\\Support\\V2\xea\x02\x1aGoogle::Cloud::Support::V2b\x06proto3"
 
 var (
@@ -249,22 +300,25 @@ func file_google_cloud_support_v2_comment_service_proto_rawDescGZIP() []byte {
 	return file_google_cloud_support_v2_comment_service_proto_rawDescData
 }
 
-var file_google_cloud_support_v2_comment_service_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
+var file_google_cloud_support_v2_comment_service_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_google_cloud_support_v2_comment_service_proto_goTypes = []any{
 	(*ListCommentsRequest)(nil),  // 0: google.cloud.support.v2.ListCommentsRequest
 	(*ListCommentsResponse)(nil), // 1: google.cloud.support.v2.ListCommentsResponse
 	(*CreateCommentRequest)(nil), // 2: google.cloud.support.v2.CreateCommentRequest
-	(*Comment)(nil),              // 3: google.cloud.support.v2.Comment
+	(*GetCommentRequest)(nil),    // 3: google.cloud.support.v2.GetCommentRequest
+	(*Comment)(nil),              // 4: google.cloud.support.v2.Comment
 }
 var file_google_cloud_support_v2_comment_service_proto_depIdxs = []int32{
-	3, // 0: google.cloud.support.v2.ListCommentsResponse.comments:type_name -> google.cloud.support.v2.Comment
-	3, // 1: google.cloud.support.v2.CreateCommentRequest.comment:type_name -> google.cloud.support.v2.Comment
+	4, // 0: google.cloud.support.v2.ListCommentsResponse.comments:type_name -> google.cloud.support.v2.Comment
+	4, // 1: google.cloud.support.v2.CreateCommentRequest.comment:type_name -> google.cloud.support.v2.Comment
 	0, // 2: google.cloud.support.v2.CommentService.ListComments:input_type -> google.cloud.support.v2.ListCommentsRequest
 	2, // 3: google.cloud.support.v2.CommentService.CreateComment:input_type -> google.cloud.support.v2.CreateCommentRequest
-	1, // 4: google.cloud.support.v2.CommentService.ListComments:output_type -> google.cloud.support.v2.ListCommentsResponse
-	3, // 5: google.cloud.support.v2.CommentService.CreateComment:output_type -> google.cloud.support.v2.Comment
-	4, // [4:6] is the sub-list for method output_type
-	2, // [2:4] is the sub-list for method input_type
+	3, // 4: google.cloud.support.v2.CommentService.GetComment:input_type -> google.cloud.support.v2.GetCommentRequest
+	1, // 5: google.cloud.support.v2.CommentService.ListComments:output_type -> google.cloud.support.v2.ListCommentsResponse
+	4, // 6: google.cloud.support.v2.CommentService.CreateComment:output_type -> google.cloud.support.v2.Comment
+	4, // 7: google.cloud.support.v2.CommentService.GetComment:output_type -> google.cloud.support.v2.Comment
+	5, // [5:8] is the sub-list for method output_type
+	2, // [2:5] is the sub-list for method input_type
 	2, // [2:2] is the sub-list for extension type_name
 	2, // [2:2] is the sub-list for extension extendee
 	0, // [0:2] is the sub-list for field type_name
@@ -282,7 +336,7 @@ func file_google_cloud_support_v2_comment_service_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_support_v2_comment_service_proto_rawDesc), len(file_google_cloud_support_v2_comment_service_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   3,
+			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

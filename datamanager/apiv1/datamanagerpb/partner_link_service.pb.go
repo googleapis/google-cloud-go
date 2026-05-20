@@ -411,11 +411,11 @@ const file_google_ads_datamanager_v1_partner_link_service_proto_rawDesc = "" +
 	"\x0fpartner_link_id\x18\x02 \x01(\tB\x03\xe0A\x03R\rpartnerLinkId\x12U\n" +
 	"\x0eowning_account\x18\x03 \x01(\v2).google.ads.datamanager.v1.ProductAccountB\x03\xe0A\x02R\rowningAccount\x12W\n" +
 	"\x0fpartner_account\x18\x04 \x01(\v2).google.ads.datamanager.v1.ProductAccountB\x03\xe0A\x02R\x0epartnerAccount:\x93\x01\xeaA\x8f\x01\n" +
-	"&datamanager.googleapis.com/PartnerLink\x12JaccountTypes/{account_type}/accounts/{account}/partnerLinks/{partner_link}*\fpartnerLinks2\vpartnerLink2\xad\x05\n" +
+	"&datamanager.googleapis.com/PartnerLink\x12JaccountTypes/{account_type}/accounts/{account}/partnerLinks/{partner_link}*\fpartnerLinks2\vpartnerLink2\xe6\x05\n" +
 	"\x12PartnerLinkService\x12\xd1\x01\n" +
 	"\x11CreatePartnerLink\x123.google.ads.datamanager.v1.CreatePartnerLinkRequest\x1a&.google.ads.datamanager.v1.PartnerLink\"_\xdaA\x13parent,partner_link\x82\xd3\xe4\x93\x02C:\fpartner_link\"3/v1/{parent=accountTypes/*/accounts/*}/partnerLinks\x12\xa4\x01\n" +
 	"\x11DeletePartnerLink\x123.google.ads.datamanager.v1.DeletePartnerLinkRequest\x1a\x16.google.protobuf.Empty\"B\xdaA\x04name\x82\xd3\xe4\x93\x025*3/v1/{name=accountTypes/*/accounts/*/partnerLinks/*}\x12\xce\x01\n" +
-	"\x12SearchPartnerLinks\x124.google.ads.datamanager.v1.SearchPartnerLinksRequest\x1a5.google.ads.datamanager.v1.SearchPartnerLinksResponse\"K\xdaA\x06parent\x82\xd3\xe4\x93\x02<\x12:/v1/{parent=accountTypes/*/accounts/*}/partnerLinks:search\x1aK\xcaA\x1adatamanager.googleapis.com\xd2A+https://www.googleapis.com/auth/datamanagerB\xd4\x01\n" +
+	"\x12SearchPartnerLinks\x124.google.ads.datamanager.v1.SearchPartnerLinksRequest\x1a5.google.ads.datamanager.v1.SearchPartnerLinksResponse\"K\xdaA\x06parent\x82\xd3\xe4\x93\x02<\x12:/v1/{parent=accountTypes/*/accounts/*}/partnerLinks:search\x1a\x83\x01\xcaA\x1adatamanager.googleapis.com\xd2Achttps://www.googleapis.com/auth/datamanager,https://www.googleapis.com/auth/datamanager.partnerlinkB\xd4\x01\n" +
 	"\x1dcom.google.ads.datamanager.v1B\x17PartnerLinkServiceProtoP\x01ZAcloud.google.com/go/datamanager/apiv1/datamanagerpb;datamanagerpb\xaa\x02\x19Google.Ads.DataManager.V1\xca\x02\x19Google\\Ads\\DataManager\\V1\xea\x02\x1cGoogle::Ads::DataManager::V1b\x06proto3"
 
 var (

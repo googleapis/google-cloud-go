@@ -17,6 +17,52 @@
           "fullName": "google.cloud.support.v2.CaseAttachmentClient",
           "shortName": "CaseAttachmentClient"
         },
+        "fullName": "google.cloud.support.v2.CaseAttachmentClient.GetAttachment",
+        "method": {
+          "fullName": "google.cloud.support.v2.CaseAttachmentService.GetAttachment",
+          "service": {
+            "fullName": "google.cloud.support.v2.CaseAttachmentService",
+            "shortName": "CaseAttachmentService"
+          },
+          "shortName": "GetAttachment"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "supportpb.GetAttachmentRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*supportpb.Attachment",
+        "shortName": "GetAttachment"
+      },
+      "description": "GetAttachment retrieve an attachment associated with a support case.\n\nEXAMPLES: \n\ncURL: \n\n```shell\nattachment=\"projects/some-project/cases/23598314/attachments/0684M00000P3h1fQAB\"\ncurl \\\n--header \"Authorization: Bearer $(gcloud auth print-access-token)\" \\\n\"https: //cloudsupport.googleapis.com/v2/$attachment\"\n```\n\nPython: \n\n```python\nimport googleapiclient.discovery\n\napi_version = \"v2\"\nsupportApiService = googleapiclient.discovery.build(\nserviceName=\"cloudsupport\",\nversion=api_version,\ndiscoveryServiceUrl=f\"https: //cloudsupport.googleapis.com/$discovery/rest?version={api_version}\",\n)\nrequest = (\nsupportApiService.cases()\n.attachments()\n.get(name=\"projects/some-project/cases/43595344/attachments/0684M00000P3h1fQAB\")\n)\nprint(request.execute())\n```",
+      "file": "CaseAttachmentClient/GetAttachment/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "cloudsupport_v2_generated_CaseAttachmentService_GetAttachment_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "cloudsupport GetAttachment Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.support.v2.CaseAttachmentClient",
+          "shortName": "CaseAttachmentClient"
+        },
         "fullName": "google.cloud.support.v2.CaseAttachmentClient.ListAttachments",
         "method": {
           "fullName": "google.cloud.support.v2.CaseAttachmentService.ListAttachments",
@@ -470,6 +516,52 @@
         }
       ],
       "title": "cloudsupport CreateComment Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.support.v2.CommentClient",
+          "shortName": "CommentClient"
+        },
+        "fullName": "google.cloud.support.v2.CommentClient.GetComment",
+        "method": {
+          "fullName": "google.cloud.support.v2.CommentService.GetComment",
+          "service": {
+            "fullName": "google.cloud.support.v2.CommentService",
+            "shortName": "CommentService"
+          },
+          "shortName": "GetComment"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "supportpb.GetCommentRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*supportpb.Comment",
+        "shortName": "GetComment"
+      },
+      "description": "GetComment retrieve a comment.\n\nEXAMPLES: \n\ncURL: \n\n```shell\ncomment=\"projects/some-project/cases/43595344/comments/234567890\"\ncurl \\\n--header \"Authorization: Bearer $(gcloud auth print-access-token)\" \\\n\"https: //cloudsupport.googleapis.com/v2/$comment\"\n```\n\nPython: \n\n```python\nimport googleapiclient.discovery\n\napi_version = \"v2\"\nsupportApiService = googleapiclient.discovery.build(\nserviceName=\"cloudsupport\",\nversion=api_version,\ndiscoveryServiceUrl=f\"https: //cloudsupport.googleapis.com/$discovery/rest?version={api_version}\",\n)\n\nrequest = supportApiService.cases().comments().get(\nname=\"projects/some-project/cases/43595344/comments/234567890\",\n)\nprint(request.execute())\n```",
+      "file": "CommentClient/GetComment/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "cloudsupport_v2_generated_CommentService_GetComment_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "cloudsupport GetComment Sample"
     },
     {
       "clientMethod": {
