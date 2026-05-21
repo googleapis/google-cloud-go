@@ -162,6 +162,8 @@ func normalizeDCPConfig(cfg DynamicChannelPoolConfig) (DynamicChannelPoolConfig,
 	// scale-down qualification and flapping.
 	case cfg.DCPMinRPCPerChannel >= cfg.DCPMaxRPCPerChannel:
 		return cfg, fmt.Errorf("DCPMinRPCPerChannel must be less than DCPMaxRPCPerChannel")
+	case cfg.DCPScaleDownCheckInterval <= 0:
+		return cfg, fmt.Errorf("DCPScaleDownCheckInterval must be positive")
 	case cfg.DCPMaxScaleUpPercent <= 0 || cfg.DCPMaxScaleUpPercent > 100:
 		return cfg, fmt.Errorf("DCPMaxScaleUpPercent must be in (0,100]")
 	case cfg.DCPMaxRemoveChannels <= 0:
@@ -179,11 +181,9 @@ type dynamicChannelPool struct {
 	cfg                 DynamicChannelPoolConfig
 	targetRPCPerChannel float64
 
-	ctx                  context.Context
-	cancel               context.CancelFunc
-	sc                   *sessionClient
-	database             string
-	disableRouteToLeader bool
+	ctx    context.Context
+	cancel context.CancelFunc
+	sc     *sessionClient
 
 	dial          func(context.Context) (gtransport.ConnPool, error)
 	rrIndex       atomic.Uint64
@@ -216,26 +216,21 @@ type dcpEntry struct {
 }
 
 // newDynamicChannelPool creates the initial channel set and starts scale workers.
-func newDynamicChannelPool(ctx context.Context, sc *sessionClient, cfg DynamicChannelPoolConfig, initial int, dial func(context.Context) (gtransport.ConnPool, error)) (*dynamicChannelPool, error) {
+func newDynamicChannelPool(ctx context.Context, sc *sessionClient, cfg DynamicChannelPoolConfig, dial func(context.Context) (gtransport.ConnPool, error)) (*dynamicChannelPool, error) {
 	cfg, err := normalizeDCPConfig(cfg)
 	if err != nil {
 		return nil, err
 	}
-	if initial > 0 {
-		cfg.DCPInitialChannels = initial
-	}
 	poolCtx, cancel := context.WithCancel(ctx)
 	p := &dynamicChannelPool{
-		cfg:                  cfg,
-		targetRPCPerChannel:  math.Max(1, math.Floor((cfg.DCPMinRPCPerChannel+cfg.DCPMaxRPCPerChannel)/2)),
-		ctx:                  poolCtx,
-		cancel:               cancel,
-		sc:                   sc,
-		database:             sc.database,
-		disableRouteToLeader: sc.disableRouteToLeader,
-		dial:                 dial,
-		scaleUpSignal:        make(chan struct{}, 1),
-		done:                 make(chan struct{}),
+		cfg:                 cfg,
+		targetRPCPerChannel: math.Max(1, math.Floor((cfg.DCPMinRPCPerChannel+cfg.DCPMaxRPCPerChannel)/2)),
+		ctx:                 poolCtx,
+		cancel:              cancel,
+		sc:                  sc,
+		dial:                dial,
+		scaleUpSignal:       make(chan struct{}, 1),
+		done:                make(chan struct{}),
 	}
 	entries := make([]*dcpEntry, 0, cfg.DCPInitialChannels)
 	for i := 0; i < cfg.DCPInitialChannels; i++ {
@@ -389,7 +384,7 @@ func (p *dynamicChannelPool) prime(ctx context.Context, e *dcpEntry) error {
 	var last error
 	for i := 0; i < p.cfg.DCPPrimeMaxAttempts; i++ {
 		primeCtx, cancel := context.WithTimeout(ctx, p.cfg.DCPPrimeTimeout)
-		_, last = e.delegate.ExecuteSql(contextWithOutgoingMetadata(primeCtx, p.sc.md, p.disableRouteToLeader), stmt)
+		_, last = e.delegate.ExecuteSql(contextWithOutgoingMetadata(primeCtx, p.sc.md, p.sc.disableRouteToLeader), stmt)
 		cancel()
 		if last == nil {
 			return nil
@@ -573,18 +568,18 @@ func (p *dynamicChannelPool) scaleUp() {
 	default:
 	}
 	p.dialMu.Lock()
-	defer p.dialMu.Unlock()
-	// Cooldown check inside dialMu so concurrent callers cannot both pass the
-	// gate before either records lastScaleUp.
 	now := time.Now()
 	last := time.Unix(0, p.lastScaleUp.Load())
 	if !last.IsZero() && now.Sub(last) < p.cfg.DCPScaleUpCooldown {
+		p.dialMu.Unlock()
 		return
 	}
 	if p.ctx.Err() != nil {
+		p.dialMu.Unlock()
 		return
 	}
 	if !p.hasPrimeSession() {
+		p.dialMu.Unlock()
 		return
 	}
 	entries := p.getEntries()
@@ -597,6 +592,7 @@ func (p *dynamicChannelPool) scaleUp() {
 		}
 	}
 	if active == 0 {
+		p.dialMu.Unlock()
 		return
 	}
 	desired := int(math.Ceil(float64(load) / p.targetRPCPerChannel))
@@ -615,10 +611,19 @@ func (p *dynamicChannelPool) scaleUp() {
 		add = maxAdd
 	}
 	if add <= 0 {
+		p.dialMu.Unlock()
 		return
 	}
+	// Claim the cooldown before slow channel creation/priming so any subsequent
+	// scale-up signal that arrives while priming is in progress is throttled.
+	p.lastScaleUp.Store(now.UnixNano())
+	p.dialMu.Unlock()
+
 	newEntries := make([]*dcpEntry, 0, add)
 	for i := 0; i < add; i++ {
+		if p.ctx.Err() != nil {
+			break
+		}
 		e, err := p.newEntry(p.ctx, true)
 		if err == nil {
 			newEntries = append(newEntries, e)
@@ -629,11 +634,33 @@ func (p *dynamicChannelPool) scaleUp() {
 	if len(newEntries) == 0 {
 		return
 	}
+
+	p.dialMu.Lock()
+	defer p.dialMu.Unlock()
+	if p.ctx.Err() != nil {
+		closeDCPEntries(newEntries)
+		return
+	}
+	entries = p.getEntries()
+	headroom := p.cfg.DCPMaxChannels - len(entries)
+	if headroom <= 0 {
+		closeDCPEntries(newEntries)
+		return
+	}
+	if headroom < len(newEntries) {
+		closeDCPEntries(newEntries[headroom:])
+		newEntries = newEntries[:headroom]
+	}
 	combined := make([]*dcpEntry, 0, len(entries)+len(newEntries))
 	combined = append(combined, entries...)
 	combined = append(combined, newEntries...)
 	p.entries.Store(&combined)
-	p.lastScaleUp.Store(now.UnixNano())
+}
+
+func closeDCPEntries(entries []*dcpEntry) {
+	for _, e := range entries {
+		e.close()
+	}
 }
 
 // scaleDownMonitor periodically evaluates whether sustained low load can drain
@@ -825,6 +852,10 @@ func (e *dcpEntry) rpcLoad() int32 { return e.unaryLoad.Load() + e.streamLoad.Lo
 // weightedLoad returns the current in-flight RPC load for this entry.
 func (e *dcpEntry) weightedLoad() int32 { return e.rpcLoad() }
 
+// TODO: Investigate replacing dcpSpannerClient and dcpConnPoolTrackedStream with
+// per-entry gRPC unary/stream client interceptors injected when dialing each DCP
+// entry. The interceptors could track load and trigger scale-up for both the
+// ConnPool path and spannerClient path, avoiding per-RPC wrapper methods.
 type dcpSpannerClient struct {
 	entry    *dcpEntry
 	delegate spannerClient
@@ -849,7 +880,6 @@ func (c *dcpSpannerClient) startUnary(ctx context.Context) func(error) {
 type dcpStreamRef struct {
 	once       sync.Once
 	finish     func(error)
-	closed     chan struct{}
 	stopMu     sync.Mutex
 	stop       func() bool
 	doneCalled bool
@@ -865,7 +895,6 @@ func (r *dcpStreamRef) done(err error) {
 			stop()
 		}
 		r.finish(err)
-		close(r.closed)
 	})
 }
 
@@ -886,7 +915,7 @@ func (c *dcpSpannerClient) startStream(ctx context.Context) *dcpStreamRef {
 	c.entry.parent.totalRPCLoad.Add(1)
 	c.entry.parent.maybeSignalScaleUp(c.entry)
 	c.entry.lastActivity.Store(time.Now().UnixNano())
-	ref := &dcpStreamRef{closed: make(chan struct{}), finish: func(err error) {
+	ref := &dcpStreamRef{finish: func(err error) {
 		c.entry.streamLoad.Add(-1)
 		c.entry.parent.totalRPCLoad.Add(-1)
 		c.entry.lastActivity.Store(time.Now().UnixNano())
@@ -1103,6 +1132,9 @@ func (c *dcpBatchWriteClient) CloseSend() error {
 	return err
 }
 
+// TODO: Investigate replacing this per-RPC resolving wrapper with a generic
+// interceptor-based approach after the DCP load-tracking interceptor follow-up
+// is designed.
 type dcpResolvingSpannerClient struct {
 	pool    *dynamicChannelPool
 	entryID atomic.Uint64

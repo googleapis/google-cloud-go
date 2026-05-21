@@ -635,8 +635,8 @@ func TestDynamicChannelPoolScaleUpDialFailureDoesNotPublishEntry(t *testing.T) {
 	if got := p.getEntries()[0]; got != initialEntries[0] {
 		t.Fatalf("active entry pointer changed after failed dial")
 	}
-	if got := p.lastScaleUp.Load(); got != 0 {
-		t.Fatalf("lastScaleUp after failed dial = %d, want 0", got)
+	if got := p.lastScaleUp.Load(); got == 0 {
+		t.Fatal("lastScaleUp after failed dial = 0, want cooldown to be consumed")
 	}
 	for _, e := range p.getEntries() {
 		if e.state.Load() != dcpStateActive {
@@ -657,6 +657,13 @@ func TestDynamicChannelPoolConfigDefaultsInitialChannelsToMinWhenInitialUnset(t 
 
 func TestDynamicChannelPoolConfigRejectsExplicitInitialBelowMin(t *testing.T) {
 	_, err := normalizeDCPConfig(DynamicChannelPoolConfig{DCPEnabled: true, DCPInitialChannels: 4, DCPMinChannels: 8, DCPMaxChannels: 10})
+	if err == nil {
+		t.Fatal("normalizeDCPConfig succeeded, want error")
+	}
+}
+
+func TestDynamicChannelPoolConfigRejectsNegativeScaleDownInterval(t *testing.T) {
+	_, err := normalizeDCPConfig(DynamicChannelPoolConfig{DCPEnabled: true, DCPScaleDownCheckInterval: -time.Second})
 	if err == nil {
 		t.Fatal("normalizeDCPConfig succeeded, want error")
 	}
