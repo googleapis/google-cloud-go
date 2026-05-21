@@ -21,6 +21,7 @@ import (
 	"os"
 	"reflect"
 	"strconv"
+	"strings"
 	"time"
 
 	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
@@ -160,7 +161,7 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 	// only TD calls the RLS with grpc target type
 	// and we evaluate the directAccess option after that.
 
-	allowDirectAccess := !config.DisableDirectAccess
+	allowDirectAccess := !isDirectAccessDisabled(config)
 	directAccessMD := createFeatureFlagsMD(metricsTracerFactory.enabled, disableRetryInfo, allowDirectAccess)
 
 	var connPool gtransport.ConnPool
@@ -202,8 +203,8 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 			btransport.WithDirectAccessFeatureFlagsMetadata(directAccessMD),
 		)
 
-		// Only setup DirectPath dialers if not disabled by config
-		if !config.DisableDirectAccess {
+		// Only setup DirectPath dialers if not disabled by config/env
+		if !isDirectAccessDisabled(config) {
 			directAccessDialerOptions := make([]option.ClientOption, len(o))
 			copy(directAccessDialerOptions, o)
 			directAccessDialerOptions = append(directAccessDialerOptions, directPathOptions...)
@@ -255,7 +256,7 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 		}
 
 	} else {
-		if !config.DisableDirectAccess {
+		if !isDirectAccessDisabled(config) {
 			enableDirectAccess, _ := strconv.ParseBool(os.Getenv("CBT_ENABLE_DIRECTPATH"))
 			if enableDirectAccess {
 				o = append(o, directPathOptions...)
@@ -409,4 +410,11 @@ func (c *Client) pingerWithMetadata(ctx context.Context, mt *builtinMetricsTrace
 func (c *Client) newBuiltinMetricsTracer(ctx context.Context, table string, isStreaming bool) *builtinMetricsTracer {
 	mt := c.metricsTracerFactory.createBuiltinMetricsTracer(ctx, table, isStreaming)
 	return &mt
+}
+
+func isDirectAccessDisabled(config ClientConfig) bool {
+	if config.DisableDirectAccess {
+		return true
+	}
+	return strings.EqualFold(os.Getenv("CBT_ENABLE_DIRECTPATH"), "false")
 }
