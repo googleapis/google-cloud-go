@@ -3588,6 +3588,8 @@ func TestIntegration_FindNearest(t *testing.T) {
 }
 
 func TestIntegration_BSONTypes(t *testing.T) {
+	skipIfEdition(t, "BSON types", editionStandard)
+	t.Skip("Temporarily skipping BSON integration test. Not yet released to prod.")
 	ctx := context.Background()
 	coll := integrationColl(t)
 	doc := coll.NewDoc()
@@ -3608,13 +3610,8 @@ func TestIntegration_BSONTypes(t *testing.T) {
 		"bson_int":   BSONInt32(42),
 	}
 
-	// We try to write. If the backend doesn't support BSON types, this might fail.
 	_, err := doc.Create(ctx, data)
 	if err != nil {
-		// Check if it is "not allowed" error and skip if so.
-		if strings.Contains(err.Error(), "is not allowed") || strings.Contains(err.Error(), "not supported") {
-			t.Skipf("Skipping BSON integration test: backend does not support BSON types: %v", err)
-		}
 		t.Fatalf("failed to create doc with BSON types: %v", err)
 	}
 
@@ -3625,7 +3622,6 @@ func TestIntegration_BSONTypes(t *testing.T) {
 	}
 
 	got := ds.Data()
-
 	if !testEqual(got, data) {
 		t.Errorf("got vs want diff:\n%s", testDiff(got, data))
 	}
