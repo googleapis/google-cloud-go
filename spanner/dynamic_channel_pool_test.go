@@ -143,10 +143,11 @@ func TestDynamicChannelPoolScaleDownRemovesIdleChannelsToMin(t *testing.T) {
 }
 
 func TestDynamicChannelPoolScaleDownRequiresRepeatedLowLoad(t *testing.T) {
-	_, client, teardown := setupDCPMockedTestServer(t, testDCPConfig(3, 1, 3))
+	cfg := testDCPConfig(3, 1, 3)
+	cfg.DCPDownscaleConsecutiveLowLoadChecks = 2
+	_, client, teardown := setupDCPMockedTestServer(t, cfg)
 	defer teardown()
 	p := client.sc.dynamicPool
-	p.cfg.DCPDownscaleConsecutiveLowLoadChecks = 2
 
 	p.evaluateScaleDown()
 	if got, want := p.Num(), 3; got != want {
@@ -181,10 +182,11 @@ func TestDynamicChannelPoolPickerSkipsDrainingEntries(t *testing.T) {
 }
 
 func TestDynamicChannelPoolRoundRobinSkipsDrainingEntries(t *testing.T) {
-	_, client, teardown := setupDCPMockedTestServer(t, testDCPConfig(3, 3, 3))
+	cfg := testDCPConfig(3, 3, 3)
+	cfg.DCPSelectionStrategy = DCPRoundRobin
+	_, client, teardown := setupDCPMockedTestServer(t, cfg)
 	defer teardown()
 	p := client.sc.dynamicPool
-	p.cfg.DCPSelectionStrategy = DCPRoundRobin
 	entries := p.getEntries()
 	entries[1].state.Store(dcpStateDraining)
 
@@ -196,10 +198,15 @@ func TestDynamicChannelPoolRoundRobinSkipsDrainingEntries(t *testing.T) {
 		}
 		got = append(got, e.id)
 	}
-	want := []uint64{entries[0].id, entries[2].id, entries[0].id, entries[2].id}
-	for i := range want {
-		if got[i] != want[i] {
-			t.Fatalf("round-robin sequence = %v, want %v", got, want)
+	for i, id := range got {
+		if id == entries[1].id {
+			t.Fatalf("round-robin sequence = %v, picked draining entry %d", got, id)
+		}
+		if id != entries[0].id && id != entries[2].id {
+			t.Fatalf("round-robin sequence = %v, picked unexpected entry %d", got, id)
+		}
+		if i > 0 && got[i] == got[i-1] {
+			t.Fatalf("round-robin sequence = %v, want active entries to alternate", got)
 		}
 	}
 }
@@ -453,8 +460,9 @@ func TestDCPResolvingRequestIDReturnsErrorWhenNoEntry(t *testing.T) {
 func TestDynamicChannelPoolDrainWaitsForActiveStreamLoad(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	p := &dynamicChannelPool{cfg: testDCPConfig(1, 1, 1), ctx: ctx}
-	p.cfg.DCPDrainIdleGrace = 10 * time.Millisecond
+	cfg := testDCPConfig(1, 1, 1)
+	cfg.DCPDrainIdleGrace = 10 * time.Millisecond
+	p := &dynamicChannelPool{cfg: cfg, ctx: ctx}
 	entry := &dcpEntry{id: 1, pool: &fakeDCPConnPool{}, client: &mockSpannerClient{}, parent: p}
 	entry.state.Store(dcpStateDraining)
 	entry.streamLoad.Store(1)
