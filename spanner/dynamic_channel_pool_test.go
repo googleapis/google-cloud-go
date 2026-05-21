@@ -145,6 +145,9 @@ func TestDynamicChannelPoolScaleDownRemovesIdleChannelsToMin(t *testing.T) {
 func TestDynamicChannelPoolScaleDownRequiresRepeatedLowLoad(t *testing.T) {
 	cfg := testDCPConfig(3, 1, 3)
 	cfg.DCPDownscaleConsecutiveLowLoadChecks = 2
+	// This test drives evaluateScaleDown manually. Keep the background monitor
+	// from consuming a low-load check first and making the assertion flaky.
+	cfg.DCPScaleDownCheckInterval = time.Hour
 	_, client, teardown := setupDCPMockedTestServer(t, cfg)
 	defer teardown()
 	p := client.sc.dynamicPool
