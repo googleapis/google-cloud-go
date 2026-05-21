@@ -479,7 +479,7 @@ libraries:
     apis:
       - path: google/cloud/commerce/consumer/procurement/v1
   - name: compute
-    version: 1.63.0
+    version: 1.64.0
     apis:
       - path: google/cloud/compute/v1
         go:
@@ -571,7 +571,7 @@ libraries:
     apis:
       - path: google/cloud/datalabeling/v1beta1
   - name: datamanager
-    version: 1.0.0
+    version: 1.1.0
     apis:
       - path: google/ads/datamanager/v1
         go:
@@ -1337,7 +1337,7 @@ libraries:
     apis:
       - path: google/streetview/publish/v1
   - name: support
-    version: 1.10.0
+    version: 1.11.0
     apis:
       - path: google/cloud/support/v2
       - path: google/cloud/support/v2beta
