@@ -717,6 +717,9 @@ func (it *messageIterator) sendAck(m map[string]*AckResult) {
 				s.AddEvent(eventAckEnd)
 			}
 			for ackID, ar := range completed {
+				if ar == nil {
+					continue
+				}
 				_, getErr := ar.Get(context.Background())
 				if getErr != nil {
 					anyError = true
@@ -877,6 +880,9 @@ func (it *messageIterator) sendModAck(ctx context.Context, m map[string]*AckResu
 				s.AddEvent(eventEnd)
 			}
 			for ackID, ar := range completed {
+				if ar == nil {
+					continue
+				}
 				_, getErr := ar.Get(context.Background())
 				if getErr != nil {
 					anyError = true
@@ -956,7 +962,10 @@ func (it *messageIterator) retryAcks(m map[string]*AckResult) {
 				if ok {
 					subscribeSpan := s.(trace.Span)
 					subscribeSpan.AddEvent(eventAckEnd)
-					_, getErr := ar.Get(context.Background())
+					var getErr error
+					if ar != nil {
+						_, getErr = ar.Get(context.Background())
+					}
 					if getErr != nil {
 						subscribeSpan.RecordError(getErr)
 						subscribeSpan.SetStatus(otelcodes.Error, getErr.Error())
@@ -1046,7 +1055,10 @@ func (it *messageIterator) retryModAcks(m map[string]*AckResult, deadlineSec int
 					subscribeSpan.AddEvent(eventEnd)
 					if isNack {
 						it.activeSpans.Delete(ackID)
-						_, getErr := ar.Get(context.Background())
+						var getErr error
+						if ar != nil {
+							_, getErr = ar.Get(context.Background())
+						}
 						if getErr != nil {
 							subscribeSpan.RecordError(getErr)
 							subscribeSpan.SetStatus(otelcodes.Error, getErr.Error())
