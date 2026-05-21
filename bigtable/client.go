@@ -255,7 +255,6 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 		}
 
 	} else {
-		fmt.Println("connpool 2")
 		if !config.DisableDirectAccess {
 			enableDirectAccess, _ := strconv.ParseBool(os.Getenv("CBT_ENABLE_DIRECTPATH"))
 			if enableDirectAccess {
