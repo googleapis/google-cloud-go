@@ -72,6 +72,9 @@ type ClientConfig struct {
 	// DisableConnectionRecycler disables the automatic preemptive refresh of connection.
 	// Preemptive connection is default to true
 	DisableConnectionRecycler bool
+
+	// DisableDirectpath disables direct access by default.
+	DisableDirectAccess bool
 }
 
 // MetricsProvider is a wrapper for built in metrics meter provider
@@ -155,7 +158,9 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 	// as CFE/GFE will call RLS with gslb target type
 	// only TD calls the RLS with grpc target type
 	// and we evaluate the directAccess option after that.
-	directAccessMD := createFeatureFlagsMD(metricsTracerFactory.enabled, disableRetryInfo, true)
+
+	allowDirectAccess := !config.DisableDirectpath
+	directAccessMD := createFeatureFlagsMD(metricsTracerFactory.enabled, disableRetryInfo, allowDirectAccess)
 
 	var connPool gtransport.ConnPool
 	var connPoolErr error
@@ -186,18 +191,32 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 
 		fullInstanceName := fmt.Sprintf("projects/%s/instances/%s", project, instance)
 
-		directAccessDialerOptions := make([]option.ClientOption, len(o))
-		copy(directAccessDialerOptions, o)
-		directAccessDialerOptions = append(directAccessDialerOptions, directPathOptions...)
-		// enable hard bound tokens by default
-		directAccessDialerOptions = append(directAccessDialerOptions, internaloption.AllowHardBoundTokens("ALTS"))
+		var poolOpts []btransport.BigtableChannelPoolOption
+		poolOpts = append(poolOpts,
+			btransport.WithInstanceName(fullInstanceName),
+			btransport.WithAppProfile(config.AppProfile),
+			btransport.WithFeatureFlagsMetadata(directAccessMD),
+			btransport.WithMetricsReporterConfig(btopt.DefaultMetricsReporterConfig()),
+			btransport.WithMeterProvider(metricsTracerFactory.otelMeterProvider),
+			btransport.WithDirectAccessFeatureFlagsMetadata(directAccessMD),
+		)
 
-		directAccessDialer := func() (*btransport.BigtableConn, error) {
-			grpcConn, err := gtransport.Dial(ctx, directAccessDialerOptions...)
-			if err != nil {
-				return nil, err
+		// Only setup DirectPath dialers if not disabled by config
+		if !config.DisableDirectAccess {
+			directAccessDialerOptions := make([]option.ClientOption, len(o))
+			copy(directAccessDialerOptions, o)
+			directAccessDialerOptions = append(directAccessDialerOptions, directPathOptions...)
+			// enable hard bound tokens by default
+			directAccessDialerOptions = append(directAccessDialerOptions, internaloption.AllowHardBoundTokens("ALTS"))
+
+			directAccessDialer := func() (*btransport.BigtableConn, error) {
+				grpcConn, err := gtransport.Dial(ctx, directAccessDialerOptions...)
+				if err != nil {
+					return nil, err
+				}
+				return btransport.NewBigtableConn(grpcConn), nil
 			}
-			return btransport.NewBigtableConn(grpcConn), nil
+			poolOpts = append(poolOpts, btransport.WithDirectAccessDialer(directAccessDialer))
 		}
 
 		btPool, err := btransport.NewBigtableChannelPool(ctx,
@@ -212,13 +231,7 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 			},
 			clientCreationTimestamp,
 			// options
-			btransport.WithInstanceName(fullInstanceName),
-			btransport.WithAppProfile(config.AppProfile),
-			btransport.WithFeatureFlagsMetadata(directAccessMD),
-			btransport.WithMetricsReporterConfig(btopt.DefaultMetricsReporterConfig()),
-			btransport.WithMeterProvider(metricsTracerFactory.otelMeterProvider),
-			btransport.WithDirectAccessFeatureFlagsMetadata(directAccessMD),
-			btransport.WithDirectAccessDialer(directAccessDialer),
+			poolOpts...,
 		)
 
 		if err != nil {
@@ -244,11 +257,13 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 		}
 
 	} else {
-		enableDirectAccess, _ := strconv.ParseBool(os.Getenv("CBT_ENABLE_DIRECTPATH"))
-		if enableDirectAccess {
-			o = append(o, directPathOptions...)
-			if disableBoundToken, _ := strconv.ParseBool(os.Getenv("CBT_DISABLE_DIRECTPATH_BOUND_TOKEN")); !disableBoundToken {
-				o = append(o, internaloption.AllowHardBoundTokens("ALTS"))
+		if !config.DisableDirectpath {
+			enableDirectAccess, _ := strconv.ParseBool(os.Getenv("CBT_ENABLE_DIRECTPATH"))
+			if enableDirectAccess {
+				o = append(o, directPathOptions...)
+				if disableBoundToken, _ := strconv.ParseBool(os.Getenv("CBT_DISABLE_DIRECTPATH_BOUND_TOKEN")); !disableBoundToken {
+					o = append(o, internaloption.AllowHardBoundTokens("ALTS"))
+				}
 			}
 		}
 		// use to regular ConnPool
