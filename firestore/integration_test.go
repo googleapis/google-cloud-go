@@ -3586,3 +3586,83 @@ func TestIntegration_FindNearest(t *testing.T) {
 		})
 	}
 }
+
+func TestIntegration_TransactionReadTime(t *testing.T) {
+	ctx := context.Background()
+	c := integrationClient(t)
+
+	coll := c.Collection(collectionIDs.New())
+
+	doc1 := coll.NewDoc()
+	doc2 := coll.NewDoc()
+	doc3 := coll.NewDoc()
+	docRefs := []*DocumentRef{doc1, doc2, doc3}
+
+	// 1. Record time t0
+	t0 := time.Now().Truncate(time.Microsecond)
+
+	// Wait to ensure t0 is strictly before creation.
+	time.Sleep(2 * time.Second)
+
+	// 2. Create 3 documents
+	for _, doc := range docRefs {
+		_, err := doc.Set(ctx, map[string]interface{}{"foo": "bar"})
+		if err != nil {
+			t.Fatalf("Set failed: %v", err)
+		}
+	}
+	t.Cleanup(func() {
+		deleteDocuments(docRefs)
+	})
+
+	// 3. Create a transaction T1 with read time t0 (using new option)
+	err := c.RunTransaction(ctx, func(ctx2 context.Context, tx *Transaction) error {
+		// 4. Assert that there are no documents retrieved
+		snaps, err := tx.GetAll(docRefs)
+		if err != nil {
+			return err
+		}
+		for _, snap := range snaps {
+			if snap.Exists() {
+				t.Errorf("Expected document to NOT exist at read time t0, but it does: %s", snap.Ref.Path)
+			}
+		}
+		return nil
+	}, ReadOnly, TransactionReadTime(t0))
+
+	if err != nil {
+		t.Fatalf("Transaction T1 failed: %v", err)
+	}
+
+	// 5. Create a second transaction T2 with current read time (default)
+	err = c.RunTransaction(ctx, func(ctx2 context.Context, tx *Transaction) error {
+		// 6. Assert that 3 documents are retrieved
+		snaps, err := tx.GetAll(docRefs)
+		if err != nil {
+			return err
+		}
+		for _, snap := range snaps {
+			if !snap.Exists() {
+				t.Errorf("Expected document to exist, but it does not: %s", snap.Ref.Path)
+			}
+		}
+		return nil
+	}, ReadOnly)
+
+	if err != nil {
+		t.Fatalf("Transaction T2 failed: %v", err)
+	}
+}
+
+func TestIntegration_TransactionWithReadOptionsError(t *testing.T) {
+	ctx := context.Background()
+	c := integrationClient(t)
+
+	err := c.RunTransaction(ctx, func(ctx2 context.Context, tx *Transaction) error {
+		tx.WithReadOptions(ReadTime(time.Now()))
+		return nil
+	}, ReadOnly)
+	if err != errInvalidReadTime {
+		t.Fatalf("got err %v, want %v", err, errInvalidReadTime)
+	}
+}
