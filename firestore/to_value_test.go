@@ -537,5 +537,3 @@ func TestIsEmpty(t *testing.T) {
 		}
 	}
 }
-
-
