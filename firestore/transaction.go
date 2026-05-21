@@ -116,7 +116,7 @@ var (
 	errReadAfterWrite    = errors.New("firestore: read after write in transaction")
 	errWriteReadOnly     = errors.New("firestore: write in read-only transaction")
 	errNestedTransaction = errors.New("firestore: nested transaction")
-	errInvalidReadTime   = errors.New("firestore: ReadTime cannot be set via WithReadOptions on a Transaction. Use TransactionReadTime option when starting the transaction.")
+	errInvalidReadTime   = errors.New("firestore: ReadTime cannot be set via WithReadOptions on a Transaction. Use TransactionReadTime option when starting the transaction")
 )
 
 type transactionInProgressKey struct{}
