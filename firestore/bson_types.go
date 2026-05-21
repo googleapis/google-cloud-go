@@ -14,73 +14,18 @@
 
 package firestore
 
-import (
-	"encoding/hex"
-	"fmt"
-	"sort"
-	"strings"
-)
+// BSONObjectID represents a BSON ObjectID as a 24-character lowercase hex string.
+type BSONObjectID string
 
-// BSONObjectID represents a BSON ObjectID (12 bytes).
-type BSONObjectID [12]byte
-
-// String returns the 24-character lowercase hex string representation of the BSONObjectID.
+// String returns the string representation of the BSONObjectID.
 func (id BSONObjectID) String() string {
-	return hex.EncodeToString(id[:])
-}
-
-// ParseBSONObjectID parses a 24-character lowercase hex string into a BSONObjectID.
-func ParseBSONObjectID(s string) (BSONObjectID, error) {
-	var id BSONObjectID
-	if len(s) != 24 {
-		return id, fmt.Errorf("firestore: invalid BSONObjectID length: %d (expected 24)", len(s))
-	}
-	// Check if all characters are lowercase hex.
-	for i := 0; i < len(s); i++ {
-		c := s[i]
-		if !((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f')) {
-			return id, fmt.Errorf("firestore: invalid BSONObjectID character at %d: %c", i, c)
-		}
-	}
-	b, err := hex.DecodeString(s)
-	if err != nil {
-		return id, err
-	}
-	copy(id[:], b)
-	return id, nil
+	return string(id)
 }
 
 // BSONRegex represents a BSON Regular Expression.
 type BSONRegex struct {
 	Pattern string
 	Options string
-}
-
-// Validate validates the BSONRegex.
-// - Pattern must not contain null bytes.
-// - Options must only contain characters 'i', 'm', 's', 'u', 'x', sorted alphabetically, no repeats.
-func (r BSONRegex) Validate() error {
-	if strings.ContainsRune(r.Pattern, 0) {
-		return fmt.Errorf("firestore: BSONRegex Pattern cannot contain null bytes")
-	}
-	// Validate options.
-	validOptions := map[rune]bool{'i': true, 'm': true, 's': true, 'u': true, 'x': true}
-	seen := map[rune]bool{}
-	for _, c := range r.Options {
-		if !validOptions[c] {
-			return fmt.Errorf("firestore: invalid BSONRegex Option: %c", c)
-		}
-		if seen[c] {
-			return fmt.Errorf("firestore: duplicate BSONRegex Option: %c", c)
-		}
-		seen[c] = true
-	}
-	// Check if sorted.
-	runes := []rune(r.Options)
-	if !sort.SliceIsSorted(runes, func(i, j int) bool { return runes[i] < runes[j] }) {
-		return fmt.Errorf("firestore: BSONRegex Options must be sorted alphabetically: %s", r.Options)
-	}
-	return nil
 }
 
 // BSONTimestamp represents a BSON Timestamp.
@@ -91,14 +36,6 @@ type BSONTimestamp struct {
 
 // BSONDecimal128 represents a BSON Decimal128.
 type BSONDecimal128 string
-
-// Validate validates the BSONDecimal128 string representation.
-func (d BSONDecimal128) Validate() error {
-	if d == "" {
-		return fmt.Errorf("firestore: BSONDecimal128 string cannot be empty")
-	}
-	return nil
-}
 
 // BSONMinKey represents BSON MinKey.
 type BSONMinKey struct{}

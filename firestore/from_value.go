@@ -579,7 +579,7 @@ func bsonObjectIDFromProtoValue(v *pb.Value) (BSONObjectID, error) {
 	if err != nil {
 		return id, err
 	}
-	return ParseBSONObjectID(s)
+	return BSONObjectID(s), nil
 }
 
 func bsonRegexFromProtoValue(v *pb.Value) (BSONRegex, error) {
@@ -603,9 +603,6 @@ func bsonRegexFromProtoValue(v *pb.Value) (BSONRegex, error) {
 		return r, err
 	}
 	r = BSONRegex{Pattern: pattern, Options: options}
-	if err := r.Validate(); err != nil {
-		return r, err
-	}
 	return r, nil
 }
 
@@ -661,9 +658,6 @@ func bsonDecimal128FromProtoValue(v *pb.Value) (BSONDecimal128, error) {
 		return d, err
 	}
 	d = BSONDecimal128(s)
-	if err := d.Validate(); err != nil {
-		return d, err
-	}
 	return d, nil
 }
 
@@ -745,11 +739,7 @@ func tryConvertMapToBSONType(m map[string]interface{}) (interface{}, bool, error
 			if !ok {
 				return nil, false, fmt.Errorf("firestore: __oid__ value is not string: %T", v)
 			}
-			id, err := ParseBSONObjectID(s)
-			if err != nil {
-				return nil, false, err
-			}
-			return id, true, nil
+			return BSONObjectID(s), true, nil
 
 		case "__regex__":
 			subMap, ok := v.(map[string]interface{})
@@ -765,9 +755,6 @@ func tryConvertMapToBSONType(m map[string]interface{}) (interface{}, bool, error
 				return nil, false, fmt.Errorf("firestore: regex options is not string")
 			}
 			r := BSONRegex{Pattern: pattern, Options: options}
-			if err := r.Validate(); err != nil {
-				return nil, false, err
-			}
 			return r, true, nil
 
 		case "__int__":
@@ -806,11 +793,7 @@ func tryConvertMapToBSONType(m map[string]interface{}) (interface{}, bool, error
 			if !ok {
 				return nil, false, fmt.Errorf("firestore: __decimal128__ value is not string: %T", v)
 			}
-			d := BSONDecimal128(s)
-			if err := d.Validate(); err != nil {
-				return nil, false, err
-			}
-			return d, true, nil
+			return BSONDecimal128(s), true, nil
 
 		case "__min__":
 			if v != nil {

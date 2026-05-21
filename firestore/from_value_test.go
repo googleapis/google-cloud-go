@@ -702,10 +702,7 @@ func TestPopulateMap(t *testing.T) {
 }
 
 func TestBSONTypes_RoundTrip(t *testing.T) {
-	oid, err := ParseBSONObjectID("0123456789abcdef01234567")
-	if err != nil {
-		t.Fatal(err)
-	}
+	oid := BSONObjectID("0123456789abcdef01234567")
 
 	tests := []struct {
 		desc string

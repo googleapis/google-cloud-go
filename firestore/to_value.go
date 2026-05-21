@@ -36,7 +36,7 @@ var (
 	typeOfProtoTimestamp = reflect.TypeOf((*ts.Timestamp)(nil))
 	typeOfVector64       = reflect.TypeOf(Vector64{})
 	typeOfVector32       = reflect.TypeOf(Vector32{})
-	typeOfBSONObjectID   = reflect.TypeOf(BSONObjectID{})
+	typeOfBSONObjectID   = reflect.TypeOf(BSONObjectID(""))
 	typeOfBSONRegex      = reflect.TypeOf(BSONRegex{})
 	typeOfBSONTimestamp  = reflect.TypeOf(BSONTimestamp{})
 	typeOfBSONDecimal128 = reflect.TypeOf(BSONDecimal128(""))
@@ -115,13 +115,11 @@ func toProtoValue(v reflect.Value) (pbv *pb.Value, sawTransform bool, err error)
 	case BSONObjectID:
 		return bsonObjectIDToProtoValue(x), false, nil
 	case BSONRegex:
-		pbVal, err := bsonRegexToProtoValue(x)
-		return pbVal, false, err
+		return bsonRegexToProtoValue(x), false, nil
 	case BSONTimestamp:
 		return bsonTimestampToProtoValue(x), false, nil
 	case BSONDecimal128:
-		pbVal, err := bsonDecimal128ToProtoValue(x)
-		return pbVal, false, err
+		return bsonDecimal128ToProtoValue(x), false, nil
 	case BSONMinKey:
 		return bsonMinKeyToProtoValue(), false, nil
 	case BSONMaxKey:
@@ -405,10 +403,7 @@ func bsonObjectIDToProtoValue(id BSONObjectID) *pb.Value {
 	}
 }
 
-func bsonRegexToProtoValue(r BSONRegex) (*pb.Value, error) {
-	if err := r.Validate(); err != nil {
-		return nil, err
-	}
+func bsonRegexToProtoValue(r BSONRegex) *pb.Value {
 	return &pb.Value{
 		ValueType: &pb.Value_MapValue{
 			MapValue: &pb.MapValue{
@@ -426,7 +421,7 @@ func bsonRegexToProtoValue(r BSONRegex) (*pb.Value, error) {
 				},
 			},
 		},
-	}, nil
+	}
 }
 
 func bsonTimestampToProtoValue(t BSONTimestamp) *pb.Value {
@@ -450,10 +445,7 @@ func bsonTimestampToProtoValue(t BSONTimestamp) *pb.Value {
 	}
 }
 
-func bsonDecimal128ToProtoValue(d BSONDecimal128) (*pb.Value, error) {
-	if err := d.Validate(); err != nil {
-		return nil, err
-	}
+func bsonDecimal128ToProtoValue(d BSONDecimal128) *pb.Value {
 	return &pb.Value{
 		ValueType: &pb.Value_MapValue{
 			MapValue: &pb.MapValue{
@@ -462,7 +454,7 @@ func bsonDecimal128ToProtoValue(d BSONDecimal128) (*pb.Value, error) {
 				},
 			},
 		},
-	}, nil
+	}
 }
 
 func bsonMinKeyToProtoValue() *pb.Value {

@@ -3595,10 +3595,7 @@ func TestIntegration_BSONTypes(t *testing.T) {
 		deleteDocuments([]*DocumentRef{doc})
 	})
 
-	oid, err := ParseBSONObjectID("0123456789abcdef01234567")
-	if err != nil {
-		t.Fatal(err)
-	}
+	oid := BSONObjectID("0123456789abcdef01234567")
 
 	data := map[string]interface{}{
 		"oid":        oid,
@@ -3612,7 +3609,7 @@ func TestIntegration_BSONTypes(t *testing.T) {
 	}
 
 	// We try to write. If the backend doesn't support BSON types, this might fail.
-	_, err = doc.Create(ctx, data)
+	_, err := doc.Create(ctx, data)
 	if err != nil {
 		// Check if it is "not allowed" error and skip if so.
 		if strings.Contains(err.Error(), "is not allowed") || strings.Contains(err.Error(), "not supported") {
