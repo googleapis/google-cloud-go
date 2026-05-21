@@ -1,6 +1,12 @@
 # Changes
 
 
+## [1.61.4](https://github.com/googleapis/google-cloud-go/releases/tag/storage%2Fv1.61.4) (2026-05-21)
+
+### Bug Fixes
+
+* add server closed idle connection to retriable errors (#14594) ([37580e7](https://github.com/googleapis/google-cloud-go/commit/37580e7eb530bbcf54951425947060c51cb0b30a))
+
 ## [1.61.3](https://github.com/googleapis/google-cloud-go/releases/tag/storage%2Fv1.61.3) (2026-03-13)
 
 ### Documentation

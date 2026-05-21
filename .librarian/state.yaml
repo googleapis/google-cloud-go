@@ -1,3 +1,16 @@
+# Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 image: us-central1-docker.pkg.dev/cloud-sdk-librarian-prod/images-prod/librarian-go@sha256:19bb93e8f1f916c61b597db2bad65dc432f79baaabb210499d7d0e4ad1dffe29
 libraries:
   - id: accessapproval
@@ -4219,7 +4232,6 @@ libraries:
     last_generated_commit: c288189b43c016dd3cf1ec73ce3cadee8b732f07
     apis:
       - path: google/cloud/orgpolicy/v1
-        service_config: ""
       - path: google/cloud/orgpolicy/v2
         service_config: orgpolicy_v2.yaml
     source_roots:
@@ -4333,7 +4345,6 @@ libraries:
       - path: google/cloud/oslogin/v1beta
         service_config: oslogin_v1beta.yaml
       - path: google/cloud/oslogin/common
-        service_config: ""
     source_roots:
       - oslogin
       - internal/generated/snippets/oslogin
@@ -5477,7 +5488,6 @@ libraries:
       - path: google/shopping/merchant/reviews/v1beta
         service_config: merchantapi_v1beta.yaml
       - path: google/shopping/type
-        service_config: ""
     source_roots:
       - shopping
       - internal/generated/snippets/shopping
@@ -5889,7 +5899,7 @@ libraries:
       - internal/generated/snippets/speech/
     tag_format: '{id}/v{version}'
   - id: storage
-    version: 1.61.3
+    version: 1.61.4
     last_generated_commit: 9eea40c74d97622bb0aa406dd313409a376cc73b
     apis:
       - path: google/storage/control/v2
