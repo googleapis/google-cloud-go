@@ -80,7 +80,11 @@ func drainDCPQuery(ctx context.Context, client *Client) error {
 }
 
 func TestDynamicChannelPoolOptInCreatesInitialChannels(t *testing.T) {
-	_, client, teardown := setupDCPMockedTestServer(t, testDCPConfig(2, 1, 4))
+	cfg := testDCPConfig(2, 1, 4)
+	// This test asserts startup state only. Keep background scale-down from
+	// racing the initial channel-count assertion on slow/race builds.
+	cfg.DCPScaleDownCheckInterval = time.Hour
+	_, client, teardown := setupDCPMockedTestServer(t, cfg)
 	defer teardown()
 
 	if got, want := client.sc.dynamicPool.Num(), 2; got != want {
@@ -580,6 +584,9 @@ func TestDynamicChannelPoolScaleUpFloorsCapAtTwo(t *testing.T) {
 	cfg := testDCPConfig(4, 1, 8)
 	cfg.DCPMaxScaleUpPercent = 25 // ceil(4*0.25)=1, floored to 2.
 	cfg.DCPScaleUpCooldown = time.Hour
+	// This test drives scaleUp manually. Keep background scale-down from
+	// removing idle channels before the explicit scale-up assertion.
+	cfg.DCPScaleDownCheckInterval = time.Hour
 	_, client, teardown := setupDCPMockedTestServer(t, cfg)
 	defer teardown()
 	p := client.sc.dynamicPool
@@ -601,6 +608,9 @@ func TestDynamicChannelPoolScaleUpHonorsMaxScaleUpPercent(t *testing.T) {
 	cfg := testDCPConfig(12, 1, 20)
 	cfg.DCPMaxScaleUpPercent = 25 // ceil(12*0.25)=3, above floor.
 	cfg.DCPScaleUpCooldown = time.Hour
+	// This test drives scaleUp manually. Keep background scale-down from
+	// removing idle channels before the explicit scale-up assertion.
+	cfg.DCPScaleDownCheckInterval = time.Hour
 	_, client, teardown := setupDCPMockedTestServer(t, cfg)
 	defer teardown()
 	p := client.sc.dynamicPool
