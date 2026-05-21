@@ -132,6 +132,7 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 	var directPathOptions = []option.ClientOption{
 		internaloption.EnableDirectPath(true),
 		internaloption.EnableDirectPathXds(),
+		internaloption.AllowHardBoundTokens("ALTS"),
 	}
 
 	// Allow non-default service account in DirectPath.
@@ -159,7 +160,7 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 	// only TD calls the RLS with grpc target type
 	// and we evaluate the directAccess option after that.
 
-	allowDirectAccess := !config.DisableDirectpath
+	allowDirectAccess := !config.DisableDirectAccess
 	directAccessMD := createFeatureFlagsMD(metricsTracerFactory.enabled, disableRetryInfo, allowDirectAccess)
 
 	var connPool gtransport.ConnPool
@@ -206,9 +207,6 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 			directAccessDialerOptions := make([]option.ClientOption, len(o))
 			copy(directAccessDialerOptions, o)
 			directAccessDialerOptions = append(directAccessDialerOptions, directPathOptions...)
-			// enable hard bound tokens by default
-			directAccessDialerOptions = append(directAccessDialerOptions, internaloption.AllowHardBoundTokens("ALTS"))
-
 			directAccessDialer := func() (*btransport.BigtableConn, error) {
 				grpcConn, err := gtransport.Dial(ctx, directAccessDialerOptions...)
 				if err != nil {
@@ -257,13 +255,11 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 		}
 
 	} else {
-		if !config.DisableDirectpath {
+		fmt.Println("connpool 2")
+		if !config.DisableDirectAccess {
 			enableDirectAccess, _ := strconv.ParseBool(os.Getenv("CBT_ENABLE_DIRECTPATH"))
 			if enableDirectAccess {
 				o = append(o, directPathOptions...)
-				if disableBoundToken, _ := strconv.ParseBool(os.Getenv("CBT_DISABLE_DIRECTPATH_BOUND_TOKEN")); !disableBoundToken {
-					o = append(o, internaloption.AllowHardBoundTokens("ALTS"))
-				}
 			}
 		}
 		// use to regular ConnPool
