@@ -53,9 +53,30 @@ type DeviceInfo struct {
 	// applicable Google policies. See the [About offline conversion
 	// imports](https://support.google.com/google-ads/answer/2998031) page for
 	// more details.
-	IpAddress     string `protobuf:"bytes,2,opt,name=ip_address,json=ipAddress,proto3" json:"ip_address,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	IpAddress string `protobuf:"bytes,2,opt,name=ip_address,json=ipAddress,proto3" json:"ip_address,omitempty"`
+	// Optional. The category of device. For example, “desktop”, “tablet”,
+	// “mobile”, “smart TV”.
+	Category string `protobuf:"bytes,3,opt,name=category,proto3" json:"category,omitempty"`
+	// Optional. The language the device uses in ISO 639-1 format.
+	LanguageCode string `protobuf:"bytes,4,opt,name=language_code,json=languageCode,proto3" json:"language_code,omitempty"`
+	// Optional. The height of the screen in pixels.
+	ScreenHeight int32 `protobuf:"varint,5,opt,name=screen_height,json=screenHeight,proto3" json:"screen_height,omitempty"`
+	// Optional. The width of the screen in pixels.
+	ScreenWidth int32 `protobuf:"varint,6,opt,name=screen_width,json=screenWidth,proto3" json:"screen_width,omitempty"`
+	// Optional. The operating system or platform of the device.
+	OperatingSystem string `protobuf:"bytes,7,opt,name=operating_system,json=operatingSystem,proto3" json:"operating_system,omitempty"`
+	// Optional. The version of the operating system or platform.
+	OperatingSystemVersion string `protobuf:"bytes,8,opt,name=operating_system_version,json=operatingSystemVersion,proto3" json:"operating_system_version,omitempty"`
+	// Optional. The model of the device.
+	Model string `protobuf:"bytes,9,opt,name=model,proto3" json:"model,omitempty"`
+	// Optional. The brand of the device.
+	Brand string `protobuf:"bytes,10,opt,name=brand,proto3" json:"brand,omitempty"`
+	// Optional. The brand or type of the browser.
+	Browser string `protobuf:"bytes,11,opt,name=browser,proto3" json:"browser,omitempty"`
+	// Optional. The version of the browser.
+	BrowserVersion string `protobuf:"bytes,12,opt,name=browser_version,json=browserVersion,proto3" json:"browser_version,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *DeviceInfo) Reset() {
@@ -102,17 +123,98 @@ func (x *DeviceInfo) GetIpAddress() string {
 	return ""
 }
 
+func (x *DeviceInfo) GetCategory() string {
+	if x != nil {
+		return x.Category
+	}
+	return ""
+}
+
+func (x *DeviceInfo) GetLanguageCode() string {
+	if x != nil {
+		return x.LanguageCode
+	}
+	return ""
+}
+
+func (x *DeviceInfo) GetScreenHeight() int32 {
+	if x != nil {
+		return x.ScreenHeight
+	}
+	return 0
+}
+
+func (x *DeviceInfo) GetScreenWidth() int32 {
+	if x != nil {
+		return x.ScreenWidth
+	}
+	return 0
+}
+
+func (x *DeviceInfo) GetOperatingSystem() string {
+	if x != nil {
+		return x.OperatingSystem
+	}
+	return ""
+}
+
+func (x *DeviceInfo) GetOperatingSystemVersion() string {
+	if x != nil {
+		return x.OperatingSystemVersion
+	}
+	return ""
+}
+
+func (x *DeviceInfo) GetModel() string {
+	if x != nil {
+		return x.Model
+	}
+	return ""
+}
+
+func (x *DeviceInfo) GetBrand() string {
+	if x != nil {
+		return x.Brand
+	}
+	return ""
+}
+
+func (x *DeviceInfo) GetBrowser() string {
+	if x != nil {
+		return x.Browser
+	}
+	return ""
+}
+
+func (x *DeviceInfo) GetBrowserVersion() string {
+	if x != nil {
+		return x.BrowserVersion
+	}
+	return ""
+}
+
 var File_google_ads_datamanager_v1_device_info_proto protoreflect.FileDescriptor
 
 const file_google_ads_datamanager_v1_device_info_proto_rawDesc = "" +
 	"\n" +
-	"+google/ads/datamanager/v1/device_info.proto\x12\x19google.ads.datamanager.v1\x1a\x1fgoogle/api/field_behavior.proto\"T\n" +
+	"+google/ads/datamanager/v1/device_info.proto\x12\x19google.ads.datamanager.v1\x1a\x1fgoogle/api/field_behavior.proto\"\xe3\x03\n" +
 	"\n" +
 	"DeviceInfo\x12\"\n" +
 	"\n" +
 	"user_agent\x18\x01 \x01(\tB\x03\xe0A\x01R\tuserAgent\x12\"\n" +
 	"\n" +
-	"ip_address\x18\x02 \x01(\tB\x03\xe0A\x01R\tipAddressB\xcc\x01\n" +
+	"ip_address\x18\x02 \x01(\tB\x03\xe0A\x01R\tipAddress\x12\x1f\n" +
+	"\bcategory\x18\x03 \x01(\tB\x03\xe0A\x01R\bcategory\x12(\n" +
+	"\rlanguage_code\x18\x04 \x01(\tB\x03\xe0A\x01R\flanguageCode\x12(\n" +
+	"\rscreen_height\x18\x05 \x01(\x05B\x03\xe0A\x01R\fscreenHeight\x12&\n" +
+	"\fscreen_width\x18\x06 \x01(\x05B\x03\xe0A\x01R\vscreenWidth\x12.\n" +
+	"\x10operating_system\x18\a \x01(\tB\x03\xe0A\x01R\x0foperatingSystem\x12=\n" +
+	"\x18operating_system_version\x18\b \x01(\tB\x03\xe0A\x01R\x16operatingSystemVersion\x12\x19\n" +
+	"\x05model\x18\t \x01(\tB\x03\xe0A\x01R\x05model\x12\x19\n" +
+	"\x05brand\x18\n" +
+	" \x01(\tB\x03\xe0A\x01R\x05brand\x12\x1d\n" +
+	"\abrowser\x18\v \x01(\tB\x03\xe0A\x01R\abrowser\x12,\n" +
+	"\x0fbrowser_version\x18\f \x01(\tB\x03\xe0A\x01R\x0ebrowserVersionB\xcc\x01\n" +
 	"\x1dcom.google.ads.datamanager.v1B\x0fDeviceInfoProtoP\x01ZAcloud.google.com/go/datamanager/apiv1/datamanagerpb;datamanagerpb\xaa\x02\x19Google.Ads.DataManager.V1\xca\x02\x19Google\\Ads\\DataManager\\V1\xea\x02\x1cGoogle::Ads::DataManager::V1b\x06proto3"
 
 var (
