@@ -262,12 +262,12 @@ func BenchmarkReadLargeResultSetExactShapePublicQuery(b *testing.B) {
 			var randomFloat32 float32
 			var randomFloat64 float64
 			var randomInterval GenericColumnValue
-			var randomJson NullJSON
+			var randomJSON NullJSON
 			var randomInt64 int64
 			var randomNumeric big.Rat
 			var randomString string
 			var randomTimestamp time.Time
-			var randomUuid string
+			var randomUUID string
 
 			if err := row.Column(0, &randomBool); err != nil {
 				b.Fatal(err)
@@ -287,7 +287,7 @@ func BenchmarkReadLargeResultSetExactShapePublicQuery(b *testing.B) {
 			if err := row.Column(5, &randomInterval); err != nil {
 				b.Fatal(err)
 			}
-			if err := row.Column(6, &randomJson); err != nil {
+			if err := row.Column(6, &randomJSON); err != nil {
 				b.Fatal(err)
 			}
 			if err := row.Column(7, &randomInt64); err != nil {
@@ -302,10 +302,10 @@ func BenchmarkReadLargeResultSetExactShapePublicQuery(b *testing.B) {
 			if err := row.Column(10, &randomTimestamp); err != nil {
 				b.Fatal(err)
 			}
-			if err := row.Column(11, &randomUuid); err != nil {
+			if err := row.Column(11, &randomUUID); err != nil {
 				b.Fatal(err)
 			}
-			total += len(randomBytes) + len(randomString) + len(randomUuid)
+			total += len(randomBytes) + len(randomString) + len(randomUUID)
 		}
 		iter.Stop()
 	}
