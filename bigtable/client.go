@@ -35,6 +35,8 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+const directpathEnvVar = "CBT_ENABLE_DIRECTPATH"
+
 // Client is a client for reading and writing data to tables in an instance.
 //
 // A Client is safe to use concurrently, except for its Close method.
@@ -86,8 +88,6 @@ type MetricsProvider interface {
 type NoopMetricsProvider struct{}
 
 func (NoopMetricsProvider) isMetricsProvider() {}
-
-const DIRECTPATH_ENV_VAR = "CBT_ENABLE_DIRECTPATH"
 
 // NewClient creates a new Client for a given project and instance.
 // The default ClientConfig will be used.
@@ -181,7 +181,7 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 	if !enableBigtableConnPool {
 		// Use the regular ConnPool
 		// For regular ConnPool the Direct Access is off by default so we need to check the env var again.
-		if enabled, _ := strconv.ParseBool(os.Getenv(DIRECTPATH_ENV_VAR)); enabled {
+		if enabled, _ := strconv.ParseBool(os.Getenv(directpathEnvVar)); enabled {
 			o = append(o, directPathOptions...)
 		}
 		regConnPool, err := gtransport.DialPool(ctx, o...)
@@ -408,9 +408,9 @@ func (c *Client) newBuiltinMetricsTracer(ctx context.Context, table string, isSt
 }
 
 func isDirectAccessEnabled(config ClientConfig) bool {
-	if os.Getenv(DIRECTPATH_ENV_VAR) == "" {
+	if os.Getenv(directpathEnvVar) == "" {
 		return !config.DisableDirectAccess
 	}
-	res, _ := strconv.ParseBool(os.Getenv(DIRECTPATH_ENV_VAR))
+	res, _ := strconv.ParseBool(os.Getenv(directpathEnvVar))
 	return res
 }
