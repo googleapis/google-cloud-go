@@ -12,12 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 language: go
-version: v0.13.2-0.20260518181009-04b8e642ea4c
+version: v0.14.0
 repo: googleapis/google-cloud-go
 sources:
   googleapis:
-    commit: a0cedfb6af9305b49db07dccaa7d0c8985e07e70
-    sha256: 8a1760be36c3d1a2d9b6f098dbfdacd887dc8251d4068495e4dc1a8db966c80b
+    commit: 43731d5d22f8e3526ba7aa708da9d5de26043d0f
+    sha256: d146cfa257ffa00fc298ec7b6f73f9c7395a5a5ba050dcc553cfd78d6705bc3b
 tools:
   go:
     - name: github.com/googleapis/gapic-generator-go/cmd/protoc-gen-go_gapic
@@ -479,7 +479,7 @@ libraries:
     apis:
       - path: google/cloud/commerce/consumer/procurement/v1
   - name: compute
-    version: 1.63.0
+    version: 1.64.0
     apis:
       - path: google/cloud/compute/v1
         go:
@@ -571,7 +571,7 @@ libraries:
     apis:
       - path: google/cloud/datalabeling/v1beta1
   - name: datamanager
-    version: 1.0.0
+    version: 1.1.0
     apis:
       - path: google/ads/datamanager/v1
         go:
@@ -593,7 +593,7 @@ libraries:
     apis:
       - path: google/cloud/dataqna/v1alpha
   - name: datastore
-    version: 1.23.0
+    version: 1.24.0
     apis:
       - path: google/datastore/v1
         go:
@@ -1337,7 +1337,7 @@ libraries:
     apis:
       - path: google/streetview/publish/v1
   - name: support
-    version: 1.10.0
+    version: 1.11.0
     apis:
       - path: google/cloud/support/v2
       - path: google/cloud/support/v2beta

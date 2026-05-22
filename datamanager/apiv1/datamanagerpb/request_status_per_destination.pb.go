@@ -42,13 +42,25 @@ type RequestStatusPerDestination_RequestStatus int32
 const (
 	// The request status is unknown.
 	RequestStatusPerDestination_REQUEST_STATUS_UNKNOWN RequestStatusPerDestination_RequestStatus = 0
-	// The request succeeded.
+	// Processing succeeded for all records without any errors. However, there
+	// may be warnings in the
+	// [`warning_info`][google.ads.datamanager.v1.RequestStatusPerDestination.warning_info]
+	// field.
 	RequestStatusPerDestination_SUCCESS RequestStatusPerDestination_RequestStatus = 1
 	// The request is processing.
 	RequestStatusPerDestination_PROCESSING RequestStatusPerDestination_RequestStatus = 2
-	// The request failed.
+	// Processing failed for all records. Check the
+	// [`error_info`][google.ads.datamanager.v1.RequestStatusPerDestination.error_info]
+	// field for error details, and check the
+	// [`warning_info`][google.ads.datamanager.v1.RequestStatusPerDestination.warning_info]
+	// field for warning details.
 	RequestStatusPerDestination_FAILED RequestStatusPerDestination_RequestStatus = 3
-	// The request partially succeeded.
+	// Processing completed successfully without errors for some records, but
+	// failed with errors for other records. Check the
+	// [`error_info`][google.ads.datamanager.v1.RequestStatusPerDestination.error_info]
+	// field for error details, and check the
+	// [`warning_info`][google.ads.datamanager.v1.RequestStatusPerDestination.warning_info]
+	// field for warning details.
 	RequestStatusPerDestination_PARTIAL_SUCCESS RequestStatusPerDestination_RequestStatus = 4
 )
 
@@ -105,10 +117,22 @@ type RequestStatusPerDestination struct {
 	// The request status of the destination.
 	RequestStatus RequestStatusPerDestination_RequestStatus `protobuf:"varint,2,opt,name=request_status,json=requestStatus,proto3,enum=google.ads.datamanager.v1.RequestStatusPerDestination_RequestStatus" json:"request_status,omitempty"`
 	// An error info error containing the error reason and error counts related to
-	// the upload.
+	// the upload. Only populated if the
+	// [`request_status`][google.ads.datamanager.v1.RequestStatusPerDestination.request_status]
+	// is
+	// [`FAILED`][google.ads.datamanager.v1.RequestStatusPerDestination.RequestStatus.FAILED]
+	// or
+	// [`PARTIAL_SUCCESS`][google.ads.datamanager.v1.RequestStatusPerDestination.RequestStatus.PARTIAL_SUCCESS].
+	// This field isn't populated while the request has
+	// [`request_status`][google.ads.datamanager.v1.RequestStatusPerDestination.request_status]
+	// of
+	// [`PROCESSING`][google.ads.datamanager.v1.RequestStatusPerDestination.RequestStatus.PROCESSING].
 	ErrorInfo *ErrorInfo `protobuf:"bytes,3,opt,name=error_info,json=errorInfo,proto3" json:"error_info,omitempty"`
 	// A warning info containing the warning reason and warning counts related to
-	// the upload.
+	// the upload. This field isn't populated while the request has
+	// [`request_status`][google.ads.datamanager.v1.RequestStatusPerDestination.request_status]
+	// of
+	// [`PROCESSING`][google.ads.datamanager.v1.RequestStatusPerDestination.RequestStatus.PROCESSING].
 	WarningInfo *WarningInfo `protobuf:"bytes,7,opt,name=warning_info,json=warningInfo,proto3" json:"warning_info,omitempty"`
 	// The status of the destination.
 	//

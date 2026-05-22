@@ -8,7 +8,7 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/compute/apiv1",
-    "version": "1.63.0"
+    "version": "1.64.0"
   },
   "snippets": [
     {
@@ -7324,6 +7324,282 @@
         }
       ],
       "title": "compute Patch Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1.GlobalVmExtensionPoliciesClient",
+          "shortName": "GlobalVmExtensionPoliciesClient"
+        },
+        "fullName": "google.cloud.compute.v1.GlobalVmExtensionPoliciesClient.AggregatedList",
+        "method": {
+          "fullName": "google.cloud.compute.v1.GlobalVmExtensionPolicies.AggregatedList",
+          "service": {
+            "fullName": "google.cloud.compute.v1.GlobalVmExtensionPolicies",
+            "shortName": "GlobalVmExtensionPolicies"
+          },
+          "shortName": "AggregatedList"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.AggregatedListGlobalVmExtensionPoliciesRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "VmExtensionPoliciesScopedListPairIterator",
+        "shortName": "AggregatedList"
+      },
+      "description": "AggregatedList retrieves the list of all VM Extension Policy resources\navailable to the specified project.\n\nTo prevent failure, it's recommended that you set the\n`returnPartialSuccess` parameter to `true`.",
+      "file": "GlobalVmExtensionPoliciesClient/AggregatedList/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1_generated_GlobalVmExtensionPolicies_AggregatedList_sync",
+      "segments": [
+        {
+          "end": 66,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute AggregatedList Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1.GlobalVmExtensionPoliciesClient",
+          "shortName": "GlobalVmExtensionPoliciesClient"
+        },
+        "fullName": "google.cloud.compute.v1.GlobalVmExtensionPoliciesClient.Delete",
+        "method": {
+          "fullName": "google.cloud.compute.v1.GlobalVmExtensionPolicies.Delete",
+          "service": {
+            "fullName": "google.cloud.compute.v1.GlobalVmExtensionPolicies",
+            "shortName": "GlobalVmExtensionPolicies"
+          },
+          "shortName": "Delete"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.DeleteGlobalVmExtensionPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*Operation",
+        "shortName": "Delete"
+      },
+      "description": "Delete purge scoped resources (zonal policies) from a global VM extension\npolicy, and then delete the global VM extension policy. Purge of the scoped\nresources is a pre-condition of the global VM extension policy deletion.\nThe deletion of the global VM extension policy happens after the purge\nrollout is done, so it's not a part of the LRO. It's an automatic process\nthat triggers in the backend.",
+      "file": "GlobalVmExtensionPoliciesClient/Delete/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1_generated_GlobalVmExtensionPolicies_Delete_sync",
+      "segments": [
+        {
+          "end": 56,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute Delete Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1.GlobalVmExtensionPoliciesClient",
+          "shortName": "GlobalVmExtensionPoliciesClient"
+        },
+        "fullName": "google.cloud.compute.v1.GlobalVmExtensionPoliciesClient.Get",
+        "method": {
+          "fullName": "google.cloud.compute.v1.GlobalVmExtensionPolicies.Get",
+          "service": {
+            "fullName": "google.cloud.compute.v1.GlobalVmExtensionPolicies",
+            "shortName": "GlobalVmExtensionPolicies"
+          },
+          "shortName": "Get"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.GetGlobalVmExtensionPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*computepb.GlobalVmExtensionPolicy",
+        "shortName": "Get"
+      },
+      "description": "Get gets details of a global VM extension policy.",
+      "file": "GlobalVmExtensionPoliciesClient/Get/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1_generated_GlobalVmExtensionPolicies_Get_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute Get Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1.GlobalVmExtensionPoliciesClient",
+          "shortName": "GlobalVmExtensionPoliciesClient"
+        },
+        "fullName": "google.cloud.compute.v1.GlobalVmExtensionPoliciesClient.Insert",
+        "method": {
+          "fullName": "google.cloud.compute.v1.GlobalVmExtensionPolicies.Insert",
+          "service": {
+            "fullName": "google.cloud.compute.v1.GlobalVmExtensionPolicies",
+            "shortName": "GlobalVmExtensionPolicies"
+          },
+          "shortName": "Insert"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.InsertGlobalVmExtensionPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*Operation",
+        "shortName": "Insert"
+      },
+      "description": "Insert creates a new project level GlobalVmExtensionPolicy.",
+      "file": "GlobalVmExtensionPoliciesClient/Insert/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1_generated_GlobalVmExtensionPolicies_Insert_sync",
+      "segments": [
+        {
+          "end": 56,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute Insert Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1.GlobalVmExtensionPoliciesClient",
+          "shortName": "GlobalVmExtensionPoliciesClient"
+        },
+        "fullName": "google.cloud.compute.v1.GlobalVmExtensionPoliciesClient.List",
+        "method": {
+          "fullName": "google.cloud.compute.v1.GlobalVmExtensionPolicies.List",
+          "service": {
+            "fullName": "google.cloud.compute.v1.GlobalVmExtensionPolicies",
+            "shortName": "GlobalVmExtensionPolicies"
+          },
+          "shortName": "List"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.ListGlobalVmExtensionPoliciesRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "GlobalVmExtensionPolicyIterator",
+        "shortName": "List"
+      },
+      "description": "List lists global VM extension policies.",
+      "file": "GlobalVmExtensionPoliciesClient/List/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1_generated_GlobalVmExtensionPolicies_List_sync",
+      "segments": [
+        {
+          "end": 66,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute List Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1.GlobalVmExtensionPoliciesClient",
+          "shortName": "GlobalVmExtensionPoliciesClient"
+        },
+        "fullName": "google.cloud.compute.v1.GlobalVmExtensionPoliciesClient.Update",
+        "method": {
+          "fullName": "google.cloud.compute.v1.GlobalVmExtensionPolicies.Update",
+          "service": {
+            "fullName": "google.cloud.compute.v1.GlobalVmExtensionPolicies",
+            "shortName": "GlobalVmExtensionPolicies"
+          },
+          "shortName": "Update"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.UpdateGlobalVmExtensionPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*Operation",
+        "shortName": "Update"
+      },
+      "description": "Update updates a global VM extension policy.",
+      "file": "GlobalVmExtensionPoliciesClient/Update/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1_generated_GlobalVmExtensionPolicies_Update_sync",
+      "segments": [
+        {
+          "end": 56,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute Update Sample"
     },
     {
       "clientMethod": {
@@ -15381,6 +15657,98 @@
           "fullName": "google.cloud.compute.v1.LicenseCodesClient",
           "shortName": "LicenseCodesClient"
         },
+        "fullName": "google.cloud.compute.v1.LicenseCodesClient.GetIamPolicy",
+        "method": {
+          "fullName": "google.cloud.compute.v1.LicenseCodes.GetIamPolicy",
+          "service": {
+            "fullName": "google.cloud.compute.v1.LicenseCodes",
+            "shortName": "LicenseCodes"
+          },
+          "shortName": "GetIamPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.GetIamPolicyLicenseCodeRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*computepb.Policy",
+        "shortName": "GetIamPolicy"
+      },
+      "description": "GetIamPolicy gets the access control policy for a resource. May be empty if no such\npolicy or resource exists.\n*Caution* This resource is intended\nfor use only by third-party partners who are creatingCloud Marketplace\nimages.",
+      "file": "LicenseCodesClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1_generated_LicenseCodes_GetIamPolicy_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute GetIamPolicy Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1.LicenseCodesClient",
+          "shortName": "LicenseCodesClient"
+        },
+        "fullName": "google.cloud.compute.v1.LicenseCodesClient.SetIamPolicy",
+        "method": {
+          "fullName": "google.cloud.compute.v1.LicenseCodes.SetIamPolicy",
+          "service": {
+            "fullName": "google.cloud.compute.v1.LicenseCodes",
+            "shortName": "LicenseCodes"
+          },
+          "shortName": "SetIamPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.SetIamPolicyLicenseCodeRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*computepb.Policy",
+        "shortName": "SetIamPolicy"
+      },
+      "description": "SetIamPolicy sets the access control policy on the specified resource.\nReplaces any existing policy.\n*Caution* This resource is intended\nfor use only by third-party partners who are creatingCloud Marketplace\nimages.",
+      "file": "LicenseCodesClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1_generated_LicenseCodes_SetIamPolicy_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute SetIamPolicy Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1.LicenseCodesClient",
+          "shortName": "LicenseCodesClient"
+        },
         "fullName": "google.cloud.compute.v1.LicenseCodesClient.TestIamPermissions",
         "method": {
           "fullName": "google.cloud.compute.v1.LicenseCodes.TestIamPermissions",
@@ -18456,6 +18824,52 @@
         }
       ],
       "title": "compute AddPeering Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1.NetworksClient",
+          "shortName": "NetworksClient"
+        },
+        "fullName": "google.cloud.compute.v1.NetworksClient.CancelRequestRemovePeering",
+        "method": {
+          "fullName": "google.cloud.compute.v1.Networks.CancelRequestRemovePeering",
+          "service": {
+            "fullName": "google.cloud.compute.v1.Networks",
+            "shortName": "Networks"
+          },
+          "shortName": "CancelRequestRemovePeering"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.CancelRequestRemovePeeringNetworkRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*Operation",
+        "shortName": "CancelRequestRemovePeering"
+      },
+      "description": "CancelRequestRemovePeering cancel requests to remove a peering from the specified network. Applicable\nonly for PeeringConnection with update_strategy=CONSENSUS.  Cancels a\nrequest to remove a peering from the specified network.",
+      "file": "NetworksClient/CancelRequestRemovePeering/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1_generated_Networks_CancelRequestRemovePeering_sync",
+      "segments": [
+        {
+          "end": 56,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute CancelRequestRemovePeering Sample"
     },
     {
       "clientMethod": {
@@ -35204,6 +35618,374 @@
     {
       "clientMethod": {
         "client": {
+          "fullName": "google.cloud.compute.v1.RolloutPlansClient",
+          "shortName": "RolloutPlansClient"
+        },
+        "fullName": "google.cloud.compute.v1.RolloutPlansClient.Delete",
+        "method": {
+          "fullName": "google.cloud.compute.v1.RolloutPlans.Delete",
+          "service": {
+            "fullName": "google.cloud.compute.v1.RolloutPlans",
+            "shortName": "RolloutPlans"
+          },
+          "shortName": "Delete"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.DeleteRolloutPlanRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*Operation",
+        "shortName": "Delete"
+      },
+      "description": "Delete deletes a RolloutPlan.",
+      "file": "RolloutPlansClient/Delete/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1_generated_RolloutPlans_Delete_sync",
+      "segments": [
+        {
+          "end": 56,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute Delete Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1.RolloutPlansClient",
+          "shortName": "RolloutPlansClient"
+        },
+        "fullName": "google.cloud.compute.v1.RolloutPlansClient.Get",
+        "method": {
+          "fullName": "google.cloud.compute.v1.RolloutPlans.Get",
+          "service": {
+            "fullName": "google.cloud.compute.v1.RolloutPlans",
+            "shortName": "RolloutPlans"
+          },
+          "shortName": "Get"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.GetRolloutPlanRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*computepb.RolloutPlan",
+        "shortName": "Get"
+      },
+      "description": "Get gets details of a single project-scoped RolloutPlan.",
+      "file": "RolloutPlansClient/Get/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1_generated_RolloutPlans_Get_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute Get Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1.RolloutPlansClient",
+          "shortName": "RolloutPlansClient"
+        },
+        "fullName": "google.cloud.compute.v1.RolloutPlansClient.Insert",
+        "method": {
+          "fullName": "google.cloud.compute.v1.RolloutPlans.Insert",
+          "service": {
+            "fullName": "google.cloud.compute.v1.RolloutPlans",
+            "shortName": "RolloutPlans"
+          },
+          "shortName": "Insert"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.InsertRolloutPlanRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*Operation",
+        "shortName": "Insert"
+      },
+      "description": "Insert creates a new RolloutPlan in a given project and location.",
+      "file": "RolloutPlansClient/Insert/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1_generated_RolloutPlans_Insert_sync",
+      "segments": [
+        {
+          "end": 56,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute Insert Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1.RolloutPlansClient",
+          "shortName": "RolloutPlansClient"
+        },
+        "fullName": "google.cloud.compute.v1.RolloutPlansClient.List",
+        "method": {
+          "fullName": "google.cloud.compute.v1.RolloutPlans.List",
+          "service": {
+            "fullName": "google.cloud.compute.v1.RolloutPlans",
+            "shortName": "RolloutPlans"
+          },
+          "shortName": "List"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.ListRolloutPlansRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "RolloutPlanIterator",
+        "shortName": "List"
+      },
+      "description": "List lists RolloutPlans in a given project and location.",
+      "file": "RolloutPlansClient/List/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1_generated_RolloutPlans_List_sync",
+      "segments": [
+        {
+          "end": 66,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute List Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1.RolloutsClient",
+          "shortName": "RolloutsClient"
+        },
+        "fullName": "google.cloud.compute.v1.RolloutsClient.Cancel",
+        "method": {
+          "fullName": "google.cloud.compute.v1.Rollouts.Cancel",
+          "service": {
+            "fullName": "google.cloud.compute.v1.Rollouts",
+            "shortName": "Rollouts"
+          },
+          "shortName": "Cancel"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.CancelRolloutRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*Operation",
+        "shortName": "Cancel"
+      },
+      "description": "Cancel cancels a Rollout.",
+      "file": "RolloutsClient/Cancel/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1_generated_Rollouts_Cancel_sync",
+      "segments": [
+        {
+          "end": 56,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute Cancel Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1.RolloutsClient",
+          "shortName": "RolloutsClient"
+        },
+        "fullName": "google.cloud.compute.v1.RolloutsClient.Delete",
+        "method": {
+          "fullName": "google.cloud.compute.v1.Rollouts.Delete",
+          "service": {
+            "fullName": "google.cloud.compute.v1.Rollouts",
+            "shortName": "Rollouts"
+          },
+          "shortName": "Delete"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.DeleteRolloutRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*Operation",
+        "shortName": "Delete"
+      },
+      "description": "Delete deletes a Rollout.",
+      "file": "RolloutsClient/Delete/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1_generated_Rollouts_Delete_sync",
+      "segments": [
+        {
+          "end": 56,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute Delete Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1.RolloutsClient",
+          "shortName": "RolloutsClient"
+        },
+        "fullName": "google.cloud.compute.v1.RolloutsClient.Get",
+        "method": {
+          "fullName": "google.cloud.compute.v1.Rollouts.Get",
+          "service": {
+            "fullName": "google.cloud.compute.v1.Rollouts",
+            "shortName": "Rollouts"
+          },
+          "shortName": "Get"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.GetRolloutRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*computepb.Rollout",
+        "shortName": "Get"
+      },
+      "description": "Get gets details of a single project-scoped Rollout.",
+      "file": "RolloutsClient/Get/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1_generated_Rollouts_Get_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute Get Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1.RolloutsClient",
+          "shortName": "RolloutsClient"
+        },
+        "fullName": "google.cloud.compute.v1.RolloutsClient.List",
+        "method": {
+          "fullName": "google.cloud.compute.v1.Rollouts.List",
+          "service": {
+            "fullName": "google.cloud.compute.v1.Rollouts",
+            "shortName": "Rollouts"
+          },
+          "shortName": "List"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.ListRolloutsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "RolloutIterator",
+        "shortName": "List"
+      },
+      "description": "List lists Rollouts in a given project and location.",
+      "file": "RolloutsClient/List/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1_generated_Rollouts_List_sync",
+      "segments": [
+        {
+          "end": 66,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute List Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
           "fullName": "google.cloud.compute.v1.RoutersClient",
           "shortName": "RoutersClient"
         },
@@ -44019,7 +44801,7 @@
         "resultType": "*Operation",
         "shortName": "Delete"
       },
-      "description": "Delete deletes a specified zone VM extension policy.",
+      "description": "Delete deletes a specified zone VM extension policy within a project.",
       "file": "ZoneVmExtensionPoliciesClient/Delete/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -44065,7 +44847,7 @@
         "resultType": "*computepb.VmExtensionPolicy",
         "shortName": "Get"
       },
-      "description": "Get retrieves details of a specific zone VM extension policy.",
+      "description": "Get retrieves details of a specific zone VM extension policy within a project.",
       "file": "ZoneVmExtensionPoliciesClient/Get/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -44203,7 +44985,7 @@
         "resultType": "*Operation",
         "shortName": "Update"
       },
-      "description": "Update modifies an existing zone VM extension policy.",
+      "description": "Update modifies an existing zone VM extension policy within a project.",
       "file": "ZoneVmExtensionPoliciesClient/Update/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",

@@ -51,7 +51,13 @@ type CartData struct {
 	// Optional. The sum of all discounts associated with the transaction.
 	TransactionDiscount float64 `protobuf:"fixed64,4,opt,name=transaction_discount,json=transactionDiscount,proto3" json:"transaction_discount,omitempty"`
 	// Optional. The list of items associated with the event.
-	Items         []*Item `protobuf:"bytes,5,rep,name=items,proto3" json:"items,omitempty"`
+	Items []*Item `protobuf:"bytes,5,rep,name=items,proto3" json:"items,omitempty"`
+	// Optional. The list of coupon codes that were applied to the cart.
+	// Cart-level and item-level coupon codes are independent.
+	//
+	// If the event is for a Google Analytics destination, only provide a single
+	// coupon code. Google Analytics ignores additional coupon codes.
+	CouponCodes   []string `protobuf:"bytes,6,rep,name=coupon_codes,json=couponCodes,proto3" json:"coupon_codes,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -121,6 +127,13 @@ func (x *CartData) GetItems() []*Item {
 	return nil
 }
 
+func (x *CartData) GetCouponCodes() []string {
+	if x != nil {
+		return x.CouponCodes
+	}
+	return nil
+}
+
 // Represents an item in the cart associated with the event.
 type Item struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -138,8 +151,29 @@ type Item struct {
 	// to be included within the event that were not already specified using other
 	// structured fields.
 	AdditionalItemParameters []*ItemParameter `protobuf:"bytes,5,rep,name=additional_item_parameters,json=additionalItemParameters,proto3" json:"additional_item_parameters,omitempty"`
-	unknownFields            protoimpl.UnknownFields
-	sizeCache                protoimpl.SizeCache
+	// Optional. The Merchant Center ID associated with the item. For Store Sales
+	// events this will override the value set at the cart level.  This field is
+	// ignored for other events.
+	MerchantId string `protobuf:"bytes,6,opt,name=merchant_id,json=merchantId,proto3" json:"merchant_id,omitempty"`
+	// Optional. The feed label of the Merchant Center feed. If countries are
+	// still being used, the 2-letter country code in ISO-3166-1 alpha-2 can be
+	// used instead. For Store Sales events this will override the value set at
+	// the cart level. This field is ignored for other events.
+	MerchantFeedLabel string `protobuf:"bytes,7,opt,name=merchant_feed_label,json=merchantFeedLabel,proto3" json:"merchant_feed_label,omitempty"`
+	// Optional. The language code in ISO 639-1 associated with the Merchant
+	// Center feed where your items are uploaded.
+	MerchantFeedLanguageCode string `protobuf:"bytes,8,opt,name=merchant_feed_language_code,json=merchantFeedLanguageCode,proto3" json:"merchant_feed_language_code,omitempty"`
+	// Optional. The conversion value associated with this item within the event,
+	// for cases where the conversion value is different for each item.
+	ConversionValue *float64 `protobuf:"fixed64,9,opt,name=conversion_value,json=conversionValue,proto3,oneof" json:"conversion_value,omitempty"`
+	// Optional. Additional key/value pair information to send to the conversion
+	// containers (conversion action or Floodlight activity), when tracking
+	// per-item
+	//
+	//	conversions.
+	CustomVariables []*ItemCustomVariable `protobuf:"bytes,10,rep,name=custom_variables,json=customVariables,proto3" json:"custom_variables,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
 }
 
 func (x *Item) Reset() {
@@ -207,25 +241,142 @@ func (x *Item) GetAdditionalItemParameters() []*ItemParameter {
 	return nil
 }
 
+func (x *Item) GetMerchantId() string {
+	if x != nil {
+		return x.MerchantId
+	}
+	return ""
+}
+
+func (x *Item) GetMerchantFeedLabel() string {
+	if x != nil {
+		return x.MerchantFeedLabel
+	}
+	return ""
+}
+
+func (x *Item) GetMerchantFeedLanguageCode() string {
+	if x != nil {
+		return x.MerchantFeedLanguageCode
+	}
+	return ""
+}
+
+func (x *Item) GetConversionValue() float64 {
+	if x != nil && x.ConversionValue != nil {
+		return *x.ConversionValue
+	}
+	return 0
+}
+
+func (x *Item) GetCustomVariables() []*ItemCustomVariable {
+	if x != nil {
+		return x.CustomVariables
+	}
+	return nil
+}
+
+// Item-level custom variable for ads conversions.
+type ItemCustomVariable struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. The name of the custom variable to set. If the variable is not
+	// found for the given destination, it will be ignored.
+	Variable string `protobuf:"bytes,1,opt,name=variable,proto3" json:"variable,omitempty"`
+	// Optional. The value to store for the custom variable.
+	Value string `protobuf:"bytes,2,opt,name=value,proto3" json:"value,omitempty"`
+	// Optional. Reference string used to determine which of the
+	// [Event.destination_references][google.ads.datamanager.v1.Event.destination_references]
+	// the custom variable should be sent to. If empty, the
+	// [Event.destination_references][google.ads.datamanager.v1.Event.destination_references]
+	// will be used.
+	DestinationReferences []string `protobuf:"bytes,3,rep,name=destination_references,json=destinationReferences,proto3" json:"destination_references,omitempty"`
+	unknownFields         protoimpl.UnknownFields
+	sizeCache             protoimpl.SizeCache
+}
+
+func (x *ItemCustomVariable) Reset() {
+	*x = ItemCustomVariable{}
+	mi := &file_google_ads_datamanager_v1_cart_data_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ItemCustomVariable) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ItemCustomVariable) ProtoMessage() {}
+
+func (x *ItemCustomVariable) ProtoReflect() protoreflect.Message {
+	mi := &file_google_ads_datamanager_v1_cart_data_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ItemCustomVariable.ProtoReflect.Descriptor instead.
+func (*ItemCustomVariable) Descriptor() ([]byte, []int) {
+	return file_google_ads_datamanager_v1_cart_data_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *ItemCustomVariable) GetVariable() string {
+	if x != nil {
+		return x.Variable
+	}
+	return ""
+}
+
+func (x *ItemCustomVariable) GetValue() string {
+	if x != nil {
+		return x.Value
+	}
+	return ""
+}
+
+func (x *ItemCustomVariable) GetDestinationReferences() []string {
+	if x != nil {
+		return x.DestinationReferences
+	}
+	return nil
+}
+
 var File_google_ads_datamanager_v1_cart_data_proto protoreflect.FileDescriptor
 
 const file_google_ads_datamanager_v1_cart_data_proto_rawDesc = "" +
 	"\n" +
-	")google/ads/datamanager/v1/cart_data.proto\x12\x19google.ads.datamanager.v1\x1a.google/ads/datamanager/v1/item_parameter.proto\x1a\x1fgoogle/api/field_behavior.proto\"\x9d\x02\n" +
+	")google/ads/datamanager/v1/cart_data.proto\x12\x19google.ads.datamanager.v1\x1a.google/ads/datamanager/v1/item_parameter.proto\x1a\x1fgoogle/api/field_behavior.proto\"\xc5\x02\n" +
 	"\bCartData\x12$\n" +
 	"\vmerchant_id\x18\x01 \x01(\tB\x03\xe0A\x01R\n" +
 	"merchantId\x123\n" +
 	"\x13merchant_feed_label\x18\x02 \x01(\tB\x03\xe0A\x01R\x11merchantFeedLabel\x12B\n" +
 	"\x1bmerchant_feed_language_code\x18\x03 \x01(\tB\x03\xe0A\x01R\x18merchantFeedLanguageCode\x126\n" +
 	"\x14transaction_discount\x18\x04 \x01(\x01B\x03\xe0A\x01R\x13transactionDiscount\x12:\n" +
-	"\x05items\x18\x05 \x03(\v2\x1f.google.ads.datamanager.v1.ItemB\x03\xe0A\x01R\x05items\"\x8b\x02\n" +
+	"\x05items\x18\x05 \x03(\v2\x1f.google.ads.datamanager.v1.ItemB\x03\xe0A\x01R\x05items\x12&\n" +
+	"\fcoupon_codes\x18\x06 \x03(\tB\x03\xe0A\x01R\vcouponCodes\"\xd3\x04\n" +
 	"\x04Item\x123\n" +
 	"\x13merchant_product_id\x18\x01 \x01(\tB\x03\xe0A\x01R\x11merchantProductId\x12\x1f\n" +
 	"\bquantity\x18\x02 \x01(\x03B\x03\xe0A\x01R\bquantity\x12\"\n" +
 	"\n" +
 	"unit_price\x18\x03 \x01(\x01B\x03\xe0A\x01R\tunitPrice\x12\x1c\n" +
 	"\aitem_id\x18\x04 \x01(\tB\x03\xe0A\x01R\x06itemId\x12k\n" +
-	"\x1aadditional_item_parameters\x18\x05 \x03(\v2(.google.ads.datamanager.v1.ItemParameterB\x03\xe0A\x01R\x18additionalItemParametersB\xca\x01\n" +
+	"\x1aadditional_item_parameters\x18\x05 \x03(\v2(.google.ads.datamanager.v1.ItemParameterB\x03\xe0A\x01R\x18additionalItemParameters\x12$\n" +
+	"\vmerchant_id\x18\x06 \x01(\tB\x03\xe0A\x01R\n" +
+	"merchantId\x123\n" +
+	"\x13merchant_feed_label\x18\a \x01(\tB\x03\xe0A\x01R\x11merchantFeedLabel\x12B\n" +
+	"\x1bmerchant_feed_language_code\x18\b \x01(\tB\x03\xe0A\x01R\x18merchantFeedLanguageCode\x123\n" +
+	"\x10conversion_value\x18\t \x01(\x01B\x03\xe0A\x01H\x00R\x0fconversionValue\x88\x01\x01\x12]\n" +
+	"\x10custom_variables\x18\n" +
+	" \x03(\v2-.google.ads.datamanager.v1.ItemCustomVariableB\x03\xe0A\x01R\x0fcustomVariablesB\x13\n" +
+	"\x11_conversion_value\"\x8c\x01\n" +
+	"\x12ItemCustomVariable\x12\x1f\n" +
+	"\bvariable\x18\x01 \x01(\tB\x03\xe0A\x01R\bvariable\x12\x19\n" +
+	"\x05value\x18\x02 \x01(\tB\x03\xe0A\x01R\x05value\x12:\n" +
+	"\x16destination_references\x18\x03 \x03(\tB\x03\xe0A\x01R\x15destinationReferencesB\xca\x01\n" +
 	"\x1dcom.google.ads.datamanager.v1B\rCartDataProtoP\x01ZAcloud.google.com/go/datamanager/apiv1/datamanagerpb;datamanagerpb\xaa\x02\x19Google.Ads.DataManager.V1\xca\x02\x19Google\\Ads\\DataManager\\V1\xea\x02\x1cGoogle::Ads::DataManager::V1b\x06proto3"
 
 var (
@@ -240,20 +391,22 @@ func file_google_ads_datamanager_v1_cart_data_proto_rawDescGZIP() []byte {
 	return file_google_ads_datamanager_v1_cart_data_proto_rawDescData
 }
 
-var file_google_ads_datamanager_v1_cart_data_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_google_ads_datamanager_v1_cart_data_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
 var file_google_ads_datamanager_v1_cart_data_proto_goTypes = []any{
-	(*CartData)(nil),      // 0: google.ads.datamanager.v1.CartData
-	(*Item)(nil),          // 1: google.ads.datamanager.v1.Item
-	(*ItemParameter)(nil), // 2: google.ads.datamanager.v1.ItemParameter
+	(*CartData)(nil),           // 0: google.ads.datamanager.v1.CartData
+	(*Item)(nil),               // 1: google.ads.datamanager.v1.Item
+	(*ItemCustomVariable)(nil), // 2: google.ads.datamanager.v1.ItemCustomVariable
+	(*ItemParameter)(nil),      // 3: google.ads.datamanager.v1.ItemParameter
 }
 var file_google_ads_datamanager_v1_cart_data_proto_depIdxs = []int32{
 	1, // 0: google.ads.datamanager.v1.CartData.items:type_name -> google.ads.datamanager.v1.Item
-	2, // 1: google.ads.datamanager.v1.Item.additional_item_parameters:type_name -> google.ads.datamanager.v1.ItemParameter
-	2, // [2:2] is the sub-list for method output_type
-	2, // [2:2] is the sub-list for method input_type
-	2, // [2:2] is the sub-list for extension type_name
-	2, // [2:2] is the sub-list for extension extendee
-	0, // [0:2] is the sub-list for field type_name
+	3, // 1: google.ads.datamanager.v1.Item.additional_item_parameters:type_name -> google.ads.datamanager.v1.ItemParameter
+	2, // 2: google.ads.datamanager.v1.Item.custom_variables:type_name -> google.ads.datamanager.v1.ItemCustomVariable
+	3, // [3:3] is the sub-list for method output_type
+	3, // [3:3] is the sub-list for method input_type
+	3, // [3:3] is the sub-list for extension type_name
+	3, // [3:3] is the sub-list for extension extendee
+	0, // [0:3] is the sub-list for field type_name
 }
 
 func init() { file_google_ads_datamanager_v1_cart_data_proto_init() }
@@ -262,13 +415,14 @@ func file_google_ads_datamanager_v1_cart_data_proto_init() {
 		return
 	}
 	file_google_ads_datamanager_v1_item_parameter_proto_init()
+	file_google_ads_datamanager_v1_cart_data_proto_msgTypes[1].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_ads_datamanager_v1_cart_data_proto_rawDesc), len(file_google_ads_datamanager_v1_cart_data_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   2,
+			NumMessages:   3,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

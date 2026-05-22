@@ -133,20 +133,21 @@ func gatherChanges(googleapisDir, genprotoDir string) ([]*git.ChangeInfo, error)
 // recordGoogleapisHash parses the latest commit in googleapis and records it to
 // regen.txt in go-genproto.
 func recordGoogleapisHash(googleapisDir, genprotoDir string) error {
-	commits, err := git.CommitsSinceHash(googleapisDir, "HEAD", true)
+	hash, err := git.HeadHash(googleapisDir)
 	if err != nil {
 		return err
 	}
-	if len(commits) != 1 {
-		return fmt.Errorf("only expected one commit, got %d", len(commits))
+	if hash == "" {
+		return fmt.Errorf("git.HeadHash: empty output")
 	}
 
 	f, err := os.OpenFile(filepath.Join(genprotoDir, "regen.txt"), os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
+
 	if err != nil {
 		return err
 	}
 	defer f.Close()
-	if _, err := f.WriteString(commits[0]); err != nil {
+	if _, err := f.WriteString(hash); err != nil {
 		return err
 	}
 	return nil

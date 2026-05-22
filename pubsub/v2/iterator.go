@@ -30,6 +30,7 @@ import (
 	"cloud.google.com/go/pubsub/v2/internal/distribution"
 	"github.com/googleapis/gax-go/v2/apierror"
 	"go.opentelemetry.io/otel/attribute"
+	otelcodes "go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/propagation"
 	semconv "go.opentelemetry.io/otel/semconv/v1.26.0"
 	"go.opentelemetry.io/otel/trace"
@@ -637,17 +638,22 @@ func (it *messageIterator) sendAck(m map[string]*AckResult) {
 		cctx, cancel2 := context.WithTimeout(ctx, 60*time.Second)
 		defer cancel2()
 
-		var err error
-		innerCtx := cctx
 		var ackSpan trace.Span
-		subscribeSpans := make([]trace.Span, 0, len(toSend))
+		var subscribeSpans map[string]trace.Span
 		if it.enableTracing {
+			subscribeSpans = make(map[string]trace.Span)
 			var links []trace.Link
 			for _, ackID := range toSend {
-				s, ok := it.activeSpans.LoadAndDelete(ackID)
+				var s any
+				var ok bool
+				if exactlyOnceDelivery {
+					s, ok = it.activeSpans.Load(ackID)
+				} else {
+					s, ok = it.activeSpans.LoadAndDelete(ackID)
+				}
 				if ok {
 					subscribeSpan := s.(trace.Span)
-					subscribeSpans = append(subscribeSpans, subscribeSpan)
+					subscribeSpans[ackID] = subscribeSpan
 					subscribeSpan.AddEvent(eventAckStart, trace.WithAttributes(semconv.MessagingBatchMessageCount(len(toSend))))
 					if subscribeSpan.SpanContext().IsSampled() {
 						links = append(links, trace.Link{SpanContext: subscribeSpan.SpanContext()})
@@ -664,7 +670,7 @@ func (it *messageIterator) sendAck(m map[string]*AckResult) {
 					semconv.CodeFunction("sendAck"),
 				),
 			)
-			innerCtx, ackSpan = startSpan(cctx, ackSpanName, it.subID, opts...)
+			cctx, ackSpan = startSpan(cctx, ackSpanName, it.subID, opts...)
 			if ackSpan.SpanContext().IsSampled() {
 				for _, s := range subscribeSpans {
 					s.AddLink(trace.Link{
@@ -677,32 +683,73 @@ func (it *messageIterator) sendAck(m map[string]*AckResult) {
 			}
 		}
 
-		err = it.subc.Acknowledge(innerCtx, &pb.AcknowledgeRequest{
+		err := it.subc.Acknowledge(cctx, &pb.AcknowledgeRequest{
 			Subscription: it.subName,
 			AckIds:       toSend,
 		})
 
+		if !exactlyOnceDelivery {
+			if it.enableTracing {
+				for _, s := range subscribeSpans {
+					s.AddEvent(eventAckEnd)
+					s.SetAttributes(attribute.String(resultAttribute, resultAcked))
+					s.End()
+				}
+				if err != nil {
+					ackSpan.RecordError(err)
+					ackSpan.SetStatus(otelcodes.Error, err.Error())
+				}
+				ackSpan.End()
+			}
+			return
+		}
+
+		resultsByAckID := make(map[string]*AckResult)
+		for _, ackID := range toSend {
+			resultsByAckID[ackID] = m[ackID]
+		}
+		st, md := extractMetadata(err)
+		completed, toRetry := processResults(st, resultsByAckID, md)
+
 		if it.enableTracing {
+			var anyError bool
 			for _, s := range subscribeSpans {
 				s.AddEvent(eventAckEnd)
-				s.SetAttributes(attribute.String(resultAttribute, resultAcked))
-				s.End()
+			}
+			for ackID, ar := range completed {
+				if ar == nil {
+					continue
+				}
+				_, getErr := ar.Get(context.Background())
+				if getErr != nil {
+					anyError = true
+				}
+				if s, ok := subscribeSpans[ackID]; ok {
+					it.activeSpans.Delete(ackID)
+					if getErr != nil {
+						s.RecordError(getErr)
+						s.SetStatus(otelcodes.Error, getErr.Error())
+					} else {
+						s.SetAttributes(attribute.String(resultAttribute, resultAcked))
+					}
+					s.End()
+				}
+			}
+			if err != nil || len(toRetry) > 0 || anyError {
+				if err != nil {
+					ackSpan.RecordError(err)
+					ackSpan.SetStatus(otelcodes.Error, err.Error())
+				} else {
+					ackSpan.SetStatus(otelcodes.Error, "some messages in the batch failed or require retry")
+				}
 			}
 			ackSpan.End()
 		}
 
-		if exactlyOnceDelivery {
-			resultsByAckID := make(map[string]*AckResult)
-			for _, ackID := range toSend {
-				resultsByAckID[ackID] = m[ackID]
-			}
-			st, md := extractMetadata(err)
-			_, toRetry := processResults(st, resultsByAckID, md)
-			if len(toRetry) > 0 {
-				go func() {
-					it.retryAcks(toRetry)
-				}()
-			}
+		if len(toRetry) > 0 {
+			go func() {
+				it.retryAcks(toRetry)
+			}()
 		}
 	})
 }
@@ -738,23 +785,26 @@ func (it *messageIterator) sendModAck(ctx context.Context, m map[string]*AckResu
 		cctx, cancel2 := context.WithTimeout(ctx, 60*time.Second)
 		defer cancel2()
 
-		var err error
-		innerCtx := cctx
 		var mSpan trace.Span
-		subscribeSpans := make([]trace.Span, 0, len(toSend))
+		var subscribeSpans map[string]trace.Span
 		if it.enableTracing {
-			links := make([]trace.Link, 0, len(toSend))
+			subscribeSpans = make(map[string]trace.Span)
+			var links []trace.Link
 			for _, ackID := range toSend {
 				var s any
 				var ok bool
 				if isNack {
-					s, ok = it.activeSpans.LoadAndDelete(ackID)
+					if exactlyOnceDelivery {
+						s, ok = it.activeSpans.Load(ackID)
+					} else {
+						s, ok = it.activeSpans.LoadAndDelete(ackID)
+					}
 				} else {
 					s, ok = it.activeSpans.Load(ackID)
 				}
 				if ok {
 					subscribeSpan := s.(trace.Span)
-					subscribeSpans = append(subscribeSpans, subscribeSpan)
+					subscribeSpans[ackID] = subscribeSpan
 					subscribeSpan.AddEvent(eventStart, trace.WithAttributes(semconv.MessagingBatchMessageCount(len(toSend))))
 					if subscribeSpan.SpanContext().IsSampled() {
 						links = append(links, trace.Link{SpanContext: subscribeSpan.SpanContext()})
@@ -780,7 +830,7 @@ func (it *messageIterator) sendModAck(ctx context.Context, m map[string]*AckResu
 					),
 				)
 			}
-			innerCtx, mSpan = startSpan(cctx, spanName, it.subID, opts...)
+			cctx, mSpan = startSpan(cctx, spanName, it.subID, opts...)
 			if mSpan.SpanContext().IsSampled() {
 				for _, s := range subscribeSpans {
 					s.AddLink(trace.Link{
@@ -793,35 +843,78 @@ func (it *messageIterator) sendModAck(ctx context.Context, m map[string]*AckResu
 			}
 		}
 
-		err = it.subc.ModifyAckDeadline(innerCtx, &pb.ModifyAckDeadlineRequest{
+		err := it.subc.ModifyAckDeadline(cctx, &pb.ModifyAckDeadlineRequest{
 			Subscription:       it.subName,
 			AckDeadlineSeconds: deadlineSec,
 			AckIds:             toSend,
 		})
 
+		if !exactlyOnceDelivery {
+			if it.enableTracing {
+				for _, s := range subscribeSpans {
+					s.AddEvent(eventEnd)
+					if isNack {
+						s.SetAttributes(attribute.String(resultAttribute, resultNacked))
+						s.End()
+					}
+				}
+				if err != nil {
+					mSpan.RecordError(err)
+					mSpan.SetStatus(otelcodes.Error, err.Error())
+				}
+				mSpan.End()
+			}
+			return
+		}
+
+		resultsByAckID := make(map[string]*AckResult)
+		for _, ackID := range toSend {
+			resultsByAckID[ackID] = m[ackID]
+		}
+		st, md := extractMetadata(err)
+		completed, toRetry := processResults(st, resultsByAckID, md)
+
 		if it.enableTracing {
+			var anyError bool
 			for _, s := range subscribeSpans {
 				s.AddEvent(eventEnd)
+			}
+			for ackID, ar := range completed {
+				if ar == nil {
+					continue
+				}
+				_, getErr := ar.Get(context.Background())
+				if getErr != nil {
+					anyError = true
+				}
 				if isNack {
-					s.SetAttributes(attribute.String(resultAttribute, resultNacked))
-					s.End()
+					if s, ok := subscribeSpans[ackID]; ok {
+						it.activeSpans.Delete(ackID)
+						if getErr != nil {
+							s.RecordError(getErr)
+							s.SetStatus(otelcodes.Error, getErr.Error())
+						} else {
+							s.SetAttributes(attribute.String(resultAttribute, resultNacked))
+						}
+						s.End()
+					}
+				}
+			}
+			if err != nil || len(toRetry) > 0 || anyError {
+				if err != nil {
+					mSpan.RecordError(err)
+					mSpan.SetStatus(otelcodes.Error, err.Error())
+				} else {
+					mSpan.SetStatus(otelcodes.Error, "some messages in the batch failed or require retry")
 				}
 			}
 			mSpan.End()
 		}
 
-		if exactlyOnceDelivery {
-			resultsByAckID := make(map[string]*AckResult)
-			for _, ackID := range toSend {
-				resultsByAckID[ackID] = m[ackID]
-			}
-			st, md := extractMetadata(err)
-			_, toRetry := processResults(st, resultsByAckID, md)
-			if len(toRetry) > 0 {
-				go func() {
-					it.retryModAcks(toRetry, deadlineSec, logOnInvalid)
-				}()
-			}
+		if len(toRetry) > 0 {
+			go func() {
+				it.retryModAcks(toRetry, deadlineSec, logOnInvalid)
+			}()
 		}
 	})
 }
@@ -834,8 +927,17 @@ func (it *messageIterator) retryAcks(m map[string]*AckResult) {
 	bo := newExactlyOnceBackoff()
 	for {
 		if ctx.Err() != nil {
-			for _, r := range m {
+			for ackID, r := range m {
 				ipubsub.SetAckResult(r, AcknowledgeStatusOther, ctx.Err())
+				if it.enableTracing {
+					s, ok := it.activeSpans.LoadAndDelete(ackID)
+					if ok {
+						subscribeSpan := s.(trace.Span)
+						subscribeSpan.RecordError(ctx.Err())
+						subscribeSpan.SetStatus(otelcodes.Error, ctx.Err().Error())
+						subscribeSpan.End()
+					}
+				}
 			}
 			return
 		}
@@ -852,7 +954,29 @@ func (it *messageIterator) retryAcks(m map[string]*AckResult) {
 			AckIds:       ackIDs,
 		})
 		st, md := extractMetadata(err)
-		_, toRetry := processResults(st, m, md)
+		completed, toRetry := processResults(st, m, md)
+
+		if it.enableTracing {
+			for ackID, ar := range completed {
+				s, ok := it.activeSpans.LoadAndDelete(ackID)
+				if ok {
+					subscribeSpan := s.(trace.Span)
+					subscribeSpan.AddEvent(eventAckEnd)
+					var getErr error
+					if ar != nil {
+						_, getErr = ar.Get(context.Background())
+					}
+					if getErr != nil {
+						subscribeSpan.RecordError(getErr)
+						subscribeSpan.SetStatus(otelcodes.Error, getErr.Error())
+					} else {
+						subscribeSpan.SetAttributes(attribute.String(resultAttribute, resultAcked))
+					}
+					subscribeSpan.End()
+				}
+			}
+		}
+
 		if len(toRetry) == 0 {
 			return
 		}
@@ -870,11 +994,28 @@ func (it *messageIterator) retryModAcks(m map[string]*AckResult, deadlineSec int
 	retryCount := 0
 	ctx, cancel := context.WithTimeout(context.Background(), exactlyOnceDeliveryRetryDeadline)
 	defer cancel()
+	isNack := deadlineSec == 0
+	var eventEnd string
+	if isNack {
+		eventEnd = eventNackEnd
+	} else {
+		eventEnd = eventModackEnd
+	}
+
 	for {
 		// If context is done, complete all AckResults with errors.
 		if ctx.Err() != nil {
-			for _, r := range m {
+			for ackID, r := range m {
 				ipubsub.SetAckResult(r, AcknowledgeStatusOther, ctx.Err())
+				if isNack && it.enableTracing {
+					s, ok := it.activeSpans.LoadAndDelete(ackID)
+					if ok {
+						subscribeSpan := s.(trace.Span)
+						subscribeSpan.RecordError(ctx.Err())
+						subscribeSpan.SetStatus(otelcodes.Error, ctx.Err().Error())
+						subscribeSpan.End()
+					}
+				}
 			}
 			return
 		}
@@ -904,7 +1045,32 @@ func (it *messageIterator) retryModAcks(m map[string]*AckResult, deadlineSec int
 			AckDeadlineSeconds: deadlineSec,
 		})
 		st, md := extractMetadata(err)
-		_, toRetry := processResults(st, m, md)
+		completed, toRetry := processResults(st, m, md)
+
+		if it.enableTracing {
+			for ackID, ar := range completed {
+				s, ok := it.activeSpans.Load(ackID)
+				if ok {
+					subscribeSpan := s.(trace.Span)
+					subscribeSpan.AddEvent(eventEnd)
+					if isNack {
+						it.activeSpans.Delete(ackID)
+						var getErr error
+						if ar != nil {
+							_, getErr = ar.Get(context.Background())
+						}
+						if getErr != nil {
+							subscribeSpan.RecordError(getErr)
+							subscribeSpan.SetStatus(otelcodes.Error, getErr.Error())
+						} else {
+							subscribeSpan.SetAttributes(attribute.String(resultAttribute, resultNacked))
+						}
+						subscribeSpan.End()
+					}
+				}
+			}
+		}
+
 		if len(toRetry) == 0 {
 			return
 		}

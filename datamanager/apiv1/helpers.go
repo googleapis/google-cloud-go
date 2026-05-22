@@ -54,6 +54,7 @@ func getVersionClient() string {
 func DefaultAuthScopes() []string {
 	return []string{
 		"https://www.googleapis.com/auth/datamanager",
+		"https://www.googleapis.com/auth/datamanager.partnerlink",
 	}
 }
 

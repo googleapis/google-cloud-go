@@ -651,7 +651,6 @@ func TestTransaction_WithReadOptions(t *testing.T) {
 
 	const db = "projects/projectID/databases/(default)"
 	tm := time.Date(2021, time.February, 20, 0, 0, 0, 0, time.UTC)
-	ts := &timestamppb.Timestamp{Nanos: int32(tm.UnixNano())}
 	tid := []byte{1}
 
 	beginReq := &pb.BeginTransactionRequest{Database: db}
@@ -659,29 +658,21 @@ func TestTransaction_WithReadOptions(t *testing.T) {
 
 	srv.reset()
 	srv.addRPC(beginReq, beginRes)
-
 	srv.addRPC(
-		&pb.CommitRequest{
+		&pb.RollbackRequest{
 			Database:    db,
 			Transaction: tid,
 		},
-		&pb.CommitResponse{CommitTime: ts},
+		&emptypb.Empty{},
 	)
 
-	srv.addRPC(
-		&pb.CommitRequest{
-			Database:    db,
-			Transaction: tid,
-		},
-		&pb.CommitResponse{CommitTime: ts},
-	)
-
-	if err := c.RunTransaction(ctx, func(ctx2 context.Context, tx *Transaction) error {
+	err := c.RunTransaction(ctx, func(ctx2 context.Context, tx *Transaction) error {
 		docref := c.Collection("C").Doc("a")
 		tx.WithReadOptions(ReadTime(tm)).Get(docref)
 		return nil
-	}); err != nil {
-		t.Fatal(err)
+	})
+	if err != errInvalidReadTime {
+		t.Fatalf("got err %v, want %v", err, errInvalidReadTime)
 	}
 }
 
@@ -784,5 +775,90 @@ func TestBeginTransactionRetryOnUnavailable(t *testing.T) {
 	}, MaxAttempts(1))
 	if err != nil {
 		t.Fatalf("RunTransaction failed: %v", err)
+	}
+}
+
+func TestTransaction_TransactionReadTime_Success(t *testing.T) {
+	ctx := context.Background()
+	c, srv, cleanup := newMock(t)
+	defer cleanup()
+
+	const db = "projects/projectID/databases/(default)"
+	tm := time.Date(2021, time.February, 20, 0, 0, 0, 0, time.UTC)
+	ts := timestamppb.New(tm)
+	tid := []byte{1}
+
+	beginReq := &pb.BeginTransactionRequest{
+		Database: db,
+		Options: &pb.TransactionOptions{
+			Mode: &pb.TransactionOptions_ReadOnly_{
+				ReadOnly: &pb.TransactionOptions_ReadOnly{
+					ConsistencySelector: &pb.TransactionOptions_ReadOnly_ReadTime{
+						ReadTime: ts,
+					},
+				},
+			},
+		},
+	}
+	beginRes := &pb.BeginTransactionResponse{Transaction: tid}
+
+	srv.reset()
+	srv.addRPC(beginReq, beginRes)
+	srv.addRPC(
+		&pb.CommitRequest{
+			Database:    db,
+			Transaction: tid,
+		},
+		&pb.CommitResponse{CommitTime: ts},
+	)
+
+	err := c.RunTransaction(ctx, func(ctx2 context.Context, tx *Transaction) error {
+		return nil
+	}, ReadOnly, TransactionReadTime(tm))
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestTransaction_WithReadOptions_Empty_AfterTransactionReadTime(t *testing.T) {
+	ctx := context.Background()
+	c, srv, cleanup := newMock(t)
+	defer cleanup()
+
+	const db = "projects/projectID/databases/(default)"
+	tm := time.Date(2021, time.February, 20, 0, 0, 0, 0, time.UTC)
+	ts := timestamppb.New(tm)
+	tid := []byte{1}
+
+	beginReq := &pb.BeginTransactionRequest{
+		Database: db,
+		Options: &pb.TransactionOptions{
+			Mode: &pb.TransactionOptions_ReadOnly_{
+				ReadOnly: &pb.TransactionOptions_ReadOnly{
+					ConsistencySelector: &pb.TransactionOptions_ReadOnly_ReadTime{
+						ReadTime: ts,
+					},
+				},
+			},
+		},
+	}
+	beginRes := &pb.BeginTransactionResponse{Transaction: tid}
+
+	srv.reset()
+	srv.addRPC(beginReq, beginRes)
+	srv.addRPC(
+		&pb.CommitRequest{
+			Database:    db,
+			Transaction: tid,
+		},
+		&pb.CommitResponse{CommitTime: ts},
+	)
+
+	err := c.RunTransaction(ctx, func(ctx2 context.Context, tx *Transaction) error {
+		tx.WithReadOptions()
+		return nil
+	}, ReadOnly, TransactionReadTime(tm))
+	if err != nil {
+		t.Fatal(err)
 	}
 }
