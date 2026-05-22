@@ -21,10 +21,8 @@ jobs:
           go-version: '1.26.x'
 
       - name: Run librarian tidy
-        run: |
-          V=$(go run github.com/googleapis/librarian/cmd/librarian@latest config get version)
-          go run github.com/googleapis/librarian/cmd/librarian@${V} tidy
-          git diff
+        uses: noahdietz/librarian@librarian-action
+        run: librarian tidy
 
       - name: Check for diff
         run: |
