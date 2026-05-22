@@ -807,7 +807,7 @@ libraries:
       - internal/generated/snippets/commerce/
     tag_format: '{id}/v{version}'
   - id: compute
-    version: 1.63.0
+    version: 1.64.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/compute/v1
@@ -999,7 +999,7 @@ libraries:
       - internal/generated/snippets/datalabeling/
     tag_format: '{id}/v{version}'
   - id: datamanager
-    version: 1.0.0
+    version: 1.1.0
     last_generated_commit: ""
     apis:
       - path: google/ads/datamanager/v1
@@ -2755,7 +2755,7 @@ libraries:
       - internal/generated/snippets/streetview/
     tag_format: '{id}/v{version}'
   - id: support
-    version: 1.10.0
+    version: 1.11.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/support/v2
