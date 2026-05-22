@@ -21,9 +21,9 @@ import (
 
 func TestDiverterZeroAndOne(t *testing.T) {
 	tests := []struct {
-		name         string
-		sessionLoad  float64
-		expectedRes  bool
+		name        string
+		sessionLoad float64
+		expectedRes bool
 	}{
 		{
 			name:        "Load is zero",
