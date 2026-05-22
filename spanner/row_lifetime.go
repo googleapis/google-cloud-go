@@ -18,28 +18,7 @@ package spanner
 
 import "sync"
 
-type rawRowData struct {
-	vals    [][]byte
-	release func()
-}
-
-var rawRows sync.Map     // map[*Row]rawRowData
 var rowReleases sync.Map // map[*Row]func()
-
-func rawValsForRow(row *Row) ([][]byte, bool) {
-	if row == nil {
-		return nil, false
-	}
-	v, ok := rawRows.Load(row)
-	if !ok {
-		return nil, false
-	}
-	return v.(rawRowData).vals, true
-}
-
-func setRawRow(row *Row, vals [][]byte, release func()) {
-	rawRows.Store(row, rawRowData{vals: vals, release: release})
-}
 
 func setRowRelease(row *Row, release func()) {
 	if release != nil {
@@ -53,12 +32,5 @@ func releaseRawRow(row *Row) {
 	}
 	if v, ok := rowReleases.LoadAndDelete(row); ok {
 		v.(func())()
-	}
-	v, ok := rawRows.LoadAndDelete(row)
-	if !ok {
-		return
-	}
-	if release := v.(rawRowData).release; release != nil {
-		release()
 	}
 }

@@ -130,13 +130,9 @@ func BenchmarkCustomerShapePublicQuery(b *testing.B) {
 				b.Fatal(err)
 			}
 			buf = buf[:0]
-			if useRaw {
-				buf, err = row.ColumnBytes(1, buf)
-			} else {
-				var s string
-				err = row.Column(1, &s)
-				buf = append(buf, s...)
-			}
+			var s string
+			err = row.Column(1, &s)
+			buf = append(buf, s...)
 			if err != nil {
 				b.Fatal(err)
 			}

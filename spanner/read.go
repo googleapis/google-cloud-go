@@ -929,7 +929,7 @@ func (p *partialResultSetDecoder) yield(chunked, last bool) *Row {
 		copy(fresh.vals, p.row.vals)
 		if len(p.rowBuffers) > 0 {
 			buffers := append([]*vtUnsafeBuffer(nil), p.rowBuffers...)
-			setRawRow(&fresh, make([][]byte, len(fresh.vals)), func() { releaseVTUnsafeBufferRefs(buffers) })
+			setRowRelease(&fresh, func() { releaseVTUnsafeBufferRefs(buffers) })
 		}
 		p.row.vals = p.row.vals[:0] // empty and reuse slice
 		p.rowBuffers = p.rowBuffers[:0]

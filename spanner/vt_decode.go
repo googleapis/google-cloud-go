@@ -141,23 +141,6 @@ func retainVTUnsafePartialResultSetForIterator(prs *sppb.PartialResultSet) func(
 	return retainVTUnsafePartialResultSet(prs)
 }
 
-func combineReleases(releases ...func()) func() {
-	var nonNil []func()
-	for _, release := range releases {
-		if release != nil {
-			nonNil = append(nonNil, release)
-		}
-	}
-	if len(nonNil) == 0 {
-		return nil
-	}
-	return func() {
-		for _, release := range nonNil {
-			release()
-		}
-	}
-}
-
 func (g *grpcSpannerClient) ExecuteStreamingSqlVTUnsafe(ctx context.Context, req *sppb.ExecuteSqlRequest, opts ...gax.CallOption) (sppb.Spanner_ExecuteStreamingSqlClient, error) {
 	opts = append(opts, gax.WithGRPCOptions(grpc.ForceCodecV2(vtUnsafeCodec{})))
 	return g.raw.ExecuteStreamingSql(ctx, req, opts...)

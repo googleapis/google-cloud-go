@@ -17,7 +17,6 @@ limitations under the License.
 package spanner
 
 import (
-	"encoding/base64"
 	"errors"
 	"fmt"
 	"reflect"
@@ -138,41 +137,6 @@ func (r *Row) Size() int {
 	return len(r.fields)
 }
 
-// ColumnBytes appends column i to dst and returns the extended buffer.
-//
-// When QueryOptions.ExperimentalRawDecode is enabled, some experimental paths
-// can attach raw bytes to the Row. Otherwise this decodes the column as a
-// string and appends its bytes to dst.
-func (r *Row) ColumnBytes(i int, dst []byte) ([]byte, error) {
-	if i < 0 || i >= len(r.fields) {
-		return nil, errColIdxOutOfRange(i, r)
-	}
-	if rawVals, ok := rawValsForRow(r); ok {
-		if i >= len(rawVals) {
-			return nil, errColIdxOutOfRange(i, r)
-		}
-		if rawVals[i] != nil && r.fields[i] != nil {
-			switch r.fields[i].Type.Code {
-			case sppb.TypeCode_STRING:
-				return append(dst, rawVals[i]...), nil
-			case sppb.TypeCode_BYTES, sppb.TypeCode_PROTO:
-				n0 := len(dst)
-				dst = append(dst, make([]byte, base64.StdEncoding.DecodedLen(len(rawVals[i])))...)
-				n, err := base64.StdEncoding.Decode(dst[n0:], rawVals[i])
-				if err != nil {
-					return nil, errDecodeColumn(i, errBadEncoding(r.vals[i], err))
-				}
-				return dst[:n0+n], nil
-			}
-		}
-	}
-	var s string
-	if err := r.Column(i, &s); err != nil {
-		return nil, err
-	}
-	return append(dst, s...), nil
-}
-
 // ColumnName returns the name of column i, or empty string for invalid column.
 func (r *Row) ColumnName(i int) string {
 	if i < 0 || i >= len(r.fields) {
@@ -274,31 +238,6 @@ func (r *Row) Column(i int, ptr interface{}) error {
 	}
 	if r.fields[i] == nil {
 		return errNilColType(i)
-	}
-	if rawVals, ok := rawValsForRow(r); ok && i < len(rawVals) && rawVals[i] != nil {
-		switch p := ptr.(type) {
-		case *string:
-			if p == nil {
-				return errNilDst(p)
-			}
-			if r.fields[i].Type.Code == sppb.TypeCode_STRING {
-				*p = string(rawVals[i])
-				return nil
-			}
-		case *[]byte:
-			if p == nil {
-				return errNilDst(p)
-			}
-			if r.fields[i].Type.Code == sppb.TypeCode_BYTES || r.fields[i].Type.Code == sppb.TypeCode_PROTO {
-				dst := make([]byte, base64.StdEncoding.DecodedLen(len(rawVals[i])))
-				n, err := base64.StdEncoding.Decode(dst, rawVals[i])
-				if err != nil {
-					return errDecodeColumn(i, errBadEncoding(r.vals[i], err))
-				}
-				*p = dst[:n]
-				return nil
-			}
-		}
 	}
 	if err := decodeValue(r.vals[i], r.fields[i].Type, ptr); err != nil {
 		return errDecodeColumn(i, err)
