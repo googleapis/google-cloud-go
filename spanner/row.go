@@ -17,6 +17,7 @@ limitations under the License.
 package spanner
 
 import (
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"reflect"
@@ -260,6 +261,31 @@ func (r *Row) Column(i int, ptr interface{}) error {
 	}
 	if r.fields[i] == nil {
 		return errNilColType(i)
+	}
+	if rawVals, ok := rawValsForRow(r); ok && i < len(rawVals) && rawVals[i] != nil {
+		switch p := ptr.(type) {
+		case *string:
+			if p == nil {
+				return errNilDst(p)
+			}
+			if r.fields[i].Type.Code == sppb.TypeCode_STRING {
+				*p = string(rawVals[i])
+				return nil
+			}
+		case *[]byte:
+			if p == nil {
+				return errNilDst(p)
+			}
+			if r.fields[i].Type.Code == sppb.TypeCode_BYTES || r.fields[i].Type.Code == sppb.TypeCode_PROTO {
+				dst := make([]byte, base64.StdEncoding.DecodedLen(len(rawVals[i])))
+				n, err := base64.StdEncoding.Decode(dst, rawVals[i])
+				if err != nil {
+					return errDecodeColumn(i, errBadEncoding(r.vals[i], err))
+				}
+				*p = dst[:n]
+				return nil
+			}
+		}
 	}
 	if err := decodeValue(r.vals[i], r.fields[i].Type, ptr); err != nil {
 		return errDecodeColumn(i, err)

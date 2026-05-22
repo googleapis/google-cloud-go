@@ -33,6 +33,7 @@ import (
 	"google.golang.org/grpc/mem"
 	"google.golang.org/protobuf/encoding/protowire"
 	"google.golang.org/protobuf/proto"
+	proto3 "google.golang.org/protobuf/types/known/structpb"
 )
 
 type rawBytesCodec struct{}
@@ -106,9 +107,14 @@ func (r *rawStreamingReceiver) RecvRaw(needMetadata bool) (*rawPartialResultSet,
 
 type rawPartialResultSet struct {
 	metadata *sppb.ResultSetMetadata
-	values   [][]byte
+	values   []rawDecodedValue
 	last     bool
 	data     mem.Buffer
+}
+
+type rawDecodedValue struct {
+	rawString []byte
+	protoVal  *proto3.Value
 }
 
 type rawRowData struct {
@@ -197,7 +203,7 @@ func decodeRawPartialResultSet(data mem.BufferSlice, needMetadata bool) (*rawPar
 				prs.free()
 				return nil, protowire.ParseError(n)
 			}
-			v, err := decodeRawStringValue(b)
+			v, err := decodeRawValue(b)
 			if err != nil {
 				prs.free()
 				return nil, err
@@ -224,27 +230,32 @@ func decodeRawPartialResultSet(data mem.BufferSlice, needMetadata bool) (*rawPar
 	return prs, nil
 }
 
-func decodeRawStringValue(wire []byte) ([]byte, error) {
+func decodeRawValue(wire []byte) (rawDecodedValue, error) {
+	orig := wire
 	for len(wire) > 0 {
 		num, typ, n := protowire.ConsumeTag(wire)
 		if n < 0 {
-			return nil, protowire.ParseError(n)
+			return rawDecodedValue{}, protowire.ParseError(n)
 		}
 		wire = wire[n:]
 		if num == 3 && typ == protowire.BytesType {
 			v, n := protowire.ConsumeBytes(wire)
 			if n < 0 {
-				return nil, protowire.ParseError(n)
+				return rawDecodedValue{}, protowire.ParseError(n)
 			}
-			return v, nil
+			return rawDecodedValue{rawString: v}, nil
 		}
 		n = protowire.ConsumeFieldValue(num, typ, wire)
 		if n < 0 {
-			return nil, protowire.ParseError(n)
+			return rawDecodedValue{}, protowire.ParseError(n)
 		}
 		wire = wire[n:]
 	}
-	return nil, fmt.Errorf("spanner raw decode: missing string_value")
+	val := &proto3.Value{}
+	if err := proto.Unmarshal(orig, val); err != nil {
+		return rawDecodedValue{}, err
+	}
+	return rawDecodedValue{protoVal: val}, nil
 }
 
 type rawStreamDecoder struct {
@@ -258,7 +269,7 @@ type rawStreamDecoder struct {
 
 type rawPartialResultSetDecoder struct {
 	fields []*sppb.StructType_Field
-	vals   [][]byte
+	vals   []rawDecodedValue
 }
 
 func rawStreamWithTransactionCallbacks(
@@ -372,10 +383,20 @@ func (p *rawPartialResultSetDecoder) add(prs *rawPartialResultSet) ([]*Row, erro
 		p.vals = append(p.vals, v)
 		if len(p.vals) == len(p.fields) {
 			rawVals := make([][]byte, len(p.vals))
-			copy(rawVals, p.vals)
+			protoVals := make([]*proto3.Value, len(p.vals))
+			for i, val := range p.vals {
+				rawVals[i] = val.rawString
+				protoVals[i] = val.protoVal
+				if protoVals[i] == nil && val.rawString != nil {
+					code := p.fields[i].Type.Code
+					if code != sppb.TypeCode_STRING && code != sppb.TypeCode_BYTES && code != sppb.TypeCode_PROTO {
+						protoVals[i] = &proto3.Value{Kind: &proto3.Value_StringValue{StringValue: string(val.rawString)}}
+					}
+				}
+			}
 			prs.ref()
 			buf := prs.data
-			row := &Row{fields: p.fields}
+			row := &Row{fields: p.fields, vals: protoVals}
 			setRawRow(row, rawVals, func() { buf.Free() })
 			rows = append(rows, row)
 			p.vals = p.vals[:0]
