@@ -117,7 +117,7 @@ func Vet(dir string) error {
 		return err
 	}
 
-	c = execv.Command("gofmt", "-s", "-d", "-w", "-l", ".")
+	c = execv.Command("gofmt", "-s", "-w", "-l", ".")
 	c.Dir = dir
 	return c.Run()
 }
