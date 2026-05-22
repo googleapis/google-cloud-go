@@ -16,10 +16,8 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Run librarian tidy
-        uses: googleapis/librarian@latest
-        run: |
-          V=$(librarian config get version)
-          go run github.com/googleapis/librarian/cmd/librarian@${V} tidy
+        uses: noahdietz/librarian@librarian-action
+        run: librarian tidy
 
       - name: Check for diff
         run: |
