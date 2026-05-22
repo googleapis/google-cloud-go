@@ -23,7 +23,8 @@ type rawRowData struct {
 	release func()
 }
 
-var rawRows sync.Map // map[*Row]rawRowData
+var rawRows sync.Map     // map[*Row]rawRowData
+var rowReleases sync.Map // map[*Row]func()
 
 func rawValsForRow(row *Row) ([][]byte, bool) {
 	if row == nil {
@@ -40,9 +41,18 @@ func setRawRow(row *Row, vals [][]byte, release func()) {
 	rawRows.Store(row, rawRowData{vals: vals, release: release})
 }
 
+func setRowRelease(row *Row, release func()) {
+	if release != nil {
+		rowReleases.Store(row, release)
+	}
+}
+
 func releaseRawRow(row *Row) {
 	if row == nil {
 		return
+	}
+	if v, ok := rowReleases.LoadAndDelete(row); ok {
+		v.(func())()
 	}
 	v, ok := rawRows.LoadAndDelete(row)
 	if !ok {

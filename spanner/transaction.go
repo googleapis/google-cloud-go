@@ -733,7 +733,7 @@ func (t *txReadOnly) query(ctx context.Context, statement Statement, options Que
 	allowRetryResourceExhaustedWithoutDelay := shouldAllowRetryResourceExhaustedWithoutDelayInStreaming(client)
 	if options.ExperimentalRawDecode {
 		if gclient := asGRPCSpannerClient(client); gclient != nil {
-			return streamWithTransactionCallbacks(
+			iter := streamWithTransactionCallbacks(
 				contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader),
 				sh.session.logger,
 				t.sm.sc.metricsTracerFactory,
@@ -771,6 +771,8 @@ func (t *txReadOnly) query(ctx context.Context, statement Statement, options Que
 				gclient,
 				retryResourceExhausted,
 				allowRetryResourceExhaustedWithoutDelay)
+			iter.reuseRowUntilNext = true
+			return iter
 		}
 	}
 	return streamWithTransactionCallbacks(

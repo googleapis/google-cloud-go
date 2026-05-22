@@ -164,6 +164,7 @@ type RowIterator struct {
 	rows                 []*Row
 	lastRawRow           *Row
 	vtUnsafeReleases     []func()
+	reuseRowUntilNext    bool
 	sawStats             bool
 }
 
@@ -174,6 +175,9 @@ var _ rowIterator = (*RowIterator)(nil)
 // there are no more results. Once Next returns Done, all subsequent calls
 // will return Done.
 func (r *RowIterator) Next() (*Row, error) {
+	if r.reuseRowUntilNext {
+		return r.nextReusableRow()
+	}
 	if r.lastRawRow != nil {
 		releaseRawRow(r.lastRawRow)
 		r.lastRawRow = nil
@@ -268,6 +272,100 @@ func (r *RowIterator) Next() (*Row, error) {
 	return nil, r.err
 }
 
+func (r *RowIterator) nextReusableRow() (*Row, error) {
+	if r.lastRawRow != nil {
+		releaseRawRow(r.lastRawRow)
+		r.lastRawRow = nil
+	}
+	mt := r.meterTracerFactory.createBuiltinMetricsTracer(r.ctx)
+	if r.err != nil {
+		return nil, r.err
+	}
+	mt.currOp.incrementAttemptCount()
+	mt.currOp.currAttempt = &attemptTracer{startTime: time.Now()}
+	defer func() {
+		if mt.method != "" {
+			statusCode, _ := convertToGrpcStatusErr(r.err)
+			mt.currOp.currAttempt.setStatus(statusCode.String())
+			recordAttemptCompletion(&mt)
+			mt.currOp.setStatus(statusCode.String())
+			recordOperationCompletion(&mt)
+			mt.currOp.currAttempt = nil
+		}
+	}()
+
+	for {
+		row, metadata, err := r.rowd.nextReusableBuffered(nil)
+		if err != nil {
+			r.err = err
+			return nil, r.err
+		}
+		if metadata != nil {
+			r.Metadata = metadata
+		}
+		if row != nil {
+			r.lastRawRow = row
+			return row, nil
+		}
+		if !r.streamd.next(&mt) {
+			break
+		}
+		prs := r.streamd.get()
+		if release := retainVTUnsafePartialResultSetForIterator(prs); release != nil {
+			r.vtUnsafeReleases = append(r.vtUnsafeReleases, release)
+		}
+		if r.setTransactionID != nil {
+			if prs.Metadata != nil && prs.Metadata.Transaction != nil {
+				r.setTransactionID(prs.Metadata.Transaction.GetId())
+			} else {
+				r.setTransactionID(nil)
+				r.err = r.updateTxState(errInlineBeginTransactionFailed(nil))
+				return nil, r.err
+			}
+			r.setTransactionID = nil
+		}
+		if r.updatePrecommitToken != nil {
+			r.updatePrecommitToken(prs.GetPrecommitToken())
+		}
+		if prs.Stats != nil {
+			r.sawStats = true
+			r.QueryPlan = prs.Stats.QueryPlan
+			r.QueryStats = protostruct.DecodeToMap(prs.Stats.QueryStats)
+			if prs.Stats.RowCount != nil {
+				rc, err := extractRowCount(prs.Stats)
+				if err != nil {
+					return nil, err
+				}
+				r.RowCount = rc
+			}
+		}
+		row, metadata, r.err = r.rowd.addReusable(prs)
+		if metadata != nil {
+			r.Metadata = metadata
+		}
+		if r.err != nil {
+			return nil, r.err
+		}
+		if !r.rowd.ts.IsZero() && r.setTimestamp != nil {
+			r.setTimestamp(r.rowd.ts)
+			r.setTimestamp = nil
+		}
+		if row != nil {
+			r.lastRawRow = row
+			return row, nil
+		}
+	}
+	if err := r.streamd.lastErr(); err != nil {
+		r.err = r.updateTxState(ToSpannerError(err))
+	} else if !r.rowd.done() {
+		r.err = errEarlyReadEnd()
+	} else {
+		r.cancel = nil
+		r.err = iterator.Done
+	}
+	return nil, r.err
+}
+
 func extractRowCount(stats *sppb.ResultSetStats) (int64, error) {
 	if stats.RowCount == nil {
 		return 0, spannerErrorf(codes.Internal, "missing RowCount")
@@ -321,6 +419,9 @@ func (r *RowIterator) Stop() {
 		release()
 	}
 	r.vtUnsafeReleases = nil
+	if r.rowd != nil {
+		r.rowd.releasePending()
+	}
 	if r.streamd != nil {
 		if r.err != nil && r.err != iterator.Done {
 			defer trace.EndSpan(r.streamd.ctx, r.err)
@@ -797,8 +898,12 @@ type partialResultSetDecoder struct {
 	tx      *sppb.Transaction
 	chunked bool // if true, next value should be merged with last values
 	// entry.
-	ts         time.Time // read timestamp
-	rowBuffers []*vtUnsafeBuffer
+	ts              time.Time // read timestamp
+	rowBuffers      []*vtUnsafeBuffer
+	pendingPRS      *sppb.PartialResultSet
+	pendingIndex    int
+	reusableRow     Row
+	reusableRelease func()
 }
 
 // yield checks we have a complete row, and if so returns it.  A row is not
@@ -842,18 +947,7 @@ func errChunkedEmptyRow() error {
 // rows that have been completed as a result.
 func (p *partialResultSetDecoder) add(r *sppb.PartialResultSet) ([]*Row, *sppb.ResultSetMetadata, error) {
 	var rows []*Row
-	if r.Metadata != nil {
-		// Metadata should only be returned in the first result.
-		if p.row.fields == nil {
-			p.row.fields = r.Metadata.RowType.Fields
-		}
-		if p.tx == nil && r.Metadata.Transaction != nil {
-			p.tx = r.Metadata.Transaction
-			if p.tx.ReadTimestamp != nil {
-				p.ts = time.Unix(p.tx.ReadTimestamp.Seconds, int64(p.tx.ReadTimestamp.Nanos))
-			}
-		}
-	}
+	p.observeMetadata(r)
 	if len(r.Values) == 0 {
 		return nil, r.Metadata, nil
 	}
@@ -901,6 +995,105 @@ func (p *partialResultSetDecoder) add(r *sppb.PartialResultSet) ([]*Row, *sppb.R
 		p.chunked = true
 	}
 	return rows, r.Metadata, nil
+}
+
+func (p *partialResultSetDecoder) observeMetadata(r *sppb.PartialResultSet) {
+	if r.Metadata == nil {
+		return
+	}
+	if p.row.fields == nil {
+		p.row.fields = r.Metadata.RowType.Fields
+	}
+	if p.tx == nil && r.Metadata.Transaction != nil {
+		p.tx = r.Metadata.Transaction
+		if p.tx.ReadTimestamp != nil {
+			p.ts = time.Unix(p.tx.ReadTimestamp.Seconds, int64(p.tx.ReadTimestamp.Nanos))
+		}
+	}
+}
+
+func (p *partialResultSetDecoder) addReusable(r *sppb.PartialResultSet) (*Row, *sppb.ResultSetMetadata, error) {
+	p.observeMetadata(r)
+	if len(r.Values) == 0 {
+		releaseVTUnsafePartialResultSet(r)
+		return nil, r.Metadata, nil
+	}
+	p.pendingPRS = r
+	p.pendingIndex = 0
+	return p.nextReusableBuffered(r.Metadata)
+}
+
+func (p *partialResultSetDecoder) nextReusableBuffered(metadata *sppb.ResultSetMetadata) (*Row, *sppb.ResultSetMetadata, error) {
+	for p.pendingPRS != nil && p.pendingIndex < len(p.pendingPRS.Values) {
+		v := p.pendingPRS.Values[p.pendingIndex]
+		last := p.pendingIndex == len(p.pendingPRS.Values)-1
+		if p.chunked {
+			p.chunked = false
+			prev := len(p.row.vals) - 1
+			if prev < 0 {
+				return nil, nil, errChunkedEmptyRow()
+			}
+			if buf := retainVTUnsafePartialResultSetBuffer(p.pendingPRS); buf != nil {
+				p.rowBuffers = append(p.rowBuffers, buf)
+			}
+			merged, err := p.merge(p.row.vals[prev], v)
+			if err != nil {
+				return nil, metadata, err
+			}
+			p.row.vals[prev] = merged
+		} else {
+			p.row.vals = append(p.row.vals, v)
+			if buf := retainVTUnsafePartialResultSetBuffer(p.pendingPRS); buf != nil {
+				p.rowBuffers = append(p.rowBuffers, buf)
+			}
+		}
+		p.pendingIndex++
+		if row := p.yieldReusable(p.pendingPRS.ChunkedValue, last); row != nil {
+			if p.pendingIndex == len(p.pendingPRS.Values) {
+				releaseVTUnsafePartialResultSet(p.pendingPRS)
+				p.pendingPRS = nil
+				p.pendingIndex = 0
+			}
+			return row, metadata, nil
+		}
+	}
+	if p.pendingPRS != nil && p.pendingIndex == len(p.pendingPRS.Values) {
+		if p.pendingPRS.ChunkedValue {
+			p.chunked = true
+		}
+		releaseVTUnsafePartialResultSet(p.pendingPRS)
+		p.pendingPRS = nil
+		p.pendingIndex = 0
+	}
+	return nil, metadata, nil
+}
+
+func (p *partialResultSetDecoder) yieldReusable(chunked, last bool) *Row {
+	if len(p.row.vals) != len(p.row.fields) || (chunked && last) {
+		return nil
+	}
+	p.reusableRow.fields = p.row.fields
+	p.reusableRow.vals = p.row.vals
+	if p.reusableRelease == nil {
+		p.reusableRelease = p.releaseReusableRow
+	}
+	setRowRelease(&p.reusableRow, p.reusableRelease)
+	p.row.vals = p.row.vals[:0]
+	return &p.reusableRow
+}
+
+func (p *partialResultSetDecoder) releaseReusableRow() {
+	releaseVTUnsafeBufferRefs(p.rowBuffers)
+	p.rowBuffers = p.rowBuffers[:0]
+}
+
+func (p *partialResultSetDecoder) releasePending() {
+	if p.pendingPRS != nil {
+		releaseVTUnsafePartialResultSet(p.pendingPRS)
+		p.pendingPRS = nil
+		p.pendingIndex = 0
+	}
+	p.releaseReusableRow()
 }
 
 // isMergeable returns if a protobuf Value can be potentially merged with other
