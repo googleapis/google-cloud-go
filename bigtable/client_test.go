@@ -25,20 +25,20 @@ func TestIsDirectAccessDisabled(t *testing.T) {
 		configDisable bool
 		envValue      string
 		envSet        bool
-		want          bool
+		want          bool // direct access should be enabled
 	}{
 		{
 			name:          "config_disabled_env_unset",
 			configDisable: true,
 			envSet:        false,
-			want:          true,
+			want:          false,
 		},
 		{
 			name:          "config_disabled_env_false",
 			configDisable: true,
 			envSet:        true,
 			envValue:      "false",
-			want:          true,
+			want:          false,
 		},
 		{
 			name:          "config_disabled_env_true",
@@ -51,49 +51,49 @@ func TestIsDirectAccessDisabled(t *testing.T) {
 			name:          "config_enabled_env_unset",
 			configDisable: false,
 			envSet:        false,
-			want:          false,
+			want:          true,
 		},
 		{
 			name:          "config_enabled_env_false_lowercase",
 			configDisable: false,
 			envSet:        true,
 			envValue:      "false",
-			want:          true,
+			want:          false,
 		},
 		{
 			name:          "config_enabled_env_false_uppercase",
 			configDisable: false,
 			envSet:        true,
 			envValue:      "FALSE",
-			want:          true,
+			want:          false,
 		},
 		{
 			name:          "config_enabled_env_false_mixedcase",
 			configDisable: false,
 			envSet:        true,
 			envValue:      "False",
-			want:          true,
+			want:          false,
 		},
 		{
 			name:          "config_enabled_env_true_lowercase",
 			configDisable: false,
 			envSet:        true,
 			envValue:      "true",
-			want:          false,
+			want:          true,
 		},
 		{
 			name:          "config_enabled_env_true_uppercase",
 			configDisable: false,
 			envSet:        true,
 			envValue:      "TRUE",
-			want:          false,
+			want:          true,
 		},
 		{
 			name:          "config_enabled_env_true_mixedcase",
 			configDisable: false,
 			envSet:        true,
 			envValue:      "True",
-			want:          false,
+			want:          true,
 		},
 		{
 			// 't' is not respected, defaults to not disabled (false)
@@ -101,7 +101,7 @@ func TestIsDirectAccessDisabled(t *testing.T) {
 			configDisable: false,
 			envSet:        true,
 			envValue:      "t",
-			want:          false,
+			want:          true,
 		},
 		{
 			// 'f' is not respected, defaults to not disabled (false)
@@ -130,7 +130,7 @@ func TestIsDirectAccessDisabled(t *testing.T) {
 			config := ClientConfig{
 				DisableDirectAccess: tc.configDisable,
 			}
-			got := isDirectAccessDisabled(config)
+			got := isDirectAccessEnabled(config)
 			if got != tc.want {
 				t.Errorf("isDirectAccessDisabled(%+v) = %v; want %v", config, got, tc.want)
 			}

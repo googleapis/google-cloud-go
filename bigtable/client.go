@@ -21,7 +21,6 @@ import (
 	"os"
 	"reflect"
 	"strconv"
-	"strings"
 	"time"
 
 	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
@@ -74,7 +73,7 @@ type ClientConfig struct {
 	// Preemptive connection is default to true
 	DisableConnectionRecycler bool
 
-	// DisableDirectpath disables direct access by default.
+	// DisableDirectAccess disables direct access by default.
 	DisableDirectAccess bool
 }
 
@@ -87,6 +86,8 @@ type MetricsProvider interface {
 type NoopMetricsProvider struct{}
 
 func (NoopMetricsProvider) isMetricsProvider() {}
+
+const DIRECTPATH_ENV_VAR = "CBT_ENABLE_DIRECTPATH"
 
 // NewClient creates a new Client for a given project and instance.
 // The default ClientConfig will be used.
@@ -161,11 +162,10 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 	// only TD calls the RLS with grpc target type
 	// and we evaluate the directAccess option after that.
 
-	allowDirectAccess := !isDirectAccessDisabled(config)
+	allowDirectAccess := isDirectAccessEnabled(config)
 	directAccessMD := createFeatureFlagsMD(metricsTracerFactory.enabled, disableRetryInfo, allowDirectAccess)
 
 	var connPool gtransport.ConnPool
-	var connPoolErr error
 	var dsm *btransport.DynamicScaleMonitor
 	var connRecycler *btransport.ConnectionRecycler
 
@@ -178,7 +178,18 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 		}
 	}
 	var connPoolSize int
-	if enableBigtableConnPool {
+	if !enableBigtableConnPool {
+		// Use the regular ConnPool
+		// For regular ConnPool the Direct Access is off by default so we need to check the env var again.
+		if enabled, _ := strconv.ParseBool(os.Getenv(DIRECTPATH_ENV_VAR)); enabled {
+			o = append(o, directPathOptions...)
+		}
+		regConnPool, err := gtransport.DialPool(ctx, o...)
+		if err != nil {
+			return nil, err
+		}
+		connPool = regConnPool
+	} else { // Use the BigtableConnPool
 		uResolver, err := internaloption.NewUnsafeResolver(o...)
 		if err != nil {
 			// just fallback
@@ -204,7 +215,7 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 		)
 
 		// Only setup DirectPath dialers if not disabled by config/env
-		if !isDirectAccessDisabled(config) {
+		if allowDirectAccess {
 			directAccessDialerOptions := make([]option.ClientOption, len(o))
 			copy(directAccessDialerOptions, o)
 			directAccessDialerOptions = append(directAccessDialerOptions, directPathOptions...)
@@ -232,42 +243,26 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 			// options
 			poolOpts...,
 		)
-
 		if err != nil {
-			connPoolErr = err
-		} else {
-			connPool = btPool
-
-			// Validate dynamic config early if enabled
-			if !config.DisableDynamicChannelPool {
-				if err := btransport.ValidateDynamicConfig(btopt.DefaultDynamicChannelPoolConfig(), defaultBigtableConnPoolSize); err != nil {
-					return nil, fmt.Errorf("invalid DynamicChannelPoolConfig: %w", err)
-				}
-
-				dsm = btransport.NewDynamicScaleMonitor(btopt.DefaultDynamicChannelPoolConfig(), btPool)
-				dsm.Start(ctx) // Start the monitor's background goroutine
-			}
-			// connection recyler.
-			if !config.DisableConnectionRecycler {
-				connRecycler = btransport.NewConnectionRecycler(btopt.DefaultConnectionRecycleConfig(), btPool)
-				connRecycler.Start(ctx) // Start the monitor's background goroutine
-			}
-
+			return nil, err
 		}
 
-	} else {
-		if !isDirectAccessDisabled(config) {
-			enableDirectAccess, _ := strconv.ParseBool(os.Getenv("CBT_ENABLE_DIRECTPATH"))
-			if enableDirectAccess {
-				o = append(o, directPathOptions...)
-			}
-		}
-		// use to regular ConnPool
-		connPool, connPoolErr = gtransport.DialPool(ctx, o...)
-	}
+		connPool = btPool
 
-	if connPoolErr != nil {
-		return nil, connPoolErr
+		// Validate dynamic config early if enabled
+		if !config.DisableDynamicChannelPool {
+			if err := btransport.ValidateDynamicConfig(btopt.DefaultDynamicChannelPoolConfig(), defaultBigtableConnPoolSize); err != nil {
+				return nil, fmt.Errorf("invalid DynamicChannelPoolConfig: %w", err)
+			}
+
+			dsm = btransport.NewDynamicScaleMonitor(btopt.DefaultDynamicChannelPoolConfig(), btPool)
+			dsm.Start(ctx) // Start the monitor's background goroutine
+		}
+		// connection recyler.
+		if !config.DisableConnectionRecycler {
+			connRecycler = btransport.NewConnectionRecycler(btopt.DefaultConnectionRecycleConfig(), btPool)
+			connRecycler.Start(ctx) // Start the monitor's background goroutine
+		}
 	}
 
 	return &Client{
@@ -412,9 +407,10 @@ func (c *Client) newBuiltinMetricsTracer(ctx context.Context, table string, isSt
 	return &mt
 }
 
-func isDirectAccessDisabled(config ClientConfig) bool {
-	if config.DisableDirectAccess {
-		return true
+func isDirectAccessEnabled(config ClientConfig) bool {
+	if os.Getenv(DIRECTPATH_ENV_VAR) == "" {
+		return !config.DisableDirectAccess
 	}
-	return strings.EqualFold(os.Getenv("CBT_ENABLE_DIRECTPATH"), "false")
+	res, _ := strconv.ParseBool(os.Getenv(DIRECTPATH_ENV_VAR))
+	return res
 }
