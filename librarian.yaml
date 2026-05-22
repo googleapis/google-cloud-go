@@ -897,13 +897,17 @@ libraries:
       - path: google/maps/fleetengine/v1
         go:
           proto_package: maps.fleetengine.v1
+          omit_snippets: true
       - path: google/maps/places/v1
       - path: google/maps/routeoptimization/v1
       - path: google/maps/solar/v1
       - path: google/maps/fleetengine/delivery/v1
         go:
           proto_package: maps.fleetengine.delivery.v1
+          omit_snippets: true
       - path: google/maps/mapmanagement/v2beta
+        go:
+          omit_snippets: true
     title_override: Google Maps Platform
   - name: mediatranslation
     version: 0.13.0
