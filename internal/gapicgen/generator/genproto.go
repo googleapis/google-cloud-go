@@ -168,7 +168,7 @@ func (g *GenprotoGenerator) Regen(ctx context.Context) error {
 	// if the last regenerated hash is earlier than the top commit, the git diff-tree
 	// command fails. This is is a bit of a rough edge. Using my local clone of
 	// googleapis rectified the issue.
-	pkgFiles, err := g.getUpdatedPackages(string(lastHash))
+	pkgFiles, err := g.getUpdatedPackages(strings.TrimSpace(string(lastHash)))
 	if err != nil {
 		return err
 	}
