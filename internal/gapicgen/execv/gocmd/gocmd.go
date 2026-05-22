@@ -117,7 +117,16 @@ func Vet(dir string) error {
 		return err
 	}
 
-	c = execv.Command("gofmt", "-s", "-w", "-l", ".")
-	c.Dir = dir
-	return c.Run()
+	// Run once to print diffs to stdout (which gets logged by execv).
+	// We ignore the error here because gofmt -d exits with 1 if there are diffs,
+	// but we still want to proceed to write them.
+	c1 := execv.Command("gofmt", "-s", "-d", "-l", ".")
+	c1.Dir = dir
+	_ = c1.Run()
+
+	// Run again to actually write the changes.
+	// We do not ignore the error here to ensure we catch any real failures.
+	c2 := execv.Command("gofmt", "-s", "-w", ".")
+	c2.Dir = dir
+	return c2.Run()
 }
