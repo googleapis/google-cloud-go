@@ -581,6 +581,10 @@ type QueryOptions struct {
 
 	// ClientContext contains client-owned context information to be passed with the query.
 	ClientContext *sppb.RequestOptions_ClientContext
+
+	// ExperimentalRawDecode enables a prototype streaming decode path that
+	// exposes string values as raw bytes through Row.ColumnBytes.
+	ExperimentalRawDecode bool
 }
 
 // merge combines two QueryOptions that the input parameter will have higher
@@ -596,6 +600,7 @@ func (qo QueryOptions) merge(opts QueryOptions) QueryOptions {
 		ExcludeTxnFromChangeStreams: qo.ExcludeTxnFromChangeStreams || opts.ExcludeTxnFromChangeStreams,
 		LastStatement:               qo.LastStatement || opts.LastStatement,
 		ClientContext:               mergeClientContext(qo.ClientContext, opts.ClientContext),
+		ExperimentalRawDecode:       qo.ExperimentalRawDecode || opts.ExperimentalRawDecode,
 	}
 	if opts.Mode != nil {
 		merged.Mode = opts.Mode
@@ -726,6 +731,38 @@ func (t *txReadOnly) query(ctx context.Context, statement Statement, options Que
 	client := sh.getClient()
 	retryResourceExhausted := shouldRetryResourceExhaustedInStreaming(client)
 	allowRetryResourceExhaustedWithoutDelay := shouldAllowRetryResourceExhaustedWithoutDelayInStreaming(client)
+	if options.ExperimentalRawDecode {
+		if gclient := asGRPCSpannerClient(client); gclient != nil {
+			return rawStreamWithTransactionCallbacks(
+				contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader),
+				sh.session.logger,
+				t.sm.sc.metricsTracerFactory,
+				func(ctx context.Context, resumeToken []byte, opts ...gax.CallOption) (*rawStreamingReceiver, error) {
+					if t.sh == nil {
+						return nil, errTransactionNoLongerActive()
+					}
+					req.ResumeToken = resumeToken
+					req.Session = t.sh.getID()
+					req.Transaction = t.getTransactionSelector()
+					client, err := gclient.ExecuteStreamingSqlRaw(ctx, req, opts...)
+					if err != nil {
+						if _, ok := req.Transaction.GetSelector().(*sppb.TransactionSelector_Begin); ok {
+							t.setTransactionID(nil)
+							return client, t.updateTxState(errInlineBeginTransactionFailed(err))
+						}
+						return client, t.updateTxState(err)
+					}
+					return client, err
+				},
+				setTransactionID,
+				func(err error) error { return t.updateTxState(err) },
+				t.updatePrecommitToken,
+				t.setTimestamp,
+				t.release,
+				retryResourceExhausted,
+				allowRetryResourceExhaustedWithoutDelay)
+		}
+	}
 	return streamWithTransactionCallbacks(
 		contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader),
 		sh.session.logger,

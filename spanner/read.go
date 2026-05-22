@@ -162,6 +162,9 @@ type RowIterator struct {
 	cancel               func()
 	err                  error
 	rows                 []*Row
+	rawStreamd           *rawStreamDecoder
+	rawRowd              *rawPartialResultSetDecoder
+	lastRawRow           *Row
 	sawStats             bool
 }
 
@@ -172,6 +175,9 @@ var _ rowIterator = (*RowIterator)(nil)
 // there are no more results. Once Next returns Done, all subsequent calls
 // will return Done.
 func (r *RowIterator) Next() (*Row, error) {
+	if r.rawStreamd != nil {
+		return r.nextRaw()
+	}
 	mt := r.meterTracerFactory.createBuiltinMetricsTracer(r.ctx)
 	if r.err != nil {
 		return nil, r.err
@@ -299,6 +305,13 @@ func (r *RowIterator) Do(f func(r *Row) error) error {
 // Stop terminates the iteration. It should be called after you finish using the
 // iterator.
 func (r *RowIterator) Stop() {
+	if r.lastRawRow != nil {
+		releaseRawRow(r.lastRawRow)
+		r.lastRawRow = nil
+	}
+	for _, row := range r.rows {
+		releaseRawRow(row)
+	}
 	if r.streamd != nil {
 		if r.err != nil && r.err != iterator.Done {
 			defer trace.EndSpan(r.streamd.ctx, r.err)
@@ -313,6 +326,9 @@ func (r *RowIterator) Stop() {
 		if finalizer, ok := r.streamd.stream.(streamingFinalizer); ok {
 			finalizer.finish()
 		}
+	}
+	if r.rawStreamd != nil {
+		r.rawStreamd.finish()
 	}
 	if r.release != nil {
 		r.release(r.err)

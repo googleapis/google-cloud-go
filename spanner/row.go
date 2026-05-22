@@ -137,6 +137,28 @@ func (r *Row) Size() int {
 	return len(r.fields)
 }
 
+// ColumnBytes appends column i to dst and returns the extended buffer.
+//
+// When QueryOptions.ExperimentalRawDecode is enabled, STRING columns are copied
+// directly from the streamed protobuf wire bytes without first allocating a Go
+// string. The returned bytes remain owned by the caller.
+func (r *Row) ColumnBytes(i int, dst []byte) ([]byte, error) {
+	if i < 0 || i >= len(r.fields) {
+		return nil, errColIdxOutOfRange(i, r)
+	}
+	if rawVals, ok := rawValsForRow(r); ok {
+		if i >= len(rawVals) {
+			return nil, errColIdxOutOfRange(i, r)
+		}
+		return append(dst, rawVals[i]...), nil
+	}
+	var s string
+	if err := r.Column(i, &s); err != nil {
+		return nil, err
+	}
+	return append(dst, s...), nil
+}
+
 // ColumnName returns the name of column i, or empty string for invalid column.
 func (r *Row) ColumnName(i int) string {
 	if i < 0 || i >= len(r.fields) {
