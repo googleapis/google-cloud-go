@@ -582,8 +582,8 @@ type QueryOptions struct {
 	// ClientContext contains client-owned context information to be passed with the query.
 	ClientContext *sppb.RequestOptions_ClientContext
 
-	// ExperimentalRawDecode enables a prototype streaming decode path that
-	// exposes string values as raw bytes through Row.ColumnBytes.
+	// ExperimentalRawDecode enables a prototype streaming decode path that uses
+	// vtprotobuf unsafe unmarshalling for PartialResultSet messages.
 	ExperimentalRawDecode bool
 }
 
@@ -733,24 +733,33 @@ func (t *txReadOnly) query(ctx context.Context, statement Statement, options Que
 	allowRetryResourceExhaustedWithoutDelay := shouldAllowRetryResourceExhaustedWithoutDelayInStreaming(client)
 	if options.ExperimentalRawDecode {
 		if gclient := asGRPCSpannerClient(client); gclient != nil {
-			return rawStreamWithTransactionCallbacks(
+			return streamWithTransactionCallbacks(
 				contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader),
 				sh.session.logger,
 				t.sm.sc.metricsTracerFactory,
-				func(ctx context.Context, resumeToken []byte, opts ...gax.CallOption) (*rawStreamingReceiver, error) {
+				func(ctx context.Context, resumeToken []byte, opts ...gax.CallOption) (streamingReceiver, error) {
 					if t.sh == nil {
 						return nil, errTransactionNoLongerActive()
 					}
 					req.ResumeToken = resumeToken
 					req.Session = t.sh.getID()
 					req.Transaction = t.getTransactionSelector()
-					client, err := gclient.ExecuteStreamingSqlRaw(ctx, req, opts...)
+					client, err := gclient.ExecuteStreamingSqlVTUnsafe(ctx, req, opts...)
 					if err != nil {
 						if _, ok := req.Transaction.GetSelector().(*sppb.TransactionSelector_Begin); ok {
 							t.setTransactionID(nil)
 							return client, t.updateTxState(errInlineBeginTransactionFailed(err))
 						}
 						return client, t.updateTxState(err)
+					}
+					md, err := client.Header()
+					if getGFELatencyMetricsFlag() && md != nil && t.ct != nil {
+						if err := createContextAndCaptureGFELatencyMetrics(ctx, t.ct, md, "query"); err != nil {
+							trace.TracePrintf(ctx, nil, "Error in recording GFE Latency. Try disabling and rerunning. Error: %v", err)
+						}
+					}
+					if metricErr := recordGFELatencyMetricsOT(ctx, md, "query", t.otConfig); metricErr != nil {
+						trace.TracePrintf(ctx, nil, "Error in recording GFE Latency through OpenTelemetry. Error: %v", metricErr)
 					}
 					return client, err
 				},
@@ -759,6 +768,7 @@ func (t *txReadOnly) query(ctx context.Context, statement Statement, options Que
 				t.updatePrecommitToken,
 				t.setTimestamp,
 				t.release,
+				gclient,
 				retryResourceExhausted,
 				allowRetryResourceExhaustedWithoutDelay)
 		}

@@ -162,9 +162,8 @@ type RowIterator struct {
 	cancel               func()
 	err                  error
 	rows                 []*Row
-	rawStreamd           *rawStreamDecoder
-	rawRowd              *rawPartialResultSetDecoder
 	lastRawRow           *Row
+	vtUnsafeReleases     []func()
 	sawStats             bool
 }
 
@@ -175,8 +174,9 @@ var _ rowIterator = (*RowIterator)(nil)
 // there are no more results. Once Next returns Done, all subsequent calls
 // will return Done.
 func (r *RowIterator) Next() (*Row, error) {
-	if r.rawStreamd != nil {
-		return r.nextRaw()
+	if r.lastRawRow != nil {
+		releaseRawRow(r.lastRawRow)
+		r.lastRawRow = nil
 	}
 	mt := r.meterTracerFactory.createBuiltinMetricsTracer(r.ctx)
 	if r.err != nil {
@@ -204,6 +204,9 @@ func (r *RowIterator) Next() (*Row, error) {
 
 	for len(r.rows) == 0 && r.streamd.next(&mt) {
 		prs := r.streamd.get()
+		if release := retainVTUnsafePartialResultSetForIterator(prs); release != nil {
+			r.vtUnsafeReleases = append(r.vtUnsafeReleases, release)
+		}
 		if r.setTransactionID != nil {
 			// this is when Read/Query is executed using ReadWriteTransaction
 			// and server returned the first stream response.
@@ -236,6 +239,7 @@ func (r *RowIterator) Next() (*Row, error) {
 		}
 		var metadata *sppb.ResultSetMetadata
 		r.rows, metadata, r.err = r.rowd.add(prs)
+		releaseVTUnsafePartialResultSet(prs)
 		if metadata != nil {
 			r.Metadata = metadata
 		}
@@ -250,6 +254,7 @@ func (r *RowIterator) Next() (*Row, error) {
 	if len(r.rows) > 0 {
 		row := r.rows[0]
 		r.rows = r.rows[1:]
+		r.lastRawRow = row
 		return row, nil
 	}
 	if err := r.streamd.lastErr(); err != nil {
@@ -312,6 +317,10 @@ func (r *RowIterator) Stop() {
 	for _, row := range r.rows {
 		releaseRawRow(row)
 	}
+	for _, release := range r.vtUnsafeReleases {
+		release()
+	}
+	r.vtUnsafeReleases = nil
 	if r.streamd != nil {
 		if r.err != nil && r.err != iterator.Done {
 			defer trace.EndSpan(r.streamd.ctx, r.err)
@@ -326,9 +335,6 @@ func (r *RowIterator) Stop() {
 		if finalizer, ok := r.streamd.stream.(streamingFinalizer); ok {
 			finalizer.finish()
 		}
-	}
-	if r.rawStreamd != nil {
-		r.rawStreamd.finish()
 	}
 	if r.release != nil {
 		r.release(r.err)
@@ -791,7 +797,8 @@ type partialResultSetDecoder struct {
 	tx      *sppb.Transaction
 	chunked bool // if true, next value should be merged with last values
 	// entry.
-	ts time.Time // read timestamp
+	ts         time.Time // read timestamp
+	rowBuffers []*vtUnsafeBuffer
 }
 
 // yield checks we have a complete row, and if so returns it.  A row is not
@@ -815,7 +822,12 @@ func (p *partialResultSetDecoder) yield(chunked, last bool) *Row {
 			vals:   make([]*proto3.Value, len(p.row.vals)),
 		}
 		copy(fresh.vals, p.row.vals)
+		if len(p.rowBuffers) > 0 {
+			buffers := append([]*vtUnsafeBuffer(nil), p.rowBuffers...)
+			setRawRow(&fresh, make([][]byte, len(fresh.vals)), func() { releaseVTUnsafeBufferRefs(buffers) })
+		}
 		p.row.vals = p.row.vals[:0] // empty and reuse slice
+		p.rowBuffers = p.rowBuffers[:0]
 		return &fresh
 	}
 	return nil
@@ -855,8 +867,15 @@ func (p *partialResultSetDecoder) add(r *sppb.PartialResultSet) ([]*Row, *sppb.R
 		var err error
 		// If p is chunked, then we should always try to merge p.last with
 		// r.first.
+		firstBuffer := retainVTUnsafePartialResultSetBuffer(r)
 		if p.row.vals[last], err = p.merge(p.row.vals[last], r.Values[0]); err != nil {
+			if firstBuffer != nil {
+				firstBuffer.buf.Free()
+			}
 			return nil, r.Metadata, err
+		}
+		if firstBuffer != nil {
+			p.rowBuffers = append(p.rowBuffers, firstBuffer)
 		}
 		r.Values = r.Values[1:]
 		// Merge is done, try to yield a complete Row.
@@ -867,6 +886,9 @@ func (p *partialResultSetDecoder) add(r *sppb.PartialResultSet) ([]*Row, *sppb.R
 	for i, v := range r.Values {
 		// The rest values in r can be appened into p directly.
 		p.row.vals = append(p.row.vals, v)
+		if buf := retainVTUnsafePartialResultSetBuffer(r); buf != nil {
+			p.rowBuffers = append(p.rowBuffers, buf)
+		}
 		// Again, check to see if a complete Row can be yielded because of the
 		// newly added value.
 		if row := p.yield(r.ChunkedValue, i == len(r.Values)-1); row != nil {
