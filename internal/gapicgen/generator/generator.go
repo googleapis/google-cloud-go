@@ -137,8 +137,12 @@ func recordGoogleapisHash(googleapisDir, genprotoDir string) error {
 	if err != nil {
 		return err
 	}
+	if hash == "" {
+		return fmt.Errorf("git.HeadHash: empty output")
+	}
 
 	f, err := os.OpenFile(filepath.Join(genprotoDir, "regen.txt"), os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
+
 	if err != nil {
 		return err
 	}

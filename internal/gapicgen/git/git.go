@@ -15,9 +15,11 @@
 package git
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"os"
+	"os/exec"
 	"strings"
 
 	"cloud.google.com/go/internal/gapicgen/execv"
@@ -220,6 +222,10 @@ func HeadHash(gitDir string) (string, error) {
 	c.Dir = gitDir
 	b, err := c.Output()
 	if err != nil {
+		var exitErr *exec.ExitError
+		if errors.As(err, &exitErr) {
+			return "", fmt.Errorf("git rev-parse HEAD failed: %w (stderr: %s)", err, string(exitErr.Stderr))
+		}
 		return "", err
 	}
 	return strings.TrimSpace(string(b)), nil
