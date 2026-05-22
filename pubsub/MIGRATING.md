@@ -12,9 +12,9 @@ Note: The end of support date has been extended to December 31st, 2026 from the 
 
 There are two new packages:
 
-* [cloud.google.com/go/v2](http://cloud.google.com/go/v2): The new main v2 package. 
+* [cloud.google.com/go/pubsub/v2](http://cloud.google.com/go/pubsub/v2): The new main v2 package. 
 
-* [cloud.google.com/go/v2/apiv1/pubsubpb](http://cloud.google.com/go/v2/apiv1/pubsubpb): The auto-generated protobuf Go types that are used as arguments for admin operations. 
+* [cloud.google.com/go/pubsub/v2/apiv1/pubsubpb](http://cloud.google.com/go/pubsub/v2/apiv1/pubsubpb): The auto-generated protobuf Go types that are used as arguments for admin operations. 
 
 For other relevant packages, see Additional References.
 
@@ -22,7 +22,7 @@ For other relevant packages, see Additional References.
 
 The following is an overview of the migration process. You can find more details about the classes in the later part of this document.
 
-1. Import the new [cloud.google.com/go/v2](http://cloud.google.com/go/v2) package.
+1. Import the new [cloud.google.com/go/pubsub/v2](http://cloud.google.com/go/pubsub/v2) package.
 
 2. Migrate admin operations such as `CreateTopic` and `DeleteTopic` to the v2 version admin API.
 
@@ -537,7 +537,7 @@ Because of the change to the data plane clients (now named `Publisher` and `Subs
 
 **Q: Why does the new admin API package mention both v2 and apiv1?**
 
-The new Pub/Sub v2 package is `cloud.google.com/go/v2`. All of the new v2 code lives in the v2 directory. The apiv1 version denotes that the Pub/Sub server API is still under v1 and is **not** changing.
+The new Pub/Sub v2 package is `cloud.google.com/go/pubsub/v2`. All of the new v2 code lives in the v2 directory. The apiv1 version denotes that the Pub/Sub server API is still under v1 and is **not** changing.
 
 **Q: Why are you changing the admin API surface?**
 
