@@ -282,7 +282,7 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 		requestParamsHeader, c.reqParamsHeaderValInstance(),
 	), c.featureFlagsMD)
 
-	configManager := btransport.NewClientConfigurationManager(btClient, c.fullInstanceName(), config.AppProfile, configMD)
+	configManager := btransport.NewClientConfigurationManager(btClient, c.fullInstanceName(), config.AppProfile, configMD, nil)
 	configManager.Start(ctx)
 	c.configManager = configManager
 

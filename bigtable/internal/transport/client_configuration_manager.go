@@ -16,11 +16,13 @@ package internal
 
 import (
 	"context"
+	"log"
 	"math/rand"
 	"sync"
 	"time"
 
 	bigtablepb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
+	btopt "cloud.google.com/go/bigtable/internal/option"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 )
@@ -97,6 +99,7 @@ type ClientConfigurationManager struct {
 	appProfileId  string
 	metadata      metadata.MD
 	defaultConfig clientConfig
+	logger        *log.Logger
 
 	mu            sync.RWMutex
 	currentConfig clientConfig
@@ -145,6 +148,7 @@ func NewClientConfigurationManager(
 	instanceName string,
 	appProfileId string,
 	md metadata.MD,
+	logger *log.Logger,
 ) *ClientConfigurationManager {
 	done := make(chan struct{})
 
@@ -158,11 +162,13 @@ func NewClientConfigurationManager(
 		currentConfig: defaultClientConfig,
 		validUntil:    time.Now().Add(time.Hour * 24 * 365 * 100), //  default far in future
 		listeners:     make(map[int]configListener),
+		logger:        logger,
 	}
 }
 
 // Start begins the polling process.
 func (m *ClientConfigurationManager) Start(ctx context.Context) {
+	btopt.Debugf(m.logger, "bigtable: starting client configuration manager for instance %q, app profile %q", m.instanceName, m.appProfileId)
 	// We need a context for the initial poll.
 	go func() {
 		pollCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
@@ -176,6 +182,7 @@ func (m *ClientConfigurationManager) Start(ctx context.Context) {
 
 // Close stops the polling process.
 func (m *ClientConfigurationManager) Close() {
+	btopt.Debugf(m.logger, "bigtable: closing client configuration manager")
 	close(m.done)
 }
 
@@ -200,6 +207,7 @@ func (m *ClientConfigurationManager) addListener(listener configListener) func()
 	seq := m.configSeq
 	m.mu.Unlock()
 
+	btopt.Debugf(m.logger, "bigtable: adding configuration listener (id: %d)", id)
 	listener(cfg, seq)
 
 	return func() {
@@ -248,6 +256,7 @@ func (m *ClientConfigurationManager) pollingLoop(parentCtx context.Context) {
 // poll queries the GetClientConfiguration API and triggers registered listeners with the new configuration.
 // If the poll fails and the previous configuration's validity has expired, it falls back to the default config.
 func (m *ClientConfigurationManager) poll(ctx context.Context) {
+	btopt.Debugf(m.logger, "bigtable: polling client configuration...")
 	req := &bigtablepb.GetClientConfigurationRequest{
 		InstanceName: m.instanceName,
 		AppProfileId: m.appProfileId,
@@ -262,13 +271,17 @@ func (m *ClientConfigurationManager) poll(ctx context.Context) {
 	maxRetries := m.currentConfig.Polling.MaxRpcRetryCount
 	m.mu.RUnlock()
 
-	// Retry with randomized exponential backoff using seconds (preventing fast tight loops)
+	// Retry with randomized exponential backoff using seconds
 	for i := 0; i <= maxRetries; i++ {
 		var header, trailer metadata.MD
+		rpcStart := time.Now()
 		resp, err = m.client.GetClientConfiguration(ctx, req, grpc.Header(&header), grpc.Trailer(&trailer))
+		rpcDuration := time.Since(rpcStart)
 		if err == nil {
+			btopt.Debugf(m.logger, "bigtable: GetClientConfiguration RPC attempt %d completed successfully in %v", i, rpcDuration)
 			break
 		}
+		btopt.Debugf(m.logger, "bigtable: GetClientConfiguration RPC attempt %d failed in %v: %v", i, rpcDuration, err)
 		if i < maxRetries {
 			delay := time.Duration(rand.Intn(1<<i)) * time.Second
 			select {
@@ -280,12 +293,14 @@ func (m *ClientConfigurationManager) poll(ctx context.Context) {
 	}
 
 	if err != nil {
+		btopt.Debugf(m.logger, "bigtable: failed to poll client configuration: %v", err)
 		m.mu.Lock()
 		var listeners []configListener
 		var cfgToNotify clientConfig
 		var seq int64
 		// Fall back to default configuration if validity window has expired
 		if time.Now().After(m.validUntil) {
+			btopt.Debugf(m.logger, "bigtable: client configuration validity window expired, falling back to default config")
 			m.currentConfig = m.defaultConfig
 			m.configSeq++
 			seq = m.configSeq
@@ -306,6 +321,7 @@ func (m *ClientConfigurationManager) poll(ctx context.Context) {
 	}
 
 	parsedResp := parseConfig(resp, m.defaultConfig)
+	btopt.Debugf(m.logger, "bigtable: successfully polled new client configuration. validityDuration: %v", parsedResp.Polling.ValidityDuration)
 
 	m.mu.Lock()
 	m.currentConfig = parsedResp

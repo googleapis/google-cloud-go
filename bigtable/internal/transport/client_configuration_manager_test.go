@@ -41,7 +41,7 @@ func (m *mockBigtableClient) GetClientConfiguration(ctx context.Context, req *bi
 
 func TestNewClientConfigurationManager(t *testing.T) {
 	client := &mockBigtableClient{}
-	manager := NewClientConfigurationManager(client, "instance", "profile", nil)
+	manager := NewClientConfigurationManager(client, "instance", "profile", nil, nil)
 
 	if manager == nil {
 		t.Fatal("Expected manager to be non-nil")
@@ -67,7 +67,7 @@ func TestManagerPoll_Success(t *testing.T) {
 		return expectedCfg, nil
 	}
 
-	manager := NewClientConfigurationManager(client, "instance", "profile", nil)
+	manager := NewClientConfigurationManager(client, "instance", "profile", nil, nil)
 	manager.poll(context.Background())
 
 	cfg := manager.getConfig()
@@ -78,7 +78,7 @@ func TestManagerPoll_Success(t *testing.T) {
 
 func TestManagerPoll_FailureKeepsOldConfig(t *testing.T) {
 	client := &mockBigtableClient{}
-	manager := NewClientConfigurationManager(client, "instance", "profile", nil)
+	manager := NewClientConfigurationManager(client, "instance", "profile", nil, nil)
 
 	// Set a valid until time in the future
 	manager.validUntil = time.Now().Add(time.Hour)
@@ -97,7 +97,7 @@ func TestManagerPoll_FailureKeepsOldConfig(t *testing.T) {
 
 func TestManagerPoll_FailureFallbackToDefault(t *testing.T) {
 	client := &mockBigtableClient{}
-	manager := NewClientConfigurationManager(client, "instance", "profile", nil)
+	manager := NewClientConfigurationManager(client, "instance", "profile", nil, nil)
 
 	// Set a valid until time in the past
 	manager.validUntil = time.Now().Add(-time.Hour)
@@ -119,7 +119,7 @@ func TestManagerPoll_FailureFallbackToDefault(t *testing.T) {
 
 func TestManagerNotifyListeners(t *testing.T) {
 	client := &mockBigtableClient{}
-	manager := NewClientConfigurationManager(client, "instance", "profile", nil)
+	manager := NewClientConfigurationManager(client, "instance", "profile", nil, nil)
 
 	var wg sync.WaitGroup
 	wg.Add(2) // Expect two notifications: immediate, and after poll
@@ -174,7 +174,7 @@ func TestManagerNotifyListeners(t *testing.T) {
 
 func TestGetConfig_ReturnsCopy(t *testing.T) {
 	client := &mockBigtableClient{}
-	manager := NewClientConfigurationManager(client, "instance", "profile", nil)
+	manager := NewClientConfigurationManager(client, "instance", "profile", nil, nil)
 
 	cfg1 := manager.getConfig()
 	cfg1.Polling.MaxRpcRetryCount = 999
@@ -187,7 +187,7 @@ func TestGetConfig_ReturnsCopy(t *testing.T) {
 
 func TestManagerNotifyListeners_Race(t *testing.T) {
 	client := &mockBigtableClient{}
-	manager := NewClientConfigurationManager(client, "instance", "profile", nil)
+	manager := NewClientConfigurationManager(client, "instance", "profile", nil, nil)
 
 	// Initial config is default (seq 0)
 
