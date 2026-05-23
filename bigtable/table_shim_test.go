@@ -147,7 +147,7 @@ func TestTableShim_ReadRow(t *testing.T) {
 		}
 	})
 
-	t.Run("Session fails and falls back to classic when context is NOT cancelled", func(t *testing.T) {
+	t.Run("Session fails and returns error directly without falling back to classic", func(t *testing.T) {
 		classicCalled := false
 		sessionCalled := false
 
@@ -167,50 +167,12 @@ func TestTableShim_ReadRow(t *testing.T) {
 		diverter := internal.NewDiverter(1.0)
 		shim := NewTableShim(classic, session, diverter)
 
-		res, err := shim.ReadRow(context.Background(), "row1")
-		if err != nil {
-			t.Errorf("Unexpected error: %v", err)
-		}
-		if res.Key() != "row1" {
-			t.Errorf("Expected row key row1, got %s", res.Key())
-		}
-		if !classicCalled {
-			t.Error("Expected classic to be called on fallback")
-		}
-		if !sessionCalled {
-			t.Error("Expected session to be called first")
-		}
-	})
-
-	t.Run("Session fails and does NOT fall back when context IS cancelled", func(t *testing.T) {
-		classicCalled := false
-		sessionCalled := false
-
-		classic := &mockTableAPI{
-			readRowFunc: func(ctx context.Context, row string, opts ...ReadOption) (Row, error) {
-				classicCalled = true
-				return dummyRow, nil
-			},
-		}
-		session := &mockTableAPI{
-			readRowFunc: func(ctx context.Context, row string, opts ...ReadOption) (Row, error) {
-				sessionCalled = true
-				return nil, dummyErr
-			},
-		}
-
-		diverter := internal.NewDiverter(1.0)
-		shim := NewTableShim(classic, session, diverter)
-
-		ctx, cancel := context.WithCancel(context.Background())
-		cancel() // Cancel the context immediately
-
-		_, err := shim.ReadRow(ctx, "row1")
+		_, err := shim.ReadRow(context.Background(), "row1")
 		if err != dummyErr {
 			t.Errorf("Expected session error %v, got %v", dummyErr, err)
 		}
 		if classicCalled {
-			t.Error("Expected classic NOT to be called when context is cancelled")
+			t.Error("Expected classic NOT to be called")
 		}
 		if !sessionCalled {
 			t.Error("Expected session to be called")
@@ -285,7 +247,7 @@ func TestTableShim_Apply(t *testing.T) {
 		}
 	})
 
-	t.Run("Session fails and falls back to classic when context is NOT cancelled", func(t *testing.T) {
+	t.Run("Session fails and returns error directly without falling back to classic", func(t *testing.T) {
 		classicCalled := false
 		sessionCalled := false
 
@@ -306,46 +268,11 @@ func TestTableShim_Apply(t *testing.T) {
 		shim := NewTableShim(classic, session, diverter)
 
 		err := shim.Apply(context.Background(), "row1", NewMutation())
-		if err != nil {
-			t.Errorf("Unexpected error: %v", err)
-		}
-		if !classicCalled {
-			t.Error("Expected classic to be called on fallback")
-		}
-		if !sessionCalled {
-			t.Error("Expected session to be called first")
-		}
-	})
-
-	t.Run("Session fails and does NOT fall back when context IS cancelled", func(t *testing.T) {
-		classicCalled := false
-		sessionCalled := false
-
-		classic := &mockTableAPI{
-			applyFunc: func(ctx context.Context, row string, m *Mutation, opts ...ApplyOption) error {
-				classicCalled = true
-				return nil
-			},
-		}
-		session := &mockTableAPI{
-			applyFunc: func(ctx context.Context, row string, m *Mutation, opts ...ApplyOption) error {
-				sessionCalled = true
-				return dummyErr
-			},
-		}
-
-		diverter := internal.NewDiverter(1.0)
-		shim := NewTableShim(classic, session, diverter)
-
-		ctx, cancel := context.WithCancel(context.Background())
-		cancel() // Cancel the context immediately
-
-		err := shim.Apply(ctx, "row1", NewMutation())
 		if err != dummyErr {
 			t.Errorf("Expected session error %v, got %v", dummyErr, err)
 		}
 		if classicCalled {
-			t.Error("Expected classic NOT to be called when context is cancelled")
+			t.Error("Expected classic NOT to be called")
 		}
 		if !sessionCalled {
 			t.Error("Expected session to be called")
