@@ -39,15 +39,7 @@ func NewTableShim(classic, session TableAPI, diverter *internal.Diverter) TableA
 // ReadRow implements TableAPI.
 func (t *TableShim) ReadRow(ctx context.Context, row string, opts ...ReadOption) (Row, error) {
 	if t.diverter.UseSession() {
-		rowRes, err := t.session.ReadRow(ctx, row, opts...)
-		if err != nil {
-			// Do not fall back to classic if the session call failed because the context was cancelled or timed out.
-			if ctx.Err() != nil {
-				return nil, err
-			}
-			return t.classic.ReadRow(ctx, row, opts...)
-		}
-		return rowRes, nil
+		return t.session.ReadRow(ctx, row, opts...)
 	}
 	return t.classic.ReadRow(ctx, row, opts...)
 }
@@ -55,15 +47,7 @@ func (t *TableShim) ReadRow(ctx context.Context, row string, opts ...ReadOption)
 // Apply implements TableAPI.
 func (t *TableShim) Apply(ctx context.Context, row string, m *Mutation, opts ...ApplyOption) error {
 	if t.diverter.UseSession() {
-		err := t.session.Apply(ctx, row, m, opts...)
-		if err != nil {
-			// Do not fall back to classic if the session call failed because the context was cancelled or timed out.
-			if ctx.Err() != nil {
-				return err
-			}
-			return t.classic.Apply(ctx, row, m, opts...)
-		}
-		return nil
+		return t.session.Apply(ctx, row, m, opts...)
 	}
 	return t.classic.Apply(ctx, row, m, opts...)
 }

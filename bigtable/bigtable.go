@@ -197,6 +197,8 @@ func createFeatureFlagsMD(clientSideMetricsEnabled, disableRetryInfo, enableDire
 		RetryInfo:                !disableRetryInfo,
 		TrafficDirectorEnabled:   enableDirectAccess,
 		DirectAccessRequested:    enableDirectAccess,
+		SessionsCompatible:       true,
+		PeerInfo:                 true,
 	}
 
 	val := ""

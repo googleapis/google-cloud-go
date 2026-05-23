@@ -50,6 +50,7 @@ type Client struct {
 	featureFlagsMD          metadata.MD // Pre-computed feature flags metadata to be sent with each request.
 	dynamicScaleMonitor     *btransport.DynamicScaleMonitor
 	connsRecycler           *btransport.ConnectionRecycler
+	configManager           *btransport.ClientConfigurationManager
 }
 
 // ClientConfig has configurations for the client.
@@ -259,9 +260,11 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 		return nil, connPoolErr
 	}
 
-	return &Client{
+	btClient := btpb.NewBigtableClient(connPool)
+
+	c := &Client{
 		connPool:                connPool,
-		client:                  btpb.NewBigtableClient(connPool),
+		client:                  btClient,
 		project:                 project,
 		instance:                instance,
 		appProfile:              config.AppProfile,
@@ -272,11 +275,25 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 		featureFlagsMD:          directAccessMD,
 		dynamicScaleMonitor:     dsm,
 		connsRecycler:           connRecycler,
-	}, nil
+	}
+
+	configMD := metadata.Join(metadata.Pairs(
+		resourcePrefixHeader, c.fullInstanceName(),
+		requestParamsHeader, c.reqParamsHeaderValInstance(),
+	), c.featureFlagsMD)
+
+	configManager := btransport.NewClientConfigurationManager(btClient, c.fullInstanceName(), config.AppProfile, configMD)
+	configManager.Start(ctx)
+	c.configManager = configManager
+
+	return c, nil
 }
 
 // Close closes the Client.
 func (c *Client) Close() error {
+	if c.configManager != nil {
+		c.configManager.Close()
+	}
 	if c.dynamicScaleMonitor != nil {
 		c.dynamicScaleMonitor.Stop()
 	}
