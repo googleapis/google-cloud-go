@@ -31,7 +31,6 @@ import (
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	"github.com/GoogleCloudPlatform/grpc-gcp-go/grpcgcp"
 	grpcgcppb "github.com/GoogleCloudPlatform/grpc-gcp-go/grpcgcp/grpc_gcp"
-	"github.com/googleapis/gax-go/v2"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
 	"go.opentelemetry.io/otel/metric/noop"
@@ -521,6 +520,11 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 	if err != nil {
 		return nil, err
 	}
+	closeMetricsTracerFactory := func() {
+		if metricsTracerFactory != nil {
+			metricsTracerFactory.shutdown(context.Background())
+		}
+	}
 	if len(metricsTracerFactory.clientOpts) > 0 {
 		opts = append(opts, metricsTracerFactory.clientOpts...)
 	}
@@ -550,6 +554,7 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 		endpointClientOpts = append(endpointClientOpts, allOpts...)
 		primaryConn, err = gtransport.DialPool(ctx, allOpts...)
 		if err != nil {
+			closeMetricsTracerFactory()
 			return nil, err
 		}
 
@@ -557,12 +562,14 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 		fallbackConn, err = gtransport.DialPool(ctx, fallbackConnOpts...)
 		if err != nil {
 			primaryConn.Close()
+			closeMetricsTracerFactory()
 			return nil, err
 		}
 
 		if hasNumChannelsConfig && ((primaryConn.Num() != config.NumChannels) || (fallbackConn.Num() != config.NumChannels)) {
 			primaryConn.Close()
 			fallbackConn.Close()
+			closeMetricsTracerFactory()
 			return nil, spannerErrorf(codes.InvalidArgument, "Connection pool mismatch: NumChannels=%v, primaryConn.Num()=%v, fallbackConn.Num()=%v", config.NumChannels, primaryConn.Num(), fallbackConn.Num())
 		}
 
@@ -580,6 +587,7 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 		if err != nil {
 			primaryConn.Close()
 			fallbackConn.Close()
+			closeMetricsTracerFactory()
 			return nil, err
 		}
 
@@ -599,11 +607,13 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 		endpointClientOpts = append(endpointClientOpts, allOpts...)
 		pool, err = gtransport.DialPool(ctx, allOpts...)
 		if err != nil {
+			closeMetricsTracerFactory()
 			return nil, err
 		}
 
 		if hasNumChannelsConfig && pool.Num() != config.NumChannels {
 			pool.Close()
+			closeMetricsTracerFactory()
 			return nil, spannerErrorf(codes.InvalidArgument, "Connection pool mismatch: NumChannels=%v, WithGRPCConnectionPool=%v. Only set one of these options, or set both to the same value.", config.NumChannels, pool.Num())
 		}
 	}
@@ -652,6 +662,8 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 	otConfig, err := createOpenTelemetryConfig(ctx, config.OpenTelemetryMeterProvider, config.Logger, sc.id, database)
 	if err != nil {
 		// The error returned here will be due to database name parsing
+		sc.close()
+		closeMetricsTracerFactory()
 		return nil, err
 	}
 	// To prevent data race in unit tests (ex: TestClient_SessionNotFound)
@@ -689,6 +701,7 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 	// Create a session manager.
 	sp, err := newSessionManager(sc, config.SessionPoolConfig, sharedLocationAwareState)
 	if err != nil {
+		closeMetricsTracerFactory()
 		sc.close()
 		return nil, err
 	}
@@ -845,7 +858,7 @@ func metricsInterceptor() grpc.UnaryClientInterceptor {
 		statusCode, _ := status.FromError(err)
 		mt.currOp.currAttempt.setStatus(statusCode.Code().String())
 		mt.currOp.currAttempt.setDirectPathUsed(peer.NewContext(ctx, peerInfo))
-		latencies := parseServerTimingHeader(md)
+		latencies := parseServerTimingHeaderMetrics(md)
 		span := otrace.SpanFromContext(ctx)
 		setGFEAndAFESpanAttributes(span, latencies)
 		mt.currOp.currAttempt.setServerTimingMetrics(latencies)
@@ -1374,11 +1387,21 @@ type BatchWriteResponseIterator struct {
 // will return Done.
 func (r *BatchWriteResponseIterator) Next() (*sppb.BatchWriteResponse, error) {
 	mt := r.meterTracerFactory.createBuiltinMetricsTracer(r.ctx)
+	if r.err != nil {
+		return nil, r.err
+	}
+	mt.currOp.incrementAttemptCount()
+	mt.currOp.currAttempt = &attemptTracer{
+		startTime: time.Now(),
+	}
 	defer func() {
 		if mt.method != "" {
 			statusCode, _ := convertToGrpcStatusErr(r.err)
+			mt.currOp.currAttempt.setStatus(statusCode.String())
+			recordAttemptCompletion(&mt)
 			mt.currOp.setStatus(statusCode.String())
 			recordOperationCompletion(&mt)
+			mt.currOp.currAttempt = nil
 		}
 	}()
 	for {
@@ -1389,7 +1412,7 @@ func (r *BatchWriteResponseIterator) Next() (*sppb.BatchWriteResponse, error) {
 
 		// RPC not made yet.
 		if r.stream == nil {
-			r.stream, r.err = r.rpc(r.ctx)
+			r.stream, r.err = r.rpc(context.WithValue(r.ctx, metricsTracerKey, &mt))
 			continue
 		}
 
@@ -1499,21 +1522,28 @@ func (c *Client) BatchWriteWithOptions(ctx context.Context, mgs []*MutationGroup
 	}
 
 	rpc := func(ct context.Context) (sppb.Spanner_BatchWriteClient, error) {
-		var md metadata.MD
 		stream, rpcErr := sh.getClient().BatchWrite(contextWithOutgoingMetadata(ct, sh.getMetadata(), c.disableRouteToLeader), &sppb.BatchWriteRequest{
 			Session:                     sh.getID(),
 			MutationGroups:              mgsPb,
 			RequestOptions:              createRequestOptions(opts.Priority, "", opts.TransactionTag, mergeClientContext(c.clientContext, opts.ClientContext)),
 			ExcludeTxnFromChangeStreams: opts.ExcludeTxnFromChangeStreams,
-		}, gax.WithGRPCOptions(grpc.Header(&md)))
+		})
 
-		if getGFELatencyMetricsFlag() && md != nil && c.ct != nil {
-			if metricErr := createContextAndCaptureGFELatencyMetrics(ct, c.ct, md, "BatchWrite"); metricErr != nil {
-				trace.TracePrintf(ct, nil, "Error in recording GFE Latency. Try disabling and rerunning. Error: %v", err)
-			}
-		}
-		if metricErr := recordGFELatencyMetricsOT(ct, md, "BatchWrite", c.otConfig); metricErr != nil {
-			trace.TracePrintf(ct, nil, "Error in recording GFE Latency through OpenTelemetry. Error: %v", err)
+		if rpcErr == nil && stream != nil && shouldCaptureStreamingHeaderMetrics(c.ct, c.otConfig) {
+			stream = wrapBatchWriteClient(
+				stream,
+				otrace.SpanFromContext(ct),
+				nil,
+				streamingHeaderMetrics{
+					ctx:      ct,
+					ct:       c.ct,
+					otConfig: c.otConfig,
+					method:   "BatchWrite",
+					traceErrf: func(err error) {
+						trace.TracePrintf(ct, nil, "Error in recording GFE Latency. Try disabling and rerunning. Error: %v", err)
+					},
+				},
+			)
 		}
 		return stream, rpcErr
 	}
@@ -1546,31 +1576,112 @@ func logf(logger *log.Logger, format string, v ...interface{}) {
 	}
 }
 
-// parseServerTimingHeader extracts server timing metrics from gRPC metadata into a map
+type serverTimingMetrics struct {
+	gfeLatency time.Duration
+	afeLatency time.Duration
+	hasGFE     bool
+	hasAFE     bool
+}
+
+// parseServerTimingHeader extracts server timing metrics from gRPC metadata into a map.
+// This is used by legacy exported helpers/tests. Built-in metrics use
+// parseServerTimingHeaderMetrics to avoid allocating a map on the request path.
 func parseServerTimingHeader(md metadata.MD) map[string]time.Duration {
-	metrics := make(map[string]time.Duration)
+	timing := parseServerTimingHeaderMetrics(md)
+	metrics := make(map[string]time.Duration, 2)
+	if timing.hasGFE {
+		metrics[gfeTimingHeader] = timing.gfeLatency
+	}
+	if timing.hasAFE {
+		metrics[afeTimingHeader] = timing.afeLatency
+	}
+	return metrics
+}
+
+// parseServerTimingHeaderMetrics extracts only the server timing fields used by
+// built-in metrics. It avoids regexp result slices and map allocation.
+func parseServerTimingHeaderMetrics(md metadata.MD) serverTimingMetrics {
+	var metrics serverTimingMetrics
 	if md == nil {
 		return metrics
 	}
-
-	serverTiming := md.Get(serverTimingHeaderKey)
+	serverTiming := md[serverTimingHeaderKey]
 	if len(serverTiming) == 0 {
-		return metrics
+		serverTiming = md.Get(serverTimingHeaderKey)
 	}
-
 	for _, timing := range serverTiming {
-		matches := serverTimingPattern.FindAllStringSubmatch(timing, -1)
-		for _, match := range matches {
-			if len(match) == 3 { // full match + 2 capture groups
-				metricName := match[1]
-				duration, err := strconv.ParseFloat(match[2], 64)
-				if err == nil {
-					metrics[metricName] = time.Duration(duration*1000) * time.Microsecond
-				}
-			}
+		parseServerTimingHeaderValue(timing, &metrics)
+		if metrics.hasGFE && metrics.hasAFE {
+			break
 		}
 	}
 	return metrics
+}
+
+func parseServerTimingHeaderValue(timing string, metrics *serverTimingMetrics) {
+	for len(timing) > 0 {
+		timing = strings.TrimLeft(timing, " \t,")
+		nameEnd := strings.IndexByte(timing, ';')
+		if nameEnd < 0 {
+			return
+		}
+		name := strings.TrimSpace(timing[:nameEnd])
+		timing = timing[nameEnd+1:]
+		next := strings.IndexByte(timing, ',')
+		var params string
+		if next < 0 {
+			params = timing
+			timing = ""
+		} else {
+			params = timing[:next]
+			timing = timing[next+1:]
+		}
+		if name != gfeTimingHeader && name != afeTimingHeader {
+			continue
+		}
+		dur, ok := parseServerTimingDuration(params)
+		if !ok {
+			continue
+		}
+		if name == gfeTimingHeader {
+			metrics.gfeLatency = dur
+			metrics.hasGFE = true
+		} else {
+			metrics.afeLatency = dur
+			metrics.hasAFE = true
+		}
+	}
+}
+
+func parseServerTimingDuration(params string) (time.Duration, bool) {
+	for len(params) > 0 {
+		params = strings.TrimLeft(params, " \t;")
+		if strings.HasPrefix(params, "dur=") {
+			params = params[len("dur="):]
+			end := 0
+			for end < len(params) {
+				c := params[end]
+				if (c < '0' || c > '9') && c != '.' {
+					break
+				}
+				end++
+			}
+			if end == 0 {
+				return 0, false
+			}
+			duration, err := strconv.ParseFloat(params[:end], 64)
+			if err != nil {
+				return 0, false
+			}
+			return time.Duration(duration*1000) * time.Microsecond, true
+		}
+		next := strings.IndexByte(params, ';')
+		if next < 0 {
+			return 0, false
+		}
+		params = params[next+1:]
+	}
+	return 0, false
 }
 
 // enableLogClientOptions returns true if the environment variable for enabling has been set to true, or if the

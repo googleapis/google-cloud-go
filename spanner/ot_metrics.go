@@ -215,15 +215,18 @@ func recordGFELatencyMetricsOT(ctx context.Context, md metadata.MD, keyMethod st
 	if otConfig == nil || !otConfig.enabled || md == nil {
 		return nil
 	}
-	attr := otConfig.attributeMap
-	metrics := parseServerTimingHeader(md)
-	if len(metrics) == 0 && otConfig.gfeHeaderMissingCount != nil {
-		otConfig.gfeHeaderMissingCount.Add(ctx, 1, metric.WithAttributes(attr...))
+	timing := parseServerTimingHeaderMetrics(md)
+	if !timing.hasGFE {
+		if otConfig.gfeHeaderMissingCount != nil {
+			otConfig.gfeHeaderMissingCount.Add(ctx, 1, metric.WithAttributes(otConfig.attributeMap...))
+		}
 		return nil
 	}
-	attr = append(attr, attributeKeyMethod.String(keyMethod))
 	if otConfig.gfeLatency != nil {
-		otConfig.gfeLatency.Record(ctx, metrics[gfeTimingHeader].Milliseconds(), metric.WithAttributes(attr...))
+		var attr [8]attribute.KeyValue
+		n := copy(attr[:], otConfig.attributeMap)
+		attr[n] = attributeKeyMethod.String(keyMethod)
+		otConfig.gfeLatency.Record(ctx, timing.gfeLatency.Milliseconds(), metric.WithAttributes(attr[:n+1]...))
 	}
 	return nil
 }

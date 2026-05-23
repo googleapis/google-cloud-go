@@ -111,59 +111,6 @@ var (
 		800.0, 1000.0, 2000.0, 5000.0, 10000.0, 20000.0, 50000.0, 100000.0, 200000.0,
 		400000.0, 800000.0, 1600000.0, 3200000.0}
 
-	// All the built-in metrics have same attributes except 'status' and 'streaming'
-	// These attributes need to be added to only few of the metrics
-	metricsDetails = map[string]metricInfo{
-		metricNameOperationCount: {
-			additionalAttrs: []string{
-				metricLabelKeyStatus,
-			},
-			recordedPerAttempt: false,
-		},
-		metricNameOperationLatencies: {
-			additionalAttrs: []string{
-				metricLabelKeyStatus,
-			},
-			recordedPerAttempt: false,
-		},
-		metricNameAttemptLatencies: {
-			additionalAttrs: []string{
-				metricLabelKeyStatus,
-			},
-			recordedPerAttempt: true,
-		},
-		metricNameAttemptCount: {
-			additionalAttrs: []string{
-				metricLabelKeyStatus,
-			},
-			recordedPerAttempt: true,
-		},
-		metricNameAFELatencies: {
-			additionalAttrs: []string{
-				metricLabelKeyStatus,
-			},
-			recordedPerAttempt: true,
-		},
-		metricNameGFELatencies: {
-			additionalAttrs: []string{
-				metricLabelKeyStatus,
-			},
-			recordedPerAttempt: true,
-		},
-		metricNameGFEConnectivityErrorCount: {
-			additionalAttrs: []string{
-				metricLabelKeyStatus,
-			},
-			recordedPerAttempt: true,
-		},
-		metricNameAFEConnectivityErrorCount: {
-			additionalAttrs: []string{
-				metricLabelKeyStatus,
-			},
-			recordedPerAttempt: true,
-		},
-	}
-
 	// Generates unique client ID in the format go-<random UUID>@<hostname>
 	generateClientUID = func() (string, error) {
 		hostname := "localhost"
@@ -251,11 +198,6 @@ var (
 		"grpc.lb.locality",
 	}
 )
-
-type metricInfo struct {
-	additionalAttrs    []string
-	recordedPerAttempt bool
-}
 
 // builtinMetricsTracerFactory is responsible for creating and managing metrics tracers.
 type builtinMetricsTracerFactory struct {
@@ -357,6 +299,9 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, dbpath, compression str
 	// Create meter and instruments
 	meter := meterProvider.Meter(builtInMetricsMeterName, metric.WithInstrumentationVersion(internal.Version))
 	err = tracerFactory.createInstruments(meter)
+	if err != nil {
+		return tracerFactory, err
+	}
 	return tracerFactory, err
 }
 
@@ -523,7 +468,8 @@ type builtinMetricsTracer struct {
 	instrumentOperationCount     metric.Int64Counter     // Counter for the number of operations.
 	instrumentAttemptCount       metric.Int64Counter     // Counter for the number of attempts.
 
-	method string // The method being traced.
+	method      string // The method being traced.
+	methodLabel string // The method label value used by metrics.
 
 	currOp *opTracer // The current operation tracer.
 }
@@ -549,7 +495,7 @@ type attemptTracer struct {
 	status    string    // The gRPC status code of the attempt.
 
 	directPathUsed      bool // Indicates if DirectPath was used for the attempt.
-	serverTimingMetrics map[string]time.Duration
+	serverTimingMetrics serverTimingMetrics
 }
 
 // setStartTime sets the start time for the operation.
@@ -581,13 +527,19 @@ func (o *opTracer) incrementAttemptCount() {
 func (a *attemptTracer) setDirectPathUsed(ctx context.Context) {
 	peerInfo, ok := peer.FromContext(ctx)
 	if ok {
+		a.setDirectPathUsedFromPeer(peerInfo)
+	}
+}
+
+func (a *attemptTracer) setDirectPathUsedFromPeer(peerInfo *peer.Peer) {
+	if peerInfo != nil {
 		if _, isALTS := peerInfo.AuthInfo.(alts.AuthInfo); isALTS {
 			a.directPathUsed = true
 		}
 	}
 }
 
-func (a *attemptTracer) setServerTimingMetrics(metrics map[string]time.Duration) {
+func (a *attemptTracer) setServerTimingMetrics(metrics serverTimingMetrics) {
 	a.serverTimingMetrics = metrics
 }
 
@@ -621,71 +573,20 @@ func (tf *builtinMetricsTracerFactory) createBuiltinMetricsTracer(ctx context.Co
 	}
 }
 
-// toOtelMetricAttrs:
-// - converts metric attributes values captured throughout the operation / attempt
-// to OpenTelemetry attributes format,
-// - combines these with common client attributes and returns
-func (mt *builtinMetricsTracer) toOtelMetricAttrs(metricName string) ([]attribute.KeyValue, error) {
-	if mt.currOp == nil || mt.currOp.currAttempt == nil {
-		return nil, fmt.Errorf("unable to create attributes list for unknown metric: %v", metricName)
+func (mt *builtinMetricsTracer) metricMethodLabel() string {
+	if mt.methodLabel == "" && mt.method != "" {
+		mt.methodLabel = strings.ReplaceAll(strings.TrimPrefix(mt.method, "/google.spanner.v1."), "/", ".")
 	}
-	// Get metric details
-	mDetails, found := metricsDetails[metricName]
-	if !found {
-		return nil, fmt.Errorf("unable to create attributes list for unknown metric: %v", metricName)
-	}
+	return mt.methodLabel
+}
 
-	rpcStatus := mt.currOp.status
-	if mDetails.recordedPerAttempt {
-		rpcStatus = mt.currOp.currAttempt.status
-	}
-
-	return []attribute.KeyValue{
-		attribute.String(metricLabelKeyMethod, strings.ReplaceAll(strings.TrimPrefix(mt.method, "/google.spanner.v1."), "/", ".")),
+func (mt *builtinMetricsTracer) metricAttributeSet(status string, directPathUsed bool) attribute.Set {
+	return attribute.NewSet(
+		attribute.String(metricLabelKeyMethod, mt.metricMethodLabel()),
 		attribute.String(metricLabelKeyDirectPathEnabled, strconv.FormatBool(mt.currOp.directPathEnabled)),
-		attribute.String(metricLabelKeyDirectPathUsed, strconv.FormatBool(mt.currOp.currAttempt.directPathUsed)),
-		attribute.String(metricLabelKeyStatus, rpcStatus),
-	}, nil
-}
-
-func (t *builtinMetricsTracer) recordGFELatency(latency time.Duration) {
-	if t.builtInEnabled {
-		attrs, err := t.toOtelMetricAttrs(metricNameGFELatencies)
-		if err != nil {
-			return
-		}
-		t.instrumentGFELatencies.Record(t.ctx, float64(latency.Milliseconds()), metric.WithAttributes(attrs...))
-	}
-}
-
-func (t *builtinMetricsTracer) recordAFELatency(latency time.Duration) {
-	if !t.isAFEBuiltInMetricEnabled {
-		return
-	}
-	attrs, err := t.toOtelMetricAttrs(metricNameAFELatencies)
-	if err != nil {
-		return
-	}
-	t.instrumentAFELatencies.Record(t.ctx, float64(latency.Milliseconds()), metric.WithAttributes(attrs...))
-}
-
-func (t *builtinMetricsTracer) recordGFEError() {
-	attrs, err := t.toOtelMetricAttrs(metricNameGFEConnectivityErrorCount)
-	if err != nil {
-		return
-	}
-	t.instrumentGFEErrorCount.Add(t.ctx, 1, metric.WithAttributes(attrs...))
-}
-
-func (t *builtinMetricsTracer) recordAFEError() {
-	if !t.isAFEBuiltInMetricEnabled {
-		return
-	}
-	attrs, err := t.toOtelMetricAttrs(metricNameAFEConnectivityErrorCount)
-	if err != nil {
-		return
-	}
-	t.instrumentAFEErrorCount.Add(t.ctx, 1, metric.WithAttributes(attrs...))
+		attribute.String(metricLabelKeyDirectPathUsed, strconv.FormatBool(directPathUsed)),
+		attribute.String(metricLabelKeyStatus, status),
+	)
 }
 
 // Convert error to grpc status error
@@ -710,33 +611,31 @@ func convertToGrpcStatusErr(err error) (codes.Code, error) {
 // Ignore errors seen while creating metric attributes since metric can still
 // be recorded with rest of the attributes
 func recordAttemptCompletion(mt *builtinMetricsTracer) {
+	if mt.currOp == nil || mt.currOp.currAttempt == nil {
+		return
+	}
 	if !mt.builtInEnabled {
 		return
 	}
-	// capture AFE metrics only if direct-path is enabled and used in current attempt
-	if mt.currOp.currAttempt.directPathUsed {
-		if dur, ok := mt.currOp.currAttempt.serverTimingMetrics[afeTimingHeader]; ok {
-			mt.recordAFELatency(dur)
-		} else {
-			mt.recordAFEError()
+	attempt := mt.currOp.currAttempt
+	attrSet := mt.metricAttributeSet(attempt.status, attempt.directPathUsed)
+
+	if attempt.directPathUsed {
+		if mt.isAFEBuiltInMetricEnabled {
+			if attempt.serverTimingMetrics.hasAFE {
+				mt.instrumentAFELatencies.Record(mt.ctx, float64(attempt.serverTimingMetrics.afeLatency.Milliseconds()), metric.WithAttributeSet(attrSet))
+			} else {
+				mt.instrumentAFEErrorCount.Add(mt.ctx, 1, metric.WithAttributeSet(attrSet))
+			}
 		}
 	} else {
-		if dur, ok := mt.currOp.currAttempt.serverTimingMetrics[gfeTimingHeader]; ok {
-			mt.recordGFELatency(dur)
+		if attempt.serverTimingMetrics.hasGFE {
+			mt.instrumentGFELatencies.Record(mt.ctx, float64(attempt.serverTimingMetrics.gfeLatency.Milliseconds()), metric.WithAttributeSet(attrSet))
 		} else {
-			mt.recordGFEError()
+			mt.instrumentGFEErrorCount.Add(mt.ctx, 1, metric.WithAttributeSet(attrSet))
 		}
 	}
-
-	// Calculate elapsed time
-	elapsedTime := convertToMs(time.Since(mt.currOp.currAttempt.startTime))
-
-	// Record attempt_latencies
-	attemptLatAttrs, err := mt.toOtelMetricAttrs(metricNameAttemptLatencies)
-	if err != nil {
-		return
-	}
-	mt.instrumentAttemptLatencies.Record(mt.ctx, elapsedTime, metric.WithAttributes(attemptLatAttrs...))
+	mt.instrumentAttemptLatencies.Record(mt.ctx, convertToMs(time.Since(attempt.startTime)), metric.WithAttributeSet(attrSet))
 }
 
 // recordOperationCompletion records as many operation specific metrics as it can
@@ -746,30 +645,14 @@ func recordOperationCompletion(mt *builtinMetricsTracer) {
 	if !mt.builtInEnabled {
 		return
 	}
-
-	// Calculate elapsed time
-	elapsedTimeMs := convertToMs(time.Since(mt.currOp.startTime))
-
-	// Record operation_count
-	opCntAttrs, err := mt.toOtelMetricAttrs(metricNameOperationCount)
-	if err != nil {
+	if mt.currOp == nil || mt.currOp.currAttempt == nil {
 		return
 	}
-	mt.instrumentOperationCount.Add(mt.ctx, 1, metric.WithAttributes(opCntAttrs...))
 
-	// Record operation_latencies
-	opLatAttrs, err := mt.toOtelMetricAttrs(metricNameOperationLatencies)
-	if err != nil {
-		return
-	}
-	mt.instrumentOperationLatencies.Record(mt.ctx, elapsedTimeMs, metric.WithAttributes(opLatAttrs...))
-
-	// Record attempt_count
-	attemptCntAttrs, err := mt.toOtelMetricAttrs(metricNameAttemptCount)
-	if err != nil {
-		return
-	}
-	mt.instrumentAttemptCount.Add(mt.ctx, mt.currOp.attemptCount, metric.WithAttributes(attemptCntAttrs...))
+	attrSet := mt.metricAttributeSet(mt.currOp.status, mt.currOp.currAttempt.directPathUsed)
+	mt.instrumentOperationCount.Add(mt.ctx, 1, metric.WithAttributeSet(attrSet))
+	mt.instrumentOperationLatencies.Record(mt.ctx, convertToMs(time.Since(mt.currOp.startTime)), metric.WithAttributeSet(attrSet))
+	mt.instrumentAttemptCount.Add(mt.ctx, mt.currOp.attemptCount, metric.WithAttributeSet(attrSet))
 }
 
 func convertToMs(d time.Duration) float64 {
