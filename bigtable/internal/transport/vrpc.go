@@ -18,43 +18,58 @@ import (
 	"context"
 )
 
-// CallContext represents the execution context of a virtual RPC invocation.
-type CallContext interface {
-	context.Context
-	// Method returns the name of the virtual RPC method.
-	Method() string
-	// Attempt returns the current attempt number (1-indexed).
-	Attempt() int
-}
+type contextKey struct{}
 
-// Handler represents the core execution function of a virtual RPC downstream invocation.
-type Handler func(ctx CallContext, req interface{}) (interface{}, error)
-
-// Interceptor represents a decorator middleware that intercepts a virtual RPC downstream invocation.
-type Interceptor func(ctx CallContext, req interface{}, handler Handler) (interface{}, error)
-
-// VRpcListener receives notifications of vRPC attempt lifecycles.
-type VRpcListener interface {
-	// OnAttemptStart is called before a new attempt is executed.
-	OnAttemptStart(ctx CallContext)
-	// OnAttemptComplete is called after an attempt completes (with success or error).
-	OnAttemptComplete(ctx CallContext, err error)
-}
-
-type callContext struct {
-	context.Context
+type vrpcMetadata struct {
 	method  string
 	attempt int
 }
 
-func (c *callContext) Method() string { return c.method }
-func (c *callContext) Attempt() int   { return c.attempt }
-
-// NewCallContext creates a new CallContext with initial attempt set to 1.
-func NewCallContext(ctx context.Context, method string) CallContext {
-	return &callContext{
-		Context: ctx,
+// WithVRpcMetadata returns a new context with virtual RPC metadata set.
+func WithVRpcMetadata(ctx context.Context, method string, attempt int) context.Context {
+	return context.WithValue(ctx, contextKey{}, &vrpcMetadata{
 		method:  method,
-		attempt: 1,
+		attempt: attempt,
+	})
+}
+
+// WithAttempt returns a new context with the virtual RPC attempt updated.
+func WithAttempt(ctx context.Context, attempt int) context.Context {
+	if md, ok := ctx.Value(contextKey{}).(*vrpcMetadata); ok {
+		return context.WithValue(ctx, contextKey{}, &vrpcMetadata{
+			method:  md.method,
+			attempt: attempt,
+		})
 	}
+	return ctx
+}
+
+// VRpcMethod extracts the virtual RPC method name from the context.
+func VRpcMethod(ctx context.Context) string {
+	if md, ok := ctx.Value(contextKey{}).(*vrpcMetadata); ok {
+		return md.method
+	}
+	return ""
+}
+
+// VRpcAttempt extracts the virtual RPC attempt number (1-indexed) from the context.
+func VRpcAttempt(ctx context.Context) int {
+	if md, ok := ctx.Value(contextKey{}).(*vrpcMetadata); ok {
+		return md.attempt
+	}
+	return 0
+}
+
+// Handler represents the core execution function of a virtual RPC downstream invocation.
+type Handler func(ctx context.Context, req interface{}) (interface{}, error)
+
+// Interceptor represents a decorator middleware that intercepts a virtual RPC downstream invocation.
+type Interceptor func(ctx context.Context, req interface{}, handler Handler) (interface{}, error)
+
+// VRpcListener receives notifications of vRPC attempt lifecycles.
+type VRpcListener interface {
+	// OnAttemptStart is called before a new attempt is executed.
+	OnAttemptStart(ctx context.Context)
+	// OnAttemptComplete is called after an attempt completes (with success or error).
+	OnAttemptComplete(ctx context.Context, err error)
 }

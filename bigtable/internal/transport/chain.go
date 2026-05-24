@@ -14,15 +14,19 @@
 
 package internal
 
+import (
+	"context"
+)
+
 // ChainInterceptors chains multiple interceptors into a single virtual RPC execution Handler.
 // The first interceptor in the list is executed first, wrapping the subsequent ones.
 func ChainInterceptors(interceptors ...Interceptor) Interceptor {
-	return func(ctx CallContext, req interface{}, invoker Handler) (interface{}, error) {
+	return func(ctx context.Context, req interface{}, invoker Handler) (interface{}, error) {
 		chain := invoker
 		for i := len(interceptors) - 1; i >= 0; i-- {
 			currentIdx := i
 			nextHandler := chain
-			chain = func(c CallContext, r interface{}) (interface{}, error) {
+			chain = func(c context.Context, r interface{}) (interface{}, error) {
 				return interceptors[currentIdx](c, r, nextHandler)
 			}
 		}

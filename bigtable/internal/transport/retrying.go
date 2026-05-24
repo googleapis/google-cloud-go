@@ -15,6 +15,7 @@
 package internal
 
 import (
+	"context"
 	"sync/atomic"
 	"time"
 
@@ -48,7 +49,7 @@ func RetryingVRpc(opts RetryingOptions) Interceptor {
 		opts.BackoffMultiplier = 1.3
 	}
 
-	return func(ctx CallContext, req interface{}, next Handler) (interface{}, error) {
+	return func(ctx context.Context, req interface{}, next Handler) (interface{}, error) {
 		var attempt int32
 		backoff := opts.InitialBackoff
 
@@ -66,11 +67,7 @@ func RetryingVRpc(opts RetryingOptions) Interceptor {
 				break
 			}
 
-			attemptCtx := &callContext{
-				Context: ctx,
-				method:  ctx.Method(),
-				attempt: int(currentAttempt),
-			}
+			attemptCtx := WithAttempt(ctx, int(currentAttempt))
 
 			if shieldedListener != nil {
 				shieldedListener.OnAttemptStart(attemptCtx)
@@ -156,13 +153,13 @@ func (s *closedListenerShield) isClosed() bool {
 	return atomic.LoadInt32(&s.closed) == 1
 }
 
-func (s *closedListenerShield) OnAttemptStart(ctx CallContext) {
+func (s *closedListenerShield) OnAttemptStart(ctx context.Context) {
 	if !s.isClosed() && s.listener != nil {
 		s.listener.OnAttemptStart(ctx)
 	}
 }
 
-func (s *closedListenerShield) OnAttemptComplete(ctx CallContext, err error) {
+func (s *closedListenerShield) OnAttemptComplete(ctx context.Context, err error) {
 	if !s.isClosed() && s.listener != nil {
 		s.listener.OnAttemptComplete(ctx, err)
 	}
