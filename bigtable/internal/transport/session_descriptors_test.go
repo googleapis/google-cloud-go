@@ -187,3 +187,31 @@ func TestMaterializedViewSessionDescriptor(t *testing.T) {
 		}
 	}
 }
+
+func TestSessionDescriptors_SafeAssertions(t *testing.T) {
+	// 1. Verify with nil request
+	if name := TABLE_SESSION.LogNameFn(nil); name != "TableSession(nil)" {
+		t.Errorf("Expected LogNameFn(nil) = 'TableSession(nil)', got %q", name)
+	}
+	if meta := TABLE_SESSION.MetadataFn(nil); meta != nil {
+		t.Errorf("Expected MetadataFn(nil) = nil, got %v", meta)
+	}
+
+	// 2. Verify with typed nil pointer
+	var nilTableReq *spb.OpenTableRequest
+	if name := TABLE_SESSION.LogNameFn(nilTableReq); name != "TableSession(nil)" {
+		t.Errorf("Expected LogNameFn(typed nil) = 'TableSession(nil)', got %q", name)
+	}
+	if meta := TABLE_SESSION.MetadataFn(nilTableReq); meta != nil {
+		t.Errorf("Expected MetadataFn(typed nil) = nil, got %v", meta)
+	}
+
+	// 3. Verify with wrong message type
+	wrongReq := &spb.OpenAuthorizedViewRequest{}
+	if name := TABLE_SESSION.LogNameFn(wrongReq); name != "TableSession(nil)" {
+		t.Errorf("Expected LogNameFn(wrong type) = 'TableSession(nil)', got %q", name)
+	}
+	if meta := TABLE_SESSION.MetadataFn(wrongReq); meta != nil {
+		t.Errorf("Expected MetadataFn(wrong type) = nil, got %v", meta)
+	}
+}

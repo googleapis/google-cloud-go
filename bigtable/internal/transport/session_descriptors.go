@@ -62,11 +62,17 @@ var (
 		MethodName: "OpenTable",
 		HeaderKeys: []string{"table_name", "app_profile_id", "permission"},
 		LogNameFn: func(req proto.Message) string {
-			r := req.(*spb.OpenTableRequest)
+			r, ok := req.(*spb.OpenTableRequest)
+			if !ok || r == nil {
+				return "TableSession(nil)"
+			}
 			return fmt.Sprintf("TableSession(table=%s, app_profile=%s, perm=%s)", r.TableName, r.AppProfileId, r.Permission.String())
 		},
 		MetadataFn: func(req proto.Message) map[string]string {
-			r := req.(*spb.OpenTableRequest)
+			r, ok := req.(*spb.OpenTableRequest)
+			if !ok || r == nil {
+				return nil
+			}
 			return map[string]string{
 				"open_session.payload.table_name":     r.TableName,
 				"open_session.payload.app_profile_id": r.AppProfileId,
@@ -81,11 +87,17 @@ var (
 		MethodName: "OpenAuthorizedView",
 		HeaderKeys: []string{"authorized_view_name", "app_profile_id", "permission"},
 		LogNameFn: func(req proto.Message) string {
-			r := req.(*spb.OpenAuthorizedViewRequest)
+			r, ok := req.(*spb.OpenAuthorizedViewRequest)
+			if !ok || r == nil {
+				return "AuthorizedViewSession(nil)"
+			}
 			return fmt.Sprintf("AuthorizedViewSession(view=%s, app_profile=%s, perm=%s)", r.AuthorizedViewName, r.AppProfileId, r.Permission.String())
 		},
 		MetadataFn: func(req proto.Message) map[string]string {
-			r := req.(*spb.OpenAuthorizedViewRequest)
+			r, ok := req.(*spb.OpenAuthorizedViewRequest)
+			if !ok || r == nil {
+				return nil
+			}
 			return map[string]string{
 				"open_session.payload.authorized_view_name": r.AuthorizedViewName,
 				"open_session.payload.app_profile_id":       r.AppProfileId,
@@ -100,11 +112,17 @@ var (
 		MethodName: "OpenMaterializedView",
 		HeaderKeys: []string{"materialized_view_name", "app_profile_id", "permission"},
 		LogNameFn: func(req proto.Message) string {
-			r := req.(*spb.OpenMaterializedViewRequest)
+			r, ok := req.(*spb.OpenMaterializedViewRequest)
+			if !ok || r == nil {
+				return "MaterializedViewSession(nil)"
+			}
 			return fmt.Sprintf("MaterializedViewSession(view=%s, app_profile=%s, perm=%s)", r.MaterializedViewName, r.AppProfileId, r.Permission.String())
 		},
 		MetadataFn: func(req proto.Message) map[string]string {
-			r := req.(*spb.OpenMaterializedViewRequest)
+			r, ok := req.(*spb.OpenMaterializedViewRequest)
+			if !ok || r == nil {
+				return nil
+			}
 			return map[string]string{
 				"open_session.payload.materialized_view_name": r.MaterializedViewName,
 				"open_session.payload.app_profile_id":         r.AppProfileId,
@@ -112,4 +130,4 @@ var (
 			}
 		},
 	}
-)
+}
