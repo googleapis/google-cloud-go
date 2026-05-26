@@ -110,6 +110,7 @@ func RetryingVRpc(opts RetryingOptions) Interceptor {
 				return nil, err
 			}
 
+
 			if !hasServerDelay {
 				delay = backoff
 				nextBackoff := float64(backoff) * opts.BackoffMultiplier
@@ -130,6 +131,7 @@ func RetryingVRpc(opts RetryingOptions) Interceptor {
 		return nil, lastErr
 	}
 }
+
 
 func isRetryableCode(code codes.Code) bool {
 	switch code {

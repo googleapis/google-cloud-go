@@ -2387,9 +2387,12 @@ func newUnaryClientInterceptor(prepReqCount *int, respPtrs *[]prepareQueryResp, 
 	return func(ctx context.Context, method string, req, reply interface{},
 		cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
 		err := invoker(ctx, method, req, reply, cc, opts...)
-		defer func() { *prepReqCount++ }()
 		_, isPrepReq := req.(*btpb.PrepareQueryRequest)
-		if !isPrepReq || (err != nil && !strings.Contains(err.Error(), emulatorUnsupported)) {
+		if !isPrepReq {
+			return err
+		}
+		defer func() { *prepReqCount++ }()
+		if err != nil && !strings.Contains(err.Error(), emulatorUnsupported) {
 			return err
 		}
 

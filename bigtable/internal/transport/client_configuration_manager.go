@@ -217,6 +217,17 @@ func (m *ClientConfigurationManager) addListener(listener configListener) func()
 	}
 }
 
+// AddSessionPoolListener registers a callback that receives raw SessionPoolConfiguration updates.
+func (m *ClientConfigurationManager) AddSessionPoolListener(listener func(*bigtablepb.SessionClientConfiguration_SessionPoolConfiguration)) func() {
+	return m.addListener(func(cfg clientConfig, seq int64) {
+		spCfg := &bigtablepb.SessionClientConfiguration_SessionPoolConfiguration{
+			MinSessionCount: int32(cfg.Session.SessionPool.MinSessionCount),
+			MaxSessionCount: int32(cfg.Session.SessionPool.MaxSessionCount),
+		}
+		listener(spCfg)
+	})
+}
+
 // pollingLoop continuously polls the Bigtable control plane at the configured interval.
 // It enforces a minimum interval (MinPollingInterval) to protect the control plane from DDoSes.
 func (m *ClientConfigurationManager) pollingLoop(parentCtx context.Context) {

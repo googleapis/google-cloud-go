@@ -789,6 +789,11 @@ func (p *BigtableChannelPool) NewStream(ctx context.Context, desc *grpc.StreamDe
 	}, nil
 }
 
+// MeterProvider returns the meter provider for creating instruments.
+func (p *BigtableChannelPool) MeterProvider() metric.MeterProvider {
+	return p.meterProvider
+}
+
 // selectLeastLoadedRandomOfTwo() returns the index of the connection via random of two
 func (p *BigtableChannelPool) selectLeastLoadedRandomOfTwo() (*connEntry, error) {
 	conns := p.getConns()
