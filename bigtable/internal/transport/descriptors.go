@@ -16,7 +16,6 @@ package internal
 
 import (
 	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
-	spb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -51,17 +50,17 @@ func (d *VRpcDescriptorImpl) Decode(buf []byte) (interface{}, error) {
 
 // vRPC Encoder/Decoder factories
 
-func createTableEncoder(subEncoder func(req interface{}, envelope *spb.TableRequest)) func(interface{}) ([]byte, error) {
+func createTableEncoder(subEncoder func(req interface{}, envelope *btpb.TableRequest)) func(interface{}) ([]byte, error) {
 	return func(req interface{}) ([]byte, error) {
-		envelope := &spb.TableRequest{}
+		envelope := &btpb.TableRequest{}
 		subEncoder(req, envelope)
 		return proto.Marshal(envelope)
 	}
 }
 
-func createTableDecoder(subDecoder func(envelope *spb.TableResponse) interface{}) func([]byte) (interface{}, error) {
+func createTableDecoder(subDecoder func(envelope *btpb.TableResponse) interface{}) func([]byte) (interface{}, error) {
 	return func(buf []byte) (interface{}, error) {
-		envelope := &spb.TableResponse{}
+		envelope := &btpb.TableResponse{}
 		if err := proto.Unmarshal(buf, envelope); err != nil {
 			return nil, err
 		}
@@ -69,17 +68,17 @@ func createTableDecoder(subDecoder func(envelope *spb.TableResponse) interface{}
 	}
 }
 
-func createAuthViewEncoder(subEncoder func(req interface{}, envelope *spb.AuthorizedViewRequest)) func(interface{}) ([]byte, error) {
+func createAuthViewEncoder(subEncoder func(req interface{}, envelope *btpb.AuthorizedViewRequest)) func(interface{}) ([]byte, error) {
 	return func(req interface{}) ([]byte, error) {
-		envelope := &spb.AuthorizedViewRequest{}
+		envelope := &btpb.AuthorizedViewRequest{}
 		subEncoder(req, envelope)
 		return proto.Marshal(envelope)
 	}
 }
 
-func createAuthViewDecoder(subDecoder func(envelope *spb.AuthorizedViewResponse) interface{}) func([]byte) (interface{}, error) {
+func createAuthViewDecoder(subDecoder func(envelope *btpb.AuthorizedViewResponse) interface{}) func([]byte) (interface{}, error) {
 	return func(buf []byte) (interface{}, error) {
-		envelope := &spb.AuthorizedViewResponse{}
+		envelope := &btpb.AuthorizedViewResponse{}
 		if err := proto.Unmarshal(buf, envelope); err != nil {
 			return nil, err
 		}
@@ -87,17 +86,17 @@ func createAuthViewDecoder(subDecoder func(envelope *spb.AuthorizedViewResponse)
 	}
 }
 
-func createMatViewEncoder(subEncoder func(req interface{}, envelope *spb.MaterializedViewRequest)) func(interface{}) ([]byte, error) {
+func createMatViewEncoder(subEncoder func(req interface{}, envelope *btpb.MaterializedViewRequest)) func(interface{}) ([]byte, error) {
 	return func(req interface{}) ([]byte, error) {
-		envelope := &spb.MaterializedViewRequest{}
+		envelope := &btpb.MaterializedViewRequest{}
 		subEncoder(req, envelope)
 		return proto.Marshal(envelope)
 	}
 }
 
-func createMatViewDecoder(subDecoder func(envelope *spb.MaterializedViewResponse) interface{}) func([]byte) (interface{}, error) {
+func createMatViewDecoder(subDecoder func(envelope *btpb.MaterializedViewResponse) interface{}) func([]byte) (interface{}, error) {
 	return func(buf []byte) (interface{}, error) {
-		envelope := &spb.MaterializedViewResponse{}
+		envelope := &btpb.MaterializedViewResponse{}
 		if err := proto.Unmarshal(buf, envelope); err != nil {
 			return nil, err
 		}
@@ -122,116 +121,101 @@ type MutateRowArgs struct {
 // MutateRowResult holds the result of a MutateRow virtual RPC.
 type MutateRowResult struct{}
 
-func encodeReadRow(args ReadRowArgs) *spb.SessionReadRowRequest {
-	return &spb.SessionReadRowRequest{
+func encodeReadRow(args ReadRowArgs) *btpb.SessionReadRowRequest {
+	return &btpb.SessionReadRowRequest{
 		Key:    []byte(args.RowKey),
 		Filter: args.Filter,
 	}
 }
 
-func decodeReadRow(payload []byte) (ReadRowResult, error) {
-	var resp spb.SessionReadRowResponse
-	if err := proto.Unmarshal(payload, &resp); err != nil {
-		return ReadRowResult{}, err
+func decodeReadRow(resp *btpb.SessionReadRowResponse) ReadRowResult {
+	if resp == nil {
+		return ReadRowResult{}
 	}
 	return ReadRowResult{
 		Row: resp.Row,
-	}, nil
+	}
 }
 
-func encodeMutateRow(args MutateRowArgs) *spb.SessionMutateRowRequest {
-	return &spb.SessionMutateRowRequest{
+func encodeMutateRow(args MutateRowArgs) *btpb.SessionMutateRowRequest {
+	return &btpb.SessionMutateRowRequest{
 		Key:       []byte(args.RowKey),
 		Mutations: args.Mutations,
 	}
 }
 
-func decodeMutateRow(payload []byte) (MutateRowResult, error) {
-	var resp spb.SessionMutateRowResponse
-	if err := proto.Unmarshal(payload, &resp); err != nil {
-		return MutateRowResult{}, err
-	}
-	return MutateRowResult{}, nil
+func decodeMutateRow(resp *btpb.SessionMutateRowResponse) MutateRowResult {
+	return MutateRowResult{}
 }
 
 var (
 	// READ_ROW executes Point Reads on standard tables.
 	READ_ROW = &VRpcDescriptorImpl{
 		MethodName: "ReadRow",
-		EncodeFn: createTableEncoder(func(req interface{}, env *spb.TableRequest) {
+		EncodeFn: createTableEncoder(func(req interface{}, env *btpb.TableRequest) {
 			args := req.(ReadRowArgs)
-			env.Payload = &spb.TableRequest_ReadRow{
+			env.Payload = &btpb.TableRequest_ReadRow{
 				ReadRow: encodeReadRow(args),
 			}
 		}),
-		DecodeFn: createTableDecoder(func(env *spb.TableResponse) interface{} {
-			payload, _ := proto.Marshal(env.GetReadRow())
-			res, _ := decodeReadRow(payload)
-			return res
+		DecodeFn: createTableDecoder(func(env *btpb.TableResponse) interface{} {
+			return decodeReadRow(env.GetReadRow())
 		}),
 	}
 
 	// MUTATE_ROW executes Point Mutations on standard tables.
 	MUTATE_ROW = &VRpcDescriptorImpl{
 		MethodName: "MutateRow",
-		EncodeFn: createTableEncoder(func(req interface{}, env *spb.TableRequest) {
+		EncodeFn: createTableEncoder(func(req interface{}, env *btpb.TableRequest) {
 			args := req.(MutateRowArgs)
-			env.Payload = &spb.TableRequest_MutateRow{
+			env.Payload = &btpb.TableRequest_MutateRow{
 				MutateRow: encodeMutateRow(args),
 			}
 		}),
-		DecodeFn: createTableDecoder(func(env *spb.TableResponse) interface{} {
-			payload, _ := proto.Marshal(env.GetMutateRow())
-			res, _ := decodeMutateRow(payload)
-			return res
+		DecodeFn: createTableDecoder(func(env *btpb.TableResponse) interface{} {
+			return decodeMutateRow(env.GetMutateRow())
 		}),
 	}
 
 	// READ_ROW_AUTH_VIEW executes Point Reads on Authorized Views.
 	READ_ROW_AUTH_VIEW = &VRpcDescriptorImpl{
 		MethodName: "ReadRow",
-		EncodeFn: createAuthViewEncoder(func(req interface{}, env *spb.AuthorizedViewRequest) {
+		EncodeFn: createAuthViewEncoder(func(req interface{}, env *btpb.AuthorizedViewRequest) {
 			args := req.(ReadRowArgs)
-			env.Payload = &spb.AuthorizedViewRequest_ReadRow{
+			env.Payload = &btpb.AuthorizedViewRequest_ReadRow{
 				ReadRow: encodeReadRow(args),
 			}
 		}),
-		DecodeFn: createAuthViewDecoder(func(env *spb.AuthorizedViewResponse) interface{} {
-			payload, _ := proto.Marshal(env.GetReadRow())
-			res, _ := decodeReadRow(payload)
-			return res
+		DecodeFn: createAuthViewDecoder(func(env *btpb.AuthorizedViewResponse) interface{} {
+			return decodeReadRow(env.GetReadRow())
 		}),
 	}
 
 	// MUTATE_ROW_AUTH_VIEW executes Point Mutations on Authorized Views.
 	MUTATE_ROW_AUTH_VIEW = &VRpcDescriptorImpl{
 		MethodName: "MutateRow",
-		EncodeFn: createAuthViewEncoder(func(req interface{}, env *spb.AuthorizedViewRequest) {
+		EncodeFn: createAuthViewEncoder(func(req interface{}, env *btpb.AuthorizedViewRequest) {
 			args := req.(MutateRowArgs)
-			env.Payload = &spb.AuthorizedViewRequest_MutateRow{
+			env.Payload = &btpb.AuthorizedViewRequest_MutateRow{
 				MutateRow: encodeMutateRow(args),
 			}
 		}),
-		DecodeFn: createAuthViewDecoder(func(env *spb.AuthorizedViewResponse) interface{} {
-			payload, _ := proto.Marshal(env.GetMutateRow())
-			res, _ := decodeMutateRow(payload)
-			return res
+		DecodeFn: createAuthViewDecoder(func(env *btpb.AuthorizedViewResponse) interface{} {
+			return decodeMutateRow(env.GetMutateRow())
 		}),
 	}
 
 	// READ_ROW_MAT_VIEW executes Point Reads on Materialized Views.
 	READ_ROW_MAT_VIEW = &VRpcDescriptorImpl{
 		MethodName: "ReadRow",
-		EncodeFn: createMatViewEncoder(func(req interface{}, env *spb.MaterializedViewRequest) {
+		EncodeFn: createMatViewEncoder(func(req interface{}, env *btpb.MaterializedViewRequest) {
 			args := req.(ReadRowArgs)
-			env.Payload = &spb.MaterializedViewRequest_ReadRow{
+			env.Payload = &btpb.MaterializedViewRequest_ReadRow{
 				ReadRow: encodeReadRow(args),
 			}
 		}),
-		DecodeFn: createMatViewDecoder(func(env *spb.MaterializedViewResponse) interface{} {
-			payload, _ := proto.Marshal(env.GetReadRow())
-			res, _ := decodeReadRow(payload)
-			return res
+		DecodeFn: createMatViewDecoder(func(env *btpb.MaterializedViewResponse) interface{} {
+			return decodeReadRow(env.GetReadRow())
 		}),
 	}
 )

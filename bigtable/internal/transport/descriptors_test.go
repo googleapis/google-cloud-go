@@ -19,7 +19,6 @@ import (
 	"testing"
 
 	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
-	spb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -55,12 +54,12 @@ func TestTableDescriptors_ReadRow(t *testing.T) {
 		t.Fatalf("Failed to encode READ_ROW: %v", err)
 	}
 
-	var env spb.TableRequest
+	var env btpb.TableRequest
 	if err := proto.Unmarshal(encodedBytes, &env); err != nil {
 		t.Fatalf("Failed to unmarshal TableRequest envelope: %v", err)
 	}
 
-	payload, ok := env.Payload.(*spb.TableRequest_ReadRow)
+	payload, ok := env.Payload.(*btpb.TableRequest_ReadRow)
 	if !ok {
 		t.Fatalf("Expected TableRequest_ReadRow payload, got %T", env.Payload)
 	}
@@ -80,11 +79,11 @@ func TestTableDescriptors_ReadRow(t *testing.T) {
 			{Name: "cf1"},
 		},
 	}
-	innerResp := &spb.SessionReadRowResponse{
+	innerResp := &btpb.SessionReadRowResponse{
 		Row: row,
 	}
-	respEnvelope := &spb.TableResponse{
-		Payload: &spb.TableResponse_ReadRow{
+	respEnvelope := &btpb.TableResponse{
+		Payload: &btpb.TableResponse_ReadRow{
 			ReadRow: innerResp,
 		},
 	}
@@ -132,12 +131,12 @@ func TestTableDescriptors_MutateRow(t *testing.T) {
 		t.Fatalf("Failed to encode MUTATE_ROW: %v", err)
 	}
 
-	var env spb.TableRequest
+	var env btpb.TableRequest
 	if err := proto.Unmarshal(encodedBytes, &env); err != nil {
 		t.Fatalf("Failed to unmarshal TableRequest envelope: %v", err)
 	}
 
-	payload, ok := env.Payload.(*spb.TableRequest_MutateRow)
+	payload, ok := env.Payload.(*btpb.TableRequest_MutateRow)
 	if !ok {
 		t.Fatalf("Expected TableRequest_MutateRow payload, got %T", env.Payload)
 	}
@@ -151,9 +150,9 @@ func TestTableDescriptors_MutateRow(t *testing.T) {
 	}
 
 	// 2. Test Decoding
-	innerResp := &spb.SessionMutateRowResponse{}
-	respEnvelope := &spb.TableResponse{
-		Payload: &spb.TableResponse_MutateRow{
+	innerResp := &btpb.SessionMutateRowResponse{}
+	respEnvelope := &btpb.TableResponse{
+		Payload: &btpb.TableResponse_MutateRow{
 			MutateRow: innerResp,
 		},
 	}
@@ -185,12 +184,12 @@ func TestAuthorizedViewDescriptors_ReadRow(t *testing.T) {
 		t.Fatalf("Failed to encode READ_ROW_AUTH_VIEW: %v", err)
 	}
 
-	var env spb.AuthorizedViewRequest
+	var env btpb.AuthorizedViewRequest
 	if err := proto.Unmarshal(encodedBytes, &env); err != nil {
 		t.Fatalf("Failed to unmarshal AuthorizedViewRequest envelope: %v", err)
 	}
 
-	payload, ok := env.Payload.(*spb.AuthorizedViewRequest_ReadRow)
+	payload, ok := env.Payload.(*btpb.AuthorizedViewRequest_ReadRow)
 	if !ok {
 		t.Fatalf("Expected AuthorizedViewRequest_ReadRow payload, got %T", env.Payload)
 	}
@@ -204,11 +203,11 @@ func TestAuthorizedViewDescriptors_ReadRow(t *testing.T) {
 	row := &btpb.Row{
 		Key: []byte("row-key-3"),
 	}
-	innerResp := &spb.SessionReadRowResponse{
+	innerResp := &btpb.SessionReadRowResponse{
 		Row: row,
 	}
-	respEnvelope := &spb.AuthorizedViewResponse{
-		Payload: &spb.AuthorizedViewResponse_ReadRow{
+	respEnvelope := &btpb.AuthorizedViewResponse{
+		Payload: &btpb.AuthorizedViewResponse_ReadRow{
 			ReadRow: innerResp,
 		},
 	}
@@ -244,12 +243,12 @@ func TestAuthorizedViewDescriptors_MutateRow(t *testing.T) {
 		t.Fatalf("Failed to encode MUTATE_ROW_AUTH_VIEW: %v", err)
 	}
 
-	var env spb.AuthorizedViewRequest
+	var env btpb.AuthorizedViewRequest
 	if err := proto.Unmarshal(encodedBytes, &env); err != nil {
 		t.Fatalf("Failed to unmarshal AuthorizedViewRequest envelope: %v", err)
 	}
 
-	payload, ok := env.Payload.(*spb.AuthorizedViewRequest_MutateRow)
+	payload, ok := env.Payload.(*btpb.AuthorizedViewRequest_MutateRow)
 	if !ok {
 		t.Fatalf("Expected AuthorizedViewRequest_MutateRow payload, got %T", env.Payload)
 	}
@@ -260,9 +259,9 @@ func TestAuthorizedViewDescriptors_MutateRow(t *testing.T) {
 	}
 
 	// 2. Test Decoding
-	innerResp := &spb.SessionMutateRowResponse{}
-	respEnvelope := &spb.AuthorizedViewResponse{
-		Payload: &spb.AuthorizedViewResponse_MutateRow{
+	innerResp := &btpb.SessionMutateRowResponse{}
+	respEnvelope := &btpb.AuthorizedViewResponse{
+		Payload: &btpb.AuthorizedViewResponse_MutateRow{
 			MutateRow: innerResp,
 		},
 	}
@@ -294,12 +293,12 @@ func TestMaterializedViewDescriptors_ReadRow(t *testing.T) {
 		t.Fatalf("Failed to encode READ_ROW_MAT_VIEW: %v", err)
 	}
 
-	var env spb.MaterializedViewRequest
+	var env btpb.MaterializedViewRequest
 	if err := proto.Unmarshal(encodedBytes, &env); err != nil {
 		t.Fatalf("Failed to unmarshal MaterializedViewRequest envelope: %v", err)
 	}
 
-	payload, ok := env.Payload.(*spb.MaterializedViewRequest_ReadRow)
+	payload, ok := env.Payload.(*btpb.MaterializedViewRequest_ReadRow)
 	if !ok {
 		t.Fatalf("Expected MaterializedViewRequest_ReadRow payload, got %T", env.Payload)
 	}
@@ -313,11 +312,11 @@ func TestMaterializedViewDescriptors_ReadRow(t *testing.T) {
 	row := &btpb.Row{
 		Key: []byte("row-key-5"),
 	}
-	innerResp := &spb.SessionReadRowResponse{
+	innerResp := &btpb.SessionReadRowResponse{
 		Row: row,
 	}
-	respEnvelope := &spb.MaterializedViewResponse{
-		Payload: &spb.MaterializedViewResponse_ReadRow{
+	respEnvelope := &btpb.MaterializedViewResponse{
+		Payload: &btpb.MaterializedViewResponse_ReadRow{
 			ReadRow: innerResp,
 		},
 	}
