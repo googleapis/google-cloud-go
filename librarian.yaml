@@ -361,7 +361,7 @@ libraries:
       - README.md
     skip_release: true
   - name: bigtable
-    version: 1.47.0
+    version: 1.48.0
     apis:
       - path: google/bigtable/v2
         go:
