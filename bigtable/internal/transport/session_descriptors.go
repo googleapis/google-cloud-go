@@ -52,11 +52,11 @@ type SessionDescriptor struct {
 	MethodName string
 	HeaderKeys []string
 	LogNameFn  func(req proto.Message) string
-	MetadataFn func(req proto.Message) map[string]string // Dynamically populates handshake metadata headers E2E!
+	MetadataFn func(req proto.Message) map[string]string // Populates session metadata headers required for OpenSession{} RPC
 }
 
 var (
-	// TABLE_SESSION manages standard table scoped connection streams.
+	// TABLE_SESSION manages standard table scoped Session streams.
 	TABLE_SESSION = &SessionDescriptor{
 		Type:       SessionTypeTable,
 		MethodName: "OpenTable",
@@ -75,7 +75,7 @@ var (
 		},
 	}
 
-	// AUTHORIZED_VIEW_SESSION manages authorized view scoped connection streams.
+	// AUTHORIZED_VIEW_SESSION manages authorized view scoped Session streams.
 	AUTHORIZED_VIEW_SESSION = &SessionDescriptor{
 		Type:       SessionTypeAuthorizedView,
 		MethodName: "OpenAuthorizedView",
@@ -94,7 +94,7 @@ var (
 		},
 	}
 
-	// MATERIALIZED_VIEW_SESSION manages materialized view scoped connection streams (Read-Only).
+	// MATERIALIZED_VIEW_SESSION manages materialized view scoped Session streams (Read-Only).
 	MATERIALIZED_VIEW_SESSION = &SessionDescriptor{
 		Type:       SessionTypeMaterializedView,
 		MethodName: "OpenMaterializedView",
