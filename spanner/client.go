@@ -285,6 +285,9 @@ type ClientConfig struct {
 	// SessionPoolConfig is the configuration for session pool.
 	SessionPoolConfig
 
+	// DynamicChannelPoolConfig is the opt-in configuration for dynamic gRPC channel pooling.
+	DynamicChannelPoolConfig DynamicChannelPoolConfig
+
 	// SessionLabels for the sessions created by this client.
 	// See https://cloud.google.com/spanner/docs/reference/rpc/google.spanner.v1#session
 	// for more info.
@@ -449,6 +452,93 @@ func (fw *fallbackWrapper) Close() error {
 	return err2
 }
 
+func isDCPEnabledForConfig(config ClientConfig, gme *grpcgcp.GCPMultiEndpoint) bool {
+	return config.DynamicChannelPoolConfig.DCPEnabled &&
+		gme == nil &&
+		!isExperimentalLocationAPIEnabledForConfig(config) &&
+		os.Getenv("SPANNER_EMULATOR_HOST") == ""
+}
+
+func createDCPConnPool(
+	ctx context.Context,
+	database string,
+	config ClientConfig,
+	sessionLabels map[string]string,
+	md metadata.MD,
+	metricsTracerFactory *builtinMetricsTracerFactory,
+	opts ...option.ClientOption,
+) (gtransport.ConnPool, *sessionClient, error) {
+	reqIDInjector := new(requestIDHeaderInjector)
+	dcpOpts := append([]option.ClientOption{}, opts...)
+	dcpOpts = append(dcpOpts,
+		option.WithGRPCDialOption(grpc.WithChainStreamInterceptor(reqIDInjector.interceptStream)),
+		option.WithGRPCDialOption(grpc.WithChainUnaryInterceptor(reqIDInjector.interceptUnary)),
+	)
+	sc := newSessionClient(nil, database, config.UserAgent, sessionLabels, config.DatabaseRole, config.DisableRouteToLeader, md, config.BatchTimeout, config.Logger, config.CallOptions)
+	sc.metricsTracerFactory = metricsTracerFactory
+	dial := func(dialCtx context.Context) (gtransport.ConnPool, error) {
+		return gtransport.DialPool(dialCtx, allClientOpts(1, config.Compression, config.EnableDirectAccess, dcpOpts...)...)
+	}
+	dcp, err := newDynamicChannelPool(ctx, sc, config.DynamicChannelPoolConfig, dial)
+	if err != nil {
+		return nil, nil, err
+	}
+	sc.connPool = dcp
+	sc.dynamicPool = dcp
+	return dcp, sc, nil
+}
+
+func createFallbackConnPool(
+	ctx context.Context,
+	config ClientConfig,
+	hasNumChannelsConfig bool,
+	metricsTracerFactory *builtinMetricsTracerFactory,
+	opts ...option.ClientOption,
+) (gtransport.ConnPool, []option.ClientOption, error) {
+	reqIDInjector := new(requestIDHeaderInjector)
+	opts = append(opts,
+		option.WithGRPCDialOption(grpc.WithChainStreamInterceptor(reqIDInjector.interceptStream)),
+		option.WithGRPCDialOption(grpc.WithChainUnaryInterceptor(reqIDInjector.interceptUnary)),
+	)
+	allOpts := allClientOpts(config.NumChannels, config.Compression, config.EnableDirectAccess, opts...)
+	primaryConn, err := gtransport.DialPool(ctx, allOpts...)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	fallbackConnOpts := append(allOpts, internaloption.EnableDirectPath(false))
+	fallbackConn, err := gtransport.DialPool(ctx, fallbackConnOpts...)
+	if err != nil {
+		primaryConn.Close()
+		return nil, nil, err
+	}
+
+	if hasNumChannelsConfig && ((primaryConn.Num() != config.NumChannels) || (fallbackConn.Num() != config.NumChannels)) {
+		primaryConn.Close()
+		fallbackConn.Close()
+		return nil, nil, spannerErrorf(codes.InvalidArgument, "Connection pool mismatch: NumChannels=%v, primaryConn.Num()=%v, fallbackConn.Num()=%v", config.NumChannels, primaryConn.Num(), fallbackConn.Num())
+	}
+
+	fbOpts := grpcgcp.NewGCPFallbackOptions()
+	fbOpts.EnableFallback = true
+	fbOpts.ErrorRateThreshold = 1
+	fbOpts.MinFailedCalls = 1
+	fbOpts.Period = time.Minute * 3
+
+	if metricsTracerFactory != nil && metricsTracerFactory.meterProvider != nil {
+		fbOpts.MeterProvider = metricsTracerFactory.meterProvider
+	}
+
+	gcpFallback, err := grpcgcp.NewGCPFallback(ctx, primaryConn, fallbackConn, fbOpts)
+	if err != nil {
+		primaryConn.Close()
+		fallbackConn.Close()
+		return nil, nil, err
+	}
+
+	return &fallbackWrapper{gcpFallback, primaryConn, fallbackConn}, allOpts, nil
+}
+
 func newClientWithConfig(ctx context.Context, database string, config ClientConfig, gme *grpcgcp.GCPMultiEndpoint, opts ...option.ClientOption) (c *Client, err error) {
 	// Validate database path.
 	if err := validDatabaseName(database); err != nil {
@@ -527,6 +617,7 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 
 	var pool gtransport.ConnPool
 	var endpointClientOpts []option.ClientOption
+	var sc *sessionClient
 
 	isFallbackEnabled := true
 	if val, ok := os.LookupEnv("GOOGLE_SPANNER_ENABLE_GCP_FALLBACK"); ok {
@@ -534,56 +625,48 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 			isFallbackEnabled = b
 		}
 	}
-	if gme != nil {
+
+	// TODO(loite): Remove as the original map cannot be changed by the user
+	// anyways, and the client library is also not changing it.
+	// Make a copy of labels.
+	sessionLabels := make(map[string]string)
+	for k, v := range config.SessionLabels {
+		sessionLabels[k] = v
+	}
+
+	md := metadata.Pairs(resourcePrefixHeader, database)
+	if config.Compression == gzip.Name {
+		md.Append(requestsCompressionHeader, gzip.Name)
+	}
+	// Append end to end tracing header if SPANNER_ENABLE_END_TO_END_TRACING
+	// environment variable has been set or client has passed the opt-in
+	// option in ClientConfig.
+	endToEndTracingEnvironmentVariable := os.Getenv("SPANNER_ENABLE_END_TO_END_TRACING")
+	if config.EnableEndToEndTracing || strings.EqualFold(endToEndTracingEnvironmentVariable, "true") {
+		md.Append(endToEndTracingHeader, "true")
+	}
+
+	if isAFEBuiltInMetricEnabled {
+		md.Append(afeMetricHeader, "true")
+	}
+	if config.BatchTimeout == 0 {
+		config.BatchTimeout = time.Minute
+	}
+
+	if isDCPEnabledForConfig(config, gme) {
+		pool, sc, err = createDCPConnPool(ctx, database, config, sessionLabels, md, metricsTracerFactory, opts...)
+		if err != nil {
+			return nil, err
+		}
+	} else if gme != nil {
 		// Use GCPMultiEndpoint if provided.
 		pool = &gmeWrapper{gme}
 		endpointClientOpts = append(endpointClientOpts, opts...)
 	} else if isFallbackEnabled && isDirectPathEnabled {
-		var primaryConn gtransport.ConnPool
-		var fallbackConn gtransport.ConnPool
-		reqIDInjector := new(requestIDHeaderInjector)
-		opts = append(opts,
-			option.WithGRPCDialOption(grpc.WithChainStreamInterceptor(reqIDInjector.interceptStream)),
-			option.WithGRPCDialOption(grpc.WithChainUnaryInterceptor(reqIDInjector.interceptUnary)),
-		)
-		allOpts := allClientOpts(config.NumChannels, config.Compression, config.EnableDirectAccess, opts...)
-		endpointClientOpts = append(endpointClientOpts, allOpts...)
-		primaryConn, err = gtransport.DialPool(ctx, allOpts...)
+		pool, endpointClientOpts, err = createFallbackConnPool(ctx, config, hasNumChannelsConfig, metricsTracerFactory, opts...)
 		if err != nil {
 			return nil, err
 		}
-
-		fallbackConnOpts := append(allOpts, internaloption.EnableDirectPath(false))
-		fallbackConn, err = gtransport.DialPool(ctx, fallbackConnOpts...)
-		if err != nil {
-			primaryConn.Close()
-			return nil, err
-		}
-
-		if hasNumChannelsConfig && ((primaryConn.Num() != config.NumChannels) || (fallbackConn.Num() != config.NumChannels)) {
-			primaryConn.Close()
-			fallbackConn.Close()
-			return nil, spannerErrorf(codes.InvalidArgument, "Connection pool mismatch: NumChannels=%v, primaryConn.Num()=%v, fallbackConn.Num()=%v", config.NumChannels, primaryConn.Num(), fallbackConn.Num())
-		}
-
-		fbOpts := grpcgcp.NewGCPFallbackOptions()
-		fbOpts.EnableFallback = true
-		fbOpts.ErrorRateThreshold = 1
-		fbOpts.MinFailedCalls = 1
-		fbOpts.Period = time.Minute * 3
-
-		if metricsTracerFactory != nil && metricsTracerFactory.meterProvider != nil {
-			fbOpts.MeterProvider = metricsTracerFactory.meterProvider
-		}
-
-		gcpFallback, err := grpcgcp.NewGCPFallback(ctx, primaryConn, fallbackConn, fbOpts)
-		if err != nil {
-			primaryConn.Close()
-			fallbackConn.Close()
-			return nil, err
-		}
-
-		pool = &fallbackWrapper{gcpFallback, primaryConn, fallbackConn}
 	} else {
 		// Create gtransport ConnPool as usual if MultiEndpoint is not used.
 		// gRPC options.
@@ -608,14 +691,6 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 		}
 	}
 
-	// TODO(loite): Remove as the original map cannot be changed by the user
-	// anyways, and the client library is also not changing it.
-	// Make a copy of labels.
-	sessionLabels := make(map[string]string)
-	for k, v := range config.SessionLabels {
-		sessionLabels[k] = v
-	}
-
 	// Default configs for session pool.
 	if config.MaxOpened == 0 {
 		config.MaxOpened = uint64(pool.Num() * 100)
@@ -623,30 +698,13 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 	if config.MaxBurst == 0 {
 		config.MaxBurst = DefaultSessionPoolConfig.MaxBurst
 	}
-	if config.BatchTimeout == 0 {
-		config.BatchTimeout = time.Minute
-	}
-
-	md := metadata.Pairs(resourcePrefixHeader, database)
-	if config.Compression == gzip.Name {
-		md.Append(requestsCompressionHeader, gzip.Name)
-	}
-	// Append end to end tracing header if SPANNER_ENABLE_END_TO_END_TRACING
-	// environment variable has been set or client has passed the opt-in
-	// option in ClientConfig.
-	endToEndTracingEnvironmentVariable := os.Getenv("SPANNER_ENABLE_END_TO_END_TRACING")
-	if config.EnableEndToEndTracing || endToEndTracingEnvironmentVariable == "true" {
-		md.Append(endToEndTracingHeader, "true")
-	}
-
-	if isAFEBuiltInMetricEnabled {
-		md.Append(afeMetricHeader, "true")
-	}
 
 	// Multiplexed sessions are always enabled as the session pool has been removed.
 
 	// Create a session client.
-	sc := newSessionClient(pool, database, config.UserAgent, sessionLabels, config.DatabaseRole, config.DisableRouteToLeader, md, config.BatchTimeout, config.Logger, config.CallOptions)
+	if sc == nil {
+		sc = newSessionClient(pool, database, config.UserAgent, sessionLabels, config.DatabaseRole, config.DisableRouteToLeader, md, config.BatchTimeout, config.Logger, config.CallOptions)
+	}
 
 	// Create an OpenTelemetry configuration
 	otConfig, err := createOpenTelemetryConfig(ctx, config.OpenTelemetryMeterProvider, config.Logger, sc.id, database)

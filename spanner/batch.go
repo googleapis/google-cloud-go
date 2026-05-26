@@ -370,7 +370,7 @@ func (t *BatchReadOnlyTransaction) Execute(ctx context.Context, p *Partition) *R
 		nil,
 		t.setTimestamp,
 		t.release,
-		asGRPCSpannerClient(client),
+		requestIDHeaderProviderFromSpannerClient(client),
 		true,
 		false,
 	)
