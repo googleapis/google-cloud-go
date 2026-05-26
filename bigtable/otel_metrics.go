@@ -176,7 +176,7 @@ type metricsConfig struct {
 	resourceOpts    []resource.Option    // used by tests
 }
 
-func newOtelMetricsContext(ctx context.Context, cfg metricsConfig) (*otelMetricsContext, error) {
+var newOtelMetricsContext = func(ctx context.Context, cfg metricsConfig) (*otelMetricsContext, error) {
 	var exporter metric.Exporter
 	meterOpts := []metric.Option{}
 	if cfg.customExporter == nil {
