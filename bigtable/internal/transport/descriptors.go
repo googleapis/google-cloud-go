@@ -104,15 +104,18 @@ func createMatViewDecoder(subDecoder func(envelope *btpb.MaterializedViewRespons
 	}
 }
 
+// ReadRowArgs contains arguments required for a virtual RPC ReadRow call.
 type ReadRowArgs struct {
 	RowKey string
 	Filter *btpb.RowFilter
 }
 
+// ReadRowResult holds the result returned from a virtual RPC ReadRow call.
 type ReadRowResult struct {
 	Row *btpb.Row
 }
 
+// MutateRowArgs contains arguments required for a virtual RPC MutateRow call.
 type MutateRowArgs struct {
 	RowKey    string
 	Mutations []*btpb.Mutation
