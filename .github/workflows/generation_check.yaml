@@ -29,6 +29,7 @@ jobs:
         run: |
           version=$(go run github.com/googleapis/librarian/cmd/librarian@latest config get version)
           go run "github.com/googleapis/librarian/cmd/librarian@${version}" generate -all
+          git diff --exit-code
       - name: Create issue on diff
         if: failure()
         env:
