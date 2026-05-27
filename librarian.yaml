@@ -884,6 +884,10 @@ libraries:
       - path: google/cloud/managedidentities/v1
   - name: managedkafka
     version: 1.0.0
+
+
+
+    
     apis:
       - path: google/cloud/managedkafka/v1
       - path: google/cloud/managedkafka/schemaregistry/v1
