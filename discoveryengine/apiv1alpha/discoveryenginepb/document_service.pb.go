@@ -1191,14 +1191,14 @@ var file_google_cloud_discoveryengine_v1alpha_document_service_proto_goTypes = [
 	(*BatchGetDocumentsMetadataRequest_Matcher)(nil),                        // 13: google.cloud.discoveryengine.v1alpha.BatchGetDocumentsMetadataRequest.Matcher
 	(*BatchGetDocumentsMetadataResponse_DocumentMetadata)(nil),              // 14: google.cloud.discoveryengine.v1alpha.BatchGetDocumentsMetadataResponse.DocumentMetadata
 	(*BatchGetDocumentsMetadataResponse_DocumentMetadata_MatcherValue)(nil), // 15: google.cloud.discoveryengine.v1alpha.BatchGetDocumentsMetadataResponse.DocumentMetadata.MatcherValue
-	(*Document)(nil),                // 16: google.cloud.discoveryengine.v1alpha.Document
-	(*fieldmaskpb.FieldMask)(nil),   // 17: google.protobuf.FieldMask
-	(*timestamppb.Timestamp)(nil),   // 18: google.protobuf.Timestamp
-	(*ImportDocumentsRequest)(nil),  // 19: google.cloud.discoveryengine.v1alpha.ImportDocumentsRequest
-	(*PurgeDocumentsRequest)(nil),   // 20: google.cloud.discoveryengine.v1alpha.PurgeDocumentsRequest
-	(*emptypb.Empty)(nil),           // 21: google.protobuf.Empty
-	(*longrunningpb.Operation)(nil), // 22: google.longrunning.Operation
-	(*ProcessedDocument)(nil),       // 23: google.cloud.discoveryengine.v1alpha.ProcessedDocument
+	(*Document)(nil),                                                        // 16: google.cloud.discoveryengine.v1alpha.Document
+	(*fieldmaskpb.FieldMask)(nil),                                           // 17: google.protobuf.FieldMask
+	(*timestamppb.Timestamp)(nil),                                           // 18: google.protobuf.Timestamp
+	(*ImportDocumentsRequest)(nil),                                          // 19: google.cloud.discoveryengine.v1alpha.ImportDocumentsRequest
+	(*PurgeDocumentsRequest)(nil),                                           // 20: google.cloud.discoveryengine.v1alpha.PurgeDocumentsRequest
+	(*emptypb.Empty)(nil),                                                   // 21: google.protobuf.Empty
+	(*longrunningpb.Operation)(nil),                                         // 22: google.longrunning.Operation
+	(*ProcessedDocument)(nil),                                               // 23: google.cloud.discoveryengine.v1alpha.ProcessedDocument
 }
 var file_google_cloud_discoveryengine_v1alpha_document_service_proto_depIdxs = []int32{
 	16, // 0: google.cloud.discoveryengine.v1alpha.ListDocumentsResponse.documents:type_name -> google.cloud.discoveryengine.v1alpha.Document

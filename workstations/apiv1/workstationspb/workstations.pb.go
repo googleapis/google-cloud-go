@@ -3961,7 +3961,7 @@ var file_google_cloud_workstations_v1_workstations_proto_goTypes = []any{
 	(*WorkstationConfig_ReadinessCheck)(nil),        // 39: google.cloud.workstations.v1.WorkstationConfig.ReadinessCheck
 	nil,                                             // 40: google.cloud.workstations.v1.WorkstationConfig.AnnotationsEntry
 	nil,                                             // 41: google.cloud.workstations.v1.WorkstationConfig.LabelsEntry
-	(*WorkstationConfig_Host_GceInstance)(nil),                               // 42: google.cloud.workstations.v1.WorkstationConfig.Host.GceInstance
+	(*WorkstationConfig_Host_GceInstance)(nil),      // 42: google.cloud.workstations.v1.WorkstationConfig.Host.GceInstance
 	(*WorkstationConfig_Host_GceInstance_GceShieldedInstanceConfig)(nil),     // 43: google.cloud.workstations.v1.WorkstationConfig.Host.GceInstance.GceShieldedInstanceConfig
 	(*WorkstationConfig_Host_GceInstance_GceConfidentialInstanceConfig)(nil), // 44: google.cloud.workstations.v1.WorkstationConfig.Host.GceInstance.GceConfidentialInstanceConfig
 	(*WorkstationConfig_PersistentDirectory_GceRegionalPersistentDisk)(nil),  // 45: google.cloud.workstations.v1.WorkstationConfig.PersistentDirectory.GceRegionalPersistentDisk
