@@ -1,5 +1,11 @@
 # Changes
 
+## [1.48.0](https://github.com/googleapis/google-cloud-go/releases/tag/bigtable%2Fv1.48.0) (2026-05-26)
+
+### Features
+
+* expose a client option to disable direct access: (#14626) ([f22b29f](https://github.com/googleapis/google-cloud-go/commit/f22b29f5d954a61b34e71995546c818883697aa6))
+
 ## [1.47.0](https://github.com/googleapis/google-cloud-go/releases/tag/bigtable%2Fv1.47.0) (2026-05-01)
 
 ## [1.46.0](https://github.com/googleapis/google-cloud-go/releases/tag/bigtable%2Fv1.46.0) (2026-04-09)
