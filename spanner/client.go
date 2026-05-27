@@ -117,21 +117,24 @@ func parseDatabaseName(db string) (project, instance, database string, err error
 // Client is a client for reading and writing data to a Cloud Spanner database.
 // A client is safe to use concurrently, except for its Close method.
 type Client struct {
-	sc                   *sessionClient
-	sm                   *sessionManager
-	logger               *log.Logger
-	qo                   QueryOptions
-	ro                   ReadOptions
-	ao                   []ApplyOption
-	txo                  TransactionOptions
-	bwo                  BatchWriteOptions
-	ct                   *commonTags
-	disableRouteToLeader bool
-	dro                  *sppb.DirectedReadOptions
-	otConfig             *openTelemetryConfig
-	metricsTracerFactory *builtinMetricsTracerFactory
-	clientContext        *sppb.RequestOptions_ClientContext
-	locationRouter       *locationRouter
+	sc                     *sessionClient
+	sm                     *sessionManager
+	logger                 *log.Logger
+	qo                     QueryOptions
+	ro                     ReadOptions
+	ao                     []ApplyOption
+	txo                    TransactionOptions
+	bwo                    BatchWriteOptions
+	ct                     *commonTags
+	disableRouteToLeader   bool
+	dro                    *sppb.DirectedReadOptions
+	otConfig               *openTelemetryConfig
+	metricsTracerFactory   *builtinMetricsTracerFactory
+	clientContext          *sppb.RequestOptions_ClientContext
+	locationRouter         *locationRouter
+	enableAutoTagging      bool
+	autoTaggingPackages    []string
+	autoTaggingTracerLimit int
 }
 
 // DatabaseName returns the full name of a database, e.g.,
@@ -383,6 +386,22 @@ type ClientConfig struct {
 	//
 	// Default: false
 	EnableDirectAccess bool
+
+	// EnableAutoTagging is an opt-in flag that automatically adds transaction tags to all
+	// read/write transactions and request tags to all statements in read-only transactions
+	// based on the name of the method that started the transaction.
+	EnableAutoTagging bool
+
+	// AutoTaggingPackages is an optional list of target package name prefixes.
+	// Use this to indicate which package names are part of the application.
+	// A tag name will be based on the first method that is found in the call stack
+	// that is part of the application. If no package names are specified in this option,
+	// auto-tagging will look for the first method that it can find that is not part of the
+	// Spanner client or a system package.
+	AutoTaggingPackages []string
+
+	// AutoTaggingTracerLimit specifies depth limit for stack-trace walking.
+	AutoTaggingTracerLimit int
 }
 
 type openTelemetryConfig struct {
@@ -767,22 +786,33 @@ Multiplexed session enabled: true
 			projectID, config.NumChannels, !config.DisableRouteToLeader, isDirectPathEnabled,
 			config.EnableEndToEndTracing, !config.DisableNativeMetrics, isGRPCBuiltInMetricsEnabled)
 	}
+	if strings.EqualFold(os.Getenv("SPANNER_DISABLE_AUTO_TAGGING"), "true") {
+		config.EnableAutoTagging = false
+	} else if strings.EqualFold(os.Getenv("SPANNER_ENABLE_AUTO_TAGGING"), "true") {
+		config.EnableAutoTagging = true
+	}
+	if config.EnableAutoTagging && config.AutoTaggingTracerLimit == 0 {
+		config.AutoTaggingTracerLimit = 50
+	}
 	c = &Client{
-		sc:                   sc,
-		sm:                   sp,
-		logger:               config.Logger,
-		qo:                   getQueryOptions(config.QueryOptions),
-		ro:                   config.ReadOptions,
-		ao:                   config.ApplyOptions,
-		txo:                  config.TransactionOptions,
-		bwo:                  config.BatchWriteOptions,
-		ct:                   getCommonTags(sc),
-		disableRouteToLeader: config.DisableRouteToLeader,
-		dro:                  config.DirectedReadOptions,
-		otConfig:             otConfig,
-		metricsTracerFactory: metricsTracerFactory,
-		clientContext:        config.ClientContext,
-		locationRouter:       locationRouter,
+		sc:                     sc,
+		sm:                     sp,
+		logger:                 config.Logger,
+		qo:                     getQueryOptions(config.QueryOptions),
+		ro:                     config.ReadOptions,
+		ao:                     config.ApplyOptions,
+		txo:                    config.TransactionOptions,
+		bwo:                    config.BatchWriteOptions,
+		ct:                     getCommonTags(sc),
+		disableRouteToLeader:   config.DisableRouteToLeader,
+		dro:                    config.DirectedReadOptions,
+		otConfig:               otConfig,
+		metricsTracerFactory:   metricsTracerFactory,
+		clientContext:          config.ClientContext,
+		locationRouter:         locationRouter,
+		enableAutoTagging:      config.EnableAutoTagging,
+		autoTaggingPackages:    config.AutoTaggingPackages,
+		autoTaggingTracerLimit: config.AutoTaggingTracerLimit,
 	}
 	return c, nil
 }
@@ -1006,6 +1036,9 @@ func (c *Client) Single() *ReadOnlyTransaction {
 	t.txReadOnly.ro.DirectedReadOptions = c.dro
 	t.txReadOnly.ro.LockHint = sppb.ReadRequest_LOCK_HINT_UNSPECIFIED
 	t.txReadOnly.clientContext = c.clientContext
+	if c.enableAutoTagging {
+		t.cachedRequestTag = getCallStackTag(c.autoTaggingPackages, c.autoTaggingTracerLimit)
+	}
 
 	t.ct = c.ct
 	t.otConfig = c.otConfig
@@ -1035,6 +1068,9 @@ func (c *Client) ReadOnlyTransaction() *ReadOnlyTransaction {
 	t.txReadOnly.ro.DirectedReadOptions = c.dro
 	t.txReadOnly.ro.LockHint = sppb.ReadRequest_LOCK_HINT_UNSPECIFIED
 	t.txReadOnly.clientContext = c.clientContext
+	if c.enableAutoTagging {
+		t.cachedRequestTag = getCallStackTag(c.autoTaggingPackages, c.autoTaggingTracerLimit)
+	}
 
 	t.ct = c.ct
 	t.otConfig = c.otConfig
@@ -1108,6 +1144,9 @@ func (c *Client) BatchReadOnlyTransaction(ctx context.Context, tb TimestampBound
 	t.txReadOnly.ro.DirectedReadOptions = c.dro
 	t.txReadOnly.ro.LockHint = sppb.ReadRequest_LOCK_HINT_UNSPECIFIED
 	t.txReadOnly.clientContext = c.clientContext
+	if c.enableAutoTagging {
+		t.cachedRequestTag = getCallStackTag(c.autoTaggingPackages, c.autoTaggingTracerLimit)
+	}
 
 	t.ct = c.ct
 	t.otConfig = c.otConfig
@@ -1146,6 +1185,9 @@ func (c *Client) BatchReadOnlyTransactionFromID(tid BatchReadOnlyTransactionID) 
 	t.txReadOnly.ro.DirectedReadOptions = c.dro
 	t.txReadOnly.ro.LockHint = sppb.ReadRequest_LOCK_HINT_UNSPECIFIED
 	t.txReadOnly.clientContext = c.clientContext
+	if c.enableAutoTagging {
+		t.cachedRequestTag = getCallStackTag(c.autoTaggingPackages, c.autoTaggingTracerLimit)
+	}
 
 	t.ct = c.ct
 	t.otConfig = c.otConfig
@@ -1203,6 +1245,9 @@ func (c *Client) ReadWriteTransactionWithOptions(ctx context.Context, f func(con
 func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *ReadWriteTransaction) error, options TransactionOptions) (resp CommitResponse, err error) {
 	if err := checkNestedTxn(ctx); err != nil {
 		return resp, err
+	}
+	if c.enableAutoTagging && options.TransactionTag == "" {
+		options.TransactionTag = getCallStackTag(c.autoTaggingPackages, c.autoTaggingTracerLimit)
 	}
 	var (
 		sh      *sessionHandle
@@ -1377,6 +1422,9 @@ func (c *Client) Apply(ctx context.Context, ms []*Mutation, opts ...ApplyOption)
 		}, TransactionOptions{CommitPriority: ao.priority, TransactionTag: ao.transactionTag, ExcludeTxnFromChangeStreams: ao.excludeTxnFromChangeStreams, CommitOptions: ao.commitOptions, IsolationLevel: ao.isolationLevel})
 		return resp.CommitTs, err
 	}
+	if c.enableAutoTagging && ao.transactionTag == "" {
+		ao.transactionTag = getCallStackTag(c.autoTaggingPackages, c.autoTaggingTracerLimit)
+	}
 	t := &writeOnlyTransaction{sm: c.sm, commitPriority: ao.priority, transactionTag: ao.transactionTag, disableRouteToLeader: c.disableRouteToLeader, excludeTxnFromChangeStreams: ao.excludeTxnFromChangeStreams, commitOptions: ao.commitOptions, isolationLevel: ao.isolationLevel, clientContext: c.clientContext}
 	return t.applyAtLeastOnce(ctx, ms...)
 }
@@ -1544,6 +1592,9 @@ func (c *Client) BatchWriteWithOptions(ctx context.Context, mgs []*MutationGroup
 	}()
 
 	opts = c.bwo.merge(opts)
+	if c.enableAutoTagging && opts.TransactionTag == "" {
+		opts.TransactionTag = getCallStackTag(c.autoTaggingPackages, c.autoTaggingTracerLimit)
+	}
 
 	mgsPb, err := mutationGroupsProto(mgs)
 	if err != nil {
