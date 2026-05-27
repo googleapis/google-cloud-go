@@ -1762,7 +1762,7 @@ const file_google_cloud_dataplex_v1_business_glossary_proto_rawDesc = "" +
 	"\x19ListGlossaryTermsResponse\x12<\n" +
 	"\x05terms\x18\x01 \x03(\v2&.google.cloud.dataplex.v1.GlossaryTermR\x05terms\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x123\n" +
-	"\x15unreachable_locations\x18\x03 \x03(\tR\x14unreachableLocations2\xd6\x18\n" +
+	"\x15unreachable_locations\x18\x03 \x03(\tR\x14unreachableLocations2\xf7\x19\n" +
 	"\x17BusinessGlossaryService\x12\xe0\x01\n" +
 	"\x0eCreateGlossary\x12/.google.cloud.dataplex.v1.CreateGlossaryRequest\x1a\x1d.google.longrunning.Operation\"~\xcaA\x1d\n" +
 	"\bGlossary\x12\x11OperationMetadata\xdaA\x1bparent,glossary,glossary_id\x82\xd3\xe4\x93\x02::\bglossary\"./v1/{parent=projects/*/locations/*}/glossaries\x12\xe3\x01\n" +
@@ -1781,7 +1781,7 @@ const file_google_cloud_dataplex_v1_business_glossary_proto_rawDesc = "" +
 	"\x12UpdateGlossaryTerm\x123.google.cloud.dataplex.v1.UpdateGlossaryTermRequest\x1a&.google.cloud.dataplex.v1.GlossaryTerm\"\\\xdaA\x10term,update_mask\x82\xd3\xe4\x93\x02C:\x04term2;/v1/{term.name=projects/*/locations/*/glossaries/*/terms/*}\x12\xa8\x01\n" +
 	"\x12DeleteGlossaryTerm\x123.google.cloud.dataplex.v1.DeleteGlossaryTermRequest\x1a\x16.google.protobuf.Empty\"E\xdaA\x04name\x82\xd3\xe4\x93\x028*6/v1/{name=projects/*/locations/*/glossaries/*/terms/*}\x12\xb2\x01\n" +
 	"\x0fGetGlossaryTerm\x120.google.cloud.dataplex.v1.GetGlossaryTermRequest\x1a&.google.cloud.dataplex.v1.GlossaryTerm\"E\xdaA\x04name\x82\xd3\xe4\x93\x028\x126/v1/{name=projects/*/locations/*/glossaries/*/terms/*}\x12\xc5\x01\n" +
-	"\x11ListGlossaryTerms\x122.google.cloud.dataplex.v1.ListGlossaryTermsRequest\x1a3.google.cloud.dataplex.v1.ListGlossaryTermsResponse\"G\xdaA\x06parent\x82\xd3\xe4\x93\x028\x126/v1/{parent=projects/*/locations/*/glossaries/*}/terms\x1aK\xcaA\x17dataplex.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformBq\n" +
+	"\x11ListGlossaryTerms\x122.google.cloud.dataplex.v1.ListGlossaryTermsRequest\x1a3.google.cloud.dataplex.v1.ListGlossaryTermsResponse\"G\xdaA\x06parent\x82\xd3\xe4\x93\x028\x126/v1/{parent=projects/*/locations/*/glossaries/*}/terms\x1a\xeb\x01\xcaA\x17dataplex.googleapis.com\xd2A\xcd\x01https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/cloud-platform.read-only,https://www.googleapis.com/auth/dataplex.read-write,https://www.googleapis.com/auth/dataplex.readonlyBq\n" +
 	"\x1ccom.google.cloud.dataplex.v1B\x15BusinessGlossaryProtoP\x01Z8cloud.google.com/go/dataplex/apiv1/dataplexpb;dataplexpbb\x06proto3"
 
 var (

@@ -263,7 +263,7 @@ func (x MetadataJob_Type) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use MetadataJob_Type.Descriptor instead.
 func (MetadataJob_Type) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{43, 0}
+	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{44, 0}
 }
 
 // Specifies how the entries and aspects in a metadata import job are
@@ -335,7 +335,7 @@ func (x MetadataJob_ImportJobSpec_SyncMode) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use MetadataJob_ImportJobSpec_SyncMode.Descriptor instead.
 func (MetadataJob_ImportJobSpec_SyncMode) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{43, 2, 0}
+	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{44, 2, 0}
 }
 
 // The level of logs to write to Cloud Logging for this job.
@@ -399,7 +399,7 @@ func (x MetadataJob_ImportJobSpec_LogLevel) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use MetadataJob_ImportJobSpec_LogLevel.Descriptor instead.
 func (MetadataJob_ImportJobSpec_LogLevel) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{43, 2, 1}
+	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{44, 2, 1}
 }
 
 // State of a metadata job.
@@ -472,7 +472,7 @@ func (x MetadataJob_Status_State) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use MetadataJob_Status_State.Descriptor instead.
 func (MetadataJob_Status_State) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{43, 4, 0}
+	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{44, 4, 0}
 }
 
 // Reference type of the Entry.
@@ -526,7 +526,7 @@ func (x EntryLink_EntryReference_Type) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use EntryLink_EntryReference_Type.Descriptor instead.
 func (EntryLink_EntryReference_Type) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{44, 0, 0}
+	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{45, 0, 0}
 }
 
 // Mode of entry reference.
@@ -580,7 +580,7 @@ func (x LookupEntryLinksRequest_EntryMode) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use LookupEntryLinksRequest_EntryMode.Descriptor instead.
 func (LookupEntryLinksRequest_EntryMode) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{48, 0}
+	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{49, 0}
 }
 
 // The type of change that you want to listen to.
@@ -637,7 +637,7 @@ func (x MetadataFeed_Filters_ChangeType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use MetadataFeed_Filters_ChangeType.Descriptor instead.
 func (MetadataFeed_Filters_ChangeType) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{51, 1, 0}
+	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{52, 1, 0}
 }
 
 // AspectType is a template for creating Aspects, and represents the
@@ -1076,7 +1076,7 @@ func (x *EntryType) GetAuthorization() *EntryType_Authorization {
 	return nil
 }
 
-// An aspect is a single piece of metadata describing an entry.
+// Represents a single piece of metadata describing an entry or entry link.
 type Aspect struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Output only. The resource name of the type used to create this Aspect.
@@ -3123,6 +3123,9 @@ type GetEntryRequest struct {
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Optional. View to control which parts of an entry the service should
 	// return.
+	// **Please check the limitations on returned aspects in the Entry view
+	// documentation. Amount of returned aspects depends on the selected Entry
+	// View.**
 	View EntryView `protobuf:"varint,2,opt,name=view,proto3,enum=google.cloud.dataplex.v1.EntryView" json:"view,omitempty"`
 	// Optional. Limits the aspects returned to the provided aspect types.
 	// It only works for CUSTOM view.
@@ -3200,6 +3203,9 @@ type LookupEntryRequest struct {
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Optional. View to control which parts of an entry the service should
 	// return.
+	// **Please check the limitations on returned aspects in the Entry view
+	// documentation. Amount of returned aspects depends on the selected Entry
+	// View.**
 	View EntryView `protobuf:"varint,2,opt,name=view,proto3,enum=google.cloud.dataplex.v1.EntryView" json:"view,omitempty"`
 	// Optional. Limits the aspects returned to the provided aspect types.
 	// It only works for CUSTOM view.
@@ -3285,14 +3291,25 @@ type LookupContextRequest struct {
 	// Required. The project to which the request should be attributed in the
 	// following form: `projects/{project}/locations/{location}`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// Required. The entry names to lookup context for. The request should have
-	// max 10 of those.
+	// Required. The entry names to look up the context for. The maximum number of
+	// resources for a request is limited to 10.
 	//
 	// ## Examples:
 	//
-	// projects/{project}/locations/{location}/entryGroups/{entry_group}/entries/{entry}
+	// `projects/{project}/locations/{location}/entryGroups/{entry_group}/entries/{entry}`
 	Resources []string `protobuf:"bytes,2,rep,name=resources,proto3" json:"resources,omitempty"`
+	// Optional. The text representing contextual information for which metadata
+	// context is being requested.
+	Context string `protobuf:"bytes,3,opt,name=context,proto3" json:"context,omitempty"`
 	// Optional. Allows to configure the context.
+	//
+	// Supported options:
+	//
+	// - `format` - The format of the context (one of `yaml`,
+	// `xml`, `json`, default is `yaml`).
+	// - `context_budget` - If provided, the output will be intelligently
+	// truncated on a best-effort basis to contain approximately the desired
+	// amount of characters. There is no guarantee to achieve the specific amount.
 	Options       map[string]string `protobuf:"bytes,4,rep,name=options,proto3" json:"options,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -3342,6 +3359,13 @@ func (x *LookupContextRequest) GetResources() []string {
 	return nil
 }
 
+func (x *LookupContextRequest) GetContext() string {
+	if x != nil {
+		return x.Context
+	}
+	return ""
+}
+
 func (x *LookupContextRequest) GetOptions() map[string]string {
 	if x != nil {
 		return x.Options
@@ -3349,10 +3373,116 @@ func (x *LookupContextRequest) GetOptions() map[string]string {
 	return nil
 }
 
+// Modify Entry request using permissions in the source system.
+type ModifyEntryRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The project to which the request should be attributed in the
+	// following form: `projects/{project}/locations/{location}`.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Required. The entry to modify.
+	Entry *Entry `protobuf:"bytes,2,opt,name=entry,proto3" json:"entry,omitempty"`
+	// Optional. Mask of fields to update. To update Aspects, the update_mask must
+	// contain the value "aspects".
+	//
+	// If the update_mask is empty, the service will update all modifiable fields
+	// present in the request.
+	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,3,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
+	// Optional. If set to true, any aspects not specified in the request will be
+	// deleted. The default is false.
+	DeleteMissingAspects bool `protobuf:"varint,4,opt,name=delete_missing_aspects,json=deleteMissingAspects,proto3" json:"delete_missing_aspects,omitempty"`
+	// Optional. The aspect keys which the service should modify. It supports
+	// the following syntaxes:
+	//
+	// * `<aspect_type_reference>` - matches an aspect of the given type and empty
+	// path.
+	// * `<aspect_type_reference>@path` - matches an aspect of the given type and
+	// specified path. For example, to attach an aspect to a field that is
+	// specified by the `schema` aspect, the path should have the format
+	// `Schema.<field_name>`.
+	// * `<aspect_type_reference>@*` - matches aspects of the given type for all
+	// paths.
+	// * `*@path` - matches aspects of all types on the given path.
+	//
+	// The service will not remove existing aspects matching the syntax unless
+	// `delete_missing_aspects` is set to true.
+	//
+	// If this field is left empty, the service treats it as specifying
+	// exactly those Aspects present in the request.
+	AspectKeys    []string `protobuf:"bytes,5,rep,name=aspect_keys,json=aspectKeys,proto3" json:"aspect_keys,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ModifyEntryRequest) Reset() {
+	*x = ModifyEntryRequest{}
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[33]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ModifyEntryRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ModifyEntryRequest) ProtoMessage() {}
+
+func (x *ModifyEntryRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[33]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ModifyEntryRequest.ProtoReflect.Descriptor instead.
+func (*ModifyEntryRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{33}
+}
+
+func (x *ModifyEntryRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *ModifyEntryRequest) GetEntry() *Entry {
+	if x != nil {
+		return x.Entry
+	}
+	return nil
+}
+
+func (x *ModifyEntryRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
+	if x != nil {
+		return x.UpdateMask
+	}
+	return nil
+}
+
+func (x *ModifyEntryRequest) GetDeleteMissingAspects() bool {
+	if x != nil {
+		return x.DeleteMissingAspects
+	}
+	return false
+}
+
+func (x *ModifyEntryRequest) GetAspectKeys() []string {
+	if x != nil {
+		return x.AspectKeys
+	}
+	return nil
+}
+
 // Lookup Context response.
 type LookupContextResponse struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// LLM generated context for the resources.
+	// Pre-formatted block of text containing the context for the requested
+	// resources.
 	Context       string `protobuf:"bytes,1,opt,name=context,proto3" json:"context,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -3360,7 +3490,7 @@ type LookupContextResponse struct {
 
 func (x *LookupContextResponse) Reset() {
 	*x = LookupContextResponse{}
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[33]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[34]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3372,7 +3502,7 @@ func (x *LookupContextResponse) String() string {
 func (*LookupContextResponse) ProtoMessage() {}
 
 func (x *LookupContextResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[33]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[34]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3385,7 +3515,7 @@ func (x *LookupContextResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LookupContextResponse.ProtoReflect.Descriptor instead.
 func (*LookupContextResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{33}
+	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{34}
 }
 
 func (x *LookupContextResponse) GetContext() string {
@@ -3432,7 +3562,7 @@ type SearchEntriesRequest struct {
 
 func (x *SearchEntriesRequest) Reset() {
 	*x = SearchEntriesRequest{}
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[34]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[35]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3444,7 +3574,7 @@ func (x *SearchEntriesRequest) String() string {
 func (*SearchEntriesRequest) ProtoMessage() {}
 
 func (x *SearchEntriesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[34]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[35]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3457,7 +3587,7 @@ func (x *SearchEntriesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SearchEntriesRequest.ProtoReflect.Descriptor instead.
 func (*SearchEntriesRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{34}
+	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{35}
 }
 
 func (x *SearchEntriesRequest) GetName() string {
@@ -3527,7 +3657,7 @@ type SearchEntriesResult struct {
 
 func (x *SearchEntriesResult) Reset() {
 	*x = SearchEntriesResult{}
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[35]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[36]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3539,7 +3669,7 @@ func (x *SearchEntriesResult) String() string {
 func (*SearchEntriesResult) ProtoMessage() {}
 
 func (x *SearchEntriesResult) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[35]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[36]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3552,7 +3682,7 @@ func (x *SearchEntriesResult) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SearchEntriesResult.ProtoReflect.Descriptor instead.
 func (*SearchEntriesResult) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{35}
+	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{36}
 }
 
 // Deprecated: Marked as deprecated in google/cloud/dataplex/v1/catalog.proto.
@@ -3597,7 +3727,7 @@ type SearchEntriesResponse struct {
 
 func (x *SearchEntriesResponse) Reset() {
 	*x = SearchEntriesResponse{}
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[36]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[37]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3609,7 +3739,7 @@ func (x *SearchEntriesResponse) String() string {
 func (*SearchEntriesResponse) ProtoMessage() {}
 
 func (x *SearchEntriesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[36]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[37]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3622,7 +3752,7 @@ func (x *SearchEntriesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SearchEntriesResponse.ProtoReflect.Descriptor instead.
 func (*SearchEntriesResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{36}
+	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{37}
 }
 
 func (x *SearchEntriesResponse) GetResults() []*SearchEntriesResult {
@@ -3715,7 +3845,7 @@ type ImportItem struct {
 
 func (x *ImportItem) Reset() {
 	*x = ImportItem{}
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[37]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[38]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3727,7 +3857,7 @@ func (x *ImportItem) String() string {
 func (*ImportItem) ProtoMessage() {}
 
 func (x *ImportItem) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[37]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[38]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3740,7 +3870,7 @@ func (x *ImportItem) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ImportItem.ProtoReflect.Descriptor instead.
 func (*ImportItem) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{37}
+	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{38}
 }
 
 func (x *ImportItem) GetEntry() *Entry {
@@ -3791,7 +3921,7 @@ type CreateMetadataJobRequest struct {
 
 func (x *CreateMetadataJobRequest) Reset() {
 	*x = CreateMetadataJobRequest{}
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[38]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[39]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3803,7 +3933,7 @@ func (x *CreateMetadataJobRequest) String() string {
 func (*CreateMetadataJobRequest) ProtoMessage() {}
 
 func (x *CreateMetadataJobRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[38]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[39]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3816,7 +3946,7 @@ func (x *CreateMetadataJobRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateMetadataJobRequest.ProtoReflect.Descriptor instead.
 func (*CreateMetadataJobRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{38}
+	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{39}
 }
 
 func (x *CreateMetadataJobRequest) GetParent() string {
@@ -3859,7 +3989,7 @@ type GetMetadataJobRequest struct {
 
 func (x *GetMetadataJobRequest) Reset() {
 	*x = GetMetadataJobRequest{}
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[39]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[40]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3871,7 +4001,7 @@ func (x *GetMetadataJobRequest) String() string {
 func (*GetMetadataJobRequest) ProtoMessage() {}
 
 func (x *GetMetadataJobRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[39]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[40]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3884,7 +4014,7 @@ func (x *GetMetadataJobRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetMetadataJobRequest.ProtoReflect.Descriptor instead.
 func (*GetMetadataJobRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{39}
+	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{40}
 }
 
 func (x *GetMetadataJobRequest) GetName() string {
@@ -3928,7 +4058,7 @@ type ListMetadataJobsRequest struct {
 
 func (x *ListMetadataJobsRequest) Reset() {
 	*x = ListMetadataJobsRequest{}
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[40]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[41]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3940,7 +4070,7 @@ func (x *ListMetadataJobsRequest) String() string {
 func (*ListMetadataJobsRequest) ProtoMessage() {}
 
 func (x *ListMetadataJobsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[40]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[41]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3953,7 +4083,7 @@ func (x *ListMetadataJobsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListMetadataJobsRequest.ProtoReflect.Descriptor instead.
 func (*ListMetadataJobsRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{40}
+	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{41}
 }
 
 func (x *ListMetadataJobsRequest) GetParent() string {
@@ -4007,7 +4137,7 @@ type ListMetadataJobsResponse struct {
 
 func (x *ListMetadataJobsResponse) Reset() {
 	*x = ListMetadataJobsResponse{}
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[41]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[42]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4019,7 +4149,7 @@ func (x *ListMetadataJobsResponse) String() string {
 func (*ListMetadataJobsResponse) ProtoMessage() {}
 
 func (x *ListMetadataJobsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[41]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[42]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4032,7 +4162,7 @@ func (x *ListMetadataJobsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListMetadataJobsResponse.ProtoReflect.Descriptor instead.
 func (*ListMetadataJobsResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{41}
+	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{42}
 }
 
 func (x *ListMetadataJobsResponse) GetMetadataJobs() []*MetadataJob {
@@ -4068,7 +4198,7 @@ type CancelMetadataJobRequest struct {
 
 func (x *CancelMetadataJobRequest) Reset() {
 	*x = CancelMetadataJobRequest{}
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[42]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[43]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4080,7 +4210,7 @@ func (x *CancelMetadataJobRequest) String() string {
 func (*CancelMetadataJobRequest) ProtoMessage() {}
 
 func (x *CancelMetadataJobRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[42]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[43]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4093,7 +4223,7 @@ func (x *CancelMetadataJobRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CancelMetadataJobRequest.ProtoReflect.Descriptor instead.
 func (*CancelMetadataJobRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{42}
+	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{43}
 }
 
 func (x *CancelMetadataJobRequest) GetName() string {
@@ -4140,7 +4270,7 @@ type MetadataJob struct {
 
 func (x *MetadataJob) Reset() {
 	*x = MetadataJob{}
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[43]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[44]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4152,7 +4282,7 @@ func (x *MetadataJob) String() string {
 func (*MetadataJob) ProtoMessage() {}
 
 func (x *MetadataJob) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[43]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[44]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4165,7 +4295,7 @@ func (x *MetadataJob) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MetadataJob.ProtoReflect.Descriptor instead.
 func (*MetadataJob) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{43}
+	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{44}
 }
 
 func (x *MetadataJob) GetName() string {
@@ -4338,7 +4468,7 @@ type EntryLink struct {
 
 func (x *EntryLink) Reset() {
 	*x = EntryLink{}
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[44]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[45]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4350,7 +4480,7 @@ func (x *EntryLink) String() string {
 func (*EntryLink) ProtoMessage() {}
 
 func (x *EntryLink) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[44]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[45]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4363,7 +4493,7 @@ func (x *EntryLink) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use EntryLink.ProtoReflect.Descriptor instead.
 func (*EntryLink) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{44}
+	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{45}
 }
 
 func (x *EntryLink) GetName() string {
@@ -4429,7 +4559,7 @@ type CreateEntryLinkRequest struct {
 
 func (x *CreateEntryLinkRequest) Reset() {
 	*x = CreateEntryLinkRequest{}
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[45]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[46]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4441,7 +4571,7 @@ func (x *CreateEntryLinkRequest) String() string {
 func (*CreateEntryLinkRequest) ProtoMessage() {}
 
 func (x *CreateEntryLinkRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[45]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[46]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4454,7 +4584,7 @@ func (x *CreateEntryLinkRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateEntryLinkRequest.ProtoReflect.Descriptor instead.
 func (*CreateEntryLinkRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{45}
+	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{46}
 }
 
 func (x *CreateEntryLinkRequest) GetParent() string {
@@ -4499,7 +4629,7 @@ type UpdateEntryLinkRequest struct {
 
 func (x *UpdateEntryLinkRequest) Reset() {
 	*x = UpdateEntryLinkRequest{}
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[46]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[47]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4511,7 +4641,7 @@ func (x *UpdateEntryLinkRequest) String() string {
 func (*UpdateEntryLinkRequest) ProtoMessage() {}
 
 func (x *UpdateEntryLinkRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[46]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[47]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4524,7 +4654,7 @@ func (x *UpdateEntryLinkRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateEntryLinkRequest.ProtoReflect.Descriptor instead.
 func (*UpdateEntryLinkRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{46}
+	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{47}
 }
 
 func (x *UpdateEntryLinkRequest) GetEntryLink() *EntryLink {
@@ -4560,7 +4690,7 @@ type DeleteEntryLinkRequest struct {
 
 func (x *DeleteEntryLinkRequest) Reset() {
 	*x = DeleteEntryLinkRequest{}
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[47]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[48]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4572,7 +4702,7 @@ func (x *DeleteEntryLinkRequest) String() string {
 func (*DeleteEntryLinkRequest) ProtoMessage() {}
 
 func (x *DeleteEntryLinkRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[47]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[48]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4585,7 +4715,7 @@ func (x *DeleteEntryLinkRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteEntryLinkRequest.ProtoReflect.Descriptor instead.
 func (*DeleteEntryLinkRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{47}
+	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{48}
 }
 
 func (x *DeleteEntryLinkRequest) GetName() string {
@@ -4626,7 +4756,7 @@ type LookupEntryLinksRequest struct {
 
 func (x *LookupEntryLinksRequest) Reset() {
 	*x = LookupEntryLinksRequest{}
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[48]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[49]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4638,7 +4768,7 @@ func (x *LookupEntryLinksRequest) String() string {
 func (*LookupEntryLinksRequest) ProtoMessage() {}
 
 func (x *LookupEntryLinksRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[48]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[49]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4651,7 +4781,7 @@ func (x *LookupEntryLinksRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LookupEntryLinksRequest.ProtoReflect.Descriptor instead.
 func (*LookupEntryLinksRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{48}
+	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{49}
 }
 
 func (x *LookupEntryLinksRequest) GetName() string {
@@ -4710,7 +4840,7 @@ type LookupEntryLinksResponse struct {
 
 func (x *LookupEntryLinksResponse) Reset() {
 	*x = LookupEntryLinksResponse{}
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[49]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[50]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4722,7 +4852,7 @@ func (x *LookupEntryLinksResponse) String() string {
 func (*LookupEntryLinksResponse) ProtoMessage() {}
 
 func (x *LookupEntryLinksResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[49]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[50]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4735,7 +4865,7 @@ func (x *LookupEntryLinksResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LookupEntryLinksResponse.ProtoReflect.Descriptor instead.
 func (*LookupEntryLinksResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{49}
+	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{50}
 }
 
 func (x *LookupEntryLinksResponse) GetEntryLinks() []*EntryLink {
@@ -4764,7 +4894,7 @@ type GetEntryLinkRequest struct {
 
 func (x *GetEntryLinkRequest) Reset() {
 	*x = GetEntryLinkRequest{}
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[50]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[51]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4776,7 +4906,7 @@ func (x *GetEntryLinkRequest) String() string {
 func (*GetEntryLinkRequest) ProtoMessage() {}
 
 func (x *GetEntryLinkRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[50]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[51]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4789,7 +4919,7 @@ func (x *GetEntryLinkRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetEntryLinkRequest.ProtoReflect.Descriptor instead.
 func (*GetEntryLinkRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{50}
+	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{51}
 }
 
 func (x *GetEntryLinkRequest) GetName() string {
@@ -4834,7 +4964,7 @@ type MetadataFeed struct {
 
 func (x *MetadataFeed) Reset() {
 	*x = MetadataFeed{}
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[51]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[52]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4846,7 +4976,7 @@ func (x *MetadataFeed) String() string {
 func (*MetadataFeed) ProtoMessage() {}
 
 func (x *MetadataFeed) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[51]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[52]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4859,7 +4989,7 @@ func (x *MetadataFeed) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MetadataFeed.ProtoReflect.Descriptor instead.
 func (*MetadataFeed) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{51}
+	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{52}
 }
 
 func (x *MetadataFeed) GetName() string {
@@ -4961,7 +5091,7 @@ type CreateMetadataFeedRequest struct {
 
 func (x *CreateMetadataFeedRequest) Reset() {
 	*x = CreateMetadataFeedRequest{}
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[52]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[53]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4973,7 +5103,7 @@ func (x *CreateMetadataFeedRequest) String() string {
 func (*CreateMetadataFeedRequest) ProtoMessage() {}
 
 func (x *CreateMetadataFeedRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[52]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[53]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4986,7 +5116,7 @@ func (x *CreateMetadataFeedRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateMetadataFeedRequest.ProtoReflect.Descriptor instead.
 func (*CreateMetadataFeedRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{52}
+	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{53}
 }
 
 func (x *CreateMetadataFeedRequest) GetParent() string {
@@ -5029,7 +5159,7 @@ type GetMetadataFeedRequest struct {
 
 func (x *GetMetadataFeedRequest) Reset() {
 	*x = GetMetadataFeedRequest{}
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[53]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[54]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5041,7 +5171,7 @@ func (x *GetMetadataFeedRequest) String() string {
 func (*GetMetadataFeedRequest) ProtoMessage() {}
 
 func (x *GetMetadataFeedRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[53]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[54]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5054,7 +5184,7 @@ func (x *GetMetadataFeedRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetMetadataFeedRequest.ProtoReflect.Descriptor instead.
 func (*GetMetadataFeedRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{53}
+	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{54}
 }
 
 func (x *GetMetadataFeedRequest) GetName() string {
@@ -5098,7 +5228,7 @@ type ListMetadataFeedsRequest struct {
 
 func (x *ListMetadataFeedsRequest) Reset() {
 	*x = ListMetadataFeedsRequest{}
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[54]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[55]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5110,7 +5240,7 @@ func (x *ListMetadataFeedsRequest) String() string {
 func (*ListMetadataFeedsRequest) ProtoMessage() {}
 
 func (x *ListMetadataFeedsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[54]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[55]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5123,7 +5253,7 @@ func (x *ListMetadataFeedsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListMetadataFeedsRequest.ProtoReflect.Descriptor instead.
 func (*ListMetadataFeedsRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{54}
+	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{55}
 }
 
 func (x *ListMetadataFeedsRequest) GetParent() string {
@@ -5177,7 +5307,7 @@ type ListMetadataFeedsResponse struct {
 
 func (x *ListMetadataFeedsResponse) Reset() {
 	*x = ListMetadataFeedsResponse{}
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[55]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[56]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5189,7 +5319,7 @@ func (x *ListMetadataFeedsResponse) String() string {
 func (*ListMetadataFeedsResponse) ProtoMessage() {}
 
 func (x *ListMetadataFeedsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[55]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[56]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5202,7 +5332,7 @@ func (x *ListMetadataFeedsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListMetadataFeedsResponse.ProtoReflect.Descriptor instead.
 func (*ListMetadataFeedsResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{55}
+	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{56}
 }
 
 func (x *ListMetadataFeedsResponse) GetMetadataFeeds() []*MetadataFeed {
@@ -5238,7 +5368,7 @@ type DeleteMetadataFeedRequest struct {
 
 func (x *DeleteMetadataFeedRequest) Reset() {
 	*x = DeleteMetadataFeedRequest{}
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[56]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[57]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5250,7 +5380,7 @@ func (x *DeleteMetadataFeedRequest) String() string {
 func (*DeleteMetadataFeedRequest) ProtoMessage() {}
 
 func (x *DeleteMetadataFeedRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[56]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[57]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5263,7 +5393,7 @@ func (x *DeleteMetadataFeedRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteMetadataFeedRequest.ProtoReflect.Descriptor instead.
 func (*DeleteMetadataFeedRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{56}
+	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{57}
 }
 
 func (x *DeleteMetadataFeedRequest) GetName() string {
@@ -5290,7 +5420,7 @@ type UpdateMetadataFeedRequest struct {
 
 func (x *UpdateMetadataFeedRequest) Reset() {
 	*x = UpdateMetadataFeedRequest{}
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[57]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[58]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5302,7 +5432,7 @@ func (x *UpdateMetadataFeedRequest) String() string {
 func (*UpdateMetadataFeedRequest) ProtoMessage() {}
 
 func (x *UpdateMetadataFeedRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[57]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[58]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5315,7 +5445,7 @@ func (x *UpdateMetadataFeedRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateMetadataFeedRequest.ProtoReflect.Descriptor instead.
 func (*UpdateMetadataFeedRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{57}
+	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{58}
 }
 
 func (x *UpdateMetadataFeedRequest) GetMetadataFeed() *MetadataFeed {
@@ -5352,7 +5482,7 @@ type AspectType_Authorization struct {
 
 func (x *AspectType_Authorization) Reset() {
 	*x = AspectType_Authorization{}
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[58]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[59]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5364,7 +5494,7 @@ func (x *AspectType_Authorization) String() string {
 func (*AspectType_Authorization) ProtoMessage() {}
 
 func (x *AspectType_Authorization) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[58]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[59]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5454,7 +5584,7 @@ type AspectType_MetadataTemplate struct {
 
 func (x *AspectType_MetadataTemplate) Reset() {
 	*x = AspectType_MetadataTemplate{}
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[59]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[60]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5466,7 +5596,7 @@ func (x *AspectType_MetadataTemplate) String() string {
 func (*AspectType_MetadataTemplate) ProtoMessage() {}
 
 func (x *AspectType_MetadataTemplate) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[59]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[60]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5576,7 +5706,7 @@ type AspectType_MetadataTemplate_EnumValue struct {
 
 func (x *AspectType_MetadataTemplate_EnumValue) Reset() {
 	*x = AspectType_MetadataTemplate_EnumValue{}
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[61]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[62]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5588,7 +5718,7 @@ func (x *AspectType_MetadataTemplate_EnumValue) String() string {
 func (*AspectType_MetadataTemplate_EnumValue) ProtoMessage() {}
 
 func (x *AspectType_MetadataTemplate_EnumValue) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[61]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[62]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5636,7 +5766,7 @@ type AspectType_MetadataTemplate_Constraints struct {
 
 func (x *AspectType_MetadataTemplate_Constraints) Reset() {
 	*x = AspectType_MetadataTemplate_Constraints{}
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[62]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[63]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5648,7 +5778,7 @@ func (x *AspectType_MetadataTemplate_Constraints) String() string {
 func (*AspectType_MetadataTemplate_Constraints) ProtoMessage() {}
 
 func (x *AspectType_MetadataTemplate_Constraints) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[62]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[63]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5700,7 +5830,7 @@ type AspectType_MetadataTemplate_Annotations struct {
 
 func (x *AspectType_MetadataTemplate_Annotations) Reset() {
 	*x = AspectType_MetadataTemplate_Annotations{}
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[63]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[64]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5712,7 +5842,7 @@ func (x *AspectType_MetadataTemplate_Annotations) String() string {
 func (*AspectType_MetadataTemplate_Annotations) ProtoMessage() {}
 
 func (x *AspectType_MetadataTemplate_Annotations) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[63]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[64]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5780,7 +5910,7 @@ type EntryType_AspectInfo struct {
 
 func (x *EntryType_AspectInfo) Reset() {
 	*x = EntryType_AspectInfo{}
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[65]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[66]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5792,7 +5922,7 @@ func (x *EntryType_AspectInfo) String() string {
 func (*EntryType_AspectInfo) ProtoMessage() {}
 
 func (x *EntryType_AspectInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[65]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[66]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5828,7 +5958,7 @@ type EntryType_Authorization struct {
 
 func (x *EntryType_Authorization) Reset() {
 	*x = EntryType_Authorization{}
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[66]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[67]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5840,7 +5970,7 @@ func (x *EntryType_Authorization) String() string {
 func (*EntryType_Authorization) ProtoMessage() {}
 
 func (x *EntryType_Authorization) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[66]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[67]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5877,7 +6007,7 @@ type EntrySource_Ancestor struct {
 
 func (x *EntrySource_Ancestor) Reset() {
 	*x = EntrySource_Ancestor{}
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[69]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[70]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5889,7 +6019,7 @@ func (x *EntrySource_Ancestor) String() string {
 func (*EntrySource_Ancestor) ProtoMessage() {}
 
 func (x *EntrySource_Ancestor) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[69]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[70]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5935,7 +6065,7 @@ type SearchEntriesResult_Snippets struct {
 
 func (x *SearchEntriesResult_Snippets) Reset() {
 	*x = SearchEntriesResult_Snippets{}
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[72]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[73]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5947,7 +6077,7 @@ func (x *SearchEntriesResult_Snippets) String() string {
 func (*SearchEntriesResult_Snippets) ProtoMessage() {}
 
 func (x *SearchEntriesResult_Snippets) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[72]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[73]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5960,7 +6090,7 @@ func (x *SearchEntriesResult_Snippets) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SearchEntriesResult_Snippets.ProtoReflect.Descriptor instead.
 func (*SearchEntriesResult_Snippets) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{35, 0}
+	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{36, 0}
 }
 
 // Deprecated: Marked as deprecated in google/cloud/dataplex/v1/catalog.proto.
@@ -6000,7 +6130,7 @@ type MetadataJob_ImportJobResult struct {
 
 func (x *MetadataJob_ImportJobResult) Reset() {
 	*x = MetadataJob_ImportJobResult{}
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[73]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[74]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6012,7 +6142,7 @@ func (x *MetadataJob_ImportJobResult) String() string {
 func (*MetadataJob_ImportJobResult) ProtoMessage() {}
 
 func (x *MetadataJob_ImportJobResult) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[73]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[74]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6025,7 +6155,7 @@ func (x *MetadataJob_ImportJobResult) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MetadataJob_ImportJobResult.ProtoReflect.Descriptor instead.
 func (*MetadataJob_ImportJobResult) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{43, 0}
+	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{44, 0}
 }
 
 func (x *MetadataJob_ImportJobResult) GetDeletedEntries() int64 {
@@ -6106,7 +6236,7 @@ type MetadataJob_ExportJobResult struct {
 
 func (x *MetadataJob_ExportJobResult) Reset() {
 	*x = MetadataJob_ExportJobResult{}
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[74]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[75]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6118,7 +6248,7 @@ func (x *MetadataJob_ExportJobResult) String() string {
 func (*MetadataJob_ExportJobResult) ProtoMessage() {}
 
 func (x *MetadataJob_ExportJobResult) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[74]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[75]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6131,7 +6261,7 @@ func (x *MetadataJob_ExportJobResult) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MetadataJob_ExportJobResult.ProtoReflect.Descriptor instead.
 func (*MetadataJob_ExportJobResult) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{43, 1}
+	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{44, 1}
 }
 
 func (x *MetadataJob_ExportJobResult) GetExportedEntries() int64 {
@@ -6205,7 +6335,7 @@ type MetadataJob_ImportJobSpec struct {
 
 func (x *MetadataJob_ImportJobSpec) Reset() {
 	*x = MetadataJob_ImportJobSpec{}
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[75]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[76]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6217,7 +6347,7 @@ func (x *MetadataJob_ImportJobSpec) String() string {
 func (*MetadataJob_ImportJobSpec) ProtoMessage() {}
 
 func (x *MetadataJob_ImportJobSpec) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[75]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[76]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6230,7 +6360,7 @@ func (x *MetadataJob_ImportJobSpec) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MetadataJob_ImportJobSpec.ProtoReflect.Descriptor instead.
 func (*MetadataJob_ImportJobSpec) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{43, 2}
+	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{44, 2}
 }
 
 func (x *MetadataJob_ImportJobSpec) GetSourceStorageUri() string {
@@ -6296,7 +6426,7 @@ type MetadataJob_ExportJobSpec struct {
 
 func (x *MetadataJob_ExportJobSpec) Reset() {
 	*x = MetadataJob_ExportJobSpec{}
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[76]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[77]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6308,7 +6438,7 @@ func (x *MetadataJob_ExportJobSpec) String() string {
 func (*MetadataJob_ExportJobSpec) ProtoMessage() {}
 
 func (x *MetadataJob_ExportJobSpec) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[76]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[77]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6321,7 +6451,7 @@ func (x *MetadataJob_ExportJobSpec) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MetadataJob_ExportJobSpec.ProtoReflect.Descriptor instead.
 func (*MetadataJob_ExportJobSpec) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{43, 3}
+	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{44, 3}
 }
 
 func (x *MetadataJob_ExportJobSpec) GetScope() *MetadataJob_ExportJobSpec_ExportJobScope {
@@ -6355,7 +6485,7 @@ type MetadataJob_Status struct {
 
 func (x *MetadataJob_Status) Reset() {
 	*x = MetadataJob_Status{}
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[77]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[78]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6367,7 +6497,7 @@ func (x *MetadataJob_Status) String() string {
 func (*MetadataJob_Status) ProtoMessage() {}
 
 func (x *MetadataJob_Status) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[77]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[78]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6380,7 +6510,7 @@ func (x *MetadataJob_Status) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MetadataJob_Status.ProtoReflect.Descriptor instead.
 func (*MetadataJob_Status) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{43, 4}
+	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{44, 4}
 }
 
 func (x *MetadataJob_Status) GetState() MetadataJob_Status_State {
@@ -6488,7 +6618,7 @@ type MetadataJob_ImportJobSpec_ImportJobScope struct {
 
 func (x *MetadataJob_ImportJobSpec_ImportJobScope) Reset() {
 	*x = MetadataJob_ImportJobSpec_ImportJobScope{}
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[79]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[80]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6500,7 +6630,7 @@ func (x *MetadataJob_ImportJobSpec_ImportJobScope) String() string {
 func (*MetadataJob_ImportJobSpec_ImportJobScope) ProtoMessage() {}
 
 func (x *MetadataJob_ImportJobSpec_ImportJobScope) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[79]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[80]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6513,7 +6643,7 @@ func (x *MetadataJob_ImportJobSpec_ImportJobScope) ProtoReflect() protoreflect.M
 
 // Deprecated: Use MetadataJob_ImportJobSpec_ImportJobScope.ProtoReflect.Descriptor instead.
 func (*MetadataJob_ImportJobSpec_ImportJobScope) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{43, 2, 0}
+	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{44, 2, 0}
 }
 
 func (x *MetadataJob_ImportJobSpec_ImportJobScope) GetEntryGroups() []string {
@@ -6613,7 +6743,7 @@ type MetadataJob_ExportJobSpec_ExportJobScope struct {
 
 func (x *MetadataJob_ExportJobSpec_ExportJobScope) Reset() {
 	*x = MetadataJob_ExportJobSpec_ExportJobScope{}
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[80]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[81]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6625,7 +6755,7 @@ func (x *MetadataJob_ExportJobSpec_ExportJobScope) String() string {
 func (*MetadataJob_ExportJobSpec_ExportJobScope) ProtoMessage() {}
 
 func (x *MetadataJob_ExportJobSpec_ExportJobScope) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[80]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[81]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6638,7 +6768,7 @@ func (x *MetadataJob_ExportJobSpec_ExportJobScope) ProtoReflect() protoreflect.M
 
 // Deprecated: Use MetadataJob_ExportJobSpec_ExportJobScope.ProtoReflect.Descriptor instead.
 func (*MetadataJob_ExportJobSpec_ExportJobScope) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{43, 3, 0}
+	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{44, 3, 0}
 }
 
 func (x *MetadataJob_ExportJobSpec_ExportJobScope) GetOrganizationLevel() bool {
@@ -6695,7 +6825,7 @@ type EntryLink_EntryReference struct {
 
 func (x *EntryLink_EntryReference) Reset() {
 	*x = EntryLink_EntryReference{}
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[81]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[82]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6707,7 +6837,7 @@ func (x *EntryLink_EntryReference) String() string {
 func (*EntryLink_EntryReference) ProtoMessage() {}
 
 func (x *EntryLink_EntryReference) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[81]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[82]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6720,7 +6850,7 @@ func (x *EntryLink_EntryReference) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use EntryLink_EntryReference.ProtoReflect.Descriptor instead.
 func (*EntryLink_EntryReference) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{44, 0}
+	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{45, 0}
 }
 
 func (x *EntryLink_EntryReference) GetName() string {
@@ -6771,7 +6901,7 @@ type MetadataFeed_Scope struct {
 
 func (x *MetadataFeed_Scope) Reset() {
 	*x = MetadataFeed_Scope{}
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[83]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[84]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6783,7 +6913,7 @@ func (x *MetadataFeed_Scope) String() string {
 func (*MetadataFeed_Scope) ProtoMessage() {}
 
 func (x *MetadataFeed_Scope) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[83]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[84]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6796,7 +6926,7 @@ func (x *MetadataFeed_Scope) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MetadataFeed_Scope.ProtoReflect.Descriptor instead.
 func (*MetadataFeed_Scope) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{51, 0}
+	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{52, 0}
 }
 
 func (x *MetadataFeed_Scope) GetOrganizationLevel() bool {
@@ -6845,7 +6975,7 @@ type MetadataFeed_Filters struct {
 
 func (x *MetadataFeed_Filters) Reset() {
 	*x = MetadataFeed_Filters{}
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[84]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[85]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6857,7 +6987,7 @@ func (x *MetadataFeed_Filters) String() string {
 func (*MetadataFeed_Filters) ProtoMessage() {}
 
 func (x *MetadataFeed_Filters) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[84]
+	mi := &file_google_cloud_dataplex_v1_catalog_proto_msgTypes[85]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6870,7 +7000,7 @@ func (x *MetadataFeed_Filters) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MetadataFeed_Filters.ProtoReflect.Descriptor instead.
 func (*MetadataFeed_Filters) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{51, 1}
+	return file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP(), []int{52, 1}
 }
 
 func (x *MetadataFeed_Filters) GetEntryTypes() []string {
@@ -7196,15 +7326,24 @@ const file_google_cloud_dataplex_v1_catalog_proto_rawDesc = "" +
 	"\faspect_types\x18\x03 \x03(\tB\x03\xe0A\x01R\vaspectTypes\x12\x19\n" +
 	"\x05paths\x18\x04 \x03(\tB\x03\xe0A\x01R\x05paths\x12;\n" +
 	"\x05entry\x18\x05 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1ddataplex.googleapis.com/EntryR\x05entry\"\x8c\x02\n" +
+	"\x1ddataplex.googleapis.com/EntryR\x05entry\"\xab\x02\n" +
 	"\x14LookupContextRequest\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12C\n" +
 	"\tresources\x18\x02 \x03(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1ddataplex.googleapis.com/EntryR\tresources\x12Z\n" +
+	"\x1ddataplex.googleapis.com/EntryR\tresources\x12\x1d\n" +
+	"\acontext\x18\x03 \x01(\tB\x03\xe0A\x01R\acontext\x12Z\n" +
 	"\aoptions\x18\x04 \x03(\v2;.google.cloud.dataplex.v1.LookupContextRequest.OptionsEntryB\x03\xe0A\x01R\aoptions\x1a:\n" +
 	"\fOptionsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"1\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x8c\x02\n" +
+	"\x12ModifyEntryRequest\x12\x17\n" +
+	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12:\n" +
+	"\x05entry\x18\x02 \x01(\v2\x1f.google.cloud.dataplex.v1.EntryB\x03\xe0A\x02R\x05entry\x12@\n" +
+	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
+	"updateMask\x129\n" +
+	"\x16delete_missing_aspects\x18\x04 \x01(\bB\x03\xe0A\x01R\x14deleteMissingAspects\x12$\n" +
+	"\vaspect_keys\x18\x05 \x03(\tB\x03\xe0A\x01R\n" +
+	"aspectKeys\"1\n" +
 	"\x15LookupContextResponse\x12\x18\n" +
 	"\acontext\x18\x01 \x01(\tR\acontext\"\x9f\x02\n" +
 	"\x14SearchEntriesRequest\x12=\n" +
@@ -7508,7 +7647,7 @@ const file_google_cloud_dataplex_v1_catalog_proto_rawDesc = "" +
 	"\x0eTransferStatus\x12\x1f\n" +
 	"\x1bTRANSFER_STATUS_UNSPECIFIED\x10\x00\x12\x1c\n" +
 	"\x18TRANSFER_STATUS_MIGRATED\x10\x01\x12\x1f\n" +
-	"\x1bTRANSFER_STATUS_TRANSFERRED\x10\x022\x8f<\n" +
+	"\x1bTRANSFER_STATUS_TRANSFERRED\x10\x022\xa8=\n" +
 	"\x0eCatalogService\x12\xea\x01\n" +
 	"\x0fCreateEntryType\x120.google.cloud.dataplex.v1.CreateEntryTypeRequest\x1a\x1d.google.longrunning.Operation\"\x85\x01\xcaA\x1e\n" +
 	"\tEntryType\x12\x11OperationMetadata\xdaA\x1fparent,entry_type,entry_type_id\x82\xd3\xe4\x93\x02<:\n" +
@@ -7545,7 +7684,8 @@ const file_google_cloud_dataplex_v1_catalog_proto_rawDesc = "" +
 	"\vDeleteEntry\x12,.google.cloud.dataplex.v1.DeleteEntryRequest\x1a\x1f.google.cloud.dataplex.v1.Entry\"I\xdaA\x04name\x82\xd3\xe4\x93\x02<*:/v1/{name=projects/*/locations/*/entryGroups/*/entries/**}\x12\xb6\x01\n" +
 	"\vListEntries\x12,.google.cloud.dataplex.v1.ListEntriesRequest\x1a-.google.cloud.dataplex.v1.ListEntriesResponse\"J\xdaA\x06parent\x82\xd3\xe4\x93\x02;\x129/v1/{parent=projects/*/locations/*/entryGroups/*}/entries\x12\xa1\x01\n" +
 	"\bGetEntry\x12).google.cloud.dataplex.v1.GetEntryRequest\x1a\x1f.google.cloud.dataplex.v1.Entry\"I\xdaA\x04name\x82\xd3\xe4\x93\x02<\x12:/v1/{name=projects/*/locations/*/entryGroups/*/entries/**}\x12\x93\x01\n" +
-	"\vLookupEntry\x12,.google.cloud.dataplex.v1.LookupEntryRequest\x1a\x1f.google.cloud.dataplex.v1.Entry\"5\x82\xd3\xe4\x93\x02/\x12-/v1/{name=projects/*/locations/*}:lookupEntry\x12\xb6\x01\n" +
+	"\vLookupEntry\x12,.google.cloud.dataplex.v1.LookupEntryRequest\x1a\x1f.google.cloud.dataplex.v1.Entry\"5\x82\xd3\xe4\x93\x02/\x12-/v1/{name=projects/*/locations/*}:lookupEntry\x12\x96\x01\n" +
+	"\vModifyEntry\x12,.google.cloud.dataplex.v1.ModifyEntryRequest\x1a\x1f.google.cloud.dataplex.v1.Entry\"8\x82\xd3\xe4\x93\x022:\x01*\"-/v1/{name=projects/*/locations/*}:modifyEntry\x12\xb6\x01\n" +
 	"\rSearchEntries\x12..google.cloud.dataplex.v1.SearchEntriesRequest\x1a/.google.cloud.dataplex.v1.SearchEntriesResponse\"D\xdaA\n" +
 	"name,query\x82\xd3\xe4\x93\x021\"//v1/{name=projects/*/locations/*}:searchEntries\x12\xf8\x01\n" +
 	"\x11CreateMetadataJob\x122.google.cloud.dataplex.v1.CreateMetadataJobRequest\x1a\x1d.google.longrunning.Operation\"\x8f\x01\xcaA \n" +
@@ -7585,7 +7725,7 @@ func file_google_cloud_dataplex_v1_catalog_proto_rawDescGZIP() []byte {
 }
 
 var file_google_cloud_dataplex_v1_catalog_proto_enumTypes = make([]protoimpl.EnumInfo, 10)
-var file_google_cloud_dataplex_v1_catalog_proto_msgTypes = make([]protoimpl.MessageInfo, 86)
+var file_google_cloud_dataplex_v1_catalog_proto_msgTypes = make([]protoimpl.MessageInfo, 87)
 var file_google_cloud_dataplex_v1_catalog_proto_goTypes = []any{
 	(EntryView)(0),                                  // 0: google.cloud.dataplex.v1.EntryView
 	(TransferStatus)(0),                             // 1: google.cloud.dataplex.v1.TransferStatus
@@ -7630,248 +7770,253 @@ var file_google_cloud_dataplex_v1_catalog_proto_goTypes = []any{
 	(*GetEntryRequest)(nil),                         // 40: google.cloud.dataplex.v1.GetEntryRequest
 	(*LookupEntryRequest)(nil),                      // 41: google.cloud.dataplex.v1.LookupEntryRequest
 	(*LookupContextRequest)(nil),                    // 42: google.cloud.dataplex.v1.LookupContextRequest
-	(*LookupContextResponse)(nil),                   // 43: google.cloud.dataplex.v1.LookupContextResponse
-	(*SearchEntriesRequest)(nil),                    // 44: google.cloud.dataplex.v1.SearchEntriesRequest
-	(*SearchEntriesResult)(nil),                     // 45: google.cloud.dataplex.v1.SearchEntriesResult
-	(*SearchEntriesResponse)(nil),                   // 46: google.cloud.dataplex.v1.SearchEntriesResponse
-	(*ImportItem)(nil),                              // 47: google.cloud.dataplex.v1.ImportItem
-	(*CreateMetadataJobRequest)(nil),                // 48: google.cloud.dataplex.v1.CreateMetadataJobRequest
-	(*GetMetadataJobRequest)(nil),                   // 49: google.cloud.dataplex.v1.GetMetadataJobRequest
-	(*ListMetadataJobsRequest)(nil),                 // 50: google.cloud.dataplex.v1.ListMetadataJobsRequest
-	(*ListMetadataJobsResponse)(nil),                // 51: google.cloud.dataplex.v1.ListMetadataJobsResponse
-	(*CancelMetadataJobRequest)(nil),                // 52: google.cloud.dataplex.v1.CancelMetadataJobRequest
-	(*MetadataJob)(nil),                             // 53: google.cloud.dataplex.v1.MetadataJob
-	(*EntryLink)(nil),                               // 54: google.cloud.dataplex.v1.EntryLink
-	(*CreateEntryLinkRequest)(nil),                  // 55: google.cloud.dataplex.v1.CreateEntryLinkRequest
-	(*UpdateEntryLinkRequest)(nil),                  // 56: google.cloud.dataplex.v1.UpdateEntryLinkRequest
-	(*DeleteEntryLinkRequest)(nil),                  // 57: google.cloud.dataplex.v1.DeleteEntryLinkRequest
-	(*LookupEntryLinksRequest)(nil),                 // 58: google.cloud.dataplex.v1.LookupEntryLinksRequest
-	(*LookupEntryLinksResponse)(nil),                // 59: google.cloud.dataplex.v1.LookupEntryLinksResponse
-	(*GetEntryLinkRequest)(nil),                     // 60: google.cloud.dataplex.v1.GetEntryLinkRequest
-	(*MetadataFeed)(nil),                            // 61: google.cloud.dataplex.v1.MetadataFeed
-	(*CreateMetadataFeedRequest)(nil),               // 62: google.cloud.dataplex.v1.CreateMetadataFeedRequest
-	(*GetMetadataFeedRequest)(nil),                  // 63: google.cloud.dataplex.v1.GetMetadataFeedRequest
-	(*ListMetadataFeedsRequest)(nil),                // 64: google.cloud.dataplex.v1.ListMetadataFeedsRequest
-	(*ListMetadataFeedsResponse)(nil),               // 65: google.cloud.dataplex.v1.ListMetadataFeedsResponse
-	(*DeleteMetadataFeedRequest)(nil),               // 66: google.cloud.dataplex.v1.DeleteMetadataFeedRequest
-	(*UpdateMetadataFeedRequest)(nil),               // 67: google.cloud.dataplex.v1.UpdateMetadataFeedRequest
-	(*AspectType_Authorization)(nil),                // 68: google.cloud.dataplex.v1.AspectType.Authorization
-	(*AspectType_MetadataTemplate)(nil),             // 69: google.cloud.dataplex.v1.AspectType.MetadataTemplate
-	nil,                                             // 70: google.cloud.dataplex.v1.AspectType.LabelsEntry
-	(*AspectType_MetadataTemplate_EnumValue)(nil),   // 71: google.cloud.dataplex.v1.AspectType.MetadataTemplate.EnumValue
-	(*AspectType_MetadataTemplate_Constraints)(nil), // 72: google.cloud.dataplex.v1.AspectType.MetadataTemplate.Constraints
-	(*AspectType_MetadataTemplate_Annotations)(nil), // 73: google.cloud.dataplex.v1.AspectType.MetadataTemplate.Annotations
-	nil,                                  // 74: google.cloud.dataplex.v1.EntryGroup.LabelsEntry
-	(*EntryType_AspectInfo)(nil),         // 75: google.cloud.dataplex.v1.EntryType.AspectInfo
-	(*EntryType_Authorization)(nil),      // 76: google.cloud.dataplex.v1.EntryType.Authorization
-	nil,                                  // 77: google.cloud.dataplex.v1.EntryType.LabelsEntry
-	nil,                                  // 78: google.cloud.dataplex.v1.Entry.AspectsEntry
-	(*EntrySource_Ancestor)(nil),         // 79: google.cloud.dataplex.v1.EntrySource.Ancestor
-	nil,                                  // 80: google.cloud.dataplex.v1.EntrySource.LabelsEntry
-	nil,                                  // 81: google.cloud.dataplex.v1.LookupContextRequest.OptionsEntry
-	(*SearchEntriesResult_Snippets)(nil), // 82: google.cloud.dataplex.v1.SearchEntriesResult.Snippets
-	(*MetadataJob_ImportJobResult)(nil),  // 83: google.cloud.dataplex.v1.MetadataJob.ImportJobResult
-	(*MetadataJob_ExportJobResult)(nil),  // 84: google.cloud.dataplex.v1.MetadataJob.ExportJobResult
-	(*MetadataJob_ImportJobSpec)(nil),    // 85: google.cloud.dataplex.v1.MetadataJob.ImportJobSpec
-	(*MetadataJob_ExportJobSpec)(nil),    // 86: google.cloud.dataplex.v1.MetadataJob.ExportJobSpec
-	(*MetadataJob_Status)(nil),           // 87: google.cloud.dataplex.v1.MetadataJob.Status
-	nil,                                  // 88: google.cloud.dataplex.v1.MetadataJob.LabelsEntry
-	(*MetadataJob_ImportJobSpec_ImportJobScope)(nil), // 89: google.cloud.dataplex.v1.MetadataJob.ImportJobSpec.ImportJobScope
-	(*MetadataJob_ExportJobSpec_ExportJobScope)(nil), // 90: google.cloud.dataplex.v1.MetadataJob.ExportJobSpec.ExportJobScope
-	(*EntryLink_EntryReference)(nil),                 // 91: google.cloud.dataplex.v1.EntryLink.EntryReference
-	nil,                                              // 92: google.cloud.dataplex.v1.EntryLink.AspectsEntry
-	(*MetadataFeed_Scope)(nil),                       // 93: google.cloud.dataplex.v1.MetadataFeed.Scope
-	(*MetadataFeed_Filters)(nil),                     // 94: google.cloud.dataplex.v1.MetadataFeed.Filters
-	nil,                                              // 95: google.cloud.dataplex.v1.MetadataFeed.LabelsEntry
-	(*timestamppb.Timestamp)(nil),                    // 96: google.protobuf.Timestamp
-	(*structpb.Struct)(nil),                          // 97: google.protobuf.Struct
-	(*fieldmaskpb.FieldMask)(nil),                    // 98: google.protobuf.FieldMask
-	(*longrunningpb.Operation)(nil),                  // 99: google.longrunning.Operation
-	(*emptypb.Empty)(nil),                            // 100: google.protobuf.Empty
+	(*ModifyEntryRequest)(nil),                      // 43: google.cloud.dataplex.v1.ModifyEntryRequest
+	(*LookupContextResponse)(nil),                   // 44: google.cloud.dataplex.v1.LookupContextResponse
+	(*SearchEntriesRequest)(nil),                    // 45: google.cloud.dataplex.v1.SearchEntriesRequest
+	(*SearchEntriesResult)(nil),                     // 46: google.cloud.dataplex.v1.SearchEntriesResult
+	(*SearchEntriesResponse)(nil),                   // 47: google.cloud.dataplex.v1.SearchEntriesResponse
+	(*ImportItem)(nil),                              // 48: google.cloud.dataplex.v1.ImportItem
+	(*CreateMetadataJobRequest)(nil),                // 49: google.cloud.dataplex.v1.CreateMetadataJobRequest
+	(*GetMetadataJobRequest)(nil),                   // 50: google.cloud.dataplex.v1.GetMetadataJobRequest
+	(*ListMetadataJobsRequest)(nil),                 // 51: google.cloud.dataplex.v1.ListMetadataJobsRequest
+	(*ListMetadataJobsResponse)(nil),                // 52: google.cloud.dataplex.v1.ListMetadataJobsResponse
+	(*CancelMetadataJobRequest)(nil),                // 53: google.cloud.dataplex.v1.CancelMetadataJobRequest
+	(*MetadataJob)(nil),                             // 54: google.cloud.dataplex.v1.MetadataJob
+	(*EntryLink)(nil),                               // 55: google.cloud.dataplex.v1.EntryLink
+	(*CreateEntryLinkRequest)(nil),                  // 56: google.cloud.dataplex.v1.CreateEntryLinkRequest
+	(*UpdateEntryLinkRequest)(nil),                  // 57: google.cloud.dataplex.v1.UpdateEntryLinkRequest
+	(*DeleteEntryLinkRequest)(nil),                  // 58: google.cloud.dataplex.v1.DeleteEntryLinkRequest
+	(*LookupEntryLinksRequest)(nil),                 // 59: google.cloud.dataplex.v1.LookupEntryLinksRequest
+	(*LookupEntryLinksResponse)(nil),                // 60: google.cloud.dataplex.v1.LookupEntryLinksResponse
+	(*GetEntryLinkRequest)(nil),                     // 61: google.cloud.dataplex.v1.GetEntryLinkRequest
+	(*MetadataFeed)(nil),                            // 62: google.cloud.dataplex.v1.MetadataFeed
+	(*CreateMetadataFeedRequest)(nil),               // 63: google.cloud.dataplex.v1.CreateMetadataFeedRequest
+	(*GetMetadataFeedRequest)(nil),                  // 64: google.cloud.dataplex.v1.GetMetadataFeedRequest
+	(*ListMetadataFeedsRequest)(nil),                // 65: google.cloud.dataplex.v1.ListMetadataFeedsRequest
+	(*ListMetadataFeedsResponse)(nil),               // 66: google.cloud.dataplex.v1.ListMetadataFeedsResponse
+	(*DeleteMetadataFeedRequest)(nil),               // 67: google.cloud.dataplex.v1.DeleteMetadataFeedRequest
+	(*UpdateMetadataFeedRequest)(nil),               // 68: google.cloud.dataplex.v1.UpdateMetadataFeedRequest
+	(*AspectType_Authorization)(nil),                // 69: google.cloud.dataplex.v1.AspectType.Authorization
+	(*AspectType_MetadataTemplate)(nil),             // 70: google.cloud.dataplex.v1.AspectType.MetadataTemplate
+	nil,                                             // 71: google.cloud.dataplex.v1.AspectType.LabelsEntry
+	(*AspectType_MetadataTemplate_EnumValue)(nil),   // 72: google.cloud.dataplex.v1.AspectType.MetadataTemplate.EnumValue
+	(*AspectType_MetadataTemplate_Constraints)(nil), // 73: google.cloud.dataplex.v1.AspectType.MetadataTemplate.Constraints
+	(*AspectType_MetadataTemplate_Annotations)(nil), // 74: google.cloud.dataplex.v1.AspectType.MetadataTemplate.Annotations
+	nil,                                  // 75: google.cloud.dataplex.v1.EntryGroup.LabelsEntry
+	(*EntryType_AspectInfo)(nil),         // 76: google.cloud.dataplex.v1.EntryType.AspectInfo
+	(*EntryType_Authorization)(nil),      // 77: google.cloud.dataplex.v1.EntryType.Authorization
+	nil,                                  // 78: google.cloud.dataplex.v1.EntryType.LabelsEntry
+	nil,                                  // 79: google.cloud.dataplex.v1.Entry.AspectsEntry
+	(*EntrySource_Ancestor)(nil),         // 80: google.cloud.dataplex.v1.EntrySource.Ancestor
+	nil,                                  // 81: google.cloud.dataplex.v1.EntrySource.LabelsEntry
+	nil,                                  // 82: google.cloud.dataplex.v1.LookupContextRequest.OptionsEntry
+	(*SearchEntriesResult_Snippets)(nil), // 83: google.cloud.dataplex.v1.SearchEntriesResult.Snippets
+	(*MetadataJob_ImportJobResult)(nil),  // 84: google.cloud.dataplex.v1.MetadataJob.ImportJobResult
+	(*MetadataJob_ExportJobResult)(nil),  // 85: google.cloud.dataplex.v1.MetadataJob.ExportJobResult
+	(*MetadataJob_ImportJobSpec)(nil),    // 86: google.cloud.dataplex.v1.MetadataJob.ImportJobSpec
+	(*MetadataJob_ExportJobSpec)(nil),    // 87: google.cloud.dataplex.v1.MetadataJob.ExportJobSpec
+	(*MetadataJob_Status)(nil),           // 88: google.cloud.dataplex.v1.MetadataJob.Status
+	nil,                                  // 89: google.cloud.dataplex.v1.MetadataJob.LabelsEntry
+	(*MetadataJob_ImportJobSpec_ImportJobScope)(nil), // 90: google.cloud.dataplex.v1.MetadataJob.ImportJobSpec.ImportJobScope
+	(*MetadataJob_ExportJobSpec_ExportJobScope)(nil), // 91: google.cloud.dataplex.v1.MetadataJob.ExportJobSpec.ExportJobScope
+	(*EntryLink_EntryReference)(nil),                 // 92: google.cloud.dataplex.v1.EntryLink.EntryReference
+	nil,                                              // 93: google.cloud.dataplex.v1.EntryLink.AspectsEntry
+	(*MetadataFeed_Scope)(nil),                       // 94: google.cloud.dataplex.v1.MetadataFeed.Scope
+	(*MetadataFeed_Filters)(nil),                     // 95: google.cloud.dataplex.v1.MetadataFeed.Filters
+	nil,                                              // 96: google.cloud.dataplex.v1.MetadataFeed.LabelsEntry
+	(*timestamppb.Timestamp)(nil),                    // 97: google.protobuf.Timestamp
+	(*structpb.Struct)(nil),                          // 98: google.protobuf.Struct
+	(*fieldmaskpb.FieldMask)(nil),                    // 99: google.protobuf.FieldMask
+	(*longrunningpb.Operation)(nil),                  // 100: google.longrunning.Operation
+	(*emptypb.Empty)(nil),                            // 101: google.protobuf.Empty
 }
 var file_google_cloud_dataplex_v1_catalog_proto_depIdxs = []int32{
-	96,  // 0: google.cloud.dataplex.v1.AspectType.create_time:type_name -> google.protobuf.Timestamp
-	96,  // 1: google.cloud.dataplex.v1.AspectType.update_time:type_name -> google.protobuf.Timestamp
-	70,  // 2: google.cloud.dataplex.v1.AspectType.labels:type_name -> google.cloud.dataplex.v1.AspectType.LabelsEntry
+	97,  // 0: google.cloud.dataplex.v1.AspectType.create_time:type_name -> google.protobuf.Timestamp
+	97,  // 1: google.cloud.dataplex.v1.AspectType.update_time:type_name -> google.protobuf.Timestamp
+	71,  // 2: google.cloud.dataplex.v1.AspectType.labels:type_name -> google.cloud.dataplex.v1.AspectType.LabelsEntry
 	2,   // 3: google.cloud.dataplex.v1.AspectType.data_classification:type_name -> google.cloud.dataplex.v1.AspectType.DataClassification
-	68,  // 4: google.cloud.dataplex.v1.AspectType.authorization:type_name -> google.cloud.dataplex.v1.AspectType.Authorization
-	69,  // 5: google.cloud.dataplex.v1.AspectType.metadata_template:type_name -> google.cloud.dataplex.v1.AspectType.MetadataTemplate
+	69,  // 4: google.cloud.dataplex.v1.AspectType.authorization:type_name -> google.cloud.dataplex.v1.AspectType.Authorization
+	70,  // 5: google.cloud.dataplex.v1.AspectType.metadata_template:type_name -> google.cloud.dataplex.v1.AspectType.MetadataTemplate
 	1,   // 6: google.cloud.dataplex.v1.AspectType.transfer_status:type_name -> google.cloud.dataplex.v1.TransferStatus
-	96,  // 7: google.cloud.dataplex.v1.EntryGroup.create_time:type_name -> google.protobuf.Timestamp
-	96,  // 8: google.cloud.dataplex.v1.EntryGroup.update_time:type_name -> google.protobuf.Timestamp
-	74,  // 9: google.cloud.dataplex.v1.EntryGroup.labels:type_name -> google.cloud.dataplex.v1.EntryGroup.LabelsEntry
+	97,  // 7: google.cloud.dataplex.v1.EntryGroup.create_time:type_name -> google.protobuf.Timestamp
+	97,  // 8: google.cloud.dataplex.v1.EntryGroup.update_time:type_name -> google.protobuf.Timestamp
+	75,  // 9: google.cloud.dataplex.v1.EntryGroup.labels:type_name -> google.cloud.dataplex.v1.EntryGroup.LabelsEntry
 	1,   // 10: google.cloud.dataplex.v1.EntryGroup.transfer_status:type_name -> google.cloud.dataplex.v1.TransferStatus
-	96,  // 11: google.cloud.dataplex.v1.EntryType.create_time:type_name -> google.protobuf.Timestamp
-	96,  // 12: google.cloud.dataplex.v1.EntryType.update_time:type_name -> google.protobuf.Timestamp
-	77,  // 13: google.cloud.dataplex.v1.EntryType.labels:type_name -> google.cloud.dataplex.v1.EntryType.LabelsEntry
-	75,  // 14: google.cloud.dataplex.v1.EntryType.required_aspects:type_name -> google.cloud.dataplex.v1.EntryType.AspectInfo
-	76,  // 15: google.cloud.dataplex.v1.EntryType.authorization:type_name -> google.cloud.dataplex.v1.EntryType.Authorization
-	96,  // 16: google.cloud.dataplex.v1.Aspect.create_time:type_name -> google.protobuf.Timestamp
-	96,  // 17: google.cloud.dataplex.v1.Aspect.update_time:type_name -> google.protobuf.Timestamp
-	97,  // 18: google.cloud.dataplex.v1.Aspect.data:type_name -> google.protobuf.Struct
+	97,  // 11: google.cloud.dataplex.v1.EntryType.create_time:type_name -> google.protobuf.Timestamp
+	97,  // 12: google.cloud.dataplex.v1.EntryType.update_time:type_name -> google.protobuf.Timestamp
+	78,  // 13: google.cloud.dataplex.v1.EntryType.labels:type_name -> google.cloud.dataplex.v1.EntryType.LabelsEntry
+	76,  // 14: google.cloud.dataplex.v1.EntryType.required_aspects:type_name -> google.cloud.dataplex.v1.EntryType.AspectInfo
+	77,  // 15: google.cloud.dataplex.v1.EntryType.authorization:type_name -> google.cloud.dataplex.v1.EntryType.Authorization
+	97,  // 16: google.cloud.dataplex.v1.Aspect.create_time:type_name -> google.protobuf.Timestamp
+	97,  // 17: google.cloud.dataplex.v1.Aspect.update_time:type_name -> google.protobuf.Timestamp
+	98,  // 18: google.cloud.dataplex.v1.Aspect.data:type_name -> google.protobuf.Struct
 	14,  // 19: google.cloud.dataplex.v1.Aspect.aspect_source:type_name -> google.cloud.dataplex.v1.AspectSource
-	96,  // 20: google.cloud.dataplex.v1.AspectSource.create_time:type_name -> google.protobuf.Timestamp
-	96,  // 21: google.cloud.dataplex.v1.AspectSource.update_time:type_name -> google.protobuf.Timestamp
-	96,  // 22: google.cloud.dataplex.v1.Entry.create_time:type_name -> google.protobuf.Timestamp
-	96,  // 23: google.cloud.dataplex.v1.Entry.update_time:type_name -> google.protobuf.Timestamp
-	78,  // 24: google.cloud.dataplex.v1.Entry.aspects:type_name -> google.cloud.dataplex.v1.Entry.AspectsEntry
+	97,  // 20: google.cloud.dataplex.v1.AspectSource.create_time:type_name -> google.protobuf.Timestamp
+	97,  // 21: google.cloud.dataplex.v1.AspectSource.update_time:type_name -> google.protobuf.Timestamp
+	97,  // 22: google.cloud.dataplex.v1.Entry.create_time:type_name -> google.protobuf.Timestamp
+	97,  // 23: google.cloud.dataplex.v1.Entry.update_time:type_name -> google.protobuf.Timestamp
+	79,  // 24: google.cloud.dataplex.v1.Entry.aspects:type_name -> google.cloud.dataplex.v1.Entry.AspectsEntry
 	16,  // 25: google.cloud.dataplex.v1.Entry.entry_source:type_name -> google.cloud.dataplex.v1.EntrySource
-	80,  // 26: google.cloud.dataplex.v1.EntrySource.labels:type_name -> google.cloud.dataplex.v1.EntrySource.LabelsEntry
-	79,  // 27: google.cloud.dataplex.v1.EntrySource.ancestors:type_name -> google.cloud.dataplex.v1.EntrySource.Ancestor
-	96,  // 28: google.cloud.dataplex.v1.EntrySource.create_time:type_name -> google.protobuf.Timestamp
-	96,  // 29: google.cloud.dataplex.v1.EntrySource.update_time:type_name -> google.protobuf.Timestamp
+	81,  // 26: google.cloud.dataplex.v1.EntrySource.labels:type_name -> google.cloud.dataplex.v1.EntrySource.LabelsEntry
+	80,  // 27: google.cloud.dataplex.v1.EntrySource.ancestors:type_name -> google.cloud.dataplex.v1.EntrySource.Ancestor
+	97,  // 28: google.cloud.dataplex.v1.EntrySource.create_time:type_name -> google.protobuf.Timestamp
+	97,  // 29: google.cloud.dataplex.v1.EntrySource.update_time:type_name -> google.protobuf.Timestamp
 	11,  // 30: google.cloud.dataplex.v1.CreateEntryGroupRequest.entry_group:type_name -> google.cloud.dataplex.v1.EntryGroup
 	11,  // 31: google.cloud.dataplex.v1.UpdateEntryGroupRequest.entry_group:type_name -> google.cloud.dataplex.v1.EntryGroup
-	98,  // 32: google.cloud.dataplex.v1.UpdateEntryGroupRequest.update_mask:type_name -> google.protobuf.FieldMask
+	99,  // 32: google.cloud.dataplex.v1.UpdateEntryGroupRequest.update_mask:type_name -> google.protobuf.FieldMask
 	11,  // 33: google.cloud.dataplex.v1.ListEntryGroupsResponse.entry_groups:type_name -> google.cloud.dataplex.v1.EntryGroup
 	12,  // 34: google.cloud.dataplex.v1.CreateEntryTypeRequest.entry_type:type_name -> google.cloud.dataplex.v1.EntryType
 	12,  // 35: google.cloud.dataplex.v1.UpdateEntryTypeRequest.entry_type:type_name -> google.cloud.dataplex.v1.EntryType
-	98,  // 36: google.cloud.dataplex.v1.UpdateEntryTypeRequest.update_mask:type_name -> google.protobuf.FieldMask
+	99,  // 36: google.cloud.dataplex.v1.UpdateEntryTypeRequest.update_mask:type_name -> google.protobuf.FieldMask
 	12,  // 37: google.cloud.dataplex.v1.ListEntryTypesResponse.entry_types:type_name -> google.cloud.dataplex.v1.EntryType
 	10,  // 38: google.cloud.dataplex.v1.CreateAspectTypeRequest.aspect_type:type_name -> google.cloud.dataplex.v1.AspectType
 	10,  // 39: google.cloud.dataplex.v1.UpdateAspectTypeRequest.aspect_type:type_name -> google.cloud.dataplex.v1.AspectType
-	98,  // 40: google.cloud.dataplex.v1.UpdateAspectTypeRequest.update_mask:type_name -> google.protobuf.FieldMask
+	99,  // 40: google.cloud.dataplex.v1.UpdateAspectTypeRequest.update_mask:type_name -> google.protobuf.FieldMask
 	10,  // 41: google.cloud.dataplex.v1.ListAspectTypesResponse.aspect_types:type_name -> google.cloud.dataplex.v1.AspectType
 	15,  // 42: google.cloud.dataplex.v1.CreateEntryRequest.entry:type_name -> google.cloud.dataplex.v1.Entry
 	15,  // 43: google.cloud.dataplex.v1.UpdateEntryRequest.entry:type_name -> google.cloud.dataplex.v1.Entry
-	98,  // 44: google.cloud.dataplex.v1.UpdateEntryRequest.update_mask:type_name -> google.protobuf.FieldMask
+	99,  // 44: google.cloud.dataplex.v1.UpdateEntryRequest.update_mask:type_name -> google.protobuf.FieldMask
 	15,  // 45: google.cloud.dataplex.v1.ListEntriesResponse.entries:type_name -> google.cloud.dataplex.v1.Entry
 	0,   // 46: google.cloud.dataplex.v1.GetEntryRequest.view:type_name -> google.cloud.dataplex.v1.EntryView
 	0,   // 47: google.cloud.dataplex.v1.LookupEntryRequest.view:type_name -> google.cloud.dataplex.v1.EntryView
-	81,  // 48: google.cloud.dataplex.v1.LookupContextRequest.options:type_name -> google.cloud.dataplex.v1.LookupContextRequest.OptionsEntry
-	15,  // 49: google.cloud.dataplex.v1.SearchEntriesResult.dataplex_entry:type_name -> google.cloud.dataplex.v1.Entry
-	82,  // 50: google.cloud.dataplex.v1.SearchEntriesResult.snippets:type_name -> google.cloud.dataplex.v1.SearchEntriesResult.Snippets
-	45,  // 51: google.cloud.dataplex.v1.SearchEntriesResponse.results:type_name -> google.cloud.dataplex.v1.SearchEntriesResult
-	15,  // 52: google.cloud.dataplex.v1.ImportItem.entry:type_name -> google.cloud.dataplex.v1.Entry
-	54,  // 53: google.cloud.dataplex.v1.ImportItem.entry_link:type_name -> google.cloud.dataplex.v1.EntryLink
-	98,  // 54: google.cloud.dataplex.v1.ImportItem.update_mask:type_name -> google.protobuf.FieldMask
-	53,  // 55: google.cloud.dataplex.v1.CreateMetadataJobRequest.metadata_job:type_name -> google.cloud.dataplex.v1.MetadataJob
-	53,  // 56: google.cloud.dataplex.v1.ListMetadataJobsResponse.metadata_jobs:type_name -> google.cloud.dataplex.v1.MetadataJob
-	96,  // 57: google.cloud.dataplex.v1.MetadataJob.create_time:type_name -> google.protobuf.Timestamp
-	96,  // 58: google.cloud.dataplex.v1.MetadataJob.update_time:type_name -> google.protobuf.Timestamp
-	88,  // 59: google.cloud.dataplex.v1.MetadataJob.labels:type_name -> google.cloud.dataplex.v1.MetadataJob.LabelsEntry
-	3,   // 60: google.cloud.dataplex.v1.MetadataJob.type:type_name -> google.cloud.dataplex.v1.MetadataJob.Type
-	85,  // 61: google.cloud.dataplex.v1.MetadataJob.import_spec:type_name -> google.cloud.dataplex.v1.MetadataJob.ImportJobSpec
-	86,  // 62: google.cloud.dataplex.v1.MetadataJob.export_spec:type_name -> google.cloud.dataplex.v1.MetadataJob.ExportJobSpec
-	83,  // 63: google.cloud.dataplex.v1.MetadataJob.import_result:type_name -> google.cloud.dataplex.v1.MetadataJob.ImportJobResult
-	84,  // 64: google.cloud.dataplex.v1.MetadataJob.export_result:type_name -> google.cloud.dataplex.v1.MetadataJob.ExportJobResult
-	87,  // 65: google.cloud.dataplex.v1.MetadataJob.status:type_name -> google.cloud.dataplex.v1.MetadataJob.Status
-	96,  // 66: google.cloud.dataplex.v1.EntryLink.create_time:type_name -> google.protobuf.Timestamp
-	96,  // 67: google.cloud.dataplex.v1.EntryLink.update_time:type_name -> google.protobuf.Timestamp
-	92,  // 68: google.cloud.dataplex.v1.EntryLink.aspects:type_name -> google.cloud.dataplex.v1.EntryLink.AspectsEntry
-	91,  // 69: google.cloud.dataplex.v1.EntryLink.entry_references:type_name -> google.cloud.dataplex.v1.EntryLink.EntryReference
-	54,  // 70: google.cloud.dataplex.v1.CreateEntryLinkRequest.entry_link:type_name -> google.cloud.dataplex.v1.EntryLink
-	54,  // 71: google.cloud.dataplex.v1.UpdateEntryLinkRequest.entry_link:type_name -> google.cloud.dataplex.v1.EntryLink
-	8,   // 72: google.cloud.dataplex.v1.LookupEntryLinksRequest.entry_mode:type_name -> google.cloud.dataplex.v1.LookupEntryLinksRequest.EntryMode
-	54,  // 73: google.cloud.dataplex.v1.LookupEntryLinksResponse.entry_links:type_name -> google.cloud.dataplex.v1.EntryLink
-	93,  // 74: google.cloud.dataplex.v1.MetadataFeed.scope:type_name -> google.cloud.dataplex.v1.MetadataFeed.Scope
-	94,  // 75: google.cloud.dataplex.v1.MetadataFeed.filters:type_name -> google.cloud.dataplex.v1.MetadataFeed.Filters
-	96,  // 76: google.cloud.dataplex.v1.MetadataFeed.create_time:type_name -> google.protobuf.Timestamp
-	96,  // 77: google.cloud.dataplex.v1.MetadataFeed.update_time:type_name -> google.protobuf.Timestamp
-	95,  // 78: google.cloud.dataplex.v1.MetadataFeed.labels:type_name -> google.cloud.dataplex.v1.MetadataFeed.LabelsEntry
-	61,  // 79: google.cloud.dataplex.v1.CreateMetadataFeedRequest.metadata_feed:type_name -> google.cloud.dataplex.v1.MetadataFeed
-	61,  // 80: google.cloud.dataplex.v1.ListMetadataFeedsResponse.metadata_feeds:type_name -> google.cloud.dataplex.v1.MetadataFeed
-	61,  // 81: google.cloud.dataplex.v1.UpdateMetadataFeedRequest.metadata_feed:type_name -> google.cloud.dataplex.v1.MetadataFeed
-	98,  // 82: google.cloud.dataplex.v1.UpdateMetadataFeedRequest.update_mask:type_name -> google.protobuf.FieldMask
-	69,  // 83: google.cloud.dataplex.v1.AspectType.MetadataTemplate.record_fields:type_name -> google.cloud.dataplex.v1.AspectType.MetadataTemplate
-	71,  // 84: google.cloud.dataplex.v1.AspectType.MetadataTemplate.enum_values:type_name -> google.cloud.dataplex.v1.AspectType.MetadataTemplate.EnumValue
-	69,  // 85: google.cloud.dataplex.v1.AspectType.MetadataTemplate.map_items:type_name -> google.cloud.dataplex.v1.AspectType.MetadataTemplate
-	69,  // 86: google.cloud.dataplex.v1.AspectType.MetadataTemplate.array_items:type_name -> google.cloud.dataplex.v1.AspectType.MetadataTemplate
-	72,  // 87: google.cloud.dataplex.v1.AspectType.MetadataTemplate.constraints:type_name -> google.cloud.dataplex.v1.AspectType.MetadataTemplate.Constraints
-	73,  // 88: google.cloud.dataplex.v1.AspectType.MetadataTemplate.annotations:type_name -> google.cloud.dataplex.v1.AspectType.MetadataTemplate.Annotations
-	13,  // 89: google.cloud.dataplex.v1.Entry.AspectsEntry.value:type_name -> google.cloud.dataplex.v1.Aspect
-	15,  // 90: google.cloud.dataplex.v1.SearchEntriesResult.Snippets.dataplex_entry:type_name -> google.cloud.dataplex.v1.Entry
-	96,  // 91: google.cloud.dataplex.v1.MetadataJob.ImportJobResult.update_time:type_name -> google.protobuf.Timestamp
-	96,  // 92: google.cloud.dataplex.v1.MetadataJob.ImportJobSpec.source_create_time:type_name -> google.protobuf.Timestamp
-	89,  // 93: google.cloud.dataplex.v1.MetadataJob.ImportJobSpec.scope:type_name -> google.cloud.dataplex.v1.MetadataJob.ImportJobSpec.ImportJobScope
-	4,   // 94: google.cloud.dataplex.v1.MetadataJob.ImportJobSpec.entry_sync_mode:type_name -> google.cloud.dataplex.v1.MetadataJob.ImportJobSpec.SyncMode
-	4,   // 95: google.cloud.dataplex.v1.MetadataJob.ImportJobSpec.aspect_sync_mode:type_name -> google.cloud.dataplex.v1.MetadataJob.ImportJobSpec.SyncMode
-	5,   // 96: google.cloud.dataplex.v1.MetadataJob.ImportJobSpec.log_level:type_name -> google.cloud.dataplex.v1.MetadataJob.ImportJobSpec.LogLevel
-	90,  // 97: google.cloud.dataplex.v1.MetadataJob.ExportJobSpec.scope:type_name -> google.cloud.dataplex.v1.MetadataJob.ExportJobSpec.ExportJobScope
-	6,   // 98: google.cloud.dataplex.v1.MetadataJob.Status.state:type_name -> google.cloud.dataplex.v1.MetadataJob.Status.State
-	96,  // 99: google.cloud.dataplex.v1.MetadataJob.Status.update_time:type_name -> google.protobuf.Timestamp
-	7,   // 100: google.cloud.dataplex.v1.EntryLink.EntryReference.type:type_name -> google.cloud.dataplex.v1.EntryLink.EntryReference.Type
-	13,  // 101: google.cloud.dataplex.v1.EntryLink.AspectsEntry.value:type_name -> google.cloud.dataplex.v1.Aspect
-	9,   // 102: google.cloud.dataplex.v1.MetadataFeed.Filters.change_types:type_name -> google.cloud.dataplex.v1.MetadataFeed.Filters.ChangeType
-	23,  // 103: google.cloud.dataplex.v1.CatalogService.CreateEntryType:input_type -> google.cloud.dataplex.v1.CreateEntryTypeRequest
-	24,  // 104: google.cloud.dataplex.v1.CatalogService.UpdateEntryType:input_type -> google.cloud.dataplex.v1.UpdateEntryTypeRequest
-	25,  // 105: google.cloud.dataplex.v1.CatalogService.DeleteEntryType:input_type -> google.cloud.dataplex.v1.DeleteEntryTypeRequest
-	26,  // 106: google.cloud.dataplex.v1.CatalogService.ListEntryTypes:input_type -> google.cloud.dataplex.v1.ListEntryTypesRequest
-	28,  // 107: google.cloud.dataplex.v1.CatalogService.GetEntryType:input_type -> google.cloud.dataplex.v1.GetEntryTypeRequest
-	29,  // 108: google.cloud.dataplex.v1.CatalogService.CreateAspectType:input_type -> google.cloud.dataplex.v1.CreateAspectTypeRequest
-	30,  // 109: google.cloud.dataplex.v1.CatalogService.UpdateAspectType:input_type -> google.cloud.dataplex.v1.UpdateAspectTypeRequest
-	31,  // 110: google.cloud.dataplex.v1.CatalogService.DeleteAspectType:input_type -> google.cloud.dataplex.v1.DeleteAspectTypeRequest
-	32,  // 111: google.cloud.dataplex.v1.CatalogService.ListAspectTypes:input_type -> google.cloud.dataplex.v1.ListAspectTypesRequest
-	34,  // 112: google.cloud.dataplex.v1.CatalogService.GetAspectType:input_type -> google.cloud.dataplex.v1.GetAspectTypeRequest
-	17,  // 113: google.cloud.dataplex.v1.CatalogService.CreateEntryGroup:input_type -> google.cloud.dataplex.v1.CreateEntryGroupRequest
-	18,  // 114: google.cloud.dataplex.v1.CatalogService.UpdateEntryGroup:input_type -> google.cloud.dataplex.v1.UpdateEntryGroupRequest
-	19,  // 115: google.cloud.dataplex.v1.CatalogService.DeleteEntryGroup:input_type -> google.cloud.dataplex.v1.DeleteEntryGroupRequest
-	20,  // 116: google.cloud.dataplex.v1.CatalogService.ListEntryGroups:input_type -> google.cloud.dataplex.v1.ListEntryGroupsRequest
-	22,  // 117: google.cloud.dataplex.v1.CatalogService.GetEntryGroup:input_type -> google.cloud.dataplex.v1.GetEntryGroupRequest
-	35,  // 118: google.cloud.dataplex.v1.CatalogService.CreateEntry:input_type -> google.cloud.dataplex.v1.CreateEntryRequest
-	36,  // 119: google.cloud.dataplex.v1.CatalogService.UpdateEntry:input_type -> google.cloud.dataplex.v1.UpdateEntryRequest
-	37,  // 120: google.cloud.dataplex.v1.CatalogService.DeleteEntry:input_type -> google.cloud.dataplex.v1.DeleteEntryRequest
-	38,  // 121: google.cloud.dataplex.v1.CatalogService.ListEntries:input_type -> google.cloud.dataplex.v1.ListEntriesRequest
-	40,  // 122: google.cloud.dataplex.v1.CatalogService.GetEntry:input_type -> google.cloud.dataplex.v1.GetEntryRequest
-	41,  // 123: google.cloud.dataplex.v1.CatalogService.LookupEntry:input_type -> google.cloud.dataplex.v1.LookupEntryRequest
-	44,  // 124: google.cloud.dataplex.v1.CatalogService.SearchEntries:input_type -> google.cloud.dataplex.v1.SearchEntriesRequest
-	48,  // 125: google.cloud.dataplex.v1.CatalogService.CreateMetadataJob:input_type -> google.cloud.dataplex.v1.CreateMetadataJobRequest
-	49,  // 126: google.cloud.dataplex.v1.CatalogService.GetMetadataJob:input_type -> google.cloud.dataplex.v1.GetMetadataJobRequest
-	50,  // 127: google.cloud.dataplex.v1.CatalogService.ListMetadataJobs:input_type -> google.cloud.dataplex.v1.ListMetadataJobsRequest
-	52,  // 128: google.cloud.dataplex.v1.CatalogService.CancelMetadataJob:input_type -> google.cloud.dataplex.v1.CancelMetadataJobRequest
-	55,  // 129: google.cloud.dataplex.v1.CatalogService.CreateEntryLink:input_type -> google.cloud.dataplex.v1.CreateEntryLinkRequest
-	56,  // 130: google.cloud.dataplex.v1.CatalogService.UpdateEntryLink:input_type -> google.cloud.dataplex.v1.UpdateEntryLinkRequest
-	57,  // 131: google.cloud.dataplex.v1.CatalogService.DeleteEntryLink:input_type -> google.cloud.dataplex.v1.DeleteEntryLinkRequest
-	58,  // 132: google.cloud.dataplex.v1.CatalogService.LookupEntryLinks:input_type -> google.cloud.dataplex.v1.LookupEntryLinksRequest
-	42,  // 133: google.cloud.dataplex.v1.CatalogService.LookupContext:input_type -> google.cloud.dataplex.v1.LookupContextRequest
-	60,  // 134: google.cloud.dataplex.v1.CatalogService.GetEntryLink:input_type -> google.cloud.dataplex.v1.GetEntryLinkRequest
-	62,  // 135: google.cloud.dataplex.v1.CatalogService.CreateMetadataFeed:input_type -> google.cloud.dataplex.v1.CreateMetadataFeedRequest
-	63,  // 136: google.cloud.dataplex.v1.CatalogService.GetMetadataFeed:input_type -> google.cloud.dataplex.v1.GetMetadataFeedRequest
-	64,  // 137: google.cloud.dataplex.v1.CatalogService.ListMetadataFeeds:input_type -> google.cloud.dataplex.v1.ListMetadataFeedsRequest
-	66,  // 138: google.cloud.dataplex.v1.CatalogService.DeleteMetadataFeed:input_type -> google.cloud.dataplex.v1.DeleteMetadataFeedRequest
-	67,  // 139: google.cloud.dataplex.v1.CatalogService.UpdateMetadataFeed:input_type -> google.cloud.dataplex.v1.UpdateMetadataFeedRequest
-	99,  // 140: google.cloud.dataplex.v1.CatalogService.CreateEntryType:output_type -> google.longrunning.Operation
-	99,  // 141: google.cloud.dataplex.v1.CatalogService.UpdateEntryType:output_type -> google.longrunning.Operation
-	99,  // 142: google.cloud.dataplex.v1.CatalogService.DeleteEntryType:output_type -> google.longrunning.Operation
-	27,  // 143: google.cloud.dataplex.v1.CatalogService.ListEntryTypes:output_type -> google.cloud.dataplex.v1.ListEntryTypesResponse
-	12,  // 144: google.cloud.dataplex.v1.CatalogService.GetEntryType:output_type -> google.cloud.dataplex.v1.EntryType
-	99,  // 145: google.cloud.dataplex.v1.CatalogService.CreateAspectType:output_type -> google.longrunning.Operation
-	99,  // 146: google.cloud.dataplex.v1.CatalogService.UpdateAspectType:output_type -> google.longrunning.Operation
-	99,  // 147: google.cloud.dataplex.v1.CatalogService.DeleteAspectType:output_type -> google.longrunning.Operation
-	33,  // 148: google.cloud.dataplex.v1.CatalogService.ListAspectTypes:output_type -> google.cloud.dataplex.v1.ListAspectTypesResponse
-	10,  // 149: google.cloud.dataplex.v1.CatalogService.GetAspectType:output_type -> google.cloud.dataplex.v1.AspectType
-	99,  // 150: google.cloud.dataplex.v1.CatalogService.CreateEntryGroup:output_type -> google.longrunning.Operation
-	99,  // 151: google.cloud.dataplex.v1.CatalogService.UpdateEntryGroup:output_type -> google.longrunning.Operation
-	99,  // 152: google.cloud.dataplex.v1.CatalogService.DeleteEntryGroup:output_type -> google.longrunning.Operation
-	21,  // 153: google.cloud.dataplex.v1.CatalogService.ListEntryGroups:output_type -> google.cloud.dataplex.v1.ListEntryGroupsResponse
-	11,  // 154: google.cloud.dataplex.v1.CatalogService.GetEntryGroup:output_type -> google.cloud.dataplex.v1.EntryGroup
-	15,  // 155: google.cloud.dataplex.v1.CatalogService.CreateEntry:output_type -> google.cloud.dataplex.v1.Entry
-	15,  // 156: google.cloud.dataplex.v1.CatalogService.UpdateEntry:output_type -> google.cloud.dataplex.v1.Entry
-	15,  // 157: google.cloud.dataplex.v1.CatalogService.DeleteEntry:output_type -> google.cloud.dataplex.v1.Entry
-	39,  // 158: google.cloud.dataplex.v1.CatalogService.ListEntries:output_type -> google.cloud.dataplex.v1.ListEntriesResponse
-	15,  // 159: google.cloud.dataplex.v1.CatalogService.GetEntry:output_type -> google.cloud.dataplex.v1.Entry
-	15,  // 160: google.cloud.dataplex.v1.CatalogService.LookupEntry:output_type -> google.cloud.dataplex.v1.Entry
-	46,  // 161: google.cloud.dataplex.v1.CatalogService.SearchEntries:output_type -> google.cloud.dataplex.v1.SearchEntriesResponse
-	99,  // 162: google.cloud.dataplex.v1.CatalogService.CreateMetadataJob:output_type -> google.longrunning.Operation
-	53,  // 163: google.cloud.dataplex.v1.CatalogService.GetMetadataJob:output_type -> google.cloud.dataplex.v1.MetadataJob
-	51,  // 164: google.cloud.dataplex.v1.CatalogService.ListMetadataJobs:output_type -> google.cloud.dataplex.v1.ListMetadataJobsResponse
-	100, // 165: google.cloud.dataplex.v1.CatalogService.CancelMetadataJob:output_type -> google.protobuf.Empty
-	54,  // 166: google.cloud.dataplex.v1.CatalogService.CreateEntryLink:output_type -> google.cloud.dataplex.v1.EntryLink
-	54,  // 167: google.cloud.dataplex.v1.CatalogService.UpdateEntryLink:output_type -> google.cloud.dataplex.v1.EntryLink
-	54,  // 168: google.cloud.dataplex.v1.CatalogService.DeleteEntryLink:output_type -> google.cloud.dataplex.v1.EntryLink
-	59,  // 169: google.cloud.dataplex.v1.CatalogService.LookupEntryLinks:output_type -> google.cloud.dataplex.v1.LookupEntryLinksResponse
-	43,  // 170: google.cloud.dataplex.v1.CatalogService.LookupContext:output_type -> google.cloud.dataplex.v1.LookupContextResponse
-	54,  // 171: google.cloud.dataplex.v1.CatalogService.GetEntryLink:output_type -> google.cloud.dataplex.v1.EntryLink
-	99,  // 172: google.cloud.dataplex.v1.CatalogService.CreateMetadataFeed:output_type -> google.longrunning.Operation
-	61,  // 173: google.cloud.dataplex.v1.CatalogService.GetMetadataFeed:output_type -> google.cloud.dataplex.v1.MetadataFeed
-	65,  // 174: google.cloud.dataplex.v1.CatalogService.ListMetadataFeeds:output_type -> google.cloud.dataplex.v1.ListMetadataFeedsResponse
-	99,  // 175: google.cloud.dataplex.v1.CatalogService.DeleteMetadataFeed:output_type -> google.longrunning.Operation
-	99,  // 176: google.cloud.dataplex.v1.CatalogService.UpdateMetadataFeed:output_type -> google.longrunning.Operation
-	140, // [140:177] is the sub-list for method output_type
-	103, // [103:140] is the sub-list for method input_type
-	103, // [103:103] is the sub-list for extension type_name
-	103, // [103:103] is the sub-list for extension extendee
-	0,   // [0:103] is the sub-list for field type_name
+	82,  // 48: google.cloud.dataplex.v1.LookupContextRequest.options:type_name -> google.cloud.dataplex.v1.LookupContextRequest.OptionsEntry
+	15,  // 49: google.cloud.dataplex.v1.ModifyEntryRequest.entry:type_name -> google.cloud.dataplex.v1.Entry
+	99,  // 50: google.cloud.dataplex.v1.ModifyEntryRequest.update_mask:type_name -> google.protobuf.FieldMask
+	15,  // 51: google.cloud.dataplex.v1.SearchEntriesResult.dataplex_entry:type_name -> google.cloud.dataplex.v1.Entry
+	83,  // 52: google.cloud.dataplex.v1.SearchEntriesResult.snippets:type_name -> google.cloud.dataplex.v1.SearchEntriesResult.Snippets
+	46,  // 53: google.cloud.dataplex.v1.SearchEntriesResponse.results:type_name -> google.cloud.dataplex.v1.SearchEntriesResult
+	15,  // 54: google.cloud.dataplex.v1.ImportItem.entry:type_name -> google.cloud.dataplex.v1.Entry
+	55,  // 55: google.cloud.dataplex.v1.ImportItem.entry_link:type_name -> google.cloud.dataplex.v1.EntryLink
+	99,  // 56: google.cloud.dataplex.v1.ImportItem.update_mask:type_name -> google.protobuf.FieldMask
+	54,  // 57: google.cloud.dataplex.v1.CreateMetadataJobRequest.metadata_job:type_name -> google.cloud.dataplex.v1.MetadataJob
+	54,  // 58: google.cloud.dataplex.v1.ListMetadataJobsResponse.metadata_jobs:type_name -> google.cloud.dataplex.v1.MetadataJob
+	97,  // 59: google.cloud.dataplex.v1.MetadataJob.create_time:type_name -> google.protobuf.Timestamp
+	97,  // 60: google.cloud.dataplex.v1.MetadataJob.update_time:type_name -> google.protobuf.Timestamp
+	89,  // 61: google.cloud.dataplex.v1.MetadataJob.labels:type_name -> google.cloud.dataplex.v1.MetadataJob.LabelsEntry
+	3,   // 62: google.cloud.dataplex.v1.MetadataJob.type:type_name -> google.cloud.dataplex.v1.MetadataJob.Type
+	86,  // 63: google.cloud.dataplex.v1.MetadataJob.import_spec:type_name -> google.cloud.dataplex.v1.MetadataJob.ImportJobSpec
+	87,  // 64: google.cloud.dataplex.v1.MetadataJob.export_spec:type_name -> google.cloud.dataplex.v1.MetadataJob.ExportJobSpec
+	84,  // 65: google.cloud.dataplex.v1.MetadataJob.import_result:type_name -> google.cloud.dataplex.v1.MetadataJob.ImportJobResult
+	85,  // 66: google.cloud.dataplex.v1.MetadataJob.export_result:type_name -> google.cloud.dataplex.v1.MetadataJob.ExportJobResult
+	88,  // 67: google.cloud.dataplex.v1.MetadataJob.status:type_name -> google.cloud.dataplex.v1.MetadataJob.Status
+	97,  // 68: google.cloud.dataplex.v1.EntryLink.create_time:type_name -> google.protobuf.Timestamp
+	97,  // 69: google.cloud.dataplex.v1.EntryLink.update_time:type_name -> google.protobuf.Timestamp
+	93,  // 70: google.cloud.dataplex.v1.EntryLink.aspects:type_name -> google.cloud.dataplex.v1.EntryLink.AspectsEntry
+	92,  // 71: google.cloud.dataplex.v1.EntryLink.entry_references:type_name -> google.cloud.dataplex.v1.EntryLink.EntryReference
+	55,  // 72: google.cloud.dataplex.v1.CreateEntryLinkRequest.entry_link:type_name -> google.cloud.dataplex.v1.EntryLink
+	55,  // 73: google.cloud.dataplex.v1.UpdateEntryLinkRequest.entry_link:type_name -> google.cloud.dataplex.v1.EntryLink
+	8,   // 74: google.cloud.dataplex.v1.LookupEntryLinksRequest.entry_mode:type_name -> google.cloud.dataplex.v1.LookupEntryLinksRequest.EntryMode
+	55,  // 75: google.cloud.dataplex.v1.LookupEntryLinksResponse.entry_links:type_name -> google.cloud.dataplex.v1.EntryLink
+	94,  // 76: google.cloud.dataplex.v1.MetadataFeed.scope:type_name -> google.cloud.dataplex.v1.MetadataFeed.Scope
+	95,  // 77: google.cloud.dataplex.v1.MetadataFeed.filters:type_name -> google.cloud.dataplex.v1.MetadataFeed.Filters
+	97,  // 78: google.cloud.dataplex.v1.MetadataFeed.create_time:type_name -> google.protobuf.Timestamp
+	97,  // 79: google.cloud.dataplex.v1.MetadataFeed.update_time:type_name -> google.protobuf.Timestamp
+	96,  // 80: google.cloud.dataplex.v1.MetadataFeed.labels:type_name -> google.cloud.dataplex.v1.MetadataFeed.LabelsEntry
+	62,  // 81: google.cloud.dataplex.v1.CreateMetadataFeedRequest.metadata_feed:type_name -> google.cloud.dataplex.v1.MetadataFeed
+	62,  // 82: google.cloud.dataplex.v1.ListMetadataFeedsResponse.metadata_feeds:type_name -> google.cloud.dataplex.v1.MetadataFeed
+	62,  // 83: google.cloud.dataplex.v1.UpdateMetadataFeedRequest.metadata_feed:type_name -> google.cloud.dataplex.v1.MetadataFeed
+	99,  // 84: google.cloud.dataplex.v1.UpdateMetadataFeedRequest.update_mask:type_name -> google.protobuf.FieldMask
+	70,  // 85: google.cloud.dataplex.v1.AspectType.MetadataTemplate.record_fields:type_name -> google.cloud.dataplex.v1.AspectType.MetadataTemplate
+	72,  // 86: google.cloud.dataplex.v1.AspectType.MetadataTemplate.enum_values:type_name -> google.cloud.dataplex.v1.AspectType.MetadataTemplate.EnumValue
+	70,  // 87: google.cloud.dataplex.v1.AspectType.MetadataTemplate.map_items:type_name -> google.cloud.dataplex.v1.AspectType.MetadataTemplate
+	70,  // 88: google.cloud.dataplex.v1.AspectType.MetadataTemplate.array_items:type_name -> google.cloud.dataplex.v1.AspectType.MetadataTemplate
+	73,  // 89: google.cloud.dataplex.v1.AspectType.MetadataTemplate.constraints:type_name -> google.cloud.dataplex.v1.AspectType.MetadataTemplate.Constraints
+	74,  // 90: google.cloud.dataplex.v1.AspectType.MetadataTemplate.annotations:type_name -> google.cloud.dataplex.v1.AspectType.MetadataTemplate.Annotations
+	13,  // 91: google.cloud.dataplex.v1.Entry.AspectsEntry.value:type_name -> google.cloud.dataplex.v1.Aspect
+	15,  // 92: google.cloud.dataplex.v1.SearchEntriesResult.Snippets.dataplex_entry:type_name -> google.cloud.dataplex.v1.Entry
+	97,  // 93: google.cloud.dataplex.v1.MetadataJob.ImportJobResult.update_time:type_name -> google.protobuf.Timestamp
+	97,  // 94: google.cloud.dataplex.v1.MetadataJob.ImportJobSpec.source_create_time:type_name -> google.protobuf.Timestamp
+	90,  // 95: google.cloud.dataplex.v1.MetadataJob.ImportJobSpec.scope:type_name -> google.cloud.dataplex.v1.MetadataJob.ImportJobSpec.ImportJobScope
+	4,   // 96: google.cloud.dataplex.v1.MetadataJob.ImportJobSpec.entry_sync_mode:type_name -> google.cloud.dataplex.v1.MetadataJob.ImportJobSpec.SyncMode
+	4,   // 97: google.cloud.dataplex.v1.MetadataJob.ImportJobSpec.aspect_sync_mode:type_name -> google.cloud.dataplex.v1.MetadataJob.ImportJobSpec.SyncMode
+	5,   // 98: google.cloud.dataplex.v1.MetadataJob.ImportJobSpec.log_level:type_name -> google.cloud.dataplex.v1.MetadataJob.ImportJobSpec.LogLevel
+	91,  // 99: google.cloud.dataplex.v1.MetadataJob.ExportJobSpec.scope:type_name -> google.cloud.dataplex.v1.MetadataJob.ExportJobSpec.ExportJobScope
+	6,   // 100: google.cloud.dataplex.v1.MetadataJob.Status.state:type_name -> google.cloud.dataplex.v1.MetadataJob.Status.State
+	97,  // 101: google.cloud.dataplex.v1.MetadataJob.Status.update_time:type_name -> google.protobuf.Timestamp
+	7,   // 102: google.cloud.dataplex.v1.EntryLink.EntryReference.type:type_name -> google.cloud.dataplex.v1.EntryLink.EntryReference.Type
+	13,  // 103: google.cloud.dataplex.v1.EntryLink.AspectsEntry.value:type_name -> google.cloud.dataplex.v1.Aspect
+	9,   // 104: google.cloud.dataplex.v1.MetadataFeed.Filters.change_types:type_name -> google.cloud.dataplex.v1.MetadataFeed.Filters.ChangeType
+	23,  // 105: google.cloud.dataplex.v1.CatalogService.CreateEntryType:input_type -> google.cloud.dataplex.v1.CreateEntryTypeRequest
+	24,  // 106: google.cloud.dataplex.v1.CatalogService.UpdateEntryType:input_type -> google.cloud.dataplex.v1.UpdateEntryTypeRequest
+	25,  // 107: google.cloud.dataplex.v1.CatalogService.DeleteEntryType:input_type -> google.cloud.dataplex.v1.DeleteEntryTypeRequest
+	26,  // 108: google.cloud.dataplex.v1.CatalogService.ListEntryTypes:input_type -> google.cloud.dataplex.v1.ListEntryTypesRequest
+	28,  // 109: google.cloud.dataplex.v1.CatalogService.GetEntryType:input_type -> google.cloud.dataplex.v1.GetEntryTypeRequest
+	29,  // 110: google.cloud.dataplex.v1.CatalogService.CreateAspectType:input_type -> google.cloud.dataplex.v1.CreateAspectTypeRequest
+	30,  // 111: google.cloud.dataplex.v1.CatalogService.UpdateAspectType:input_type -> google.cloud.dataplex.v1.UpdateAspectTypeRequest
+	31,  // 112: google.cloud.dataplex.v1.CatalogService.DeleteAspectType:input_type -> google.cloud.dataplex.v1.DeleteAspectTypeRequest
+	32,  // 113: google.cloud.dataplex.v1.CatalogService.ListAspectTypes:input_type -> google.cloud.dataplex.v1.ListAspectTypesRequest
+	34,  // 114: google.cloud.dataplex.v1.CatalogService.GetAspectType:input_type -> google.cloud.dataplex.v1.GetAspectTypeRequest
+	17,  // 115: google.cloud.dataplex.v1.CatalogService.CreateEntryGroup:input_type -> google.cloud.dataplex.v1.CreateEntryGroupRequest
+	18,  // 116: google.cloud.dataplex.v1.CatalogService.UpdateEntryGroup:input_type -> google.cloud.dataplex.v1.UpdateEntryGroupRequest
+	19,  // 117: google.cloud.dataplex.v1.CatalogService.DeleteEntryGroup:input_type -> google.cloud.dataplex.v1.DeleteEntryGroupRequest
+	20,  // 118: google.cloud.dataplex.v1.CatalogService.ListEntryGroups:input_type -> google.cloud.dataplex.v1.ListEntryGroupsRequest
+	22,  // 119: google.cloud.dataplex.v1.CatalogService.GetEntryGroup:input_type -> google.cloud.dataplex.v1.GetEntryGroupRequest
+	35,  // 120: google.cloud.dataplex.v1.CatalogService.CreateEntry:input_type -> google.cloud.dataplex.v1.CreateEntryRequest
+	36,  // 121: google.cloud.dataplex.v1.CatalogService.UpdateEntry:input_type -> google.cloud.dataplex.v1.UpdateEntryRequest
+	37,  // 122: google.cloud.dataplex.v1.CatalogService.DeleteEntry:input_type -> google.cloud.dataplex.v1.DeleteEntryRequest
+	38,  // 123: google.cloud.dataplex.v1.CatalogService.ListEntries:input_type -> google.cloud.dataplex.v1.ListEntriesRequest
+	40,  // 124: google.cloud.dataplex.v1.CatalogService.GetEntry:input_type -> google.cloud.dataplex.v1.GetEntryRequest
+	41,  // 125: google.cloud.dataplex.v1.CatalogService.LookupEntry:input_type -> google.cloud.dataplex.v1.LookupEntryRequest
+	43,  // 126: google.cloud.dataplex.v1.CatalogService.ModifyEntry:input_type -> google.cloud.dataplex.v1.ModifyEntryRequest
+	45,  // 127: google.cloud.dataplex.v1.CatalogService.SearchEntries:input_type -> google.cloud.dataplex.v1.SearchEntriesRequest
+	49,  // 128: google.cloud.dataplex.v1.CatalogService.CreateMetadataJob:input_type -> google.cloud.dataplex.v1.CreateMetadataJobRequest
+	50,  // 129: google.cloud.dataplex.v1.CatalogService.GetMetadataJob:input_type -> google.cloud.dataplex.v1.GetMetadataJobRequest
+	51,  // 130: google.cloud.dataplex.v1.CatalogService.ListMetadataJobs:input_type -> google.cloud.dataplex.v1.ListMetadataJobsRequest
+	53,  // 131: google.cloud.dataplex.v1.CatalogService.CancelMetadataJob:input_type -> google.cloud.dataplex.v1.CancelMetadataJobRequest
+	56,  // 132: google.cloud.dataplex.v1.CatalogService.CreateEntryLink:input_type -> google.cloud.dataplex.v1.CreateEntryLinkRequest
+	57,  // 133: google.cloud.dataplex.v1.CatalogService.UpdateEntryLink:input_type -> google.cloud.dataplex.v1.UpdateEntryLinkRequest
+	58,  // 134: google.cloud.dataplex.v1.CatalogService.DeleteEntryLink:input_type -> google.cloud.dataplex.v1.DeleteEntryLinkRequest
+	59,  // 135: google.cloud.dataplex.v1.CatalogService.LookupEntryLinks:input_type -> google.cloud.dataplex.v1.LookupEntryLinksRequest
+	42,  // 136: google.cloud.dataplex.v1.CatalogService.LookupContext:input_type -> google.cloud.dataplex.v1.LookupContextRequest
+	61,  // 137: google.cloud.dataplex.v1.CatalogService.GetEntryLink:input_type -> google.cloud.dataplex.v1.GetEntryLinkRequest
+	63,  // 138: google.cloud.dataplex.v1.CatalogService.CreateMetadataFeed:input_type -> google.cloud.dataplex.v1.CreateMetadataFeedRequest
+	64,  // 139: google.cloud.dataplex.v1.CatalogService.GetMetadataFeed:input_type -> google.cloud.dataplex.v1.GetMetadataFeedRequest
+	65,  // 140: google.cloud.dataplex.v1.CatalogService.ListMetadataFeeds:input_type -> google.cloud.dataplex.v1.ListMetadataFeedsRequest
+	67,  // 141: google.cloud.dataplex.v1.CatalogService.DeleteMetadataFeed:input_type -> google.cloud.dataplex.v1.DeleteMetadataFeedRequest
+	68,  // 142: google.cloud.dataplex.v1.CatalogService.UpdateMetadataFeed:input_type -> google.cloud.dataplex.v1.UpdateMetadataFeedRequest
+	100, // 143: google.cloud.dataplex.v1.CatalogService.CreateEntryType:output_type -> google.longrunning.Operation
+	100, // 144: google.cloud.dataplex.v1.CatalogService.UpdateEntryType:output_type -> google.longrunning.Operation
+	100, // 145: google.cloud.dataplex.v1.CatalogService.DeleteEntryType:output_type -> google.longrunning.Operation
+	27,  // 146: google.cloud.dataplex.v1.CatalogService.ListEntryTypes:output_type -> google.cloud.dataplex.v1.ListEntryTypesResponse
+	12,  // 147: google.cloud.dataplex.v1.CatalogService.GetEntryType:output_type -> google.cloud.dataplex.v1.EntryType
+	100, // 148: google.cloud.dataplex.v1.CatalogService.CreateAspectType:output_type -> google.longrunning.Operation
+	100, // 149: google.cloud.dataplex.v1.CatalogService.UpdateAspectType:output_type -> google.longrunning.Operation
+	100, // 150: google.cloud.dataplex.v1.CatalogService.DeleteAspectType:output_type -> google.longrunning.Operation
+	33,  // 151: google.cloud.dataplex.v1.CatalogService.ListAspectTypes:output_type -> google.cloud.dataplex.v1.ListAspectTypesResponse
+	10,  // 152: google.cloud.dataplex.v1.CatalogService.GetAspectType:output_type -> google.cloud.dataplex.v1.AspectType
+	100, // 153: google.cloud.dataplex.v1.CatalogService.CreateEntryGroup:output_type -> google.longrunning.Operation
+	100, // 154: google.cloud.dataplex.v1.CatalogService.UpdateEntryGroup:output_type -> google.longrunning.Operation
+	100, // 155: google.cloud.dataplex.v1.CatalogService.DeleteEntryGroup:output_type -> google.longrunning.Operation
+	21,  // 156: google.cloud.dataplex.v1.CatalogService.ListEntryGroups:output_type -> google.cloud.dataplex.v1.ListEntryGroupsResponse
+	11,  // 157: google.cloud.dataplex.v1.CatalogService.GetEntryGroup:output_type -> google.cloud.dataplex.v1.EntryGroup
+	15,  // 158: google.cloud.dataplex.v1.CatalogService.CreateEntry:output_type -> google.cloud.dataplex.v1.Entry
+	15,  // 159: google.cloud.dataplex.v1.CatalogService.UpdateEntry:output_type -> google.cloud.dataplex.v1.Entry
+	15,  // 160: google.cloud.dataplex.v1.CatalogService.DeleteEntry:output_type -> google.cloud.dataplex.v1.Entry
+	39,  // 161: google.cloud.dataplex.v1.CatalogService.ListEntries:output_type -> google.cloud.dataplex.v1.ListEntriesResponse
+	15,  // 162: google.cloud.dataplex.v1.CatalogService.GetEntry:output_type -> google.cloud.dataplex.v1.Entry
+	15,  // 163: google.cloud.dataplex.v1.CatalogService.LookupEntry:output_type -> google.cloud.dataplex.v1.Entry
+	15,  // 164: google.cloud.dataplex.v1.CatalogService.ModifyEntry:output_type -> google.cloud.dataplex.v1.Entry
+	47,  // 165: google.cloud.dataplex.v1.CatalogService.SearchEntries:output_type -> google.cloud.dataplex.v1.SearchEntriesResponse
+	100, // 166: google.cloud.dataplex.v1.CatalogService.CreateMetadataJob:output_type -> google.longrunning.Operation
+	54,  // 167: google.cloud.dataplex.v1.CatalogService.GetMetadataJob:output_type -> google.cloud.dataplex.v1.MetadataJob
+	52,  // 168: google.cloud.dataplex.v1.CatalogService.ListMetadataJobs:output_type -> google.cloud.dataplex.v1.ListMetadataJobsResponse
+	101, // 169: google.cloud.dataplex.v1.CatalogService.CancelMetadataJob:output_type -> google.protobuf.Empty
+	55,  // 170: google.cloud.dataplex.v1.CatalogService.CreateEntryLink:output_type -> google.cloud.dataplex.v1.EntryLink
+	55,  // 171: google.cloud.dataplex.v1.CatalogService.UpdateEntryLink:output_type -> google.cloud.dataplex.v1.EntryLink
+	55,  // 172: google.cloud.dataplex.v1.CatalogService.DeleteEntryLink:output_type -> google.cloud.dataplex.v1.EntryLink
+	60,  // 173: google.cloud.dataplex.v1.CatalogService.LookupEntryLinks:output_type -> google.cloud.dataplex.v1.LookupEntryLinksResponse
+	44,  // 174: google.cloud.dataplex.v1.CatalogService.LookupContext:output_type -> google.cloud.dataplex.v1.LookupContextResponse
+	55,  // 175: google.cloud.dataplex.v1.CatalogService.GetEntryLink:output_type -> google.cloud.dataplex.v1.EntryLink
+	100, // 176: google.cloud.dataplex.v1.CatalogService.CreateMetadataFeed:output_type -> google.longrunning.Operation
+	62,  // 177: google.cloud.dataplex.v1.CatalogService.GetMetadataFeed:output_type -> google.cloud.dataplex.v1.MetadataFeed
+	66,  // 178: google.cloud.dataplex.v1.CatalogService.ListMetadataFeeds:output_type -> google.cloud.dataplex.v1.ListMetadataFeedsResponse
+	100, // 179: google.cloud.dataplex.v1.CatalogService.DeleteMetadataFeed:output_type -> google.longrunning.Operation
+	100, // 180: google.cloud.dataplex.v1.CatalogService.UpdateMetadataFeed:output_type -> google.longrunning.Operation
+	143, // [143:181] is the sub-list for method output_type
+	105, // [105:143] is the sub-list for method input_type
+	105, // [105:105] is the sub-list for extension type_name
+	105, // [105:105] is the sub-list for extension extendee
+	0,   // [0:105] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_dataplex_v1_catalog_proto_init() }
@@ -7880,13 +8025,13 @@ func file_google_cloud_dataplex_v1_catalog_proto_init() {
 		return
 	}
 	file_google_cloud_dataplex_v1_service_proto_init()
-	file_google_cloud_dataplex_v1_catalog_proto_msgTypes[43].OneofWrappers = []any{
+	file_google_cloud_dataplex_v1_catalog_proto_msgTypes[44].OneofWrappers = []any{
 		(*MetadataJob_ImportSpec)(nil),
 		(*MetadataJob_ExportSpec)(nil),
 		(*MetadataJob_ImportResult)(nil),
 		(*MetadataJob_ExportResult)(nil),
 	}
-	file_google_cloud_dataplex_v1_catalog_proto_msgTypes[51].OneofWrappers = []any{
+	file_google_cloud_dataplex_v1_catalog_proto_msgTypes[52].OneofWrappers = []any{
 		(*MetadataFeed_PubsubTopic)(nil),
 	}
 	type x struct{}
@@ -7895,7 +8040,7 @@ func file_google_cloud_dataplex_v1_catalog_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_dataplex_v1_catalog_proto_rawDesc), len(file_google_cloud_dataplex_v1_catalog_proto_rawDesc)),
 			NumEnums:      10,
-			NumMessages:   86,
+			NumMessages:   87,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

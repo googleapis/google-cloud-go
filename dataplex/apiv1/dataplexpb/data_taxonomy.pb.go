@@ -1969,7 +1969,7 @@ const file_google_cloud_dataplex_v1_data_taxonomy_proto_rawDesc = "" +
 	"!DeleteDataAttributeBindingRequest\x12H\n" +
 	"\x04name\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
 	",dataplex.googleapis.com/DataAttributeBindingR\x04name\x12\x17\n" +
-	"\x04etag\x18\x02 \x01(\tB\x03\xe0A\x02R\x04etag2\xbb\x1d\n" +
+	"\x04etag\x18\x02 \x01(\tB\x03\xe0A\x02R\x04etag2\xf0\x1d\n" +
 	"\x13DataTaxonomyService\x12\x83\x02\n" +
 	"\x12CreateDataTaxonomy\x123.google.cloud.dataplex.v1.CreateDataTaxonomyRequest\x1a\x1d.google.longrunning.Operation\"\x98\x01\xcaA!\n" +
 	"\fDataTaxonomy\x12\x11OperationMetadata\xdaA%parent,data_taxonomy,data_taxonomy_id\x82\xd3\xe4\x93\x02C:\rdata_taxonomy\"2/v1/{parent=projects/*/locations/*}/dataTaxonomies\x88\x02\x01\x12\x85\x02\n" +
@@ -1994,7 +1994,7 @@ const file_google_cloud_dataplex_v1_data_taxonomy_proto_rawDesc = "" +
 	"\x13DeleteDataAttribute\x124.google.cloud.dataplex.v1.DeleteDataAttributeRequest\x1a\x1d.google.longrunning.Operation\"~\xcaA*\n" +
 	"\x15google.protobuf.Empty\x12\x11OperationMetadata\xdaA\x04name\x82\xd3\xe4\x93\x02A*?/v1/{name=projects/*/locations/*/dataTaxonomies/*/attributes/*}\x88\x02\x01\x12\xd4\x01\n" +
 	"\x12ListDataAttributes\x123.google.cloud.dataplex.v1.ListDataAttributesRequest\x1a4.google.cloud.dataplex.v1.ListDataAttributesResponse\"S\xdaA\x06parent\x82\xd3\xe4\x93\x02A\x12?/v1/{parent=projects/*/locations/*/dataTaxonomies/*}/attributes\x88\x02\x01\x12\xc1\x01\n" +
-	"\x10GetDataAttribute\x121.google.cloud.dataplex.v1.GetDataAttributeRequest\x1a'.google.cloud.dataplex.v1.DataAttribute\"Q\xdaA\x04name\x82\xd3\xe4\x93\x02A\x12?/v1/{name=projects/*/locations/*/dataTaxonomies/*/attributes/*}\x88\x02\x01\x1aN\xcaA\x17dataplex.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platform\x88\x02\x01Bm\n" +
+	"\x10GetDataAttribute\x121.google.cloud.dataplex.v1.GetDataAttributeRequest\x1a'.google.cloud.dataplex.v1.DataAttribute\"Q\xdaA\x04name\x82\xd3\xe4\x93\x02A\x12?/v1/{name=projects/*/locations/*/dataTaxonomies/*/attributes/*}\x88\x02\x01\x1a\x82\x01\xcaA\x17dataplex.googleapis.com\xd2Abhttps://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/dataplex.read-write\x88\x02\x01Bm\n" +
 	"\x1ccom.google.cloud.dataplex.v1B\x11DataTaxonomyProtoP\x01Z8cloud.google.com/go/dataplex/apiv1/dataplexpb;dataplexpbb\x06proto3"
 
 var (

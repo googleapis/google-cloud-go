@@ -2484,7 +2484,7 @@ const file_google_cloud_dataplex_v1_service_proto_rawDesc = "" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"K\n" +
 	"\x10CancelJobRequest\x127\n" +
 	"\x04name\x18\x01 \x01(\tB#\xe0A\x02\xfaA\x1d\n" +
-	"\x1bdataplex.googleapis.com/JobR\x04name2\x8a(\n" +
+	"\x1bdataplex.googleapis.com/JobR\x04name2\xab)\n" +
 	"\x0fDataplexService\x12\xc3\x01\n" +
 	"\n" +
 	"CreateLake\x12+.google.cloud.dataplex.v1.CreateLakeRequest\x1a\x1d.google.longrunning.Operation\"i\xcaA\x19\n" +
@@ -2534,7 +2534,7 @@ const file_google_cloud_dataplex_v1_service_proto_rawDesc = "" +
 	"\bListJobs\x12).google.cloud.dataplex.v1.ListJobsRequest\x1a*.google.cloud.dataplex.v1.ListJobsResponse\"I\xdaA\x06parent\x82\xd3\xe4\x93\x02:\x128/v1/{parent=projects/*/locations/*/lakes/*/tasks/*}/jobs\x12\xa7\x01\n" +
 	"\aRunTask\x12(.google.cloud.dataplex.v1.RunTaskRequest\x1a).google.cloud.dataplex.v1.RunTaskResponse\"G\xdaA\x04name\x82\xd3\xe4\x93\x02::\x01*\"5/v1/{name=projects/*/locations/*/lakes/*/tasks/*}:run\x12\x99\x01\n" +
 	"\x06GetJob\x12'.google.cloud.dataplex.v1.GetJobRequest\x1a\x1d.google.cloud.dataplex.v1.Job\"G\xdaA\x04name\x82\xd3\xe4\x93\x02:\x128/v1/{name=projects/*/locations/*/lakes/*/tasks/*/jobs/*}\x12\xa2\x01\n" +
-	"\tCancelJob\x12*.google.cloud.dataplex.v1.CancelJobRequest\x1a\x16.google.protobuf.Empty\"Q\xdaA\x04name\x82\xd3\xe4\x93\x02D:\x01*\"?/v1/{name=projects/*/locations/*/lakes/*/tasks/*/jobs/*}:cancel\x1aK\xcaA\x17dataplex.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformBh\n" +
+	"\tCancelJob\x12*.google.cloud.dataplex.v1.CancelJobRequest\x1a\x16.google.protobuf.Empty\"Q\xdaA\x04name\x82\xd3\xe4\x93\x02D:\x01*\"?/v1/{name=projects/*/locations/*/lakes/*/tasks/*/jobs/*}:cancel\x1a\xeb\x01\xcaA\x17dataplex.googleapis.com\xd2A\xcd\x01https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/cloud-platform.read-only,https://www.googleapis.com/auth/dataplex.read-write,https://www.googleapis.com/auth/dataplex.readonlyBh\n" +
 	"\x1ccom.google.cloud.dataplex.v1B\fServiceProtoP\x01Z8cloud.google.com/go/dataplex/apiv1/dataplexpb;dataplexpbb\x06proto3"
 
 var (
