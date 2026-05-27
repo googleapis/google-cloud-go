@@ -17,6 +17,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+      # Version of librarian is pulled from librarian.yaml,
+      # main corresponds to the action's source definition.
       - uses: googleapis/librarian@main
         with:
           protoc-version: '33.2'
