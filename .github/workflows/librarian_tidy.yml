@@ -15,8 +15,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
+      - uses: googleapis/librarian@main
       - name: Run librarian tidy
-        uses: googleapis/librarian@main
         run: librarian tidy
 
       - name: Check for diff
