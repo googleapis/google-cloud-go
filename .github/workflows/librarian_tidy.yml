@@ -2,8 +2,6 @@ name: librarian tidy
 
 on:
   pull_request:
-    paths:
-      - 'librarian.yaml'
 
 permissions:
   contents: read
@@ -14,15 +12,22 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
-
+      - uses: dorny/paths-filter@v4
+        id: changes
+        with:
+          filters: |
+            librarian:
+              - 'librarian.yaml'
       # Version of librarian is pulled from librarian.yaml,
       # main corresponds to the action's source definition.
       - uses: googleapis/librarian@main
 
       - name: Run librarian tidy
+        if: steps.changes.outputs.librarian == 'true'
         run: librarian tidy
 
       - name: Check for diff
+        if: steps.changes.outputs.librarian == 'true'
         run: |
           if ! git diff --exit-code; then
             V=$(librarian config get version)
