@@ -15,7 +15,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - uses: noahdietz/librarian@action-install-protoc-version
+      - uses: noahdietz/librarian@action-fix-uses
       - name: Run librarian tidy
         run: librarian tidy
 
