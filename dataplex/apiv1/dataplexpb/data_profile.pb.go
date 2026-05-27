@@ -37,6 +37,65 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// Defines the execution mode for the profile scan.
+type DataProfileSpec_Mode int32
+
+const (
+	// Default value. This value is unused.
+	DataProfileSpec_MODE_UNSPECIFIED DataProfileSpec_Mode = 0
+	// Performs standard profiling. The behavior is controlled by other fields
+	// such as `sampling_percent`, `row_filter`, and column filters.
+	// This mode allows for full scans or custom sampling.
+	DataProfileSpec_STANDARD DataProfileSpec_Mode = 1
+	// Specifies lightweight profiling mode. This mode is optimized for
+	// low-latency, low-fidelity profiling.
+	//
+	// When this mode is selected, the following fields must not be set:
+	// `sampling_percent`, `row_filter`, `include_fields`, and `exclude_fields`.
+	DataProfileSpec_LIGHTWEIGHT DataProfileSpec_Mode = 2
+)
+
+// Enum value maps for DataProfileSpec_Mode.
+var (
+	DataProfileSpec_Mode_name = map[int32]string{
+		0: "MODE_UNSPECIFIED",
+		1: "STANDARD",
+		2: "LIGHTWEIGHT",
+	}
+	DataProfileSpec_Mode_value = map[string]int32{
+		"MODE_UNSPECIFIED": 0,
+		"STANDARD":         1,
+		"LIGHTWEIGHT":      2,
+	}
+)
+
+func (x DataProfileSpec_Mode) Enum() *DataProfileSpec_Mode {
+	p := new(DataProfileSpec_Mode)
+	*p = x
+	return p
+}
+
+func (x DataProfileSpec_Mode) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (DataProfileSpec_Mode) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_dataplex_v1_data_profile_proto_enumTypes[0].Descriptor()
+}
+
+func (DataProfileSpec_Mode) Type() protoreflect.EnumType {
+	return &file_google_cloud_dataplex_v1_data_profile_proto_enumTypes[0]
+}
+
+func (x DataProfileSpec_Mode) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use DataProfileSpec_Mode.Descriptor instead.
+func (DataProfileSpec_Mode) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_dataplex_v1_data_profile_proto_rawDescGZIP(), []int{0, 0}
+}
+
 // Execution state for the exporting.
 type DataProfileResult_PostScanActionsResult_BigQueryExportResult_State int32
 
@@ -79,11 +138,11 @@ func (x DataProfileResult_PostScanActionsResult_BigQueryExportResult_State) Stri
 }
 
 func (DataProfileResult_PostScanActionsResult_BigQueryExportResult_State) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_dataplex_v1_data_profile_proto_enumTypes[0].Descriptor()
+	return file_google_cloud_dataplex_v1_data_profile_proto_enumTypes[1].Descriptor()
 }
 
 func (DataProfileResult_PostScanActionsResult_BigQueryExportResult_State) Type() protoreflect.EnumType {
-	return &file_google_cloud_dataplex_v1_data_profile_proto_enumTypes[0]
+	return &file_google_cloud_dataplex_v1_data_profile_proto_enumTypes[1]
 }
 
 func (x DataProfileResult_PostScanActionsResult_BigQueryExportResult_State) Number() protoreflect.EnumNumber {
@@ -126,8 +185,10 @@ type DataProfileSpec struct {
 	// Optional. If set, the latest DataScan job result will be published as
 	// Dataplex Universal Catalog metadata.
 	CatalogPublishingEnabled bool `protobuf:"varint,8,opt,name=catalog_publishing_enabled,json=catalogPublishingEnabled,proto3" json:"catalog_publishing_enabled,omitempty"`
-	unknownFields            protoimpl.UnknownFields
-	sizeCache                protoimpl.SizeCache
+	// Optional. The execution mode for the profile scan.
+	Mode          DataProfileSpec_Mode `protobuf:"varint,9,opt,name=mode,proto3,enum=google.cloud.dataplex.v1.DataProfileSpec_Mode" json:"mode,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *DataProfileSpec) Reset() {
@@ -200,6 +261,13 @@ func (x *DataProfileSpec) GetCatalogPublishingEnabled() bool {
 		return x.CatalogPublishingEnabled
 	}
 	return false
+}
+
+func (x *DataProfileSpec) GetMode() DataProfileSpec_Mode {
+	if x != nil {
+		return x.Mode
+	}
+	return DataProfileSpec_MODE_UNSPECIFIED
 }
 
 // DataProfileResult defines the output of DataProfileScan. Each field of the
@@ -1133,7 +1201,7 @@ var File_google_cloud_dataplex_v1_data_profile_proto protoreflect.FileDescriptor
 
 const file_google_cloud_dataplex_v1_data_profile_proto_rawDesc = "" +
 	"\n" +
-	"+google/cloud/dataplex/v1/data_profile.proto\x12\x18google.cloud.dataplex.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a/google/cloud/dataplex/v1/datascans_common.proto\x1a)google/cloud/dataplex/v1/processing.proto\"\xe0\x05\n" +
+	"+google/cloud/dataplex/v1/data_profile.proto\x12\x18google.cloud.dataplex.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a/google/cloud/dataplex/v1/datascans_common.proto\x1a)google/cloud/dataplex/v1/processing.proto\"\xe6\x06\n" +
 	"\x0fDataProfileSpec\x12.\n" +
 	"\x10sampling_percent\x18\x02 \x01(\x02B\x03\xe0A\x01R\x0fsamplingPercent\x12\"\n" +
 	"\n" +
@@ -1141,14 +1209,19 @@ const file_google_cloud_dataplex_v1_data_profile_proto_rawDesc = "" +
 	"\x11post_scan_actions\x18\x04 \x01(\v29.google.cloud.dataplex.v1.DataProfileSpec.PostScanActionsB\x03\xe0A\x01R\x0fpostScanActions\x12d\n" +
 	"\x0einclude_fields\x18\x05 \x01(\v28.google.cloud.dataplex.v1.DataProfileSpec.SelectedFieldsB\x03\xe0A\x01R\rincludeFields\x12d\n" +
 	"\x0eexclude_fields\x18\x06 \x01(\v28.google.cloud.dataplex.v1.DataProfileSpec.SelectedFieldsB\x03\xe0A\x01R\rexcludeFields\x12A\n" +
-	"\x1acatalog_publishing_enabled\x18\b \x01(\bB\x03\xe0A\x01R\x18catalogPublishingEnabled\x1a\xc5\x01\n" +
+	"\x1acatalog_publishing_enabled\x18\b \x01(\bB\x03\xe0A\x01R\x18catalogPublishingEnabled\x12G\n" +
+	"\x04mode\x18\t \x01(\x0e2..google.cloud.dataplex.v1.DataProfileSpec.ModeB\x03\xe0A\x01R\x04mode\x1a\xc5\x01\n" +
 	"\x0fPostScanActions\x12v\n" +
 	"\x0fbigquery_export\x18\x01 \x01(\v2H.google.cloud.dataplex.v1.DataProfileSpec.PostScanActions.BigQueryExportB\x03\xe0A\x01R\x0ebigqueryExport\x1a:\n" +
 	"\x0eBigQueryExport\x12(\n" +
 	"\rresults_table\x18\x01 \x01(\tB\x03\xe0A\x01R\fresultsTable\x1a6\n" +
 	"\x0eSelectedFields\x12$\n" +
 	"\vfield_names\x18\x01 \x03(\tB\x03\xe0A\x01R\n" +
-	"fieldNames\"\xdc\x12\n" +
+	"fieldNames\";\n" +
+	"\x04Mode\x12\x14\n" +
+	"\x10MODE_UNSPECIFIED\x10\x00\x12\f\n" +
+	"\bSTANDARD\x10\x01\x12\x0f\n" +
+	"\vLIGHTWEIGHT\x10\x02\"\xdc\x12\n" +
 	"\x11DataProfileResult\x12 \n" +
 	"\trow_count\x18\x03 \x01(\x03B\x03\xe0A\x03R\browCount\x12R\n" +
 	"\aprofile\x18\x04 \x01(\v23.google.cloud.dataplex.v1.DataProfileResult.ProfileB\x03\xe0A\x03R\aprofile\x12M\n" +
@@ -1221,49 +1294,51 @@ func file_google_cloud_dataplex_v1_data_profile_proto_rawDescGZIP() []byte {
 	return file_google_cloud_dataplex_v1_data_profile_proto_rawDescData
 }
 
-var file_google_cloud_dataplex_v1_data_profile_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_google_cloud_dataplex_v1_data_profile_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
 var file_google_cloud_dataplex_v1_data_profile_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
 var file_google_cloud_dataplex_v1_data_profile_proto_goTypes = []any{
-	(DataProfileResult_PostScanActionsResult_BigQueryExportResult_State)(0), // 0: google.cloud.dataplex.v1.DataProfileResult.PostScanActionsResult.BigQueryExportResult.State
-	(*DataProfileSpec)(nil),                                              // 1: google.cloud.dataplex.v1.DataProfileSpec
-	(*DataProfileResult)(nil),                                            // 2: google.cloud.dataplex.v1.DataProfileResult
-	(*DataProfileSpec_PostScanActions)(nil),                              // 3: google.cloud.dataplex.v1.DataProfileSpec.PostScanActions
-	(*DataProfileSpec_SelectedFields)(nil),                               // 4: google.cloud.dataplex.v1.DataProfileSpec.SelectedFields
-	(*DataProfileSpec_PostScanActions_BigQueryExport)(nil),               // 5: google.cloud.dataplex.v1.DataProfileSpec.PostScanActions.BigQueryExport
-	(*DataProfileResult_Profile)(nil),                                    // 6: google.cloud.dataplex.v1.DataProfileResult.Profile
-	(*DataProfileResult_PostScanActionsResult)(nil),                      // 7: google.cloud.dataplex.v1.DataProfileResult.PostScanActionsResult
-	(*DataProfileResult_Profile_Field)(nil),                              // 8: google.cloud.dataplex.v1.DataProfileResult.Profile.Field
-	(*DataProfileResult_Profile_Field_ProfileInfo)(nil),                  // 9: google.cloud.dataplex.v1.DataProfileResult.Profile.Field.ProfileInfo
-	(*DataProfileResult_Profile_Field_ProfileInfo_StringFieldInfo)(nil),  // 10: google.cloud.dataplex.v1.DataProfileResult.Profile.Field.ProfileInfo.StringFieldInfo
-	(*DataProfileResult_Profile_Field_ProfileInfo_IntegerFieldInfo)(nil), // 11: google.cloud.dataplex.v1.DataProfileResult.Profile.Field.ProfileInfo.IntegerFieldInfo
-	(*DataProfileResult_Profile_Field_ProfileInfo_DoubleFieldInfo)(nil),  // 12: google.cloud.dataplex.v1.DataProfileResult.Profile.Field.ProfileInfo.DoubleFieldInfo
-	(*DataProfileResult_Profile_Field_ProfileInfo_TopNValue)(nil),        // 13: google.cloud.dataplex.v1.DataProfileResult.Profile.Field.ProfileInfo.TopNValue
-	(*DataProfileResult_PostScanActionsResult_BigQueryExportResult)(nil), // 14: google.cloud.dataplex.v1.DataProfileResult.PostScanActionsResult.BigQueryExportResult
-	(*ScannedData)(nil),                                                  // 15: google.cloud.dataplex.v1.ScannedData
-	(*DataScanCatalogPublishingStatus)(nil),                              // 16: google.cloud.dataplex.v1.DataScanCatalogPublishingStatus
+	(DataProfileSpec_Mode)(0), // 0: google.cloud.dataplex.v1.DataProfileSpec.Mode
+	(DataProfileResult_PostScanActionsResult_BigQueryExportResult_State)(0), // 1: google.cloud.dataplex.v1.DataProfileResult.PostScanActionsResult.BigQueryExportResult.State
+	(*DataProfileSpec)(nil),                                              // 2: google.cloud.dataplex.v1.DataProfileSpec
+	(*DataProfileResult)(nil),                                            // 3: google.cloud.dataplex.v1.DataProfileResult
+	(*DataProfileSpec_PostScanActions)(nil),                              // 4: google.cloud.dataplex.v1.DataProfileSpec.PostScanActions
+	(*DataProfileSpec_SelectedFields)(nil),                               // 5: google.cloud.dataplex.v1.DataProfileSpec.SelectedFields
+	(*DataProfileSpec_PostScanActions_BigQueryExport)(nil),               // 6: google.cloud.dataplex.v1.DataProfileSpec.PostScanActions.BigQueryExport
+	(*DataProfileResult_Profile)(nil),                                    // 7: google.cloud.dataplex.v1.DataProfileResult.Profile
+	(*DataProfileResult_PostScanActionsResult)(nil),                      // 8: google.cloud.dataplex.v1.DataProfileResult.PostScanActionsResult
+	(*DataProfileResult_Profile_Field)(nil),                              // 9: google.cloud.dataplex.v1.DataProfileResult.Profile.Field
+	(*DataProfileResult_Profile_Field_ProfileInfo)(nil),                  // 10: google.cloud.dataplex.v1.DataProfileResult.Profile.Field.ProfileInfo
+	(*DataProfileResult_Profile_Field_ProfileInfo_StringFieldInfo)(nil),  // 11: google.cloud.dataplex.v1.DataProfileResult.Profile.Field.ProfileInfo.StringFieldInfo
+	(*DataProfileResult_Profile_Field_ProfileInfo_IntegerFieldInfo)(nil), // 12: google.cloud.dataplex.v1.DataProfileResult.Profile.Field.ProfileInfo.IntegerFieldInfo
+	(*DataProfileResult_Profile_Field_ProfileInfo_DoubleFieldInfo)(nil),  // 13: google.cloud.dataplex.v1.DataProfileResult.Profile.Field.ProfileInfo.DoubleFieldInfo
+	(*DataProfileResult_Profile_Field_ProfileInfo_TopNValue)(nil),        // 14: google.cloud.dataplex.v1.DataProfileResult.Profile.Field.ProfileInfo.TopNValue
+	(*DataProfileResult_PostScanActionsResult_BigQueryExportResult)(nil), // 15: google.cloud.dataplex.v1.DataProfileResult.PostScanActionsResult.BigQueryExportResult
+	(*ScannedData)(nil),                                                  // 16: google.cloud.dataplex.v1.ScannedData
+	(*DataScanCatalogPublishingStatus)(nil),                              // 17: google.cloud.dataplex.v1.DataScanCatalogPublishingStatus
 }
 var file_google_cloud_dataplex_v1_data_profile_proto_depIdxs = []int32{
-	3,  // 0: google.cloud.dataplex.v1.DataProfileSpec.post_scan_actions:type_name -> google.cloud.dataplex.v1.DataProfileSpec.PostScanActions
-	4,  // 1: google.cloud.dataplex.v1.DataProfileSpec.include_fields:type_name -> google.cloud.dataplex.v1.DataProfileSpec.SelectedFields
-	4,  // 2: google.cloud.dataplex.v1.DataProfileSpec.exclude_fields:type_name -> google.cloud.dataplex.v1.DataProfileSpec.SelectedFields
-	6,  // 3: google.cloud.dataplex.v1.DataProfileResult.profile:type_name -> google.cloud.dataplex.v1.DataProfileResult.Profile
-	15, // 4: google.cloud.dataplex.v1.DataProfileResult.scanned_data:type_name -> google.cloud.dataplex.v1.ScannedData
-	7,  // 5: google.cloud.dataplex.v1.DataProfileResult.post_scan_actions_result:type_name -> google.cloud.dataplex.v1.DataProfileResult.PostScanActionsResult
-	16, // 6: google.cloud.dataplex.v1.DataProfileResult.catalog_publishing_status:type_name -> google.cloud.dataplex.v1.DataScanCatalogPublishingStatus
-	5,  // 7: google.cloud.dataplex.v1.DataProfileSpec.PostScanActions.bigquery_export:type_name -> google.cloud.dataplex.v1.DataProfileSpec.PostScanActions.BigQueryExport
-	8,  // 8: google.cloud.dataplex.v1.DataProfileResult.Profile.fields:type_name -> google.cloud.dataplex.v1.DataProfileResult.Profile.Field
-	14, // 9: google.cloud.dataplex.v1.DataProfileResult.PostScanActionsResult.bigquery_export_result:type_name -> google.cloud.dataplex.v1.DataProfileResult.PostScanActionsResult.BigQueryExportResult
-	9,  // 10: google.cloud.dataplex.v1.DataProfileResult.Profile.Field.profile:type_name -> google.cloud.dataplex.v1.DataProfileResult.Profile.Field.ProfileInfo
-	13, // 11: google.cloud.dataplex.v1.DataProfileResult.Profile.Field.ProfileInfo.top_n_values:type_name -> google.cloud.dataplex.v1.DataProfileResult.Profile.Field.ProfileInfo.TopNValue
-	10, // 12: google.cloud.dataplex.v1.DataProfileResult.Profile.Field.ProfileInfo.string_profile:type_name -> google.cloud.dataplex.v1.DataProfileResult.Profile.Field.ProfileInfo.StringFieldInfo
-	11, // 13: google.cloud.dataplex.v1.DataProfileResult.Profile.Field.ProfileInfo.integer_profile:type_name -> google.cloud.dataplex.v1.DataProfileResult.Profile.Field.ProfileInfo.IntegerFieldInfo
-	12, // 14: google.cloud.dataplex.v1.DataProfileResult.Profile.Field.ProfileInfo.double_profile:type_name -> google.cloud.dataplex.v1.DataProfileResult.Profile.Field.ProfileInfo.DoubleFieldInfo
-	0,  // 15: google.cloud.dataplex.v1.DataProfileResult.PostScanActionsResult.BigQueryExportResult.state:type_name -> google.cloud.dataplex.v1.DataProfileResult.PostScanActionsResult.BigQueryExportResult.State
-	16, // [16:16] is the sub-list for method output_type
-	16, // [16:16] is the sub-list for method input_type
-	16, // [16:16] is the sub-list for extension type_name
-	16, // [16:16] is the sub-list for extension extendee
-	0,  // [0:16] is the sub-list for field type_name
+	4,  // 0: google.cloud.dataplex.v1.DataProfileSpec.post_scan_actions:type_name -> google.cloud.dataplex.v1.DataProfileSpec.PostScanActions
+	5,  // 1: google.cloud.dataplex.v1.DataProfileSpec.include_fields:type_name -> google.cloud.dataplex.v1.DataProfileSpec.SelectedFields
+	5,  // 2: google.cloud.dataplex.v1.DataProfileSpec.exclude_fields:type_name -> google.cloud.dataplex.v1.DataProfileSpec.SelectedFields
+	0,  // 3: google.cloud.dataplex.v1.DataProfileSpec.mode:type_name -> google.cloud.dataplex.v1.DataProfileSpec.Mode
+	7,  // 4: google.cloud.dataplex.v1.DataProfileResult.profile:type_name -> google.cloud.dataplex.v1.DataProfileResult.Profile
+	16, // 5: google.cloud.dataplex.v1.DataProfileResult.scanned_data:type_name -> google.cloud.dataplex.v1.ScannedData
+	8,  // 6: google.cloud.dataplex.v1.DataProfileResult.post_scan_actions_result:type_name -> google.cloud.dataplex.v1.DataProfileResult.PostScanActionsResult
+	17, // 7: google.cloud.dataplex.v1.DataProfileResult.catalog_publishing_status:type_name -> google.cloud.dataplex.v1.DataScanCatalogPublishingStatus
+	6,  // 8: google.cloud.dataplex.v1.DataProfileSpec.PostScanActions.bigquery_export:type_name -> google.cloud.dataplex.v1.DataProfileSpec.PostScanActions.BigQueryExport
+	9,  // 9: google.cloud.dataplex.v1.DataProfileResult.Profile.fields:type_name -> google.cloud.dataplex.v1.DataProfileResult.Profile.Field
+	15, // 10: google.cloud.dataplex.v1.DataProfileResult.PostScanActionsResult.bigquery_export_result:type_name -> google.cloud.dataplex.v1.DataProfileResult.PostScanActionsResult.BigQueryExportResult
+	10, // 11: google.cloud.dataplex.v1.DataProfileResult.Profile.Field.profile:type_name -> google.cloud.dataplex.v1.DataProfileResult.Profile.Field.ProfileInfo
+	14, // 12: google.cloud.dataplex.v1.DataProfileResult.Profile.Field.ProfileInfo.top_n_values:type_name -> google.cloud.dataplex.v1.DataProfileResult.Profile.Field.ProfileInfo.TopNValue
+	11, // 13: google.cloud.dataplex.v1.DataProfileResult.Profile.Field.ProfileInfo.string_profile:type_name -> google.cloud.dataplex.v1.DataProfileResult.Profile.Field.ProfileInfo.StringFieldInfo
+	12, // 14: google.cloud.dataplex.v1.DataProfileResult.Profile.Field.ProfileInfo.integer_profile:type_name -> google.cloud.dataplex.v1.DataProfileResult.Profile.Field.ProfileInfo.IntegerFieldInfo
+	13, // 15: google.cloud.dataplex.v1.DataProfileResult.Profile.Field.ProfileInfo.double_profile:type_name -> google.cloud.dataplex.v1.DataProfileResult.Profile.Field.ProfileInfo.DoubleFieldInfo
+	1,  // 16: google.cloud.dataplex.v1.DataProfileResult.PostScanActionsResult.BigQueryExportResult.state:type_name -> google.cloud.dataplex.v1.DataProfileResult.PostScanActionsResult.BigQueryExportResult.State
+	17, // [17:17] is the sub-list for method output_type
+	17, // [17:17] is the sub-list for method input_type
+	17, // [17:17] is the sub-list for extension type_name
+	17, // [17:17] is the sub-list for extension extendee
+	0,  // [0:17] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_dataplex_v1_data_profile_proto_init() }
@@ -1283,7 +1358,7 @@ func file_google_cloud_dataplex_v1_data_profile_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_dataplex_v1_data_profile_proto_rawDesc), len(file_google_cloud_dataplex_v1_data_profile_proto_rawDesc)),
-			NumEnums:      1,
+			NumEnums:      2,
 			NumMessages:   14,
 			NumExtensions: 0,
 			NumServices:   0,

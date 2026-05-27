@@ -106,9 +106,11 @@ type DataProduct struct {
 	//	  }
 	//	}
 	//	```
-	AccessGroups  map[string]*DataProduct_AccessGroup `protobuf:"bytes,14,rep,name=access_groups,json=accessGroups,proto3" json:"access_groups,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	AccessGroups map[string]*DataProduct_AccessGroup `protobuf:"bytes,14,rep,name=access_groups,json=accessGroups,proto3" json:"access_groups,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	// Optional. Configuration for access approval for the data product.
+	AccessApprovalConfig *DataProduct_AccessApprovalConfig `protobuf:"bytes,15,opt,name=access_approval_config,json=accessApprovalConfig,proto3,oneof" json:"access_approval_config,omitempty"`
+	unknownFields        protoimpl.UnknownFields
+	sizeCache            protoimpl.SizeCache
 }
 
 func (x *DataProduct) Reset() {
@@ -221,6 +223,13 @@ func (x *DataProduct) GetAssetCount() int32 {
 func (x *DataProduct) GetAccessGroups() map[string]*DataProduct_AccessGroup {
 	if x != nil {
 		return x.AccessGroups
+	}
+	return nil
+}
+
+func (x *DataProduct) GetAccessApprovalConfig() *DataProduct_AccessApprovalConfig {
+	if x != nil {
+		return x.AccessApprovalConfig
 	}
 	return nil
 }
@@ -814,6 +823,121 @@ func (x *UpdateDataProductRequest) GetValidateOnly() bool {
 	return false
 }
 
+// Message for requesting access to a Data Product.
+type RequestDataProductAccessRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The resource name of the data product.
+	// Format:
+	// projects/{project_number}/locations/{location_id}/dataProducts/{data_product_id}
+	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
+	// Required. The change request for the data product access request.
+	ChangeRequest *ChangeRequest `protobuf:"bytes,2,opt,name=change_request,json=changeRequest,proto3" json:"change_request,omitempty"`
+	// Optional. Validates the request without actually creating the access change
+	// request. Defaults to false.
+	ValidateOnly  bool `protobuf:"varint,3,opt,name=validate_only,json=validateOnly,proto3" json:"validate_only,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RequestDataProductAccessRequest) Reset() {
+	*x = RequestDataProductAccessRequest{}
+	mi := &file_google_cloud_dataplex_v1_data_products_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RequestDataProductAccessRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RequestDataProductAccessRequest) ProtoMessage() {}
+
+func (x *RequestDataProductAccessRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_dataplex_v1_data_products_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RequestDataProductAccessRequest.ProtoReflect.Descriptor instead.
+func (*RequestDataProductAccessRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_dataplex_v1_data_products_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *RequestDataProductAccessRequest) GetParent() string {
+	if x != nil {
+		return x.Parent
+	}
+	return ""
+}
+
+func (x *RequestDataProductAccessRequest) GetChangeRequest() *ChangeRequest {
+	if x != nil {
+		return x.ChangeRequest
+	}
+	return nil
+}
+
+func (x *RequestDataProductAccessRequest) GetValidateOnly() bool {
+	if x != nil {
+		return x.ValidateOnly
+	}
+	return false
+}
+
+// Response message for requesting access to a Data Product.
+type RequestDataProductAccessResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The resource name of the created ChangeRequest.
+	// Format:
+	// projects/{project_number}/locations/{location_id}/changeRequests/{change_request_id}
+	ChangeRequestName string `protobuf:"bytes,1,opt,name=change_request_name,json=changeRequestName,proto3" json:"change_request_name,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *RequestDataProductAccessResponse) Reset() {
+	*x = RequestDataProductAccessResponse{}
+	mi := &file_google_cloud_dataplex_v1_data_products_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RequestDataProductAccessResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RequestDataProductAccessResponse) ProtoMessage() {}
+
+func (x *RequestDataProductAccessResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_dataplex_v1_data_products_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RequestDataProductAccessResponse.ProtoReflect.Descriptor instead.
+func (*RequestDataProductAccessResponse) Descriptor() ([]byte, []int) {
+	return file_google_cloud_dataplex_v1_data_products_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *RequestDataProductAccessResponse) GetChangeRequestName() string {
+	if x != nil {
+		return x.ChangeRequestName
+	}
+	return ""
+}
+
 // Request message for creating a data asset.
 type CreateDataAssetRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -841,7 +965,7 @@ type CreateDataAssetRequest struct {
 
 func (x *CreateDataAssetRequest) Reset() {
 	*x = CreateDataAssetRequest{}
-	mi := &file_google_cloud_dataplex_v1_data_products_proto_msgTypes[8]
+	mi := &file_google_cloud_dataplex_v1_data_products_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -853,7 +977,7 @@ func (x *CreateDataAssetRequest) String() string {
 func (*CreateDataAssetRequest) ProtoMessage() {}
 
 func (x *CreateDataAssetRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_data_products_proto_msgTypes[8]
+	mi := &file_google_cloud_dataplex_v1_data_products_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -866,7 +990,7 @@ func (x *CreateDataAssetRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateDataAssetRequest.ProtoReflect.Descriptor instead.
 func (*CreateDataAssetRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataplex_v1_data_products_proto_rawDescGZIP(), []int{8}
+	return file_google_cloud_dataplex_v1_data_products_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *CreateDataAssetRequest) GetParent() string {
@@ -915,7 +1039,7 @@ type UpdateDataAssetRequest struct {
 
 func (x *UpdateDataAssetRequest) Reset() {
 	*x = UpdateDataAssetRequest{}
-	mi := &file_google_cloud_dataplex_v1_data_products_proto_msgTypes[9]
+	mi := &file_google_cloud_dataplex_v1_data_products_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -927,7 +1051,7 @@ func (x *UpdateDataAssetRequest) String() string {
 func (*UpdateDataAssetRequest) ProtoMessage() {}
 
 func (x *UpdateDataAssetRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_data_products_proto_msgTypes[9]
+	mi := &file_google_cloud_dataplex_v1_data_products_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -940,7 +1064,7 @@ func (x *UpdateDataAssetRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateDataAssetRequest.ProtoReflect.Descriptor instead.
 func (*UpdateDataAssetRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataplex_v1_data_products_proto_rawDescGZIP(), []int{9}
+	return file_google_cloud_dataplex_v1_data_products_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *UpdateDataAssetRequest) GetDataAsset() *DataAsset {
@@ -985,7 +1109,7 @@ type DeleteDataAssetRequest struct {
 
 func (x *DeleteDataAssetRequest) Reset() {
 	*x = DeleteDataAssetRequest{}
-	mi := &file_google_cloud_dataplex_v1_data_products_proto_msgTypes[10]
+	mi := &file_google_cloud_dataplex_v1_data_products_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -997,7 +1121,7 @@ func (x *DeleteDataAssetRequest) String() string {
 func (*DeleteDataAssetRequest) ProtoMessage() {}
 
 func (x *DeleteDataAssetRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_data_products_proto_msgTypes[10]
+	mi := &file_google_cloud_dataplex_v1_data_products_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1010,7 +1134,7 @@ func (x *DeleteDataAssetRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteDataAssetRequest.ProtoReflect.Descriptor instead.
 func (*DeleteDataAssetRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataplex_v1_data_products_proto_rawDescGZIP(), []int{10}
+	return file_google_cloud_dataplex_v1_data_products_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *DeleteDataAssetRequest) GetName() string {
@@ -1047,7 +1171,7 @@ type GetDataAssetRequest struct {
 
 func (x *GetDataAssetRequest) Reset() {
 	*x = GetDataAssetRequest{}
-	mi := &file_google_cloud_dataplex_v1_data_products_proto_msgTypes[11]
+	mi := &file_google_cloud_dataplex_v1_data_products_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1059,7 +1183,7 @@ func (x *GetDataAssetRequest) String() string {
 func (*GetDataAssetRequest) ProtoMessage() {}
 
 func (x *GetDataAssetRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_data_products_proto_msgTypes[11]
+	mi := &file_google_cloud_dataplex_v1_data_products_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1072,7 +1196,7 @@ func (x *GetDataAssetRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetDataAssetRequest.ProtoReflect.Descriptor instead.
 func (*GetDataAssetRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataplex_v1_data_products_proto_rawDescGZIP(), []int{11}
+	return file_google_cloud_dataplex_v1_data_products_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *GetDataAssetRequest) GetName() string {
@@ -1116,7 +1240,7 @@ type ListDataAssetsRequest struct {
 
 func (x *ListDataAssetsRequest) Reset() {
 	*x = ListDataAssetsRequest{}
-	mi := &file_google_cloud_dataplex_v1_data_products_proto_msgTypes[12]
+	mi := &file_google_cloud_dataplex_v1_data_products_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1128,7 +1252,7 @@ func (x *ListDataAssetsRequest) String() string {
 func (*ListDataAssetsRequest) ProtoMessage() {}
 
 func (x *ListDataAssetsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_data_products_proto_msgTypes[12]
+	mi := &file_google_cloud_dataplex_v1_data_products_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1141,7 +1265,7 @@ func (x *ListDataAssetsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListDataAssetsRequest.ProtoReflect.Descriptor instead.
 func (*ListDataAssetsRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataplex_v1_data_products_proto_rawDescGZIP(), []int{12}
+	return file_google_cloud_dataplex_v1_data_products_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *ListDataAssetsRequest) GetParent() string {
@@ -1193,7 +1317,7 @@ type ListDataAssetsResponse struct {
 
 func (x *ListDataAssetsResponse) Reset() {
 	*x = ListDataAssetsResponse{}
-	mi := &file_google_cloud_dataplex_v1_data_products_proto_msgTypes[13]
+	mi := &file_google_cloud_dataplex_v1_data_products_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1205,7 +1329,7 @@ func (x *ListDataAssetsResponse) String() string {
 func (*ListDataAssetsResponse) ProtoMessage() {}
 
 func (x *ListDataAssetsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_data_products_proto_msgTypes[13]
+	mi := &file_google_cloud_dataplex_v1_data_products_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1218,7 +1342,7 @@ func (x *ListDataAssetsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListDataAssetsResponse.ProtoReflect.Descriptor instead.
 func (*ListDataAssetsResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataplex_v1_data_products_proto_rawDescGZIP(), []int{13}
+	return file_google_cloud_dataplex_v1_data_products_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *ListDataAssetsResponse) GetDataAssets() []*DataAsset {
@@ -1244,14 +1368,17 @@ type DataProduct_Principal struct {
 	// Types that are valid to be assigned to Type:
 	//
 	//	*DataProduct_Principal_GoogleGroup
-	Type          isDataProduct_Principal_Type `protobuf_oneof:"type"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	Type isDataProduct_Principal_Type `protobuf_oneof:"type"`
+	// Optional. Specifies the email of the producer service account, as per
+	// https://cloud.google.com/iam/docs/principals-overview#service-account.
+	ServiceAccount *string `protobuf:"bytes,2,opt,name=service_account,json=serviceAccount,proto3,oneof" json:"service_account,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *DataProduct_Principal) Reset() {
 	*x = DataProduct_Principal{}
-	mi := &file_google_cloud_dataplex_v1_data_products_proto_msgTypes[14]
+	mi := &file_google_cloud_dataplex_v1_data_products_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1263,7 +1390,7 @@ func (x *DataProduct_Principal) String() string {
 func (*DataProduct_Principal) ProtoMessage() {}
 
 func (x *DataProduct_Principal) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_data_products_proto_msgTypes[14]
+	mi := &file_google_cloud_dataplex_v1_data_products_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1291,6 +1418,13 @@ func (x *DataProduct_Principal) GetGoogleGroup() string {
 		if x, ok := x.Type.(*DataProduct_Principal_GoogleGroup); ok {
 			return x.GoogleGroup
 		}
+	}
+	return ""
+}
+
+func (x *DataProduct_Principal) GetServiceAccount() string {
+	if x != nil && x.ServiceAccount != nil {
+		return *x.ServiceAccount
 	}
 	return ""
 }
@@ -1328,7 +1462,7 @@ type DataProduct_AccessGroup struct {
 
 func (x *DataProduct_AccessGroup) Reset() {
 	*x = DataProduct_AccessGroup{}
-	mi := &file_google_cloud_dataplex_v1_data_products_proto_msgTypes[15]
+	mi := &file_google_cloud_dataplex_v1_data_products_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1340,7 +1474,7 @@ func (x *DataProduct_AccessGroup) String() string {
 func (*DataProduct_AccessGroup) ProtoMessage() {}
 
 func (x *DataProduct_AccessGroup) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_data_products_proto_msgTypes[15]
+	mi := &file_google_cloud_dataplex_v1_data_products_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1384,6 +1518,54 @@ func (x *DataProduct_AccessGroup) GetPrincipal() *DataProduct_Principal {
 	return nil
 }
 
+// Configuration for access approval for the data product.
+type DataProduct_AccessApprovalConfig struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. Specifies the email addresses of users who are potential
+	// approvers and are notified when an access request is made for the data
+	// product. The maximum number of emails allowed is 10.
+	ApproverEmails []string `protobuf:"bytes,2,rep,name=approver_emails,json=approverEmails,proto3" json:"approver_emails,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *DataProduct_AccessApprovalConfig) Reset() {
+	*x = DataProduct_AccessApprovalConfig{}
+	mi := &file_google_cloud_dataplex_v1_data_products_proto_msgTypes[18]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DataProduct_AccessApprovalConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DataProduct_AccessApprovalConfig) ProtoMessage() {}
+
+func (x *DataProduct_AccessApprovalConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_dataplex_v1_data_products_proto_msgTypes[18]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DataProduct_AccessApprovalConfig.ProtoReflect.Descriptor instead.
+func (*DataProduct_AccessApprovalConfig) Descriptor() ([]byte, []int) {
+	return file_google_cloud_dataplex_v1_data_products_proto_rawDescGZIP(), []int{0, 2}
+}
+
+func (x *DataProduct_AccessApprovalConfig) GetApproverEmails() []string {
+	if x != nil {
+		return x.ApproverEmails
+	}
+	return nil
+}
+
 // Configuration for access group inherited from the parent data product.
 type DataAsset_AccessGroupConfig struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -1398,7 +1580,7 @@ type DataAsset_AccessGroupConfig struct {
 
 func (x *DataAsset_AccessGroupConfig) Reset() {
 	*x = DataAsset_AccessGroupConfig{}
-	mi := &file_google_cloud_dataplex_v1_data_products_proto_msgTypes[18]
+	mi := &file_google_cloud_dataplex_v1_data_products_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1410,7 +1592,7 @@ func (x *DataAsset_AccessGroupConfig) String() string {
 func (*DataAsset_AccessGroupConfig) ProtoMessage() {}
 
 func (x *DataAsset_AccessGroupConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_data_products_proto_msgTypes[18]
+	mi := &file_google_cloud_dataplex_v1_data_products_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1437,7 +1619,7 @@ var File_google_cloud_dataplex_v1_data_products_proto protoreflect.FileDescripto
 
 const file_google_cloud_dataplex_v1_data_products_proto_rawDesc = "" +
 	"\n" +
-	",google/cloud/dataplex/v1/data_products.proto\x12\x18google.cloud.dataplex.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a&google/cloud/dataplex/v1/service.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x8d\t\n" +
+	",google/cloud/dataplex/v1/data_products.proto\x12\x18google.cloud.dataplex.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a0google/cloud/dataplex/v1/approval_workflow.proto\x1a&google/cloud/dataplex/v1/service.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb2\v\n" +
 	"\vDataProduct\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x1d\n" +
 	"\x03uid\x18\x02 \x01(\tB\v\xe0A\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12&\n" +
@@ -1454,22 +1636,28 @@ const file_google_cloud_dataplex_v1_data_products_proto_rawDesc = "" +
 	"\fowner_emails\x18\v \x03(\tB\x03\xe0A\x02R\vownerEmails\x12$\n" +
 	"\vasset_count\x18\r \x01(\x05B\x03\xe0A\x03R\n" +
 	"assetCount\x12a\n" +
-	"\raccess_groups\x18\x0e \x03(\v27.google.cloud.dataplex.v1.DataProduct.AccessGroupsEntryB\x03\xe0A\x01R\faccessGroups\x1a=\n" +
+	"\raccess_groups\x18\x0e \x03(\v27.google.cloud.dataplex.v1.DataProduct.AccessGroupsEntryB\x03\xe0A\x01R\faccessGroups\x12z\n" +
+	"\x16access_approval_config\x18\x0f \x01(\v2:.google.cloud.dataplex.v1.DataProduct.AccessApprovalConfigB\x03\xe0A\x01H\x00R\x14accessApprovalConfig\x88\x01\x01\x1a\x84\x01\n" +
 	"\tPrincipal\x12(\n" +
-	"\fgoogle_group\x18\x01 \x01(\tB\x03\xe0A\x01H\x00R\vgoogleGroupB\x06\n" +
-	"\x04type\x1a\xc5\x01\n" +
+	"\fgoogle_group\x18\x01 \x01(\tB\x03\xe0A\x01H\x00R\vgoogleGroup\x121\n" +
+	"\x0fservice_account\x18\x02 \x01(\tB\x03\xe0A\x01H\x01R\x0eserviceAccount\x88\x01\x01B\x06\n" +
+	"\x04typeB\x12\n" +
+	"\x10_service_account\x1a\xc5\x01\n" +
 	"\vAccessGroup\x12\x13\n" +
 	"\x02id\x18\x01 \x01(\tB\x03\xe0A\x02R\x02id\x12&\n" +
 	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12%\n" +
 	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x01R\vdescription\x12R\n" +
-	"\tprincipal\x18\x04 \x01(\v2/.google.cloud.dataplex.v1.DataProduct.PrincipalB\x03\xe0A\x02R\tprincipal\x1a9\n" +
+	"\tprincipal\x18\x04 \x01(\v2/.google.cloud.dataplex.v1.DataProduct.PrincipalB\x03\xe0A\x02R\tprincipal\x1aD\n" +
+	"\x14AccessApprovalConfig\x12,\n" +
+	"\x0fapprover_emails\x18\x02 \x03(\tB\x03\xe0A\x01R\x0eapproverEmails\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1ar\n" +
 	"\x11AccessGroupsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12G\n" +
 	"\x05value\x18\x02 \x01(\v21.google.cloud.dataplex.v1.DataProduct.AccessGroupR\x05value:\x028\x01:\x89\x01\xeaA\x85\x01\n" +
-	"#dataplex.googleapis.com/DataProduct\x12Cprojects/{project}/locations/{location}/dataProducts/{data_product}*\fdataProducts2\vdataProduct\"\xd4\x06\n" +
+	"#dataplex.googleapis.com/DataProduct\x12Cprojects/{project}/locations/{location}/dataProducts/{data_product}*\fdataProducts2\vdataProductB\x19\n" +
+	"\x17_access_approval_config\"\xd4\x06\n" +
 	"\tDataAsset\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x1d\n" +
 	"\x03uid\x18\x02 \x01(\tB\v\xe0A\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12@\n" +
@@ -1521,7 +1709,15 @@ const file_google_cloud_dataplex_v1_data_products_proto_rawDesc = "" +
 	"\fdata_product\x18\x01 \x01(\v2%.google.cloud.dataplex.v1.DataProductB\x03\xe0A\x02R\vdataProduct\x12@\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
 	"updateMask\x12(\n" +
-	"\rvalidate_only\x18\x03 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\xf9\x01\n" +
+	"\rvalidate_only\x18\x03 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\xe5\x01\n" +
+	"\x1fRequestDataProductAccessRequest\x12C\n" +
+	"\x06parent\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
+	"#dataplex.googleapis.com/DataProductR\x06parent\x12S\n" +
+	"\x0echange_request\x18\x02 \x01(\v2'.google.cloud.dataplex.v1.ChangeRequestB\x03\xe0A\x02R\rchangeRequest\x12(\n" +
+	"\rvalidate_only\x18\x03 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"~\n" +
+	" RequestDataProductAccessResponse\x12Z\n" +
+	"\x13change_request_name\x18\x01 \x01(\tB*\xfaA'\n" +
+	"%dataplex.googleapis.com/ChangeRequestR\x11changeRequestName\"\xf9\x01\n" +
 	"\x16CreateDataAssetRequest\x12C\n" +
 	"\x06parent\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
 	"#dataplex.googleapis.com/DataProductR\x06parent\x12'\n" +
@@ -1554,7 +1750,7 @@ const file_google_cloud_dataplex_v1_data_products_proto_rawDesc = "" +
 	"\x16ListDataAssetsResponse\x12D\n" +
 	"\vdata_assets\x18\x01 \x03(\v2#.google.cloud.dataplex.v1.DataAssetR\n" +
 	"dataAssets\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken2\xee\x11\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken2\x88\x15\n" +
 	"\x12DataProductService\x12\xf8\x01\n" +
 	"\x11CreateDataProduct\x122.google.cloud.dataplex.v1.CreateDataProductRequest\x1a\x1d.google.longrunning.Operation\"\x8f\x01\xcaA \n" +
 	"\vDataProduct\x12\x11OperationMetadata\xdaA#parent,data_product,data_product_id\x82\xd3\xe4\x93\x02@:\fdata_product\"0/v1/{parent=projects/*/locations/*}/dataProducts\x12\xd4\x01\n" +
@@ -1563,7 +1759,8 @@ const file_google_cloud_dataplex_v1_data_products_proto_rawDesc = "" +
 	"\x0eGetDataProduct\x12/.google.cloud.dataplex.v1.GetDataProductRequest\x1a%.google.cloud.dataplex.v1.DataProduct\"?\xdaA\x04name\x82\xd3\xe4\x93\x022\x120/v1/{name=projects/*/locations/*/dataProducts/*}\x12\xbc\x01\n" +
 	"\x10ListDataProducts\x121.google.cloud.dataplex.v1.ListDataProductsRequest\x1a2.google.cloud.dataplex.v1.ListDataProductsResponse\"A\xdaA\x06parent\x82\xd3\xe4\x93\x022\x120/v1/{parent=projects/*/locations/*}/dataProducts\x12\xfa\x01\n" +
 	"\x11UpdateDataProduct\x122.google.cloud.dataplex.v1.UpdateDataProductRequest\x1a\x1d.google.longrunning.Operation\"\x91\x01\xcaA \n" +
-	"\vDataProduct\x12\x11OperationMetadata\xdaA\x18data_product,update_mask\x82\xd3\xe4\x93\x02M:\fdata_product2=/v1/{data_product.name=projects/*/locations/*/dataProducts/*}\x12\xf9\x01\n" +
+	"\vDataProduct\x12\x11OperationMetadata\xdaA\x18data_product,update_mask\x82\xd3\xe4\x93\x02M:\fdata_product2=/v1/{data_product.name=projects/*/locations/*/dataProducts/*}\x12\xf6\x01\n" +
+	"\x18RequestDataProductAccess\x129.google.cloud.dataplex.v1.RequestDataProductAccessRequest\x1a:.google.cloud.dataplex.v1.RequestDataProductAccessResponse\"c\xdaA\x15parent,change_request\x82\xd3\xe4\x93\x02E:\x01*\"@/v1/{parent=projects/*/locations/*/dataProducts/*}:requestAccess\x12\xf9\x01\n" +
 	"\x0fCreateDataAsset\x120.google.cloud.dataplex.v1.CreateDataAssetRequest\x1a\x1d.google.longrunning.Operation\"\x94\x01\xcaA\x1e\n" +
 	"\tDataAsset\x12\x11OperationMetadata\xdaA\x1fparent,data_asset,data_asset_id\x82\xd3\xe4\x93\x02K:\n" +
 	"data_asset\"=/v1/{parent=projects/*/locations/*/dataProducts/*}/dataAssets\x12\xfb\x01\n" +
@@ -1573,7 +1770,7 @@ const file_google_cloud_dataplex_v1_data_products_proto_rawDesc = "" +
 	"\x0fDeleteDataAsset\x120.google.cloud.dataplex.v1.DeleteDataAssetRequest\x1a\x1d.google.longrunning.Operation\"y\xcaA*\n" +
 	"\x15google.protobuf.Empty\x12\x11OperationMetadata\xdaA\x04name\x82\xd3\xe4\x93\x02?*=/v1/{name=projects/*/locations/*/dataProducts/*/dataAssets/*}\x12\xb0\x01\n" +
 	"\fGetDataAsset\x12-.google.cloud.dataplex.v1.GetDataAssetRequest\x1a#.google.cloud.dataplex.v1.DataAsset\"L\xdaA\x04name\x82\xd3\xe4\x93\x02?\x12=/v1/{name=projects/*/locations/*/dataProducts/*/dataAssets/*}\x12\xc3\x01\n" +
-	"\x0eListDataAssets\x12/.google.cloud.dataplex.v1.ListDataAssetsRequest\x1a0.google.cloud.dataplex.v1.ListDataAssetsResponse\"N\xdaA\x06parent\x82\xd3\xe4\x93\x02?\x12=/v1/{parent=projects/*/locations/*/dataProducts/*}/dataAssets\x1aK\xcaA\x17dataplex.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformBm\n" +
+	"\x0eListDataAssets\x12/.google.cloud.dataplex.v1.ListDataAssetsRequest\x1a0.google.cloud.dataplex.v1.ListDataAssetsResponse\"N\xdaA\x06parent\x82\xd3\xe4\x93\x02?\x12=/v1/{parent=projects/*/locations/*/dataProducts/*}/dataAssets\x1a\xeb\x01\xcaA\x17dataplex.googleapis.com\xd2A\xcd\x01https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/cloud-platform.read-only,https://www.googleapis.com/auth/dataplex.read-write,https://www.googleapis.com/auth/dataplex.readonlyBm\n" +
 	"\x1ccom.google.cloud.dataplex.v1B\x11DataProductsProtoP\x01Z8cloud.google.com/go/dataplex/apiv1/dataplexpb;dataplexpbb\x06proto3"
 
 var (
@@ -1588,78 +1785,86 @@ func file_google_cloud_dataplex_v1_data_products_proto_rawDescGZIP() []byte {
 	return file_google_cloud_dataplex_v1_data_products_proto_rawDescData
 }
 
-var file_google_cloud_dataplex_v1_data_products_proto_msgTypes = make([]protoimpl.MessageInfo, 21)
+var file_google_cloud_dataplex_v1_data_products_proto_msgTypes = make([]protoimpl.MessageInfo, 24)
 var file_google_cloud_dataplex_v1_data_products_proto_goTypes = []any{
-	(*DataProduct)(nil),                 // 0: google.cloud.dataplex.v1.DataProduct
-	(*DataAsset)(nil),                   // 1: google.cloud.dataplex.v1.DataAsset
-	(*CreateDataProductRequest)(nil),    // 2: google.cloud.dataplex.v1.CreateDataProductRequest
-	(*DeleteDataProductRequest)(nil),    // 3: google.cloud.dataplex.v1.DeleteDataProductRequest
-	(*GetDataProductRequest)(nil),       // 4: google.cloud.dataplex.v1.GetDataProductRequest
-	(*ListDataProductsRequest)(nil),     // 5: google.cloud.dataplex.v1.ListDataProductsRequest
-	(*ListDataProductsResponse)(nil),    // 6: google.cloud.dataplex.v1.ListDataProductsResponse
-	(*UpdateDataProductRequest)(nil),    // 7: google.cloud.dataplex.v1.UpdateDataProductRequest
-	(*CreateDataAssetRequest)(nil),      // 8: google.cloud.dataplex.v1.CreateDataAssetRequest
-	(*UpdateDataAssetRequest)(nil),      // 9: google.cloud.dataplex.v1.UpdateDataAssetRequest
-	(*DeleteDataAssetRequest)(nil),      // 10: google.cloud.dataplex.v1.DeleteDataAssetRequest
-	(*GetDataAssetRequest)(nil),         // 11: google.cloud.dataplex.v1.GetDataAssetRequest
-	(*ListDataAssetsRequest)(nil),       // 12: google.cloud.dataplex.v1.ListDataAssetsRequest
-	(*ListDataAssetsResponse)(nil),      // 13: google.cloud.dataplex.v1.ListDataAssetsResponse
-	(*DataProduct_Principal)(nil),       // 14: google.cloud.dataplex.v1.DataProduct.Principal
-	(*DataProduct_AccessGroup)(nil),     // 15: google.cloud.dataplex.v1.DataProduct.AccessGroup
-	nil,                                 // 16: google.cloud.dataplex.v1.DataProduct.LabelsEntry
-	nil,                                 // 17: google.cloud.dataplex.v1.DataProduct.AccessGroupsEntry
-	(*DataAsset_AccessGroupConfig)(nil), // 18: google.cloud.dataplex.v1.DataAsset.AccessGroupConfig
-	nil,                                 // 19: google.cloud.dataplex.v1.DataAsset.LabelsEntry
-	nil,                                 // 20: google.cloud.dataplex.v1.DataAsset.AccessGroupConfigsEntry
-	(*timestamppb.Timestamp)(nil),       // 21: google.protobuf.Timestamp
-	(*fieldmaskpb.FieldMask)(nil),       // 22: google.protobuf.FieldMask
-	(*longrunningpb.Operation)(nil),     // 23: google.longrunning.Operation
+	(*DataProduct)(nil),                      // 0: google.cloud.dataplex.v1.DataProduct
+	(*DataAsset)(nil),                        // 1: google.cloud.dataplex.v1.DataAsset
+	(*CreateDataProductRequest)(nil),         // 2: google.cloud.dataplex.v1.CreateDataProductRequest
+	(*DeleteDataProductRequest)(nil),         // 3: google.cloud.dataplex.v1.DeleteDataProductRequest
+	(*GetDataProductRequest)(nil),            // 4: google.cloud.dataplex.v1.GetDataProductRequest
+	(*ListDataProductsRequest)(nil),          // 5: google.cloud.dataplex.v1.ListDataProductsRequest
+	(*ListDataProductsResponse)(nil),         // 6: google.cloud.dataplex.v1.ListDataProductsResponse
+	(*UpdateDataProductRequest)(nil),         // 7: google.cloud.dataplex.v1.UpdateDataProductRequest
+	(*RequestDataProductAccessRequest)(nil),  // 8: google.cloud.dataplex.v1.RequestDataProductAccessRequest
+	(*RequestDataProductAccessResponse)(nil), // 9: google.cloud.dataplex.v1.RequestDataProductAccessResponse
+	(*CreateDataAssetRequest)(nil),           // 10: google.cloud.dataplex.v1.CreateDataAssetRequest
+	(*UpdateDataAssetRequest)(nil),           // 11: google.cloud.dataplex.v1.UpdateDataAssetRequest
+	(*DeleteDataAssetRequest)(nil),           // 12: google.cloud.dataplex.v1.DeleteDataAssetRequest
+	(*GetDataAssetRequest)(nil),              // 13: google.cloud.dataplex.v1.GetDataAssetRequest
+	(*ListDataAssetsRequest)(nil),            // 14: google.cloud.dataplex.v1.ListDataAssetsRequest
+	(*ListDataAssetsResponse)(nil),           // 15: google.cloud.dataplex.v1.ListDataAssetsResponse
+	(*DataProduct_Principal)(nil),            // 16: google.cloud.dataplex.v1.DataProduct.Principal
+	(*DataProduct_AccessGroup)(nil),          // 17: google.cloud.dataplex.v1.DataProduct.AccessGroup
+	(*DataProduct_AccessApprovalConfig)(nil), // 18: google.cloud.dataplex.v1.DataProduct.AccessApprovalConfig
+	nil,                                      // 19: google.cloud.dataplex.v1.DataProduct.LabelsEntry
+	nil,                                      // 20: google.cloud.dataplex.v1.DataProduct.AccessGroupsEntry
+	(*DataAsset_AccessGroupConfig)(nil),      // 21: google.cloud.dataplex.v1.DataAsset.AccessGroupConfig
+	nil,                                      // 22: google.cloud.dataplex.v1.DataAsset.LabelsEntry
+	nil,                                      // 23: google.cloud.dataplex.v1.DataAsset.AccessGroupConfigsEntry
+	(*timestamppb.Timestamp)(nil),            // 24: google.protobuf.Timestamp
+	(*fieldmaskpb.FieldMask)(nil),            // 25: google.protobuf.FieldMask
+	(*ChangeRequest)(nil),                    // 26: google.cloud.dataplex.v1.ChangeRequest
+	(*longrunningpb.Operation)(nil),          // 27: google.longrunning.Operation
 }
 var file_google_cloud_dataplex_v1_data_products_proto_depIdxs = []int32{
-	21, // 0: google.cloud.dataplex.v1.DataProduct.create_time:type_name -> google.protobuf.Timestamp
-	21, // 1: google.cloud.dataplex.v1.DataProduct.update_time:type_name -> google.protobuf.Timestamp
-	16, // 2: google.cloud.dataplex.v1.DataProduct.labels:type_name -> google.cloud.dataplex.v1.DataProduct.LabelsEntry
-	17, // 3: google.cloud.dataplex.v1.DataProduct.access_groups:type_name -> google.cloud.dataplex.v1.DataProduct.AccessGroupsEntry
-	21, // 4: google.cloud.dataplex.v1.DataAsset.create_time:type_name -> google.protobuf.Timestamp
-	21, // 5: google.cloud.dataplex.v1.DataAsset.update_time:type_name -> google.protobuf.Timestamp
-	19, // 6: google.cloud.dataplex.v1.DataAsset.labels:type_name -> google.cloud.dataplex.v1.DataAsset.LabelsEntry
-	20, // 7: google.cloud.dataplex.v1.DataAsset.access_group_configs:type_name -> google.cloud.dataplex.v1.DataAsset.AccessGroupConfigsEntry
-	0,  // 8: google.cloud.dataplex.v1.CreateDataProductRequest.data_product:type_name -> google.cloud.dataplex.v1.DataProduct
-	0,  // 9: google.cloud.dataplex.v1.ListDataProductsResponse.data_products:type_name -> google.cloud.dataplex.v1.DataProduct
-	0,  // 10: google.cloud.dataplex.v1.UpdateDataProductRequest.data_product:type_name -> google.cloud.dataplex.v1.DataProduct
-	22, // 11: google.cloud.dataplex.v1.UpdateDataProductRequest.update_mask:type_name -> google.protobuf.FieldMask
-	1,  // 12: google.cloud.dataplex.v1.CreateDataAssetRequest.data_asset:type_name -> google.cloud.dataplex.v1.DataAsset
-	1,  // 13: google.cloud.dataplex.v1.UpdateDataAssetRequest.data_asset:type_name -> google.cloud.dataplex.v1.DataAsset
-	22, // 14: google.cloud.dataplex.v1.UpdateDataAssetRequest.update_mask:type_name -> google.protobuf.FieldMask
-	1,  // 15: google.cloud.dataplex.v1.ListDataAssetsResponse.data_assets:type_name -> google.cloud.dataplex.v1.DataAsset
-	14, // 16: google.cloud.dataplex.v1.DataProduct.AccessGroup.principal:type_name -> google.cloud.dataplex.v1.DataProduct.Principal
-	15, // 17: google.cloud.dataplex.v1.DataProduct.AccessGroupsEntry.value:type_name -> google.cloud.dataplex.v1.DataProduct.AccessGroup
-	18, // 18: google.cloud.dataplex.v1.DataAsset.AccessGroupConfigsEntry.value:type_name -> google.cloud.dataplex.v1.DataAsset.AccessGroupConfig
-	2,  // 19: google.cloud.dataplex.v1.DataProductService.CreateDataProduct:input_type -> google.cloud.dataplex.v1.CreateDataProductRequest
-	3,  // 20: google.cloud.dataplex.v1.DataProductService.DeleteDataProduct:input_type -> google.cloud.dataplex.v1.DeleteDataProductRequest
-	4,  // 21: google.cloud.dataplex.v1.DataProductService.GetDataProduct:input_type -> google.cloud.dataplex.v1.GetDataProductRequest
-	5,  // 22: google.cloud.dataplex.v1.DataProductService.ListDataProducts:input_type -> google.cloud.dataplex.v1.ListDataProductsRequest
-	7,  // 23: google.cloud.dataplex.v1.DataProductService.UpdateDataProduct:input_type -> google.cloud.dataplex.v1.UpdateDataProductRequest
-	8,  // 24: google.cloud.dataplex.v1.DataProductService.CreateDataAsset:input_type -> google.cloud.dataplex.v1.CreateDataAssetRequest
-	9,  // 25: google.cloud.dataplex.v1.DataProductService.UpdateDataAsset:input_type -> google.cloud.dataplex.v1.UpdateDataAssetRequest
-	10, // 26: google.cloud.dataplex.v1.DataProductService.DeleteDataAsset:input_type -> google.cloud.dataplex.v1.DeleteDataAssetRequest
-	11, // 27: google.cloud.dataplex.v1.DataProductService.GetDataAsset:input_type -> google.cloud.dataplex.v1.GetDataAssetRequest
-	12, // 28: google.cloud.dataplex.v1.DataProductService.ListDataAssets:input_type -> google.cloud.dataplex.v1.ListDataAssetsRequest
-	23, // 29: google.cloud.dataplex.v1.DataProductService.CreateDataProduct:output_type -> google.longrunning.Operation
-	23, // 30: google.cloud.dataplex.v1.DataProductService.DeleteDataProduct:output_type -> google.longrunning.Operation
-	0,  // 31: google.cloud.dataplex.v1.DataProductService.GetDataProduct:output_type -> google.cloud.dataplex.v1.DataProduct
-	6,  // 32: google.cloud.dataplex.v1.DataProductService.ListDataProducts:output_type -> google.cloud.dataplex.v1.ListDataProductsResponse
-	23, // 33: google.cloud.dataplex.v1.DataProductService.UpdateDataProduct:output_type -> google.longrunning.Operation
-	23, // 34: google.cloud.dataplex.v1.DataProductService.CreateDataAsset:output_type -> google.longrunning.Operation
-	23, // 35: google.cloud.dataplex.v1.DataProductService.UpdateDataAsset:output_type -> google.longrunning.Operation
-	23, // 36: google.cloud.dataplex.v1.DataProductService.DeleteDataAsset:output_type -> google.longrunning.Operation
-	1,  // 37: google.cloud.dataplex.v1.DataProductService.GetDataAsset:output_type -> google.cloud.dataplex.v1.DataAsset
-	13, // 38: google.cloud.dataplex.v1.DataProductService.ListDataAssets:output_type -> google.cloud.dataplex.v1.ListDataAssetsResponse
-	29, // [29:39] is the sub-list for method output_type
-	19, // [19:29] is the sub-list for method input_type
-	19, // [19:19] is the sub-list for extension type_name
-	19, // [19:19] is the sub-list for extension extendee
-	0,  // [0:19] is the sub-list for field type_name
+	24, // 0: google.cloud.dataplex.v1.DataProduct.create_time:type_name -> google.protobuf.Timestamp
+	24, // 1: google.cloud.dataplex.v1.DataProduct.update_time:type_name -> google.protobuf.Timestamp
+	19, // 2: google.cloud.dataplex.v1.DataProduct.labels:type_name -> google.cloud.dataplex.v1.DataProduct.LabelsEntry
+	20, // 3: google.cloud.dataplex.v1.DataProduct.access_groups:type_name -> google.cloud.dataplex.v1.DataProduct.AccessGroupsEntry
+	18, // 4: google.cloud.dataplex.v1.DataProduct.access_approval_config:type_name -> google.cloud.dataplex.v1.DataProduct.AccessApprovalConfig
+	24, // 5: google.cloud.dataplex.v1.DataAsset.create_time:type_name -> google.protobuf.Timestamp
+	24, // 6: google.cloud.dataplex.v1.DataAsset.update_time:type_name -> google.protobuf.Timestamp
+	22, // 7: google.cloud.dataplex.v1.DataAsset.labels:type_name -> google.cloud.dataplex.v1.DataAsset.LabelsEntry
+	23, // 8: google.cloud.dataplex.v1.DataAsset.access_group_configs:type_name -> google.cloud.dataplex.v1.DataAsset.AccessGroupConfigsEntry
+	0,  // 9: google.cloud.dataplex.v1.CreateDataProductRequest.data_product:type_name -> google.cloud.dataplex.v1.DataProduct
+	0,  // 10: google.cloud.dataplex.v1.ListDataProductsResponse.data_products:type_name -> google.cloud.dataplex.v1.DataProduct
+	0,  // 11: google.cloud.dataplex.v1.UpdateDataProductRequest.data_product:type_name -> google.cloud.dataplex.v1.DataProduct
+	25, // 12: google.cloud.dataplex.v1.UpdateDataProductRequest.update_mask:type_name -> google.protobuf.FieldMask
+	26, // 13: google.cloud.dataplex.v1.RequestDataProductAccessRequest.change_request:type_name -> google.cloud.dataplex.v1.ChangeRequest
+	1,  // 14: google.cloud.dataplex.v1.CreateDataAssetRequest.data_asset:type_name -> google.cloud.dataplex.v1.DataAsset
+	1,  // 15: google.cloud.dataplex.v1.UpdateDataAssetRequest.data_asset:type_name -> google.cloud.dataplex.v1.DataAsset
+	25, // 16: google.cloud.dataplex.v1.UpdateDataAssetRequest.update_mask:type_name -> google.protobuf.FieldMask
+	1,  // 17: google.cloud.dataplex.v1.ListDataAssetsResponse.data_assets:type_name -> google.cloud.dataplex.v1.DataAsset
+	16, // 18: google.cloud.dataplex.v1.DataProduct.AccessGroup.principal:type_name -> google.cloud.dataplex.v1.DataProduct.Principal
+	17, // 19: google.cloud.dataplex.v1.DataProduct.AccessGroupsEntry.value:type_name -> google.cloud.dataplex.v1.DataProduct.AccessGroup
+	21, // 20: google.cloud.dataplex.v1.DataAsset.AccessGroupConfigsEntry.value:type_name -> google.cloud.dataplex.v1.DataAsset.AccessGroupConfig
+	2,  // 21: google.cloud.dataplex.v1.DataProductService.CreateDataProduct:input_type -> google.cloud.dataplex.v1.CreateDataProductRequest
+	3,  // 22: google.cloud.dataplex.v1.DataProductService.DeleteDataProduct:input_type -> google.cloud.dataplex.v1.DeleteDataProductRequest
+	4,  // 23: google.cloud.dataplex.v1.DataProductService.GetDataProduct:input_type -> google.cloud.dataplex.v1.GetDataProductRequest
+	5,  // 24: google.cloud.dataplex.v1.DataProductService.ListDataProducts:input_type -> google.cloud.dataplex.v1.ListDataProductsRequest
+	7,  // 25: google.cloud.dataplex.v1.DataProductService.UpdateDataProduct:input_type -> google.cloud.dataplex.v1.UpdateDataProductRequest
+	8,  // 26: google.cloud.dataplex.v1.DataProductService.RequestDataProductAccess:input_type -> google.cloud.dataplex.v1.RequestDataProductAccessRequest
+	10, // 27: google.cloud.dataplex.v1.DataProductService.CreateDataAsset:input_type -> google.cloud.dataplex.v1.CreateDataAssetRequest
+	11, // 28: google.cloud.dataplex.v1.DataProductService.UpdateDataAsset:input_type -> google.cloud.dataplex.v1.UpdateDataAssetRequest
+	12, // 29: google.cloud.dataplex.v1.DataProductService.DeleteDataAsset:input_type -> google.cloud.dataplex.v1.DeleteDataAssetRequest
+	13, // 30: google.cloud.dataplex.v1.DataProductService.GetDataAsset:input_type -> google.cloud.dataplex.v1.GetDataAssetRequest
+	14, // 31: google.cloud.dataplex.v1.DataProductService.ListDataAssets:input_type -> google.cloud.dataplex.v1.ListDataAssetsRequest
+	27, // 32: google.cloud.dataplex.v1.DataProductService.CreateDataProduct:output_type -> google.longrunning.Operation
+	27, // 33: google.cloud.dataplex.v1.DataProductService.DeleteDataProduct:output_type -> google.longrunning.Operation
+	0,  // 34: google.cloud.dataplex.v1.DataProductService.GetDataProduct:output_type -> google.cloud.dataplex.v1.DataProduct
+	6,  // 35: google.cloud.dataplex.v1.DataProductService.ListDataProducts:output_type -> google.cloud.dataplex.v1.ListDataProductsResponse
+	27, // 36: google.cloud.dataplex.v1.DataProductService.UpdateDataProduct:output_type -> google.longrunning.Operation
+	9,  // 37: google.cloud.dataplex.v1.DataProductService.RequestDataProductAccess:output_type -> google.cloud.dataplex.v1.RequestDataProductAccessResponse
+	27, // 38: google.cloud.dataplex.v1.DataProductService.CreateDataAsset:output_type -> google.longrunning.Operation
+	27, // 39: google.cloud.dataplex.v1.DataProductService.UpdateDataAsset:output_type -> google.longrunning.Operation
+	27, // 40: google.cloud.dataplex.v1.DataProductService.DeleteDataAsset:output_type -> google.longrunning.Operation
+	1,  // 41: google.cloud.dataplex.v1.DataProductService.GetDataAsset:output_type -> google.cloud.dataplex.v1.DataAsset
+	15, // 42: google.cloud.dataplex.v1.DataProductService.ListDataAssets:output_type -> google.cloud.dataplex.v1.ListDataAssetsResponse
+	32, // [32:43] is the sub-list for method output_type
+	21, // [21:32] is the sub-list for method input_type
+	21, // [21:21] is the sub-list for extension type_name
+	21, // [21:21] is the sub-list for extension extendee
+	0,  // [0:21] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_dataplex_v1_data_products_proto_init() }
@@ -1667,8 +1872,10 @@ func file_google_cloud_dataplex_v1_data_products_proto_init() {
 	if File_google_cloud_dataplex_v1_data_products_proto != nil {
 		return
 	}
+	file_google_cloud_dataplex_v1_approval_workflow_proto_init()
 	file_google_cloud_dataplex_v1_service_proto_init()
-	file_google_cloud_dataplex_v1_data_products_proto_msgTypes[14].OneofWrappers = []any{
+	file_google_cloud_dataplex_v1_data_products_proto_msgTypes[0].OneofWrappers = []any{}
+	file_google_cloud_dataplex_v1_data_products_proto_msgTypes[16].OneofWrappers = []any{
 		(*DataProduct_Principal_GoogleGroup)(nil),
 	}
 	type x struct{}
@@ -1677,7 +1884,7 @@ func file_google_cloud_dataplex_v1_data_products_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_dataplex_v1_data_products_proto_rawDesc), len(file_google_cloud_dataplex_v1_data_products_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   21,
+			NumMessages:   24,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

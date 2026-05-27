@@ -16,8 +16,8 @@ version: v0.15.0
 repo: googleapis/google-cloud-go
 sources:
   googleapis:
-    commit: 43731d5d22f8e3526ba7aa708da9d5de26043d0f
-    sha256: d146cfa257ffa00fc298ec7b6f73f9c7395a5a5ba050dcc553cfd78d6705bc3b
+    commit: 8490ca4edad1b34f62b174292264c07607681100
+    sha256: 6994d873c0a240bfcde8fda75fc0bf3d2ee44c0602d2a2544a07fce53b2a6faa
 tools:
   go:
     - name: github.com/googleapis/gapic-generator-go/cmd/protoc-gen-go_gapic

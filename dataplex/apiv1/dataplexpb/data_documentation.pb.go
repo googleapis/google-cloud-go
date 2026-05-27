@@ -798,7 +798,7 @@ var File_google_cloud_dataplex_v1_data_documentation_proto protoreflect.FileDesc
 
 const file_google_cloud_dataplex_v1_data_documentation_proto_rawDesc = "" +
 	"\n" +
-	"1google/cloud/dataplex/v1/data_documentation.proto\x12\x18google.cloud.dataplex.v1\x1a\x1fgoogle/api/field_behavior.proto\"\xbf\x02\n" +
+	"1google/cloud/dataplex/v1/data_documentation.proto\x12\x18google.cloud.dataplex.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xbf\x02\n" +
 	"\x15DataDocumentationSpec\x12A\n" +
 	"\x1acatalog_publishing_enabled\x18\x02 \x01(\bB\x03\xe0A\x01R\x18catalogPublishingEnabled\x12q\n" +
 	"\x11generation_scopes\x18\x03 \x03(\x0e2?.google.cloud.dataplex.v1.DataDocumentationSpec.GenerationScopeB\x03\xe0A\x01R\x10generationScopes\"p\n" +
