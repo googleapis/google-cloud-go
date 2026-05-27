@@ -55,6 +55,7 @@ type DataScanCallOptions struct {
 	RunDataScan              []gax.CallOption
 	GetDataScanJob           []gax.CallOption
 	ListDataScanJobs         []gax.CallOption
+	CancelDataScanJob        []gax.CallOption
 	GenerateDataQualityRules []gax.CallOption
 	GetLocation              []gax.CallOption
 	ListLocations            []gax.CallOption
@@ -92,6 +93,7 @@ func defaultDataScanCallOptions() *DataScanCallOptions {
 		RunDataScan:              []gax.CallOption{},
 		GetDataScanJob:           []gax.CallOption{},
 		ListDataScanJobs:         []gax.CallOption{},
+		CancelDataScanJob:        []gax.CallOption{},
 		GenerateDataQualityRules: []gax.CallOption{},
 		GetLocation:              []gax.CallOption{},
 		ListLocations:            []gax.CallOption{},
@@ -115,6 +117,7 @@ func defaultDataScanRESTCallOptions() *DataScanCallOptions {
 		RunDataScan:              []gax.CallOption{},
 		GetDataScanJob:           []gax.CallOption{},
 		ListDataScanJobs:         []gax.CallOption{},
+		CancelDataScanJob:        []gax.CallOption{},
 		GenerateDataQualityRules: []gax.CallOption{},
 		GetLocation:              []gax.CallOption{},
 		ListLocations:            []gax.CallOption{},
@@ -144,6 +147,7 @@ type internalDataScanClient interface {
 	RunDataScan(context.Context, *dataplexpb.RunDataScanRequest, ...gax.CallOption) (*dataplexpb.RunDataScanResponse, error)
 	GetDataScanJob(context.Context, *dataplexpb.GetDataScanJobRequest, ...gax.CallOption) (*dataplexpb.DataScanJob, error)
 	ListDataScanJobs(context.Context, *dataplexpb.ListDataScanJobsRequest, ...gax.CallOption) *DataScanJobIterator
+	CancelDataScanJob(context.Context, *dataplexpb.CancelDataScanJobRequest, ...gax.CallOption) (*dataplexpb.CancelDataScanJobResponse, error)
 	GenerateDataQualityRules(context.Context, *dataplexpb.GenerateDataQualityRulesRequest, ...gax.CallOption) (*dataplexpb.GenerateDataQualityRulesResponse, error)
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
@@ -256,6 +260,11 @@ func (c *DataScanClient) ListDataScanJobs(ctx context.Context, req *dataplexpb.L
 	return c.internalClient.ListDataScanJobs(ctx, req, opts...)
 }
 
+// CancelDataScanJob cancels a running/pending DataScan job.
+func (c *DataScanClient) CancelDataScanJob(ctx context.Context, req *dataplexpb.CancelDataScanJobRequest, opts ...gax.CallOption) (*dataplexpb.CancelDataScanJobResponse, error) {
+	return c.internalClient.CancelDataScanJob(ctx, req, opts...)
+}
+
 // GenerateDataQualityRules generates recommended data quality rules based on the results of a data
 // profiling scan.
 //
@@ -270,14 +279,21 @@ func (c *DataScanClient) GetLocation(ctx context.Context, req *locationpb.GetLoc
 }
 
 // ListLocations lists information about the supported locations for this service.
-// This method can be called in two ways:
 //
-//	List all public locations: Use the path GET /v1/locations.
+// This method lists locations based on the resource scope provided in
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)][google.cloud.location.ListLocationsRequest.name (at http://google.cloud.location.ListLocationsRequest.name)] field: *
+// Global locations: If name is empty, the method lists the
+// public locations available to all projects. * Project-specific
+// locations: If name follows the format
+// projects/{project}, the method lists locations visible to that
+// specific project. This includes public, private, or other
+// project-specific locations enabled for the project.
 //
-//	List project-visible locations: Use the path
-//	GET /v1/projects/{project_id}/locations. This may include public
-//	locations as well as private or other locations specifically visible
-//	to the project.
+// For gRPC and client library implementations, the resource name is
+// passed as the name field. For direct service calls, the resource
+// name is
+// incorporated into the request path based on the specific service
+// implementation and version.
 func (c *DataScanClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	return c.internalClient.ListLocations(ctx, req, opts...)
 }
@@ -420,6 +436,7 @@ func NewDataScanClient(ctx context.Context, opts ...option.ClientOption) (*DataS
 		client.CallOptions.RunDataScan = append(client.CallOptions.RunDataScan, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetDataScanJob = append(client.CallOptions.GetDataScanJob, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListDataScanJobs = append(client.CallOptions.ListDataScanJobs, gax.WithClientMetrics(metrics))
+		client.CallOptions.CancelDataScanJob = append(client.CallOptions.CancelDataScanJob, gax.WithClientMetrics(metrics))
 		client.CallOptions.GenerateDataQualityRules = append(client.CallOptions.GenerateDataQualityRules, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
@@ -546,6 +563,7 @@ func NewDataScanRESTClient(ctx context.Context, opts ...option.ClientOption) (*D
 		callOpts.RunDataScan = append(callOpts.RunDataScan, gax.WithClientMetrics(metrics))
 		callOpts.GetDataScanJob = append(callOpts.GetDataScanJob, gax.WithClientMetrics(metrics))
 		callOpts.ListDataScanJobs = append(callOpts.ListDataScanJobs, gax.WithClientMetrics(metrics))
+		callOpts.CancelDataScanJob = append(callOpts.CancelDataScanJob, gax.WithClientMetrics(metrics))
 		callOpts.GenerateDataQualityRules = append(callOpts.GenerateDataQualityRules, gax.WithClientMetrics(metrics))
 		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientMetrics(metrics))
 		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientMetrics(metrics))
@@ -859,6 +877,30 @@ func (c *dataScanGRPCClient) ListDataScanJobs(ctx context.Context, req *dataplex
 	return it
 }
 
+func (c *dataScanGRPCClient) CancelDataScanJob(ctx context.Context, req *dataplexpb.CancelDataScanJobRequest, opts ...gax.CallOption) (*dataplexpb.CancelDataScanJobResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataplex.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataplex.v1.DataScanService/CancelDataScanJob")
+	}
+	opts = append((*c.CallOptions).CancelDataScanJob[0:len((*c.CallOptions).CancelDataScanJob):len((*c.CallOptions).CancelDataScanJob)], opts...)
+	var resp *dataplexpb.CancelDataScanJobResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.dataScanClient.CancelDataScanJob, req, settings.GRPC, c.logger, "CancelDataScanJob")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 func (c *dataScanGRPCClient) GenerateDataQualityRules(ctx context.Context, req *dataplexpb.GenerateDataQualityRulesRequest, opts ...gax.CallOption) (*dataplexpb.GenerateDataQualityRulesResponse, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -1143,7 +1185,9 @@ func (c *dataScanRESTClient) CreateDataScan(ctx context.Context, req *dataplexpb
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
-	params.Add("dataScanId", fmt.Sprintf("%v", req.GetDataScanId()))
+	if req.GetDataScanId() != "" {
+		params.Add("dataScanId", fmt.Sprintf("%v", req.GetDataScanId()))
+	}
 	if req.GetValidateOnly() {
 		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
 	}
@@ -1682,6 +1726,69 @@ func (c *dataScanRESTClient) ListDataScanJobs(ctx context.Context, req *dataplex
 	return it
 }
 
+// CancelDataScanJob cancels a running/pending DataScan job.
+func (c *dataScanRESTClient) CancelDataScanJob(ctx context.Context, req *dataplexpb.CancelDataScanJobRequest, opts ...gax.CallOption) (*dataplexpb.CancelDataScanJobResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataplex.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataplex.v1.DataScanService/CancelDataScanJob")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/dataScans/*/jobs/*}:cancel")
+	}
+	opts = append((*c.CallOptions).CancelDataScanJob[0:len((*c.CallOptions).CancelDataScanJob):len((*c.CallOptions).CancelDataScanJob)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &dataplexpb.CancelDataScanJobResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CancelDataScanJob")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
 // GenerateDataQualityRules generates recommended data quality rules based on the results of a data
 // profiling scan.
 //
@@ -1800,14 +1907,21 @@ func (c *dataScanRESTClient) GetLocation(ctx context.Context, req *locationpb.Ge
 }
 
 // ListLocations lists information about the supported locations for this service.
-// This method can be called in two ways:
 //
-//	List all public locations: Use the path GET /v1/locations.
+// This method lists locations based on the resource scope provided in
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)][google.cloud.location.ListLocationsRequest.name (at http://google.cloud.location.ListLocationsRequest.name)] field: *
+// Global locations: If name is empty, the method lists the
+// public locations available to all projects. * Project-specific
+// locations: If name follows the format
+// projects/{project}, the method lists locations visible to that
+// specific project. This includes public, private, or other
+// project-specific locations enabled for the project.
 //
-//	List project-visible locations: Use the path
-//	GET /v1/projects/{project_id}/locations. This may include public
-//	locations as well as private or other locations specifically visible
-//	to the project.
+// For gRPC and client library implementations, the resource name is
+// passed as the name field. For direct service calls, the resource
+// name is
+// incorporated into the request path based on the specific service
+// implementation and version.
 func (c *dataScanRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
 	req = proto.CloneOf(req)

@@ -57,6 +57,7 @@ const (
 	CatalogService_ListEntries_FullMethodName        = "/google.cloud.dataplex.v1.CatalogService/ListEntries"
 	CatalogService_GetEntry_FullMethodName           = "/google.cloud.dataplex.v1.CatalogService/GetEntry"
 	CatalogService_LookupEntry_FullMethodName        = "/google.cloud.dataplex.v1.CatalogService/LookupEntry"
+	CatalogService_ModifyEntry_FullMethodName        = "/google.cloud.dataplex.v1.CatalogService/ModifyEntry"
 	CatalogService_SearchEntries_FullMethodName      = "/google.cloud.dataplex.v1.CatalogService/SearchEntries"
 	CatalogService_CreateMetadataJob_FullMethodName  = "/google.cloud.dataplex.v1.CatalogService/CreateMetadataJob"
 	CatalogService_GetMetadataJob_FullMethodName     = "/google.cloud.dataplex.v1.CatalogService/GetMetadataJob"
@@ -121,6 +122,8 @@ type CatalogServiceClient interface {
 	GetEntry(ctx context.Context, in *GetEntryRequest, opts ...grpc.CallOption) (*Entry, error)
 	// Looks up an entry by name using the permission on the source system.
 	LookupEntry(ctx context.Context, in *LookupEntryRequest, opts ...grpc.CallOption) (*Entry, error)
+	// Modifies an entry using the permission on the source system.
+	ModifyEntry(ctx context.Context, in *ModifyEntryRequest, opts ...grpc.CallOption) (*Entry, error)
 	// Searches for Entries matching the given query and scope.
 	SearchEntries(ctx context.Context, in *SearchEntriesRequest, opts ...grpc.CallOption) (*SearchEntriesResponse, error)
 	// Creates a metadata job. For example, use a metadata job to import metadata
@@ -358,6 +361,15 @@ func (c *catalogServiceClient) LookupEntry(ctx context.Context, in *LookupEntryR
 	return out, nil
 }
 
+func (c *catalogServiceClient) ModifyEntry(ctx context.Context, in *ModifyEntryRequest, opts ...grpc.CallOption) (*Entry, error) {
+	out := new(Entry)
+	err := c.cc.Invoke(ctx, CatalogService_ModifyEntry_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *catalogServiceClient) SearchEntries(ctx context.Context, in *SearchEntriesRequest, opts ...grpc.CallOption) (*SearchEntriesResponse, error) {
 	out := new(SearchEntriesResponse)
 	err := c.cc.Invoke(ctx, CatalogService_SearchEntries_FullMethodName, in, out, opts...)
@@ -548,6 +560,8 @@ type CatalogServiceServer interface {
 	GetEntry(context.Context, *GetEntryRequest) (*Entry, error)
 	// Looks up an entry by name using the permission on the source system.
 	LookupEntry(context.Context, *LookupEntryRequest) (*Entry, error)
+	// Modifies an entry using the permission on the source system.
+	ModifyEntry(context.Context, *ModifyEntryRequest) (*Entry, error)
 	// Searches for Entries matching the given query and scope.
 	SearchEntries(context.Context, *SearchEntriesRequest) (*SearchEntriesResponse, error)
 	// Creates a metadata job. For example, use a metadata job to import metadata
@@ -654,6 +668,9 @@ func (UnimplementedCatalogServiceServer) GetEntry(context.Context, *GetEntryRequ
 }
 func (UnimplementedCatalogServiceServer) LookupEntry(context.Context, *LookupEntryRequest) (*Entry, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method LookupEntry not implemented")
+}
+func (UnimplementedCatalogServiceServer) ModifyEntry(context.Context, *ModifyEntryRequest) (*Entry, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ModifyEntry not implemented")
 }
 func (UnimplementedCatalogServiceServer) SearchEntries(context.Context, *SearchEntriesRequest) (*SearchEntriesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SearchEntries not implemented")
@@ -1093,6 +1110,24 @@ func _CatalogService_LookupEntry_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _CatalogService_ModifyEntry_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ModifyEntryRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CatalogServiceServer).ModifyEntry(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CatalogService_ModifyEntry_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CatalogServiceServer).ModifyEntry(ctx, req.(*ModifyEntryRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _CatalogService_SearchEntries_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(SearchEntriesRequest)
 	if err := dec(in); err != nil {
@@ -1471,6 +1506,10 @@ var CatalogService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "LookupEntry",
 			Handler:    _CatalogService_LookupEntry_Handler,
+		},
+		{
+			MethodName: "ModifyEntry",
+			Handler:    _CatalogService_ModifyEntry_Handler,
 		},
 		{
 			MethodName: "SearchEntries",
