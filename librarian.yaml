@@ -577,7 +577,7 @@ libraries:
         go:
           import_path: datamanager/apiv1
   - name: dataplex
-    version: 1.34.0
+    version: 1.35.0
     apis:
       - path: google/cloud/dataplex/v1
   - name: dataproc
@@ -727,7 +727,7 @@ libraries:
       - path: google/cloud/functions/v1
       - path: google/cloud/functions/v2beta
   - name: geminidataanalytics
-    version: 1.1.0
+    version: 1.2.0
     apis:
       - path: google/cloud/geminidataanalytics/v1
       - path: google/cloud/geminidataanalytics/v1beta
@@ -888,7 +888,7 @@ libraries:
       - path: google/cloud/managedkafka/v1
       - path: google/cloud/managedkafka/schemaregistry/v1
   - name: maps
-    version: 1.35.0
+    version: 1.36.0
     apis:
       - path: google/maps/geocode/v4
       - path: google/maps/routing/v2
@@ -1174,7 +1174,7 @@ libraries:
     keep:
       - apiv2/locations_client.go
   - name: saasplatform
-    version: 0.7.0
+    version: 0.8.0
     apis:
       - path: google/cloud/saasplatform/saasservicemgmt/v1beta1
   - name: scheduler
@@ -1202,7 +1202,7 @@ libraries:
     apis:
       - path: google/cloud/securesourcemanager/v1
   - name: security
-    version: 1.24.0
+    version: 1.25.0
     apis:
       - path: google/cloud/security/privateca/v1
       - path: google/cloud/security/publicca/v1
