@@ -163,6 +163,7 @@ loop:
 }
 
 func TestEndToEnd_LongProcessingTime(t *testing.T) {
+  t.Skip("flaky https://github.com/googleapis/google-cloud-go/issues/14539")
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 	client, topic, cleanup := prepareEndToEndTest(ctx, t)
