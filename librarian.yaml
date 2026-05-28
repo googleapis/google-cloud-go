@@ -233,114 +233,133 @@ libraries:
             - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
             - F_proto_cloneof
+          no_snippets: true
       - path: google/cloud/bigquery/datapolicies/v2
         go:
           enabled_generator_features:
             - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
             - F_proto_cloneof
+          no_snippets: true
       - path: google/cloud/bigquery/datatransfer/v1
         go:
           enabled_generator_features:
             - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
             - F_proto_cloneof
+          no_snippets: true
       - path: google/cloud/bigquery/biglake/v1
         go:
           enabled_generator_features:
             - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
             - F_proto_cloneof
+          no_snippets: true
       - path: google/cloud/bigquery/storage/v1
         go:
           enabled_generator_features:
             - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
             - F_proto_cloneof
+          no_snippets: true
       - path: google/cloud/bigquery/connection/v1
         go:
           enabled_generator_features:
             - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
             - F_proto_cloneof
+          no_snippets: true
       - path: google/cloud/bigquery/reservation/v1
         go:
           enabled_generator_features:
             - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
             - F_proto_cloneof
+          no_snippets: true
       - path: google/cloud/bigquery/analyticshub/v1
         go:
           enabled_generator_features:
             - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
             - F_proto_cloneof
+          no_snippets: true
       - path: google/cloud/bigquery/datapolicies/v1
         go:
           enabled_generator_features:
             - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
             - F_proto_cloneof
+          no_snippets: true
       - path: google/cloud/bigquery/datapolicies/v2beta1
         go:
           enabled_generator_features:
             - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
             - F_proto_cloneof
+          no_snippets: true
       - path: google/cloud/bigquery/migration/v2alpha
         go:
           enabled_generator_features:
             - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
             - F_proto_cloneof
+          no_snippets: true
       - path: google/cloud/bigquery/storage/v1beta2
         go:
           enabled_generator_features:
             - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
             - F_proto_cloneof
+          no_snippets: true
       - path: google/cloud/bigquery/datapolicies/v1beta1
         go:
           enabled_generator_features:
             - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
             - F_proto_cloneof
+          no_snippets: true
       - path: google/cloud/bigquery/dataexchange/v1beta1
         go:
           enabled_generator_features:
             - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
             - F_proto_cloneof
+          no_snippets: true
       - path: google/cloud/bigquery/connection/v1beta1
         go:
           enabled_generator_features:
             - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
             - F_proto_cloneof
+          no_snippets: true
       - path: google/cloud/bigquery/storage/v1beta1
         go:
           enabled_generator_features:
             - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
             - F_proto_cloneof
+          no_snippets: true
       - path: google/cloud/bigquery/storage/v1beta
         go:
           enabled_generator_features:
             - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
             - F_proto_cloneof
+          no_snippets: true
       - path: google/cloud/bigquery/biglake/v1alpha1
         go:
           enabled_generator_features:
             - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
             - F_proto_cloneof
+          no_snippets: true
       - path: google/cloud/bigquery/storage/v1alpha
         go:
           enabled_generator_features:
             - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
             - F_proto_cloneof
+          no_snippets: true
     keep:
       - README.md
     skip_release: true
@@ -357,6 +376,7 @@ libraries:
             - F_wrapper_types_for_page_size
             - F_proto_cloneof
           import_path: bigquery/v2/apiv2
+          no_snippets: true
     keep:
       - README.md
     skip_release: true
@@ -366,10 +386,12 @@ libraries:
       - path: google/bigtable/v2
         go:
           no_metadata: true
+          no_snippets: true
           proto_only: true
       - path: google/bigtable/admin/v2
         go:
           no_metadata: true
+          no_snippets: true
           proto_only: true
     keep:
       - README.md
@@ -708,6 +730,7 @@ libraries:
             - F_open_telemetry_attributes
             - F_ordered_routing_headers
             - F_proto_cloneof
+          no_snippets: true
       - path: google/firestore/admin/v1
         go:
           client_package: apiv1
@@ -717,6 +740,7 @@ libraries:
             - F_ordered_routing_headers
             - F_proto_cloneof
           import_path: firestore/apiv1/admin
+          no_snippets: true
     keep:
       - README.md
     skip_release: true
@@ -1091,6 +1115,7 @@ libraries:
             - F_proto_cloneof
           import_path: pubsub/v2/apiv1
           no_metadata: true
+          no_snippets: true
     keep:
       - README.md
     skip_release: true
@@ -1098,6 +1123,8 @@ libraries:
     version: 1.8.2
     apis:
       - path: google/cloud/pubsublite/v1
+        go:
+          no_snippets: true
     skip_release: true
   - name: rapidmigrationassessment
     version: 1.6.0
@@ -1294,14 +1321,21 @@ libraries:
       - path: google/spanner/v1
         go:
           no_metadata: true
+          no_snippets: true
       - path: google/spanner/adapter/v1
+        go:
+          no_snippets: true
       - path: google/spanner/executor/v1
+        go:
+          no_snippets: true
       - path: google/spanner/admin/database/v1
         go:
           no_metadata: true
+          no_snippets: true
       - path: google/spanner/admin/instance/v1
         go:
           no_metadata: true
+          no_snippets: true
     keep:
       - README.md
     skip_release: true
@@ -1319,6 +1353,8 @@ libraries:
           import_path: storage/internal/apiv2
           no_snippets: true
       - path: google/storage/control/v2
+        go:
+          no_snippets: true
     keep:
       - README.md
     skip_release: true
