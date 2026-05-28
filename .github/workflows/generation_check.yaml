@@ -24,7 +24,7 @@ jobs:
       # Version of librarian is pulled from librarian.yaml,
       # main corresponds to the action's source definition.
       - uses: googleapis/librarian@main
-        if: 
+        if: steps.changes.outputs.librarian == 'true'
         with:
           protoc-version: '33.2'
           protoc-checksum: '8c0a8577311720cc83488f813aeb5046d69cb9824cbf39cb7447e0c5132d677952d5bb7c1130d9df381835eee7352828878d409873ebb407d7a4649ea2a4aee5'
