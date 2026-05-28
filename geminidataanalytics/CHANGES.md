@@ -1,5 +1,11 @@
 # Changes
 
+## [1.2.0](https://github.com/googleapis/google-cloud-go/releases/tag/geminidataanalytics%2Fv1.2.0) (2026-05-28)
+
+### Features
+
+* update API sources and regenerate (#14661) ([d0cd917](https://github.com/googleapis/google-cloud-go/commit/d0cd917ce0ad46a4d2c1cd4ea2ef8efa60b591d3))
+
 ## [1.1.0](https://github.com/googleapis/google-cloud-go/releases/tag/geminidataanalytics%2Fv1.1.0) (2026-05-14)
 
 ### Features
