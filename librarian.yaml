@@ -902,8 +902,8 @@ libraries:
       - path: google/maps/solar/v1
       - path: google/maps/fleetengine/delivery/v1
         go:
-          proto_package: maps.fleetengine.delivery.v1
           no_snippets: true
+          proto_package: maps.fleetengine.delivery.v1
       - path: google/maps/mapmanagement/v2beta
         go:
           no_snippets: true
