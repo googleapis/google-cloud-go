@@ -903,7 +903,10 @@ libraries:
       - path: google/maps/fleetengine/delivery/v1
         go:
           proto_package: maps.fleetengine.delivery.v1
+          no_snippets: true
       - path: google/maps/mapmanagement/v2beta
+        go:
+          no_snippets: true
     title_override: Google Maps Platform
   - name: mediatranslation
     version: 0.13.0
