@@ -3677,9 +3677,7 @@ func TestIntegration_VerifyGRPCLimits(t *testing.T) {
 	// Create a large 5MB random payload (non-compressible) to verify transport limits
 	size := 5 * 1024 * 1024
 	largeData := make([]byte, size)
-	if _, err := rand.Read(largeData); err != nil {
-		t.Fatalf("Failed to generate random data: %v", err)
-	}
+	rand.Read(largeData)
 
 	docRef := c.Collection("large_docs").NewDoc()
 	t.Cleanup(func() {
