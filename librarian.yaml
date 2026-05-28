@@ -1314,13 +1314,11 @@ libraries:
       - path: google/storage/v2
         go:
           import_path: storage/internal/apiv2
+          no_snippets: true
       - path: google/storage/control/v2
     keep:
       - README.md
     skip_release: true
-    go:
-      delete_generation_output_paths:
-        - ../internal/generated/snippets/storage/internal
   - name: storagebatchoperations
     version: 1.0.0
     apis:
