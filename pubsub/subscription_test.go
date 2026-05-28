@@ -745,7 +745,8 @@ func TestExactlyOnceDelivery_AckRetryDeadlineExceeded(t *testing.T) {
 	}
 
 	s.ReceiveSettings = ReceiveSettings{
-		NumGoroutines: 1,
+		NumGoroutines:              1,
+		MinDurationPerAckExtension: 10 * time.Minute,
 	}
 	// Override the default timeout here so this test doesn't take 10 minutes.
 	exactlyOnceDeliveryRetryDeadline = 10 * time.Second
