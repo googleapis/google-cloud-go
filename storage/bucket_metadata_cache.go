@@ -16,10 +16,15 @@ package storage
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"net/http"
 	"time"
 
 	"golang.org/x/sync/singleflight"
+	"google.golang.org/api/googleapi"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 const (
@@ -103,14 +108,31 @@ func (c *bucketMetadataCache) fetchBackground(bucket string) {
 
 		var entry bucketMetadata
 		if err != nil {
-			// Failure: Do not retry, store placeholder but mark so we do not attempt fetches again
-			entry = bucketMetadata{
-				resource: fmt.Sprintf("projects/_/buckets/%s", bucket),
-				location: "global",
+			if isForbiddenOrPermissionError(err) {
+				entry = bucketMetadata{
+					resource: fmt.Sprintf("projects/_/buckets/%s", bucket),
+					location: "global",
+				}
+				c.put(bucket, entry)
 			}
 		} else {
 			entry = resVal.(bucketMetadata)
+			c.put(bucket, entry)
 		}
-		c.put(bucket, entry)
 	}()
+}
+
+func isForbiddenOrPermissionError(err error) bool {
+	var e *googleapi.Error
+	if errors.As(err, &e) {
+		if e.Code == http.StatusForbidden {
+			return true
+		}
+	}
+	if s, ok := status.FromError(err); ok {
+		if s.Code() == codes.PermissionDenied {
+			return true
+		}
+	}
+	return false
 }

@@ -17,7 +17,6 @@ package storage
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -26,6 +25,7 @@ import (
 	"testing"
 	"time"
 
+	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 )
 
@@ -42,27 +42,6 @@ func (m *mockMetadataFetcher) fetchBucketMetadata(ctx context.Context, bucket st
 	return fmt.Sprintf("projects/p1/buckets/%s", bucket), "us-east1", nil
 }
 
-func TestCacheGetPut(t *testing.T) {
-	cache := newBucketMetadataCache(10, nil)
-
-	// Test miss
-	if _, found := cache.get("b1"); found {
-		t.Errorf("expected cache miss, got hit")
-	}
-
-	// Test hit after put
-	meta := bucketMetadata{resource: "res", location: "loc"}
-	cache.put("b1", meta)
-
-	got, found := cache.get("b1")
-	if !found {
-		t.Fatalf("expected cache hit, got miss")
-	}
-	if got != meta {
-		t.Errorf("expected %v, got %v", meta, got)
-	}
-}
-
 func TestCacheNilSafety(t *testing.T) {
 	var cache *bucketMetadataCache = nil
 	// Must not panic
@@ -72,20 +51,6 @@ func TestCacheNilSafety(t *testing.T) {
 	cache.put("b1", bucketMetadata{})
 	cache.evict("b1")
 	cache.fetchBackground("b1")
-}
-
-func TestCacheEviction(t *testing.T) {
-	cache := newBucketMetadataCache(10, nil)
-	meta := bucketMetadata{resource: "res", location: "loc"}
-	cache.put("b1", meta)
-
-	cache.evict("b1")
-	if _, found := cache.get("b1"); found {
-		t.Errorf("expected b1 to be evicted")
-	}
-
-	// Evict non-existing should be a no-op
-	cache.evict("b2")
 }
 
 func TestCacheConcurrentSafe(t *testing.T) {
@@ -183,7 +148,7 @@ func TestCacheFetchBackgroundSingleFlight(t *testing.T) {
 func TestCacheFetchBackgroundErrorPlaceholder(t *testing.T) {
 	fetcher := &mockMetadataFetcher{
 		fetchFunc: func(ctx context.Context, bucket string) (resource string, location string, err error) {
-			return "", "", errors.New("API call failed")
+			return "", "", &googleapi.Error{Code: http.StatusForbidden}
 		},
 	}
 

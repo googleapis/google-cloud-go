@@ -361,9 +361,6 @@ func TestEndSpanEviction(t *testing.T) {
 func TestClientTracingIntegration(t *testing.T) {
 	ctx := context.Background()
 
-	t.Setenv("STORAGE_EMULATOR_HOST_GRPC", "localhost:8888")
-	t.Setenv("STORAGE_EMULATOR_HOST", "http://localhost:9000")
-
 	tests := []struct {
 		name      string
 		newClient func(ctx context.Context, opts ...option.ClientOption) (*Client, error)

@@ -72,7 +72,7 @@ func startSpanWithBucket(ctx context.Context, client *Client, bucket string, nam
 	if !isOTelTracingDevEnabled() {
 		return startSpan(ctx, name, opts...)
 	}
-	if client != nil && client.bucketMetadataCache != nil {
+	if client != nil && client.bucketMetadataCache != nil && bucket != "" {
 		ctx = context.WithValue(ctx, cacheContextKey, client.bucketMetadataCache)
 		ctx = context.WithValue(ctx, bucketContextKey, bucket)
 		isBucket := strings.HasPrefix(name, "Bucket.") || strings.HasPrefix(name, "ACL.") || strings.HasPrefix(name, "storage.IAM.")
@@ -133,14 +133,12 @@ func isNotFoundError(err error) bool {
 // and the span status is set in the form of a code and a description.
 func endSpan(ctx context.Context, err error) {
 	if err != nil && isNotFoundError(err) {
-		if isBucketVal := ctx.Value(isBucketContextKey); isBucketVal != nil && isBucketVal.(bool) {
-			if cacheVal := ctx.Value(cacheContextKey); cacheVal != nil {
-				if bucketVal := ctx.Value(bucketContextKey); bucketVal != nil {
-					cache := cacheVal.(*bucketMetadataCache)
-					bucket := bucketVal.(string)
-					cache.evict(bucket)
-				}
-			}
+		isBucket, _ := ctx.Value(isBucketContextKey).(bool)
+		cache, _ := ctx.Value(cacheContextKey).(*bucketMetadataCache)
+		bucket, _ := ctx.Value(bucketContextKey).(string)
+
+		if isBucket && cache != nil && bucket != "" {
+			cache.evict(bucket)
 		}
 	}
 
