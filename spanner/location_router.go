@@ -47,7 +47,7 @@ func isExperimentalLocationAPIEnabledForConfig(config ClientConfig) bool {
 		enabled, _ := strconv.ParseBool(locationAPIEnvValue)
 		return enabled
 	}
-	return config.IsExperimentalHost
+	return config.IsExperimentalHost || config.Type == OMNI
 }
 
 func newLocationRouter(endpointCache channelEndpointCache) *locationRouter {

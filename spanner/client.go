@@ -274,6 +274,16 @@ func (gw *gmeWrapper) Num() int {
 	return int(gw.GCPMultiEndpoint.GCPConfig().GetChannelPool().GetMaxSize())
 }
 
+// InstanceType specifies the type of Spanner instance to connect to.
+type InstanceType string
+
+const (
+	// CLOUD represents a Cloud Spanner instance.
+	CLOUD InstanceType = "CLOUD"
+	// OMNI represents a Spanner Omni instance.
+	OMNI InstanceType = "OMNI"
+)
+
 // ClientConfig has configurations for the client.
 type ClientConfig struct {
 	// NumChannels is the number of gRPC channels.
@@ -374,7 +384,14 @@ type ClientConfig struct {
 	// Default: false
 	DisableNativeMetrics bool
 
-	// Default: false
+	// Type specifies the type of Spanner instance to connect to (CLOUD or OMNI).
+	// CLOUD is a no-op and for connecting to Spanner Omni its mandatory to set type as OMNI.
+	// If unspecified, it defaults to CLOUD.
+	Type InstanceType
+
+	// IsExperimentalHost is deprecated. Use Type = OMNI instead.
+	//
+	// Deprecated: Use Type = OMNI instead.
 	IsExperimentalHost bool
 
 	// ClientContext is the default context for all requests made by the client.
