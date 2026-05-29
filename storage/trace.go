@@ -69,6 +69,9 @@ func tracer() trace.Tracer {
 }
 
 func startSpanWithBucket(ctx context.Context, client *Client, bucket string, name string, opts ...trace.SpanStartOption) (context.Context, trace.Span) {
+	if !isOTelTracingDevEnabled() {
+		return startSpan(ctx, name, opts...)
+	}
 	if client != nil && client.bucketMetadataCache != nil {
 		ctx = context.WithValue(ctx, cacheContextKey, client.bucketMetadataCache)
 		ctx = context.WithValue(ctx, bucketContextKey, bucket)

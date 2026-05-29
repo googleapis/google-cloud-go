@@ -14,20 +14,29 @@
 
 package storage
 
-import "sync"
+import (
+	"container/list"
+	"sync"
+)
 
 // lruCache is a generic, concurrency-safe Least Recently Used cache.
 type lruCache[K comparable, V any] struct {
-	mu      sync.Mutex
-	entries map[K]V
-	keys    []K // tracking access order (least recent at the front, most recent at the end)
-	limit   int
+	mu        sync.Mutex
+	entries   map[K]*list.Element
+	evictList *list.List
+	limit     int
+}
+
+type cacheEntry[K comparable, V any] struct {
+	key   K
+	value V
 }
 
 func newLRUCache[K comparable, V any](limit int) *lruCache[K, V] {
 	return &lruCache[K, V]{
-		entries: make(map[K]V),
-		limit:   limit,
+		entries:   make(map[K]*list.Element),
+		evictList: list.New(),
+		limit:     limit,
 	}
 }
 
@@ -39,11 +48,12 @@ func (c *lruCache[K, V]) get(key K) (V, bool) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
-	entry, ok := c.entries[key]
-	if ok {
-		c.promote(key)
+	if elem, ok := c.entries[key]; ok {
+		c.evictList.MoveToFront(elem)
+		return elem.Value.(*cacheEntry[K, V]).value, true
 	}
-	return entry, ok
+	var zero V
+	return zero, false
 }
 
 func (c *lruCache[K, V]) put(key K, val V) {
@@ -53,20 +63,21 @@ func (c *lruCache[K, V]) put(key K, val V) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
-	if _, exists := c.entries[key]; exists {
-		c.entries[key] = val
-		c.promote(key)
+	// If element already exists, update the value and promote it
+	if elem, ok := c.entries[key]; ok {
+		c.evictList.MoveToFront(elem)
+		elem.Value.(*cacheEntry[K, V]).value = val
 		return
 	}
 
-	if len(c.entries) >= c.limit {
-		oldest := c.keys[0]
-		c.keys = c.keys[1:]
-		delete(c.entries, oldest)
-	}
+	// Add new element to front
+	elem := c.evictList.PushFront(&cacheEntry[K, V]{key: key, value: val})
+	c.entries[key] = elem
 
-	c.entries[key] = val
-	c.keys = append(c.keys, key)
+	// Evict oldest element if limit exceeded
+	if c.evictList.Len() > c.limit {
+		c.removeOldest()
+	}
 }
 
 func (c *lruCache[K, V]) evict(key K) {
@@ -76,27 +87,20 @@ func (c *lruCache[K, V]) evict(key K) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
-	if _, exists := c.entries[key]; !exists {
-		return
-	}
-	delete(c.entries, key)
-
-	for i, k := range c.keys {
-		if k == key {
-			c.keys = append(c.keys[:i], c.keys[i+1:]...)
-			break
-		}
+	if elem, ok := c.entries[key]; ok {
+		c.removeElement(elem)
 	}
 }
 
-// promote moves the key to the end of the keys slice (most recently used).
-// Must be called under lock c.mu.
-func (c *lruCache[K, V]) promote(key K) {
-	for i, k := range c.keys {
-		if k == key {
-			c.keys = append(c.keys[:i], c.keys[i+1:]...)
-			c.keys = append(c.keys, key)
-			break
-		}
+func (c *lruCache[K, V]) removeOldest() {
+	elem := c.evictList.Back()
+	if elem != nil {
+		c.removeElement(elem)
 	}
+}
+
+func (c *lruCache[K, V]) removeElement(elem *list.Element) {
+	c.evictList.Remove(elem)
+	kv := elem.Value.(*cacheEntry[K, V])
+	delete(c.entries, kv.key)
 }
