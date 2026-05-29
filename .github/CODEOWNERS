@@ -1,8 +1,9 @@
 # Default owner for all directories not owned by others
 # The cloud-sdk-go-team team are the effective repo maintainers, but automatic
 # generation/releasing PRs are in the purview of the librarian team.
-*                       @googleapis/cloud-sdk-librarian-team @googleapis/cloud-sdk-go-team
+*                       @googleapis/cloud-sdk-go-team
 
+/librarian.yaml         @googleapis/cloud-sdk-librarian-team
 /ai/                    @googleapis/vertexai-team @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
 /aiplatform/            @googleapis/vertexai-team @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
 /agentplatform/         @googleapis/vertexai-team @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
