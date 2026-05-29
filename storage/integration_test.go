@@ -8971,3 +8971,23 @@ func TestIntegration_ParallelUpload_ChecksumValidation(t *testing.T) {
 		}
 	})
 }
+
+func TestIntegration_FetchBucketMetadata(t *testing.T) {
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		// Call the internal fetchBucketMetadata on client.tc
+		resource, location, err := client.tc.fetchBucketMetadata(ctx, bucket)
+		if err != nil {
+			t.Fatalf("fetchBucketMetadata failed: %v", err)
+		}
+
+		// Verify resource name format.
+		if !strings.HasPrefix(resource, "projects/") || !strings.HasSuffix(resource, "/buckets/"+bucket) {
+			t.Errorf("unexpected resource format: %q", resource)
+		}
+
+		// Verify location is not empty
+		if location == "" {
+			t.Errorf("expected location to be populated, got empty string")
+		}
+	})
+}

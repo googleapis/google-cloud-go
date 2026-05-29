@@ -2228,3 +2228,22 @@ func (r *gRPCReader) reopenStream() error {
 	r.cancel = cancel
 	return nil
 }
+
+func (c *grpcStorageClient) fetchBucketMetadata(ctx context.Context, bucket string) (resource string, location string, err error) {
+	req := &storagepb.GetBucketRequest{
+		Name:     bucketResourceName(globalProjectAlias, bucket),
+		ReadMask: &fieldmaskpb.FieldMask{Paths: []string{"*"}},
+	}
+	resp, err := c.raw.GetBucket(ctx, req)
+	if err != nil {
+		return "", "", err
+	}
+	project := "_"
+	if proj := resp.GetProject(); proj != "" {
+		if strings.HasPrefix(proj, "projects/") {
+			return proj + "/buckets/" + bucket, strings.ToLower(resp.GetLocation()), nil
+		}
+		project = proj
+	}
+	return fmt.Sprintf("projects/%s/buckets/%s", project, bucket), strings.ToLower(resp.GetLocation()), nil
+}
