@@ -3343,3 +3343,19 @@ type SchemaPromptSpecInteractionData struct {
 	// If InteractionData is present, every prompt message has an interaction ID.
 	InteractionIDs []string `json:"interactionIds,omitempty"`
 }
+
+// Config for listing deployable models.
+type listDeployableModelsConfig struct {
+	// Optional. Whether to list Hugging Face models.
+	IncludeHuggingFaceModels bool `json:"includeHuggingFaceModels,omitempty"`
+	// Optional. A string to filter the models by.
+	ModelFilter string `json:"modelFilter,omitempty"`
+}
+
+// Config for listing Model Garden models.
+type listModelGardenModelsConfig struct {
+	// Optional. Whether to list Hugging Face models.
+	IncludeHuggingFaceModels bool `json:"includeHuggingFaceModels,omitempty"`
+	// Optional. A string to filter the models by.
+	ModelFilter string `json:"modelFilter,omitempty"`
+}
