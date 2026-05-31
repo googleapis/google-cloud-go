@@ -267,6 +267,11 @@ func (s *Session) handleSessionResponse(resp *spb.SessionResponse) {
 		return
 	}
 
+	if hb := resp.GetHeartbeat(); hb != nil {
+		s.resetHeartbeatDeadline()
+		return
+	}
+
 	s.resetHeartbeatDeadline() // Reset deadline on any successfully received server frame!
 }
 
@@ -292,7 +297,7 @@ func (s *Session) heartBeatLoop(ctx context.Context) {
 			}
 
 			// Missed heartbeats read watchdog check!
-			if len(s.activeRPCs) > 0 && time.Now().After(s.nextHeartbeatDeadline) {
+			if time.Now().After(s.nextHeartbeatDeadline) {
 				s.mu.Unlock()
 				s.ForceClose(&spb.CloseSessionRequest{
 					Reason:      spb.CloseSessionRequest_CLOSE_SESSION_REASON_MISSED_HEARTBEAT,

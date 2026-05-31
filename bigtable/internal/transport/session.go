@@ -20,8 +20,11 @@ import (
 	"time"
 
 	spb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
+	"golang.org/x/sync/semaphore"
 	"google.golang.org/grpc/metadata"
 )
+
+const sessionConcurrencyLimit = 1 // Limit of 1 indicates no multiplexing.
 
 // State represents the state of a Session.
 type State int
@@ -91,7 +94,7 @@ type VRPCImpl struct {
 type Session struct {
 	mu                    sync.Mutex
 	sendMu                sync.Mutex
-	vrpcMu                sync.Mutex // Serializes vRPC execution to ensure only one runs at a time per session.
+	vrpcSem               *semaphore.Weighted // Serializes vRPC execution to ensure only one runs at a time per session.
 	state                 State
 	lastStateChange       time.Time
 	logName               string
@@ -125,6 +128,7 @@ func NewSession(logName string, stream Stream, listener Listener, sessionType Se
 		handshakeDone:         make(chan struct{}),
 		tracer:                newSessionTracer(sessionType),
 		sessionType:           sessionType,
+		vrpcSem:               semaphore.NewWeighted(sessionConcurrencyLimit),
 	}
 }
 

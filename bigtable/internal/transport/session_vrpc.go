@@ -27,8 +27,10 @@ import (
 
 // ExecuteVRpc executes a virtual RPC sequentially and synchronously, multiplexing over the stream.
 func (s *Session) ExecuteVRpc(ctx context.Context, desc VRpcDescriptor, req interface{}) (resp interface{}, clusterInfo *spb.ClusterInformation, err error) {
-	s.vrpcMu.Lock()
-	defer s.vrpcMu.Unlock()
+	if err := s.vrpcSem.Acquire(ctx, sessionConcurrencyLimit); err != nil {
+		return nil, nil, err
+	}
+	defer s.vrpcSem.Release(sessionConcurrencyLimit)
 
 	startTime := time.Now()
 	defer func() {

@@ -84,9 +84,26 @@ const (
 type contextKey string
 
 const (
-	statsContextKey contextKey = "bigtable/clientBlockingLatencyTracker"
-	t4t7ContextKey  contextKey = "bigtable/t4t7Tracker"
+	statsContextKey         contextKey = "bigtable/clientBlockingLatencyTracker"
+	t4t7ContextKey          contextKey = "bigtable/t4t7Tracker"
+	metricsTracerContextKey contextKey = "bigtable/metricsTracer"
 )
+
+func contextWithMetricsTracer(ctx context.Context, mt *builtinMetricsTracer) context.Context {
+	return context.WithValue(ctx, metricsTracerContextKey, mt)
+}
+
+func metricsTracerFromContext(ctx context.Context) *builtinMetricsTracer {
+	if mt, ok := ctx.Value(metricsTracerContextKey).(*builtinMetricsTracer); ok {
+		return mt
+	}
+	return &builtinMetricsTracer{
+		builtInEnabled: false,
+		currOp: opTracer{
+			cookies: make(map[string]string),
+		},
+	}
+}
 
 // These are effectively constant, but for testing purposes they are mutable
 var (
@@ -519,6 +536,9 @@ type attemptTracer struct {
 	// Tracker for client blocking latency
 	blockingLatencyTracker *blockingLatencyTracker
 
+	// Client blocking latency in ms
+	clientBlockingLatency float64
+
 	// Tracker for t4t7
 	t4t7Tracker *t4t7Tracker
 }
@@ -666,8 +686,12 @@ func (mt *builtinMetricsTracer) recordAttemptCompletion(attemptHeaderMD, attempT
 	// Get location attributes from metadata and set it in tracer
 	// Ignore get location error since the metric can still be recorded with rest of the attributes
 	clusterID, zoneID, _ := extractLocation(attemptHeaderMD, attempTrailerMD)
-	mt.currOp.currAttempt.setClusterID(clusterID)
-	mt.currOp.currAttempt.setZoneID(zoneID)
+	if mt.currOp.currAttempt.clusterID == "" || mt.currOp.currAttempt.clusterID == defaultCluster {
+		mt.currOp.currAttempt.setClusterID(clusterID)
+	}
+	if mt.currOp.currAttempt.zoneID == "" || mt.currOp.currAttempt.zoneID == defaultZone {
+		mt.currOp.currAttempt.setZoneID(zoneID)
+	}
 
 	// Set server latency in tracer
 	// FYI this is GFE t4t7(not server latency) latency where
@@ -700,6 +724,8 @@ func (mt *builtinMetricsTracer) recordAttemptCompletion(attemptHeaderMD, attempT
 	if mt.currOp.currAttempt.blockingLatencyTracker != nil {
 		messageSentNanos := mt.currOp.currAttempt.blockingLatencyTracker.getMessageSentNanos()
 		clientBlockingLatencyMs = convertToMs(time.Unix(0, int64(messageSentNanos)).Sub(mt.currOp.currAttempt.startTime))
+	} else {
+		clientBlockingLatencyMs = mt.currOp.currAttempt.clientBlockingLatency
 	}
 	clientBlockingLatAttrs, _ := mt.toOtelMetricAttrs(metricNameClientBlockingLatencies)
 	mt.instrumentClientBlockingLatencies.Record(mt.ctx, clientBlockingLatencyMs, metric.WithAttributeSet(clientBlockingLatAttrs))
@@ -780,6 +806,16 @@ func (mt *builtinMetricsTracer) incrementAppBlockingLatency(latency float64) {
 	}
 
 	mt.currOp.incrementAppBlockingLatency(latency)
+}
+
+func (mt *builtinMetricsTracer) recordClientBlockingLatency() {
+	if !mt.builtInEnabled {
+		return
+	}
+	startTime := mt.currOp.currAttempt.startTime
+	if !startTime.IsZero() {
+		mt.currOp.currAttempt.clientBlockingLatency = convertToMs(time.Since(startTime))
+	}
 }
 
 // blockingLatencyTracker is used to calculate the time between stream creation and the first message send.

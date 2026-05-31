@@ -26,7 +26,7 @@ import (
 // SessionTable implements TableAPI by routing calls via virtual RPCs through dedicated session pools.
 type SessionTable struct {
 	tableName     string
-	classic       TableAPI
+	classic       *Table
 	readPool      *btransport.SessionPoolImpl
 	writePool     *btransport.SessionPoolImpl
 	readVRpcDesc  btransport.VRpcDescriptor
@@ -36,7 +36,7 @@ type SessionTable struct {
 // NewSessionTable creates a new SessionTable instance.
 func NewSessionTable(
 	tableName string,
-	classic TableAPI,
+	classic *Table,
 	readPool *btransport.SessionPoolImpl,
 	writePool *btransport.SessionPoolImpl,
 	readVRpcDesc btransport.VRpcDescriptor,
@@ -52,11 +52,35 @@ func NewSessionTable(
 	}
 }
 
+type sessionMetricsListener struct{}
+
+func (l sessionMetricsListener) OnAttemptStart(ctx context.Context) {
+	if mt := metricsTracerFromContext(ctx); mt != nil {
+		mt.recordAttemptStart()
+	}
+}
+
+func (l sessionMetricsListener) OnAttemptComplete(ctx context.Context, err error) {
+	if mt := metricsTracerFromContext(ctx); mt != nil {
+		mt.recordAttemptCompletion(nil, nil, err)
+	}
+}
+
 // ReadRow reads a single row via vRPC.
-func (t *SessionTable) ReadRow(ctx context.Context, row string, opts ...ReadOption) (Row, error) {
+func (t *SessionTable) ReadRow(ctx context.Context, row string, opts ...ReadOption) (rowVal Row, err error) {
 	if t.readPool == nil {
 		return t.classic.ReadRow(ctx, row, opts...)
 	}
+
+	mt := t.classic.newBuiltinMetricsTracer(ctx, false)
+	defer mt.recordOperationCompletion()
+	mt.setMethod("ReadRows")
+	ctx = contextWithMetricsTracer(ctx, mt)
+
+	defer func() {
+		statusCode, _ := convertToGrpcStatusErr(err)
+		mt.setCurrOpStatus(statusCode)
+	}()
 
 	req := &btpb.ReadRowsRequest{
 		TableName: t.tableName,
@@ -76,6 +100,7 @@ func (t *SessionTable) ReadRow(ctx context.Context, row string, opts ...ReadOpti
 		InitialBackoff:    10 * time.Millisecond,
 		MaxBackoff:        100 * time.Millisecond,
 		BackoffMultiplier: 1.5,
+		Listener:          sessionMetricsListener{},
 	})
 
 	args := btransport.ReadRowArgs{
@@ -84,12 +109,19 @@ func (t *SessionTable) ReadRow(ctx context.Context, row string, opts ...ReadOpti
 	}
 
 	baseHandler := func(attemptCtx context.Context, request interface{}) (interface{}, error) {
+		if mt := metricsTracerFromContext(attemptCtx); mt != nil {
+			mt.recordClientBlockingLatency()
+		}
 		resp, clusterInfo, err := t.readPool.ExecuteVRpc(attemptCtx, t.readVRpcDesc, request)
 		if err != nil {
 			return nil, err
 		}
 		if clusterInfo != nil {
 			fmt.Printf(">>> SessionTable ReadRow attempt served by Cluster: Id=%s, Zone=%s <<<\n", clusterInfo.ClusterId, clusterInfo.ZoneId)
+			if mt := metricsTracerFromContext(attemptCtx); mt != nil {
+				mt.currOp.currAttempt.setClusterID(clusterInfo.ClusterId)
+				mt.currOp.currAttempt.setZoneID(clusterInfo.ZoneId)
+			}
 		}
 		return resp, nil
 	}
@@ -109,10 +141,20 @@ func (t *SessionTable) ReadRow(ctx context.Context, row string, opts ...ReadOpti
 }
 
 // Apply applies a single mutation via vRPC.
-func (t *SessionTable) Apply(ctx context.Context, row string, m *Mutation, opts ...ApplyOption) error {
+func (t *SessionTable) Apply(ctx context.Context, row string, m *Mutation, opts ...ApplyOption) (err error) {
 	if t.writePool == nil || m.isConditional {
 		return t.classic.Apply(ctx, row, m, opts...)
 	}
+
+	mt := t.classic.newBuiltinMetricsTracer(ctx, false)
+	defer mt.recordOperationCompletion()
+	mt.setMethod("MutateRow")
+	ctx = contextWithMetricsTracer(ctx, mt)
+
+	defer func() {
+		statusCode, _ := convertToGrpcStatusErr(err)
+		mt.setCurrOpStatus(statusCode)
+	}()
 
 	fmt.Printf(">>> SessionTable Apply: row=%s via writePool=%p <<<\n", row, t.writePool)
 
@@ -121,6 +163,7 @@ func (t *SessionTable) Apply(ctx context.Context, row string, m *Mutation, opts 
 		InitialBackoff:    10 * time.Millisecond,
 		MaxBackoff:        100 * time.Millisecond,
 		BackoffMultiplier: 1.5,
+		Listener:          sessionMetricsListener{},
 	})
 
 	args := btransport.MutateRowArgs{
@@ -129,18 +172,25 @@ func (t *SessionTable) Apply(ctx context.Context, row string, m *Mutation, opts 
 	}
 
 	baseHandler := func(attemptCtx context.Context, request interface{}) (interface{}, error) {
+		if mt := metricsTracerFromContext(attemptCtx); mt != nil {
+			mt.recordClientBlockingLatency()
+		}
 		resp, clusterInfo, err := t.writePool.ExecuteVRpc(attemptCtx, t.writeVRpcDesc, request)
 		if err != nil {
 			return nil, err
 		}
 		if clusterInfo != nil {
 			fmt.Printf(">>> SessionTable Apply attempt served by Cluster: Id=%s, Zone=%s <<<\n", clusterInfo.ClusterId, clusterInfo.ZoneId)
+			if mt := metricsTracerFromContext(attemptCtx); mt != nil {
+				mt.currOp.currAttempt.setClusterID(clusterInfo.ClusterId)
+				mt.currOp.currAttempt.setZoneID(clusterInfo.ZoneId)
+			}
 		}
 		return resp, nil
 	}
 
 	chained := btransport.ChainInterceptors(retryInterceptor)
-	_, err := chained(ctx, args, baseHandler)
+	_, err = chained(ctx, args, baseHandler)
 	if err != nil {
 		return fmt.Errorf("failed to execute MutateRow vRPC: %w", err)
 	}

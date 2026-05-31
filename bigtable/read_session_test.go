@@ -208,7 +208,7 @@ func TestSequentialReads(t *testing.T) {
 	endpoint := "test-bigtable.sandbox.googleapis.com:443"
 
 	cfg := ClientConfig{
-		EnableSessionPool: true,
+		EnableSessionPool: false,
 	}
 
 	client, err := NewClientWithConfig(ctx, project, instance, cfg, option.WithEndpoint(endpoint))
@@ -223,7 +223,7 @@ func TestSequentialReads(t *testing.T) {
 	t.Logf("Waiting for session pool to warm up...")
 	time.Sleep(3 * time.Second)
 
-	for i := 0; i < 10; i++ {
+	for i := 0; i < 100; i++ {
 		t.Logf("Sequential Read %d/10 for row %q...", i+1, rowKey)
 		t.Logf("Sleeping for 1s...")
 		time.Sleep(1 * time.Second)

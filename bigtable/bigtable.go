@@ -226,14 +226,16 @@ func (t *Table) ReadRows(ctx context.Context, arg RowSet, f func(Row) bool, opts
 
 	mt := t.newBuiltinMetricsTracer(ctx, true)
 	defer mt.recordOperationCompletion()
+	ctx = contextWithMetricsTracer(ctx, mt)
 
-	err = t.readRows(ctx, arg, f, mt, opts...)
+	err = t.readRows(ctx, arg, f, opts...)
 	statusCode, statusErr := convertToGrpcStatusErr(err)
 	mt.setCurrOpStatus(statusCode)
 	return statusErr
 }
 
-func (t *Table) readRows(ctx context.Context, arg RowSet, f func(Row) bool, mt *builtinMetricsTracer, opts ...ReadOption) (err error) {
+func (t *Table) readRows(ctx context.Context, arg RowSet, f func(Row) bool, opts ...ReadOption) (err error) {
+	mt := metricsTracerFromContext(ctx)
 	var prevRowKey string
 	attrMap := make(map[string]interface{})
 
@@ -251,7 +253,7 @@ func (t *Table) readRows(ctx context.Context, arg RowSet, f func(Row) bool, mt *
 	}
 
 	firstResponseRecorded := false
-	err = gaxInvokeWithRecorder(ctx, mt, methodNameReadRows, func(ctx context.Context, headerMD, trailerMD *metadata.MD, _ gax.CallSettings) error {
+	err = gaxInvokeWithRecorder(ctx, methodNameReadRows, func(ctx context.Context, headerMD, trailerMD *metadata.MD, _ gax.CallSettings) error {
 		if rowLimitSet && numRowsRead >= intialRowLimit {
 			return nil
 		}
@@ -907,14 +909,15 @@ func (t *Table) Apply(ctx context.Context, row string, m *Mutation, opts ...Appl
 	defer func() { trace.EndSpan(ctx, err) }()
 	mt := t.newBuiltinMetricsTracer(ctx, false)
 	defer mt.recordOperationCompletion()
+	ctx = contextWithMetricsTracer(ctx, mt)
 
-	err = t.apply(ctx, mt, row, m, opts...)
+	err = t.apply(ctx, row, m, opts...)
 	statusCode, statusErr := convertToGrpcStatusErr(err)
 	mt.setCurrOpStatus(statusCode)
 	return statusErr
 }
 
-func (t *Table) apply(ctx context.Context, mt *builtinMetricsTracer, row string, m *Mutation, opts ...ApplyOption) (err error) {
+func (t *Table) apply(ctx context.Context, row string, m *Mutation, opts ...ApplyOption) (err error) {
 	after := func(res proto.Message) {
 		for _, o := range opts {
 			o.after(res)
@@ -937,7 +940,7 @@ func (t *Table) apply(ctx context.Context, mt *builtinMetricsTracer, row string,
 			callOptions = append(callOptions, t.c.retryOption)
 		}
 		var res *btpb.MutateRowResponse
-		err := gaxInvokeWithRecorder(ctx, mt, "MutateRow", func(ctx context.Context, headerMD, trailerMD *metadata.MD, _ gax.CallSettings) error {
+		err := gaxInvokeWithRecorder(ctx, "MutateRow", func(ctx context.Context, headerMD, trailerMD *metadata.MD, _ gax.CallSettings) error {
 			var err error
 			res, err = t.c.client.MutateRow(ctx, req, grpc.Header(headerMD), grpc.Trailer(trailerMD))
 			return err
@@ -973,7 +976,7 @@ func (t *Table) apply(ctx context.Context, mt *builtinMetricsTracer, row string,
 		req.FalseMutations = m.mfalse.ops
 	}
 	var cmRes *btpb.CheckAndMutateRowResponse
-	err = gaxInvokeWithRecorder(ctx, mt, "CheckAndMutateRow", func(ctx context.Context, headerMD, trailerMD *metadata.MD, _ gax.CallSettings) error {
+	err = gaxInvokeWithRecorder(ctx, "CheckAndMutateRow", func(ctx context.Context, headerMD, trailerMD *metadata.MD, _ gax.CallSettings) error {
 		var err error
 		cmRes, err = t.c.client.CheckAndMutateRow(ctx, req, grpc.Header(headerMD), grpc.Trailer(trailerMD))
 		return err
@@ -1136,8 +1139,9 @@ func (ts Timestamp) TruncateToMilliseconds() Timestamp {
 //   - does not return errors seen while recording the metrics
 //
 // - then, calls gax.Invoke with 'callWrapper' as an argument
-func gaxInvokeWithRecorder(ctx context.Context, mt *builtinMetricsTracer, method string,
+func gaxInvokeWithRecorder(ctx context.Context, method string,
 	f func(ctx context.Context, headerMD, trailerMD *metadata.MD, _ gax.CallSettings) error, opts ...gax.CallOption) error {
+	mt := metricsTracerFromContext(ctx)
 	attemptHeaderMD := metadata.New(nil)
 	attempTrailerMD := metadata.New(nil)
 	mt.setMethod(method)

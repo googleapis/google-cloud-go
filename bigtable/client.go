@@ -305,19 +305,20 @@ func (c *Client) PingAndWarm(ctx context.Context) (err error) {
 	defer func() { trace.EndSpan(ctx, err) }()
 	mt := c.newBuiltinMetricsTracer(ctx, "", false)
 	defer mt.recordOperationCompletion()
+	ctx = contextWithMetricsTracer(ctx, mt)
 
-	err = c.pingerWithMetadata(ctx, mt)
+	err = c.pingerWithMetadata(ctx)
 	statusCode, statusErr := convertToGrpcStatusErr(err)
 	mt.currOp.setStatus(statusCode.String())
 	return statusErr
 }
 
-func (c *Client) pingerWithMetadata(ctx context.Context, mt *builtinMetricsTracer) (err error) {
+func (c *Client) pingerWithMetadata(ctx context.Context) (err error) {
 	req := &btpb.PingAndWarmRequest{
 		Name:         c.fullInstanceName(),
 		AppProfileId: c.appProfile,
 	}
-	err = gaxInvokeWithRecorder(ctx, mt, "PingAndWarm", func(ctx context.Context, headerMD, trailerMD *metadata.MD, _ gax.CallSettings) error {
+	err = gaxInvokeWithRecorder(ctx, "PingAndWarm", func(ctx context.Context, headerMD, trailerMD *metadata.MD, _ gax.CallSettings) error {
 		var err error
 		_, err = c.client.PingAndWarm(ctx, req, grpc.Header(headerMD), grpc.Trailer(trailerMD))
 		return err
