@@ -79,6 +79,16 @@ type Client struct {
 	alwaysUseImplicitOrderBy bool          // configuration flag to always append implicit OrderBy clauses
 }
 
+func normalizeEmulatorAddress(addr string) string {
+	// Strip legacy schemes and force passthrough for performance.
+	if strings.HasPrefix(addr, "http://") || strings.HasPrefix(addr, "https://") || !strings.Contains(addr, "://") {
+		addr = strings.TrimPrefix(addr, "http://")
+		addr = strings.TrimPrefix(addr, "https://")
+		addr = "passthrough:///" + addr
+	}
+	return addr
+}
+
 // newClient creates a new Firestore client, using the given createClient function to create the underlying client.
 func newClient(ctx context.Context, projectID string, createClient func(ctx context.Context, opts ...option.ClientOption) (*vkit.Client, error), supportsEmulator bool, opts ...option.ClientOption) (*Client, error) {
 	if projectID == "" {
@@ -92,6 +102,7 @@ func newClient(ctx context.Context, projectID string, createClient func(ctx cont
 			return nil, fmt.Errorf("firestore: emulator is not supported for this client type")
 		}
 
+		addr = normalizeEmulatorAddress(addr)
 		conn, err := grpc.Dial(addr,
 			grpc.WithTransportCredentials(insecure.NewCredentials()),
 			grpc.WithPerRPCCredentials(emulatorCreds{}),
@@ -100,6 +111,7 @@ func newClient(ctx context.Context, projectID string, createClient func(ctx cont
 				grpc.MaxCallSendMsgSize(math.MaxInt32),
 			),
 		)
+
 		if err != nil {
 			return nil, fmt.Errorf("firestore: dialing address from env var FIRESTORE_EMULATOR_HOST: %s", err)
 		}

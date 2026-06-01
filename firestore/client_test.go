@@ -584,3 +584,24 @@ func TestClient_UsesEmulator(t *testing.T) {
 		t.Error("got false, want true")
 	}
 }
+
+func TestNormalizeEmulatorAddress(t *testing.T) {
+	tests := []struct {
+		input string
+		want  string
+	}{
+		{"localhost:8080", "passthrough:///localhost:8080"},
+		{"http://localhost:8080", "passthrough:///localhost:8080"},
+		{"https://localhost:8080", "passthrough:///localhost:8080"},
+		{"passthrough:///localhost:8080", "passthrough:///localhost:8080"},
+		{"unix:///var/run/emulator.sock", "unix:///var/run/emulator.sock"},
+		{"custom:///localhost:8080", "custom:///localhost:8080"},
+	}
+
+	for _, tc := range tests {
+		got := normalizeEmulatorAddress(tc.input)
+		if got != tc.want {
+			t.Errorf("normalizeEmulatorAddress(%q) = %q; want %q", tc.input, got, tc.want)
+		}
+	}
+}
