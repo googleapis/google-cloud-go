@@ -1,0 +1,67 @@
+{
+  "release-type": "go",
+  "include-component-in-tag": true,
+  "tag-separator": "/",
+  "plugins": [
+    "sentence-case"
+  ],
+  "packages": {
+    "agentplatform": {
+      "component": "agentplatform"
+    },
+    "auth": {
+      "component": "auth",
+      "exclude-paths": [
+        "auth/oauth2adapt"
+      ]
+    },
+    "auth/oauth2adapt": {
+      "component": "auth/oauth2adapt"
+    },
+    "bigquery": {
+      "component": "bigquery",
+      "exclude-paths": [
+        "bigquery/v2"
+      ]
+    },
+    "bigquery/v2": {
+      "component": "bigquery/v2"
+    },
+    "bigtable": {
+      "component": "bigtable"
+    },
+    "civil": {
+      "component": "root-module"
+    },
+    "compute/metadata": {
+      "component": "compute/metadata"
+    },
+    "datastore": {
+      "component": "datastore"
+    },
+    "firestore": {
+      "component": "firestore"
+    },
+    "pubsub": {
+      "component": "pubsub",
+      "exclude-paths": [
+        "pubsub/v2"
+      ]
+    },
+    "pubsub/v2": {
+      "component": "pubsub/v2"
+    },
+    "pubsublite": {
+      "component": "pubsublite"
+    },
+    "spanner": {
+      "component": "spanner"
+    },
+    "storage": {
+      "component": "storage"
+    },
+    "vertexai": {
+      "component": "vertexai"
+    }
+  }
+}
