@@ -278,7 +278,7 @@ func (c *Client) RunTransaction(ctx context.Context, f func(context.Context, *Tr
 func (t *Transaction) rollback() {
 	// Use a background context with a timeout to ensure rollback completes
 	// even if the transaction context (t.ctx) is cancelled.
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(context.WithoutCancel(t.ctx), 5*time.Second)
 	defer cancel()
 	ctx = withResourceHeader(ctx, t.c.path())
 	_ = t.c.c.Rollback(ctx, &pb.RollbackRequest{
