@@ -8991,3 +8991,122 @@ func TestIntegration_FetchBucketMetadata(t *testing.T) {
 		}
 	})
 }
+
+func TestIntegration_ClientTracing(t *testing.T) {
+	ctx := context.Background()
+
+	tests := []struct {
+		name      string
+		newClient func(t *testing.T, ctx context.Context, opts ...option.ClientOption) (*Client, error)
+	}{
+		{
+			name: "gRPC",
+			newClient: func(t *testing.T, ctx context.Context, opts ...option.ClientOption) (*Client, error) {
+				return testConfigGRPC(ctx, t, opts...), nil
+			},
+		},
+		{
+			name: "HTTP",
+			newClient: func(t *testing.T, ctx context.Context, opts ...option.ClientOption) (*Client, error) {
+				return testConfig(ctx, t, opts...), nil
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			te := testutil.NewOpenTelemetryTestExporter()
+			t.Cleanup(func() {
+				te.Unregister(ctx)
+			})
+
+			t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "true")
+
+			// 1. Create bucket using a separate admin client
+			adminClient, err := tc.newClient(t, ctx)
+			if err != nil {
+				t.Fatalf("failed to create admin client: %v", err)
+			}
+			adminClient.bucketMetadataCache = nil
+			bucketName := fmt.Sprintf("test-trace-int-%s-%d", strings.ToLower(tc.name), time.Now().UnixNano())
+			if err := adminClient.Bucket(bucketName).Create(ctx, testutil.ProjID(), &BucketAttrs{Location: "us-east1"}); err != nil {
+				adminClient.Close()
+				t.Fatalf("failed to create bucket: %v", err)
+			}
+			t.Cleanup(func() {
+				adminClient.Bucket(bucketName).Delete(ctx)
+				adminClient.Close()
+			})
+
+			// 2. Create the test client which will have an empty cache
+			client, err := tc.newClient(t, ctx)
+			if err != nil {
+				t.Fatalf("failed to create test client: %v", err)
+			}
+			defer client.Close()
+
+			doneChan := make(chan struct{}, 1)
+			client.bucketMetadataCache.fetchDone = doneChan
+
+			// Get the number of spans before our test operations
+			initialSpanCount := len(te.Spans())
+
+			// 1. First operation: Cache Miss. Should get placeholder attributes.
+			_, err = client.Bucket(bucketName).Attrs(ctx)
+			if err != nil {
+				t.Fatalf("Bucket.Attrs failed: %v", err)
+			}
+
+			spans := te.Spans()
+			var attrsSpan tracetest.SpanStub
+			found := false
+			for _, s := range spans[initialSpanCount:] {
+				if s.Name == "cloud.google.com/go/storage.Bucket.Attrs" {
+					attrsSpan = s
+					found = true
+					break
+				}
+			}
+			if !found {
+				t.Fatalf("Bucket.Attrs span not found")
+			}
+
+			// First call should have placeholder
+			verifySpanAttributes(t, attrsSpan, "projects/_/buckets/"+bucketName, "global")
+
+			// Wait for background fetch to complete and populate cache
+			select {
+			case <-doneChan:
+			case <-time.After(fetchBackgroundTimeout):
+				t.Fatalf("timeout waiting for fetchBackground completion")
+			}
+			entry, cacheFound := client.bucketMetadataCache.get(bucketName)
+			if !cacheFound || entry.location != "us-east1" {
+				t.Fatalf("expected entry to be populated in cache with us-east1, got %+v (found: %t)", entry, cacheFound)
+			}
+
+			// 2. Second operation: Cache Hit. Should get resolved attributes.
+			spanCountAfterFirstOp := len(te.Spans())
+			_, err = client.Bucket(bucketName).Attrs(ctx)
+			if err != nil {
+				t.Fatalf("Bucket.Attrs failed: %v", err)
+			}
+
+			spans = te.Spans()
+			found = false
+			for _, s := range spans[spanCountAfterFirstOp:] {
+				if s.Name == "cloud.google.com/go/storage.Bucket.Attrs" {
+					attrsSpan = s
+					found = true
+					break
+				}
+			}
+			if !found {
+				t.Fatalf("second Bucket.Attrs span not found")
+			}
+
+			// Second call should have resolved attributes
+			verifySpanAttributes(t, attrsSpan, "projects/*/buckets/"+bucketName, "us-east1")
+		})
+	}
+}
