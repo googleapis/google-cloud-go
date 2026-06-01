@@ -45,8 +45,6 @@ import (
 
 // httpStorageClient is the HTTP-JSON API implementation of the transport-agnostic
 // storageClient interface.
-//
-// TODO(b/498422946): Add client feature tracker in HTTP client.
 type httpStorageClient struct {
 	creds                      *auth.Credentials
 	hc                         *http.Client
@@ -56,6 +54,10 @@ type httpStorageClient struct {
 	settings                   *settings
 	config                     *storageConfig
 	dynamicReadReqStallTimeout *bucketDelayManager
+
+	// configFeatureAttributes tracks client-level features that are enabled for this
+	// client instance.
+	configFeatureAttributes uint32
 }
 
 // newHTTPStorageClient initializes a new storageClient that uses the HTTP-JSON
@@ -119,8 +121,24 @@ func newHTTPStorageClient(ctx context.Context, opts ...storageOption) (storageCl
 	if err != nil {
 		return nil, fmt.Errorf("dialing: %w", err)
 	}
+
+	// Clone the http.Client to avoid modifying the original one if it was provided by the user.
+	hcClone := *hc
+	c := &httpStorageClient{
+		creds:    creds,
+		hc:       &hcClone,
+		settings: s,
+		config:   &config,
+	}
+
+	// Wrap transport to inject tracking headers.
+	hcClone.Transport = &trackingTransport{
+		base:     hc.Transport,
+		features: c.configFeatureAttributes,
+	}
+
 	// RawService should be created with the chosen endpoint to take account of user override.
-	rawService, err := raw.NewService(ctx, option.WithEndpoint(ep), option.WithHTTPClient(hc))
+	rawService, err := raw.NewService(ctx, option.WithEndpoint(ep), option.WithHTTPClient(c.hc))
 	if err != nil {
 		return nil, fmt.Errorf("storage client: %w", err)
 	}
@@ -144,21 +162,41 @@ func newHTTPStorageClient(ctx context.Context, opts ...storageOption) (storageCl
 		}
 	}
 
-	return &httpStorageClient{
-		creds:                      creds,
-		hc:                         hc,
-		xmlHost:                    u.Host,
-		raw:                        rawService,
-		scheme:                     u.Scheme,
-		settings:                   s,
-		config:                     &config,
-		dynamicReadReqStallTimeout: bd,
-	}, nil
+	c.xmlHost = u.Host
+	c.raw = rawService
+	c.scheme = u.Scheme
+	c.dynamicReadReqStallTimeout = bd
+
+	return c, nil
 }
 
 func (c *httpStorageClient) Close() error {
 	c.hc.CloseIdleConnections()
 	return nil
+}
+
+// trackingTransport wraps an http.RoundTripper to inject feature tracking headers.
+type trackingTransport struct {
+	base     http.RoundTripper
+	features uint32
+}
+
+func (t *trackingTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+	baseRT := t.base
+	if baseRT == nil {
+		baseRT = http.DefaultTransport
+	}
+	features := t.features | featureAttributes(req.Context())
+	// Merge all existing headers for this key.
+	features |= mergeFeatureAttributes(req.Header.Values(featureTrackerHeaderName))
+	if features > 0 {
+		// Clone the request to avoid modifying the original one.
+		clonedReq := req.Clone(req.Context())
+		clonedReq.Header.Set(featureTrackerHeaderName, encodeUint32(features))
+		return baseRT.RoundTrip(clonedReq)
+	}
+
+	return baseRT.RoundTrip(req)
 }
 
 // Top-level methods.

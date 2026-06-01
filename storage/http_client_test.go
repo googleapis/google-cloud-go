@@ -171,3 +171,34 @@ func TestValidateChecksumFromServer(t *testing.T) {
 		})
 	}
 }
+
+func TestTrackingTransport(t *testing.T) {
+	mock := &mockTransport{}
+	mock.addResult(&http.Response{Status: "200 OK"}, nil)
+	tt := &trackingTransport{
+		base:     mock,
+		features: uint32(1 << featurePCU),
+	}
+
+	ctx := context.Background()
+	ctx = addFeatureAttributes(ctx, featureMultistreamInMRD)
+	req, _ := http.NewRequestWithContext(ctx, "GET", "http://example.com", nil)
+
+	_, err := tt.RoundTrip(req)
+	if err != nil {
+		t.Fatalf("RoundTrip failed: %v", err)
+	}
+
+	gotHeader := mock.gotReq.Header.Get(featureTrackerHeaderName)
+	wantFeatures := uint32(1<<featurePCU) | uint32(1<<featureMultistreamInMRD)
+	wantHeader := encodeUint32(wantFeatures)
+
+	if gotHeader != wantHeader {
+		t.Errorf("Header %s = %q; want %q", featureTrackerHeaderName, gotHeader, wantHeader)
+	}
+
+	// Verify original request was not modified.
+	if req.Header.Get(featureTrackerHeaderName) != "" {
+		t.Errorf("Original request header was modified")
+	}
+}
