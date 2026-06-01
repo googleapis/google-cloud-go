@@ -449,6 +449,11 @@
                 "LookupEntryLinks"
               ]
             },
+            "ModifyEntry": {
+              "methods": [
+                "ModifyEntry"
+              ]
+            },
             "SearchEntries": {
               "methods": [
                 "SearchEntries"
@@ -682,6 +687,11 @@
             "LookupEntryLinks": {
               "methods": [
                 "LookupEntryLinks"
+              ]
+            },
+            "ModifyEntry": {
+              "methods": [
+                "ModifyEntry"
               ]
             },
             "SearchEntries": {
@@ -1021,6 +1031,11 @@
                 "ListOperations"
               ]
             },
+            "RequestDataProductAccess": {
+              "methods": [
+                "RequestDataProductAccess"
+              ]
+            },
             "SetIamPolicy": {
               "methods": [
                 "SetIamPolicy"
@@ -1121,6 +1136,11 @@
                 "ListOperations"
               ]
             },
+            "RequestDataProductAccess": {
+              "methods": [
+                "RequestDataProductAccess"
+              ]
+            },
             "SetIamPolicy": {
               "methods": [
                 "SetIamPolicy"
@@ -1150,6 +1170,11 @@
         "grpc": {
           "libraryClient": "DataScanClient",
           "rpcs": {
+            "CancelDataScanJob": {
+              "methods": [
+                "CancelDataScanJob"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
@@ -1245,6 +1270,11 @@
         "rest": {
           "libraryClient": "DataScanClient",
           "rpcs": {
+            "CancelDataScanJob": {
+              "methods": [
+                "CancelDataScanJob"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"

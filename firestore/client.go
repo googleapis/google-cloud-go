@@ -19,6 +19,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"math"
 	"net/url"
 	"os"
 	"strings"
@@ -102,7 +103,15 @@ func newClient(ctx context.Context, projectID string, createClient func(ctx cont
 		}
 
 		addr = normalizeEmulatorAddress(addr)
-		conn, err := grpc.Dial(addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithPerRPCCredentials(emulatorCreds{}))
+		conn, err := grpc.Dial(addr,
+			grpc.WithTransportCredentials(insecure.NewCredentials()),
+			grpc.WithPerRPCCredentials(emulatorCreds{}),
+			grpc.WithDefaultCallOptions(
+				grpc.MaxCallRecvMsgSize(math.MaxInt32),
+				grpc.MaxCallSendMsgSize(math.MaxInt32),
+			),
+		)
+
 		if err != nil {
 			return nil, fmt.Errorf("firestore: dialing address from env var FIRESTORE_EMULATOR_HOST: %s", err)
 		}
@@ -111,6 +120,13 @@ func newClient(ctx context.Context, projectID string, createClient func(ctx cont
 		projectID, _ = detect.ProjectID(ctx, projectID, "", opts...)
 		if projectID == "" {
 			projectID = "dummy-emulator-firestore-project"
+		}
+	} else {
+		o = []option.ClientOption{
+			option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
+				grpc.MaxCallRecvMsgSize(math.MaxInt32),
+				grpc.MaxCallSendMsgSize(math.MaxInt32),
+			)),
 		}
 	}
 	o = append(o, opts...)

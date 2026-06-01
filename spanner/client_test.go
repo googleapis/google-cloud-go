@@ -982,12 +982,19 @@ func TestLocationAwareExecuteSql_ReroutesToNextReplicaAndMarksCooldownScopes(t *
 		Params: &structpb.Struct{},
 	}
 
-	waitForCondition(t, time.Second, func() bool {
+	// 5s timeout (vs default 1s) absorbs scheduling jitter under -race + CI load.
+	waitForCondition(t, 5*time.Second, func() bool {
 		prepared := proto.Clone(req).(*sppb.ExecuteSqlRequest)
 		endpoint := client.locationRouter.prepareExecuteSQLRequest(context.Background(), prepared)
 		return endpoint != nil && endpoint.Address() == harness.ReplicaAddresses[0]
 	})
-	waitForLocationAwareEndpointHealthy(t, client, harness.ReplicaAddresses[1])
+	waitForCondition(t, 5*time.Second, func() bool {
+		if client.locationRouter == nil || client.locationRouter.endpointCache == nil {
+			return false
+		}
+		endpoint := client.locationRouter.endpointCache.Get(context.Background(), harness.ReplicaAddresses[1])
+		return endpoint != nil && endpoint.IsHealthy()
+	})
 
 	lac, ok := sh.getClient().(*locationAwareSpannerClient)
 	if !ok {

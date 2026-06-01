@@ -56,7 +56,7 @@ libraries:
       - internal/generated/snippets/advisorynotifications/
     tag_format: '{id}/v{version}'
   - id: agentplatform
-    version: 0.20.0
+    version: 0.21.0
     last_generated_commit: ""
     apis: []
     source_roots:
@@ -548,7 +548,7 @@ libraries:
       - internal/generated/snippets/bigquery/v2
     tag_format: bigquery/v{version}
   - id: bigtable
-    version: 1.47.0
+    version: 1.48.0
     last_generated_commit: ""
     apis:
       - path: google/bigtable/admin/v2
@@ -807,7 +807,7 @@ libraries:
       - internal/generated/snippets/commerce/
     tag_format: '{id}/v{version}'
   - id: compute
-    version: 1.63.0
+    version: 1.64.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/compute/v1
@@ -999,7 +999,7 @@ libraries:
       - internal/generated/snippets/datalabeling/
     tag_format: '{id}/v{version}'
   - id: datamanager
-    version: 1.0.0
+    version: 1.1.0
     last_generated_commit: ""
     apis:
       - path: google/ads/datamanager/v1
@@ -1013,7 +1013,7 @@ libraries:
       - internal/generated/snippets/datamanager/
     tag_format: '{id}/v{version}'
   - id: dataplex
-    version: 1.34.0
+    version: 1.35.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/dataplex/v1
@@ -1055,7 +1055,7 @@ libraries:
       - internal/generated/snippets/dataqna/
     tag_format: '{id}/v{version}'
   - id: datastore
-    version: 1.23.0
+    version: 1.24.0
     last_generated_commit: ""
     apis:
       - path: google/datastore/admin/v1
@@ -1346,7 +1346,7 @@ libraries:
       - internal/generated/snippets/functions/
     tag_format: '{id}/v{version}'
   - id: geminidataanalytics
-    version: 1.1.0
+    version: 1.2.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/geminidataanalytics/v1beta
@@ -1714,7 +1714,7 @@ libraries:
       - internal/generated/snippets/managedkafka/
     tag_format: '{id}/v{version}'
   - id: maps
-    version: 1.35.0
+    version: 1.36.0
     last_generated_commit: ""
     apis:
       - path: google/maps/addressvalidation/v1
@@ -1907,6 +1907,7 @@ libraries:
     apis:
       - path: google/cloud/networksecurity/v1beta1
         service_config: networksecurity_v1beta1.yaml
+      - path: google/cloud/networksecurity/v1
     source_roots:
       - networksecurity
       - internal/generated/snippets/networksecurity
@@ -2353,7 +2354,7 @@ libraries:
       - internal/generated/snippets/run/
     tag_format: '{id}/v{version}'
   - id: saasplatform
-    version: 0.7.0
+    version: 0.8.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/saasplatform/saasservicemgmt/v1beta1
@@ -2413,7 +2414,7 @@ libraries:
       - internal/generated/snippets/securesourcemanager/
     tag_format: '{id}/v{version}'
   - id: security
-    version: 1.24.0
+    version: 1.25.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/security/privateca/v1
@@ -2755,7 +2756,7 @@ libraries:
       - internal/generated/snippets/streetview/
     tag_format: '{id}/v{version}'
   - id: support
-    version: 1.10.0
+    version: 1.11.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/support/v2

@@ -838,18 +838,18 @@ func file_google_cloud_documentai_v1_document_io_proto_rawDescGZIP() []byte {
 
 var file_google_cloud_documentai_v1_document_io_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
 var file_google_cloud_documentai_v1_document_io_proto_goTypes = []any{
-	(*RawDocument)(nil),                                         // 0: google.cloud.documentai.v1.RawDocument
-	(*GcsDocument)(nil),                                         // 1: google.cloud.documentai.v1.GcsDocument
-	(*GcsDocuments)(nil),                                        // 2: google.cloud.documentai.v1.GcsDocuments
-	(*GcsPrefix)(nil),                                           // 3: google.cloud.documentai.v1.GcsPrefix
-	(*BatchDocumentsInputConfig)(nil),                           // 4: google.cloud.documentai.v1.BatchDocumentsInputConfig
-	(*DocumentOutputConfig)(nil),                                // 5: google.cloud.documentai.v1.DocumentOutputConfig
-	(*OcrConfig)(nil),                                           // 6: google.cloud.documentai.v1.OcrConfig
-	(*DocumentOutputConfig_GcsOutputConfig)(nil),                // 7: google.cloud.documentai.v1.DocumentOutputConfig.GcsOutputConfig
+	(*RawDocument)(nil),                          // 0: google.cloud.documentai.v1.RawDocument
+	(*GcsDocument)(nil),                          // 1: google.cloud.documentai.v1.GcsDocument
+	(*GcsDocuments)(nil),                         // 2: google.cloud.documentai.v1.GcsDocuments
+	(*GcsPrefix)(nil),                            // 3: google.cloud.documentai.v1.GcsPrefix
+	(*BatchDocumentsInputConfig)(nil),            // 4: google.cloud.documentai.v1.BatchDocumentsInputConfig
+	(*DocumentOutputConfig)(nil),                 // 5: google.cloud.documentai.v1.DocumentOutputConfig
+	(*OcrConfig)(nil),                            // 6: google.cloud.documentai.v1.OcrConfig
+	(*DocumentOutputConfig_GcsOutputConfig)(nil), // 7: google.cloud.documentai.v1.DocumentOutputConfig.GcsOutputConfig
 	(*DocumentOutputConfig_GcsOutputConfig_ShardingConfig)(nil), // 8: google.cloud.documentai.v1.DocumentOutputConfig.GcsOutputConfig.ShardingConfig
-	(*OcrConfig_Hints)(nil),                                     // 9: google.cloud.documentai.v1.OcrConfig.Hints
-	(*OcrConfig_PremiumFeatures)(nil),                           // 10: google.cloud.documentai.v1.OcrConfig.PremiumFeatures
-	(*fieldmaskpb.FieldMask)(nil),                               // 11: google.protobuf.FieldMask
+	(*OcrConfig_Hints)(nil),           // 9: google.cloud.documentai.v1.OcrConfig.Hints
+	(*OcrConfig_PremiumFeatures)(nil), // 10: google.cloud.documentai.v1.OcrConfig.PremiumFeatures
+	(*fieldmaskpb.FieldMask)(nil),     // 11: google.protobuf.FieldMask
 }
 var file_google_cloud_documentai_v1_document_io_proto_depIdxs = []int32{
 	1,  // 0: google.cloud.documentai.v1.GcsDocuments.documents:type_name -> google.cloud.documentai.v1.GcsDocument

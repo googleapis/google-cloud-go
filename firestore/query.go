@@ -1842,6 +1842,36 @@ func (a *AggregationQuery) GetResponse(ctx context.Context) (aro *AggregationRes
 // AggregationResult contains the results of an aggregation query.
 type AggregationResult map[string]interface{}
 
+// Data returns the AggregationResult's fields as a map of native Go types.
+// It is equivalent to
+//
+//	var m map[string]interface{}
+//	ar.DataTo(&m)
+func (ar AggregationResult) Data() map[string]interface{} {
+	var m map[string]interface{}
+	if err := ar.DataTo(&m); err != nil {
+		// Any error here is a bug in the client.
+		panic(fmt.Sprintf("firestore: %v", err))
+	}
+	return m
+}
+
+// DataTo uses the aggregation result's fields to populate p, which can be a pointer to a
+// map[string]interface{} or a pointer to a struct.
+//
+// See DocumentSnapshot.DataTo for how Firestore values are converted to Go values.
+func (ar AggregationResult) DataTo(p interface{}) error {
+	pm := make(map[string]*pb.Value, len(ar))
+	for k, v := range ar {
+		pbVal, ok := v.(*pb.Value)
+		if !ok {
+			return fmt.Errorf("firestore: aggregation result value for %q is not a *pb.Value", k)
+		}
+		pm[k] = pbVal
+	}
+	return setFromProtoValue(p, &pb.Value{ValueType: &pb.Value_MapValue{MapValue: &pb.MapValue{Fields: pm}}}, nil)
+}
+
 // AggregationResponse contains AggregationResult and response from the run options in the query
 type AggregationResponse struct {
 	Result AggregationResult

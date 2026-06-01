@@ -1,5 +1,11 @@
 # Changes
 
+## [1.25.0](https://github.com/googleapis/google-cloud-go/releases/tag/security%2Fv1.25.0) (2026-05-28)
+
+### Features
+
+* update API sources and regenerate (#14661) ([d0cd917](https://github.com/googleapis/google-cloud-go/commit/d0cd917ce0ad46a4d2c1cd4ea2ef8efa60b591d3))
+
 ## [1.24.0](https://github.com/googleapis/google-cloud-go/releases/tag/security%2Fv1.24.0) (2026-05-07)
 
 ## [1.23.0](https://github.com/googleapis/google-cloud-go/releases/tag/security%2Fv1.23.0) (2026-04-30)

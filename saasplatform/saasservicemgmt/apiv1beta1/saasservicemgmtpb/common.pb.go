@@ -106,6 +106,7 @@ func (UnitOperationErrorCategory) EnumDescriptor() ([]byte, []int) {
 }
 
 // Enumeration of variable types.
+// `STRUCT` and `LIST` values should be JSON-encoded strings.
 type UnitVariable_Type int32
 
 const (
@@ -117,6 +118,10 @@ const (
 	UnitVariable_INT UnitVariable_Type = 2
 	// Variable type is bool.
 	UnitVariable_BOOL UnitVariable_Type = 3
+	// Variable type is struct.
+	UnitVariable_STRUCT UnitVariable_Type = 4
+	// Variable type is list.
+	UnitVariable_LIST UnitVariable_Type = 5
 )
 
 // Enum value maps for UnitVariable_Type.
@@ -126,12 +131,16 @@ var (
 		1: "STRING",
 		2: "INT",
 		3: "BOOL",
+		4: "STRUCT",
+		5: "LIST",
 	}
 	UnitVariable_Type_value = map[string]int32{
 		"TYPE_UNSPECIFIED": 0,
 		"STRING":           1,
 		"INT":              2,
 		"BOOL":             3,
+		"STRUCT":           4,
+		"LIST":             5,
 	}
 )
 
@@ -356,6 +365,12 @@ const (
 	UnitOperationCondition_TYPE_APP_CREATED UnitOperationCondition_Type = 6
 	// Indicates if services and workloads have been registered with AppHub.
 	UnitOperationCondition_TYPE_APP_COMPONENTS_REGISTERED UnitOperationCondition_Type = 7
+	// Indicates if the UnitOperation's core workload execution completed
+	// successfully.
+	// The workload is the core execution operation performed for a
+	// UnitOperation (e.g., provisioning, updating, or deprovisioning
+	// resources) excluding post-operation checks.
+	UnitOperationCondition_TYPE_WORKLOAD_SUCCEEDED UnitOperationCondition_Type = 8
 )
 
 // Enum value maps for UnitOperationCondition_Type.
@@ -368,6 +383,7 @@ var (
 		5: "TYPE_CANCELLED",
 		6: "TYPE_APP_CREATED",
 		7: "TYPE_APP_COMPONENTS_REGISTERED",
+		8: "TYPE_WORKLOAD_SUCCEEDED",
 	}
 	UnitOperationCondition_Type_value = map[string]int32{
 		"TYPE_UNSPECIFIED":               0,
@@ -377,6 +393,7 @@ var (
 		"TYPE_CANCELLED":                 5,
 		"TYPE_APP_CREATED":               6,
 		"TYPE_APP_COMPONENTS_REGISTERED": 7,
+		"TYPE_WORKLOAD_SUCCEEDED":        8,
 	}
 )
 
@@ -405,6 +422,116 @@ func (x UnitOperationCondition_Type) Number() protoreflect.EnumNumber {
 // Deprecated: Use UnitOperationCondition_Type.Descriptor instead.
 func (UnitOperationCondition_Type) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_saasplatform_saasservicemgmt_v1beta1_common_proto_rawDescGZIP(), []int{3, 1}
+}
+
+// Enumeration of condition statuses.
+type SaasCondition_Status int32
+
+const (
+	// Condition status is unspecified.
+	SaasCondition_STATUS_UNSPECIFIED SaasCondition_Status = 0
+	// Condition is unknown.
+	SaasCondition_STATUS_UNKNOWN SaasCondition_Status = 1
+	// Condition is true.
+	SaasCondition_STATUS_TRUE SaasCondition_Status = 2
+	// Condition is false.
+	SaasCondition_STATUS_FALSE SaasCondition_Status = 3
+)
+
+// Enum value maps for SaasCondition_Status.
+var (
+	SaasCondition_Status_name = map[int32]string{
+		0: "STATUS_UNSPECIFIED",
+		1: "STATUS_UNKNOWN",
+		2: "STATUS_TRUE",
+		3: "STATUS_FALSE",
+	}
+	SaasCondition_Status_value = map[string]int32{
+		"STATUS_UNSPECIFIED": 0,
+		"STATUS_UNKNOWN":     1,
+		"STATUS_TRUE":        2,
+		"STATUS_FALSE":       3,
+	}
+)
+
+func (x SaasCondition_Status) Enum() *SaasCondition_Status {
+	p := new(SaasCondition_Status)
+	*p = x
+	return p
+}
+
+func (x SaasCondition_Status) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (SaasCondition_Status) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_saasplatform_saasservicemgmt_v1beta1_common_proto_enumTypes[6].Descriptor()
+}
+
+func (SaasCondition_Status) Type() protoreflect.EnumType {
+	return &file_google_cloud_saasplatform_saasservicemgmt_v1beta1_common_proto_enumTypes[6]
+}
+
+func (x SaasCondition_Status) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use SaasCondition_Status.Descriptor instead.
+func (SaasCondition_Status) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_saasplatform_saasservicemgmt_v1beta1_common_proto_rawDescGZIP(), []int{4, 0}
+}
+
+// Enumeration of condition types.
+type SaasCondition_Type int32
+
+const (
+	// Condition type is unspecified.
+	SaasCondition_TYPE_UNSPECIFIED SaasCondition_Type = 0
+	// Condition type is ready.
+	SaasCondition_TYPE_READY SaasCondition_Type = 1
+	// Condition type is synchronized.
+	SaasCondition_TYPE_SYNCHRONIZED SaasCondition_Type = 2
+)
+
+// Enum value maps for SaasCondition_Type.
+var (
+	SaasCondition_Type_name = map[int32]string{
+		0: "TYPE_UNSPECIFIED",
+		1: "TYPE_READY",
+		2: "TYPE_SYNCHRONIZED",
+	}
+	SaasCondition_Type_value = map[string]int32{
+		"TYPE_UNSPECIFIED":  0,
+		"TYPE_READY":        1,
+		"TYPE_SYNCHRONIZED": 2,
+	}
+)
+
+func (x SaasCondition_Type) Enum() *SaasCondition_Type {
+	p := new(SaasCondition_Type)
+	*p = x
+	return p
+}
+
+func (x SaasCondition_Type) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (SaasCondition_Type) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_saasplatform_saasservicemgmt_v1beta1_common_proto_enumTypes[7].Descriptor()
+}
+
+func (SaasCondition_Type) Type() protoreflect.EnumType {
+	return &file_google_cloud_saasplatform_saasservicemgmt_v1beta1_common_proto_enumTypes[7]
+}
+
+func (x SaasCondition_Type) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use SaasCondition_Type.Descriptor instead.
+func (SaasCondition_Type) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_saasplatform_saasservicemgmt_v1beta1_common_proto_rawDescGZIP(), []int{4, 1}
 }
 
 // Blueprints are OCI Images that contain all of the artifacts needed to
@@ -711,6 +838,89 @@ func (x *UnitOperationCondition) GetReason() string {
 	return ""
 }
 
+// SaasCondition describes the status of a Saas.
+type SaasCondition struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. Status of the condition.
+	Status SaasCondition_Status `protobuf:"varint,1,opt,name=status,proto3,enum=google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasCondition_Status" json:"status,omitempty"`
+	// Required. Type of the condition.
+	Type SaasCondition_Type `protobuf:"varint,6,opt,name=type,proto3,enum=google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasCondition_Type" json:"type,omitempty"`
+	// Required. Last time the condition transited from one status to another.
+	LastTransitionTime *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=last_transition_time,json=lastTransitionTime,proto3" json:"last_transition_time,omitempty"`
+	// Required. Human readable message indicating details about the last
+	// transition.
+	Message string `protobuf:"bytes,4,opt,name=message,proto3" json:"message,omitempty"`
+	// Required. Brief reason for the condition's last transition.
+	Reason        string `protobuf:"bytes,5,opt,name=reason,proto3" json:"reason,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SaasCondition) Reset() {
+	*x = SaasCondition{}
+	mi := &file_google_cloud_saasplatform_saasservicemgmt_v1beta1_common_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SaasCondition) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SaasCondition) ProtoMessage() {}
+
+func (x *SaasCondition) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_saasplatform_saasservicemgmt_v1beta1_common_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SaasCondition.ProtoReflect.Descriptor instead.
+func (*SaasCondition) Descriptor() ([]byte, []int) {
+	return file_google_cloud_saasplatform_saasservicemgmt_v1beta1_common_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *SaasCondition) GetStatus() SaasCondition_Status {
+	if x != nil {
+		return x.Status
+	}
+	return SaasCondition_STATUS_UNSPECIFIED
+}
+
+func (x *SaasCondition) GetType() SaasCondition_Type {
+	if x != nil {
+		return x.Type
+	}
+	return SaasCondition_TYPE_UNSPECIFIED
+}
+
+func (x *SaasCondition) GetLastTransitionTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.LastTransitionTime
+	}
+	return nil
+}
+
+func (x *SaasCondition) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+func (x *SaasCondition) GetReason() string {
+	if x != nil {
+		return x.Reason
+	}
+	return ""
+}
+
 // Represents the aggregation of a set of population of like records by a
 // certain group. For example, a collection of unit counts can be aggregated and
 // grouped by their state.
@@ -726,7 +936,7 @@ type Aggregate struct {
 
 func (x *Aggregate) Reset() {
 	*x = Aggregate{}
-	mi := &file_google_cloud_saasplatform_saasservicemgmt_v1beta1_common_proto_msgTypes[4]
+	mi := &file_google_cloud_saasplatform_saasservicemgmt_v1beta1_common_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -738,7 +948,7 @@ func (x *Aggregate) String() string {
 func (*Aggregate) ProtoMessage() {}
 
 func (x *Aggregate) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_saasplatform_saasservicemgmt_v1beta1_common_proto_msgTypes[4]
+	mi := &file_google_cloud_saasplatform_saasservicemgmt_v1beta1_common_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -751,7 +961,7 @@ func (x *Aggregate) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Aggregate.ProtoReflect.Descriptor instead.
 func (*Aggregate) Descriptor() ([]byte, []int) {
-	return file_google_cloud_saasplatform_saasservicemgmt_v1beta1_common_proto_rawDescGZIP(), []int{4}
+	return file_google_cloud_saasplatform_saasservicemgmt_v1beta1_common_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *Aggregate) GetGroup() string {
@@ -772,21 +982,24 @@ var File_google_cloud_saasplatform_saasservicemgmt_v1beta1_common_proto protoref
 
 const file_google_cloud_saasplatform_saasservicemgmt_v1beta1_common_proto_rawDesc = "" +
 	"\n" +
-	">google/cloud/saasplatform/saasservicemgmt/v1beta1/common.proto\x121google.cloud.saasplatform.saasservicemgmt.v1beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"i\n" +
+	">google/cloud/saasplatform/saasservicemgmt/v1beta1/common.proto\x121google.cloud.saasplatform.saasservicemgmt.v1beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"i\n" +
 	"\tBlueprint\x12 \n" +
 	"\apackage\x18\x01 \x01(\tB\x06\xe0A\x01\xe0A\x05R\apackage\x12\x1b\n" +
 	"\x06engine\x18\x02 \x01(\tB\x03\xe0A\x03R\x06engine\x12\x1d\n" +
-	"\aversion\x18\x03 \x01(\tB\x03\xe0A\x03R\aversion\"\xec\x01\n" +
+	"\aversion\x18\x03 \x01(\tB\x03\xe0A\x03R\aversion\"\x82\x02\n" +
 	"\fUnitVariable\x12\"\n" +
 	"\bvariable\x18\x01 \x01(\tB\x06\xe0A\x02\xe0A\x05R\bvariable\x12`\n" +
 	"\x04type\x18\x02 \x01(\x0e2D.google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitVariable.TypeB\x06\xe0A\x01\xe0A\x05R\x04type\x12\x19\n" +
-	"\x05value\x18\x03 \x01(\tB\x03\xe0A\x01R\x05value\";\n" +
+	"\x05value\x18\x03 \x01(\tB\x03\xe0A\x01R\x05value\"Q\n" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
 	"\x06STRING\x10\x01\x12\a\n" +
 	"\x03INT\x10\x02\x12\b\n" +
-	"\x04BOOL\x10\x03\"\xae\x04\n" +
+	"\x04BOOL\x10\x03\x12\n" +
+	"\n" +
+	"\x06STRUCT\x10\x04\x12\b\n" +
+	"\x04LIST\x10\x05\"\xae\x04\n" +
 	"\rUnitCondition\x12d\n" +
 	"\x06status\x18\x01 \x01(\x0e2G.google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitCondition.StatusB\x03\xe0A\x02R\x06status\x12^\n" +
 	"\x04type\x18\x02 \x01(\x0e2E.google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitCondition.TypeB\x03\xe0A\x02R\x04type\x12Q\n" +
@@ -804,7 +1017,7 @@ const file_google_cloud_saasplatform_saasservicemgmt_v1beta1_common_proto_rawDes
 	"TYPE_READY\x10\x01\x12\x11\n" +
 	"\rTYPE_UPDATING\x10\x02\x12\x14\n" +
 	"\x10TYPE_PROVISIONED\x10\x03\x12\x18\n" +
-	"\x14TYPE_OPERATION_ERROR\x10\x04\"\xff\x04\n" +
+	"\x14TYPE_OPERATION_ERROR\x10\x04\"\x9c\x05\n" +
 	"\x16UnitOperationCondition\x12m\n" +
 	"\x06status\x18\x01 \x01(\x0e2P.google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitOperationCondition.StatusB\x03\xe0A\x02R\x06status\x12g\n" +
 	"\x04type\x18\x02 \x01(\x0e2N.google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitOperationCondition.TypeB\x03\xe0A\x02R\x04type\x12Q\n" +
@@ -815,7 +1028,7 @@ const file_google_cloud_saasplatform_saasservicemgmt_v1beta1_common_proto_rawDes
 	"\x12STATUS_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0eSTATUS_UNKNOWN\x10\x01\x12\x0f\n" +
 	"\vSTATUS_TRUE\x10\x02\x12\x10\n" +
-	"\fSTATUS_FALSE\x10\x03\"\xa4\x01\n" +
+	"\fSTATUS_FALSE\x10\x03\"\xc1\x01\n" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0eTYPE_SCHEDULED\x10\x02\x12\x10\n" +
@@ -823,7 +1036,24 @@ const file_google_cloud_saasplatform_saasservicemgmt_v1beta1_common_proto_rawDes
 	"\x0eTYPE_SUCCEEDED\x10\x04\x12\x12\n" +
 	"\x0eTYPE_CANCELLED\x10\x05\x12\x14\n" +
 	"\x10TYPE_APP_CREATED\x10\x06\x12\"\n" +
-	"\x1eTYPE_APP_COMPONENTS_REGISTERED\x10\a\"A\n" +
+	"\x1eTYPE_APP_COMPONENTS_REGISTERED\x10\a\x12\x1b\n" +
+	"\x17TYPE_WORKLOAD_SUCCEEDED\x10\b\"\x82\x04\n" +
+	"\rSaasCondition\x12d\n" +
+	"\x06status\x18\x01 \x01(\x0e2G.google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasCondition.StatusB\x03\xe0A\x02R\x06status\x12^\n" +
+	"\x04type\x18\x06 \x01(\x0e2E.google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasCondition.TypeB\x03\xe0A\x02R\x04type\x12Q\n" +
+	"\x14last_transition_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x02R\x12lastTransitionTime\x12\x1d\n" +
+	"\amessage\x18\x04 \x01(\tB\x03\xe0A\x02R\amessage\x12\x1b\n" +
+	"\x06reason\x18\x05 \x01(\tB\x03\xe0A\x02R\x06reason\"W\n" +
+	"\x06Status\x12\x16\n" +
+	"\x12STATUS_UNSPECIFIED\x10\x00\x12\x12\n" +
+	"\x0eSTATUS_UNKNOWN\x10\x01\x12\x0f\n" +
+	"\vSTATUS_TRUE\x10\x02\x12\x10\n" +
+	"\fSTATUS_FALSE\x10\x03\"C\n" +
+	"\x04Type\x12\x14\n" +
+	"\x10TYPE_UNSPECIFIED\x10\x00\x12\x0e\n" +
+	"\n" +
+	"TYPE_READY\x10\x01\x12\x15\n" +
+	"\x11TYPE_SYNCHRONIZED\x10\x02\"A\n" +
 	"\tAggregate\x12\x19\n" +
 	"\x05group\x18\x01 \x01(\tB\x03\xe0A\x02R\x05group\x12\x19\n" +
 	"\x05count\x18\x02 \x01(\x05B\x03\xe0A\x02R\x05count*\x96\x01\n" +
@@ -848,8 +1078,8 @@ func file_google_cloud_saasplatform_saasservicemgmt_v1beta1_common_proto_rawDesc
 	return file_google_cloud_saasplatform_saasservicemgmt_v1beta1_common_proto_rawDescData
 }
 
-var file_google_cloud_saasplatform_saasservicemgmt_v1beta1_common_proto_enumTypes = make([]protoimpl.EnumInfo, 6)
-var file_google_cloud_saasplatform_saasservicemgmt_v1beta1_common_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
+var file_google_cloud_saasplatform_saasservicemgmt_v1beta1_common_proto_enumTypes = make([]protoimpl.EnumInfo, 8)
+var file_google_cloud_saasplatform_saasservicemgmt_v1beta1_common_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_google_cloud_saasplatform_saasservicemgmt_v1beta1_common_proto_goTypes = []any{
 	(UnitOperationErrorCategory)(0),    // 0: google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitOperationErrorCategory
 	(UnitVariable_Type)(0),             // 1: google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitVariable.Type
@@ -857,26 +1087,32 @@ var file_google_cloud_saasplatform_saasservicemgmt_v1beta1_common_proto_goTypes 
 	(UnitCondition_Type)(0),            // 3: google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitCondition.Type
 	(UnitOperationCondition_Status)(0), // 4: google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitOperationCondition.Status
 	(UnitOperationCondition_Type)(0),   // 5: google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitOperationCondition.Type
-	(*Blueprint)(nil),                  // 6: google.cloud.saasplatform.saasservicemgmt.v1beta1.Blueprint
-	(*UnitVariable)(nil),               // 7: google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitVariable
-	(*UnitCondition)(nil),              // 8: google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitCondition
-	(*UnitOperationCondition)(nil),     // 9: google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitOperationCondition
-	(*Aggregate)(nil),                  // 10: google.cloud.saasplatform.saasservicemgmt.v1beta1.Aggregate
-	(*timestamppb.Timestamp)(nil),      // 11: google.protobuf.Timestamp
+	(SaasCondition_Status)(0),          // 6: google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasCondition.Status
+	(SaasCondition_Type)(0),            // 7: google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasCondition.Type
+	(*Blueprint)(nil),                  // 8: google.cloud.saasplatform.saasservicemgmt.v1beta1.Blueprint
+	(*UnitVariable)(nil),               // 9: google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitVariable
+	(*UnitCondition)(nil),              // 10: google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitCondition
+	(*UnitOperationCondition)(nil),     // 11: google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitOperationCondition
+	(*SaasCondition)(nil),              // 12: google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasCondition
+	(*Aggregate)(nil),                  // 13: google.cloud.saasplatform.saasservicemgmt.v1beta1.Aggregate
+	(*timestamppb.Timestamp)(nil),      // 14: google.protobuf.Timestamp
 }
 var file_google_cloud_saasplatform_saasservicemgmt_v1beta1_common_proto_depIdxs = []int32{
 	1,  // 0: google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitVariable.type:type_name -> google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitVariable.Type
 	2,  // 1: google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitCondition.status:type_name -> google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitCondition.Status
 	3,  // 2: google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitCondition.type:type_name -> google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitCondition.Type
-	11, // 3: google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitCondition.last_transition_time:type_name -> google.protobuf.Timestamp
+	14, // 3: google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitCondition.last_transition_time:type_name -> google.protobuf.Timestamp
 	4,  // 4: google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitOperationCondition.status:type_name -> google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitOperationCondition.Status
 	5,  // 5: google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitOperationCondition.type:type_name -> google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitOperationCondition.Type
-	11, // 6: google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitOperationCondition.last_transition_time:type_name -> google.protobuf.Timestamp
-	7,  // [7:7] is the sub-list for method output_type
-	7,  // [7:7] is the sub-list for method input_type
-	7,  // [7:7] is the sub-list for extension type_name
-	7,  // [7:7] is the sub-list for extension extendee
-	0,  // [0:7] is the sub-list for field type_name
+	14, // 6: google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitOperationCondition.last_transition_time:type_name -> google.protobuf.Timestamp
+	6,  // 7: google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasCondition.status:type_name -> google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasCondition.Status
+	7,  // 8: google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasCondition.type:type_name -> google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasCondition.Type
+	14, // 9: google.cloud.saasplatform.saasservicemgmt.v1beta1.SaasCondition.last_transition_time:type_name -> google.protobuf.Timestamp
+	10, // [10:10] is the sub-list for method output_type
+	10, // [10:10] is the sub-list for method input_type
+	10, // [10:10] is the sub-list for extension type_name
+	10, // [10:10] is the sub-list for extension extendee
+	0,  // [0:10] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_saasplatform_saasservicemgmt_v1beta1_common_proto_init() }
@@ -889,8 +1125,8 @@ func file_google_cloud_saasplatform_saasservicemgmt_v1beta1_common_proto_init() 
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_saasplatform_saasservicemgmt_v1beta1_common_proto_rawDesc), len(file_google_cloud_saasplatform_saasservicemgmt_v1beta1_common_proto_rawDesc)),
-			NumEnums:      6,
-			NumMessages:   5,
+			NumEnums:      8,
+			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

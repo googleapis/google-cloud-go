@@ -479,6 +479,9 @@ func NewBigtableChannelPool(ctx context.Context, connPoolSize int, strategy btop
 				btopt.Debugf(pool.logger, "bigtable_connpool: Direct Access is not available. Using standard path")
 			}
 		}
+	} else {
+		btopt.Debugf(pool.logger, "bigtable_connpool: Direct Access manually disabled via config or environment.")
+		pool.reportDirectAccessFailure("manually_disabled")
 	}
 
 	// Initialize the connectionFactory

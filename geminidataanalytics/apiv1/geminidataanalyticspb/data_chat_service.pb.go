@@ -93,6 +93,59 @@ func (ChatRequest_ThinkingMode) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_rawDescGZIP(), []int{3, 0}
 }
 
+// Model selection for the agent.
+type ChatRequest_Model int32
+
+const (
+	// No model specified. The default model will be used. Currently, this is
+	// `gemini-3.0-flash-preview`.
+	ChatRequest_MODEL_UNSPECIFIED ChatRequest_Model = 0
+	// Use the most up-to-date non-preview model. Currently, this is
+	// `gemini-2.5-flash`. This constrains the request level settings. The
+	// default will change to `gemini-2.5-flash`, and setting `thinking_mode`
+	// will not be supported.
+	ChatRequest_LATEST_GA_MODEL ChatRequest_Model = 1
+)
+
+// Enum value maps for ChatRequest_Model.
+var (
+	ChatRequest_Model_name = map[int32]string{
+		0: "MODEL_UNSPECIFIED",
+		1: "LATEST_GA_MODEL",
+	}
+	ChatRequest_Model_value = map[string]int32{
+		"MODEL_UNSPECIFIED": 0,
+		"LATEST_GA_MODEL":   1,
+	}
+)
+
+func (x ChatRequest_Model) Enum() *ChatRequest_Model {
+	p := new(ChatRequest_Model)
+	*p = x
+	return p
+}
+
+func (x ChatRequest_Model) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (ChatRequest_Model) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_enumTypes[1].Descriptor()
+}
+
+func (ChatRequest_Model) Type() protoreflect.EnumType {
+	return &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_enumTypes[1]
+}
+
+func (x ChatRequest_Model) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use ChatRequest_Model.Descriptor instead.
+func (ChatRequest_Model) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_rawDescGZIP(), []int{3, 1}
+}
+
 // List of context versions supported by DCS.
 // There are two versions of context. This is to maintain versioning for the
 // data agent.
@@ -134,11 +187,11 @@ func (x DataAgentContext_ContextVersion) String() string {
 }
 
 func (DataAgentContext_ContextVersion) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_enumTypes[1].Descriptor()
+	return file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_enumTypes[2].Descriptor()
 }
 
 func (DataAgentContext_ContextVersion) Type() protoreflect.EnumType {
-	return &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_enumTypes[1]
+	return &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_enumTypes[2]
 }
 
 func (x DataAgentContext_ContextVersion) Number() protoreflect.EnumNumber {
@@ -200,11 +253,11 @@ func (x TextMessage_TextType) String() string {
 }
 
 func (TextMessage_TextType) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_enumTypes[2].Descriptor()
+	return file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_enumTypes[3].Descriptor()
 }
 
 func (TextMessage_TextType) Type() protoreflect.EnumType {
-	return &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_enumTypes[2]
+	return &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_enumTypes[3]
 }
 
 func (x TextMessage_TextType) Number() protoreflect.EnumNumber {
@@ -213,7 +266,7 @@ func (x TextMessage_TextType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use TextMessage_TextType.Descriptor instead.
 func (TextMessage_TextType) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_rawDescGZIP(), []int{10, 0}
+	return file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_rawDescGZIP(), []int{11, 0}
 }
 
 // Request for listing chat messages based on parent and conversation_id.
@@ -426,6 +479,13 @@ type ChatRequest struct {
 	//	*ChatRequest_DataAgentContext
 	//	*ChatRequest_ClientManagedResourceContext
 	ContextProvider isChatRequest_ContextProvider `protobuf_oneof:"context_provider"`
+	// Optional settings to customize request behavior, specific to the target
+	// datasource.
+	//
+	// Types that are valid to be assigned to DatasourceSettings:
+	//
+	//	*ChatRequest_LookerSettings
+	DatasourceSettings isChatRequest_DatasourceSettings `protobuf_oneof:"datasource_settings"`
 	// Required. The parent value for chat request.
 	// Pattern: `projects/{project}/locations/{location}`
 	Parent string `protobuf:"bytes,3,opt,name=parent,proto3" json:"parent,omitempty"`
@@ -442,7 +502,10 @@ type ChatRequest struct {
 	Credentials *Credentials `protobuf:"bytes,7,opt,name=credentials,proto3" json:"credentials,omitempty"`
 	// Optional. The thinking mode to use for the agent loop.
 	// Defaults to THINKING_MODE_UNSPECIFIED if not specified.
-	ThinkingMode  ChatRequest_ThinkingMode `protobuf:"varint,9,opt,name=thinking_mode,json=thinkingMode,proto3,enum=google.cloud.geminidataanalytics.v1.ChatRequest_ThinkingMode" json:"thinking_mode,omitempty"`
+	ThinkingMode ChatRequest_ThinkingMode `protobuf:"varint,9,opt,name=thinking_mode,json=thinkingMode,proto3,enum=google.cloud.geminidataanalytics.v1.ChatRequest_ThinkingMode" json:"thinking_mode,omitempty"`
+	// Optional. The model to use for the agent loop when processing the request.
+	// This setting only has an effect when context.options.model is not set.
+	Model         ChatRequest_Model `protobuf:"varint,11,opt,name=model,proto3,enum=google.cloud.geminidataanalytics.v1.ChatRequest_Model" json:"model,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -520,6 +583,22 @@ func (x *ChatRequest) GetClientManagedResourceContext() *ClientManagedResourceCo
 	return nil
 }
 
+func (x *ChatRequest) GetDatasourceSettings() isChatRequest_DatasourceSettings {
+	if x != nil {
+		return x.DatasourceSettings
+	}
+	return nil
+}
+
+func (x *ChatRequest) GetLookerSettings() *LookerSettings {
+	if x != nil {
+		if x, ok := x.DatasourceSettings.(*ChatRequest_LookerSettings); ok {
+			return x.LookerSettings
+		}
+	}
+	return nil
+}
+
 func (x *ChatRequest) GetParent() string {
 	if x != nil {
 		return x.Parent
@@ -546,6 +625,13 @@ func (x *ChatRequest) GetThinkingMode() ChatRequest_ThinkingMode {
 		return x.ThinkingMode
 	}
 	return ChatRequest_THINKING_MODE_UNSPECIFIED
+}
+
+func (x *ChatRequest) GetModel() ChatRequest_Model {
+	if x != nil {
+		return x.Model
+	}
+	return ChatRequest_MODEL_UNSPECIFIED
 }
 
 type isChatRequest_ContextProvider interface {
@@ -586,6 +672,17 @@ func (*ChatRequest_ConversationReference) isChatRequest_ContextProvider() {}
 func (*ChatRequest_DataAgentContext) isChatRequest_ContextProvider() {}
 
 func (*ChatRequest_ClientManagedResourceContext) isChatRequest_ContextProvider() {}
+
+type isChatRequest_DatasourceSettings interface {
+	isChatRequest_DatasourceSettings()
+}
+
+type ChatRequest_LookerSettings struct {
+	// Optional. Looker specific settings.
+	LookerSettings *LookerSettings `protobuf:"bytes,13,opt,name=looker_settings,json=lookerSettings,proto3,oneof"`
+}
+
+func (*ChatRequest_LookerSettings) isChatRequest_DatasourceSettings() {}
 
 // Context for the chat request using a data agent.
 type DataAgentContext struct {
@@ -874,6 +971,57 @@ func (*Message_UserMessage) isMessage_Kind() {}
 
 func (*Message_SystemMessage) isMessage_Kind() {}
 
+// Message to hold Looker specific custom settings.
+type LookerSettings struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. Whether to operate in Looker's Development Mode.
+	// If true, the API session will be switched to the "dev" workspace,
+	// allowing interaction with LookML changes in the user's development branch.
+	// If false or unset, the session remains in the default state (Production
+	// Mode).
+	// See https://cloud.google.com/looker/docs/dev-mode-prod-mode.
+	EnableDevMode bool `protobuf:"varint,1,opt,name=enable_dev_mode,json=enableDevMode,proto3" json:"enable_dev_mode,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *LookerSettings) Reset() {
+	*x = LookerSettings{}
+	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LookerSettings) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LookerSettings) ProtoMessage() {}
+
+func (x *LookerSettings) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LookerSettings.ProtoReflect.Descriptor instead.
+func (*LookerSettings) Descriptor() ([]byte, []int) {
+	return file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *LookerSettings) GetEnableDevMode() bool {
+	if x != nil {
+		return x.EnableDevMode
+	}
+	return false
+}
+
 // A message from the user that is interacting with the system.
 type UserMessage struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -889,7 +1037,7 @@ type UserMessage struct {
 
 func (x *UserMessage) Reset() {
 	*x = UserMessage{}
-	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[8]
+	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -901,7 +1049,7 @@ func (x *UserMessage) String() string {
 func (*UserMessage) ProtoMessage() {}
 
 func (x *UserMessage) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[8]
+	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -914,7 +1062,7 @@ func (x *UserMessage) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UserMessage.ProtoReflect.Descriptor instead.
 func (*UserMessage) Descriptor() ([]byte, []int) {
-	return file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_rawDescGZIP(), []int{8}
+	return file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *UserMessage) GetKind() isUserMessage_Kind {
@@ -973,7 +1121,7 @@ type SystemMessage struct {
 
 func (x *SystemMessage) Reset() {
 	*x = SystemMessage{}
-	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[9]
+	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -985,7 +1133,7 @@ func (x *SystemMessage) String() string {
 func (*SystemMessage) ProtoMessage() {}
 
 func (x *SystemMessage) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[9]
+	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -998,7 +1146,7 @@ func (x *SystemMessage) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SystemMessage.ProtoReflect.Descriptor instead.
 func (*SystemMessage) Descriptor() ([]byte, []int) {
-	return file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_rawDescGZIP(), []int{9}
+	return file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *SystemMessage) GetKind() isSystemMessage_Kind {
@@ -1154,7 +1302,7 @@ type TextMessage struct {
 
 func (x *TextMessage) Reset() {
 	*x = TextMessage{}
-	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[10]
+	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1166,7 +1314,7 @@ func (x *TextMessage) String() string {
 func (*TextMessage) ProtoMessage() {}
 
 func (x *TextMessage) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[10]
+	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1179,7 +1327,7 @@ func (x *TextMessage) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TextMessage.ProtoReflect.Descriptor instead.
 func (*TextMessage) Descriptor() ([]byte, []int) {
-	return file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_rawDescGZIP(), []int{10}
+	return file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *TextMessage) GetParts() []string {
@@ -1220,7 +1368,7 @@ type SchemaMessage struct {
 
 func (x *SchemaMessage) Reset() {
 	*x = SchemaMessage{}
-	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[11]
+	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1232,7 +1380,7 @@ func (x *SchemaMessage) String() string {
 func (*SchemaMessage) ProtoMessage() {}
 
 func (x *SchemaMessage) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[11]
+	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1245,7 +1393,7 @@ func (x *SchemaMessage) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SchemaMessage.ProtoReflect.Descriptor instead.
 func (*SchemaMessage) Descriptor() ([]byte, []int) {
-	return file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_rawDescGZIP(), []int{11}
+	return file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *SchemaMessage) GetKind() isSchemaMessage_Kind {
@@ -1302,7 +1450,7 @@ type SchemaQuery struct {
 
 func (x *SchemaQuery) Reset() {
 	*x = SchemaQuery{}
-	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[12]
+	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1314,7 +1462,7 @@ func (x *SchemaQuery) String() string {
 func (*SchemaQuery) ProtoMessage() {}
 
 func (x *SchemaQuery) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[12]
+	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1327,7 +1475,7 @@ func (x *SchemaQuery) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SchemaQuery.ProtoReflect.Descriptor instead.
 func (*SchemaQuery) Descriptor() ([]byte, []int) {
-	return file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_rawDescGZIP(), []int{12}
+	return file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *SchemaQuery) GetQuestion() string {
@@ -1348,7 +1496,7 @@ type SchemaResult struct {
 
 func (x *SchemaResult) Reset() {
 	*x = SchemaResult{}
-	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[13]
+	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1360,7 +1508,7 @@ func (x *SchemaResult) String() string {
 func (*SchemaResult) ProtoMessage() {}
 
 func (x *SchemaResult) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[13]
+	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1373,7 +1521,7 @@ func (x *SchemaResult) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SchemaResult.ProtoReflect.Descriptor instead.
 func (*SchemaResult) Descriptor() ([]byte, []int) {
-	return file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_rawDescGZIP(), []int{13}
+	return file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *SchemaResult) GetDatasources() []*Datasource {
@@ -1403,7 +1551,7 @@ type DataMessage struct {
 
 func (x *DataMessage) Reset() {
 	*x = DataMessage{}
-	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[14]
+	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1415,7 +1563,7 @@ func (x *DataMessage) String() string {
 func (*DataMessage) ProtoMessage() {}
 
 func (x *DataMessage) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[14]
+	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1428,7 +1576,7 @@ func (x *DataMessage) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DataMessage.ProtoReflect.Descriptor instead.
 func (*DataMessage) Descriptor() ([]byte, []int) {
-	return file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_rawDescGZIP(), []int{14}
+	return file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *DataMessage) GetKind() isDataMessage_Kind {
@@ -1548,7 +1696,7 @@ type DataQuery struct {
 
 func (x *DataQuery) Reset() {
 	*x = DataQuery{}
-	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[15]
+	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1560,7 +1708,7 @@ func (x *DataQuery) String() string {
 func (*DataQuery) ProtoMessage() {}
 
 func (x *DataQuery) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[15]
+	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1573,7 +1721,7 @@ func (x *DataQuery) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DataQuery.ProtoReflect.Descriptor instead.
 func (*DataQuery) Descriptor() ([]byte, []int) {
-	return file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_rawDescGZIP(), []int{15}
+	return file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *DataQuery) GetQueryType() isDataQuery_QueryType {
@@ -1654,7 +1802,7 @@ type DataResult struct {
 
 func (x *DataResult) Reset() {
 	*x = DataResult{}
-	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[16]
+	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1666,7 +1814,7 @@ func (x *DataResult) String() string {
 func (*DataResult) ProtoMessage() {}
 
 func (x *DataResult) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[16]
+	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1679,7 +1827,7 @@ func (x *DataResult) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DataResult.ProtoReflect.Descriptor instead.
 func (*DataResult) Descriptor() ([]byte, []int) {
-	return file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_rawDescGZIP(), []int{16}
+	return file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *DataResult) GetName() string {
@@ -1744,7 +1892,7 @@ type BigQueryJob struct {
 
 func (x *BigQueryJob) Reset() {
 	*x = BigQueryJob{}
-	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[17]
+	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1756,7 +1904,7 @@ func (x *BigQueryJob) String() string {
 func (*BigQueryJob) ProtoMessage() {}
 
 func (x *BigQueryJob) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[17]
+	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1769,7 +1917,7 @@ func (x *BigQueryJob) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BigQueryJob.ProtoReflect.Descriptor instead.
 func (*BigQueryJob) Descriptor() ([]byte, []int) {
-	return file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_rawDescGZIP(), []int{17}
+	return file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *BigQueryJob) GetProjectId() string {
@@ -1824,7 +1972,7 @@ type AnalysisMessage struct {
 
 func (x *AnalysisMessage) Reset() {
 	*x = AnalysisMessage{}
-	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[18]
+	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1836,7 +1984,7 @@ func (x *AnalysisMessage) String() string {
 func (*AnalysisMessage) ProtoMessage() {}
 
 func (x *AnalysisMessage) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[18]
+	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1849,7 +1997,7 @@ func (x *AnalysisMessage) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AnalysisMessage.ProtoReflect.Descriptor instead.
 func (*AnalysisMessage) Descriptor() ([]byte, []int) {
-	return file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_rawDescGZIP(), []int{18}
+	return file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *AnalysisMessage) GetKind() isAnalysisMessage_Kind {
@@ -1908,7 +2056,7 @@ type AnalysisQuery struct {
 
 func (x *AnalysisQuery) Reset() {
 	*x = AnalysisQuery{}
-	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[19]
+	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1920,7 +2068,7 @@ func (x *AnalysisQuery) String() string {
 func (*AnalysisQuery) ProtoMessage() {}
 
 func (x *AnalysisQuery) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[19]
+	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1933,7 +2081,7 @@ func (x *AnalysisQuery) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AnalysisQuery.ProtoReflect.Descriptor instead.
 func (*AnalysisQuery) Descriptor() ([]byte, []int) {
-	return file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_rawDescGZIP(), []int{19}
+	return file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *AnalysisQuery) GetQuestion() string {
@@ -1974,7 +2122,7 @@ type AnalysisEvent struct {
 
 func (x *AnalysisEvent) Reset() {
 	*x = AnalysisEvent{}
-	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[20]
+	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1986,7 +2134,7 @@ func (x *AnalysisEvent) String() string {
 func (*AnalysisEvent) ProtoMessage() {}
 
 func (x *AnalysisEvent) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[20]
+	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1999,7 +2147,7 @@ func (x *AnalysisEvent) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AnalysisEvent.ProtoReflect.Descriptor instead.
 func (*AnalysisEvent) Descriptor() ([]byte, []int) {
-	return file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_rawDescGZIP(), []int{20}
+	return file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *AnalysisEvent) GetKind() isAnalysisEvent_Kind {
@@ -2190,7 +2338,7 @@ type ChartMessage struct {
 
 func (x *ChartMessage) Reset() {
 	*x = ChartMessage{}
-	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[21]
+	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2202,7 +2350,7 @@ func (x *ChartMessage) String() string {
 func (*ChartMessage) ProtoMessage() {}
 
 func (x *ChartMessage) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[21]
+	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2215,7 +2363,7 @@ func (x *ChartMessage) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ChartMessage.ProtoReflect.Descriptor instead.
 func (*ChartMessage) Descriptor() ([]byte, []int) {
-	return file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_rawDescGZIP(), []int{21}
+	return file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *ChartMessage) GetKind() isChartMessage_Kind {
@@ -2275,7 +2423,7 @@ type ChartQuery struct {
 
 func (x *ChartQuery) Reset() {
 	*x = ChartQuery{}
-	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[22]
+	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2287,7 +2435,7 @@ func (x *ChartQuery) String() string {
 func (*ChartQuery) ProtoMessage() {}
 
 func (x *ChartQuery) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[22]
+	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2300,7 +2448,7 @@ func (x *ChartQuery) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ChartQuery.ProtoReflect.Descriptor instead.
 func (*ChartQuery) Descriptor() ([]byte, []int) {
-	return file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_rawDescGZIP(), []int{22}
+	return file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *ChartQuery) GetInstructions() string {
@@ -2331,7 +2479,7 @@ type ChartResult struct {
 
 func (x *ChartResult) Reset() {
 	*x = ChartResult{}
-	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[23]
+	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2343,7 +2491,7 @@ func (x *ChartResult) String() string {
 func (*ChartResult) ProtoMessage() {}
 
 func (x *ChartResult) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[23]
+	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2356,7 +2504,7 @@ func (x *ChartResult) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ChartResult.ProtoReflect.Descriptor instead.
 func (*ChartResult) Descriptor() ([]byte, []int) {
-	return file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_rawDescGZIP(), []int{23}
+	return file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *ChartResult) GetVegaConfig() *structpb.Struct {
@@ -2397,7 +2545,7 @@ type ErrorMessage struct {
 
 func (x *ErrorMessage) Reset() {
 	*x = ErrorMessage{}
-	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[24]
+	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2409,7 +2557,7 @@ func (x *ErrorMessage) String() string {
 func (*ErrorMessage) ProtoMessage() {}
 
 func (x *ErrorMessage) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[24]
+	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2422,7 +2570,7 @@ func (x *ErrorMessage) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ErrorMessage.ProtoReflect.Descriptor instead.
 func (*ErrorMessage) Descriptor() ([]byte, []int) {
-	return file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_rawDescGZIP(), []int{24}
+	return file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_rawDescGZIP(), []int{25}
 }
 
 func (x *ErrorMessage) GetText() string {
@@ -2446,7 +2594,7 @@ type ExampleQueries struct {
 
 func (x *ExampleQueries) Reset() {
 	*x = ExampleQueries{}
-	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[25]
+	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2458,7 +2606,7 @@ func (x *ExampleQueries) String() string {
 func (*ExampleQueries) ProtoMessage() {}
 
 func (x *ExampleQueries) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[25]
+	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2471,7 +2619,7 @@ func (x *ExampleQueries) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExampleQueries.ProtoReflect.Descriptor instead.
 func (*ExampleQueries) Descriptor() ([]byte, []int) {
-	return file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_rawDescGZIP(), []int{25}
+	return file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_rawDescGZIP(), []int{26}
 }
 
 func (x *ExampleQueries) GetExampleQueries() []*ExampleQuery {
@@ -2494,7 +2642,7 @@ type Blob struct {
 
 func (x *Blob) Reset() {
 	*x = Blob{}
-	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[26]
+	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2506,7 +2654,7 @@ func (x *Blob) String() string {
 func (*Blob) ProtoMessage() {}
 
 func (x *Blob) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[26]
+	mi := &file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2519,7 +2667,7 @@ func (x *Blob) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Blob.ProtoReflect.Descriptor instead.
 func (*Blob) Descriptor() ([]byte, []int) {
-	return file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_rawDescGZIP(), []int{26}
+	return file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_rawDescGZIP(), []int{27}
 }
 
 func (x *Blob) GetMimeType() string {
@@ -2554,21 +2702,27 @@ const file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_rawDesc =
 	"\x0eStorageMessage\x12\x1d\n" +
 	"\n" +
 	"message_id\x18\x01 \x01(\tR\tmessageId\x12F\n" +
-	"\amessage\x18\x02 \x01(\v2,.google.cloud.geminidataanalytics.v1.MessageR\amessage\"\xea\x06\n" +
+	"\amessage\x18\x02 \x01(\v2,.google.cloud.geminidataanalytics.v1.MessageR\amessage\"\xee\b\n" +
 	"\vChatRequest\x12Z\n" +
 	"\x0einline_context\x18e \x01(\v2,.google.cloud.geminidataanalytics.v1.ContextB\x03\xe0A\x01H\x00R\rinlineContext\x12x\n" +
 	"\x16conversation_reference\x18g \x01(\v2:.google.cloud.geminidataanalytics.v1.ConversationReferenceB\x03\xe0A\x01H\x00R\x15conversationReference\x12j\n" +
 	"\x12data_agent_context\x18h \x01(\v25.google.cloud.geminidataanalytics.v1.DataAgentContextB\x03\xe0A\x01H\x00R\x10dataAgentContext\x12\x8f\x01\n" +
-	"\x1fclient_managed_resource_context\x18i \x01(\v2A.google.cloud.geminidataanalytics.v1.ClientManagedResourceContextB\x03\xe0A\x01H\x00R\x1cclientManagedResourceContext\x12\x1b\n" +
+	"\x1fclient_managed_resource_context\x18i \x01(\v2A.google.cloud.geminidataanalytics.v1.ClientManagedResourceContextB\x03\xe0A\x01H\x00R\x1cclientManagedResourceContext\x12c\n" +
+	"\x0flooker_settings\x18\r \x01(\v23.google.cloud.geminidataanalytics.v1.LookerSettingsB\x03\xe0A\x01H\x01R\x0elookerSettings\x12\x1b\n" +
 	"\x06parent\x18\x03 \x01(\tB\x03\xe0A\x02R\x06parent\x12M\n" +
 	"\bmessages\x18\x02 \x03(\v2,.google.cloud.geminidataanalytics.v1.MessageB\x03\xe0A\x02R\bmessages\x12W\n" +
 	"\vcredentials\x18\a \x01(\v20.google.cloud.geminidataanalytics.v1.CredentialsB\x03\xe0A\x01R\vcredentials\x12g\n" +
-	"\rthinking_mode\x18\t \x01(\x0e2=.google.cloud.geminidataanalytics.v1.ChatRequest.ThinkingModeB\x03\xe0A\x01R\fthinkingMode\"E\n" +
+	"\rthinking_mode\x18\t \x01(\x0e2=.google.cloud.geminidataanalytics.v1.ChatRequest.ThinkingModeB\x03\xe0A\x01R\fthinkingMode\x12Q\n" +
+	"\x05model\x18\v \x01(\x0e26.google.cloud.geminidataanalytics.v1.ChatRequest.ModelB\x03\xe0A\x01R\x05model\"E\n" +
 	"\fThinkingMode\x12\x1d\n" +
 	"\x19THINKING_MODE_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04FAST\x10\x01\x12\f\n" +
-	"\bTHINKING\x10\x02B\x12\n" +
-	"\x10context_provider\"\xaa\x02\n" +
+	"\bTHINKING\x10\x02\"3\n" +
+	"\x05Model\x12\x15\n" +
+	"\x11MODEL_UNSPECIFIED\x10\x00\x12\x13\n" +
+	"\x0fLATEST_GA_MODEL\x10\x01B\x12\n" +
+	"\x10context_providerB\x15\n" +
+	"\x13datasource_settings\"\xaa\x02\n" +
 	"\x10DataAgentContext\x12S\n" +
 	"\n" +
 	"data_agent\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
@@ -2592,7 +2746,9 @@ const file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_rawDesc =
 	"\ttimestamp\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\ttimestamp\x12\"\n" +
 	"\n" +
 	"message_id\x18\x04 \x01(\tB\x03\xe0A\x01R\tmessageIdB\x06\n" +
-	"\x04kind\"+\n" +
+	"\x04kind\"=\n" +
+	"\x0eLookerSettings\x12+\n" +
+	"\x0fenable_dev_mode\x18\x01 \x01(\bB\x03\xe0A\x01R\renableDevMode\"+\n" +
 	"\vUserMessage\x12\x14\n" +
 	"\x04text\x18\x01 \x01(\tH\x00R\x04textB\x06\n" +
 	"\x04kind\"\xc1\x05\n" +
@@ -2714,121 +2870,125 @@ func file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_rawDescGZI
 	return file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_rawDescData
 }
 
-var file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes = make([]protoimpl.MessageInfo, 27)
+var file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_enumTypes = make([]protoimpl.EnumInfo, 4)
+var file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes = make([]protoimpl.MessageInfo, 28)
 var file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_goTypes = []any{
 	(ChatRequest_ThinkingMode)(0),        // 0: google.cloud.geminidataanalytics.v1.ChatRequest.ThinkingMode
-	(DataAgentContext_ContextVersion)(0), // 1: google.cloud.geminidataanalytics.v1.DataAgentContext.ContextVersion
-	(TextMessage_TextType)(0),            // 2: google.cloud.geminidataanalytics.v1.TextMessage.TextType
-	(*ListMessagesRequest)(nil),          // 3: google.cloud.geminidataanalytics.v1.ListMessagesRequest
-	(*ListMessagesResponse)(nil),         // 4: google.cloud.geminidataanalytics.v1.ListMessagesResponse
-	(*StorageMessage)(nil),               // 5: google.cloud.geminidataanalytics.v1.StorageMessage
-	(*ChatRequest)(nil),                  // 6: google.cloud.geminidataanalytics.v1.ChatRequest
-	(*DataAgentContext)(nil),             // 7: google.cloud.geminidataanalytics.v1.DataAgentContext
-	(*ConversationReference)(nil),        // 8: google.cloud.geminidataanalytics.v1.ConversationReference
-	(*ClientManagedResourceContext)(nil), // 9: google.cloud.geminidataanalytics.v1.ClientManagedResourceContext
-	(*Message)(nil),                      // 10: google.cloud.geminidataanalytics.v1.Message
-	(*UserMessage)(nil),                  // 11: google.cloud.geminidataanalytics.v1.UserMessage
-	(*SystemMessage)(nil),                // 12: google.cloud.geminidataanalytics.v1.SystemMessage
-	(*TextMessage)(nil),                  // 13: google.cloud.geminidataanalytics.v1.TextMessage
-	(*SchemaMessage)(nil),                // 14: google.cloud.geminidataanalytics.v1.SchemaMessage
-	(*SchemaQuery)(nil),                  // 15: google.cloud.geminidataanalytics.v1.SchemaQuery
-	(*SchemaResult)(nil),                 // 16: google.cloud.geminidataanalytics.v1.SchemaResult
-	(*DataMessage)(nil),                  // 17: google.cloud.geminidataanalytics.v1.DataMessage
-	(*DataQuery)(nil),                    // 18: google.cloud.geminidataanalytics.v1.DataQuery
-	(*DataResult)(nil),                   // 19: google.cloud.geminidataanalytics.v1.DataResult
-	(*BigQueryJob)(nil),                  // 20: google.cloud.geminidataanalytics.v1.BigQueryJob
-	(*AnalysisMessage)(nil),              // 21: google.cloud.geminidataanalytics.v1.AnalysisMessage
-	(*AnalysisQuery)(nil),                // 22: google.cloud.geminidataanalytics.v1.AnalysisQuery
-	(*AnalysisEvent)(nil),                // 23: google.cloud.geminidataanalytics.v1.AnalysisEvent
-	(*ChartMessage)(nil),                 // 24: google.cloud.geminidataanalytics.v1.ChartMessage
-	(*ChartQuery)(nil),                   // 25: google.cloud.geminidataanalytics.v1.ChartQuery
-	(*ChartResult)(nil),                  // 26: google.cloud.geminidataanalytics.v1.ChartResult
-	(*ErrorMessage)(nil),                 // 27: google.cloud.geminidataanalytics.v1.ErrorMessage
-	(*ExampleQueries)(nil),               // 28: google.cloud.geminidataanalytics.v1.ExampleQueries
-	(*Blob)(nil),                         // 29: google.cloud.geminidataanalytics.v1.Blob
-	(*Context)(nil),                      // 30: google.cloud.geminidataanalytics.v1.Context
-	(*Credentials)(nil),                  // 31: google.cloud.geminidataanalytics.v1.Credentials
-	(*timestamppb.Timestamp)(nil),        // 32: google.protobuf.Timestamp
-	(*Citation)(nil),                     // 33: google.cloud.geminidataanalytics.v1.Citation
-	(*Datasource)(nil),                   // 34: google.cloud.geminidataanalytics.v1.Datasource
-	(*MatchedQuery)(nil),                 // 35: google.cloud.geminidataanalytics.v1.MatchedQuery
-	(*LookerQuery)(nil),                  // 36: google.cloud.geminidataanalytics.v1.LookerQuery
-	(*Schema)(nil),                       // 37: google.cloud.geminidataanalytics.v1.Schema
-	(*structpb.Struct)(nil),              // 38: google.protobuf.Struct
-	(*BigQueryTableReference)(nil),       // 39: google.cloud.geminidataanalytics.v1.BigQueryTableReference
-	(*ExampleQuery)(nil),                 // 40: google.cloud.geminidataanalytics.v1.ExampleQuery
-	(*CreateConversationRequest)(nil),    // 41: google.cloud.geminidataanalytics.v1.CreateConversationRequest
-	(*DeleteConversationRequest)(nil),    // 42: google.cloud.geminidataanalytics.v1.DeleteConversationRequest
-	(*GetConversationRequest)(nil),       // 43: google.cloud.geminidataanalytics.v1.GetConversationRequest
-	(*ListConversationsRequest)(nil),     // 44: google.cloud.geminidataanalytics.v1.ListConversationsRequest
-	(*Conversation)(nil),                 // 45: google.cloud.geminidataanalytics.v1.Conversation
-	(*emptypb.Empty)(nil),                // 46: google.protobuf.Empty
-	(*ListConversationsResponse)(nil),    // 47: google.cloud.geminidataanalytics.v1.ListConversationsResponse
+	(ChatRequest_Model)(0),               // 1: google.cloud.geminidataanalytics.v1.ChatRequest.Model
+	(DataAgentContext_ContextVersion)(0), // 2: google.cloud.geminidataanalytics.v1.DataAgentContext.ContextVersion
+	(TextMessage_TextType)(0),            // 3: google.cloud.geminidataanalytics.v1.TextMessage.TextType
+	(*ListMessagesRequest)(nil),          // 4: google.cloud.geminidataanalytics.v1.ListMessagesRequest
+	(*ListMessagesResponse)(nil),         // 5: google.cloud.geminidataanalytics.v1.ListMessagesResponse
+	(*StorageMessage)(nil),               // 6: google.cloud.geminidataanalytics.v1.StorageMessage
+	(*ChatRequest)(nil),                  // 7: google.cloud.geminidataanalytics.v1.ChatRequest
+	(*DataAgentContext)(nil),             // 8: google.cloud.geminidataanalytics.v1.DataAgentContext
+	(*ConversationReference)(nil),        // 9: google.cloud.geminidataanalytics.v1.ConversationReference
+	(*ClientManagedResourceContext)(nil), // 10: google.cloud.geminidataanalytics.v1.ClientManagedResourceContext
+	(*Message)(nil),                      // 11: google.cloud.geminidataanalytics.v1.Message
+	(*LookerSettings)(nil),               // 12: google.cloud.geminidataanalytics.v1.LookerSettings
+	(*UserMessage)(nil),                  // 13: google.cloud.geminidataanalytics.v1.UserMessage
+	(*SystemMessage)(nil),                // 14: google.cloud.geminidataanalytics.v1.SystemMessage
+	(*TextMessage)(nil),                  // 15: google.cloud.geminidataanalytics.v1.TextMessage
+	(*SchemaMessage)(nil),                // 16: google.cloud.geminidataanalytics.v1.SchemaMessage
+	(*SchemaQuery)(nil),                  // 17: google.cloud.geminidataanalytics.v1.SchemaQuery
+	(*SchemaResult)(nil),                 // 18: google.cloud.geminidataanalytics.v1.SchemaResult
+	(*DataMessage)(nil),                  // 19: google.cloud.geminidataanalytics.v1.DataMessage
+	(*DataQuery)(nil),                    // 20: google.cloud.geminidataanalytics.v1.DataQuery
+	(*DataResult)(nil),                   // 21: google.cloud.geminidataanalytics.v1.DataResult
+	(*BigQueryJob)(nil),                  // 22: google.cloud.geminidataanalytics.v1.BigQueryJob
+	(*AnalysisMessage)(nil),              // 23: google.cloud.geminidataanalytics.v1.AnalysisMessage
+	(*AnalysisQuery)(nil),                // 24: google.cloud.geminidataanalytics.v1.AnalysisQuery
+	(*AnalysisEvent)(nil),                // 25: google.cloud.geminidataanalytics.v1.AnalysisEvent
+	(*ChartMessage)(nil),                 // 26: google.cloud.geminidataanalytics.v1.ChartMessage
+	(*ChartQuery)(nil),                   // 27: google.cloud.geminidataanalytics.v1.ChartQuery
+	(*ChartResult)(nil),                  // 28: google.cloud.geminidataanalytics.v1.ChartResult
+	(*ErrorMessage)(nil),                 // 29: google.cloud.geminidataanalytics.v1.ErrorMessage
+	(*ExampleQueries)(nil),               // 30: google.cloud.geminidataanalytics.v1.ExampleQueries
+	(*Blob)(nil),                         // 31: google.cloud.geminidataanalytics.v1.Blob
+	(*Context)(nil),                      // 32: google.cloud.geminidataanalytics.v1.Context
+	(*Credentials)(nil),                  // 33: google.cloud.geminidataanalytics.v1.Credentials
+	(*timestamppb.Timestamp)(nil),        // 34: google.protobuf.Timestamp
+	(*Citation)(nil),                     // 35: google.cloud.geminidataanalytics.v1.Citation
+	(*Datasource)(nil),                   // 36: google.cloud.geminidataanalytics.v1.Datasource
+	(*MatchedQuery)(nil),                 // 37: google.cloud.geminidataanalytics.v1.MatchedQuery
+	(*LookerQuery)(nil),                  // 38: google.cloud.geminidataanalytics.v1.LookerQuery
+	(*Schema)(nil),                       // 39: google.cloud.geminidataanalytics.v1.Schema
+	(*structpb.Struct)(nil),              // 40: google.protobuf.Struct
+	(*BigQueryTableReference)(nil),       // 41: google.cloud.geminidataanalytics.v1.BigQueryTableReference
+	(*ExampleQuery)(nil),                 // 42: google.cloud.geminidataanalytics.v1.ExampleQuery
+	(*CreateConversationRequest)(nil),    // 43: google.cloud.geminidataanalytics.v1.CreateConversationRequest
+	(*DeleteConversationRequest)(nil),    // 44: google.cloud.geminidataanalytics.v1.DeleteConversationRequest
+	(*GetConversationRequest)(nil),       // 45: google.cloud.geminidataanalytics.v1.GetConversationRequest
+	(*ListConversationsRequest)(nil),     // 46: google.cloud.geminidataanalytics.v1.ListConversationsRequest
+	(*Conversation)(nil),                 // 47: google.cloud.geminidataanalytics.v1.Conversation
+	(*emptypb.Empty)(nil),                // 48: google.protobuf.Empty
+	(*ListConversationsResponse)(nil),    // 49: google.cloud.geminidataanalytics.v1.ListConversationsResponse
 }
 var file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_depIdxs = []int32{
-	5,  // 0: google.cloud.geminidataanalytics.v1.ListMessagesResponse.messages:type_name -> google.cloud.geminidataanalytics.v1.StorageMessage
-	10, // 1: google.cloud.geminidataanalytics.v1.StorageMessage.message:type_name -> google.cloud.geminidataanalytics.v1.Message
-	30, // 2: google.cloud.geminidataanalytics.v1.ChatRequest.inline_context:type_name -> google.cloud.geminidataanalytics.v1.Context
-	8,  // 3: google.cloud.geminidataanalytics.v1.ChatRequest.conversation_reference:type_name -> google.cloud.geminidataanalytics.v1.ConversationReference
-	7,  // 4: google.cloud.geminidataanalytics.v1.ChatRequest.data_agent_context:type_name -> google.cloud.geminidataanalytics.v1.DataAgentContext
-	9,  // 5: google.cloud.geminidataanalytics.v1.ChatRequest.client_managed_resource_context:type_name -> google.cloud.geminidataanalytics.v1.ClientManagedResourceContext
-	10, // 6: google.cloud.geminidataanalytics.v1.ChatRequest.messages:type_name -> google.cloud.geminidataanalytics.v1.Message
-	31, // 7: google.cloud.geminidataanalytics.v1.ChatRequest.credentials:type_name -> google.cloud.geminidataanalytics.v1.Credentials
-	0,  // 8: google.cloud.geminidataanalytics.v1.ChatRequest.thinking_mode:type_name -> google.cloud.geminidataanalytics.v1.ChatRequest.ThinkingMode
-	1,  // 9: google.cloud.geminidataanalytics.v1.DataAgentContext.context_version:type_name -> google.cloud.geminidataanalytics.v1.DataAgentContext.ContextVersion
-	7,  // 10: google.cloud.geminidataanalytics.v1.ConversationReference.data_agent_context:type_name -> google.cloud.geminidataanalytics.v1.DataAgentContext
-	30, // 11: google.cloud.geminidataanalytics.v1.ClientManagedResourceContext.inline_context:type_name -> google.cloud.geminidataanalytics.v1.Context
-	11, // 12: google.cloud.geminidataanalytics.v1.Message.user_message:type_name -> google.cloud.geminidataanalytics.v1.UserMessage
-	12, // 13: google.cloud.geminidataanalytics.v1.Message.system_message:type_name -> google.cloud.geminidataanalytics.v1.SystemMessage
-	32, // 14: google.cloud.geminidataanalytics.v1.Message.timestamp:type_name -> google.protobuf.Timestamp
-	13, // 15: google.cloud.geminidataanalytics.v1.SystemMessage.text:type_name -> google.cloud.geminidataanalytics.v1.TextMessage
-	14, // 16: google.cloud.geminidataanalytics.v1.SystemMessage.schema:type_name -> google.cloud.geminidataanalytics.v1.SchemaMessage
-	17, // 17: google.cloud.geminidataanalytics.v1.SystemMessage.data:type_name -> google.cloud.geminidataanalytics.v1.DataMessage
-	21, // 18: google.cloud.geminidataanalytics.v1.SystemMessage.analysis:type_name -> google.cloud.geminidataanalytics.v1.AnalysisMessage
-	24, // 19: google.cloud.geminidataanalytics.v1.SystemMessage.chart:type_name -> google.cloud.geminidataanalytics.v1.ChartMessage
-	27, // 20: google.cloud.geminidataanalytics.v1.SystemMessage.error:type_name -> google.cloud.geminidataanalytics.v1.ErrorMessage
-	28, // 21: google.cloud.geminidataanalytics.v1.SystemMessage.example_queries:type_name -> google.cloud.geminidataanalytics.v1.ExampleQueries
-	33, // 22: google.cloud.geminidataanalytics.v1.SystemMessage.citation:type_name -> google.cloud.geminidataanalytics.v1.Citation
-	2,  // 23: google.cloud.geminidataanalytics.v1.TextMessage.text_type:type_name -> google.cloud.geminidataanalytics.v1.TextMessage.TextType
-	15, // 24: google.cloud.geminidataanalytics.v1.SchemaMessage.query:type_name -> google.cloud.geminidataanalytics.v1.SchemaQuery
-	16, // 25: google.cloud.geminidataanalytics.v1.SchemaMessage.result:type_name -> google.cloud.geminidataanalytics.v1.SchemaResult
-	34, // 26: google.cloud.geminidataanalytics.v1.SchemaResult.datasources:type_name -> google.cloud.geminidataanalytics.v1.Datasource
-	18, // 27: google.cloud.geminidataanalytics.v1.DataMessage.query:type_name -> google.cloud.geminidataanalytics.v1.DataQuery
-	19, // 28: google.cloud.geminidataanalytics.v1.DataMessage.result:type_name -> google.cloud.geminidataanalytics.v1.DataResult
-	20, // 29: google.cloud.geminidataanalytics.v1.DataMessage.big_query_job:type_name -> google.cloud.geminidataanalytics.v1.BigQueryJob
-	35, // 30: google.cloud.geminidataanalytics.v1.DataMessage.matched_query:type_name -> google.cloud.geminidataanalytics.v1.MatchedQuery
-	36, // 31: google.cloud.geminidataanalytics.v1.DataQuery.looker:type_name -> google.cloud.geminidataanalytics.v1.LookerQuery
-	34, // 32: google.cloud.geminidataanalytics.v1.DataQuery.datasources:type_name -> google.cloud.geminidataanalytics.v1.Datasource
-	37, // 33: google.cloud.geminidataanalytics.v1.DataResult.schema:type_name -> google.cloud.geminidataanalytics.v1.Schema
-	38, // 34: google.cloud.geminidataanalytics.v1.DataResult.data:type_name -> google.protobuf.Struct
-	38, // 35: google.cloud.geminidataanalytics.v1.DataResult.formatted_data:type_name -> google.protobuf.Struct
-	39, // 36: google.cloud.geminidataanalytics.v1.BigQueryJob.destination_table:type_name -> google.cloud.geminidataanalytics.v1.BigQueryTableReference
-	37, // 37: google.cloud.geminidataanalytics.v1.BigQueryJob.schema:type_name -> google.cloud.geminidataanalytics.v1.Schema
-	22, // 38: google.cloud.geminidataanalytics.v1.AnalysisMessage.query:type_name -> google.cloud.geminidataanalytics.v1.AnalysisQuery
-	23, // 39: google.cloud.geminidataanalytics.v1.AnalysisMessage.progress_event:type_name -> google.cloud.geminidataanalytics.v1.AnalysisEvent
-	25, // 40: google.cloud.geminidataanalytics.v1.ChartMessage.query:type_name -> google.cloud.geminidataanalytics.v1.ChartQuery
-	26, // 41: google.cloud.geminidataanalytics.v1.ChartMessage.result:type_name -> google.cloud.geminidataanalytics.v1.ChartResult
-	38, // 42: google.cloud.geminidataanalytics.v1.ChartResult.vega_config:type_name -> google.protobuf.Struct
-	29, // 43: google.cloud.geminidataanalytics.v1.ChartResult.image:type_name -> google.cloud.geminidataanalytics.v1.Blob
-	40, // 44: google.cloud.geminidataanalytics.v1.ExampleQueries.example_queries:type_name -> google.cloud.geminidataanalytics.v1.ExampleQuery
-	6,  // 45: google.cloud.geminidataanalytics.v1.DataChatService.Chat:input_type -> google.cloud.geminidataanalytics.v1.ChatRequest
-	41, // 46: google.cloud.geminidataanalytics.v1.DataChatService.CreateConversation:input_type -> google.cloud.geminidataanalytics.v1.CreateConversationRequest
-	42, // 47: google.cloud.geminidataanalytics.v1.DataChatService.DeleteConversation:input_type -> google.cloud.geminidataanalytics.v1.DeleteConversationRequest
-	43, // 48: google.cloud.geminidataanalytics.v1.DataChatService.GetConversation:input_type -> google.cloud.geminidataanalytics.v1.GetConversationRequest
-	44, // 49: google.cloud.geminidataanalytics.v1.DataChatService.ListConversations:input_type -> google.cloud.geminidataanalytics.v1.ListConversationsRequest
-	3,  // 50: google.cloud.geminidataanalytics.v1.DataChatService.ListMessages:input_type -> google.cloud.geminidataanalytics.v1.ListMessagesRequest
-	10, // 51: google.cloud.geminidataanalytics.v1.DataChatService.Chat:output_type -> google.cloud.geminidataanalytics.v1.Message
-	45, // 52: google.cloud.geminidataanalytics.v1.DataChatService.CreateConversation:output_type -> google.cloud.geminidataanalytics.v1.Conversation
-	46, // 53: google.cloud.geminidataanalytics.v1.DataChatService.DeleteConversation:output_type -> google.protobuf.Empty
-	45, // 54: google.cloud.geminidataanalytics.v1.DataChatService.GetConversation:output_type -> google.cloud.geminidataanalytics.v1.Conversation
-	47, // 55: google.cloud.geminidataanalytics.v1.DataChatService.ListConversations:output_type -> google.cloud.geminidataanalytics.v1.ListConversationsResponse
-	4,  // 56: google.cloud.geminidataanalytics.v1.DataChatService.ListMessages:output_type -> google.cloud.geminidataanalytics.v1.ListMessagesResponse
-	51, // [51:57] is the sub-list for method output_type
-	45, // [45:51] is the sub-list for method input_type
-	45, // [45:45] is the sub-list for extension type_name
-	45, // [45:45] is the sub-list for extension extendee
-	0,  // [0:45] is the sub-list for field type_name
+	6,  // 0: google.cloud.geminidataanalytics.v1.ListMessagesResponse.messages:type_name -> google.cloud.geminidataanalytics.v1.StorageMessage
+	11, // 1: google.cloud.geminidataanalytics.v1.StorageMessage.message:type_name -> google.cloud.geminidataanalytics.v1.Message
+	32, // 2: google.cloud.geminidataanalytics.v1.ChatRequest.inline_context:type_name -> google.cloud.geminidataanalytics.v1.Context
+	9,  // 3: google.cloud.geminidataanalytics.v1.ChatRequest.conversation_reference:type_name -> google.cloud.geminidataanalytics.v1.ConversationReference
+	8,  // 4: google.cloud.geminidataanalytics.v1.ChatRequest.data_agent_context:type_name -> google.cloud.geminidataanalytics.v1.DataAgentContext
+	10, // 5: google.cloud.geminidataanalytics.v1.ChatRequest.client_managed_resource_context:type_name -> google.cloud.geminidataanalytics.v1.ClientManagedResourceContext
+	12, // 6: google.cloud.geminidataanalytics.v1.ChatRequest.looker_settings:type_name -> google.cloud.geminidataanalytics.v1.LookerSettings
+	11, // 7: google.cloud.geminidataanalytics.v1.ChatRequest.messages:type_name -> google.cloud.geminidataanalytics.v1.Message
+	33, // 8: google.cloud.geminidataanalytics.v1.ChatRequest.credentials:type_name -> google.cloud.geminidataanalytics.v1.Credentials
+	0,  // 9: google.cloud.geminidataanalytics.v1.ChatRequest.thinking_mode:type_name -> google.cloud.geminidataanalytics.v1.ChatRequest.ThinkingMode
+	1,  // 10: google.cloud.geminidataanalytics.v1.ChatRequest.model:type_name -> google.cloud.geminidataanalytics.v1.ChatRequest.Model
+	2,  // 11: google.cloud.geminidataanalytics.v1.DataAgentContext.context_version:type_name -> google.cloud.geminidataanalytics.v1.DataAgentContext.ContextVersion
+	8,  // 12: google.cloud.geminidataanalytics.v1.ConversationReference.data_agent_context:type_name -> google.cloud.geminidataanalytics.v1.DataAgentContext
+	32, // 13: google.cloud.geminidataanalytics.v1.ClientManagedResourceContext.inline_context:type_name -> google.cloud.geminidataanalytics.v1.Context
+	13, // 14: google.cloud.geminidataanalytics.v1.Message.user_message:type_name -> google.cloud.geminidataanalytics.v1.UserMessage
+	14, // 15: google.cloud.geminidataanalytics.v1.Message.system_message:type_name -> google.cloud.geminidataanalytics.v1.SystemMessage
+	34, // 16: google.cloud.geminidataanalytics.v1.Message.timestamp:type_name -> google.protobuf.Timestamp
+	15, // 17: google.cloud.geminidataanalytics.v1.SystemMessage.text:type_name -> google.cloud.geminidataanalytics.v1.TextMessage
+	16, // 18: google.cloud.geminidataanalytics.v1.SystemMessage.schema:type_name -> google.cloud.geminidataanalytics.v1.SchemaMessage
+	19, // 19: google.cloud.geminidataanalytics.v1.SystemMessage.data:type_name -> google.cloud.geminidataanalytics.v1.DataMessage
+	23, // 20: google.cloud.geminidataanalytics.v1.SystemMessage.analysis:type_name -> google.cloud.geminidataanalytics.v1.AnalysisMessage
+	26, // 21: google.cloud.geminidataanalytics.v1.SystemMessage.chart:type_name -> google.cloud.geminidataanalytics.v1.ChartMessage
+	29, // 22: google.cloud.geminidataanalytics.v1.SystemMessage.error:type_name -> google.cloud.geminidataanalytics.v1.ErrorMessage
+	30, // 23: google.cloud.geminidataanalytics.v1.SystemMessage.example_queries:type_name -> google.cloud.geminidataanalytics.v1.ExampleQueries
+	35, // 24: google.cloud.geminidataanalytics.v1.SystemMessage.citation:type_name -> google.cloud.geminidataanalytics.v1.Citation
+	3,  // 25: google.cloud.geminidataanalytics.v1.TextMessage.text_type:type_name -> google.cloud.geminidataanalytics.v1.TextMessage.TextType
+	17, // 26: google.cloud.geminidataanalytics.v1.SchemaMessage.query:type_name -> google.cloud.geminidataanalytics.v1.SchemaQuery
+	18, // 27: google.cloud.geminidataanalytics.v1.SchemaMessage.result:type_name -> google.cloud.geminidataanalytics.v1.SchemaResult
+	36, // 28: google.cloud.geminidataanalytics.v1.SchemaResult.datasources:type_name -> google.cloud.geminidataanalytics.v1.Datasource
+	20, // 29: google.cloud.geminidataanalytics.v1.DataMessage.query:type_name -> google.cloud.geminidataanalytics.v1.DataQuery
+	21, // 30: google.cloud.geminidataanalytics.v1.DataMessage.result:type_name -> google.cloud.geminidataanalytics.v1.DataResult
+	22, // 31: google.cloud.geminidataanalytics.v1.DataMessage.big_query_job:type_name -> google.cloud.geminidataanalytics.v1.BigQueryJob
+	37, // 32: google.cloud.geminidataanalytics.v1.DataMessage.matched_query:type_name -> google.cloud.geminidataanalytics.v1.MatchedQuery
+	38, // 33: google.cloud.geminidataanalytics.v1.DataQuery.looker:type_name -> google.cloud.geminidataanalytics.v1.LookerQuery
+	36, // 34: google.cloud.geminidataanalytics.v1.DataQuery.datasources:type_name -> google.cloud.geminidataanalytics.v1.Datasource
+	39, // 35: google.cloud.geminidataanalytics.v1.DataResult.schema:type_name -> google.cloud.geminidataanalytics.v1.Schema
+	40, // 36: google.cloud.geminidataanalytics.v1.DataResult.data:type_name -> google.protobuf.Struct
+	40, // 37: google.cloud.geminidataanalytics.v1.DataResult.formatted_data:type_name -> google.protobuf.Struct
+	41, // 38: google.cloud.geminidataanalytics.v1.BigQueryJob.destination_table:type_name -> google.cloud.geminidataanalytics.v1.BigQueryTableReference
+	39, // 39: google.cloud.geminidataanalytics.v1.BigQueryJob.schema:type_name -> google.cloud.geminidataanalytics.v1.Schema
+	24, // 40: google.cloud.geminidataanalytics.v1.AnalysisMessage.query:type_name -> google.cloud.geminidataanalytics.v1.AnalysisQuery
+	25, // 41: google.cloud.geminidataanalytics.v1.AnalysisMessage.progress_event:type_name -> google.cloud.geminidataanalytics.v1.AnalysisEvent
+	27, // 42: google.cloud.geminidataanalytics.v1.ChartMessage.query:type_name -> google.cloud.geminidataanalytics.v1.ChartQuery
+	28, // 43: google.cloud.geminidataanalytics.v1.ChartMessage.result:type_name -> google.cloud.geminidataanalytics.v1.ChartResult
+	40, // 44: google.cloud.geminidataanalytics.v1.ChartResult.vega_config:type_name -> google.protobuf.Struct
+	31, // 45: google.cloud.geminidataanalytics.v1.ChartResult.image:type_name -> google.cloud.geminidataanalytics.v1.Blob
+	42, // 46: google.cloud.geminidataanalytics.v1.ExampleQueries.example_queries:type_name -> google.cloud.geminidataanalytics.v1.ExampleQuery
+	7,  // 47: google.cloud.geminidataanalytics.v1.DataChatService.Chat:input_type -> google.cloud.geminidataanalytics.v1.ChatRequest
+	43, // 48: google.cloud.geminidataanalytics.v1.DataChatService.CreateConversation:input_type -> google.cloud.geminidataanalytics.v1.CreateConversationRequest
+	44, // 49: google.cloud.geminidataanalytics.v1.DataChatService.DeleteConversation:input_type -> google.cloud.geminidataanalytics.v1.DeleteConversationRequest
+	45, // 50: google.cloud.geminidataanalytics.v1.DataChatService.GetConversation:input_type -> google.cloud.geminidataanalytics.v1.GetConversationRequest
+	46, // 51: google.cloud.geminidataanalytics.v1.DataChatService.ListConversations:input_type -> google.cloud.geminidataanalytics.v1.ListConversationsRequest
+	4,  // 52: google.cloud.geminidataanalytics.v1.DataChatService.ListMessages:input_type -> google.cloud.geminidataanalytics.v1.ListMessagesRequest
+	11, // 53: google.cloud.geminidataanalytics.v1.DataChatService.Chat:output_type -> google.cloud.geminidataanalytics.v1.Message
+	47, // 54: google.cloud.geminidataanalytics.v1.DataChatService.CreateConversation:output_type -> google.cloud.geminidataanalytics.v1.Conversation
+	48, // 55: google.cloud.geminidataanalytics.v1.DataChatService.DeleteConversation:output_type -> google.protobuf.Empty
+	47, // 56: google.cloud.geminidataanalytics.v1.DataChatService.GetConversation:output_type -> google.cloud.geminidataanalytics.v1.Conversation
+	49, // 57: google.cloud.geminidataanalytics.v1.DataChatService.ListConversations:output_type -> google.cloud.geminidataanalytics.v1.ListConversationsResponse
+	5,  // 58: google.cloud.geminidataanalytics.v1.DataChatService.ListMessages:output_type -> google.cloud.geminidataanalytics.v1.ListMessagesResponse
+	53, // [53:59] is the sub-list for method output_type
+	47, // [47:53] is the sub-list for method input_type
+	47, // [47:47] is the sub-list for extension type_name
+	47, // [47:47] is the sub-list for extension extendee
+	0,  // [0:47] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_init() }
@@ -2845,15 +3005,16 @@ func file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_init() {
 		(*ChatRequest_ConversationReference)(nil),
 		(*ChatRequest_DataAgentContext)(nil),
 		(*ChatRequest_ClientManagedResourceContext)(nil),
+		(*ChatRequest_LookerSettings)(nil),
 	}
 	file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[7].OneofWrappers = []any{
 		(*Message_UserMessage)(nil),
 		(*Message_SystemMessage)(nil),
 	}
-	file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[8].OneofWrappers = []any{
+	file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[9].OneofWrappers = []any{
 		(*UserMessage_Text)(nil),
 	}
-	file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[9].OneofWrappers = []any{
+	file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[10].OneofWrappers = []any{
 		(*SystemMessage_Text)(nil),
 		(*SystemMessage_Schema)(nil),
 		(*SystemMessage_Data)(nil),
@@ -2862,25 +3023,25 @@ func file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_init() {
 		(*SystemMessage_Error)(nil),
 		(*SystemMessage_ExampleQueries)(nil),
 	}
-	file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[11].OneofWrappers = []any{
+	file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[12].OneofWrappers = []any{
 		(*SchemaMessage_Query)(nil),
 		(*SchemaMessage_Result)(nil),
 	}
-	file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[14].OneofWrappers = []any{
+	file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[15].OneofWrappers = []any{
 		(*DataMessage_Query)(nil),
 		(*DataMessage_GeneratedSql)(nil),
 		(*DataMessage_Result)(nil),
 		(*DataMessage_BigQueryJob)(nil),
 		(*DataMessage_MatchedQuery)(nil),
 	}
-	file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[15].OneofWrappers = []any{
+	file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[16].OneofWrappers = []any{
 		(*DataQuery_Looker)(nil),
 	}
-	file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[18].OneofWrappers = []any{
+	file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[19].OneofWrappers = []any{
 		(*AnalysisMessage_Query)(nil),
 		(*AnalysisMessage_ProgressEvent)(nil),
 	}
-	file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[20].OneofWrappers = []any{
+	file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[21].OneofWrappers = []any{
 		(*AnalysisEvent_PlannerReasoning)(nil),
 		(*AnalysisEvent_CoderInstruction)(nil),
 		(*AnalysisEvent_Code)(nil),
@@ -2892,7 +3053,7 @@ func file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_init() {
 		(*AnalysisEvent_ResultReferenceData)(nil),
 		(*AnalysisEvent_Error)(nil),
 	}
-	file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[21].OneofWrappers = []any{
+	file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_msgTypes[22].OneofWrappers = []any{
 		(*ChartMessage_Query)(nil),
 		(*ChartMessage_Result)(nil),
 	}
@@ -2901,8 +3062,8 @@ func file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_rawDesc), len(file_google_cloud_geminidataanalytics_v1_data_chat_service_proto_rawDesc)),
-			NumEnums:      3,
-			NumMessages:   27,
+			NumEnums:      4,
+			NumMessages:   28,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

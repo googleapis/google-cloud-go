@@ -16,6 +16,7 @@ package firestore
 
 import (
 	"context"
+	"crypto/rand"
 	"errors"
 	"flag"
 	"fmt"
@@ -99,6 +100,10 @@ func skipIfEdition(t *testing.T, featureName string, edition firestoreEdition) {
 func parseDatabases() map[string]firestoreEdition {
 	databases := map[string]firestoreEdition{
 		DefaultDatabaseID: editionStandard,
+	}
+
+	if os.Getenv(envEmulator) != "" {
+		return databases
 	}
 
 	databasesStr, ok := os.LookupEnv(envDatabases)
@@ -3135,6 +3140,17 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 				}
 				wantResult := tc.wantResult[currentEdition]
 
+				if useEmulator {
+					// Emulator behaves differently for "Aggregation on non existent key"
+					if tc.desc == "Aggregation on non existent key" {
+						wantErr = false
+						wantResult = AggregationResult{
+							"key_avg1": &pb.Value{ValueType: &pb.Value_NullValue{NullValue: structpb.NullValue_NULL_VALUE}},
+							"key_sum1": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(0)}},
+						}
+					}
+				}
+
 				// Compare expected and actual results
 				if err != nil && !wantErr {
 					r.Errorf("got: %v, want: nil", err)
@@ -3147,6 +3163,24 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 				if !aggResultsEquals(r, gotResult, wantResult) {
 					r.Errorf("got: %v, want: %v", gotResult, wantResult)
 					return
+				}
+
+				if !wantErr {
+					// Verify Data()
+					gotNative := gotResult.Data()
+					wantNative := wantResult.Data()
+					if diff := testutil.Diff(gotNative, wantNative); diff != "" {
+						r.Errorf("Data() mismatch (-got, +want):\n%s", diff)
+					}
+
+					// Verify DataTo()
+					var gotDataTo map[string]interface{}
+					if err := gotResult.DataTo(&gotDataTo); err != nil {
+						r.Errorf("DataTo() failed: %v", err)
+					}
+					if diff := testutil.Diff(gotDataTo, wantNative); diff != "" {
+						r.Errorf("DataTo() map mismatch (-got, +want):\n%s", diff)
+					}
 				}
 			})
 		})
@@ -3551,5 +3585,123 @@ func TestIntegration_FindNearest(t *testing.T) {
 				}
 			})
 		})
+	}
+}
+
+func TestIntegration_TransactionReadTime(t *testing.T) {
+	ctx := context.Background()
+	c := integrationClient(t)
+
+	coll := c.Collection(collectionIDs.New())
+
+	doc1 := coll.NewDoc()
+	doc2 := coll.NewDoc()
+	doc3 := coll.NewDoc()
+	docRefs := []*DocumentRef{doc1, doc2, doc3}
+
+	// 1. Record time t0
+	t0 := time.Now().Truncate(time.Microsecond)
+
+	// Wait to ensure t0 is strictly before creation.
+	time.Sleep(2 * time.Second)
+
+	// 2. Create 3 documents
+	for _, doc := range docRefs {
+		_, err := doc.Set(ctx, map[string]interface{}{"foo": "bar"})
+		if err != nil {
+			t.Fatalf("Set failed: %v", err)
+		}
+	}
+	t.Cleanup(func() {
+		deleteDocuments(docRefs)
+	})
+
+	// 3. Create a transaction T1 with read time t0 (using new option)
+	err := c.RunTransaction(ctx, func(ctx2 context.Context, tx *Transaction) error {
+		// 4. Assert that there are no documents retrieved
+		snaps, err := tx.GetAll(docRefs)
+		if err != nil {
+			return err
+		}
+		for _, snap := range snaps {
+			if snap.Exists() {
+				t.Errorf("Expected document to NOT exist at read time t0, but it does: %s", snap.Ref.Path)
+			}
+		}
+		return nil
+	}, ReadOnly, TransactionReadTime(t0))
+
+	if err != nil {
+		t.Fatalf("Transaction T1 failed: %v", err)
+	}
+
+	// 5. Create a second transaction T2 with current read time (default)
+	err = c.RunTransaction(ctx, func(ctx2 context.Context, tx *Transaction) error {
+		// 6. Assert that 3 documents are retrieved
+		snaps, err := tx.GetAll(docRefs)
+		if err != nil {
+			return err
+		}
+		for _, snap := range snaps {
+			if !snap.Exists() {
+				t.Errorf("Expected document to exist, but it does not: %s", snap.Ref.Path)
+			}
+		}
+		return nil
+	}, ReadOnly)
+
+	if err != nil {
+		t.Fatalf("Transaction T2 failed: %v", err)
+	}
+}
+
+func TestIntegration_TransactionWithReadOptionsError(t *testing.T) {
+	ctx := context.Background()
+	c := integrationClient(t)
+
+	err := c.RunTransaction(ctx, func(ctx2 context.Context, tx *Transaction) error {
+		tx.WithReadOptions(ReadTime(time.Now()))
+		return nil
+	}, ReadOnly)
+	if err != errInvalidReadTime {
+		t.Fatalf("got err %v, want %v", err, errInvalidReadTime)
+	}
+}
+
+func TestIntegration_VerifyGRPCLimits(t *testing.T) {
+	skipIfEdition(t, "16MB Documents", editionStandard)
+	t.Skip("Temporarily skipped. Not yet in production.")
+	ctx := context.Background()
+	c := integrationClient(t)
+
+	// Create a large 5MB random payload (non-compressible) to verify transport limits
+	size := 5 * 1024 * 1024
+	largeData := make([]byte, size)
+	rand.Read(largeData)
+
+	docRef := c.Collection("large_docs").NewDoc()
+	t.Cleanup(func() {
+		deleteDocuments([]*DocumentRef{docRef})
+	})
+
+	// 1. Verify Send Limit
+	_, err := docRef.Set(ctx, map[string]interface{}{"payload": largeData})
+	if err != nil {
+		t.Fatalf("Failed to write large document (Send failed): %v", err)
+	}
+
+	// 2. Verify Receive Limit
+	snap, err := docRef.Get(ctx)
+	if err != nil {
+		t.Fatalf("Failed to read large document (Recv failed): %v", err)
+	}
+
+	if !snap.Exists() {
+		t.Fatal("Document does not exist after write")
+	}
+
+	gotData := snap.Data()["payload"].([]byte)
+	if len(gotData) != size {
+		t.Errorf("Got data size %d, want %d", len(gotData), size)
 	}
 }
