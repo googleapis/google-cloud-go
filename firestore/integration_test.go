@@ -16,6 +16,7 @@ package firestore
 
 import (
 	"context"
+	"crypto/rand"
 	"errors"
 	"flag"
 	"fmt"
@@ -3664,5 +3665,43 @@ func TestIntegration_TransactionWithReadOptionsError(t *testing.T) {
 	}, ReadOnly)
 	if err != errInvalidReadTime {
 		t.Fatalf("got err %v, want %v", err, errInvalidReadTime)
+	}
+}
+
+func TestIntegration_VerifyGRPCLimits(t *testing.T) {
+	skipIfEdition(t, "16MB Documents", editionStandard)
+	t.Skip("Temporarily skipped. Not yet in production.")
+	ctx := context.Background()
+	c := integrationClient(t)
+
+	// Create a large 5MB random payload (non-compressible) to verify transport limits
+	size := 5 * 1024 * 1024
+	largeData := make([]byte, size)
+	rand.Read(largeData)
+
+	docRef := c.Collection("large_docs").NewDoc()
+	t.Cleanup(func() {
+		deleteDocuments([]*DocumentRef{docRef})
+	})
+
+	// 1. Verify Send Limit
+	_, err := docRef.Set(ctx, map[string]interface{}{"payload": largeData})
+	if err != nil {
+		t.Fatalf("Failed to write large document (Send failed): %v", err)
+	}
+
+	// 2. Verify Receive Limit
+	snap, err := docRef.Get(ctx)
+	if err != nil {
+		t.Fatalf("Failed to read large document (Recv failed): %v", err)
+	}
+
+	if !snap.Exists() {
+		t.Fatal("Document does not exist after write")
+	}
+
+	gotData := snap.Data()["payload"].([]byte)
+	if len(gotData) != size {
+		t.Errorf("Got data size %d, want %d", len(gotData), size)
 	}
 }
