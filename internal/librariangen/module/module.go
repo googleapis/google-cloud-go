@@ -74,7 +74,8 @@ func UpdateSnippetsMetadata(lib *request.Library, sourceDir string, destDir stri
 	version := lib.Version
 
 	slog.Debug("librariangen: updating snippets metadata")
-	snpDir := filepath.Join("internal", "generated", "snippets", moduleName)
+	sharedSnpDir := filepath.Join("internal", "generated", "snippets", moduleName)
+	snippetDir := filepath.Join(moduleName, "examples")
 
 	for _, api := range lib.APIs {
 		apiConfig := moduleConfig.GetAPIConfig(api.Path)
@@ -84,44 +85,59 @@ func UpdateSnippetsMetadata(lib *request.Library, sourceDir string, destDir stri
 		}
 
 		snippetFile := "snippet_metadata." + apiConfig.GetProtoPackage() + ".json"
-		path := filepath.Join(snpDir, clientDirName, snippetFile)
-		slog.Info("librariangen: updating snippet metadata file", "path", path)
-		read, err := os.ReadFile(filepath.Join(sourceDir, path))
+		sharedPath := filepath.Join(sharedSnpDir, clientDirName, snippetFile)
+		snippetPath := filepath.Join(snippetDir, clientDirName, snippetFile)
+		srcToDest := make(map[string]string)
+		slog.Info("librariangen: updating snippet metadata file", "path", sharedPath)
+		read, err := os.ReadFile(filepath.Join(sourceDir, sharedPath))
 		if err != nil {
 			// If the snippet metadata doesn't exist, that's probably because this API path
 			// is proto-only (so the GAPIC generator hasn't run). Continue to the next API path.
 			if errors.Is(err, os.ErrNotExist) {
-				slog.Info("librariangen: snippet metadata file not found; assuming proto-only package", "path", path)
+				slog.Info("librariangen: snippet metadata file not found; assuming proto-only package", "path", sharedPath)
 				continue
 			}
 			return err
+		} else {
+			srcToDest[sharedPath] = string(read)
 		}
-
-		content := string(read)
-		var newContent string
-		var oldVersion string
-
-		if strings.Contains(content, "$VERSION") {
-			newContent = strings.Replace(content, "$VERSION", version, 1)
-			oldVersion = "$VERSION"
-		} else if foundVersion := versionRegexp.FindString(content); foundVersion != "" {
-			newContent = strings.Replace(content, foundVersion, version, 1)
-			oldVersion = foundVersion
-		}
-
-		if newContent == "" {
-			return fmt.Errorf("librariangen: no version number or placeholder found in '%s'", snippetFile)
-		}
-
-		destPath := filepath.Join(destDir, path)
-		slog.Info("librariangen: updating version in snippets metadata file", "destPath", path, "old", oldVersion, "new", version)
-		if err := os.MkdirAll(filepath.Dir(destPath), 0755); err != nil {
-			return fmt.Errorf("librariangen: creating directory for snippet file: %w", err)
-		}
-		err = os.WriteFile(destPath, []byte(newContent), 0644)
+		snippet, err := os.ReadFile(filepath.Join(sourceDir, snippetPath))
 		if err != nil {
+			// If the snippet metadata doesn't exist, that's probably because this API path
+			// is proto-only (so the GAPIC generator hasn't run). Continue to the next API path.
+			if errors.Is(err, os.ErrNotExist) {
+				slog.Info("librariangen: snippet metadata file not found; assuming proto-only package", "path", snippetPath)
+				continue
+			}
 			return err
+		} else {
+			srcToDest[snippetPath] = string(snippet)
 		}
+
+		for src, cont := range srcToDest {
+			var newContent string
+			var oldVersion string
+			if strings.Contains(cont, "$VERSION") {
+				newContent = strings.Replace(cont, "$VERSION", version, 1)
+				oldVersion = "$VERSION"
+			} else if foundVersion := versionRegexp.FindString(cont); foundVersion != "" {
+				newContent = strings.Replace(cont, foundVersion, version, 1)
+				oldVersion = foundVersion
+			}
+			if newContent == "" {
+				return fmt.Errorf("librariangen: no version number or placeholder found in '%s'", src)
+			}
+			destPath := filepath.Join(destDir, src)
+			slog.Info("librariangen: updating version in snippets metadata file", "destPath", destPath, "old", oldVersion, "new", version)
+			if err := os.MkdirAll(filepath.Dir(destPath), 0755); err != nil {
+				return fmt.Errorf("librariangen: creating directory for snippet file: %w", err)
+			}
+			err = os.WriteFile(destPath, []byte(newContent), 0644)
+			if err != nil {
+				return err
+			}
+		}
+
 	}
 	return nil
 }
