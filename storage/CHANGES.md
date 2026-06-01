@@ -1,6 +1,12 @@
 # Changes
 
 
+## [1.61.5](https://github.com/googleapis/google-cloud-go/releases/tag/storage%2Fv1.61.5) (2026-06-01)
+
+### Bug Fixes
+
+* fix race condition during retries in gRPC writer (#14649) ([e87213b](https://github.com/googleapis/google-cloud-go/commit/e87213b78affff3aafb6ee0ecd542d65719e5c5c))
+
 ## [1.61.4](https://github.com/googleapis/google-cloud-go/releases/tag/storage%2Fv1.61.4) (2026-05-21)
 
 ### Bug Fixes
