@@ -198,7 +198,7 @@ func (c *grpcStorageClient) NewRangeReaderReadObject(ctx context.Context, params
 	if checksums := msg.GetObjectChecksums(); checksums != nil && checksums.Crc32C != nil {
 		if !params.disableCRCCheck &&
 			params.offset == 0 &&
-			(params.length < 0 || params.length >= size) {
+			(params.length < 0 || (obj != nil && params.length >= size)) {
 			checkCRC = true
 		}
 		wantCRC = checksums.GetCrc32C()
