@@ -190,7 +190,9 @@ func (c *Client) RunTransaction(ctx context.Context, f func(context.Context, *Tr
 	// TODO(jba): use other than the standard backoff parameters?
 	// TODO(jba): get backoff time from gRPC trailer metadata? See
 	// extractRetryDelay in https://code.googlesource.com/gocloud/+/master/spanner/retry.go.
+	var errDuringCommit bool
 	for i := 0; i < t.maxAttempts; i++ {
+		errDuringCommit = false
 		t.ctx = trace.StartSpan(t.ctx, "cloud.google.com/go/firestore.Client.BeginTransaction")
 		var res *pb.BeginTransactionResponse
 		res, err = t.c.c.BeginTransaction(t.ctx, &pb.BeginTransactionRequest{
@@ -222,6 +224,7 @@ func (c *Client) RunTransaction(ctx context.Context, f func(context.Context, *Tr
 				Transaction: t.id,
 			})
 			trace.EndSpan(t.ctx, err)
+			errDuringCommit = err != nil
 
 			// on success, handle the commit response
 			if err == nil {
@@ -233,7 +236,9 @@ func (c *Client) RunTransaction(ctx context.Context, f func(context.Context, *Tr
 		}
 
 		// At this point, `err` is non-nil. It came from `f` or `Commit`.
-		t.rollback()
+		if !errDuringCommit {
+			t.rollback()
+		}
 
 		// If not a retryable error, or if read-only, return now.
 		// (We've already rolled back).
@@ -271,7 +276,12 @@ func (c *Client) RunTransaction(ctx context.Context, f func(context.Context, *Tr
 }
 
 func (t *Transaction) rollback() {
-	_ = t.c.c.Rollback(t.ctx, &pb.RollbackRequest{
+	// Use a background context with a timeout to ensure rollback completes
+	// even if the transaction context (t.ctx) is cancelled.
+	ctx, cancel := context.WithTimeout(context.WithoutCancel(t.ctx), 5*time.Second)
+	defer cancel()
+	ctx = withResourceHeader(ctx, t.c.path())
+	_ = t.c.c.Rollback(ctx, &pb.RollbackRequest{
 		Database:    t.c.path(),
 		Transaction: t.id,
 	})
