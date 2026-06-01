@@ -43,7 +43,8 @@ import (
 const (
 	projectID           = "my-project-id"
 	serviceAccountEmail = "my-sevice-account@my-project-id.iam.gserviceaccount.com"
-	MiB                 = 1 << 10 << 10
+	MiB                 = 1 << 20
+	KiB                 = 1 << 10
 )
 
 var (
@@ -776,6 +777,56 @@ var methods = map[string][]retryFunc{
 
 			if _, err := w.Write(randomBytes9MiB); err != nil {
 				return fmt.Errorf("writing object: %v", err)
+			}
+			if err := w.Close(); err != nil {
+				return fmt.Errorf("closing object: %v", err)
+			}
+			return nil
+		},
+		func(ctx context.Context, c *Client, fs *resources, preconditions bool) error {
+			obj := c.Bucket(fs.bucket.Name).Object(objectIDs.New())
+			if preconditions {
+				obj = obj.If(Conditions{DoesNotExist: true})
+			}
+			w := obj.NewWriter(ctx)
+			w.ChunkSize = 4 * MiB
+			data := generateRandomBytes(32 * MiB)
+			writeSize := 2 * MiB
+			// Write 2MiB at a time to use buffers and not user's buffer.
+			for i := 0; i < 16; i++ {
+				if _, err := w.Write(data[i*writeSize : (i+1)*writeSize]); err != nil {
+					return fmt.Errorf("writing object: %v", err)
+				}
+			}
+			if err := w.Close(); err != nil {
+				return fmt.Errorf("closing object: %v", err)
+			}
+			return nil
+		},
+		func(ctx context.Context, c *Client, fs *resources, preconditions bool) error {
+			obj := c.Bucket(fs.bucket.Name).Object(objectIDs.New())
+			if preconditions {
+				obj = obj.If(Conditions{DoesNotExist: true})
+			}
+			w := obj.NewWriter(ctx)
+			w.ChunkSize = 4 * MiB
+			data := generateRandomBytes(32 * MiB)
+			totalWriteSize := 0
+			times := 0
+			for totalWriteSize < len(data) {
+				times++
+				// Write smaller messages and larger messages to exercise different paths.
+				writeSize := 5 * KiB
+				if times%2 == 0 {
+					writeSize = 6 * MiB
+				}
+				if totalWriteSize+writeSize > len(data) {
+					writeSize = len(data) - totalWriteSize
+				}
+				if _, err := w.Write(data[totalWriteSize : totalWriteSize+writeSize]); err != nil {
+					return fmt.Errorf("writing object: %v", err)
+				}
+				totalWriteSize += writeSize
 			}
 			if err := w.Close(); err != nil {
 				return fmt.Errorf("closing object: %v", err)
