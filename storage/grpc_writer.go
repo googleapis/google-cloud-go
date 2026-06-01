@@ -443,7 +443,7 @@ func (w *gRPCWriter) writeLoop(ctx context.Context) error {
 	defer cancel()
 	w.streamSender.connect(ctx, bscs, w.settings.gax...)
 
-	// Drain any initial completions (like QueryWriteStatus results)
+	// Drain any initial completions (like QueryWriteStatus results).
 Loop:
 	for {
 		select {
@@ -628,6 +628,11 @@ func (c *gRPCWriterCommandWrite) handle(w *gRPCWriter, cs gRPCWriterCommandHandl
 			}
 			c.p = c.p[bytesPersisted:]
 			c.initialOffset = w.bufBaseOffset
+
+			if len(c.p) == 0 {
+				c.markDone()
+				return nil
+			}
 		}
 	}
 
