@@ -202,3 +202,24 @@ func TestTrackingTransport(t *testing.T) {
 		t.Errorf("Original request header was modified")
 	}
 }
+
+type mockCloseIdler struct {
+	mockTransport
+	closedIdle bool
+}
+
+func (m *mockCloseIdler) CloseIdleConnections() {
+	m.closedIdle = true
+}
+
+func TestTrackingTransport_CloseIdleConnections(t *testing.T) {
+	mock := &mockCloseIdler{}
+	tt := &trackingTransport{
+		base: mock,
+	}
+
+	tt.CloseIdleConnections()
+	if !mock.closedIdle {
+		t.Errorf("CloseIdleConnections was not called on base transport")
+	}
+}

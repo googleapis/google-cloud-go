@@ -199,6 +199,19 @@ func (t *trackingTransport) RoundTrip(req *http.Request) (*http.Response, error)
 	return baseRT.RoundTrip(req)
 }
 
+func (t *trackingTransport) CloseIdleConnections() {
+	type closeIdler interface {
+		CloseIdleConnections()
+	}
+	base := t.base
+	if base == nil {
+		base = http.DefaultTransport
+	}
+	if tr, ok := base.(closeIdler); ok {
+		tr.CloseIdleConnections()
+	}
+}
+
 // Top-level methods.
 
 func (c *httpStorageClient) GetServiceAccount(ctx context.Context, project string, opts ...storageOption) (string, error) {
