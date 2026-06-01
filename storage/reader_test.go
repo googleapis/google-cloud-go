@@ -710,3 +710,75 @@ func TestReaderWriteToExtraBytesLogging(t *testing.T) {
 		t.Errorf("expected log output to contain %q, but got %q", expectedLog, logStr)
 	}
 }
+
+func TestHTTPReaderDisableChecksum(t *testing.T) {
+	bucketName := "my-bucket"
+	objectName := "test"
+	downloadObjectXMLurl := fmt.Sprintf("/%s/%s", bucketName, objectName)
+	downloadObjectJSONurl := fmt.Sprintf("/b/%s/o/%s?alt=media&prettyPrint=false&projection=full", bucketName, objectName)
+
+	original := []byte("hello world")
+	// GCS server mock
+	mockGCS := httptest.NewUnstartedServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.URL.String() {
+		case downloadObjectXMLurl, downloadObjectJSONurl:
+			w.Header().Set("Content-Type", "text/plain")
+			w.Header().Set("Etag", `"c50e3e41c9bc9df34e84c94ce073f928"`)
+			w.Header().Set("X-Goog-Generation", "1587012235914578")
+			w.Header().Set("X-Goog-MetaGeneration", "2")
+			w.Header().Set("vary", "Accept-Encoding")
+			w.Header().Set("x-goog-stored-content-length", strconv.Itoa(len(original)))
+			// Wrong CRC32c checksum here.
+			w.Header().Set("x-goog-hash", "crc32c=badcrc==")
+			w.Header().Set("x-goog-storage-class", "STANDARD")
+			w.Write(original)
+		default:
+			fmt.Fprintf(w, "unrecognized URL %s", r.URL)
+		}
+	}))
+	mockGCS.EnableHTTP2 = true
+	mockGCS.StartTLS()
+	defer mockGCS.Close()
+
+	ctx := context.Background()
+	hc := mockGCS.Client()
+	ux, _ := url.Parse(mockGCS.URL)
+	hc.Transport.(*http.Transport).TLSClientConfig.InsecureSkipVerify = true
+	wrt := &alwaysToTargetURLRoundTripper{
+		destURL: ux,
+		hc:      hc,
+	}
+	whc := &http.Client{Transport: wrt}
+
+	multiReaderTest(ctx, t, func(t *testing.T, c *Client) {
+		obj := c.Bucket(bucketName).Object(objectName)
+
+		// 1. Without disabling checksum, it should fail with a CRC error.
+		rd, err := obj.NewReader(ctx)
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer rd.Close()
+		_, err = io.ReadAll(rd)
+		if err == nil {
+			t.Fatal("expected CRC error, got nil")
+		}
+		if !strings.Contains(err.Error(), "storage: bad CRC on read") {
+			t.Fatalf("expected bad CRC error, got: %v", err)
+		}
+
+		// 2. With disabling checksum, it should succeed.
+		rd2, err := obj.NewReader(ctx, WithDisableReaderChecksum())
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer rd2.Close()
+		got, err := io.ReadAll(rd2)
+		if err != nil {
+			t.Fatalf("expected no error with checksum disabled, got: %v", err)
+		}
+		if !bytes.Equal(got, original) {
+			t.Fatalf("content mismatch: got %q, want %q", got, original)
+		}
+	}, option.WithEndpoint(mockGCS.URL), option.WithoutAuthentication(), option.WithHTTPClient(whc))
+}

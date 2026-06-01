@@ -1635,6 +1635,7 @@ func parseReadResponse(res *http.Response, params *newRangeReaderParams, reopen 
 	}
 
 	// Check the CRC iff all of the following hold:
+	// - The user did not disable CRC check.
 	// - We asked for content (length != 0).
 	// - We got all the content (status != PartialContent).
 	// - The server sent a CRC header.
@@ -1644,7 +1645,7 @@ func parseReadResponse(res *http.Response, params *newRangeReaderParams, reopen 
 	// computes it on the compressed contents, but we compute it on the
 	// uncompressed contents.
 	crc, checkCRC = parseCRC32c(res)
-	if params.length == 0 || res.StatusCode == http.StatusPartialContent || res.Uncompressed || uncompressedByServer(res) {
+	if params.disableCRCCheck || params.length == 0 || res.StatusCode == http.StatusPartialContent || res.Uncompressed || uncompressedByServer(res) {
 		checkCRC = false
 	}
 
