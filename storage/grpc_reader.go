@@ -671,7 +671,7 @@ func (d *readObjectResponseDecoder) writeToAndUpdateCRC(w io.Writer, updateCRC f
 		// Write all remaining data from the current buffer
 		n, err := w.Write(b)
 		written += int64(n)
-		updateCRC(b)
+		updateCRC(b[:n])
 		if err != nil {
 			return written, err
 		}

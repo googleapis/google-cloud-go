@@ -1459,7 +1459,7 @@ func (r *httpReader) Read(p []byte) (int, error) {
 		n += m
 		r.seen += int64(m)
 		if r.checkCRC {
-			r.gotCRC = crc32.Update(r.gotCRC, crc32cTable, p[:n])
+			r.gotCRC = crc32.Update(r.gotCRC, crc32cTable, p[n-m:n])
 		}
 		if err == nil {
 			return n, nil
