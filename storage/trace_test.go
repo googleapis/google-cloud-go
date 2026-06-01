@@ -386,7 +386,7 @@ func TestClientTracingIntegration(t *testing.T) {
 			t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "true")
 
 			// 1. Create bucket using a separate admin client
-			adminClient, err := tc.newClient(ctx, option.WithoutAuthentication())
+			adminClient, err := tc.newClient(ctx)
 			if err != nil {
 				t.Fatalf("failed to create admin client: %v", err)
 			}
@@ -402,7 +402,7 @@ func TestClientTracingIntegration(t *testing.T) {
 			})
 
 			// 2. Create the test client which will have an empty cache
-			client, err := tc.newClient(ctx, option.WithoutAuthentication())
+			client, err := tc.newClient(ctx)
 			if err != nil {
 				t.Fatalf("failed to create test client: %v", err)
 			}
