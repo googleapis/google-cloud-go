@@ -85,36 +85,24 @@ func UpdateSnippetsMetadata(lib *request.Library, sourceDir string, destDir stri
 		}
 
 		snippetFile := "snippet_metadata." + apiConfig.GetProtoPackage() + ".json"
+		srcToContent := make(map[string]string)
 		sharedPath := filepath.Join(sharedSnpDir, clientDirName, snippetFile)
-		snippetPath := filepath.Join(snippetDir, clientDirName, snippetFile)
-		srcToDest := make(map[string]string)
 		slog.Info("librariangen: updating snippet metadata file", "path", sharedPath)
 		read, err := os.ReadFile(filepath.Join(sourceDir, sharedPath))
-		if err != nil {
-			// If the snippet metadata doesn't exist, that's probably because this API path
-			// is proto-only (so the GAPIC generator hasn't run). Continue to the next API path.
-			if errors.Is(err, os.ErrNotExist) {
-				slog.Info("librariangen: snippet metadata file not found; assuming proto-only package", "path", sharedPath)
-				continue
-			}
+		if err == nil {
+			srcToContent[sharedPath] = string(read)
+		} else if !errors.Is(err, os.ErrNotExist) {
 			return err
-		} else {
-			srcToDest[sharedPath] = string(read)
 		}
+		snippetPath := filepath.Join(snippetDir, clientDirName, snippetFile)
+		slog.Info("librariangen: updating snippet metadata file", "path", snippetPath)
 		snippet, err := os.ReadFile(filepath.Join(sourceDir, snippetPath))
-		if err != nil {
-			// If the snippet metadata doesn't exist, that's probably because this API path
-			// is proto-only (so the GAPIC generator hasn't run). Continue to the next API path.
-			if errors.Is(err, os.ErrNotExist) {
-				slog.Info("librariangen: snippet metadata file not found; assuming proto-only package", "path", snippetPath)
-				continue
-			}
+		if err == nil {
+			srcToContent[snippetPath] = string(snippet)
+		} else if !errors.Is(err, os.ErrNotExist) {
 			return err
-		} else {
-			srcToDest[snippetPath] = string(snippet)
 		}
-
-		for src, cont := range srcToDest {
+		for src, cont := range srcToContent {
 			var newContent string
 			var oldVersion string
 			if strings.Contains(cont, "$VERSION") {
