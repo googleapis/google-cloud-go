@@ -334,6 +334,57 @@ func TestUpdateSnippetsMetadata(t *testing.T) {
 				"internal/generated/snippets/secretmanager/subapi/apiv1/snippet_metadata.google.cloud.secretmanager.subapi.v1.json": `{"clientLibrary":{"version":"1.0.0"}}`,
 			},
 		},
+		{
+			name: "multiple api versions and a sub-API in two snippet directories",
+			lib: &request.Library{
+				ID:      "secretmanager",
+				Version: "1.0.0",
+				APIs: []request.API{
+					{
+						Path: "google/cloud/secretmanager/v1",
+					},
+					{
+						Path: "google/cloud/secretmanager/v2",
+					},
+					{
+						Path: "google/cloud/secretmanager/subapi/v1",
+					},
+				},
+			},
+			moduleConfig: &config.ModuleConfig{
+				Name: "secretmanager",
+				APIs: []*config.APIConfig{
+					{
+						Path:         "google/cloud/secretmanager/v1",
+						ProtoPackage: "google.cloud.secretmanager.v1",
+					},
+					{
+						Path:         "google/cloud/secretmanager/v2",
+						ProtoPackage: "google.cloud.secretmanager.v2",
+					},
+					{
+						Path:         "google/cloud/secretmanager/subapi/v1",
+						ProtoPackage: "google.cloud.secretmanager.subapi.v1",
+					},
+				},
+			},
+			files: map[string]string{
+				"internal/generated/snippets/secretmanager/apiv1/snippet_metadata.google.cloud.secretmanager.v1.json":               `{"clientLibrary":{"version":"$VERSION"}}`,
+				"internal/generated/snippets/secretmanager/apiv2/snippet_metadata.google.cloud.secretmanager.v2.json":               `{"clientLibrary":{"version":"0.1.0"}}`,
+				"internal/generated/snippets/secretmanager/subapi/apiv1/snippet_metadata.google.cloud.secretmanager.subapi.v1.json": `{"clientLibrary":{"version":"0.1.0"}}`,
+				"secretmanager/examples/apiv1/snippet_metadata.google.cloud.secretmanager.v1.json":               `{"clientLibrary":{"version":"$VERSION"}}`,
+				"secretmanager/examples/apiv2/snippet_metadata.google.cloud.secretmanager.v2.json":               `{"clientLibrary":{"version":"0.1.0"}}`,
+				"secretmanager/examples/subapi/apiv1/snippet_metadata.google.cloud.secretmanager.subapi.v1.json": `{"clientLibrary":{"version":"0.1.0"}}`,
+			},
+			want: map[string]string{
+				"internal/generated/snippets/secretmanager/apiv1/snippet_metadata.google.cloud.secretmanager.v1.json":               `{"clientLibrary":{"version":"1.0.0"}}`,
+				"internal/generated/snippets/secretmanager/apiv2/snippet_metadata.google.cloud.secretmanager.v2.json":               `{"clientLibrary":{"version":"1.0.0"}}`,
+				"internal/generated/snippets/secretmanager/subapi/apiv1/snippet_metadata.google.cloud.secretmanager.subapi.v1.json": `{"clientLibrary":{"version":"1.0.0"}}`,
+				"secretmanager/examples/apiv1/snippet_metadata.google.cloud.secretmanager.v1.json":               `{"clientLibrary":{"version":"1.0.0"}}`,
+				"secretmanager/examples/apiv2/snippet_metadata.google.cloud.secretmanager.v2.json":               `{"clientLibrary":{"version":"1.0.0"}}`,
+				"secretmanager/examples/subapi/apiv1/snippet_metadata.google.cloud.secretmanager.subapi.v1.json": `{"clientLibrary":{"version":"1.0.0"}}`,
+			},
+		},
 	}
 
 	for _, tc := range testdata {
