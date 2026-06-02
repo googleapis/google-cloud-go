@@ -22,7 +22,7 @@ For other relevant packages, see Additional References.
 
 The following is an overview of the migration process. You can find more details about the classes in the later part of this document.
 
-1. Import the new [cloud.google.com/go/pubsub/v2](http://cloud.google.com/go/pubsub/v2) package.
+1. Import the new [cloud.google.com/go/pubsub/v2](https://cloud.google.com/go/pubsub/v2) package.
 
 2. Migrate admin operations such as `CreateTopic` and `DeleteTopic` to the v2 version admin API.
 
