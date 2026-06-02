@@ -83,49 +83,47 @@ func UpdateSnippetsMetadata(lib *request.Library, sourceDir string, destDir stri
 		if err != nil {
 			return err
 		}
-
 		snippetFile := "snippet_metadata." + apiConfig.GetProtoPackage() + ".json"
-		srcToContent := make(map[string]string)
-		sharedPath := filepath.Join(sharedSnpDir, clientDirName, snippetFile)
-		slog.Info("librariangen: updating snippet metadata file", "path", sharedPath)
-		read, err := os.ReadFile(filepath.Join(sourceDir, sharedPath))
-		if err == nil {
-			srcToContent[sharedPath] = string(read)
-		} else if !errors.Is(err, os.ErrNotExist) {
-			return err
+		paths := []string{
+			filepath.Join(sharedSnpDir, clientDirName, snippetFile),
+			filepath.Join(snippetDir, clientDirName, snippetFile),
 		}
-		snippetPath := filepath.Join(snippetDir, clientDirName, snippetFile)
-		slog.Info("librariangen: updating snippet metadata file", "path", snippetPath)
-		snippet, err := os.ReadFile(filepath.Join(sourceDir, snippetPath))
-		if err == nil {
-			srcToContent[snippetPath] = string(snippet)
-		} else if !errors.Is(err, os.ErrNotExist) {
-			return err
-		}
-		for src, cont := range srcToContent {
+		var found bool
+		for _, path := range paths {
+			slog.Info("librariangen: updating snippet metadata file", "path", path)
+			read, err := os.ReadFile(filepath.Join(sourceDir, path))
+			if err != nil {
+				if errors.Is(err, os.ErrNotExist) {
+					continue
+				}
+				return err
+			}
+			found = true
+			content := string(read)
 			var newContent string
 			var oldVersion string
-			if strings.Contains(cont, "$VERSION") {
-				newContent = strings.Replace(cont, "$VERSION", version, 1)
+			if strings.Contains(content, "$VERSION") {
+				newContent = strings.Replace(content, "$VERSION", version, 1)
 				oldVersion = "$VERSION"
-			} else if foundVersion := versionRegexp.FindString(cont); foundVersion != "" {
-				newContent = strings.Replace(cont, foundVersion, version, 1)
+			} else if foundVersion := versionRegexp.FindString(content); foundVersion != "" {
+				newContent = strings.Replace(content, foundVersion, version, 1)
 				oldVersion = foundVersion
 			}
 			if newContent == "" {
-				return fmt.Errorf("librariangen: no version number or placeholder found in '%s'", src)
+				return fmt.Errorf("librariangen: no version number or placeholder found in '%s'", path)
 			}
-			destPath := filepath.Join(destDir, src)
+			destPath := filepath.Join(destDir, path)
 			slog.Info("librariangen: updating version in snippets metadata file", "destPath", destPath, "old", oldVersion, "new", version)
 			if err := os.MkdirAll(filepath.Dir(destPath), 0755); err != nil {
 				return fmt.Errorf("librariangen: creating directory for snippet file: %w", err)
 			}
-			err = os.WriteFile(destPath, []byte(newContent), 0644)
-			if err != nil {
+			if err := os.WriteFile(destPath, []byte(newContent), 0644); err != nil {
 				return err
 			}
 		}
-
+		if !found {
+			slog.Info("librariangen: snippet metadata files not found; assuming proto-only package", "paths", paths)
+		}
 	}
 	return nil
 }
