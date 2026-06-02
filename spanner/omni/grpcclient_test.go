@@ -209,4 +209,39 @@ func TestConnectionOptions(t *testing.T) {
 			t.Fatal("expected error for nonexistent client key file")
 		}
 	})
+
+	t.Run("nil config returns error", func(t *testing.T) {
+		_, err := ConnectionOptions(nil)
+		if err == nil {
+			t.Fatal("expected error when config is nil")
+		}
+	})
+
+	t.Run("only client certificate provided returns error", func(t *testing.T) {
+		caFile, certFile, _ := generateCerts(t)
+		config := &SpannerOmniConfig{
+			UsePlainText:          false,
+			CaCertificateFile:     caFile,
+			ClientCertificateFile: certFile,
+			ClientKeyFile:         "",
+		}
+		_, err := ConnectionOptions(config)
+		if err == nil {
+			t.Fatal("expected error when client key is missing for mTLS")
+		}
+	})
+
+	t.Run("only client key provided returns error", func(t *testing.T) {
+		caFile, _, keyFile := generateCerts(t)
+		config := &SpannerOmniConfig{
+			UsePlainText:          false,
+			CaCertificateFile:     caFile,
+			ClientCertificateFile: "",
+			ClientKeyFile:         keyFile,
+		}
+		_, err := ConnectionOptions(config)
+		if err == nil {
+			t.Fatal("expected error when client certificate is missing for mTLS")
+		}
+	})
 }

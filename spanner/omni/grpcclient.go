@@ -67,8 +67,11 @@ func certPool(caCertFile string) (*x509.CertPool, error) {
 }
 
 func clientCertificate(clientCertificatePath string, clientKeyPath string) ([]tls.Certificate, error) {
-	if clientCertificatePath == "" || clientKeyPath == "" {
+	if clientCertificatePath == "" && clientKeyPath == "" {
 		return nil, nil
+	}
+	if clientCertificatePath == "" || clientKeyPath == "" {
+		return nil, fmt.Errorf("both client certificate and client key must be provided for mTLS")
 	}
 	cert, err := tls.LoadX509KeyPair(clientCertificatePath, clientKeyPath)
 	if err != nil {
@@ -89,6 +92,9 @@ type SpannerOmniConfig struct {
 }
 
 func ConnectionOptions(config *SpannerOmniConfig) ([]option.ClientOption, error) {
+	if config == nil {
+		return nil, fmt.Errorf("config cannot be nil")
+	}
 	if config.UsePlainText {
 		return []option.ClientOption{
 			option.WithoutAuthentication(),
