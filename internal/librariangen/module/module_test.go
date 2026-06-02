@@ -153,11 +153,11 @@ func TestUpdateSnippetsMetadata(t *testing.T) {
 			},
 			files: map[string]string{
 				"internal/generated/snippets/secretmanager/apiv1/snippet_metadata.google.cloud.secretmanager.v1.json": `{"clientLibrary":{"version":"$VERSION"}}`,
-				"secretmanager/examples/apiv1/snippet_metadata.google.cloud.secretmanager.v1.json": `{"clientLibrary":{"version":"$VERSION"}}`,
+				"secretmanager/examples/apiv1/snippet_metadata.google.cloud.secretmanager.v1.json":                    `{"clientLibrary":{"version":"$VERSION"}}`,
 			},
 			want: map[string]string{
 				"internal/generated/snippets/secretmanager/apiv1/snippet_metadata.google.cloud.secretmanager.v1.json": `{"clientLibrary":{"version":"2.3.4"}}`,
-				"secretmanager/examples/apiv1/snippet_metadata.google.cloud.secretmanager.v1.json": `{"clientLibrary":{"version":"2.3.4"}}`,
+				"secretmanager/examples/apiv1/snippet_metadata.google.cloud.secretmanager.v1.json":                    `{"clientLibrary":{"version":"2.3.4"}}`,
 			},
 		},
 		{
@@ -372,17 +372,17 @@ func TestUpdateSnippetsMetadata(t *testing.T) {
 				"internal/generated/snippets/secretmanager/apiv1/snippet_metadata.google.cloud.secretmanager.v1.json":               `{"clientLibrary":{"version":"$VERSION"}}`,
 				"internal/generated/snippets/secretmanager/apiv2/snippet_metadata.google.cloud.secretmanager.v2.json":               `{"clientLibrary":{"version":"0.1.0"}}`,
 				"internal/generated/snippets/secretmanager/subapi/apiv1/snippet_metadata.google.cloud.secretmanager.subapi.v1.json": `{"clientLibrary":{"version":"0.1.0"}}`,
-				"secretmanager/examples/apiv1/snippet_metadata.google.cloud.secretmanager.v1.json":               `{"clientLibrary":{"version":"$VERSION"}}`,
-				"secretmanager/examples/apiv2/snippet_metadata.google.cloud.secretmanager.v2.json":               `{"clientLibrary":{"version":"0.1.0"}}`,
-				"secretmanager/examples/subapi/apiv1/snippet_metadata.google.cloud.secretmanager.subapi.v1.json": `{"clientLibrary":{"version":"0.1.0"}}`,
+				"secretmanager/examples/apiv1/snippet_metadata.google.cloud.secretmanager.v1.json":                                  `{"clientLibrary":{"version":"$VERSION"}}`,
+				"secretmanager/examples/apiv2/snippet_metadata.google.cloud.secretmanager.v2.json":                                  `{"clientLibrary":{"version":"0.1.0"}}`,
+				"secretmanager/examples/subapi/apiv1/snippet_metadata.google.cloud.secretmanager.subapi.v1.json":                    `{"clientLibrary":{"version":"0.1.0"}}`,
 			},
 			want: map[string]string{
 				"internal/generated/snippets/secretmanager/apiv1/snippet_metadata.google.cloud.secretmanager.v1.json":               `{"clientLibrary":{"version":"1.0.0"}}`,
 				"internal/generated/snippets/secretmanager/apiv2/snippet_metadata.google.cloud.secretmanager.v2.json":               `{"clientLibrary":{"version":"1.0.0"}}`,
 				"internal/generated/snippets/secretmanager/subapi/apiv1/snippet_metadata.google.cloud.secretmanager.subapi.v1.json": `{"clientLibrary":{"version":"1.0.0"}}`,
-				"secretmanager/examples/apiv1/snippet_metadata.google.cloud.secretmanager.v1.json":               `{"clientLibrary":{"version":"1.0.0"}}`,
-				"secretmanager/examples/apiv2/snippet_metadata.google.cloud.secretmanager.v2.json":               `{"clientLibrary":{"version":"1.0.0"}}`,
-				"secretmanager/examples/subapi/apiv1/snippet_metadata.google.cloud.secretmanager.subapi.v1.json": `{"clientLibrary":{"version":"1.0.0"}}`,
+				"secretmanager/examples/apiv1/snippet_metadata.google.cloud.secretmanager.v1.json":                                  `{"clientLibrary":{"version":"1.0.0"}}`,
+				"secretmanager/examples/apiv2/snippet_metadata.google.cloud.secretmanager.v2.json":                                  `{"clientLibrary":{"version":"1.0.0"}}`,
+				"secretmanager/examples/subapi/apiv1/snippet_metadata.google.cloud.secretmanager.subapi.v1.json":                    `{"clientLibrary":{"version":"1.0.0"}}`,
 			},
 		},
 	}
