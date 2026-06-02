@@ -151,7 +151,13 @@ func setupFakeServerWithCustomHandler(projectID, instanceID string, cfg ClientCo
 		return nil, nil, fmt.Errorf("failed to start bttest server: %w", err)
 	}
 
-	conn, err := grpc.Dial(rawGrpcServer.Addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock(), grpc.WithStatsHandler(sharedLatencyStatsHandler))
+	conn, err := grpc.Dial(rawGrpcServer.Addr,
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithBlock(),
+		grpc.WithStatsHandler(sharedLatencyStatsHandler),
+		grpc.WithChainUnaryInterceptor(metricsUnaryClientInterceptor()),
+		grpc.WithChainStreamInterceptor(metricsStreamClientInterceptor()),
+	)
 	if err != nil {
 		rawGrpcServer.Close()
 		return nil, nil, fmt.Errorf("failed to dial test server: %w", err)

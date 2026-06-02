@@ -34,6 +34,7 @@ import (
 	"go.opentelemetry.io/otel/metric"
 	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
 	"google.golang.org/api/option"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/stats"
@@ -495,6 +496,10 @@ type opTracer struct {
 
 	// For routing cookie and gRPC attempt number
 	cookies map[string]string
+
+	// Last known location details across all attempts
+	lastClusterID string
+	lastZoneID    string
 }
 
 func (o *opTracer) setStartTime(t time.Time) {
@@ -613,6 +618,23 @@ func (mt *builtinMetricsTracer) setMethod(m string) {
 // to OpenTelemetry attributes format,
 // - combines these with common client attributes and returns
 func (mt *builtinMetricsTracer) toOtelMetricAttrs(metricName string) (attribute.Set, error) {
+	// Get metric details
+	mDetails, found := metricsDetails[metricName]
+	if !found {
+		return attribute.Set{}, fmt.Errorf("unable to create attributes list for unknown metric: %v", metricName)
+	}
+
+	clusterID := mt.currOp.currAttempt.clusterID
+	zoneID := mt.currOp.currAttempt.zoneID
+	status := mt.currOp.status
+
+	if mDetails.recordedPerAttempt {
+		status = mt.currOp.currAttempt.status
+	} else {
+		clusterID = fallbackString(clusterID, mt.currOp.lastClusterID)
+		zoneID = fallbackString(zoneID, mt.currOp.lastZoneID)
+	}
+
 	attrKeyValues := make([]attribute.KeyValue, 0, maxAttrsLen)
 	// Create attribute key value pairs for attributes common to all metricss
 	attrKeyValues = append(attrKeyValues,
@@ -623,23 +645,10 @@ func (mt *builtinMetricsTracer) toOtelMetricAttrs(metricName string) (attribute.
 		// will not add them to Google Cloud Monitoring metric labels
 		attribute.String(monitoredResLabelKeyTable, mt.tableName),
 
-		// Irrespective of whether metric is attempt specific or operation specific,
-		// use last attempt's cluster and zone
-		attribute.String(monitoredResLabelKeyCluster, mt.currOp.currAttempt.clusterID),
-		attribute.String(monitoredResLabelKeyZone, mt.currOp.currAttempt.zoneID),
+		attribute.String(monitoredResLabelKeyCluster, clusterID),
+		attribute.String(monitoredResLabelKeyZone, zoneID),
 	)
 	attrKeyValues = append(attrKeyValues, mt.clientAttributes...)
-
-	// Get metric details
-	mDetails, found := metricsDetails[metricName]
-	if !found {
-		return attribute.Set{}, fmt.Errorf("unable to create attributes list for unknown metric: %v", metricName)
-	}
-
-	status := mt.currOp.status
-	if mDetails.recordedPerAttempt {
-		status = mt.currOp.currAttempt.status
-	}
 
 	// Add additional attributes to metrics
 	for _, attrKey := range mDetails.additionalAttrs {
@@ -671,6 +680,38 @@ func (mt *builtinMetricsTracer) recordAttemptStart() {
 	mt.currOp.currAttempt.setStartTime(time.Now())
 }
 
+// recordAttemptCompletionWithMetadata extracts location, server latency (with t4t7 fallback),
+// and client blocking latency from headers, trailers, and active trackers, saves them to
+// the current attempt tracer, and then records the attempt metrics.
+func (mt *builtinMetricsTracer) recordAttemptCompletionWithMetadata(attemptHeaderMD, attempTrailerMD metadata.MD, err error) {
+	if !mt.builtInEnabled {
+		return
+	}
+
+	// 1. Calculate client blocking latency
+	if mt.currOp.currAttempt.blockingLatencyTracker != nil {
+		messageSentNanos := mt.currOp.currAttempt.blockingLatencyTracker.getMessageSentNanos()
+		if messageSentNanos > 0 {
+			mt.currOp.currAttempt.clientBlockingLatency = convertToMs(time.Unix(0, messageSentNanos).Sub(mt.currOp.currAttempt.startTime))
+		}
+	}
+
+	// 2. Extract server latency and apply t4t7 fallback
+	serverLatency, serverLatencyErr := extractServerLatency(attemptHeaderMD, attempTrailerMD)
+	if serverLatency == 0 && mt.currOp.currAttempt.t4t7Tracker != nil {
+		fallbackLatency := mt.currOp.currAttempt.t4t7Tracker.getLatencyMs()
+		if fallbackLatency > 0 {
+			serverLatency = fallbackLatency
+			serverLatencyErr = nil
+		}
+	}
+	mt.currOp.currAttempt.serverLatency = serverLatency
+	mt.currOp.currAttempt.serverLatencyErr = serverLatencyErr
+
+	// 3. Call recordAttemptCompletion
+	mt.recordAttemptCompletion(attemptHeaderMD, attempTrailerMD, err)
+}
+
 // recordAttemptCompletion records as many attempt specific metrics as it can
 // Ignore errors seen while creating metric attributes since metric can still
 // be recorded with rest of the attributes
@@ -686,31 +727,16 @@ func (mt *builtinMetricsTracer) recordAttemptCompletion(attemptHeaderMD, attempT
 	// Get location attributes from metadata and set it in tracer
 	// Ignore get location error since the metric can still be recorded with rest of the attributes
 	clusterID, zoneID, _ := extractLocation(attemptHeaderMD, attempTrailerMD)
-	if mt.currOp.currAttempt.clusterID == "" {
+	if clusterID != "" {
 		mt.currOp.currAttempt.setClusterID(clusterID)
+		mt.currOp.lastClusterID = clusterID
 	}
-	if mt.currOp.currAttempt.zoneID == "" {
+	if zoneID != "" {
 		mt.currOp.currAttempt.setZoneID(zoneID)
+		mt.currOp.lastZoneID = zoneID
 	}
 
-	// Set server latency in tracer
-	// FYI this is GFE t4t7(not server latency) latency where
-	// it measures the time between initial metadata send (client) - initial metadata recv(server)
-	serverLatency, serverLatencyErr := extractServerLatency(attemptHeaderMD, attempTrailerMD)
-	// If server latency is missing (0), fallback to the client-measured t4t7 latency
-	// t4t7 for directpath measures the time between the OutHeaders and InHeaders
-	// t4t7 for cloudpath measures the time between gfe receives the initial metadata of req
-	// and gfe sends the initial metadata of response to client
-	if serverLatency == 0 && mt.currOp.currAttempt.t4t7Tracker != nil {
-		fallbackLatency := mt.currOp.currAttempt.t4t7Tracker.getLatencyMs()
-		if fallbackLatency > 0 {
-			serverLatency = fallbackLatency
-			serverLatencyErr = nil
-		}
-	}
 
-	mt.currOp.currAttempt.setServerLatencyErr(serverLatencyErr)
-	mt.currOp.currAttempt.setServerLatency(serverLatency)
 
 	// Calculate elapsed time
 	elapsedTime := convertToMs(time.Since(mt.currOp.currAttempt.startTime))
@@ -720,15 +746,8 @@ func (mt *builtinMetricsTracer) recordAttemptCompletion(attemptHeaderMD, attempT
 	mt.instrumentAttemptLatencies.Record(mt.ctx, elapsedTime, metric.WithAttributeSet(attemptLatAttrs))
 
 	// Record client_blocking_latencies
-	var clientBlockingLatencyMs float64
-	if mt.currOp.currAttempt.blockingLatencyTracker != nil {
-		messageSentNanos := mt.currOp.currAttempt.blockingLatencyTracker.getMessageSentNanos()
-		clientBlockingLatencyMs = convertToMs(time.Unix(0, int64(messageSentNanos)).Sub(mt.currOp.currAttempt.startTime))
-	} else {
-		clientBlockingLatencyMs = mt.currOp.currAttempt.clientBlockingLatency
-	}
 	clientBlockingLatAttrs, _ := mt.toOtelMetricAttrs(metricNameClientBlockingLatencies)
-	mt.instrumentClientBlockingLatencies.Record(mt.ctx, clientBlockingLatencyMs, metric.WithAttributeSet(clientBlockingLatAttrs))
+	mt.instrumentClientBlockingLatencies.Record(mt.ctx, mt.currOp.currAttempt.clientBlockingLatency, metric.WithAttributeSet(clientBlockingLatAttrs))
 
 	// Record server_latencies
 	serverLatAttrs, _ := mt.toOtelMetricAttrs(metricNameServerLatencies)
@@ -808,7 +827,9 @@ func (mt *builtinMetricsTracer) incrementAppBlockingLatency(latency float64) {
 	mt.currOp.incrementAppBlockingLatency(latency)
 }
 
-func (mt *builtinMetricsTracer) recordClientBlockingLatency() {
+// recordAttemptClientBlockingLatency records the client blocking latency for the current attempt.
+// It is measured per attempt as the duration between when the attempt started preparing and when it was executed or dispatched.
+func (mt *builtinMetricsTracer) recordAttemptClientBlockingLatency() {
 	if !mt.builtInEnabled {
 		return
 	}
@@ -894,3 +915,99 @@ func (h *latencyStatsHandler) TagConn(ctx context.Context, info *stats.ConnTagIn
 }
 
 func (h *latencyStatsHandler) HandleConn(context.Context, stats.ConnStats) {}
+
+func metricsUnaryClientInterceptor() grpc.UnaryClientInterceptor {
+	return func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
+		mt := metricsTracerFromContext(ctx)
+		if !mt.builtInEnabled {
+			return invoker(ctx, method, req, reply, cc, opts...)
+		}
+
+		parts := strings.Split(method, "/")
+		shortMethod := parts[len(parts)-1]
+		mt.setMethod(shortMethod)
+		mt.recordAttemptStart()
+		mt.recordAttemptClientBlockingLatency()
+
+		blockTracker := &blockingLatencyTracker{}
+		mt.currOp.currAttempt.blockingLatencyTracker = blockTracker
+		ctx = context.WithValue(ctx, statsContextKey, blockTracker)
+
+		t4t7 := &t4t7Tracker{}
+		mt.currOp.currAttempt.t4t7Tracker = t4t7
+		ctx = context.WithValue(ctx, t4t7ContextKey, t4t7)
+
+		var headerMD, trailerMD metadata.MD
+		opts = append(opts, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
+
+		err := invoker(ctx, method, req, reply, cc, opts...)
+
+		mt.recordAttemptCompletionWithMetadata(headerMD, trailerMD, err)
+		return err
+	}
+}
+
+func metricsStreamClientInterceptor() grpc.StreamClientInterceptor {
+	return func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
+		mt := metricsTracerFromContext(ctx)
+		if !mt.builtInEnabled {
+			return streamer(ctx, desc, cc, method, opts...)
+		}
+
+		parts := strings.Split(method, "/")
+		shortMethod := parts[len(parts)-1]
+		mt.setMethod(shortMethod)
+		mt.recordAttemptStart()
+		mt.recordAttemptClientBlockingLatency()
+
+		blockTracker := &blockingLatencyTracker{}
+		mt.currOp.currAttempt.blockingLatencyTracker = blockTracker
+		ctx = context.WithValue(ctx, statsContextKey, blockTracker)
+
+		t4t7 := &t4t7Tracker{}
+		mt.currOp.currAttempt.t4t7Tracker = t4t7
+		ctx = context.WithValue(ctx, t4t7ContextKey, t4t7)
+
+		var headerMD, trailerMD metadata.MD
+		opts = append(opts, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
+
+		clientStream, err := streamer(ctx, desc, cc, method, opts...)
+		if err != nil {
+			mt.recordAttemptCompletionWithMetadata(headerMD, trailerMD, err)
+			return nil, err
+		}
+
+		wrapped := &metricsWrappedClientStream{
+			ClientStream: clientStream,
+			mt:           mt,
+			headerMD:     &headerMD,
+			trailerMD:    &trailerMD,
+		}
+		return wrapped, nil
+	}
+}
+
+type metricsWrappedClientStream struct {
+	grpc.ClientStream
+	mt        *builtinMetricsTracer
+	headerMD  *metadata.MD
+	trailerMD *metadata.MD
+	completed int32
+}
+
+func (w *metricsWrappedClientStream) RecvMsg(m interface{}) error {
+	err := w.ClientStream.RecvMsg(m)
+	if err != nil {
+		if atomic.CompareAndSwapInt32(&w.completed, 0, 1) {
+			w.mt.recordAttemptCompletionWithMetadata(*w.headerMD, *w.trailerMD, err)
+		}
+	}
+	return err
+}
+
+func fallbackString(a, b string) string {
+	if a != "" {
+		return a
+	}
+	return b
+}
