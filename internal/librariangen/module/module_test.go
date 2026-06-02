@@ -264,6 +264,32 @@ func TestUpdateSnippetsMetadata(t *testing.T) {
 			wantErr: true,
 		},
 		{
+			name: "no version string in library output",
+			lib: &request.Library{
+				ID:      "secretmanager",
+				Version: "2.3.4",
+				APIs: []request.API{
+					{
+						Path: "google/cloud/secretmanager/v1",
+					},
+				},
+			},
+			moduleConfig: &config.ModuleConfig{
+				Name: "secretmanager",
+				APIs: []*config.APIConfig{
+					{
+						Path:         "google/cloud/secretmanager/v1",
+						ProtoPackage: "google.cloud.secretmanager.v1",
+					},
+				},
+			},
+			files: map[string]string{
+				"secretmanager/examples/apiv1/snippet_metadata.google.cloud.secretmanager.v1.json": `{"clientLibrary":{}}`,
+			},
+			want:    map[string]string{},
+			wantErr: true,
+		},
+		{
 			name: "multiple api versions and a sub-API",
 			lib: &request.Library{
 				ID:      "secretmanager",
