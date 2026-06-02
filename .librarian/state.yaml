@@ -1902,7 +1902,7 @@ libraries:
       - internal/generated/snippets/networkmanagement/
     tag_format: '{id}/v{version}'
   - id: networksecurity
-    version: 0.16.0
+    version: 0.17.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/networksecurity/v1beta1
