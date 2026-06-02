@@ -998,7 +998,7 @@ libraries:
     apis:
       - path: google/cloud/networkmanagement/v1
   - name: networksecurity
-    version: 0.16.0
+    version: 0.17.0
     apis:
       - path: google/cloud/networksecurity/v1
       - path: google/cloud/networksecurity/v1beta1
