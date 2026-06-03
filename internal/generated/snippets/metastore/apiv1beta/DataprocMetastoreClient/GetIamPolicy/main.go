@@ -16,6 +16,8 @@
 
 // [START metastore_v1beta_generated_DataprocMetastore_GetIamPolicy_sync]
 
+//go:build examples
+
 package main
 
 import (

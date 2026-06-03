@@ -16,6 +16,8 @@
 
 // [START osconfig_v1alpha_generated_OsConfigZonalService_GetOSPolicyAssignmentReport_sync]
 
+//go:build examples
+
 package main
 
 import (

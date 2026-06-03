@@ -16,6 +16,8 @@
 
 // [START cloudkms_v1_generated_KeyManagementService_GetImportJob_sync]
 
+//go:build examples
+
 package main
 
 import (

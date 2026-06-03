@@ -16,6 +16,8 @@
 
 // [START fleetengine_v1_generated_TripService_GetTrip_sync]
 
+//go:build examples
+
 package main
 
 import (

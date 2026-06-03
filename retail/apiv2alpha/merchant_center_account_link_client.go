@@ -144,7 +144,7 @@ type MerchantCenterAccountLinkClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *MerchantCenterAccountLinkClient) Close() error {
 	return c.internalClient.Close()
@@ -321,7 +321,7 @@ func (c *merchantCenterAccountLinkGRPCClient) setGoogleClientInfo(keyval ...stri
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *merchantCenterAccountLinkGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -433,7 +433,7 @@ func (c *merchantCenterAccountLinkRESTClient) setGoogleClientInfo(keyval ...stri
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *merchantCenterAccountLinkRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.

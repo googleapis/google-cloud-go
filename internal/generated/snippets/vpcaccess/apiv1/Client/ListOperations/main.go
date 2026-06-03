@@ -16,6 +16,8 @@
 
 // [START vpcaccess_v1_generated_VpcAccessService_ListOperations_sync]
 
+//go:build examples
+
 package main
 
 import (

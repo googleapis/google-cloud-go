@@ -16,6 +16,8 @@
 
 // [START dialogflow_v2_generated_SessionEntityTypes_DeleteSessionEntityType_sync]
 
+//go:build examples
+
 package main
 
 import (

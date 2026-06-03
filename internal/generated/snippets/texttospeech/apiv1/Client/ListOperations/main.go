@@ -16,6 +16,8 @@
 
 // [START texttospeech_v1_generated_TextToSpeech_ListOperations_sync]
 
+//go:build examples
+
 package main
 
 import (

@@ -16,6 +16,8 @@
 
 // [START securitycenter_v1beta1_generated_SecurityCenterSettingsService_UpdateSettings_sync]
 
+//go:build examples
+
 package main
 
 import (

@@ -16,6 +16,8 @@
 
 // [START workloadmanager_v1_generated_WorkloadManager_ListLocations_sync]
 
+//go:build examples
+
 package main
 
 import (

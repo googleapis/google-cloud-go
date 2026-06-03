@@ -16,6 +16,8 @@
 
 // [START baremetalsolution_v2_generated_BareMetalSolution_GetLocation_sync]
 
+//go:build examples
+
 package main
 
 import (

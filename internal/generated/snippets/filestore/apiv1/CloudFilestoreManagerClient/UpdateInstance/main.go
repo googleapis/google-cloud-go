@@ -16,6 +16,8 @@
 
 // [START file_v1_generated_CloudFilestoreManager_UpdateInstance_sync]
 
+//go:build examples
+
 package main
 
 import (

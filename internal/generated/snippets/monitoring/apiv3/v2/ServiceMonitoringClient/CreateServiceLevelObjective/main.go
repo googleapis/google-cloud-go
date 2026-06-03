@@ -16,6 +16,8 @@
 
 // [START monitoring_v3_generated_ServiceMonitoringService_CreateServiceLevelObjective_sync]
 
+//go:build examples
+
 package main
 
 import (

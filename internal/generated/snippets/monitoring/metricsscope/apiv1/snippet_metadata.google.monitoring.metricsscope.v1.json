@@ -50,7 +50,7 @@
       "regionTag": "monitoring_v1_generated_MetricsScopes_CreateMonitoredProject_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -96,7 +96,7 @@
       "regionTag": "monitoring_v1_generated_MetricsScopes_DeleteMonitoredProject_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -142,7 +142,7 @@
       "regionTag": "monitoring_v1_generated_MetricsScopes_GetMetricsScope_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -188,7 +188,7 @@
       "regionTag": "monitoring_v1_generated_MetricsScopes_ListMetricsScopesByMonitoredProject_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }

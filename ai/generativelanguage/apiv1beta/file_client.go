@@ -127,7 +127,7 @@ type FileClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *FileClient) Close() error {
 	return c.internalClient.Close()
@@ -299,7 +299,7 @@ func (c *fileGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *fileGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -400,7 +400,7 @@ func (c *fileRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *fileRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.

@@ -16,6 +16,8 @@
 
 // [START generativelanguage_v1alpha_generated_ModelService_ListOperations_sync]
 
+//go:build examples
+
 package main
 
 import (

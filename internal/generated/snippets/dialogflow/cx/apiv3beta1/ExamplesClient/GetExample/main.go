@@ -16,6 +16,8 @@
 
 // [START dialogflow_v3beta1_generated_Examples_GetExample_sync]
 
+//go:build examples
+
 package main
 
 import (

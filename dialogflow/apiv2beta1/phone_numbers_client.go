@@ -215,7 +215,7 @@ type PhoneNumbersClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *PhoneNumbersClient) Close() error {
 	return c.internalClient.Close()
@@ -415,7 +415,7 @@ func (c *phoneNumbersGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *phoneNumbersGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -517,7 +517,7 @@ func (c *phoneNumbersRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *phoneNumbersRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.

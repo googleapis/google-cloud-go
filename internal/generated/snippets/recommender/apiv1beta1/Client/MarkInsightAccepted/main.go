@@ -16,6 +16,8 @@
 
 // [START recommender_v1beta1_generated_Recommender_MarkInsightAccepted_sync]
 
+//go:build examples
+
 package main
 
 import (

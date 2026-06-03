@@ -16,6 +16,8 @@
 
 // [START cloudbilling_v1_generated_CloudBilling_ListBillingAccounts_sync]
 
+//go:build examples
+
 package main
 
 import (

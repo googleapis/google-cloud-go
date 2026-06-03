@@ -16,6 +16,8 @@
 
 // [START speech_v1_generated_Adaptation_DeletePhraseSet_sync]
 
+//go:build examples
+
 package main
 
 import (

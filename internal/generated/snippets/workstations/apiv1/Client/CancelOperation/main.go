@@ -16,6 +16,8 @@
 
 // [START workstations_v1_generated_Workstations_CancelOperation_sync]
 
+//go:build examples
+
 package main
 
 import (

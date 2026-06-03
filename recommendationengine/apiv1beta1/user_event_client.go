@@ -238,7 +238,7 @@ type UserEventClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *UserEventClient) Close() error {
 	return c.internalClient.Close()
@@ -424,7 +424,7 @@ func (c *userEventGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *userEventGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -536,7 +536,7 @@ func (c *userEventRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *userEventRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.

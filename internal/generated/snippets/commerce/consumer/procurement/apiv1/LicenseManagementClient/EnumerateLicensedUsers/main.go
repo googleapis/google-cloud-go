@@ -16,6 +16,8 @@
 
 // [START cloudcommerceconsumerprocurement_v1_generated_LicenseManagementService_EnumerateLicensedUsers_sync]
 
+//go:build examples
+
 package main
 
 import (

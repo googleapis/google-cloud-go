@@ -16,6 +16,8 @@
 
 // [START dataflow_v1beta3_generated_SnapshotsV1Beta3_DeleteSnapshot_sync]
 
+//go:build examples
+
 package main
 
 import (

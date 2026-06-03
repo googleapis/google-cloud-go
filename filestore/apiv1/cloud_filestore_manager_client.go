@@ -345,7 +345,7 @@ type CloudFilestoreManagerClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *CloudFilestoreManagerClient) Close() error {
 	return c.internalClient.Close()
@@ -732,7 +732,7 @@ func (c *cloudFilestoreManagerGRPCClient) setGoogleClientInfo(keyval ...string) 
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *cloudFilestoreManagerGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -887,7 +887,7 @@ func (c *cloudFilestoreManagerRESTClient) setGoogleClientInfo(keyval ...string) 
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *cloudFilestoreManagerRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.

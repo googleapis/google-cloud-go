@@ -16,6 +16,8 @@
 
 // [START managedkafka_v1_generated_ManagedSchemaRegistry_GetVersion_sync]
 
+//go:build examples
+
 package main
 
 import (

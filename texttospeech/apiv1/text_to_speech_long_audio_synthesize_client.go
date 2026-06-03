@@ -116,7 +116,7 @@ type TextToSpeechLongAudioSynthesizeClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *TextToSpeechLongAudioSynthesizeClient) Close() error {
 	return c.internalClient.Close()
@@ -274,7 +274,7 @@ func (c *textToSpeechLongAudioSynthesizeGRPCClient) setGoogleClientInfo(keyval .
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *textToSpeechLongAudioSynthesizeGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -384,7 +384,7 @@ func (c *textToSpeechLongAudioSynthesizeRESTClient) setGoogleClientInfo(keyval .
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *textToSpeechLongAudioSynthesizeRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.

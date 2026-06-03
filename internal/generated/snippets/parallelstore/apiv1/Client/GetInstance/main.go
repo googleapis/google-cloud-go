@@ -16,6 +16,8 @@
 
 // [START parallelstore_v1_generated_Parallelstore_GetInstance_sync]
 
+//go:build examples
+
 package main
 
 import (

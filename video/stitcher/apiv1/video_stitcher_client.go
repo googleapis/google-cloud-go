@@ -323,7 +323,7 @@ type VideoStitcherClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *VideoStitcherClient) Close() error {
 	return c.internalClient.Close()
@@ -749,7 +749,7 @@ func (c *videoStitcherGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *videoStitcherGRPCClient) Close() error {
 	return c.connPool.Close()

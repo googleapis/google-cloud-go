@@ -16,6 +16,8 @@
 
 // [START retail_v2alpha_generated_BranchService_GetOperation_sync]
 
+//go:build examples
+
 package main
 
 import (

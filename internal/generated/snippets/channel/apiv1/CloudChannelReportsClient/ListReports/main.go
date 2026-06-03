@@ -16,6 +16,8 @@
 
 // [START cloudchannel_v1_generated_CloudChannelReportsService_ListReports_sync]
 
+//go:build examples
+
 package main
 
 import (

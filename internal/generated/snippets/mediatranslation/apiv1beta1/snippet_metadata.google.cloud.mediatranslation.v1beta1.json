@@ -46,7 +46,7 @@
       "regionTag": "mediatranslation_v1beta1_generated_SpeechTranslationService_StreamingTranslateSpeech_sync",
       "segments": [
         {
-          "end": 69,
+          "end": 71,
           "start": 18,
           "type": "FULL"
         }

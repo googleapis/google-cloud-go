@@ -16,6 +16,8 @@
 
 // [START dialogflow_v2_generated_ConversationDatasets_GetConversationDataset_sync]
 
+//go:build examples
+
 package main
 
 import (

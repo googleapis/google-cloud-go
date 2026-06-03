@@ -16,6 +16,8 @@
 
 // [START storageinsights_v1_generated_StorageInsights_GetOperation_sync]
 
+//go:build examples
+
 package main
 
 import (

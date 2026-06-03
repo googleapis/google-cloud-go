@@ -16,6 +16,8 @@
 
 // [START chronicle_v1_generated_FeaturedContentNativeDashboardService_DeleteOperation_sync]
 
+//go:build examples
+
 package main
 
 import (

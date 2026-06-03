@@ -16,6 +16,8 @@
 
 // [START monitoring_v1_generated_MetricsScopes_ListMetricsScopesByMonitoredProject_sync]
 
+//go:build examples
+
 package main
 
 import (

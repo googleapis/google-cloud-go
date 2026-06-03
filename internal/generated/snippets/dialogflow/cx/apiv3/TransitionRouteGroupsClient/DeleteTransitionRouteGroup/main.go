@@ -16,6 +16,8 @@
 
 // [START dialogflow_v3_generated_TransitionRouteGroups_DeleteTransitionRouteGroup_sync]
 
+//go:build examples
+
 package main
 
 import (

@@ -97,7 +97,7 @@ type ShippingSettingsClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *ShippingSettingsClient) Close() error {
 	return c.internalClient.Close()
@@ -226,7 +226,7 @@ func (c *shippingSettingsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *shippingSettingsGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -321,7 +321,7 @@ func (c *shippingSettingsRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *shippingSettingsRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.

@@ -49,7 +49,7 @@
       "regionTag": "cloudsecuritycompliance_v1_generated_Audit_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -95,7 +95,7 @@
       "regionTag": "cloudsecuritycompliance_v1_generated_Audit_CreateFrameworkAudit_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -140,7 +140,7 @@
       "regionTag": "cloudsecuritycompliance_v1_generated_Audit_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -186,7 +186,7 @@
       "regionTag": "cloudsecuritycompliance_v1_generated_Audit_GenerateFrameworkAuditScopeReport_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -232,7 +232,7 @@
       "regionTag": "cloudsecuritycompliance_v1_generated_Audit_GetFrameworkAudit_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -278,7 +278,7 @@
       "regionTag": "cloudsecuritycompliance_v1_generated_Audit_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -324,7 +324,7 @@
       "regionTag": "cloudsecuritycompliance_v1_generated_Audit_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -370,7 +370,7 @@
       "regionTag": "cloudsecuritycompliance_v1_generated_Audit_ListFrameworkAudits_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -416,7 +416,7 @@
       "regionTag": "cloudsecuritycompliance_v1_generated_Audit_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -462,7 +462,7 @@
       "regionTag": "cloudsecuritycompliance_v1_generated_Audit_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -508,7 +508,7 @@
       "regionTag": "cloudsecuritycompliance_v1_generated_CmEnrollmentService_CalculateEffectiveCmEnrollment_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -553,7 +553,7 @@
       "regionTag": "cloudsecuritycompliance_v1_generated_CmEnrollmentService_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -598,7 +598,7 @@
       "regionTag": "cloudsecuritycompliance_v1_generated_CmEnrollmentService_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -644,7 +644,7 @@
       "regionTag": "cloudsecuritycompliance_v1_generated_CmEnrollmentService_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -690,7 +690,7 @@
       "regionTag": "cloudsecuritycompliance_v1_generated_CmEnrollmentService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -736,7 +736,7 @@
       "regionTag": "cloudsecuritycompliance_v1_generated_CmEnrollmentService_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -782,7 +782,7 @@
       "regionTag": "cloudsecuritycompliance_v1_generated_CmEnrollmentService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -828,7 +828,7 @@
       "regionTag": "cloudsecuritycompliance_v1_generated_CmEnrollmentService_UpdateCmEnrollment_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -873,7 +873,7 @@
       "regionTag": "cloudsecuritycompliance_v1_generated_Config_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -919,7 +919,7 @@
       "regionTag": "cloudsecuritycompliance_v1_generated_Config_CreateCloudControl_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -965,7 +965,7 @@
       "regionTag": "cloudsecuritycompliance_v1_generated_Config_CreateFramework_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1010,7 +1010,7 @@
       "regionTag": "cloudsecuritycompliance_v1_generated_Config_DeleteCloudControl_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -1055,7 +1055,7 @@
       "regionTag": "cloudsecuritycompliance_v1_generated_Config_DeleteFramework_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -1100,7 +1100,7 @@
       "regionTag": "cloudsecuritycompliance_v1_generated_Config_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -1146,7 +1146,7 @@
       "regionTag": "cloudsecuritycompliance_v1_generated_Config_GetCloudControl_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1192,7 +1192,7 @@
       "regionTag": "cloudsecuritycompliance_v1_generated_Config_GetFramework_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1238,7 +1238,7 @@
       "regionTag": "cloudsecuritycompliance_v1_generated_Config_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1284,7 +1284,7 @@
       "regionTag": "cloudsecuritycompliance_v1_generated_Config_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1330,7 +1330,7 @@
       "regionTag": "cloudsecuritycompliance_v1_generated_Config_ListCloudControls_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1376,7 +1376,7 @@
       "regionTag": "cloudsecuritycompliance_v1_generated_Config_ListFrameworks_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1422,7 +1422,7 @@
       "regionTag": "cloudsecuritycompliance_v1_generated_Config_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1468,7 +1468,7 @@
       "regionTag": "cloudsecuritycompliance_v1_generated_Config_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1514,7 +1514,7 @@
       "regionTag": "cloudsecuritycompliance_v1_generated_Config_UpdateCloudControl_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1560,7 +1560,7 @@
       "regionTag": "cloudsecuritycompliance_v1_generated_Config_UpdateFramework_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1605,7 +1605,7 @@
       "regionTag": "cloudsecuritycompliance_v1_generated_Deployment_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -1651,7 +1651,7 @@
       "regionTag": "cloudsecuritycompliance_v1_generated_Deployment_CreateFrameworkDeployment_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1697,7 +1697,7 @@
       "regionTag": "cloudsecuritycompliance_v1_generated_Deployment_DeleteFrameworkDeployment_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -1742,7 +1742,7 @@
       "regionTag": "cloudsecuritycompliance_v1_generated_Deployment_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -1788,7 +1788,7 @@
       "regionTag": "cloudsecuritycompliance_v1_generated_Deployment_GetCloudControlDeployment_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1834,7 +1834,7 @@
       "regionTag": "cloudsecuritycompliance_v1_generated_Deployment_GetFrameworkDeployment_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1880,7 +1880,7 @@
       "regionTag": "cloudsecuritycompliance_v1_generated_Deployment_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1926,7 +1926,7 @@
       "regionTag": "cloudsecuritycompliance_v1_generated_Deployment_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1972,7 +1972,7 @@
       "regionTag": "cloudsecuritycompliance_v1_generated_Deployment_ListCloudControlDeployments_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2018,7 +2018,7 @@
       "regionTag": "cloudsecuritycompliance_v1_generated_Deployment_ListFrameworkDeployments_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2064,7 +2064,7 @@
       "regionTag": "cloudsecuritycompliance_v1_generated_Deployment_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2110,7 +2110,7 @@
       "regionTag": "cloudsecuritycompliance_v1_generated_Deployment_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2156,7 +2156,7 @@
       "regionTag": "cloudsecuritycompliance_v1_generated_Monitoring_AggregateFrameworkComplianceReport_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2201,7 +2201,7 @@
       "regionTag": "cloudsecuritycompliance_v1_generated_Monitoring_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -2246,7 +2246,7 @@
       "regionTag": "cloudsecuritycompliance_v1_generated_Monitoring_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -2292,7 +2292,7 @@
       "regionTag": "cloudsecuritycompliance_v1_generated_Monitoring_FetchFrameworkComplianceReport_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2338,7 +2338,7 @@
       "regionTag": "cloudsecuritycompliance_v1_generated_Monitoring_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2384,7 +2384,7 @@
       "regionTag": "cloudsecuritycompliance_v1_generated_Monitoring_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2430,7 +2430,7 @@
       "regionTag": "cloudsecuritycompliance_v1_generated_Monitoring_ListControlComplianceSummaries_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2476,7 +2476,7 @@
       "regionTag": "cloudsecuritycompliance_v1_generated_Monitoring_ListFindingSummaries_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2522,7 +2522,7 @@
       "regionTag": "cloudsecuritycompliance_v1_generated_Monitoring_ListFrameworkComplianceSummaries_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2568,7 +2568,7 @@
       "regionTag": "cloudsecuritycompliance_v1_generated_Monitoring_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2614,7 +2614,7 @@
       "regionTag": "cloudsecuritycompliance_v1_generated_Monitoring_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }

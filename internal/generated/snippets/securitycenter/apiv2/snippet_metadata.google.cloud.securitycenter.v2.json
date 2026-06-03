@@ -50,7 +50,7 @@
       "regionTag": "securitycenter_v2_generated_SecurityCenter_BatchCreateResourceValueConfigs_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -96,7 +96,7 @@
       "regionTag": "securitycenter_v2_generated_SecurityCenter_BulkMuteFindings_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -141,7 +141,7 @@
       "regionTag": "securitycenter_v2_generated_SecurityCenter_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -187,7 +187,7 @@
       "regionTag": "securitycenter_v2_generated_SecurityCenter_CreateBigQueryExport_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -233,7 +233,7 @@
       "regionTag": "securitycenter_v2_generated_SecurityCenter_CreateFinding_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -279,7 +279,7 @@
       "regionTag": "securitycenter_v2_generated_SecurityCenter_CreateMuteConfig_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -325,7 +325,7 @@
       "regionTag": "securitycenter_v2_generated_SecurityCenter_CreateNotificationConfig_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -371,7 +371,7 @@
       "regionTag": "securitycenter_v2_generated_SecurityCenter_CreateSource_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -416,7 +416,7 @@
       "regionTag": "securitycenter_v2_generated_SecurityCenter_DeleteBigQueryExport_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -461,7 +461,7 @@
       "regionTag": "securitycenter_v2_generated_SecurityCenter_DeleteMuteConfig_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -506,7 +506,7 @@
       "regionTag": "securitycenter_v2_generated_SecurityCenter_DeleteNotificationConfig_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -551,7 +551,7 @@
       "regionTag": "securitycenter_v2_generated_SecurityCenter_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -596,7 +596,7 @@
       "regionTag": "securitycenter_v2_generated_SecurityCenter_DeleteResourceValueConfig_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -642,7 +642,7 @@
       "regionTag": "securitycenter_v2_generated_SecurityCenter_GetBigQueryExport_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -688,7 +688,7 @@
       "regionTag": "securitycenter_v2_generated_SecurityCenter_GetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -734,7 +734,7 @@
       "regionTag": "securitycenter_v2_generated_SecurityCenter_GetMuteConfig_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -780,7 +780,7 @@
       "regionTag": "securitycenter_v2_generated_SecurityCenter_GetNotificationConfig_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -826,7 +826,7 @@
       "regionTag": "securitycenter_v2_generated_SecurityCenter_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -872,7 +872,7 @@
       "regionTag": "securitycenter_v2_generated_SecurityCenter_GetResourceValueConfig_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -918,7 +918,7 @@
       "regionTag": "securitycenter_v2_generated_SecurityCenter_GetSimulation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -964,7 +964,7 @@
       "regionTag": "securitycenter_v2_generated_SecurityCenter_GetSource_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1010,7 +1010,7 @@
       "regionTag": "securitycenter_v2_generated_SecurityCenter_GetValuedResource_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1056,7 +1056,7 @@
       "regionTag": "securitycenter_v2_generated_SecurityCenter_GroupFindings_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1102,7 +1102,7 @@
       "regionTag": "securitycenter_v2_generated_SecurityCenter_ListAttackPaths_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1148,7 +1148,7 @@
       "regionTag": "securitycenter_v2_generated_SecurityCenter_ListBigQueryExports_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1194,7 +1194,7 @@
       "regionTag": "securitycenter_v2_generated_SecurityCenter_ListFindings_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1240,7 +1240,7 @@
       "regionTag": "securitycenter_v2_generated_SecurityCenter_ListMuteConfigs_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1286,7 +1286,7 @@
       "regionTag": "securitycenter_v2_generated_SecurityCenter_ListNotificationConfigs_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1332,7 +1332,7 @@
       "regionTag": "securitycenter_v2_generated_SecurityCenter_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1378,7 +1378,7 @@
       "regionTag": "securitycenter_v2_generated_SecurityCenter_ListResourceValueConfigs_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1424,7 +1424,7 @@
       "regionTag": "securitycenter_v2_generated_SecurityCenter_ListSources_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1470,7 +1470,7 @@
       "regionTag": "securitycenter_v2_generated_SecurityCenter_ListValuedResources_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1516,7 +1516,7 @@
       "regionTag": "securitycenter_v2_generated_SecurityCenter_SetFindingState_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1562,7 +1562,7 @@
       "regionTag": "securitycenter_v2_generated_SecurityCenter_SetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1608,7 +1608,7 @@
       "regionTag": "securitycenter_v2_generated_SecurityCenter_SetMute_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1654,7 +1654,7 @@
       "regionTag": "securitycenter_v2_generated_SecurityCenter_TestIamPermissions_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1700,7 +1700,7 @@
       "regionTag": "securitycenter_v2_generated_SecurityCenter_UpdateBigQueryExport_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1746,7 +1746,7 @@
       "regionTag": "securitycenter_v2_generated_SecurityCenter_UpdateExternalSystem_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1792,7 +1792,7 @@
       "regionTag": "securitycenter_v2_generated_SecurityCenter_UpdateFinding_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1838,7 +1838,7 @@
       "regionTag": "securitycenter_v2_generated_SecurityCenter_UpdateMuteConfig_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1884,7 +1884,7 @@
       "regionTag": "securitycenter_v2_generated_SecurityCenter_UpdateNotificationConfig_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1930,7 +1930,7 @@
       "regionTag": "securitycenter_v2_generated_SecurityCenter_UpdateResourceValueConfig_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1976,7 +1976,7 @@
       "regionTag": "securitycenter_v2_generated_SecurityCenter_UpdateSecurityMarks_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2022,7 +2022,7 @@
       "regionTag": "securitycenter_v2_generated_SecurityCenter_UpdateSource_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }

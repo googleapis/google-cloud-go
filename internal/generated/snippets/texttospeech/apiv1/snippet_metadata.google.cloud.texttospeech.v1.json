@@ -50,7 +50,7 @@
       "regionTag": "texttospeech_v1_generated_TextToSpeech_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -96,7 +96,7 @@
       "regionTag": "texttospeech_v1_generated_TextToSpeech_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -142,7 +142,7 @@
       "regionTag": "texttospeech_v1_generated_TextToSpeech_ListVoices_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -184,7 +184,7 @@
       "regionTag": "texttospeech_v1_generated_TextToSpeech_StreamingSynthesize_sync",
       "segments": [
         {
-          "end": 69,
+          "end": 71,
           "start": 18,
           "type": "FULL"
         }
@@ -230,7 +230,7 @@
       "regionTag": "texttospeech_v1_generated_TextToSpeech_SynthesizeSpeech_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -276,7 +276,7 @@
       "regionTag": "texttospeech_v1_generated_TextToSpeechLongAudioSynthesize_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -322,7 +322,7 @@
       "regionTag": "texttospeech_v1_generated_TextToSpeechLongAudioSynthesize_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -368,7 +368,7 @@
       "regionTag": "texttospeech_v1_generated_TextToSpeechLongAudioSynthesize_SynthesizeLongAudio_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }

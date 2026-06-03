@@ -16,6 +16,8 @@
 
 // [START jobs_v4beta1_generated_TenantService_UpdateTenant_sync]
 
+//go:build examples
+
 package main
 
 import (

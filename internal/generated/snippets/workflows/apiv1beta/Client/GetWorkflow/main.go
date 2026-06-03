@@ -16,6 +16,8 @@
 
 // [START workflows_v1beta_generated_Workflows_GetWorkflow_sync]
 
+//go:build examples
+
 package main
 
 import (

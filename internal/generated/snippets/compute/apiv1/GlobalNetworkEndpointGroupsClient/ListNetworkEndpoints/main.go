@@ -16,6 +16,8 @@
 
 // [START compute_v1_generated_GlobalNetworkEndpointGroups_ListNetworkEndpoints_sync]
 
+//go:build examples
+
 package main
 
 import (

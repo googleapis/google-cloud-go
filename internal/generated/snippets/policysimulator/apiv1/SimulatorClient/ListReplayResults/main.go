@@ -16,6 +16,8 @@
 
 // [START policysimulator_v1_generated_Simulator_ListReplayResults_sync]
 
+//go:build examples
+
 package main
 
 import (

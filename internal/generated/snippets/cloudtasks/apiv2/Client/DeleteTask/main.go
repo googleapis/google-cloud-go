@@ -16,6 +16,8 @@
 
 // [START cloudtasks_v2_generated_CloudTasks_DeleteTask_sync]
 
+//go:build examples
+
 package main
 
 import (

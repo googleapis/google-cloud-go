@@ -261,7 +261,7 @@ type DatastoreAdminClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *DatastoreAdminClient) Close() error {
 	return c.internalClient.Close()
@@ -569,7 +569,7 @@ func (c *datastoreAdminGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *datastoreAdminGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -740,7 +740,7 @@ func (c *datastoreAdminRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *datastoreAdminRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.

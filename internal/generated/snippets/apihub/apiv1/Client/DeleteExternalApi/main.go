@@ -16,6 +16,8 @@
 
 // [START apihub_v1_generated_ApiHub_DeleteExternalApi_sync]
 
+//go:build examples
+
 package main
 
 import (

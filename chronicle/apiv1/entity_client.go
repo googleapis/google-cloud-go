@@ -183,7 +183,7 @@ type EntityClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *EntityClient) Close() error {
 	return c.internalClient.Close()
@@ -356,7 +356,7 @@ func (c *entityGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *entityGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -457,7 +457,7 @@ func (c *entityRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *entityRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.

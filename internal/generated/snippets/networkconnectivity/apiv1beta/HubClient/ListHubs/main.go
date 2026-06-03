@@ -16,6 +16,8 @@
 
 // [START networkconnectivity_v1beta_generated_HubService_ListHubs_sync]
 
+//go:build examples
+
 package main
 
 import (

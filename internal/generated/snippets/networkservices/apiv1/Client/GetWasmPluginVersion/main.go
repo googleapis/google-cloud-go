@@ -16,6 +16,8 @@
 
 // [START networkservices_v1_generated_NetworkServices_GetWasmPluginVersion_sync]
 
+//go:build examples
+
 package main
 
 import (

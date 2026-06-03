@@ -16,6 +16,8 @@
 
 // [START cloudasset_v1_generated_AssetService_GetSavedQuery_sync]
 
+//go:build examples
+
 package main
 
 import (

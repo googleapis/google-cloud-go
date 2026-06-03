@@ -50,7 +50,7 @@
       "regionTag": "datamigration_v1_generated_DataMigrationService_ApplyConversionWorkspace_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -95,7 +95,7 @@
       "regionTag": "datamigration_v1_generated_DataMigrationService_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -141,7 +141,7 @@
       "regionTag": "datamigration_v1_generated_DataMigrationService_CommitConversionWorkspace_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -187,7 +187,7 @@
       "regionTag": "datamigration_v1_generated_DataMigrationService_ConvertConversionWorkspace_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -233,7 +233,7 @@
       "regionTag": "datamigration_v1_generated_DataMigrationService_CreateConnectionProfile_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -279,7 +279,7 @@
       "regionTag": "datamigration_v1_generated_DataMigrationService_CreateConversionWorkspace_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -325,7 +325,7 @@
       "regionTag": "datamigration_v1_generated_DataMigrationService_CreateMappingRule_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -371,7 +371,7 @@
       "regionTag": "datamigration_v1_generated_DataMigrationService_CreateMigrationJob_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -417,7 +417,7 @@
       "regionTag": "datamigration_v1_generated_DataMigrationService_CreatePrivateConnection_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -463,7 +463,7 @@
       "regionTag": "datamigration_v1_generated_DataMigrationService_DeleteConnectionProfile_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -509,7 +509,7 @@
       "regionTag": "datamigration_v1_generated_DataMigrationService_DeleteConversionWorkspace_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -554,7 +554,7 @@
       "regionTag": "datamigration_v1_generated_DataMigrationService_DeleteMappingRule_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -600,7 +600,7 @@
       "regionTag": "datamigration_v1_generated_DataMigrationService_DeleteMigrationJob_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -645,7 +645,7 @@
       "regionTag": "datamigration_v1_generated_DataMigrationService_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -691,7 +691,7 @@
       "regionTag": "datamigration_v1_generated_DataMigrationService_DeletePrivateConnection_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -737,7 +737,7 @@
       "regionTag": "datamigration_v1_generated_DataMigrationService_DescribeConversionWorkspaceRevisions_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -783,7 +783,7 @@
       "regionTag": "datamigration_v1_generated_DataMigrationService_DescribeDatabaseEntities_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -829,7 +829,7 @@
       "regionTag": "datamigration_v1_generated_DataMigrationService_FetchStaticIps_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -875,7 +875,7 @@
       "regionTag": "datamigration_v1_generated_DataMigrationService_GenerateSshScript_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -921,7 +921,7 @@
       "regionTag": "datamigration_v1_generated_DataMigrationService_GenerateTcpProxyScript_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -967,7 +967,7 @@
       "regionTag": "datamigration_v1_generated_DataMigrationService_GetConnectionProfile_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1013,7 +1013,7 @@
       "regionTag": "datamigration_v1_generated_DataMigrationService_GetConversionWorkspace_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1059,7 +1059,7 @@
       "regionTag": "datamigration_v1_generated_DataMigrationService_GetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1105,7 +1105,7 @@
       "regionTag": "datamigration_v1_generated_DataMigrationService_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1151,7 +1151,7 @@
       "regionTag": "datamigration_v1_generated_DataMigrationService_GetMappingRule_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1197,7 +1197,7 @@
       "regionTag": "datamigration_v1_generated_DataMigrationService_GetMigrationJob_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1243,7 +1243,7 @@
       "regionTag": "datamigration_v1_generated_DataMigrationService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1289,7 +1289,7 @@
       "regionTag": "datamigration_v1_generated_DataMigrationService_GetPrivateConnection_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1335,7 +1335,7 @@
       "regionTag": "datamigration_v1_generated_DataMigrationService_ImportMappingRules_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1381,7 +1381,7 @@
       "regionTag": "datamigration_v1_generated_DataMigrationService_ListConnectionProfiles_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1427,7 +1427,7 @@
       "regionTag": "datamigration_v1_generated_DataMigrationService_ListConversionWorkspaces_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1473,7 +1473,7 @@
       "regionTag": "datamigration_v1_generated_DataMigrationService_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1519,7 +1519,7 @@
       "regionTag": "datamigration_v1_generated_DataMigrationService_ListMappingRules_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1565,7 +1565,7 @@
       "regionTag": "datamigration_v1_generated_DataMigrationService_ListMigrationJobs_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1611,7 +1611,7 @@
       "regionTag": "datamigration_v1_generated_DataMigrationService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1657,7 +1657,7 @@
       "regionTag": "datamigration_v1_generated_DataMigrationService_ListPrivateConnections_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1703,7 +1703,7 @@
       "regionTag": "datamigration_v1_generated_DataMigrationService_PromoteMigrationJob_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1749,7 +1749,7 @@
       "regionTag": "datamigration_v1_generated_DataMigrationService_RestartMigrationJob_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1795,7 +1795,7 @@
       "regionTag": "datamigration_v1_generated_DataMigrationService_ResumeMigrationJob_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1841,7 +1841,7 @@
       "regionTag": "datamigration_v1_generated_DataMigrationService_RollbackConversionWorkspace_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1887,7 +1887,7 @@
       "regionTag": "datamigration_v1_generated_DataMigrationService_SearchBackgroundJobs_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1933,7 +1933,7 @@
       "regionTag": "datamigration_v1_generated_DataMigrationService_SeedConversionWorkspace_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1979,7 +1979,7 @@
       "regionTag": "datamigration_v1_generated_DataMigrationService_SetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2025,7 +2025,7 @@
       "regionTag": "datamigration_v1_generated_DataMigrationService_StartMigrationJob_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2071,7 +2071,7 @@
       "regionTag": "datamigration_v1_generated_DataMigrationService_StopMigrationJob_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2117,7 +2117,7 @@
       "regionTag": "datamigration_v1_generated_DataMigrationService_TestIamPermissions_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2163,7 +2163,7 @@
       "regionTag": "datamigration_v1_generated_DataMigrationService_UpdateConnectionProfile_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2209,7 +2209,7 @@
       "regionTag": "datamigration_v1_generated_DataMigrationService_UpdateConversionWorkspace_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2255,7 +2255,7 @@
       "regionTag": "datamigration_v1_generated_DataMigrationService_UpdateMigrationJob_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2301,7 +2301,7 @@
       "regionTag": "datamigration_v1_generated_DataMigrationService_VerifyMigrationJob_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }

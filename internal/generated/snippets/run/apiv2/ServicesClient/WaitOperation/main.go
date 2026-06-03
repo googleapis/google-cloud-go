@@ -16,6 +16,8 @@
 
 // [START run_v2_generated_Services_WaitOperation_sync]
 
+//go:build examples
+
 package main
 
 import (

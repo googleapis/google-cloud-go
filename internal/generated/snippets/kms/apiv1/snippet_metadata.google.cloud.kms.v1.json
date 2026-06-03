@@ -50,7 +50,7 @@
       "regionTag": "cloudkms_v1_generated_Autokey_CreateKeyHandle_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -96,7 +96,7 @@
       "regionTag": "cloudkms_v1_generated_Autokey_GetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -142,7 +142,7 @@
       "regionTag": "cloudkms_v1_generated_Autokey_GetKeyHandle_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -188,7 +188,7 @@
       "regionTag": "cloudkms_v1_generated_Autokey_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -234,7 +234,7 @@
       "regionTag": "cloudkms_v1_generated_Autokey_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -280,7 +280,7 @@
       "regionTag": "cloudkms_v1_generated_Autokey_ListKeyHandles_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -326,7 +326,7 @@
       "regionTag": "cloudkms_v1_generated_Autokey_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -372,7 +372,7 @@
       "regionTag": "cloudkms_v1_generated_Autokey_SetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -418,7 +418,7 @@
       "regionTag": "cloudkms_v1_generated_Autokey_TestIamPermissions_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -464,7 +464,7 @@
       "regionTag": "cloudkms_v1_generated_AutokeyAdmin_GetAutokeyConfig_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -510,7 +510,7 @@
       "regionTag": "cloudkms_v1_generated_AutokeyAdmin_GetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -556,7 +556,7 @@
       "regionTag": "cloudkms_v1_generated_AutokeyAdmin_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -602,7 +602,7 @@
       "regionTag": "cloudkms_v1_generated_AutokeyAdmin_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -648,7 +648,7 @@
       "regionTag": "cloudkms_v1_generated_AutokeyAdmin_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -694,7 +694,7 @@
       "regionTag": "cloudkms_v1_generated_AutokeyAdmin_SetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -740,7 +740,7 @@
       "regionTag": "cloudkms_v1_generated_AutokeyAdmin_ShowEffectiveAutokeyConfig_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -786,7 +786,7 @@
       "regionTag": "cloudkms_v1_generated_AutokeyAdmin_TestIamPermissions_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -832,7 +832,7 @@
       "regionTag": "cloudkms_v1_generated_AutokeyAdmin_UpdateAutokeyConfig_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -878,7 +878,7 @@
       "regionTag": "cloudkms_v1_generated_EkmService_CreateEkmConnection_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -924,7 +924,7 @@
       "regionTag": "cloudkms_v1_generated_EkmService_GetEkmConfig_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -970,7 +970,7 @@
       "regionTag": "cloudkms_v1_generated_EkmService_GetEkmConnection_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1016,7 +1016,7 @@
       "regionTag": "cloudkms_v1_generated_EkmService_GetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1062,7 +1062,7 @@
       "regionTag": "cloudkms_v1_generated_EkmService_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1108,7 +1108,7 @@
       "regionTag": "cloudkms_v1_generated_EkmService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1154,7 +1154,7 @@
       "regionTag": "cloudkms_v1_generated_EkmService_ListEkmConnections_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1200,7 +1200,7 @@
       "regionTag": "cloudkms_v1_generated_EkmService_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1246,7 +1246,7 @@
       "regionTag": "cloudkms_v1_generated_EkmService_SetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1292,7 +1292,7 @@
       "regionTag": "cloudkms_v1_generated_EkmService_TestIamPermissions_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1338,7 +1338,7 @@
       "regionTag": "cloudkms_v1_generated_EkmService_UpdateEkmConfig_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1384,7 +1384,7 @@
       "regionTag": "cloudkms_v1_generated_EkmService_UpdateEkmConnection_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1430,7 +1430,7 @@
       "regionTag": "cloudkms_v1_generated_EkmService_VerifyConnectivity_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1476,7 +1476,7 @@
       "regionTag": "cloudkms_v1_generated_HsmManagement_ApproveSingleTenantHsmInstanceProposal_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1522,7 +1522,7 @@
       "regionTag": "cloudkms_v1_generated_HsmManagement_CreateSingleTenantHsmInstance_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1568,7 +1568,7 @@
       "regionTag": "cloudkms_v1_generated_HsmManagement_CreateSingleTenantHsmInstanceProposal_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1613,7 +1613,7 @@
       "regionTag": "cloudkms_v1_generated_HsmManagement_DeleteSingleTenantHsmInstanceProposal_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -1659,7 +1659,7 @@
       "regionTag": "cloudkms_v1_generated_HsmManagement_ExecuteSingleTenantHsmInstanceProposal_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1705,7 +1705,7 @@
       "regionTag": "cloudkms_v1_generated_HsmManagement_GetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1751,7 +1751,7 @@
       "regionTag": "cloudkms_v1_generated_HsmManagement_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1797,7 +1797,7 @@
       "regionTag": "cloudkms_v1_generated_HsmManagement_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1843,7 +1843,7 @@
       "regionTag": "cloudkms_v1_generated_HsmManagement_GetSingleTenantHsmInstance_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1889,7 +1889,7 @@
       "regionTag": "cloudkms_v1_generated_HsmManagement_GetSingleTenantHsmInstanceProposal_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1935,7 +1935,7 @@
       "regionTag": "cloudkms_v1_generated_HsmManagement_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1981,7 +1981,7 @@
       "regionTag": "cloudkms_v1_generated_HsmManagement_ListSingleTenantHsmInstanceProposals_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2027,7 +2027,7 @@
       "regionTag": "cloudkms_v1_generated_HsmManagement_ListSingleTenantHsmInstances_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2073,7 +2073,7 @@
       "regionTag": "cloudkms_v1_generated_HsmManagement_SetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2119,7 +2119,7 @@
       "regionTag": "cloudkms_v1_generated_HsmManagement_TestIamPermissions_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2165,7 +2165,7 @@
       "regionTag": "cloudkms_v1_generated_KeyManagementService_AsymmetricDecrypt_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2211,7 +2211,7 @@
       "regionTag": "cloudkms_v1_generated_KeyManagementService_AsymmetricSign_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2257,7 +2257,7 @@
       "regionTag": "cloudkms_v1_generated_KeyManagementService_CreateCryptoKey_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2303,7 +2303,7 @@
       "regionTag": "cloudkms_v1_generated_KeyManagementService_CreateCryptoKeyVersion_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2349,7 +2349,7 @@
       "regionTag": "cloudkms_v1_generated_KeyManagementService_CreateImportJob_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2395,7 +2395,7 @@
       "regionTag": "cloudkms_v1_generated_KeyManagementService_CreateKeyRing_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2441,7 +2441,7 @@
       "regionTag": "cloudkms_v1_generated_KeyManagementService_Decapsulate_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2487,7 +2487,7 @@
       "regionTag": "cloudkms_v1_generated_KeyManagementService_Decrypt_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2533,7 +2533,7 @@
       "regionTag": "cloudkms_v1_generated_KeyManagementService_DeleteCryptoKey_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -2579,7 +2579,7 @@
       "regionTag": "cloudkms_v1_generated_KeyManagementService_DeleteCryptoKeyVersion_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -2625,7 +2625,7 @@
       "regionTag": "cloudkms_v1_generated_KeyManagementService_DestroyCryptoKeyVersion_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2671,7 +2671,7 @@
       "regionTag": "cloudkms_v1_generated_KeyManagementService_Encrypt_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2717,7 +2717,7 @@
       "regionTag": "cloudkms_v1_generated_KeyManagementService_GenerateRandomBytes_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2763,7 +2763,7 @@
       "regionTag": "cloudkms_v1_generated_KeyManagementService_GetCryptoKey_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2809,7 +2809,7 @@
       "regionTag": "cloudkms_v1_generated_KeyManagementService_GetCryptoKeyVersion_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2855,7 +2855,7 @@
       "regionTag": "cloudkms_v1_generated_KeyManagementService_GetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2901,7 +2901,7 @@
       "regionTag": "cloudkms_v1_generated_KeyManagementService_GetImportJob_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2947,7 +2947,7 @@
       "regionTag": "cloudkms_v1_generated_KeyManagementService_GetKeyRing_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2993,7 +2993,7 @@
       "regionTag": "cloudkms_v1_generated_KeyManagementService_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3039,7 +3039,7 @@
       "regionTag": "cloudkms_v1_generated_KeyManagementService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3085,7 +3085,7 @@
       "regionTag": "cloudkms_v1_generated_KeyManagementService_GetPublicKey_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3131,7 +3131,7 @@
       "regionTag": "cloudkms_v1_generated_KeyManagementService_GetRetiredResource_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3177,7 +3177,7 @@
       "regionTag": "cloudkms_v1_generated_KeyManagementService_ImportCryptoKeyVersion_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3223,7 +3223,7 @@
       "regionTag": "cloudkms_v1_generated_KeyManagementService_ListCryptoKeyVersions_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -3269,7 +3269,7 @@
       "regionTag": "cloudkms_v1_generated_KeyManagementService_ListCryptoKeys_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -3315,7 +3315,7 @@
       "regionTag": "cloudkms_v1_generated_KeyManagementService_ListImportJobs_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -3361,7 +3361,7 @@
       "regionTag": "cloudkms_v1_generated_KeyManagementService_ListKeyRings_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -3407,7 +3407,7 @@
       "regionTag": "cloudkms_v1_generated_KeyManagementService_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -3453,7 +3453,7 @@
       "regionTag": "cloudkms_v1_generated_KeyManagementService_ListRetiredResources_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -3499,7 +3499,7 @@
       "regionTag": "cloudkms_v1_generated_KeyManagementService_MacSign_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3545,7 +3545,7 @@
       "regionTag": "cloudkms_v1_generated_KeyManagementService_MacVerify_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3591,7 +3591,7 @@
       "regionTag": "cloudkms_v1_generated_KeyManagementService_RawDecrypt_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3637,7 +3637,7 @@
       "regionTag": "cloudkms_v1_generated_KeyManagementService_RawEncrypt_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3683,7 +3683,7 @@
       "regionTag": "cloudkms_v1_generated_KeyManagementService_RestoreCryptoKeyVersion_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3729,7 +3729,7 @@
       "regionTag": "cloudkms_v1_generated_KeyManagementService_SetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3775,7 +3775,7 @@
       "regionTag": "cloudkms_v1_generated_KeyManagementService_TestIamPermissions_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3821,7 +3821,7 @@
       "regionTag": "cloudkms_v1_generated_KeyManagementService_UpdateCryptoKey_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3867,7 +3867,7 @@
       "regionTag": "cloudkms_v1_generated_KeyManagementService_UpdateCryptoKeyPrimaryVersion_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3913,7 +3913,7 @@
       "regionTag": "cloudkms_v1_generated_KeyManagementService_UpdateCryptoKeyVersion_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }

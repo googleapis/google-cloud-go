@@ -16,6 +16,8 @@
 
 // [START dialogflow_v3_generated_Tools_CreateToolVersion_sync]
 
+//go:build examples
+
 package main
 
 import (

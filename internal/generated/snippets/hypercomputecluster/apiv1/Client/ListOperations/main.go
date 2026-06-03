@@ -16,6 +16,8 @@
 
 // [START hypercomputecluster_v1_generated_HypercomputeCluster_ListOperations_sync]
 
+//go:build examples
+
 package main
 
 import (

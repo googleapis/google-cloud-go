@@ -16,6 +16,8 @@
 
 // [START memorystore_v1_generated_Memorystore_DeleteInstance_sync]
 
+//go:build examples
+
 package main
 
 import (

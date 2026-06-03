@@ -16,6 +16,8 @@
 
 // [START discoveryengine_v1beta_generated_SessionService_GetSession_sync]
 
+//go:build examples
+
 package main
 
 import (

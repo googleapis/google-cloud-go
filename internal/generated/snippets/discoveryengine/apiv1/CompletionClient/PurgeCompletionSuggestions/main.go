@@ -16,6 +16,8 @@
 
 // [START discoveryengine_v1_generated_CompletionService_PurgeCompletionSuggestions_sync]
 
+//go:build examples
+
 package main
 
 import (

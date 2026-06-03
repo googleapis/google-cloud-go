@@ -165,7 +165,7 @@ type ProductInputsClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *ProductInputsClient) Close() error {
 	return c.internalClient.Close()
@@ -318,7 +318,7 @@ func (c *productInputsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *productInputsGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -413,7 +413,7 @@ func (c *productInputsRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *productInputsRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.

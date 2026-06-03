@@ -16,6 +16,8 @@
 
 // [START retail_v2_generated_SearchService_Search_sync]
 
+//go:build examples
+
 package main
 
 import (

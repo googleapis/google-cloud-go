@@ -16,6 +16,8 @@
 
 // [START texttospeech_v1_generated_TextToSpeech_StreamingSynthesize_sync]
 
+//go:build examples
+
 package main
 
 import (

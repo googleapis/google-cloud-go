@@ -16,6 +16,8 @@
 
 // [START jobs_v4beta1_generated_EventService_GetOperation_sync]
 
+//go:build examples
+
 package main
 
 import (

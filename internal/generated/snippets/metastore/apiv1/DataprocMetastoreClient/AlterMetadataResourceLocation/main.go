@@ -16,6 +16,8 @@
 
 // [START metastore_v1_generated_DataprocMetastore_AlterMetadataResourceLocation_sync]
 
+//go:build examples
+
 package main
 
 import (

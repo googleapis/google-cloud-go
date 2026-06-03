@@ -16,6 +16,8 @@
 
 // [START capacityplanner_v1beta_generated_UsageService_QueryForecasts_sync]
 
+//go:build examples
+
 package main
 
 import (

@@ -16,6 +16,8 @@
 
 // [START compute_v1beta_generated_Instances_SetShieldedInstanceIntegrityPolicy_sync]
 
+//go:build examples
+
 package main
 
 import (

@@ -16,6 +16,8 @@
 
 // [START domains_v1beta1_generated_Domains_SearchDomains_sync]
 
+//go:build examples
+
 package main
 
 import (

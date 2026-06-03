@@ -16,6 +16,8 @@
 
 // [START cloudshell_v1_generated_CloudShellService_GetEnvironment_sync]
 
+//go:build examples
+
 package main
 
 import (

@@ -16,6 +16,8 @@
 
 // [START compute_v1_generated_TargetVpnGateways_AggregatedList_sync]
 
+//go:build examples
+
 package main
 
 import (

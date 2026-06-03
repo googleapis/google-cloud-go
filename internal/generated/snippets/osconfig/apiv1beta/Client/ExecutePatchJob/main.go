@@ -16,6 +16,8 @@
 
 // [START osconfig_v1beta_generated_OsConfigService_ExecutePatchJob_sync]
 
+//go:build examples
+
 package main
 
 import (

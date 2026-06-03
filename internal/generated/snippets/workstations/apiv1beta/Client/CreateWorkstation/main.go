@@ -16,6 +16,8 @@
 
 // [START workstations_v1beta_generated_Workstations_CreateWorkstation_sync]
 
+//go:build examples
+
 package main
 
 import (

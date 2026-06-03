@@ -16,6 +16,8 @@
 
 // [START servicemanagement_v1_generated_ServiceManager_UndeleteService_sync]
 
+//go:build examples
+
 package main
 
 import (

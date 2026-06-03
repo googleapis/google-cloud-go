@@ -16,6 +16,8 @@
 
 // [START appengine_v1_generated_Versions_CreateVersion_sync]
 
+//go:build examples
+
 package main
 
 import (

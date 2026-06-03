@@ -16,6 +16,8 @@
 
 // [START gkerecommender_v1_generated_GkeInferenceQuickstart_FetchModelServerVersions_sync]
 
+//go:build examples
+
 package main
 
 import (

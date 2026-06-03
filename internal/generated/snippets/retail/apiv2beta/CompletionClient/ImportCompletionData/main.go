@@ -16,6 +16,8 @@
 
 // [START retail_v2beta_generated_CompletionService_ImportCompletionData_sync]
 
+//go:build examples
+
 package main
 
 import (

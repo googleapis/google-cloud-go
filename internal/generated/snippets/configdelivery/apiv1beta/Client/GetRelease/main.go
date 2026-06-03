@@ -16,6 +16,8 @@
 
 // [START configdelivery_v1beta_generated_ConfigDelivery_GetRelease_sync]
 
+//go:build examples
+
 package main
 
 import (

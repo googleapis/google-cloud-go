@@ -16,6 +16,8 @@
 
 // [START retail_v2beta_generated_ModelService_GetOperation_sync]
 
+//go:build examples
+
 package main
 
 import (

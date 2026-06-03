@@ -16,6 +16,8 @@
 
 // [START securitycenter_v1p1beta1_generated_SecurityCenter_GetOrganizationSettings_sync]
 
+//go:build examples
+
 package main
 
 import (

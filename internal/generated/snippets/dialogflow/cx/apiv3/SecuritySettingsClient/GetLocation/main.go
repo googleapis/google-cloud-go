@@ -16,6 +16,8 @@
 
 // [START dialogflow_v3_generated_SecuritySettingsService_GetLocation_sync]
 
+//go:build examples
+
 package main
 
 import (

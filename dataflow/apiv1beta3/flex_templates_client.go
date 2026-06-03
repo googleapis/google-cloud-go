@@ -93,7 +93,7 @@ type FlexTemplatesClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *FlexTemplatesClient) Close() error {
 	return c.internalClient.Close()
@@ -214,7 +214,7 @@ func (c *flexTemplatesGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *flexTemplatesGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -307,7 +307,7 @@ func (c *flexTemplatesRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *flexTemplatesRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.

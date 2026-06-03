@@ -16,6 +16,8 @@
 
 // [START iam-meta-api_v1_generated_IAMPolicy_GetIamPolicy_sync]
 
+//go:build examples
+
 package main
 
 import (

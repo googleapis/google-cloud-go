@@ -16,6 +16,8 @@
 
 // [START monitoring_v3_generated_MetricService_DeleteMetricDescriptor_sync]
 
+//go:build examples
+
 package main
 
 import (

@@ -16,6 +16,8 @@
 
 // [START eventarc_v1_generated_Eventarc_SetIamPolicy_sync]
 
+//go:build examples
+
 package main
 
 import (

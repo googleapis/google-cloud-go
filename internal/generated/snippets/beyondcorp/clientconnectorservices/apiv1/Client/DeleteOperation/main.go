@@ -16,6 +16,8 @@
 
 // [START beyondcorp_v1_generated_ClientConnectorServicesService_DeleteOperation_sync]
 
+//go:build examples
+
 package main
 
 import (

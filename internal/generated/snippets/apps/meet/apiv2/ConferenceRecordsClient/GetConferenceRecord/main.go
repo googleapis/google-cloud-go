@@ -16,6 +16,8 @@
 
 // [START meet_v2_generated_ConferenceRecordsService_GetConferenceRecord_sync]
 
+//go:build examples
+
 package main
 
 import (

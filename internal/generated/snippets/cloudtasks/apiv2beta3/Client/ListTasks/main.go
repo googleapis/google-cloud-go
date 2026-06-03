@@ -16,6 +16,8 @@
 
 // [START cloudtasks_v2beta3_generated_CloudTasks_ListTasks_sync]
 
+//go:build examples
+
 package main
 
 import (

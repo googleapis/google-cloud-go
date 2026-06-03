@@ -16,6 +16,8 @@
 
 // [START osconfig_v1_generated_OsConfigZonalService_GetInventory_sync]
 
+//go:build examples
+
 package main
 
 import (

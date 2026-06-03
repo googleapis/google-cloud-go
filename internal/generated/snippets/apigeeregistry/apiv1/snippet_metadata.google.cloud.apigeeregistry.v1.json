@@ -49,7 +49,7 @@
       "regionTag": "apigeeregistry_v1_generated_Provisioning_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -95,7 +95,7 @@
       "regionTag": "apigeeregistry_v1_generated_Provisioning_CreateInstance_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -141,7 +141,7 @@
       "regionTag": "apigeeregistry_v1_generated_Provisioning_DeleteInstance_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -186,7 +186,7 @@
       "regionTag": "apigeeregistry_v1_generated_Provisioning_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -232,7 +232,7 @@
       "regionTag": "apigeeregistry_v1_generated_Provisioning_GetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -278,7 +278,7 @@
       "regionTag": "apigeeregistry_v1_generated_Provisioning_GetInstance_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -324,7 +324,7 @@
       "regionTag": "apigeeregistry_v1_generated_Provisioning_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -370,7 +370,7 @@
       "regionTag": "apigeeregistry_v1_generated_Provisioning_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -416,7 +416,7 @@
       "regionTag": "apigeeregistry_v1_generated_Provisioning_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -462,7 +462,7 @@
       "regionTag": "apigeeregistry_v1_generated_Provisioning_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -508,7 +508,7 @@
       "regionTag": "apigeeregistry_v1_generated_Provisioning_SetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -554,7 +554,7 @@
       "regionTag": "apigeeregistry_v1_generated_Provisioning_TestIamPermissions_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -599,7 +599,7 @@
       "regionTag": "apigeeregistry_v1_generated_Registry_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -645,7 +645,7 @@
       "regionTag": "apigeeregistry_v1_generated_Registry_CreateApi_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -691,7 +691,7 @@
       "regionTag": "apigeeregistry_v1_generated_Registry_CreateApiDeployment_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -737,7 +737,7 @@
       "regionTag": "apigeeregistry_v1_generated_Registry_CreateApiSpec_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -783,7 +783,7 @@
       "regionTag": "apigeeregistry_v1_generated_Registry_CreateApiVersion_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -829,7 +829,7 @@
       "regionTag": "apigeeregistry_v1_generated_Registry_CreateArtifact_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -874,7 +874,7 @@
       "regionTag": "apigeeregistry_v1_generated_Registry_DeleteApi_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -919,7 +919,7 @@
       "regionTag": "apigeeregistry_v1_generated_Registry_DeleteApiDeployment_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -965,7 +965,7 @@
       "regionTag": "apigeeregistry_v1_generated_Registry_DeleteApiDeploymentRevision_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1010,7 +1010,7 @@
       "regionTag": "apigeeregistry_v1_generated_Registry_DeleteApiSpec_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -1056,7 +1056,7 @@
       "regionTag": "apigeeregistry_v1_generated_Registry_DeleteApiSpecRevision_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1101,7 +1101,7 @@
       "regionTag": "apigeeregistry_v1_generated_Registry_DeleteApiVersion_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -1146,7 +1146,7 @@
       "regionTag": "apigeeregistry_v1_generated_Registry_DeleteArtifact_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -1191,7 +1191,7 @@
       "regionTag": "apigeeregistry_v1_generated_Registry_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -1237,7 +1237,7 @@
       "regionTag": "apigeeregistry_v1_generated_Registry_GetApi_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1283,7 +1283,7 @@
       "regionTag": "apigeeregistry_v1_generated_Registry_GetApiDeployment_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1329,7 +1329,7 @@
       "regionTag": "apigeeregistry_v1_generated_Registry_GetApiSpec_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1375,7 +1375,7 @@
       "regionTag": "apigeeregistry_v1_generated_Registry_GetApiSpecContents_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1421,7 +1421,7 @@
       "regionTag": "apigeeregistry_v1_generated_Registry_GetApiVersion_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1467,7 +1467,7 @@
       "regionTag": "apigeeregistry_v1_generated_Registry_GetArtifact_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1513,7 +1513,7 @@
       "regionTag": "apigeeregistry_v1_generated_Registry_GetArtifactContents_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1559,7 +1559,7 @@
       "regionTag": "apigeeregistry_v1_generated_Registry_GetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1605,7 +1605,7 @@
       "regionTag": "apigeeregistry_v1_generated_Registry_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1651,7 +1651,7 @@
       "regionTag": "apigeeregistry_v1_generated_Registry_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1697,7 +1697,7 @@
       "regionTag": "apigeeregistry_v1_generated_Registry_ListApiDeploymentRevisions_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1743,7 +1743,7 @@
       "regionTag": "apigeeregistry_v1_generated_Registry_ListApiDeployments_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1789,7 +1789,7 @@
       "regionTag": "apigeeregistry_v1_generated_Registry_ListApiSpecRevisions_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1835,7 +1835,7 @@
       "regionTag": "apigeeregistry_v1_generated_Registry_ListApiSpecs_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1881,7 +1881,7 @@
       "regionTag": "apigeeregistry_v1_generated_Registry_ListApiVersions_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1927,7 +1927,7 @@
       "regionTag": "apigeeregistry_v1_generated_Registry_ListApis_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1973,7 +1973,7 @@
       "regionTag": "apigeeregistry_v1_generated_Registry_ListArtifacts_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2019,7 +2019,7 @@
       "regionTag": "apigeeregistry_v1_generated_Registry_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2065,7 +2065,7 @@
       "regionTag": "apigeeregistry_v1_generated_Registry_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2111,7 +2111,7 @@
       "regionTag": "apigeeregistry_v1_generated_Registry_ReplaceArtifact_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2157,7 +2157,7 @@
       "regionTag": "apigeeregistry_v1_generated_Registry_RollbackApiDeployment_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2203,7 +2203,7 @@
       "regionTag": "apigeeregistry_v1_generated_Registry_RollbackApiSpec_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2249,7 +2249,7 @@
       "regionTag": "apigeeregistry_v1_generated_Registry_SetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2295,7 +2295,7 @@
       "regionTag": "apigeeregistry_v1_generated_Registry_TagApiDeploymentRevision_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2341,7 +2341,7 @@
       "regionTag": "apigeeregistry_v1_generated_Registry_TagApiSpecRevision_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2387,7 +2387,7 @@
       "regionTag": "apigeeregistry_v1_generated_Registry_TestIamPermissions_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2433,7 +2433,7 @@
       "regionTag": "apigeeregistry_v1_generated_Registry_UpdateApi_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2479,7 +2479,7 @@
       "regionTag": "apigeeregistry_v1_generated_Registry_UpdateApiDeployment_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2525,7 +2525,7 @@
       "regionTag": "apigeeregistry_v1_generated_Registry_UpdateApiSpec_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2571,7 +2571,7 @@
       "regionTag": "apigeeregistry_v1_generated_Registry_UpdateApiVersion_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }

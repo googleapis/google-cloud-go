@@ -50,7 +50,7 @@
       "regionTag": "cloudoptimization_v1_generated_FleetRouting_BatchOptimizeTours_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -96,7 +96,7 @@
       "regionTag": "cloudoptimization_v1_generated_FleetRouting_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -142,7 +142,7 @@
       "regionTag": "cloudoptimization_v1_generated_FleetRouting_OptimizeTours_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }

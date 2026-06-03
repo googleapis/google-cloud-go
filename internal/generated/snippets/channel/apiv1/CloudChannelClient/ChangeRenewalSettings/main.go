@@ -16,6 +16,8 @@
 
 // [START cloudchannel_v1_generated_CloudChannelService_ChangeRenewalSettings_sync]
 
+//go:build examples
+
 package main
 
 import (

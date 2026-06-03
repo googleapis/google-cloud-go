@@ -16,6 +16,8 @@
 
 // [START binaryauthorization_v1_generated_ValidationHelperV1_ValidateAttestationOccurrence_sync]
 
+//go:build examples
+
 package main
 
 import (

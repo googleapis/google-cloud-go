@@ -16,6 +16,8 @@
 
 // [START gkerecommender_v1_generated_GkeInferenceQuickstart_FetchBenchmarkingData_sync]
 
+//go:build examples
+
 package main
 
 import (

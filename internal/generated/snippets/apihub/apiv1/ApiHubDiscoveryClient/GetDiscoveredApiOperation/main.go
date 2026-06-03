@@ -16,6 +16,8 @@
 
 // [START apihub_v1_generated_ApiHubDiscovery_GetDiscoveredApiOperation_sync]
 
+//go:build examples
+
 package main
 
 import (

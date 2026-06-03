@@ -16,6 +16,8 @@
 
 // [START apigeeconnect_v1_generated_Tether_Egress_sync]
 
+//go:build examples
+
 package main
 
 import (

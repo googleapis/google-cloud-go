@@ -50,7 +50,7 @@
       "regionTag": "apigeeconnect_v1_generated_ConnectionService_ListConnections_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -92,7 +92,7 @@
       "regionTag": "apigeeconnect_v1_generated_Tether_Egress_sync",
       "segments": [
         {
-          "end": 69,
+          "end": 71,
           "start": 18,
           "type": "FULL"
         }

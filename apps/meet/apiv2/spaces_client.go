@@ -139,7 +139,7 @@ type SpacesClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *SpacesClient) Close() error {
 	return c.internalClient.Close()
@@ -287,7 +287,7 @@ func (c *spacesGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *spacesGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -383,7 +383,7 @@ func (c *spacesRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *spacesRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.

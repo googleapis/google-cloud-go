@@ -269,7 +269,7 @@ type BinauthzManagementClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *BinauthzManagementClient) Close() error {
 	return c.internalClient.Close()
@@ -450,7 +450,7 @@ func (c *binauthzManagementGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *binauthzManagementGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -556,7 +556,7 @@ func (c *binauthzManagementRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *binauthzManagementRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.

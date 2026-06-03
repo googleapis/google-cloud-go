@@ -118,7 +118,7 @@ type ReportClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *ReportClient) Close() error {
 	return c.internalClient.Close()
@@ -242,7 +242,7 @@ func (c *reportGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *reportGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -336,7 +336,7 @@ func (c *reportRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *reportRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.

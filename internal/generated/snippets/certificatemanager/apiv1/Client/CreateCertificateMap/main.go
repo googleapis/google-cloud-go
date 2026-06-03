@@ -16,6 +16,8 @@
 
 // [START certificatemanager_v1_generated_CertificateManager_CreateCertificateMap_sync]
 
+//go:build examples
+
 package main
 
 import (

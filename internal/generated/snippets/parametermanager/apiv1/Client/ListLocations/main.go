@@ -16,6 +16,8 @@
 
 // [START parametermanager_v1_generated_ParameterManager_ListLocations_sync]
 
+//go:build examples
+
 package main
 
 import (

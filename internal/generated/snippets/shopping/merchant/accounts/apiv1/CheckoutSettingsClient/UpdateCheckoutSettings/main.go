@@ -16,6 +16,8 @@
 
 // [START merchantapi_v1_generated_CheckoutSettingsService_UpdateCheckoutSettings_sync]
 
+//go:build examples
+
 package main
 
 import (

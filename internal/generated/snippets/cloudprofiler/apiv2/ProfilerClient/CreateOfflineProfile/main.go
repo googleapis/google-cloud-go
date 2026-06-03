@@ -16,6 +16,8 @@
 
 // [START cloudprofiler_v2_generated_ProfilerService_CreateOfflineProfile_sync]
 
+//go:build examples
+
 package main
 
 import (

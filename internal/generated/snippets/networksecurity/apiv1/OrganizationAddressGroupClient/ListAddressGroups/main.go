@@ -16,6 +16,8 @@
 
 // [START networksecurity_v1_generated_OrganizationAddressGroupService_ListAddressGroups_sync]
 
+//go:build examples
+
 package main
 
 import (

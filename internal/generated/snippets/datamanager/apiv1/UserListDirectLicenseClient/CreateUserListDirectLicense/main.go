@@ -16,6 +16,8 @@
 
 // [START datamanager_v1_generated_UserListDirectLicenseService_CreateUserListDirectLicense_sync]
 
+//go:build examples
+
 package main
 
 import (

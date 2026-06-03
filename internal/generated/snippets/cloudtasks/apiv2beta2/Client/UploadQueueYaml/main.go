@@ -16,6 +16,8 @@
 
 // [START cloudtasks_v2beta2_generated_CloudTasks_UploadQueueYaml_sync]
 
+//go:build examples
+
 package main
 
 import (

@@ -16,6 +16,8 @@
 
 // [START automl_v1beta1_generated_AutoMl_GetModelEvaluation_sync]
 
+//go:build examples
+
 package main
 
 import (

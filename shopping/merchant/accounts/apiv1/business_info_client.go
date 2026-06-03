@@ -140,7 +140,7 @@ type BusinessInfoClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *BusinessInfoClient) Close() error {
 	return c.internalClient.Close()
@@ -268,7 +268,7 @@ func (c *businessInfoGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *businessInfoGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -362,7 +362,7 @@ func (c *businessInfoRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *businessInfoRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.

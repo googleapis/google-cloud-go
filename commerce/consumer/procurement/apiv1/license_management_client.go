@@ -115,7 +115,7 @@ type LicenseManagementClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *LicenseManagementClient) Close() error {
 	return c.internalClient.Close()
@@ -269,7 +269,7 @@ func (c *licenseManagementGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *licenseManagementGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -367,7 +367,7 @@ func (c *licenseManagementRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *licenseManagementRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.

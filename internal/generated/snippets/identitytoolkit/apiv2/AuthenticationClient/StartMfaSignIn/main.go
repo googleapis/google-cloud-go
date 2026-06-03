@@ -16,6 +16,8 @@
 
 // [START identitytoolkit_v2_generated_AuthenticationService_StartMfaSignIn_sync]
 
+//go:build examples
+
 package main
 
 import (

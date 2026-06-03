@@ -16,6 +16,8 @@
 
 // [START cloudquotas_v1_generated_CloudQuotas_CreateQuotaPreference_sync]
 
+//go:build examples
+
 package main
 
 import (

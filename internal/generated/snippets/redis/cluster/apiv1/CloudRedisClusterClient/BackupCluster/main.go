@@ -16,6 +16,8 @@
 
 // [START redis_v1_generated_CloudRedisCluster_BackupCluster_sync]
 
+//go:build examples
+
 package main
 
 import (

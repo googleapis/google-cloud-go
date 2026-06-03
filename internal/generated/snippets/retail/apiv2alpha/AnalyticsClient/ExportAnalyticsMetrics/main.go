@@ -16,6 +16,8 @@
 
 // [START retail_v2alpha_generated_AnalyticsService_ExportAnalyticsMetrics_sync]
 
+//go:build examples
+
 package main
 
 import (

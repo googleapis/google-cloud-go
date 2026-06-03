@@ -16,6 +16,8 @@
 
 // [START secretmanager_v1_generated_SecretManagerService_AccessSecretVersion_sync]
 
+//go:build examples
+
 package main
 
 import (

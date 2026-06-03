@@ -80,7 +80,7 @@ type SpeechTranslationClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *SpeechTranslationClient) Close() error {
 	return c.internalClient.Close()
@@ -202,7 +202,7 @@ func (c *speechTranslationGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *speechTranslationGRPCClient) Close() error {
 	return c.connPool.Close()

@@ -16,6 +16,8 @@
 
 // [START oracledatabase_v1_generated_OracleDatabase_DeleteAutonomousDatabase_sync]
 
+//go:build examples
+
 package main
 
 import (

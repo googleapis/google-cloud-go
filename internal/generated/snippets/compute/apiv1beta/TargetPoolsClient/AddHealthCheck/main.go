@@ -16,6 +16,8 @@
 
 // [START compute_v1beta_generated_TargetPools_AddHealthCheck_sync]
 
+//go:build examples
+
 package main
 
 import (

@@ -16,6 +16,8 @@
 
 // [START contactcenterinsights_v1_generated_ContactCenterInsights_DeleteView_sync]
 
+//go:build examples
+
 package main
 
 import (

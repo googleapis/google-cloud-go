@@ -100,7 +100,7 @@ type AuthorizedDomainsClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *AuthorizedDomainsClient) Close() error {
 	return c.internalClient.Close()
@@ -223,7 +223,7 @@ func (c *authorizedDomainsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *authorizedDomainsGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -318,7 +318,7 @@ func (c *authorizedDomainsRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *authorizedDomainsRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.

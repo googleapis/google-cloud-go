@@ -16,6 +16,8 @@
 
 // [START cloudkms_v1_generated_HsmManagement_TestIamPermissions_sync]
 
+//go:build examples
+
 package main
 
 import (

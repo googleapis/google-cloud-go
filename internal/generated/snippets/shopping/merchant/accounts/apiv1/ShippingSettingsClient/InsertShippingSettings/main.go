@@ -16,6 +16,8 @@
 
 // [START merchantapi_v1_generated_ShippingSettingsService_InsertShippingSettings_sync]
 
+//go:build examples
+
 package main
 
 import (

@@ -50,7 +50,7 @@
       "regionTag": "binaryauthorization_v1beta1_generated_BinauthzManagementServiceV1Beta1_CreateAttestor_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -95,7 +95,7 @@
       "regionTag": "binaryauthorization_v1beta1_generated_BinauthzManagementServiceV1Beta1_DeleteAttestor_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -141,7 +141,7 @@
       "regionTag": "binaryauthorization_v1beta1_generated_BinauthzManagementServiceV1Beta1_GetAttestor_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -187,7 +187,7 @@
       "regionTag": "binaryauthorization_v1beta1_generated_BinauthzManagementServiceV1Beta1_GetPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -233,7 +233,7 @@
       "regionTag": "binaryauthorization_v1beta1_generated_BinauthzManagementServiceV1Beta1_ListAttestors_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -279,7 +279,7 @@
       "regionTag": "binaryauthorization_v1beta1_generated_BinauthzManagementServiceV1Beta1_UpdateAttestor_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -325,7 +325,7 @@
       "regionTag": "binaryauthorization_v1beta1_generated_BinauthzManagementServiceV1Beta1_UpdatePolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -371,7 +371,7 @@
       "regionTag": "binaryauthorization_v1beta1_generated_SystemPolicyV1Beta1_GetSystemPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }

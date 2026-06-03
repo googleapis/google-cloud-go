@@ -16,6 +16,8 @@
 
 // [START networkconnectivity_v1_generated_DataTransferService_ListOperations_sync]
 
+//go:build examples
+
 package main
 
 import (

@@ -16,6 +16,8 @@
 
 // [START lifesciences_v2beta_generated_WorkflowsServiceV2Beta_ListLocations_sync]
 
+//go:build examples
+
 package main
 
 import (

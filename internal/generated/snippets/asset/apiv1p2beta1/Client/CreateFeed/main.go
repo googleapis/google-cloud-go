@@ -16,6 +16,8 @@
 
 // [START cloudasset_v1p2beta1_generated_AssetService_CreateFeed_sync]
 
+//go:build examples
+
 package main
 
 import (

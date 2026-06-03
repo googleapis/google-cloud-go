@@ -16,6 +16,8 @@
 
 // [START auditmanager_v1_generated_AuditManager_GenerateAuditReport_sync]
 
+//go:build examples
+
 package main
 
 import (
