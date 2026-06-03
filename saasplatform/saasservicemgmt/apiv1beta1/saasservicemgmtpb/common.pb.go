@@ -243,6 +243,11 @@ const (
 	// Condition type is operationError.
 	// True when the last unit operation fails with a non-ignorable error.
 	UnitCondition_TYPE_OPERATION_ERROR UnitCondition_Type = 4
+	// Indicates if AppHub app has been created or if Apphub app has already
+	// existed.
+	UnitCondition_TYPE_APP_CREATED_OR_ALREADY_EXISTS UnitCondition_Type = 5
+	// Indicates if services and workloads have been registered with AppHub.
+	UnitCondition_TYPE_APP_COMPONENTS_REGISTERED UnitCondition_Type = 6
 )
 
 // Enum value maps for UnitCondition_Type.
@@ -253,13 +258,17 @@ var (
 		2: "TYPE_UPDATING",
 		3: "TYPE_PROVISIONED",
 		4: "TYPE_OPERATION_ERROR",
+		5: "TYPE_APP_CREATED_OR_ALREADY_EXISTS",
+		6: "TYPE_APP_COMPONENTS_REGISTERED",
 	}
 	UnitCondition_Type_value = map[string]int32{
-		"TYPE_UNSPECIFIED":     0,
-		"TYPE_READY":           1,
-		"TYPE_UPDATING":        2,
-		"TYPE_PROVISIONED":     3,
-		"TYPE_OPERATION_ERROR": 4,
+		"TYPE_UNSPECIFIED":                   0,
+		"TYPE_READY":                         1,
+		"TYPE_UPDATING":                      2,
+		"TYPE_PROVISIONED":                   3,
+		"TYPE_OPERATION_ERROR":               4,
+		"TYPE_APP_CREATED_OR_ALREADY_EXISTS": 5,
+		"TYPE_APP_COMPONENTS_REGISTERED":     6,
 	}
 )
 
@@ -999,7 +1008,7 @@ const file_google_cloud_saasplatform_saasservicemgmt_v1beta1_common_proto_rawDes
 	"\x04BOOL\x10\x03\x12\n" +
 	"\n" +
 	"\x06STRUCT\x10\x04\x12\b\n" +
-	"\x04LIST\x10\x05\"\xae\x04\n" +
+	"\x04LIST\x10\x05\"\xfb\x04\n" +
 	"\rUnitCondition\x12d\n" +
 	"\x06status\x18\x01 \x01(\x0e2G.google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitCondition.StatusB\x03\xe0A\x02R\x06status\x12^\n" +
 	"\x04type\x18\x02 \x01(\x0e2E.google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitCondition.TypeB\x03\xe0A\x02R\x04type\x12Q\n" +
@@ -1010,14 +1019,16 @@ const file_google_cloud_saasplatform_saasservicemgmt_v1beta1_common_proto_rawDes
 	"\x12STATUS_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0eSTATUS_UNKNOWN\x10\x01\x12\x0f\n" +
 	"\vSTATUS_TRUE\x10\x02\x12\x10\n" +
-	"\fSTATUS_FALSE\x10\x03\"o\n" +
+	"\fSTATUS_FALSE\x10\x03\"\xbb\x01\n" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\x0e\n" +
 	"\n" +
 	"TYPE_READY\x10\x01\x12\x11\n" +
 	"\rTYPE_UPDATING\x10\x02\x12\x14\n" +
 	"\x10TYPE_PROVISIONED\x10\x03\x12\x18\n" +
-	"\x14TYPE_OPERATION_ERROR\x10\x04\"\x9c\x05\n" +
+	"\x14TYPE_OPERATION_ERROR\x10\x04\x12&\n" +
+	"\"TYPE_APP_CREATED_OR_ALREADY_EXISTS\x10\x05\x12\"\n" +
+	"\x1eTYPE_APP_COMPONENTS_REGISTERED\x10\x06\"\x9c\x05\n" +
 	"\x16UnitOperationCondition\x12m\n" +
 	"\x06status\x18\x01 \x01(\x0e2P.google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitOperationCondition.StatusB\x03\xe0A\x02R\x06status\x12g\n" +
 	"\x04type\x18\x02 \x01(\x0e2N.google.cloud.saasplatform.saasservicemgmt.v1beta1.UnitOperationCondition.TypeB\x03\xe0A\x02R\x04type\x12Q\n" +

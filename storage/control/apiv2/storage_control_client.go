@@ -78,6 +78,11 @@ type StorageControlCallOptions struct {
 	GetIamPolicy                         []gax.CallOption
 	SetIamPolicy                         []gax.CallOption
 	TestIamPermissions                   []gax.CallOption
+	GetIntelligenceFinding               []gax.CallOption
+	ListIntelligenceFindings             []gax.CallOption
+	SummarizeIntelligenceFindings        []gax.CallOption
+	GetIntelligenceFindingRevision       []gax.CallOption
+	ListIntelligenceFindingRevisions     []gax.CallOption
 }
 
 func defaultStorageControlGRPCClientOptions() []option.ClientOption {
@@ -451,6 +456,86 @@ func defaultStorageControlCallOptions() *StorageControlCallOptions {
 		TestIamPermissions: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		GetIntelligenceFinding: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.ResourceExhausted,
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+					codes.Internal,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 2.00,
+				})
+			}),
+		},
+		ListIntelligenceFindings: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.ResourceExhausted,
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+					codes.Internal,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 2.00,
+				})
+			}),
+		},
+		SummarizeIntelligenceFindings: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.ResourceExhausted,
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+					codes.Internal,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 2.00,
+				})
+			}),
+		},
+		GetIntelligenceFindingRevision: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.ResourceExhausted,
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+					codes.Internal,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 2.00,
+				})
+			}),
+		},
+		ListIntelligenceFindingRevisions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.ResourceExhausted,
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+					codes.Internal,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 2.00,
+				})
+			}),
+		},
 	}
 }
 
@@ -789,6 +874,81 @@ func defaultStorageControlRESTCallOptions() *StorageControlCallOptions {
 		TestIamPermissions: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		GetIntelligenceFinding: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 2.00,
+				},
+					http.StatusTooManyRequests,
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout,
+					http.StatusInternalServerError,
+					http.StatusInternalServerError)
+			}),
+		},
+		ListIntelligenceFindings: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 2.00,
+				},
+					http.StatusTooManyRequests,
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout,
+					http.StatusInternalServerError,
+					http.StatusInternalServerError)
+			}),
+		},
+		SummarizeIntelligenceFindings: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 2.00,
+				},
+					http.StatusTooManyRequests,
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout,
+					http.StatusInternalServerError,
+					http.StatusInternalServerError)
+			}),
+		},
+		GetIntelligenceFindingRevision: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 2.00,
+				},
+					http.StatusTooManyRequests,
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout,
+					http.StatusInternalServerError,
+					http.StatusInternalServerError)
+			}),
+		},
+		ListIntelligenceFindingRevisions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 2.00,
+				},
+					http.StatusTooManyRequests,
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout,
+					http.StatusInternalServerError,
+					http.StatusInternalServerError)
+			}),
+		},
 	}
 }
 
@@ -828,6 +988,11 @@ type internalStorageControlClient interface {
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
 	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
 	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest, ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error)
+	GetIntelligenceFinding(context.Context, *controlpb.GetIntelligenceFindingRequest, ...gax.CallOption) (*controlpb.IntelligenceFinding, error)
+	ListIntelligenceFindings(context.Context, *controlpb.ListIntelligenceFindingsRequest, ...gax.CallOption) *IntelligenceFindingIterator
+	SummarizeIntelligenceFindings(context.Context, *controlpb.SummarizeIntelligenceFindingsRequest, ...gax.CallOption) *FindingSummaryIterator
+	GetIntelligenceFindingRevision(context.Context, *controlpb.GetIntelligenceFindingRevisionRequest, ...gax.CallOption) (*controlpb.IntelligenceFindingRevision, error)
+	ListIntelligenceFindingRevisions(context.Context, *controlpb.ListIntelligenceFindingRevisionsRequest, ...gax.CallOption) *IntelligenceFindingRevisionIterator
 }
 
 // StorageControlClient is a client for interacting with Storage Control API.
@@ -1055,6 +1220,32 @@ func (c *StorageControlClient) TestIamPermissions(ctx context.Context, req *iamp
 	return c.internalClient.TestIamPermissions(ctx, req, opts...)
 }
 
+// GetIntelligenceFinding gets the IntelligenceFinding for a project.
+func (c *StorageControlClient) GetIntelligenceFinding(ctx context.Context, req *controlpb.GetIntelligenceFindingRequest, opts ...gax.CallOption) (*controlpb.IntelligenceFinding, error) {
+	return c.internalClient.GetIntelligenceFinding(ctx, req, opts...)
+}
+
+// ListIntelligenceFindings lists the IntelligenceFinding resources for the specified project.
+func (c *StorageControlClient) ListIntelligenceFindings(ctx context.Context, req *controlpb.ListIntelligenceFindingsRequest, opts ...gax.CallOption) *IntelligenceFindingIterator {
+	return c.internalClient.ListIntelligenceFindings(ctx, req, opts...)
+}
+
+// SummarizeIntelligenceFindings summarize the intelligence findings for the specified scope(org, folder or
+// project).
+func (c *StorageControlClient) SummarizeIntelligenceFindings(ctx context.Context, req *controlpb.SummarizeIntelligenceFindingsRequest, opts ...gax.CallOption) *FindingSummaryIterator {
+	return c.internalClient.SummarizeIntelligenceFindings(ctx, req, opts...)
+}
+
+// GetIntelligenceFindingRevision gets the IntelligenceFindingRevision resource.
+func (c *StorageControlClient) GetIntelligenceFindingRevision(ctx context.Context, req *controlpb.GetIntelligenceFindingRevisionRequest, opts ...gax.CallOption) (*controlpb.IntelligenceFindingRevision, error) {
+	return c.internalClient.GetIntelligenceFindingRevision(ctx, req, opts...)
+}
+
+// ListIntelligenceFindingRevisions lists all the revisions of an IntelligenceFinding resource.
+func (c *StorageControlClient) ListIntelligenceFindingRevisions(ctx context.Context, req *controlpb.ListIntelligenceFindingRevisionsRequest, opts ...gax.CallOption) *IntelligenceFindingRevisionIterator {
+	return c.internalClient.ListIntelligenceFindingRevisions(ctx, req, opts...)
+}
+
 // storageControlGRPCClient is a client for interacting with Storage Control API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
@@ -1155,6 +1346,11 @@ func NewStorageControlClient(ctx context.Context, opts ...option.ClientOption) (
 		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientMetrics(metrics))
 		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientMetrics(metrics))
 		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetIntelligenceFinding = append(client.CallOptions.GetIntelligenceFinding, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListIntelligenceFindings = append(client.CallOptions.ListIntelligenceFindings, gax.WithClientMetrics(metrics))
+		client.CallOptions.SummarizeIntelligenceFindings = append(client.CallOptions.SummarizeIntelligenceFindings, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetIntelligenceFindingRevision = append(client.CallOptions.GetIntelligenceFindingRevision, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListIntelligenceFindingRevisions = append(client.CallOptions.ListIntelligenceFindingRevisions, gax.WithClientMetrics(metrics))
 	}
 
 	client.internalClient = c
@@ -1288,6 +1484,11 @@ func NewStorageControlRESTClient(ctx context.Context, opts ...option.ClientOptio
 		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientMetrics(metrics))
 		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientMetrics(metrics))
 		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientMetrics(metrics))
+		callOpts.GetIntelligenceFinding = append(callOpts.GetIntelligenceFinding, gax.WithClientMetrics(metrics))
+		callOpts.ListIntelligenceFindings = append(callOpts.ListIntelligenceFindings, gax.WithClientMetrics(metrics))
+		callOpts.SummarizeIntelligenceFindings = append(callOpts.SummarizeIntelligenceFindings, gax.WithClientMetrics(metrics))
+		callOpts.GetIntelligenceFindingRevision = append(callOpts.GetIntelligenceFindingRevision, gax.WithClientMetrics(metrics))
+		callOpts.ListIntelligenceFindingRevisions = append(callOpts.ListIntelligenceFindingRevisions, gax.WithClientMetrics(metrics))
 	}
 
 	lroOpts := []option.ClientOption{
@@ -2304,6 +2505,207 @@ func (c *storageControlGRPCClient) TestIamPermissions(ctx context.Context, req *
 		return nil, err
 	}
 	return resp, nil
+}
+
+func (c *storageControlGRPCClient) GetIntelligenceFinding(ctx context.Context, req *controlpb.GetIntelligenceFindingRequest, opts ...gax.CallOption) (*controlpb.IntelligenceFinding, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//storage.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/GetIntelligenceFinding")
+	}
+	opts = append((*c.CallOptions).GetIntelligenceFinding[0:len((*c.CallOptions).GetIntelligenceFinding):len((*c.CallOptions).GetIntelligenceFinding)], opts...)
+	var resp *controlpb.IntelligenceFinding
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.storageControlClient.GetIntelligenceFinding, req, settings.GRPC, c.logger, "GetIntelligenceFinding")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *storageControlGRPCClient) ListIntelligenceFindings(ctx context.Context, req *controlpb.ListIntelligenceFindingsRequest, opts ...gax.CallOption) *IntelligenceFindingIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//storage.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/ListIntelligenceFindings")
+	}
+	opts = append((*c.CallOptions).ListIntelligenceFindings[0:len((*c.CallOptions).ListIntelligenceFindings):len((*c.CallOptions).ListIntelligenceFindings)], opts...)
+	it := &IntelligenceFindingIterator{}
+	req = proto.CloneOf(req)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*controlpb.IntelligenceFinding, string, error) {
+		resp := &controlpb.ListIntelligenceFindingsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.storageControlClient.ListIntelligenceFindings, req, settings.GRPC, c.logger, "ListIntelligenceFindings")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetIntelligenceFindings(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *storageControlGRPCClient) SummarizeIntelligenceFindings(ctx context.Context, req *controlpb.SummarizeIntelligenceFindingsRequest, opts ...gax.CallOption) *FindingSummaryIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/SummarizeIntelligenceFindings")
+	}
+	opts = append((*c.CallOptions).SummarizeIntelligenceFindings[0:len((*c.CallOptions).SummarizeIntelligenceFindings):len((*c.CallOptions).SummarizeIntelligenceFindings)], opts...)
+	it := &FindingSummaryIterator{}
+	req = proto.CloneOf(req)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*controlpb.FindingSummary, string, error) {
+		resp := &controlpb.SummarizeIntelligenceFindingsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.storageControlClient.SummarizeIntelligenceFindings, req, settings.GRPC, c.logger, "SummarizeIntelligenceFindings")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetFindingSummaries(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *storageControlGRPCClient) GetIntelligenceFindingRevision(ctx context.Context, req *controlpb.GetIntelligenceFindingRevisionRequest, opts ...gax.CallOption) (*controlpb.IntelligenceFindingRevision, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//storage.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/GetIntelligenceFindingRevision")
+	}
+	opts = append((*c.CallOptions).GetIntelligenceFindingRevision[0:len((*c.CallOptions).GetIntelligenceFindingRevision):len((*c.CallOptions).GetIntelligenceFindingRevision)], opts...)
+	var resp *controlpb.IntelligenceFindingRevision
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.storageControlClient.GetIntelligenceFindingRevision, req, settings.GRPC, c.logger, "GetIntelligenceFindingRevision")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *storageControlGRPCClient) ListIntelligenceFindingRevisions(ctx context.Context, req *controlpb.ListIntelligenceFindingRevisionsRequest, opts ...gax.CallOption) *IntelligenceFindingRevisionIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//storage.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/ListIntelligenceFindingRevisions")
+	}
+	opts = append((*c.CallOptions).ListIntelligenceFindingRevisions[0:len((*c.CallOptions).ListIntelligenceFindingRevisions):len((*c.CallOptions).ListIntelligenceFindingRevisions)], opts...)
+	it := &IntelligenceFindingRevisionIterator{}
+	req = proto.CloneOf(req)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*controlpb.IntelligenceFindingRevision, string, error) {
+		resp := &controlpb.ListIntelligenceFindingRevisionsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.storageControlClient.ListIntelligenceFindingRevisions, req, settings.GRPC, c.logger, "ListIntelligenceFindingRevisions")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetIntelligenceFindingRevisions(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 // CreateFolder creates a new folder. This operation is only applicable to a hierarchical
@@ -4434,6 +4836,364 @@ func (c *storageControlRESTClient) TestIamPermissions(ctx context.Context, req *
 		return nil, e
 	}
 	return resp, nil
+}
+
+// GetIntelligenceFinding gets the IntelligenceFinding for a project.
+func (c *storageControlRESTClient) GetIntelligenceFinding(ctx context.Context, req *controlpb.GetIntelligenceFindingRequest, opts ...gax.CallOption) (*controlpb.IntelligenceFinding, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//storage.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/GetIntelligenceFinding")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/locations/*/intelligenceFindings/*}")
+	}
+	opts = append((*c.CallOptions).GetIntelligenceFinding[0:len((*c.CallOptions).GetIntelligenceFinding):len((*c.CallOptions).GetIntelligenceFinding)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &controlpb.IntelligenceFinding{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetIntelligenceFinding")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListIntelligenceFindings lists the IntelligenceFinding resources for the specified project.
+func (c *storageControlRESTClient) ListIntelligenceFindings(ctx context.Context, req *controlpb.ListIntelligenceFindingsRequest, opts ...gax.CallOption) *IntelligenceFindingIterator {
+	it := &IntelligenceFindingIterator{}
+	req = proto.CloneOf(req)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*controlpb.IntelligenceFinding, string, error) {
+		resp := &controlpb.ListIntelligenceFindingsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v2/%v/intelligenceFindings", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListIntelligenceFindings")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetIntelligenceFindings(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// SummarizeIntelligenceFindings summarize the intelligence findings for the specified scope(org, folder or
+// project).
+func (c *storageControlRESTClient) SummarizeIntelligenceFindings(ctx context.Context, req *controlpb.SummarizeIntelligenceFindingsRequest, opts ...gax.CallOption) *FindingSummaryIterator {
+	it := &FindingSummaryIterator{}
+	req = proto.CloneOf(req)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*controlpb.FindingSummary, string, error) {
+		resp := &controlpb.SummarizeIntelligenceFindingsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v2/%v/intelligenceFindings:summarize", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req.GetResourceScope() != 0 {
+			params.Add("resourceScope", fmt.Sprintf("%v", req.GetResourceScope()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "SummarizeIntelligenceFindings")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetFindingSummaries(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetIntelligenceFindingRevision gets the IntelligenceFindingRevision resource.
+func (c *storageControlRESTClient) GetIntelligenceFindingRevision(ctx context.Context, req *controlpb.GetIntelligenceFindingRevisionRequest, opts ...gax.CallOption) (*controlpb.IntelligenceFindingRevision, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//storage.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/GetIntelligenceFindingRevision")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/locations/*/intelligenceFindings/*/revisions/*}")
+	}
+	opts = append((*c.CallOptions).GetIntelligenceFindingRevision[0:len((*c.CallOptions).GetIntelligenceFindingRevision):len((*c.CallOptions).GetIntelligenceFindingRevision)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &controlpb.IntelligenceFindingRevision{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetIntelligenceFindingRevision")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListIntelligenceFindingRevisions lists all the revisions of an IntelligenceFinding resource.
+func (c *storageControlRESTClient) ListIntelligenceFindingRevisions(ctx context.Context, req *controlpb.ListIntelligenceFindingRevisionsRequest, opts ...gax.CallOption) *IntelligenceFindingRevisionIterator {
+	it := &IntelligenceFindingRevisionIterator{}
+	req = proto.CloneOf(req)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*controlpb.IntelligenceFindingRevision, string, error) {
+		resp := &controlpb.ListIntelligenceFindingRevisionsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v2/%v/revisions", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListIntelligenceFindingRevisions")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetIntelligenceFindingRevisions(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 // CreateAnywhereCacheOperation returns a new CreateAnywhereCacheOperation from a given name.

@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ const (
 // Configuration for a Recommender.
 type RecommenderConfig struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Name of recommender config.
+	// Identifier. Name of recommender config.
 	// Eg,
 	// projects/[PROJECT_NUMBER]/locations/[LOCATION]/recommenders/[RECOMMENDER_ID]/config
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
@@ -206,9 +206,9 @@ var File_google_cloud_recommender_v1_recommender_config_proto protoreflect.FileD
 
 const file_google_cloud_recommender_v1_recommender_config_proto_rawDesc = "" +
 	"\n" +
-	"4google/cloud/recommender/v1/recommender_config.proto\x12\x1bgoogle.cloud.recommender.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x94\x06\n" +
-	"\x11RecommenderConfig\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12|\n" +
+	"4google/cloud/recommender/v1/recommender_config.proto\x12\x1bgoogle.cloud.recommender.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x99\x06\n" +
+	"\x11RecommenderConfig\x12\x17\n" +
+	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12|\n" +
 	"\x1drecommender_generation_config\x18\x02 \x01(\v28.google.cloud.recommender.v1.RecommenderGenerationConfigR\x1brecommenderGenerationConfig\x12\x12\n" +
 	"\x04etag\x18\x03 \x01(\tR\x04etag\x12;\n" +
 	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\n" +

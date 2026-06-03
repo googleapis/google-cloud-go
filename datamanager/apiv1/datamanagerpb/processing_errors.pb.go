@@ -37,6 +37,7 @@ const (
 )
 
 // The processing error reason.
+// New reasons may be added in the future.
 type ProcessingErrorReason int32
 
 const (
@@ -107,6 +108,39 @@ const (
 	ProcessingErrorReason_PROCESSING_ERROR_OPERATING_ACCOUNT_MISMATCH_FOR_AD_IDENTIFIER ProcessingErrorReason = 26
 	// One-per-click conversion actions cannot be used with BRAIDs.
 	ProcessingErrorReason_PROCESSING_ERROR_REASON_ONE_PER_CLICK_CONVERSION_ACTION_NOT_PERMITTED_WITH_BRAID ProcessingErrorReason = 28
+	// The match ID can not be found.
+	ProcessingErrorReason_PROCESSING_ERROR_REASON_MATCH_ID_NOT_FOUND ProcessingErrorReason = 29
+	// The user ID can not be found for the match ID.
+	ProcessingErrorReason_PROCESSING_ERROR_REASON_USER_ID_NOT_FOUND_FOR_MATCH_ID ProcessingErrorReason = 30
+	// The user ID can not be found for the GCLID.
+	ProcessingErrorReason_PROCESSING_ERROR_REASON_USER_ID_NOT_FOUND_FOR_GCLID ProcessingErrorReason = 31
+	// The user ID can not be found for the DCLID.
+	ProcessingErrorReason_PROCESSING_ERROR_REASON_USER_ID_NOT_FOUND_FOR_DCLID ProcessingErrorReason = 32
+	// There are ad identifiers that are invalid.
+	ProcessingErrorReason_PROCESSING_ERROR_REASON_INVALID_AD_IDENTIFIERS ProcessingErrorReason = 33
+	// The mobile ID format is invalid.
+	ProcessingErrorReason_PROCESSING_ERROR_REASON_INVALID_MOBILE_ID_FORMAT ProcessingErrorReason = 34
+	// The original conversions can't be found.
+	ProcessingErrorReason_PROCESSING_ERROR_REASON_ORIGINAL_CONVERSIONS_NOT_FOUND ProcessingErrorReason = 35
+	// The event ID (dclid or impression ID) cannot be decoded.
+	ProcessingErrorReason_PROCESSING_ERROR_REASON_EVENT_ID_DECODE_ERROR ProcessingErrorReason = 36
+	// The user ID cannot be found for the given impression ID.
+	ProcessingErrorReason_PROCESSING_ERROR_REASON_USER_ID_NOT_FOUND_FOR_IMPRESSION_ID ProcessingErrorReason = 37
+	// The user ID cannot be found.
+	ProcessingErrorReason_PROCESSING_ERROR_REASON_USER_ID_NOT_FOUND ProcessingErrorReason = 38
+	// The event timestamp on the event was earlier than the associated click.
+	ProcessingErrorReason_PROCESSING_ERROR_REASON_CONVERSION_PRECEDES_CLICK ProcessingErrorReason = 39
+	// The click occurred too recently.
+	ProcessingErrorReason_PROCESSING_ERROR_REASON_TOO_RECENT_CLICK ProcessingErrorReason = 40
+	// The event can't be attributed to a click (GCLID). This may be because the
+	// click did not come from a Google Ads campaign, for example.
+	ProcessingErrorReason_PROCESSING_ERROR_REASON_INVALID_CLICK ProcessingErrorReason = 41
+	// The click from the event isn't associated with the
+	// [`operating_account`][google.ads.datamanager.v1.Destination.operating_account]
+	// of the destination.
+	ProcessingErrorReason_PROCESSING_ERROR_REASON_INVALID_OPERATING_ACCOUNT_FOR_CLICK ProcessingErrorReason = 42
+	// A corresponding click can't be found that matches the provided attributes.
+	ProcessingErrorReason_PROCESSING_ERROR_REASON_CLICK_NOT_FOUND ProcessingErrorReason = 43
 )
 
 // Enum value maps for ProcessingErrorReason.
@@ -141,6 +175,21 @@ var (
 		25: "PROCESSING_ERROR_REASON_USER_IDENTIFIER_DECRYPTION_ERROR",
 		26: "PROCESSING_ERROR_OPERATING_ACCOUNT_MISMATCH_FOR_AD_IDENTIFIER",
 		28: "PROCESSING_ERROR_REASON_ONE_PER_CLICK_CONVERSION_ACTION_NOT_PERMITTED_WITH_BRAID",
+		29: "PROCESSING_ERROR_REASON_MATCH_ID_NOT_FOUND",
+		30: "PROCESSING_ERROR_REASON_USER_ID_NOT_FOUND_FOR_MATCH_ID",
+		31: "PROCESSING_ERROR_REASON_USER_ID_NOT_FOUND_FOR_GCLID",
+		32: "PROCESSING_ERROR_REASON_USER_ID_NOT_FOUND_FOR_DCLID",
+		33: "PROCESSING_ERROR_REASON_INVALID_AD_IDENTIFIERS",
+		34: "PROCESSING_ERROR_REASON_INVALID_MOBILE_ID_FORMAT",
+		35: "PROCESSING_ERROR_REASON_ORIGINAL_CONVERSIONS_NOT_FOUND",
+		36: "PROCESSING_ERROR_REASON_EVENT_ID_DECODE_ERROR",
+		37: "PROCESSING_ERROR_REASON_USER_ID_NOT_FOUND_FOR_IMPRESSION_ID",
+		38: "PROCESSING_ERROR_REASON_USER_ID_NOT_FOUND",
+		39: "PROCESSING_ERROR_REASON_CONVERSION_PRECEDES_CLICK",
+		40: "PROCESSING_ERROR_REASON_TOO_RECENT_CLICK",
+		41: "PROCESSING_ERROR_REASON_INVALID_CLICK",
+		42: "PROCESSING_ERROR_REASON_INVALID_OPERATING_ACCOUNT_FOR_CLICK",
+		43: "PROCESSING_ERROR_REASON_CLICK_NOT_FOUND",
 	}
 	ProcessingErrorReason_value = map[string]int32{
 		"PROCESSING_ERROR_REASON_UNSPECIFIED":                                               0,
@@ -172,6 +221,21 @@ var (
 		"PROCESSING_ERROR_REASON_USER_IDENTIFIER_DECRYPTION_ERROR":                          25,
 		"PROCESSING_ERROR_OPERATING_ACCOUNT_MISMATCH_FOR_AD_IDENTIFIER":                     26,
 		"PROCESSING_ERROR_REASON_ONE_PER_CLICK_CONVERSION_ACTION_NOT_PERMITTED_WITH_BRAID":  28,
+		"PROCESSING_ERROR_REASON_MATCH_ID_NOT_FOUND":                                        29,
+		"PROCESSING_ERROR_REASON_USER_ID_NOT_FOUND_FOR_MATCH_ID":                            30,
+		"PROCESSING_ERROR_REASON_USER_ID_NOT_FOUND_FOR_GCLID":                               31,
+		"PROCESSING_ERROR_REASON_USER_ID_NOT_FOUND_FOR_DCLID":                               32,
+		"PROCESSING_ERROR_REASON_INVALID_AD_IDENTIFIERS":                                    33,
+		"PROCESSING_ERROR_REASON_INVALID_MOBILE_ID_FORMAT":                                  34,
+		"PROCESSING_ERROR_REASON_ORIGINAL_CONVERSIONS_NOT_FOUND":                            35,
+		"PROCESSING_ERROR_REASON_EVENT_ID_DECODE_ERROR":                                     36,
+		"PROCESSING_ERROR_REASON_USER_ID_NOT_FOUND_FOR_IMPRESSION_ID":                       37,
+		"PROCESSING_ERROR_REASON_USER_ID_NOT_FOUND":                                         38,
+		"PROCESSING_ERROR_REASON_CONVERSION_PRECEDES_CLICK":                                 39,
+		"PROCESSING_ERROR_REASON_TOO_RECENT_CLICK":                                          40,
+		"PROCESSING_ERROR_REASON_INVALID_CLICK":                                             41,
+		"PROCESSING_ERROR_REASON_INVALID_OPERATING_ACCOUNT_FOR_CLICK":                       42,
+		"PROCESSING_ERROR_REASON_CLICK_NOT_FOUND":                                           43,
 	}
 )
 
@@ -505,7 +569,7 @@ const file_google_ads_datamanager_v1_processing_errors_proto_rawDesc = "" +
 	"\x0ewarning_counts\x18\x01 \x03(\v2'.google.ads.datamanager.v1.WarningCountR\rwarningCounts\"}\n" +
 	"\fWarningCount\x12!\n" +
 	"\frecord_count\x18\x01 \x01(\x03R\vrecordCount\x12J\n" +
-	"\x06reason\x18\x02 \x01(\x0e22.google.ads.datamanager.v1.ProcessingWarningReasonR\x06reason*\xd7\v\n" +
+	"\x06reason\x18\x02 \x01(\x0e22.google.ads.datamanager.v1.ProcessingWarningReasonR\x06reason*\xfc\x11\n" +
 	"\x15ProcessingErrorReason\x12'\n" +
 	"#PROCESSING_ERROR_REASON_UNSPECIFIED\x10\x00\x123\n" +
 	"/PROCESSING_ERROR_REASON_INVALID_CUSTOM_VARIABLE\x10\x01\x127\n" +
@@ -536,7 +600,22 @@ const file_google_ads_datamanager_v1_processing_errors_proto_rawDesc = "" +
 	"'PROCESSING_ERROR_REASON_AWS_AUTH_FAILED\x10\x1b\x12<\n" +
 	"8PROCESSING_ERROR_REASON_USER_IDENTIFIER_DECRYPTION_ERROR\x10\x19\x12A\n" +
 	"=PROCESSING_ERROR_OPERATING_ACCOUNT_MISMATCH_FOR_AD_IDENTIFIER\x10\x1a\x12T\n" +
-	"PPROCESSING_ERROR_REASON_ONE_PER_CLICK_CONVERSION_ACTION_NOT_PERMITTED_WITH_BRAID\x10\x1c*\xff\x03\n" +
+	"PPROCESSING_ERROR_REASON_ONE_PER_CLICK_CONVERSION_ACTION_NOT_PERMITTED_WITH_BRAID\x10\x1c\x12.\n" +
+	"*PROCESSING_ERROR_REASON_MATCH_ID_NOT_FOUND\x10\x1d\x12:\n" +
+	"6PROCESSING_ERROR_REASON_USER_ID_NOT_FOUND_FOR_MATCH_ID\x10\x1e\x127\n" +
+	"3PROCESSING_ERROR_REASON_USER_ID_NOT_FOUND_FOR_GCLID\x10\x1f\x127\n" +
+	"3PROCESSING_ERROR_REASON_USER_ID_NOT_FOUND_FOR_DCLID\x10 \x122\n" +
+	".PROCESSING_ERROR_REASON_INVALID_AD_IDENTIFIERS\x10!\x124\n" +
+	"0PROCESSING_ERROR_REASON_INVALID_MOBILE_ID_FORMAT\x10\"\x12:\n" +
+	"6PROCESSING_ERROR_REASON_ORIGINAL_CONVERSIONS_NOT_FOUND\x10#\x121\n" +
+	"-PROCESSING_ERROR_REASON_EVENT_ID_DECODE_ERROR\x10$\x12?\n" +
+	";PROCESSING_ERROR_REASON_USER_ID_NOT_FOUND_FOR_IMPRESSION_ID\x10%\x12-\n" +
+	")PROCESSING_ERROR_REASON_USER_ID_NOT_FOUND\x10&\x125\n" +
+	"1PROCESSING_ERROR_REASON_CONVERSION_PRECEDES_CLICK\x10'\x12,\n" +
+	"(PROCESSING_ERROR_REASON_TOO_RECENT_CLICK\x10(\x12)\n" +
+	"%PROCESSING_ERROR_REASON_INVALID_CLICK\x10)\x12?\n" +
+	";PROCESSING_ERROR_REASON_INVALID_OPERATING_ACCOUNT_FOR_CLICK\x10*\x12+\n" +
+	"'PROCESSING_ERROR_REASON_CLICK_NOT_FOUND\x10+*\xff\x03\n" +
 	"\x17ProcessingWarningReason\x12)\n" +
 	"%PROCESSING_WARNING_REASON_UNSPECIFIED\x10\x00\x123\n" +
 	"/PROCESSING_WARNING_REASON_KEK_PERMISSION_DENIED\x10\x01\x122\n" +
