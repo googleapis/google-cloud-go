@@ -32,7 +32,7 @@ or there is not yet a stable backend available.
 
 ## Google Cloud Samples
 
-To browse ready to use code samples check [Google Cloud Samples](https://cloud.google.com/docs/samples?l=go).
+To browse ready to use code samples check [Google Cloud Samples](https://developers.google.com/maps/documentation/places/web-service/client-library-examples#go).
 
 ## Go Version Support
 
