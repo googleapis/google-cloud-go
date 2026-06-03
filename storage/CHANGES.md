@@ -42,6 +42,18 @@
 
 * Update `EnableParallelUpload` documentation in `writer.go` (#14328) ([22d0749](http://github.com/googleapis/google-cloud-go/commit/22d0749f8fdbeaa34f2a836b63510bd0c3def990))
 
+## [1.61.5](https://github.com/googleapis/google-cloud-go/releases/tag/storage%2Fv1.61.5) (2026-06-01)
+
+### Bug Fixes
+
+* fix race condition during retries in gRPC writer (#14649) ([e87213b](https://github.com/googleapis/google-cloud-go/commit/e87213b78affff3aafb6ee0ecd542d65719e5c5c))
+
+## [1.61.4](https://github.com/googleapis/google-cloud-go/releases/tag/storage%2Fv1.61.4) (2026-05-21)
+
+### Bug Fixes
+
+* add server closed idle connection to retriable errors (#14594) ([37580e7](https://github.com/googleapis/google-cloud-go/commit/37580e7eb530bbcf54951425947060c51cb0b30a))
+
 ## [1.61.3](https://github.com/googleapis/google-cloud-go/releases/tag/storage%2Fv1.61.3) (2026-03-13)
 
 ### Documentation
