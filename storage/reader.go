@@ -409,11 +409,11 @@ func (r *Reader) Remain() int64 {
 	if r.unfinalized || r.Attrs.Decompressed {
 		return -1
 	}
-	if rem := atomic.LoadInt64(&r.remain); rem < 0 {
+	rem := atomic.LoadInt64(&r.remain)
+	if rem < 0 {
 		return 0
-	} else {
-		return rem
 	}
+	return rem
 }
 
 // ContentType returns the content type of the object.
