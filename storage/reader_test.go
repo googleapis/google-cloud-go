@@ -20,6 +20,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"hash/crc32"
 	"io"
 	"log"
 	"net/http"
@@ -781,4 +782,73 @@ func TestHTTPReaderDisableChecksum(t *testing.T) {
 			t.Fatalf("content mismatch: got %q, want %q", got, original)
 		}
 	}, option.WithEndpoint(mockGCS.URL), option.WithoutAuthentication(), option.WithHTTPClient(whc))
+}
+
+func TestHTTPReaderMidStreamRetryCRC(t *testing.T) {
+	ctx := context.Background()
+	hc, close := newTestServer(handleRangeRead)
+	defer close()
+
+	originalData := []byte("0123456789")
+	wantCRC := crc32.Checksum(originalData, crc32cTable)
+
+	internalErr := http2Error("blah blah INTERNAL_ERROR")
+
+	multiReaderTest(ctx, t, func(t *testing.T, c *Client) {
+		obj := c.Bucket("b").Object("o")
+		r, err := obj.NewRangeReader(ctx, 0, -1)
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer r.Close()
+
+		// Mock the HTTP reader to simulate a mid-stream retry.
+		// The first body yields 5 bytes and then returns a retryable error in the same call.
+		// The second body yields the remaining 5 bytes and EOF.
+		firstBody := fakeReadCloser{
+			data:   originalData,
+			counts: []int{5},
+			err:    internalErr,
+		}
+		secondBody := fakeReadCloser{
+			data:   originalData[5:],
+			counts: []int{5},
+			err:    io.EOF,
+		}
+
+		b := 0
+		r.checkCRC = true
+		r.reader = &httpReader{
+			body:     &firstBody,
+			checkCRC: true,
+			wantCRC:  wantCRC,
+			reopen: func(seen int64) (*http.Response, error) {
+				if seen != 5 {
+					t.Errorf("expected seen offset 5, got %d", seen)
+				}
+				b++
+				return &http.Response{Body: &secondBody}, nil
+			},
+		}
+
+		// Read all data. Since the buffer size we pass to Read is larger than the data,
+		// the first read will attempt to read the entire data, retrieve 5 bytes and error,
+		// and then trigger reopen.
+		buf := make([]byte, 1024)
+		var gotb []byte
+		for {
+			n, err := r.Read(buf)
+			gotb = append(gotb, buf[:n]...)
+			if err == io.EOF {
+				break
+			}
+			if err != nil {
+				t.Fatalf("expected no read error, got: %v", err)
+			}
+		}
+
+		if got := string(gotb); got != string(originalData) {
+			t.Errorf("got data %q, want %q", got, originalData)
+		}
+	}, option.WithHTTPClient(hc))
 }
