@@ -627,7 +627,7 @@ func TestReaderExtraBytesLogging(t *testing.T) {
 
 	r := &Reader{
 		reader: m,
-		remain: 5, // We pretend we only requested 5 bytes
+		remain: 5, // We pretend we only requested 5 bytes.
 		bucket: "my-bucket",
 		object: "my-object",
 	}
@@ -642,23 +642,23 @@ func TestReaderExtraBytesLogging(t *testing.T) {
 		t.Fatalf("expected 12 bytes read, got %d", n)
 	}
 
-	// Logging should not have occurred yet during reads
+	// Logging should not have occurred yet during reads.
 	if logOutput.Len() > 0 {
 		t.Errorf("expected no logging during reads, but got: %q", logOutput.String())
 	}
 
-	// Remain() should be 0 because we have fully read our requested range (and more)
+	// Remain() should be 0 because we have fully read our requested range (and more).
 	if rem := r.Remain(); rem != 0 {
 		t.Errorf("expected Remain() to be 0, got %d", rem)
 	}
 
-	// Close should trigger the log
+	// Close should trigger the log.
 	if err := r.Close(); err != nil {
 		t.Fatalf("unexpected error on Close(): %v", err)
 	}
 
 	logStr := logOutput.String()
-	expectedLog := `storage: received 7 more bytes than requested from GCS for bucket "my-bucket", object "my-object"`
+	expectedLog := fmt.Sprintf("storage: received 7 more bytes than requested from GCS for bucket %q, object %q", r.bucket, r.object)
 	if !strings.Contains(logStr, expectedLog) {
 		t.Errorf("expected log output to contain %q, but got %q", expectedLog, logStr)
 	}
@@ -674,7 +674,7 @@ func TestReaderWriteToExtraBytesLogging(t *testing.T) {
 
 	r := &Reader{
 		reader: m,
-		remain: 5, // We pretend we only requested 5 bytes
+		remain: 5, // We pretend we only requested 5 bytes.
 		bucket: "my-bucket",
 		object: "my-object",
 	}
@@ -689,23 +689,23 @@ func TestReaderWriteToExtraBytesLogging(t *testing.T) {
 		t.Fatalf("expected 12 bytes copied, got %d", n)
 	}
 
-	// Logging should not have occurred yet during writes
+	// Logging should not have occurred yet during writes.
 	if logOutput.Len() > 0 {
 		t.Errorf("expected no logging during WriteTo, but got: %q", logOutput.String())
 	}
 
-	// Remain() should be 0 because we have fully read our requested range (and more)
+	// Remain() should be 0 because we have fully read our requested range (and more).
 	if rem := r.Remain(); rem != 0 {
 		t.Errorf("expected Remain() to be 0, got %d", rem)
 	}
 
-	// Close should trigger the log
+	// Close should trigger the log.
 	if err := r.Close(); err != nil {
 		t.Fatalf("unexpected error on Close(): %v", err)
 	}
 
 	logStr := logOutput.String()
-	expectedLog := `storage: received 7 more bytes than requested from GCS for bucket "my-bucket", object "my-object"`
+	expectedLog := fmt.Sprintf("storage: received 7 more bytes than requested from GCS for bucket %q, object %q", r.bucket, r.object)
 	if !strings.Contains(logStr, expectedLog) {
 		t.Errorf("expected log output to contain %q, but got %q", expectedLog, logStr)
 	}
