@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.62.3](https://github.com/googleapis/google-cloud-go/releases/tag/storage%2Fv1.62.3) (2026-06-03)
+
+### Bug Fixes
+
+* add server closed idle connection to retriable errors (#14594) ([20b37d6](https://github.com/googleapis/google-cloud-go/commit/20b37d65d56d4b5e7b8d43b1f6b2ddefcd8944be))
+* fix race condition during retries in gRPC writer (#14649) ([04b6c63](https://github.com/googleapis/google-cloud-go/commit/04b6c635c09de1772fcefd8a7fd5e4ffdd370b79))
+
 ## [1.62.2](https://github.com/googleapis/google-cloud-go/releases/tag/storage%2Fv1.62.2) (2026-05-18)
 
 ### Features
