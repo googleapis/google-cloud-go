@@ -28,6 +28,7 @@ import (
 	vkit "cloud.google.com/go/spanner/apiv1"
 	"cloud.google.com/go/spanner/apiv1/spannerpb"
 	"github.com/googleapis/gax-go/v2"
+	"go.opentelemetry.io/otel/metric"
 	gtransport "google.golang.org/api/transport/grpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -197,6 +198,7 @@ type dynamicChannelPool struct {
 	lowLoadRuns   int
 	monitorMu     sync.Mutex
 	primeSession  atomic.Value // string
+	metrics       *dcpMetrics
 
 	drainingCount atomic.Int64
 }
@@ -216,7 +218,7 @@ type dcpEntry struct {
 }
 
 // newDynamicChannelPool creates the initial channel set and starts scale workers.
-func newDynamicChannelPool(ctx context.Context, sc *sessionClient, cfg DynamicChannelPoolConfig, dial func(context.Context) (gtransport.ConnPool, error)) (*dynamicChannelPool, error) {
+func newDynamicChannelPool(ctx context.Context, sc *sessionClient, cfg DynamicChannelPoolConfig, mp metric.MeterProvider, dial func(context.Context) (gtransport.ConnPool, error)) (*dynamicChannelPool, error) {
 	cfg, err := normalizeDCPConfig(cfg)
 	if err != nil {
 		return nil, err
@@ -245,6 +247,7 @@ func newDynamicChannelPool(ctx context.Context, sc *sessionClient, cfg DynamicCh
 		entries = append(entries, e)
 	}
 	p.entries.Store(&entries)
+	p.metrics = newDCPMetrics(p, mp)
 	go p.scaleUpWorker()
 	go p.scaleDownMonitor()
 	return p, nil
@@ -296,6 +299,7 @@ func (p *dynamicChannelPool) NewStream(ctx context.Context, desc *grpc.StreamDes
 }
 
 func (p *dynamicChannelPool) Close() error {
+	p.metrics.close(p.sc.logger)
 	p.stopOnce.Do(func() { p.cancel(); close(p.done) })
 	p.dialMu.Lock()
 	defer p.dialMu.Unlock()
@@ -655,6 +659,7 @@ func (p *dynamicChannelPool) scaleUp() {
 	combined = append(combined, entries...)
 	combined = append(combined, newEntries...)
 	p.entries.Store(&combined)
+	p.metrics.recordScaleUp(p.ctx, int64(len(newEntries)))
 }
 
 func closeDCPEntries(entries []*dcpEntry) {
@@ -785,7 +790,9 @@ func (p *dynamicChannelPool) removeEntries(count int) {
 	}
 	p.entries.Store(&keep)
 	p.dialMu.Unlock()
-	p.drainingCount.Add(int64(len(toDrain)))
+	removed := int64(len(toDrain))
+	p.drainingCount.Add(removed)
+	p.metrics.recordScaleDown(p.ctx, removed)
 	for e := range toDrain {
 		go p.waitForDrainAndClose(e)
 	}

@@ -21,6 +21,14 @@ import (
 	"testing"
 	"time"
 
+	"cloud.google.com/go/spanner/internal"
+	. "cloud.google.com/go/spanner/internal/testutil"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/metric"
+	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
+	"go.opentelemetry.io/otel/sdk/metric/metricdata"
+	"go.opentelemetry.io/otel/sdk/metric/metricdata/metricdatatest"
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -28,8 +36,6 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-
-	. "cloud.google.com/go/spanner/internal/testutil"
 )
 
 func testDCPConfig(initial, min, max int) DynamicChannelPoolConfig {
@@ -53,9 +59,15 @@ func testDCPConfig(initial, min, max int) DynamicChannelPoolConfig {
 
 func setupDCPMockedTestServer(t *testing.T, dcp DynamicChannelPoolConfig) (*MockedSpannerInMemTestServer, *Client, func()) {
 	t.Helper()
+	return setupDCPMockedTestServerWithMeterProvider(t, dcp, nil)
+}
+
+func setupDCPMockedTestServerWithMeterProvider(t *testing.T, dcp DynamicChannelPoolConfig, mp metric.MeterProvider) (*MockedSpannerInMemTestServer, *Client, func()) {
+	t.Helper()
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
-		DisableNativeMetrics:     true,
-		DynamicChannelPoolConfig: dcp,
+		DisableNativeMetrics:       true,
+		DynamicChannelPoolConfig:   dcp,
+		OpenTelemetryMeterProvider: mp,
 	})
 	addSelect1Result(server)
 	if client.sc.dynamicPool == nil {
@@ -63,6 +75,73 @@ func setupDCPMockedTestServer(t *testing.T, dcp DynamicChannelPoolConfig) (*Mock
 		t.Fatal("dynamic channel pool not enabled")
 	}
 	return server, client, teardown
+}
+
+func newDCPManualReader() (*sdkmetric.ManualReader, *sdkmetric.MeterProvider) {
+	reader := sdkmetric.NewManualReader()
+	mp := sdkmetric.NewMeterProvider(sdkmetric.WithReader(reader))
+	return reader, mp
+}
+
+func enableOpenTelemetryMetricsForTest(t *testing.T) {
+	t.Helper()
+	setOpenTelemetryMetricsFlag(false)
+	t.Cleanup(func() { setOpenTelemetryMetricsFlag(false) })
+	EnableOpenTelemetryMetrics()
+}
+
+func collectDCPMetrics(t *testing.T, reader *sdkmetric.ManualReader) metricdata.ResourceMetrics {
+	t.Helper()
+	rm := metricdata.ResourceMetrics{}
+	if err := reader.Collect(context.Background(), &rm); err != nil {
+		t.Fatalf("Collect() failed: %v", err)
+	}
+	return rm
+}
+
+func findDCPMetric(rm metricdata.ResourceMetrics, name string) (metricdata.Metrics, bool) {
+	for _, sm := range rm.ScopeMetrics {
+		for _, m := range sm.Metrics {
+			if m.Name == name {
+				return m, true
+			}
+		}
+	}
+	return metricdata.Metrics{}, false
+}
+
+func requireDCPMetric(t *testing.T, rm metricdata.ResourceMetrics, name string) metricdata.Metrics {
+	t.Helper()
+	m, ok := findDCPMetric(rm, name)
+	if !ok {
+		t.Fatalf("metric %q not found in %+v", name, rm.ScopeMetrics)
+	}
+	return m
+}
+
+func requireDCPGaugeValue(t *testing.T, rm metricdata.ResourceMetrics, name string, want int64, attrs []attribute.KeyValue) {
+	t.Helper()
+	m := requireDCPMetric(t, rm, name)
+	gauge, ok := m.Data.(metricdata.Gauge[int64])
+	if !ok {
+		t.Fatalf("metric %q data type = %T, want metricdata.Gauge[int64]", name, m.Data)
+	}
+	if got, want := len(gauge.DataPoints), 1; got != want {
+		t.Fatalf("metric %q datapoints = %d, want %d", name, got, want)
+	}
+	if got := gauge.DataPoints[0].Value; got != want {
+		t.Fatalf("metric %q value = %d, want %d", name, got, want)
+	}
+	metricdatatest.AssertHasAttributes[metricdata.DataPoint[int64]](t, gauge.DataPoints[0], attrs...)
+}
+
+func dcpCommonAttrs(clientID string) []attribute.KeyValue {
+	return []attribute.KeyValue{
+		attributeKeyClientID.String(clientID),
+		attributeKeyDatabase.String("[DATABASE]"),
+		attributeKeyInstance.String("[INSTANCE]"),
+		attributeKeyLibVersion.String(internal.Version),
+	}
 }
 
 func drainDCPQuery(ctx context.Context, client *Client) error {
@@ -250,6 +329,112 @@ func TestDynamicChannelPoolLocationAwareDisablesDCP(t *testing.T) {
 	defer teardown()
 	if client.sc.dynamicPool != nil {
 		t.Fatal("DCP enabled with location-aware routing, want disabled")
+	}
+}
+
+func TestDynamicChannelPoolOTMetricsRequireOpenTelemetryMetricsEnabled(t *testing.T) {
+	setOpenTelemetryMetricsFlag(false)
+	t.Cleanup(func() { setOpenTelemetryMetricsFlag(false) })
+	reader, mp := newDCPManualReader()
+	_, _, teardown := setupDCPMockedTestServerWithMeterProvider(t, testDCPConfig(1, 1, 2), mp)
+	defer teardown()
+
+	rm := collectDCPMetrics(t, reader)
+	if _, ok := findDCPMetric(rm, "spanner/dynamic_channel_pool/num_channels"); ok {
+		t.Fatal("DCP metric exported without EnableOpenTelemetryMetrics")
+	}
+}
+
+func TestDynamicChannelPoolOTMetricsFallbackToGlobalMeterProvider(t *testing.T) {
+	enableOpenTelemetryMetricsForTest(t)
+	reader, mp := newDCPManualReader()
+	oldMP := otel.GetMeterProvider()
+	otel.SetMeterProvider(mp)
+	t.Cleanup(func() { otel.SetMeterProvider(oldMP) })
+	_, client, teardown := setupDCPMockedTestServer(t, testDCPConfig(1, 1, 2))
+	defer teardown()
+
+	rm := collectDCPMetrics(t, reader)
+	requireDCPGaugeValue(t, rm, "spanner/dynamic_channel_pool/num_channels", 1, dcpCommonAttrs(client.ClientID()))
+}
+
+func TestDynamicChannelPoolOTMetricsObserveGaugesWithCommonAttributes(t *testing.T) {
+	enableOpenTelemetryMetricsForTest(t)
+	reader, mp := newDCPManualReader()
+	cfg := testDCPConfig(2, 1, 4)
+	cfg.DCPScaleDownCheckInterval = time.Hour
+	_, client, teardown := setupDCPMockedTestServerWithMeterProvider(t, cfg, mp)
+	defer teardown()
+	client.sc.dynamicPool.totalRPCLoad.Store(7)
+
+	rm := collectDCPMetrics(t, reader)
+	attrs := dcpCommonAttrs(client.ClientID())
+	requireDCPGaugeValue(t, rm, "spanner/dynamic_channel_pool/num_channels", 2, attrs)
+	requireDCPGaugeValue(t, rm, "spanner/dynamic_channel_pool/draining_channel_count", 0, attrs)
+	requireDCPGaugeValue(t, rm, "spanner/dynamic_channel_pool/max_allowed_channels", 4, attrs)
+	requireDCPGaugeValue(t, rm, "spanner/dynamic_channel_pool/active_rpc_count", 7, attrs)
+	requireDCPGaugeValue(t, rm, "spanner/dynamic_channel_pool/max_rpc_per_channel", 1, attrs)
+}
+
+func TestDynamicChannelPoolOTMetricsScalingCounterUsesChannelDeltaAndDirection(t *testing.T) {
+	enableOpenTelemetryMetricsForTest(t)
+	reader, mp := newDCPManualReader()
+	cfg := testDCPConfig(1, 1, 4)
+	cfg.DCPScaleDownCheckInterval = time.Hour
+	_, client, teardown := setupDCPMockedTestServerWithMeterProvider(t, cfg, mp)
+	defer teardown()
+	p := client.sc.dynamicPool
+	p.setPrimeSession(client.sm.multiplexedSession.id)
+	p.getEntries()[0].unaryLoad.Store(3)
+	p.totalRPCLoad.Store(3)
+	p.scaleUp()
+	p.getEntries()[0].unaryLoad.Store(0)
+	p.totalRPCLoad.Store(0)
+	p.removeEntries(1)
+
+	rm := collectDCPMetrics(t, reader)
+	m := requireDCPMetric(t, rm, "spanner/dynamic_channel_pool/channel_pool_scaling")
+	sum, ok := m.Data.(metricdata.Sum[int64])
+	if !ok {
+		t.Fatalf("channel_pool_scaling data type = %T, want metricdata.Sum[int64]", m.Data)
+	}
+	attrs := dcpCommonAttrs(client.ClientID())
+	want := map[string]int64{"up": 2, "down": 1}
+	if got, want := len(sum.DataPoints), 2; got != want {
+		t.Fatalf("channel_pool_scaling datapoints = %d, want %d: %+v", got, want, sum.DataPoints)
+	}
+	for _, dp := range sum.DataPoints {
+		metricdatatest.AssertHasAttributes[metricdata.DataPoint[int64]](t, dp, attrs...)
+		direction, ok := dp.Attributes.Value(attribute.Key("direction"))
+		if !ok {
+			t.Fatalf("channel_pool_scaling datapoint missing direction attr: %+v", dp)
+		}
+		directionValue := direction.AsString()
+		if got, ok := want[directionValue]; !ok || dp.Value != got {
+			t.Fatalf("channel_pool_scaling{%s} = %d, want map %v", directionValue, dp.Value, want)
+		}
+		delete(want, directionValue)
+	}
+	if len(want) != 0 {
+		t.Fatalf("missing channel_pool_scaling directions: %v", want)
+	}
+}
+
+func TestDynamicChannelPoolOTMetricsCloseUnregistersCallback(t *testing.T) {
+	enableOpenTelemetryMetricsForTest(t)
+	reader, mp := newDCPManualReader()
+	cfg := testDCPConfig(1, 1, 2)
+	cfg.DCPScaleDownCheckInterval = time.Hour
+	_, client, teardown := setupDCPMockedTestServerWithMeterProvider(t, cfg, mp)
+	defer teardown()
+
+	rm := collectDCPMetrics(t, reader)
+	requireDCPGaugeValue(t, rm, "spanner/dynamic_channel_pool/num_channels", 1, dcpCommonAttrs(client.ClientID()))
+	client.sc.dynamicPool.Close()
+
+	rm = collectDCPMetrics(t, reader)
+	if _, ok := findDCPMetric(rm, "spanner/dynamic_channel_pool/num_channels"); ok {
+		t.Fatal("DCP metric still exported after dynamicChannelPool.Close")
 	}
 }
 

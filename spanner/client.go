@@ -498,7 +498,7 @@ func createDCPConnPool(
 	dial := func(dialCtx context.Context) (gtransport.ConnPool, error) {
 		return gtransport.DialPool(dialCtx, allClientOpts(1, config.Compression, config.EnableDirectAccess, dcpOpts...)...)
 	}
-	dcp, err := newDynamicChannelPool(ctx, sc, config.DynamicChannelPoolConfig, dial)
+	dcp, err := newDynamicChannelPool(ctx, sc, config.DynamicChannelPoolConfig, config.OpenTelemetryMeterProvider, dial)
 	if err != nil {
 		return nil, nil, err
 	}
