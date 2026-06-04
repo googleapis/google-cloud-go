@@ -133,7 +133,8 @@ func (m *dcpMetrics) recordScaling(ctx context.Context, channels int64, directio
 	if m == nil || m.channelPoolScaling == nil || channels <= 0 {
 		return
 	}
-	attrs := append([]attribute.KeyValue{}, m.attrs...)
+	attrs := make([]attribute.KeyValue, 0, len(m.attrs)+1)
+	attrs = append(attrs, m.attrs...)
 	attrs = append(attrs, attributeKeyDCPDirection.String(direction))
 	m.channelPoolScaling.Add(ctx, channels, metric.WithAttributes(attrs...))
 }

@@ -468,7 +468,6 @@ func TestDynamicChannelPoolOTMetricsRecordScalingNoopsWithoutCounter(t *testing.
 }
 
 func TestDynamicChannelPoolCloseUnregistersMetricsOnce(t *testing.T) {
-	enableOpenTelemetryMetricsForTest(t)
 	cfg := testDCPConfig(1, 1, 2)
 	cfg.DCPScaleDownCheckInterval = time.Hour
 	_, client, teardown := setupDCPMockedTestServer(t, cfg)
