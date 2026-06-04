@@ -439,20 +439,7 @@ func (tf *builtinMetricsTracerFactory) createInstruments(meter metric.Meter) err
 	// Create uptime
 	startTime := tf.startTime
 	clientAttrs := tf.clientAttributes
-	if tf.otelMeterProvider != nil {
-		otelMeter := tf.otelMeterProvider.Meter(builtInMetricsMeterName, metric.WithInstrumentationVersion(internal.Version))
-		tf.clientUptime, err = otelMeter.Int64ObservableGauge(
-			metricNameClientUptime,
-			metric.WithDescription("The uptime of the client."),
-			metric.WithUnit(metricUnitMS),
-			metric.WithInt64Callback(func(ctx context.Context, obs metric.Int64Observer) error {
-				if !startTime.IsZero() {
-					obs.Observe(time.Since(startTime).Milliseconds())
-				}
-				return nil
-			}),
-		)
-	} else {
+	if tf.otelMeterProvider == nil {
 		// Fallback to built-in meter (custom exporter) if otelMeterProvider is nil (e.g. in some test setups)
 		tf.clientUptime, err = meter.Int64ObservableGauge(
 			metricNameClientUptime,
