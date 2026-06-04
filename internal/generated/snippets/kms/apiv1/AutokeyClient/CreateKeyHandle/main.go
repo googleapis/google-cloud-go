@@ -16,6 +16,8 @@
 
 // [START cloudkms_v1_generated_Autokey_CreateKeyHandle_sync]
 
+//go:build examples
+
 package main
 
 import (

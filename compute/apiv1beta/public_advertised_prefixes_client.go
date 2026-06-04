@@ -123,7 +123,7 @@ type PublicAdvertisedPrefixesClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *PublicAdvertisedPrefixesClient) Close() error {
 	return c.internalClient.Close()
@@ -289,7 +289,7 @@ func (c *publicAdvertisedPrefixesRESTClient) setGoogleClientInfo(keyval ...strin
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *publicAdvertisedPrefixesRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.

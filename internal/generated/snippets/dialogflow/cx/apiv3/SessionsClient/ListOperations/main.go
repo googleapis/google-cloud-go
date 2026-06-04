@@ -16,6 +16,8 @@
 
 // [START dialogflow_v3_generated_Sessions_ListOperations_sync]
 
+//go:build examples
+
 package main
 
 import (

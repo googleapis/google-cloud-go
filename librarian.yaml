@@ -12,16 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 language: go
-version: v0.14.0
+version: v0.16.1-0.20260603141118-7278ace00162
 repo: googleapis/google-cloud-go
 sources:
   googleapis:
-    commit: 43731d5d22f8e3526ba7aa708da9d5de26043d0f
-    sha256: d146cfa257ffa00fc298ec7b6f73f9c7395a5a5ba050dcc553cfd78d6705bc3b
+    commit: b10e55c86f8f5117cb041cc9af8a5d2f34be302c
+    sha256: 4ba84558b1e0cb0a9bc0bf500185c0766d1446fa0367a41c3bfc41b6b6ae6abe
 tools:
   go:
     - name: github.com/googleapis/gapic-generator-go/cmd/protoc-gen-go_gapic
-      version: v0.59.0
+      version: v0.61.0
     - name: golang.org/x/tools/cmd/goimports
       version: v0.44.0
     - name: google.golang.org/grpc/cmd/protoc-gen-go-grpc
@@ -31,7 +31,7 @@ tools:
 default:
   tag_format: '{name}/v{version}'
   go:
-    toolchain: go1.25.0
+    toolchain: go1.25.8
     default_enabled_generator_features:
       - F_open_telemetry_attributes
       - F_proto_cloneof
@@ -51,7 +51,7 @@ libraries:
     apis:
       - path: google/cloud/advisorynotifications/v1
   - name: agentplatform
-    version: 0.20.0
+    version: 0.21.0
     skip_generate: true
     skip_release: true
   - name: ai
@@ -233,114 +233,133 @@ libraries:
             - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
             - F_proto_cloneof
+          no_snippets: true
       - path: google/cloud/bigquery/datapolicies/v2
         go:
           enabled_generator_features:
             - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
             - F_proto_cloneof
+          no_snippets: true
       - path: google/cloud/bigquery/datatransfer/v1
         go:
           enabled_generator_features:
             - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
             - F_proto_cloneof
+          no_snippets: true
       - path: google/cloud/bigquery/biglake/v1
         go:
           enabled_generator_features:
             - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
             - F_proto_cloneof
+          no_snippets: true
       - path: google/cloud/bigquery/storage/v1
         go:
           enabled_generator_features:
             - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
             - F_proto_cloneof
+          no_snippets: true
       - path: google/cloud/bigquery/connection/v1
         go:
           enabled_generator_features:
             - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
             - F_proto_cloneof
+          no_snippets: true
       - path: google/cloud/bigquery/reservation/v1
         go:
           enabled_generator_features:
             - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
             - F_proto_cloneof
+          no_snippets: true
       - path: google/cloud/bigquery/analyticshub/v1
         go:
           enabled_generator_features:
             - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
             - F_proto_cloneof
+          no_snippets: true
       - path: google/cloud/bigquery/datapolicies/v1
         go:
           enabled_generator_features:
             - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
             - F_proto_cloneof
+          no_snippets: true
       - path: google/cloud/bigquery/datapolicies/v2beta1
         go:
           enabled_generator_features:
             - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
             - F_proto_cloneof
+          no_snippets: true
       - path: google/cloud/bigquery/migration/v2alpha
         go:
           enabled_generator_features:
             - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
             - F_proto_cloneof
+          no_snippets: true
       - path: google/cloud/bigquery/storage/v1beta2
         go:
           enabled_generator_features:
             - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
             - F_proto_cloneof
+          no_snippets: true
       - path: google/cloud/bigquery/datapolicies/v1beta1
         go:
           enabled_generator_features:
             - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
             - F_proto_cloneof
+          no_snippets: true
       - path: google/cloud/bigquery/dataexchange/v1beta1
         go:
           enabled_generator_features:
             - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
             - F_proto_cloneof
+          no_snippets: true
       - path: google/cloud/bigquery/connection/v1beta1
         go:
           enabled_generator_features:
             - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
             - F_proto_cloneof
+          no_snippets: true
       - path: google/cloud/bigquery/storage/v1beta1
         go:
           enabled_generator_features:
             - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
             - F_proto_cloneof
+          no_snippets: true
       - path: google/cloud/bigquery/storage/v1beta
         go:
           enabled_generator_features:
             - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
             - F_proto_cloneof
+          no_snippets: true
       - path: google/cloud/bigquery/biglake/v1alpha1
         go:
           enabled_generator_features:
             - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
             - F_proto_cloneof
+          no_snippets: true
       - path: google/cloud/bigquery/storage/v1alpha
         go:
           enabled_generator_features:
             - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
             - F_proto_cloneof
+          no_snippets: true
     keep:
       - README.md
     skip_release: true
@@ -357,19 +376,22 @@ libraries:
             - F_wrapper_types_for_page_size
             - F_proto_cloneof
           import_path: bigquery/v2/apiv2
+          no_snippets: true
     keep:
       - README.md
     skip_release: true
   - name: bigtable
-    version: 1.47.0
+    version: 1.48.0
     apis:
       - path: google/bigtable/v2
         go:
           no_metadata: true
+          no_snippets: true
           proto_only: true
       - path: google/bigtable/admin/v2
         go:
           no_metadata: true
+          no_snippets: true
           proto_only: true
     keep:
       - README.md
@@ -479,7 +501,7 @@ libraries:
     apis:
       - path: google/cloud/commerce/consumer/procurement/v1
   - name: compute
-    version: 1.63.0
+    version: 1.64.0
     apis:
       - path: google/cloud/compute/v1
         go:
@@ -571,13 +593,13 @@ libraries:
     apis:
       - path: google/cloud/datalabeling/v1beta1
   - name: datamanager
-    version: 1.0.0
+    version: 1.1.0
     apis:
       - path: google/ads/datamanager/v1
         go:
           import_path: datamanager/apiv1
   - name: dataplex
-    version: 1.34.0
+    version: 1.35.0
     apis:
       - path: google/cloud/dataplex/v1
   - name: dataproc
@@ -708,6 +730,7 @@ libraries:
             - F_open_telemetry_attributes
             - F_ordered_routing_headers
             - F_proto_cloneof
+          no_snippets: true
       - path: google/firestore/admin/v1
         go:
           client_package: apiv1
@@ -717,6 +740,7 @@ libraries:
             - F_ordered_routing_headers
             - F_proto_cloneof
           import_path: firestore/apiv1/admin
+          no_snippets: true
     keep:
       - README.md
     skip_release: true
@@ -727,7 +751,7 @@ libraries:
       - path: google/cloud/functions/v1
       - path: google/cloud/functions/v2beta
   - name: geminidataanalytics
-    version: 1.1.0
+    version: 1.2.0
     apis:
       - path: google/cloud/geminidataanalytics/v1
       - path: google/cloud/geminidataanalytics/v1beta
@@ -888,7 +912,7 @@ libraries:
       - path: google/cloud/managedkafka/v1
       - path: google/cloud/managedkafka/schemaregistry/v1
   - name: maps
-    version: 1.35.0
+    version: 1.36.0
     apis:
       - path: google/maps/geocode/v4
       - path: google/maps/routing/v2
@@ -902,8 +926,11 @@ libraries:
       - path: google/maps/solar/v1
       - path: google/maps/fleetengine/delivery/v1
         go:
+          no_snippets: true
           proto_package: maps.fleetengine.delivery.v1
       - path: google/maps/mapmanagement/v2beta
+        go:
+          no_snippets: true
     title_override: Google Maps Platform
   - name: mediatranslation
     version: 0.13.0
@@ -971,8 +998,9 @@ libraries:
     apis:
       - path: google/cloud/networkmanagement/v1
   - name: networksecurity
-    version: 0.16.0
+    version: 0.17.0
     apis:
+      - path: google/cloud/networksecurity/v1
       - path: google/cloud/networksecurity/v1beta1
   - name: networkservices
     version: 1.0.0
@@ -1087,6 +1115,7 @@ libraries:
             - F_proto_cloneof
           import_path: pubsub/v2/apiv1
           no_metadata: true
+          no_snippets: true
     keep:
       - README.md
     skip_release: true
@@ -1094,6 +1123,8 @@ libraries:
     version: 1.8.2
     apis:
       - path: google/cloud/pubsublite/v1
+        go:
+          no_snippets: true
     skip_release: true
   - name: rapidmigrationassessment
     version: 1.6.0
@@ -1170,7 +1201,7 @@ libraries:
     keep:
       - apiv2/locations_client.go
   - name: saasplatform
-    version: 0.7.0
+    version: 0.8.0
     apis:
       - path: google/cloud/saasplatform/saasservicemgmt/v1beta1
   - name: scheduler
@@ -1198,7 +1229,7 @@ libraries:
     apis:
       - path: google/cloud/securesourcemanager/v1
   - name: security
-    version: 1.24.0
+    version: 1.25.0
     apis:
       - path: google/cloud/security/privateca/v1
       - path: google/cloud/security/publicca/v1
@@ -1290,14 +1321,21 @@ libraries:
       - path: google/spanner/v1
         go:
           no_metadata: true
+          no_snippets: true
       - path: google/spanner/adapter/v1
+        go:
+          no_snippets: true
       - path: google/spanner/executor/v1
+        go:
+          no_snippets: true
       - path: google/spanner/admin/database/v1
         go:
           no_metadata: true
+          no_snippets: true
       - path: google/spanner/admin/instance/v1
         go:
           no_metadata: true
+          no_snippets: true
     keep:
       - README.md
     skip_release: true
@@ -1313,13 +1351,13 @@ libraries:
       - path: google/storage/v2
         go:
           import_path: storage/internal/apiv2
+          no_snippets: true
       - path: google/storage/control/v2
+        go:
+          no_snippets: true
     keep:
       - README.md
     skip_release: true
-    go:
-      delete_generation_output_paths:
-        - ../internal/generated/snippets/storage/internal
   - name: storagebatchoperations
     version: 1.0.0
     apis:
@@ -1337,7 +1375,7 @@ libraries:
     apis:
       - path: google/streetview/publish/v1
   - name: support
-    version: 1.10.0
+    version: 1.11.0
     apis:
       - path: google/cloud/support/v2
       - path: google/cloud/support/v2beta

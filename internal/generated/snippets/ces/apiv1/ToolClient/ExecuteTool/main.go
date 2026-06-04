@@ -16,6 +16,8 @@
 
 // [START ces_v1_generated_ToolService_ExecuteTool_sync]
 
+//go:build examples
+
 package main
 
 import (

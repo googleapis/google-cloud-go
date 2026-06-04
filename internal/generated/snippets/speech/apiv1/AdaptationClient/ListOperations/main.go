@@ -16,6 +16,8 @@
 
 // [START speech_v1_generated_Adaptation_ListOperations_sync]
 
+//go:build examples
+
 package main
 
 import (

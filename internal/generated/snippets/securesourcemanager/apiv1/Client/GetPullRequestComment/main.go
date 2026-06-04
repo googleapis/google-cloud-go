@@ -16,6 +16,8 @@
 
 // [START securesourcemanager_v1_generated_SecureSourceManager_GetPullRequestComment_sync]
 
+//go:build examples
+
 package main
 
 import (

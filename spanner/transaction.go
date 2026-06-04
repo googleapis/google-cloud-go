@@ -20,6 +20,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"runtime"
+	"strings"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -357,6 +359,11 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 		}
 		clientContext = mergeClientContext(clientContext, opts.ClientContext)
 	}
+	if requestTag == "" {
+		if rot, ok := t.txReadEnv.(*ReadOnlyTransaction); ok && rot.cachedRequestTag != "" {
+			requestTag = rot.cachedRequestTag
+		}
+	}
 	var setTransactionID func(transactionID)
 	if _, ok := ts.Selector.(*sppb.TransactionSelector_Begin); ok {
 		setTransactionID = t.setTransactionID
@@ -411,7 +418,7 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 		t.updatePrecommitToken,
 		t.setTimestamp,
 		t.release,
-		asGRPCSpannerClient(client),
+		requestIDHeaderProviderFromSpannerClient(client),
 		retryResourceExhausted,
 		allowRetryResourceExhaustedWithoutDelay,
 	)
@@ -766,7 +773,7 @@ func (t *txReadOnly) query(ctx context.Context, statement Statement, options Que
 		t.updatePrecommitToken,
 		t.setTimestamp,
 		t.release,
-		asGRPCSpannerClient(client),
+		requestIDHeaderProviderFromSpannerClient(client),
 		retryResourceExhausted,
 		allowRetryResourceExhaustedWithoutDelay)
 }
@@ -790,6 +797,12 @@ func (t *txReadOnly) prepareExecuteSQL(ctx context.Context, stmt Statement, opti
 	if options.Mode != nil {
 		mode = *options.Mode
 	}
+	requestTag := options.RequestTag
+	if requestTag == "" {
+		if rot, ok := t.txReadEnv.(*ReadOnlyTransaction); ok && rot.cachedRequestTag != "" {
+			requestTag = rot.cachedRequestTag
+		}
+	}
 	req := &sppb.ExecuteSqlRequest{
 		Session:             sid,
 		Transaction:         ts,
@@ -799,7 +812,7 @@ func (t *txReadOnly) prepareExecuteSQL(ctx context.Context, stmt Statement, opti
 		Params:              params,
 		ParamTypes:          paramTypes,
 		QueryOptions:        options.Options,
-		RequestOptions:      createRequestOptions(options.Priority, options.RequestTag, t.txOpts.TransactionTag, mergeClientContext(t.clientContext, options.ClientContext)),
+		RequestOptions:      createRequestOptions(options.Priority, requestTag, t.txOpts.TransactionTag, mergeClientContext(t.clientContext, options.ClientContext)),
 		DataBoostEnabled:    options.DataBoostEnabled,
 		DirectedReadOptions: options.DirectedReadOptions,
 		LastStatement:       options.LastStatement,
@@ -886,6 +899,7 @@ type ReadOnlyTransaction struct {
 	beginTransactionOption BeginTransactionOption
 	// isLongRunningTransaction indicates whether the transaction is long-running or not.
 	isLongRunningTransaction bool
+	cachedRequestTag         string
 }
 
 // errTxInitTimeout returns error for timeout in waiting for initialization of
@@ -2320,4 +2334,67 @@ type transactionBeginOptions struct {
 	previousTx    transactionID
 	mutation      *sppb.Mutation
 	clientContext *sppb.RequestOptions_ClientContext
+}
+
+func getCallStackTag(packages []string, limit int) string {
+	if limit <= 0 {
+		limit = 50
+	}
+	pc := make([]uintptr, limit)
+	// Skip runtime.Callers and getCallStackTag frames
+	n := runtime.Callers(2, pc)
+	if n == 0 {
+		return ""
+	}
+	pc = pc[:n]
+	frames := runtime.CallersFrames(pc)
+	for {
+		frame, more := frames.Next()
+		if frame.Function != "" && isEligibleFrame(frame.Function, packages) {
+			tag := formatFrameTag(frame.Function)
+			if len(tag) > 50 {
+				tag = tag[len(tag)-50:]
+			}
+			// Tags must start with a letter and contain only letters, numbers, underscores, and hyphens.
+			tag = strings.TrimLeft(tag, "0123456789_-")
+			if tag != "" {
+				return tag
+			}
+		}
+		if !more {
+			break
+		}
+	}
+	return ""
+}
+
+func isEligibleFrame(fn string, packages []string) bool {
+	if strings.HasPrefix(fn, "runtime.") || strings.HasPrefix(fn, "reflect.") || strings.HasPrefix(fn, "sync.") {
+		return false
+	}
+	if len(packages) > 0 {
+		for _, pkg := range packages {
+			if strings.HasPrefix(fn, pkg) || strings.Contains(fn, "/"+pkg) {
+				return true
+			}
+		}
+		return false
+	}
+	if strings.Contains(fn, "cloud.google.com/go/spanner") {
+		return false
+	}
+	return true
+}
+
+func formatFrameTag(fn string) string {
+	idx := strings.LastIndex(fn, "/")
+	if idx >= 0 {
+		fn = fn[idx+1:]
+	}
+	return strings.Map(func(r rune) rune {
+		if (r >= 'a' && r <= 'z') || (r >= 'A' && r <= 'Z') || (r >= '0' && r <= '9') || r == '_' || r == '-' {
+			return r
+		}
+		return '_'
+	}, fn)
 }

@@ -16,6 +16,8 @@
 
 // [START dataflow_v1beta3_generated_JobsV1Beta3_CreateJob_sync]
 
+//go:build examples
+
 package main
 
 import (

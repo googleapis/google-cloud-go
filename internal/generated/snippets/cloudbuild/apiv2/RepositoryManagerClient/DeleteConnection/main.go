@@ -16,6 +16,8 @@
 
 // [START cloudbuild_v2_generated_RepositoryManager_DeleteConnection_sync]
 
+//go:build examples
+
 package main
 
 import (

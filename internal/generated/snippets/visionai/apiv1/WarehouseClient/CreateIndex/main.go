@@ -16,6 +16,8 @@
 
 // [START warehouse-visionai_v1_generated_Warehouse_CreateIndex_sync]
 
+//go:build examples
+
 package main
 
 import (

@@ -141,7 +141,7 @@ type AccountLimitsClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *AccountLimitsClient) Close() error {
 	return c.internalClient.Close()
@@ -268,7 +268,7 @@ func (c *accountLimitsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *accountLimitsGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -362,7 +362,7 @@ func (c *accountLimitsRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *accountLimitsRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.

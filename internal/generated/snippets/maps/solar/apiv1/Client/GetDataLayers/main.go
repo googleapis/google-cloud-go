@@ -16,6 +16,8 @@
 
 // [START solar_v1_generated_Solar_GetDataLayers_sync]
 
+//go:build examples
+
 package main
 
 import (

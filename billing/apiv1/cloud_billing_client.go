@@ -349,7 +349,7 @@ type CloudBillingClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *CloudBillingClient) Close() error {
 	return c.internalClient.Close()
@@ -600,7 +600,7 @@ func (c *cloudBillingGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *cloudBillingGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -704,7 +704,7 @@ func (c *cloudBillingRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *cloudBillingRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.

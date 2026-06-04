@@ -16,6 +16,8 @@
 
 // [START apihub_v1_generated_ApiHubCurate_CancelOperation_sync]
 
+//go:build examples
+
 package main
 
 import (

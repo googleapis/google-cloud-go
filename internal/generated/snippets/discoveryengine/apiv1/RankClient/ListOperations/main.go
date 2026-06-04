@@ -16,6 +16,8 @@
 
 // [START discoveryengine_v1_generated_RankService_ListOperations_sync]
 
+//go:build examples
+
 package main
 
 import (

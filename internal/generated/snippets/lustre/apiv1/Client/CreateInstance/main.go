@@ -16,6 +16,8 @@
 
 // [START lustre_v1_generated_Lustre_CreateInstance_sync]
 
+//go:build examples
+
 package main
 
 import (

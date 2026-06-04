@@ -16,6 +16,8 @@
 
 // [START vmwareengine_v1_generated_VmwareEngine_ListNetworkPeerings_sync]
 
+//go:build examples
+
 package main
 
 import (

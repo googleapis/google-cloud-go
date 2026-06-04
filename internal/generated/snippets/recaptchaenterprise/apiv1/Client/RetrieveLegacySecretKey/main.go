@@ -16,6 +16,8 @@
 
 // [START recaptchaenterprise_v1_generated_RecaptchaEnterpriseService_RetrieveLegacySecretKey_sync]
 
+//go:build examples
+
 package main
 
 import (

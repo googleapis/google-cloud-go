@@ -16,6 +16,8 @@
 
 // [START geocoding-backend_v4_generated_GeocodeService_GeocodeAddress_sync]
 
+//go:build examples
+
 package main
 
 import (

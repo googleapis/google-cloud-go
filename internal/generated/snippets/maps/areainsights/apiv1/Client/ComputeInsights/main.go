@@ -16,6 +16,8 @@
 
 // [START areainsights_v1_generated_AreaInsights_ComputeInsights_sync]
 
+//go:build examples
+
 package main
 
 import (

@@ -113,7 +113,7 @@ type SnapshotsV1Beta3Client struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *SnapshotsV1Beta3Client) Close() error {
 	return c.internalClient.Close()
@@ -246,7 +246,7 @@ func (c *snapshotsV1Beta3GRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *snapshotsV1Beta3GRPCClient) Close() error {
 	return c.connPool.Close()
@@ -341,7 +341,7 @@ func (c *snapshotsV1Beta3RESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *snapshotsV1Beta3RESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.

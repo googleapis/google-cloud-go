@@ -16,6 +16,8 @@
 
 // [START certificatemanager_v1_generated_CertificateManager_DeleteTrustConfig_sync]
 
+//go:build examples
+
 package main
 
 import (

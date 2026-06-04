@@ -16,6 +16,8 @@
 
 // [START securitycenter_v2_generated_SecurityCenter_ListMuteConfigs_sync]
 
+//go:build examples
+
 package main
 
 import (

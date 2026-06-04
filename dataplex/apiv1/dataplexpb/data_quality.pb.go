@@ -178,8 +178,28 @@ type DataQualitySpec struct {
 	// Optional. If set, the latest DataScan job result will be published as
 	// Dataplex Universal Catalog metadata.
 	CatalogPublishingEnabled bool `protobuf:"varint,8,opt,name=catalog_publishing_enabled,json=catalogPublishingEnabled,proto3" json:"catalog_publishing_enabled,omitempty"`
-	unknownFields            protoimpl.UnknownFields
-	sizeCache                protoimpl.SizeCache
+	// Optional. If enabled, the data scan will retrieve rules defined in the
+	// dataplex-types.global.data-rules aspect on all paths of the catalog entry
+	// corresponding to the BigQuery table resource and all attached glossary
+	// terms. The path that data-rules aspect is attached on the table entry
+	// defines the column that the rule will be evaluated against. For glossary
+	// terms, the path that the terms are attached on the table entry defines the
+	// column that the rule will be evaluated against. At the start of scan
+	// execution, the rules reflect the latest state retrieved from the catalog
+	// entry and any updates on the rules thereafter are ignored for that
+	// execution. The updates will be reflected from the next execution. Rules
+	// defined in the datascan must be empty if this field is enabled.
+	EnableCatalogBasedRules bool `protobuf:"varint,10,opt,name=enable_catalog_based_rules,json=enableCatalogBasedRules,proto3" json:"enable_catalog_based_rules,omitempty"`
+	// Optional. Filter for selectively running a subset of rules. You can filter
+	// the request by the name or attribute key-value pairs defined on the rule.
+	// If not specified, all rules are run. The filter is applicable to both, the
+	// rules retrieved from catalog and explicitly defined rules in the scan.
+	// Please see [filter
+	// syntax](https://docs.cloud.google.com/dataplex/docs/auto-data-quality-overview#rule-filtering)
+	// for more details.
+	Filter        string `protobuf:"bytes,11,opt,name=filter,proto3" json:"filter,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *DataQualitySpec) Reset() {
@@ -245,6 +265,20 @@ func (x *DataQualitySpec) GetCatalogPublishingEnabled() bool {
 		return x.CatalogPublishingEnabled
 	}
 	return false
+}
+
+func (x *DataQualitySpec) GetEnableCatalogBasedRules() bool {
+	if x != nil {
+		return x.EnableCatalogBasedRules
+	}
+	return false
+}
+
+func (x *DataQualitySpec) GetFilter() string {
+	if x != nil {
+		return x.Filter
+	}
+	return ""
 }
 
 // The output of a DataQualityScan.
@@ -658,6 +692,7 @@ type DataQualityRule struct {
 	//	*DataQualityRule_RowConditionExpectation_
 	//	*DataQualityRule_TableConditionExpectation_
 	//	*DataQualityRule_SqlAssertion_
+	//	*DataQualityRule_TemplateReference_
 	RuleType isDataQualityRule_RuleType `protobuf_oneof:"rule_type"`
 	// Optional. The unnested column which this rule is evaluated against.
 	Column string `protobuf:"bytes,500,opt,name=column,proto3" json:"column,omitempty"`
@@ -698,6 +733,13 @@ type DataQualityRule struct {
 	// Optional. Whether the Rule is active or suspended.
 	// Default is false.
 	Suspended bool `protobuf:"varint,506,opt,name=suspended,proto3" json:"suspended,omitempty"`
+	// Optional. Map of attribute name and value linked to the rule. The rules to
+	// evaluate can be filtered based on attributes provided here and a filter
+	// expression provided in the DataQualitySpec.filter field.
+	Attributes map[string]string `protobuf:"bytes,507,rep,name=attributes,proto3" json:"attributes,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	// Output only. Contains information about the source of the rule and its
+	// relationship with the BigQuery table, where applicable.
+	RuleSource *DataQualityRule_RuleSource `protobuf:"bytes,508,opt,name=rule_source,json=ruleSource,proto3" json:"rule_source,omitempty"`
 	// Optional. Specifies the debug queries for this rule.
 	// Currently, only one query is supported, but this may be expanded in the
 	// future.
@@ -824,6 +866,15 @@ func (x *DataQualityRule) GetSqlAssertion() *DataQualityRule_SqlAssertion {
 	return nil
 }
 
+func (x *DataQualityRule) GetTemplateReference() *DataQualityRule_TemplateReference {
+	if x != nil {
+		if x, ok := x.RuleType.(*DataQualityRule_TemplateReference_); ok {
+			return x.TemplateReference
+		}
+	}
+	return nil
+}
+
 func (x *DataQualityRule) GetColumn() string {
 	if x != nil {
 		return x.Column
@@ -871,6 +922,20 @@ func (x *DataQualityRule) GetSuspended() bool {
 		return x.Suspended
 	}
 	return false
+}
+
+func (x *DataQualityRule) GetAttributes() map[string]string {
+	if x != nil {
+		return x.Attributes
+	}
+	return nil
+}
+
+func (x *DataQualityRule) GetRuleSource() *DataQualityRule_RuleSource {
+	if x != nil {
+		return x.RuleSource
+	}
+	return nil
 }
 
 func (x *DataQualityRule) GetDebugQueries() []*DataQualityRule_DebugQuery {
@@ -936,6 +1001,13 @@ type DataQualityRule_SqlAssertion_ struct {
 	SqlAssertion *DataQualityRule_SqlAssertion `protobuf:"bytes,202,opt,name=sql_assertion,json=sqlAssertion,proto3,oneof"`
 }
 
+type DataQualityRule_TemplateReference_ struct {
+	// Aggregate rule which references a rule template and provides the
+	// parameters to be substituted in the template. If any rows are returned,
+	// this rule fails.
+	TemplateReference *DataQualityRule_TemplateReference `protobuf:"bytes,5,opt,name=template_reference,json=templateReference,proto3,oneof"`
+}
+
 func (*DataQualityRule_RangeExpectation_) isDataQualityRule_RuleType() {}
 
 func (*DataQualityRule_NonNullExpectation_) isDataQualityRule_RuleType() {}
@@ -953,6 +1025,8 @@ func (*DataQualityRule_RowConditionExpectation_) isDataQualityRule_RuleType() {}
 func (*DataQualityRule_TableConditionExpectation_) isDataQualityRule_RuleType() {}
 
 func (*DataQualityRule_SqlAssertion_) isDataQualityRule_RuleType() {}
+
+func (*DataQualityRule_TemplateReference_) isDataQualityRule_RuleType() {}
 
 // DataQualityColumnResult provides a more detailed, per-column view of
 // the results.
@@ -2188,6 +2262,137 @@ func (x *DataQualityRule_SqlAssertion) GetSqlStatement() string {
 	return ""
 }
 
+// A rule that constructs a SQL statement to evaluate using a rule template
+// and parameter values. If the constructed statement returns any rows, this
+// rule fails
+type DataQualityRule_TemplateReference struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The template entry name. Entry must be of EntryType
+	// `projects/dataplex-types/locations/global/entryTypes/data-quality-rule-template`
+	// and contains top-level aspect of AspectType
+	// `projects/dataplex-types/locations/global/aspectTypes/data-quality-rule-template`.
+	// The format is:
+	// `projects/{project_id_or_number}/locations/{location_id}/entryGroups/{entry_group_id}/entries/{entry_id}`
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Optional. Provides the map of parameter name and value.
+	// The maximum size of the field is 120KB (encoded as UTF-8).
+	Values map[string]*DataQualityRule_TemplateReference_ParameterValue `protobuf:"bytes,5,rep,name=values,proto3" json:"values,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	// Output only. The resolved SQL statement generated from the template with
+	// parameters substituted. It is only populated in the result.
+	ResolvedSql string `protobuf:"bytes,3,opt,name=resolved_sql,json=resolvedSql,proto3" json:"resolved_sql,omitempty"`
+	// Output only. The rule template used to resolve the rule. It is only
+	// populated in the result.
+	RuleTemplate  *DataQualityRuleTemplate `protobuf:"bytes,4,opt,name=rule_template,json=ruleTemplate,proto3" json:"rule_template,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DataQualityRule_TemplateReference) Reset() {
+	*x = DataQualityRule_TemplateReference{}
+	mi := &file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[28]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DataQualityRule_TemplateReference) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DataQualityRule_TemplateReference) ProtoMessage() {}
+
+func (x *DataQualityRule_TemplateReference) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[28]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DataQualityRule_TemplateReference.ProtoReflect.Descriptor instead.
+func (*DataQualityRule_TemplateReference) Descriptor() ([]byte, []int) {
+	return file_google_cloud_dataplex_v1_data_quality_proto_rawDescGZIP(), []int{5, 9}
+}
+
+func (x *DataQualityRule_TemplateReference) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *DataQualityRule_TemplateReference) GetValues() map[string]*DataQualityRule_TemplateReference_ParameterValue {
+	if x != nil {
+		return x.Values
+	}
+	return nil
+}
+
+func (x *DataQualityRule_TemplateReference) GetResolvedSql() string {
+	if x != nil {
+		return x.ResolvedSql
+	}
+	return ""
+}
+
+func (x *DataQualityRule_TemplateReference) GetRuleTemplate() *DataQualityRuleTemplate {
+	if x != nil {
+		return x.RuleTemplate
+	}
+	return nil
+}
+
+// Represents the rule source information from Catalog.
+type DataQualityRule_RuleSource struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Output only. Rule path elements represent information about the
+	// individual items in the relationship path between the scan resource and
+	// rule origin in that order.
+	RulePathElements []*DataQualityRule_RuleSource_RulePathElement `protobuf:"bytes,1,rep,name=rule_path_elements,json=rulePathElements,proto3" json:"rule_path_elements,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *DataQualityRule_RuleSource) Reset() {
+	*x = DataQualityRule_RuleSource{}
+	mi := &file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[29]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DataQualityRule_RuleSource) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DataQualityRule_RuleSource) ProtoMessage() {}
+
+func (x *DataQualityRule_RuleSource) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[29]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DataQualityRule_RuleSource.ProtoReflect.Descriptor instead.
+func (*DataQualityRule_RuleSource) Descriptor() ([]byte, []int) {
+	return file_google_cloud_dataplex_v1_data_quality_proto_rawDescGZIP(), []int{5, 10}
+}
+
+func (x *DataQualityRule_RuleSource) GetRulePathElements() []*DataQualityRule_RuleSource_RulePathElement {
+	if x != nil {
+		return x.RulePathElements
+	}
+	return nil
+}
+
 // Specifies a SQL statement that is evaluated to return up to 10 scalar
 // values that are used to debug rules. If the rule fails, the values can help
 // diagnose the cause of the failure.
@@ -2222,7 +2427,7 @@ type DataQualityRule_DebugQuery struct {
 
 func (x *DataQualityRule_DebugQuery) Reset() {
 	*x = DataQualityRule_DebugQuery{}
-	mi := &file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[28]
+	mi := &file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[30]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2234,7 +2439,7 @@ func (x *DataQualityRule_DebugQuery) String() string {
 func (*DataQualityRule_DebugQuery) ProtoMessage() {}
 
 func (x *DataQualityRule_DebugQuery) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[28]
+	mi := &file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[30]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2247,7 +2452,7 @@ func (x *DataQualityRule_DebugQuery) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DataQualityRule_DebugQuery.ProtoReflect.Descriptor instead.
 func (*DataQualityRule_DebugQuery) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataplex_v1_data_quality_proto_rawDescGZIP(), []int{5, 9}
+	return file_google_cloud_dataplex_v1_data_quality_proto_rawDescGZIP(), []int{5, 11}
 }
 
 func (x *DataQualityRule_DebugQuery) GetDescription() string {
@@ -2264,19 +2469,288 @@ func (x *DataQualityRule_DebugQuery) GetSqlStatement() string {
 	return ""
 }
 
+// Represents a parameter value.
+type DataQualityRule_TemplateReference_ParameterValue struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. Represents the string value of the parameter.
+	Value         string `protobuf:"bytes,1,opt,name=value,proto3" json:"value,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DataQualityRule_TemplateReference_ParameterValue) Reset() {
+	*x = DataQualityRule_TemplateReference_ParameterValue{}
+	mi := &file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[32]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DataQualityRule_TemplateReference_ParameterValue) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DataQualityRule_TemplateReference_ParameterValue) ProtoMessage() {}
+
+func (x *DataQualityRule_TemplateReference_ParameterValue) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[32]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DataQualityRule_TemplateReference_ParameterValue.ProtoReflect.Descriptor instead.
+func (*DataQualityRule_TemplateReference_ParameterValue) Descriptor() ([]byte, []int) {
+	return file_google_cloud_dataplex_v1_data_quality_proto_rawDescGZIP(), []int{5, 9, 0}
+}
+
+func (x *DataQualityRule_TemplateReference_ParameterValue) GetValue() string {
+	if x != nil {
+		return x.Value
+	}
+	return ""
+}
+
+// Path Element represents the direct relationship between the rule origin
+// (aspects) to the BigQuery Entry. Ordering of the rule relationship will
+// be maintained such that the first entry in the list is the closest
+// ancestor (BigQuery table itself). A blank source denotes that the rule is
+// derived directly from the DataScan itself.
+type DataQualityRule_RuleSource_RulePathElement struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The source type of the rule.
+	//
+	// Types that are valid to be assigned to SourceType:
+	//
+	//	*DataQualityRule_RuleSource_RulePathElement_EntrySource_
+	//	*DataQualityRule_RuleSource_RulePathElement_EntryLinkSource_
+	SourceType    isDataQualityRule_RuleSource_RulePathElement_SourceType `protobuf_oneof:"source_type"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DataQualityRule_RuleSource_RulePathElement) Reset() {
+	*x = DataQualityRule_RuleSource_RulePathElement{}
+	mi := &file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[34]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DataQualityRule_RuleSource_RulePathElement) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DataQualityRule_RuleSource_RulePathElement) ProtoMessage() {}
+
+func (x *DataQualityRule_RuleSource_RulePathElement) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[34]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DataQualityRule_RuleSource_RulePathElement.ProtoReflect.Descriptor instead.
+func (*DataQualityRule_RuleSource_RulePathElement) Descriptor() ([]byte, []int) {
+	return file_google_cloud_dataplex_v1_data_quality_proto_rawDescGZIP(), []int{5, 10, 0}
+}
+
+func (x *DataQualityRule_RuleSource_RulePathElement) GetSourceType() isDataQualityRule_RuleSource_RulePathElement_SourceType {
+	if x != nil {
+		return x.SourceType
+	}
+	return nil
+}
+
+func (x *DataQualityRule_RuleSource_RulePathElement) GetEntrySource() *DataQualityRule_RuleSource_RulePathElement_EntrySource {
+	if x != nil {
+		if x, ok := x.SourceType.(*DataQualityRule_RuleSource_RulePathElement_EntrySource_); ok {
+			return x.EntrySource
+		}
+	}
+	return nil
+}
+
+func (x *DataQualityRule_RuleSource_RulePathElement) GetEntryLinkSource() *DataQualityRule_RuleSource_RulePathElement_EntryLinkSource {
+	if x != nil {
+		if x, ok := x.SourceType.(*DataQualityRule_RuleSource_RulePathElement_EntryLinkSource_); ok {
+			return x.EntryLinkSource
+		}
+	}
+	return nil
+}
+
+type isDataQualityRule_RuleSource_RulePathElement_SourceType interface {
+	isDataQualityRule_RuleSource_RulePathElement_SourceType()
+}
+
+type DataQualityRule_RuleSource_RulePathElement_EntrySource_ struct {
+	// Output only. Entry source represents information about the related
+	// source entry.
+	EntrySource *DataQualityRule_RuleSource_RulePathElement_EntrySource `protobuf:"bytes,1,opt,name=entry_source,json=entrySource,proto3,oneof"`
+}
+
+type DataQualityRule_RuleSource_RulePathElement_EntryLinkSource_ struct {
+	// Output only. Entry link source represents information about the entry
+	// link.
+	EntryLinkSource *DataQualityRule_RuleSource_RulePathElement_EntryLinkSource `protobuf:"bytes,2,opt,name=entry_link_source,json=entryLinkSource,proto3,oneof"`
+}
+
+func (*DataQualityRule_RuleSource_RulePathElement_EntrySource_) isDataQualityRule_RuleSource_RulePathElement_SourceType() {
+}
+
+func (*DataQualityRule_RuleSource_RulePathElement_EntryLinkSource_) isDataQualityRule_RuleSource_RulePathElement_SourceType() {
+}
+
+// Entry source represents information about the related source entry.
+type DataQualityRule_RuleSource_RulePathElement_EntrySource struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Output only. The entry type to represent the current characteristics
+	// of the entry in the form of:
+	// `projects/{project_id_or_number}/locations/{location_id}/entryTypes/{entry-type-id}`.
+	EntryType string `protobuf:"bytes,1,opt,name=entry_type,json=entryType,proto3" json:"entry_type,omitempty"`
+	// Output only. The entry name in the form of:
+	// `projects/{project_id_or_number}/locations/{location_id}/entryGroups/{entry_group_id}/entries/{entry_id}`
+	Entry string `protobuf:"bytes,2,opt,name=entry,proto3" json:"entry,omitempty"`
+	// Output only. The display name of the entry.
+	DisplayName   string `protobuf:"bytes,3,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DataQualityRule_RuleSource_RulePathElement_EntrySource) Reset() {
+	*x = DataQualityRule_RuleSource_RulePathElement_EntrySource{}
+	mi := &file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[35]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DataQualityRule_RuleSource_RulePathElement_EntrySource) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DataQualityRule_RuleSource_RulePathElement_EntrySource) ProtoMessage() {}
+
+func (x *DataQualityRule_RuleSource_RulePathElement_EntrySource) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[35]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DataQualityRule_RuleSource_RulePathElement_EntrySource.ProtoReflect.Descriptor instead.
+func (*DataQualityRule_RuleSource_RulePathElement_EntrySource) Descriptor() ([]byte, []int) {
+	return file_google_cloud_dataplex_v1_data_quality_proto_rawDescGZIP(), []int{5, 10, 0, 0}
+}
+
+func (x *DataQualityRule_RuleSource_RulePathElement_EntrySource) GetEntryType() string {
+	if x != nil {
+		return x.EntryType
+	}
+	return ""
+}
+
+func (x *DataQualityRule_RuleSource_RulePathElement_EntrySource) GetEntry() string {
+	if x != nil {
+		return x.Entry
+	}
+	return ""
+}
+
+func (x *DataQualityRule_RuleSource_RulePathElement_EntrySource) GetDisplayName() string {
+	if x != nil {
+		return x.DisplayName
+	}
+	return ""
+}
+
+// Entry link source represents information about the entry link.
+type DataQualityRule_RuleSource_RulePathElement_EntryLinkSource struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Output only. The entry link type to represent the current
+	// relationship between the entry and the next entry in the path.
+	// In the form of:
+	// `projects/{project_id_or_number}/locations/{location_id}/entryLinkTypes/{entry_link_type_id}`
+	EntryLinkType string `protobuf:"bytes,1,opt,name=entry_link_type,json=entryLinkType,proto3" json:"entry_link_type,omitempty"`
+	// Output only. The entry link name in the form of:
+	// `projects/{project_id_or_number}/locations/{location_id}/entryGroups/{entry_group_id}/entryLinks/{entry_link_id}`
+	EntryLink     string `protobuf:"bytes,2,opt,name=entry_link,json=entryLink,proto3" json:"entry_link,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DataQualityRule_RuleSource_RulePathElement_EntryLinkSource) Reset() {
+	*x = DataQualityRule_RuleSource_RulePathElement_EntryLinkSource{}
+	mi := &file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[36]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DataQualityRule_RuleSource_RulePathElement_EntryLinkSource) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DataQualityRule_RuleSource_RulePathElement_EntryLinkSource) ProtoMessage() {}
+
+func (x *DataQualityRule_RuleSource_RulePathElement_EntryLinkSource) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[36]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DataQualityRule_RuleSource_RulePathElement_EntryLinkSource.ProtoReflect.Descriptor instead.
+func (*DataQualityRule_RuleSource_RulePathElement_EntryLinkSource) Descriptor() ([]byte, []int) {
+	return file_google_cloud_dataplex_v1_data_quality_proto_rawDescGZIP(), []int{5, 10, 0, 1}
+}
+
+func (x *DataQualityRule_RuleSource_RulePathElement_EntryLinkSource) GetEntryLinkType() string {
+	if x != nil {
+		return x.EntryLinkType
+	}
+	return ""
+}
+
+func (x *DataQualityRule_RuleSource_RulePathElement_EntryLinkSource) GetEntryLink() string {
+	if x != nil {
+		return x.EntryLink
+	}
+	return ""
+}
+
 var File_google_cloud_dataplex_v1_data_quality_proto protoreflect.FileDescriptor
 
 const file_google_cloud_dataplex_v1_data_quality_proto_rawDesc = "" +
 	"\n" +
-	"+google/cloud/dataplex/v1/data_quality.proto\x12\x18google.cloud.dataplex.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a/google/cloud/dataplex/v1/datascans_common.proto\x1a)google/cloud/dataplex/v1/processing.proto\"\xc9\n" +
-	"\n" +
+	"+google/cloud/dataplex/v1/data_quality.proto\x12\x18google.cloud.dataplex.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a9google/cloud/dataplex/v1/data_quality_rule_template.proto\x1a/google/cloud/dataplex/v1/datascans_common.proto\x1a)google/cloud/dataplex/v1/processing.proto\"\xa8\v\n" +
 	"\x0fDataQualitySpec\x12D\n" +
 	"\x05rules\x18\x01 \x03(\v2).google.cloud.dataplex.v1.DataQualityRuleB\x03\xe0A\x02R\x05rules\x12.\n" +
 	"\x10sampling_percent\x18\x04 \x01(\x02B\x03\xe0A\x01R\x0fsamplingPercent\x12\"\n" +
 	"\n" +
 	"row_filter\x18\x05 \x01(\tB\x03\xe0A\x01R\trowFilter\x12j\n" +
 	"\x11post_scan_actions\x18\x06 \x01(\v29.google.cloud.dataplex.v1.DataQualitySpec.PostScanActionsB\x03\xe0A\x01R\x0fpostScanActions\x12A\n" +
-	"\x1acatalog_publishing_enabled\x18\b \x01(\bB\x03\xe0A\x01R\x18catalogPublishingEnabled\x1a\xec\a\n" +
+	"\x1acatalog_publishing_enabled\x18\b \x01(\bB\x03\xe0A\x01R\x18catalogPublishingEnabled\x12@\n" +
+	"\x1aenable_catalog_based_rules\x18\n" +
+	" \x01(\bB\x03\xe0A\x01R\x17enableCatalogBasedRules\x12\x1b\n" +
+	"\x06filter\x18\v \x01(\tB\x03\xe0A\x01R\x06filter\x1a\xec\a\n" +
 	"\x0fPostScanActions\x12v\n" +
 	"\x0fbigquery_export\x18\x01 \x01(\v2H.google.cloud.dataplex.v1.DataQualitySpec.PostScanActions.BigQueryExportB\x03\xe0A\x01R\x0ebigqueryExport\x12\x82\x01\n" +
 	"\x13notification_report\x18\x02 \x01(\v2L.google.cloud.dataplex.v1.DataQualitySpec.PostScanActions.NotificationReportB\x03\xe0A\x01R\x12notificationReport\x1a:\n" +
@@ -2352,7 +2826,7 @@ const file_google_cloud_dataplex_v1_data_quality_proto_rawDesc = "" +
 	"\x05score\x18\x04 \x01(\x02B\x03\xe0A\x03H\x00R\x05score\x88\x01\x01B\b\n" +
 	"\x06_score\"/\n" +
 	"\x14DataQualityDimension\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\"\x8a\x13\n" +
+	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\"\xf1\x1e\n" +
 	"\x0fDataQualityRule\x12i\n" +
 	"\x11range_expectation\x18\x01 \x01(\v2:.google.cloud.dataplex.v1.DataQualityRule.RangeExpectationH\x00R\x10rangeExpectation\x12p\n" +
 	"\x14non_null_expectation\x18\x02 \x01(\v2<.google.cloud.dataplex.v1.DataQualityRule.NonNullExpectationH\x00R\x12nonNullExpectation\x12c\n" +
@@ -2362,7 +2836,8 @@ const file_google_cloud_dataplex_v1_data_quality_proto_rawDesc = "" +
 	"\x1bstatistic_range_expectation\x18e \x01(\v2C.google.cloud.dataplex.v1.DataQualityRule.StatisticRangeExpectationH\x00R\x19statisticRangeExpectation\x12\x80\x01\n" +
 	"\x19row_condition_expectation\x18\xc8\x01 \x01(\v2A.google.cloud.dataplex.v1.DataQualityRule.RowConditionExpectationH\x00R\x17rowConditionExpectation\x12\x86\x01\n" +
 	"\x1btable_condition_expectation\x18\xc9\x01 \x01(\v2C.google.cloud.dataplex.v1.DataQualityRule.TableConditionExpectationH\x00R\x19tableConditionExpectation\x12^\n" +
-	"\rsql_assertion\x18\xca\x01 \x01(\v26.google.cloud.dataplex.v1.DataQualityRule.SqlAssertionH\x00R\fsqlAssertion\x12\x1c\n" +
+	"\rsql_assertion\x18\xca\x01 \x01(\v26.google.cloud.dataplex.v1.DataQualityRule.SqlAssertionH\x00R\fsqlAssertion\x12l\n" +
+	"\x12template_reference\x18\x05 \x01(\v2;.google.cloud.dataplex.v1.DataQualityRule.TemplateReferenceH\x00R\x11templateReference\x12\x1c\n" +
 	"\x06column\x18\xf4\x03 \x01(\tB\x03\xe0A\x01R\x06column\x12%\n" +
 	"\vignore_null\x18\xf5\x03 \x01(\bB\x03\xe0A\x01R\n" +
 	"ignoreNull\x12\"\n" +
@@ -2371,6 +2846,11 @@ const file_google_cloud_dataplex_v1_data_quality_proto_rawDesc = "" +
 	"\x04name\x18\xf8\x03 \x01(\tB\x03\xe0A\x01R\x04name\x12&\n" +
 	"\vdescription\x18\xf9\x03 \x01(\tB\x03\xe0A\x01R\vdescription\x12\"\n" +
 	"\tsuspended\x18\xfa\x03 \x01(\bB\x03\xe0A\x01R\tsuspended\x12_\n" +
+	"\n" +
+	"attributes\x18\xfb\x03 \x03(\v29.google.cloud.dataplex.v1.DataQualityRule.AttributesEntryB\x03\xe0A\x01R\n" +
+	"attributes\x12[\n" +
+	"\vrule_source\x18\xfc\x03 \x01(\v24.google.cloud.dataplex.v1.DataQualityRule.RuleSourceB\x03\xe0A\x03R\n" +
+	"ruleSource\x12_\n" +
 	"\rdebug_queries\x18\xfe\x03 \x03(\v24.google.cloud.dataplex.v1.DataQualityRule.DebugQueryB\x03\xe0A\x01R\fdebugQueries\x1a\xbc\x01\n" +
 	"\x10RangeExpectation\x12 \n" +
 	"\tmin_value\x18\x01 \x01(\tB\x03\xe0A\x01R\bminValue\x12 \n" +
@@ -2399,11 +2879,41 @@ const file_google_cloud_dataplex_v1_data_quality_proto_rawDesc = "" +
 	"\x19TableConditionExpectation\x12*\n" +
 	"\x0esql_expression\x18\x01 \x01(\tB\x03\xe0A\x01R\rsqlExpression\x1a8\n" +
 	"\fSqlAssertion\x12(\n" +
-	"\rsql_statement\x18\x01 \x01(\tB\x03\xe0A\x01R\fsqlStatement\x1a]\n" +
+	"\rsql_statement\x18\x01 \x01(\tB\x03\xe0A\x01R\fsqlStatement\x1a\xee\x03\n" +
+	"\x11TemplateReference\x129\n" +
+	"\x04name\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
+	"\x1ddataplex.googleapis.com/EntryR\x04name\x12d\n" +
+	"\x06values\x18\x05 \x03(\v2G.google.cloud.dataplex.v1.DataQualityRule.TemplateReference.ValuesEntryB\x03\xe0A\x01R\x06values\x12&\n" +
+	"\fresolved_sql\x18\x03 \x01(\tB\x03\xe0A\x03R\vresolvedSql\x12[\n" +
+	"\rrule_template\x18\x04 \x01(\v21.google.cloud.dataplex.v1.DataQualityRuleTemplateB\x03\xe0A\x03R\fruleTemplate\x1a+\n" +
+	"\x0eParameterValue\x12\x19\n" +
+	"\x05value\x18\x01 \x01(\tB\x03\xe0A\x02R\x05value\x1a\x85\x01\n" +
+	"\vValuesEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12`\n" +
+	"\x05value\x18\x02 \x01(\v2J.google.cloud.dataplex.v1.DataQualityRule.TemplateReference.ParameterValueR\x05value:\x028\x01\x1a\x88\x05\n" +
+	"\n" +
+	"RuleSource\x12w\n" +
+	"\x12rule_path_elements\x18\x01 \x03(\v2D.google.cloud.dataplex.v1.DataQualityRule.RuleSource.RulePathElementB\x03\xe0A\x03R\x10rulePathElements\x1a\x80\x04\n" +
+	"\x0fRulePathElement\x12z\n" +
+	"\fentry_source\x18\x01 \x01(\v2P.google.cloud.dataplex.v1.DataQualityRule.RuleSource.RulePathElement.EntrySourceB\x03\xe0A\x03H\x00R\ventrySource\x12\x87\x01\n" +
+	"\x11entry_link_source\x18\x02 \x01(\v2T.google.cloud.dataplex.v1.DataQualityRule.RuleSource.RulePathElement.EntryLinkSourceB\x03\xe0A\x03H\x00R\x0fentryLinkSource\x1at\n" +
+	"\vEntrySource\x12\"\n" +
+	"\n" +
+	"entry_type\x18\x01 \x01(\tB\x03\xe0A\x03R\tentryType\x12\x19\n" +
+	"\x05entry\x18\x02 \x01(\tB\x03\xe0A\x03R\x05entry\x12&\n" +
+	"\fdisplay_name\x18\x03 \x01(\tB\x03\xe0A\x03R\vdisplayName\x1ab\n" +
+	"\x0fEntryLinkSource\x12+\n" +
+	"\x0fentry_link_type\x18\x01 \x01(\tB\x03\xe0A\x03R\rentryLinkType\x12\"\n" +
+	"\n" +
+	"entry_link\x18\x02 \x01(\tB\x03\xe0A\x03R\tentryLinkB\r\n" +
+	"\vsource_type\x1a]\n" +
 	"\n" +
 	"DebugQuery\x12%\n" +
 	"\vdescription\x18\x01 \x01(\tB\x03\xe0A\x01R\vdescription\x12(\n" +
-	"\rsql_statement\x18\x02 \x01(\tB\x03\xe0A\x02R\fsqlStatementB\v\n" +
+	"\rsql_statement\x18\x02 \x01(\tB\x03\xe0A\x02R\fsqlStatement\x1a=\n" +
+	"\x0fAttributesEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B\v\n" +
 	"\trule_type\"\xd8\x01\n" +
 	"\x17DataQualityColumnResult\x12\x1b\n" +
 	"\x06column\x18\x01 \x01(\tB\x03\xe0A\x03R\x06column\x12\x1e\n" +
@@ -2429,7 +2939,7 @@ func file_google_cloud_dataplex_v1_data_quality_proto_rawDescGZIP() []byte {
 }
 
 var file_google_cloud_dataplex_v1_data_quality_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_google_cloud_dataplex_v1_data_quality_proto_msgTypes = make([]protoimpl.MessageInfo, 29)
+var file_google_cloud_dataplex_v1_data_quality_proto_msgTypes = make([]protoimpl.MessageInfo, 37)
 var file_google_cloud_dataplex_v1_data_quality_proto_goTypes = []any{
 	(DataQualityResult_PostScanActionsResult_BigQueryExportResult_State)(0), // 0: google.cloud.dataplex.v1.DataQualityResult.PostScanActionsResult.BigQueryExportResult.State
 	(DataQualityRule_StatisticRangeExpectation_ColumnStatistic)(0),          // 1: google.cloud.dataplex.v1.DataQualityRule.StatisticRangeExpectation.ColumnStatistic
@@ -2461,9 +2971,18 @@ var file_google_cloud_dataplex_v1_data_quality_proto_goTypes = []any{
 	(*DataQualityRule_RowConditionExpectation)(nil),                      // 27: google.cloud.dataplex.v1.DataQualityRule.RowConditionExpectation
 	(*DataQualityRule_TableConditionExpectation)(nil),                    // 28: google.cloud.dataplex.v1.DataQualityRule.TableConditionExpectation
 	(*DataQualityRule_SqlAssertion)(nil),                                 // 29: google.cloud.dataplex.v1.DataQualityRule.SqlAssertion
-	(*DataQualityRule_DebugQuery)(nil),                                   // 30: google.cloud.dataplex.v1.DataQualityRule.DebugQuery
-	(*ScannedData)(nil),                                                  // 31: google.cloud.dataplex.v1.ScannedData
-	(*DataScanCatalogPublishingStatus)(nil),                              // 32: google.cloud.dataplex.v1.DataScanCatalogPublishingStatus
+	(*DataQualityRule_TemplateReference)(nil),                            // 30: google.cloud.dataplex.v1.DataQualityRule.TemplateReference
+	(*DataQualityRule_RuleSource)(nil),                                   // 31: google.cloud.dataplex.v1.DataQualityRule.RuleSource
+	(*DataQualityRule_DebugQuery)(nil),                                   // 32: google.cloud.dataplex.v1.DataQualityRule.DebugQuery
+	nil,                                                                  // 33: google.cloud.dataplex.v1.DataQualityRule.AttributesEntry
+	(*DataQualityRule_TemplateReference_ParameterValue)(nil),             // 34: google.cloud.dataplex.v1.DataQualityRule.TemplateReference.ParameterValue
+	nil, // 35: google.cloud.dataplex.v1.DataQualityRule.TemplateReference.ValuesEntry
+	(*DataQualityRule_RuleSource_RulePathElement)(nil),                 // 36: google.cloud.dataplex.v1.DataQualityRule.RuleSource.RulePathElement
+	(*DataQualityRule_RuleSource_RulePathElement_EntrySource)(nil),     // 37: google.cloud.dataplex.v1.DataQualityRule.RuleSource.RulePathElement.EntrySource
+	(*DataQualityRule_RuleSource_RulePathElement_EntryLinkSource)(nil), // 38: google.cloud.dataplex.v1.DataQualityRule.RuleSource.RulePathElement.EntryLinkSource
+	(*ScannedData)(nil),                     // 39: google.cloud.dataplex.v1.ScannedData
+	(*DataScanCatalogPublishingStatus)(nil), // 40: google.cloud.dataplex.v1.DataScanCatalogPublishingStatus
+	(*DataQualityRuleTemplate)(nil),         // 41: google.cloud.dataplex.v1.DataQualityRuleTemplate
 }
 var file_google_cloud_dataplex_v1_data_quality_proto_depIdxs = []int32{
 	7,  // 0: google.cloud.dataplex.v1.DataQualitySpec.rules:type_name -> google.cloud.dataplex.v1.DataQualityRule
@@ -2471,9 +2990,9 @@ var file_google_cloud_dataplex_v1_data_quality_proto_depIdxs = []int32{
 	5,  // 2: google.cloud.dataplex.v1.DataQualityResult.dimensions:type_name -> google.cloud.dataplex.v1.DataQualityDimensionResult
 	8,  // 3: google.cloud.dataplex.v1.DataQualityResult.columns:type_name -> google.cloud.dataplex.v1.DataQualityColumnResult
 	4,  // 4: google.cloud.dataplex.v1.DataQualityResult.rules:type_name -> google.cloud.dataplex.v1.DataQualityRuleResult
-	31, // 5: google.cloud.dataplex.v1.DataQualityResult.scanned_data:type_name -> google.cloud.dataplex.v1.ScannedData
+	39, // 5: google.cloud.dataplex.v1.DataQualityResult.scanned_data:type_name -> google.cloud.dataplex.v1.ScannedData
 	16, // 6: google.cloud.dataplex.v1.DataQualityResult.post_scan_actions_result:type_name -> google.cloud.dataplex.v1.DataQualityResult.PostScanActionsResult
-	32, // 7: google.cloud.dataplex.v1.DataQualityResult.catalog_publishing_status:type_name -> google.cloud.dataplex.v1.DataScanCatalogPublishingStatus
+	40, // 7: google.cloud.dataplex.v1.DataQualityResult.catalog_publishing_status:type_name -> google.cloud.dataplex.v1.DataScanCatalogPublishingStatus
 	17, // 8: google.cloud.dataplex.v1.DataQualityResult.anomaly_detection_generated_assets:type_name -> google.cloud.dataplex.v1.DataQualityResult.AnomalyDetectionGeneratedAssets
 	7,  // 9: google.cloud.dataplex.v1.DataQualityRuleResult.rule:type_name -> google.cloud.dataplex.v1.DataQualityRule
 	20, // 10: google.cloud.dataplex.v1.DataQualityRuleResult.debug_queries_result_sets:type_name -> google.cloud.dataplex.v1.DataQualityRuleResult.DebugQueryResultSet
@@ -2487,23 +3006,32 @@ var file_google_cloud_dataplex_v1_data_quality_proto_depIdxs = []int32{
 	27, // 18: google.cloud.dataplex.v1.DataQualityRule.row_condition_expectation:type_name -> google.cloud.dataplex.v1.DataQualityRule.RowConditionExpectation
 	28, // 19: google.cloud.dataplex.v1.DataQualityRule.table_condition_expectation:type_name -> google.cloud.dataplex.v1.DataQualityRule.TableConditionExpectation
 	29, // 20: google.cloud.dataplex.v1.DataQualityRule.sql_assertion:type_name -> google.cloud.dataplex.v1.DataQualityRule.SqlAssertion
-	30, // 21: google.cloud.dataplex.v1.DataQualityRule.debug_queries:type_name -> google.cloud.dataplex.v1.DataQualityRule.DebugQuery
-	5,  // 22: google.cloud.dataplex.v1.DataQualityColumnResult.dimensions:type_name -> google.cloud.dataplex.v1.DataQualityDimensionResult
-	10, // 23: google.cloud.dataplex.v1.DataQualitySpec.PostScanActions.bigquery_export:type_name -> google.cloud.dataplex.v1.DataQualitySpec.PostScanActions.BigQueryExport
-	15, // 24: google.cloud.dataplex.v1.DataQualitySpec.PostScanActions.notification_report:type_name -> google.cloud.dataplex.v1.DataQualitySpec.PostScanActions.NotificationReport
-	11, // 25: google.cloud.dataplex.v1.DataQualitySpec.PostScanActions.NotificationReport.recipients:type_name -> google.cloud.dataplex.v1.DataQualitySpec.PostScanActions.Recipients
-	12, // 26: google.cloud.dataplex.v1.DataQualitySpec.PostScanActions.NotificationReport.score_threshold_trigger:type_name -> google.cloud.dataplex.v1.DataQualitySpec.PostScanActions.ScoreThresholdTrigger
-	13, // 27: google.cloud.dataplex.v1.DataQualitySpec.PostScanActions.NotificationReport.job_failure_trigger:type_name -> google.cloud.dataplex.v1.DataQualitySpec.PostScanActions.JobFailureTrigger
-	14, // 28: google.cloud.dataplex.v1.DataQualitySpec.PostScanActions.NotificationReport.job_end_trigger:type_name -> google.cloud.dataplex.v1.DataQualitySpec.PostScanActions.JobEndTrigger
-	18, // 29: google.cloud.dataplex.v1.DataQualityResult.PostScanActionsResult.bigquery_export_result:type_name -> google.cloud.dataplex.v1.DataQualityResult.PostScanActionsResult.BigQueryExportResult
-	0,  // 30: google.cloud.dataplex.v1.DataQualityResult.PostScanActionsResult.BigQueryExportResult.state:type_name -> google.cloud.dataplex.v1.DataQualityResult.PostScanActionsResult.BigQueryExportResult.State
-	19, // 31: google.cloud.dataplex.v1.DataQualityRuleResult.DebugQueryResultSet.results:type_name -> google.cloud.dataplex.v1.DataQualityRuleResult.DebugQueryResult
-	1,  // 32: google.cloud.dataplex.v1.DataQualityRule.StatisticRangeExpectation.statistic:type_name -> google.cloud.dataplex.v1.DataQualityRule.StatisticRangeExpectation.ColumnStatistic
-	33, // [33:33] is the sub-list for method output_type
-	33, // [33:33] is the sub-list for method input_type
-	33, // [33:33] is the sub-list for extension type_name
-	33, // [33:33] is the sub-list for extension extendee
-	0,  // [0:33] is the sub-list for field type_name
+	30, // 21: google.cloud.dataplex.v1.DataQualityRule.template_reference:type_name -> google.cloud.dataplex.v1.DataQualityRule.TemplateReference
+	33, // 22: google.cloud.dataplex.v1.DataQualityRule.attributes:type_name -> google.cloud.dataplex.v1.DataQualityRule.AttributesEntry
+	31, // 23: google.cloud.dataplex.v1.DataQualityRule.rule_source:type_name -> google.cloud.dataplex.v1.DataQualityRule.RuleSource
+	32, // 24: google.cloud.dataplex.v1.DataQualityRule.debug_queries:type_name -> google.cloud.dataplex.v1.DataQualityRule.DebugQuery
+	5,  // 25: google.cloud.dataplex.v1.DataQualityColumnResult.dimensions:type_name -> google.cloud.dataplex.v1.DataQualityDimensionResult
+	10, // 26: google.cloud.dataplex.v1.DataQualitySpec.PostScanActions.bigquery_export:type_name -> google.cloud.dataplex.v1.DataQualitySpec.PostScanActions.BigQueryExport
+	15, // 27: google.cloud.dataplex.v1.DataQualitySpec.PostScanActions.notification_report:type_name -> google.cloud.dataplex.v1.DataQualitySpec.PostScanActions.NotificationReport
+	11, // 28: google.cloud.dataplex.v1.DataQualitySpec.PostScanActions.NotificationReport.recipients:type_name -> google.cloud.dataplex.v1.DataQualitySpec.PostScanActions.Recipients
+	12, // 29: google.cloud.dataplex.v1.DataQualitySpec.PostScanActions.NotificationReport.score_threshold_trigger:type_name -> google.cloud.dataplex.v1.DataQualitySpec.PostScanActions.ScoreThresholdTrigger
+	13, // 30: google.cloud.dataplex.v1.DataQualitySpec.PostScanActions.NotificationReport.job_failure_trigger:type_name -> google.cloud.dataplex.v1.DataQualitySpec.PostScanActions.JobFailureTrigger
+	14, // 31: google.cloud.dataplex.v1.DataQualitySpec.PostScanActions.NotificationReport.job_end_trigger:type_name -> google.cloud.dataplex.v1.DataQualitySpec.PostScanActions.JobEndTrigger
+	18, // 32: google.cloud.dataplex.v1.DataQualityResult.PostScanActionsResult.bigquery_export_result:type_name -> google.cloud.dataplex.v1.DataQualityResult.PostScanActionsResult.BigQueryExportResult
+	0,  // 33: google.cloud.dataplex.v1.DataQualityResult.PostScanActionsResult.BigQueryExportResult.state:type_name -> google.cloud.dataplex.v1.DataQualityResult.PostScanActionsResult.BigQueryExportResult.State
+	19, // 34: google.cloud.dataplex.v1.DataQualityRuleResult.DebugQueryResultSet.results:type_name -> google.cloud.dataplex.v1.DataQualityRuleResult.DebugQueryResult
+	1,  // 35: google.cloud.dataplex.v1.DataQualityRule.StatisticRangeExpectation.statistic:type_name -> google.cloud.dataplex.v1.DataQualityRule.StatisticRangeExpectation.ColumnStatistic
+	35, // 36: google.cloud.dataplex.v1.DataQualityRule.TemplateReference.values:type_name -> google.cloud.dataplex.v1.DataQualityRule.TemplateReference.ValuesEntry
+	41, // 37: google.cloud.dataplex.v1.DataQualityRule.TemplateReference.rule_template:type_name -> google.cloud.dataplex.v1.DataQualityRuleTemplate
+	36, // 38: google.cloud.dataplex.v1.DataQualityRule.RuleSource.rule_path_elements:type_name -> google.cloud.dataplex.v1.DataQualityRule.RuleSource.RulePathElement
+	34, // 39: google.cloud.dataplex.v1.DataQualityRule.TemplateReference.ValuesEntry.value:type_name -> google.cloud.dataplex.v1.DataQualityRule.TemplateReference.ParameterValue
+	37, // 40: google.cloud.dataplex.v1.DataQualityRule.RuleSource.RulePathElement.entry_source:type_name -> google.cloud.dataplex.v1.DataQualityRule.RuleSource.RulePathElement.EntrySource
+	38, // 41: google.cloud.dataplex.v1.DataQualityRule.RuleSource.RulePathElement.entry_link_source:type_name -> google.cloud.dataplex.v1.DataQualityRule.RuleSource.RulePathElement.EntryLinkSource
+	42, // [42:42] is the sub-list for method output_type
+	42, // [42:42] is the sub-list for method input_type
+	42, // [42:42] is the sub-list for extension type_name
+	42, // [42:42] is the sub-list for extension extendee
+	0,  // [0:42] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_dataplex_v1_data_quality_proto_init() }
@@ -2511,6 +3039,7 @@ func file_google_cloud_dataplex_v1_data_quality_proto_init() {
 	if File_google_cloud_dataplex_v1_data_quality_proto != nil {
 		return
 	}
+	file_google_cloud_dataplex_v1_data_quality_rule_template_proto_init()
 	file_google_cloud_dataplex_v1_datascans_common_proto_init()
 	file_google_cloud_dataplex_v1_processing_proto_init()
 	file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[1].OneofWrappers = []any{}
@@ -2525,15 +3054,20 @@ func file_google_cloud_dataplex_v1_data_quality_proto_init() {
 		(*DataQualityRule_RowConditionExpectation_)(nil),
 		(*DataQualityRule_TableConditionExpectation_)(nil),
 		(*DataQualityRule_SqlAssertion_)(nil),
+		(*DataQualityRule_TemplateReference_)(nil),
 	}
 	file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[6].OneofWrappers = []any{}
+	file_google_cloud_dataplex_v1_data_quality_proto_msgTypes[34].OneofWrappers = []any{
+		(*DataQualityRule_RuleSource_RulePathElement_EntrySource_)(nil),
+		(*DataQualityRule_RuleSource_RulePathElement_EntryLinkSource_)(nil),
+	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_dataplex_v1_data_quality_proto_rawDesc), len(file_google_cloud_dataplex_v1_data_quality_proto_rawDesc)),
 			NumEnums:      2,
-			NumMessages:   29,
+			NumMessages:   37,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

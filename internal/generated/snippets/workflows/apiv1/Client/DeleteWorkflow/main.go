@@ -16,6 +16,8 @@
 
 // [START workflows_v1_generated_Workflows_DeleteWorkflow_sync]
 
+//go:build examples
+
 package main
 
 import (

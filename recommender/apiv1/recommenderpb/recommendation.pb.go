@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -313,7 +313,7 @@ func (RecommendationStateInfo_State) EnumDescriptor() ([]byte, []int) {
 // recommendation for an underutilized VM, IAM role recommendations, etc
 type Recommendation struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Name of recommendation.
+	// Identifier. Name of recommendation.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Free-form human readable summary in English. The maximum length is 500
 	// characters.
@@ -354,9 +354,11 @@ type Recommendation struct {
 	// A non-empty ID indicates that the recommendation belongs to a mutually
 	// exclusive group. This means that only one recommendation within the group
 	// is suggested to be applied.
-	XorGroupId    string `protobuf:"bytes,18,opt,name=xor_group_id,json=xorGroupId,proto3" json:"xor_group_id,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	XorGroupId string `protobuf:"bytes,18,opt,name=xor_group_id,json=xorGroupId,proto3" json:"xor_group_id,omitempty"`
+	// Fully qualified resource names that this recommendation is targeting.
+	TargetResources []string `protobuf:"bytes,19,rep,name=target_resources,json=targetResources,proto3" json:"target_resources,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
 }
 
 func (x *Recommendation) Reset() {
@@ -471,6 +473,13 @@ func (x *Recommendation) GetXorGroupId() string {
 		return x.XorGroupId
 	}
 	return ""
+}
+
+func (x *Recommendation) GetTargetResources() []string {
+	if x != nil {
+		return x.TargetResources
+	}
+	return nil
 }
 
 // Contains what resources are changing and how they are changing.
@@ -801,6 +810,8 @@ func (*Operation_ValueMatcher) isOperation_PathValue() {}
 // Contains various matching options for values for a GCP resource field.
 type ValueMatcher struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
+	// To be used for full regex matching.
+	//
 	// Types that are valid to be assigned to MatchVariant:
 	//
 	//	*ValueMatcher_MatchesPattern
@@ -1108,7 +1119,9 @@ type Impact struct {
 	//	*Impact_SecurityProjection
 	//	*Impact_SustainabilityProjection
 	//	*Impact_ReliabilityProjection
-	Projection    isImpact_Projection `protobuf_oneof:"projection"`
+	Projection isImpact_Projection `protobuf_oneof:"projection"`
+	// The service that this impact is associated with.
+	Service       string `protobuf:"bytes,3,opt,name=service,proto3" json:"service,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1191,6 +1204,13 @@ func (x *Impact) GetReliabilityProjection() *ReliabilityProjection {
 		}
 	}
 	return nil
+}
+
+func (x *Impact) GetService() string {
+	if x != nil {
+		return x.Service
+	}
+	return ""
 }
 
 type isImpact_Projection interface {
@@ -1331,10 +1351,10 @@ var File_google_cloud_recommender_v1_recommendation_proto protoreflect.FileDescr
 
 const file_google_cloud_recommender_v1_recommendation_proto_rawDesc = "" +
 	"\n" +
-	"0google/cloud/recommender/v1/recommendation.proto\x12\x1bgoogle.cloud.recommender.v1\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/type/money.proto\"\xc8\n" +
+	"0google/cloud/recommender/v1/recommendation.proto\x12\x1bgoogle.cloud.recommender.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/type/money.proto\"\xf8\n" +
 	"\n" +
-	"\x0eRecommendation\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12 \n" +
+	"\x0eRecommendation\x12\x17\n" +
+	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x12/\n" +
 	"\x13recommender_subtype\x18\f \x01(\tR\x12recommenderSubtype\x12F\n" +
 	"\x11last_refresh_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\x0flastRefreshTime\x12J\n" +
@@ -1348,7 +1368,8 @@ const file_google_cloud_recommender_v1_recommendation_proto_rawDesc = "" +
 	"\x04etag\x18\v \x01(\tR\x04etag\x12m\n" +
 	"\x13associated_insights\x18\x0e \x03(\v2<.google.cloud.recommender.v1.Recommendation.InsightReferenceR\x12associatedInsights\x12 \n" +
 	"\fxor_group_id\x18\x12 \x01(\tR\n" +
-	"xorGroupId\x1a,\n" +
+	"xorGroupId\x12)\n" +
+	"\x10target_resources\x18\x13 \x03(\tR\x0ftargetResources\x1a,\n" +
 	"\x10InsightReference\x12\x18\n" +
 	"\ainsight\x18\x01 \x01(\tR\ainsight\"D\n" +
 	"\bPriority\x12\x18\n" +
@@ -1405,13 +1426,14 @@ const file_google_cloud_recommender_v1_recommendation_proto_rawDesc = "" +
 	"\x15RISK_TYPE_UNSPECIFIED\x10\x00\x12\x16\n" +
 	"\x12SERVICE_DISRUPTION\x10\x01\x12\r\n" +
 	"\tDATA_LOSS\x10\x02\x12\x0f\n" +
-	"\vACCESS_DENY\x10\x03\"\x87\x05\n" +
+	"\vACCESS_DENY\x10\x03\"\xa1\x05\n" +
 	"\x06Impact\x12H\n" +
 	"\bcategory\x18\x01 \x01(\x0e2,.google.cloud.recommender.v1.Impact.CategoryR\bcategory\x12V\n" +
 	"\x0fcost_projection\x18d \x01(\v2+.google.cloud.recommender.v1.CostProjectionH\x00R\x0ecostProjection\x12b\n" +
 	"\x13security_projection\x18e \x01(\v2/.google.cloud.recommender.v1.SecurityProjectionH\x00R\x12securityProjection\x12t\n" +
 	"\x19sustainability_projection\x18f \x01(\v25.google.cloud.recommender.v1.SustainabilityProjectionH\x00R\x18sustainabilityProjection\x12k\n" +
-	"\x16reliability_projection\x18g \x01(\v22.google.cloud.recommender.v1.ReliabilityProjectionH\x00R\x15reliabilityProjection\"\x85\x01\n" +
+	"\x16reliability_projection\x18g \x01(\v22.google.cloud.recommender.v1.ReliabilityProjectionH\x00R\x15reliabilityProjection\x12\x18\n" +
+	"\aservice\x18\x03 \x01(\tR\aservice\"\x85\x01\n" +
 	"\bCategory\x12\x18\n" +
 	"\x14CATEGORY_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04COST\x10\x01\x12\f\n" +

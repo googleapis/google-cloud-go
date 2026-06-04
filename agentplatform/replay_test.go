@@ -18,6 +18,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"path"
+	"strings"
 	"testing"
 	"time"
 
@@ -36,12 +37,13 @@ var (
 	embeddingModel  = fmt.Sprintf("%s/publishers/google/models/text-embedding-005", parent)
 )
 
-func newTestClientWithReplay(t *testing.T, replayGroup, replay string) (*Client, *genai.InternalReplayAPIClient) {
+func newTestClientWithReplay(t *testing.T, replayTest string) (*Client, *genai.InternalReplayAPIClient) {
 	t.Helper()
+	replay := strings.Split(replayTest, "/")
 	config := &genai.ClientConfig{
 		Backend: genai.BackendVertexAI,
 	}
-	replayAPIClient := createReplayAPIClient(t, replayGroup, replay)
+	replayAPIClient := createReplayAPIClient(t, replay[1], replay[2])
 	if *mode == replayMode {
 		config = &genai.ClientConfig{
 			HTTPOptions: genai.HTTPOptions{
@@ -79,37 +81,36 @@ func readRequestFromReplayFile[T any](t *testing.T, replayClient *genai.Internal
 	return &req
 }
 
-func createReplayAPIClient(t *testing.T, testGroup string, replayFileName string) *genai.InternalReplayAPIClient {
+func createReplayAPIClient(t *testing.T, replayPath string, replayFileName string) *genai.InternalReplayAPIClient {
 	t.Helper()
 	replayAPIClient := genai.NewInternalReplayAPIClient(t)
-	replayFilePath := path.Join("tests", "vertex_sdk_genai_replays", testGroup, fmt.Sprintf("%s.%s.json", replayFileName, "vertex"))
+	replayFilePath := path.Join("tests", "vertex_sdk_genai_replays", replayPath, fmt.Sprintf("%s.%s.json", replayFileName, "vertex"))
 	replayAPIClient.LoadReplay(replayFilePath)
 	return replayAPIClient
 }
 
-func TestReplays(t *testing.T) {
+func TestReplays_AgentEngine(t *testing.T) {
+	if *mode != replayMode {
+		t.Skipf("unsupported mode: %s", *mode)
+	}
+
 	createAgentEngineTestCases := []struct {
 		replay string
 	}{
 		{
-			replay: "test_create_with_labels",
+			replay: "create_agent_engine/test_create_with_labels",
 		},
 		{
-			replay: "test_create_with_context_spec",
+			replay: "create_agent_engine/test_create_with_context_spec",
 		},
 		{
-			replay: "test_create_with_identity_type",
+			replay: "create_agent_engine/test_create_with_identity_type",
 		},
 	}
 
 	for _, tc := range createAgentEngineTestCases {
-		t.Run(fmt.Sprintf("create_agent_engine/%s", tc.replay), func(t *testing.T) {
-			if *mode != replayMode {
-				t.Skipf("unsupported mode: %s", *mode)
-			}
-
-			// Create the client and replay API client.
-			client, replayAPIClient := newTestClientWithReplay(t, "create_agent_engine", tc.replay)
+		t.Run(tc.replay, func(tt *testing.T) {
+			client, replayAPIClient := newTestClientWithReplay(tt, tt.Name())
 
 			// Create the AgentEngine.
 			request := readRequestFromReplayFile[types.CreateAgentEngineConfig](t, replayAPIClient)
@@ -145,48 +146,4 @@ func TestReplays(t *testing.T) {
 			}
 		})
 	}
-
-	t.Run("ae_memories_private_create/test_private_create_memory", func(tt *testing.T) {
-		if *mode != replayMode {
-			tt.Skipf("unsupported mode: %s", *mode)
-		}
-
-		// Create the client and replay API client.
-		client, _ := newTestClientWithReplay(tt, "ae_memories_private_create", "test_private_create_memory")
-
-		// Create the AgentEngineMemory
-		name := "projects/964831358985/locations/us-central1/reasoningEngines/2886612747586371584"
-		fact := "memory_fact"
-		scope := map[string]string{"user_id": "123"}
-		createOp, err := client.AgentEngines.Memories.Create(tt.Context(), name, fact, scope, nil)
-		if err != nil {
-			tt.Fatalf("create() failed unexpectedly: %v", err)
-		}
-
-		// Assert that the operation is of type AgentEngineMemoryOperation
-		if createOp.Name == "" {
-			tt.Errorf("create(), want not empty, got empty, createOp: %v", createOp)
-		}
-	})
-
-	t.Run("ae_memories_delete/test_delete_memory", func(tt *testing.T) {
-		if *mode != replayMode {
-			tt.Skipf("unsupported mode: %s", *mode)
-		}
-
-		// Create the client and replay API client.
-		client, _ := newTestClientWithReplay(tt, "ae_memories_delete", "test_delete_memory")
-
-		// Create the AgentEngineMemory
-		name := "projects/964831358985/locations/us-central1/reasoningEngines/2886612747586371584/memories/5605466683931099136"
-		deleteOp, err := client.AgentEngines.Memories.Delete(tt.Context(), name, nil)
-		if err != nil {
-			tt.Fatalf("delete() failed unexpectedly: %v", err)
-		}
-
-		// Assert that the operation is of type AgentEngineMemoryOperation
-		if deleteOp.Name == "" {
-			tt.Errorf("delete(), want not empty, got empty, deleteOp: %v", deleteOp)
-		}
-	})
 }

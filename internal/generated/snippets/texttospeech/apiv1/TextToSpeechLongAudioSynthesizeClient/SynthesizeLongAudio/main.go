@@ -16,6 +16,8 @@
 
 // [START texttospeech_v1_generated_TextToSpeechLongAudioSynthesize_SynthesizeLongAudio_sync]
 
+//go:build examples
+
 package main
 
 import (

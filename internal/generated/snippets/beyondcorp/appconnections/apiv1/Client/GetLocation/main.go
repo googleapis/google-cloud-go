@@ -16,6 +16,8 @@
 
 // [START beyondcorp_v1_generated_AppConnectionsService_GetLocation_sync]
 
+//go:build examples
+
 package main
 
 import (

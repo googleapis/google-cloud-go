@@ -16,6 +16,8 @@
 
 // [START cloudbilling_v1_generated_CloudCatalog_ListServices_sync]
 
+//go:build examples
+
 package main
 
 import (

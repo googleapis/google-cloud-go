@@ -16,6 +16,8 @@
 
 // [START networkmanagement_v1_generated_OrganizationVpcFlowLogsService_DeleteVpcFlowLogsConfig_sync]
 
+//go:build examples
+
 package main
 
 import (

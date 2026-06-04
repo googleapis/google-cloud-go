@@ -16,6 +16,8 @@
 
 // [START redis_v1_generated_CloudRedis_CancelOperation_sync]
 
+//go:build examples
+
 package main
 
 import (

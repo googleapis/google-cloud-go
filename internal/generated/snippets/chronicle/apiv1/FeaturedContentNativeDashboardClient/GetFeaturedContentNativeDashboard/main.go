@@ -16,6 +16,8 @@
 
 // [START chronicle_v1_generated_FeaturedContentNativeDashboardService_GetFeaturedContentNativeDashboard_sync]
 
+//go:build examples
+
 package main
 
 import (

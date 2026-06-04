@@ -8,7 +8,7 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/saasplatform/saasservicemgmt/apiv1beta1",
-    "version": "0.7.0"
+    "version": "0.8.0"
   },
   "snippets": [
     {
@@ -50,7 +50,7 @@
       "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_CreateRelease_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -96,7 +96,7 @@
       "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_CreateSaas_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -142,7 +142,7 @@
       "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_CreateTenant_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -188,7 +188,7 @@
       "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_CreateUnit_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -234,7 +234,7 @@
       "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_CreateUnitKind_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -280,7 +280,7 @@
       "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_CreateUnitOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -325,7 +325,7 @@
       "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_DeleteRelease_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -370,7 +370,7 @@
       "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_DeleteSaas_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -415,7 +415,7 @@
       "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_DeleteTenant_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -460,7 +460,7 @@
       "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_DeleteUnit_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -505,7 +505,7 @@
       "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_DeleteUnitKind_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -550,7 +550,7 @@
       "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_DeleteUnitOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -596,7 +596,7 @@
       "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -642,7 +642,7 @@
       "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_GetRelease_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -688,7 +688,7 @@
       "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_GetSaas_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -734,7 +734,7 @@
       "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_GetTenant_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -780,7 +780,7 @@
       "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_GetUnit_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -826,7 +826,7 @@
       "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_GetUnitKind_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -872,7 +872,7 @@
       "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_GetUnitOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -911,14 +911,14 @@
         "resultType": "LocationIterator",
         "shortName": "ListLocations"
       },
-      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name] field: \n\n* **Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
+      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name][google.cloud.location.ListLocationsRequest.name] field: *\n**Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
       "file": "SaasDeploymentsClient/ListLocations/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
       "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -964,7 +964,7 @@
       "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_ListReleases_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1010,7 +1010,7 @@
       "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_ListSaas_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1056,7 +1056,7 @@
       "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_ListTenants_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1102,7 +1102,7 @@
       "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_ListUnitKinds_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1148,7 +1148,7 @@
       "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_ListUnitOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1194,7 +1194,7 @@
       "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_ListUnits_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1240,7 +1240,7 @@
       "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_UpdateRelease_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1286,7 +1286,7 @@
       "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_UpdateSaas_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1332,7 +1332,7 @@
       "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_UpdateTenant_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1378,7 +1378,7 @@
       "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_UpdateUnit_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1424,7 +1424,7 @@
       "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_UpdateUnitKind_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1470,7 +1470,7 @@
       "regionTag": "saasservicemgmt_v1beta1_generated_SaasDeployments_UpdateUnitOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1516,7 +1516,7 @@
       "regionTag": "saasservicemgmt_v1beta1_generated_SaasRollouts_CreateRollout_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1562,7 +1562,7 @@
       "regionTag": "saasservicemgmt_v1beta1_generated_SaasRollouts_CreateRolloutKind_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1607,7 +1607,7 @@
       "regionTag": "saasservicemgmt_v1beta1_generated_SaasRollouts_DeleteRollout_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -1652,7 +1652,7 @@
       "regionTag": "saasservicemgmt_v1beta1_generated_SaasRollouts_DeleteRolloutKind_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -1698,7 +1698,7 @@
       "regionTag": "saasservicemgmt_v1beta1_generated_SaasRollouts_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1744,7 +1744,7 @@
       "regionTag": "saasservicemgmt_v1beta1_generated_SaasRollouts_GetRollout_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1790,7 +1790,7 @@
       "regionTag": "saasservicemgmt_v1beta1_generated_SaasRollouts_GetRolloutKind_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1829,14 +1829,14 @@
         "resultType": "LocationIterator",
         "shortName": "ListLocations"
       },
-      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name] field: \n\n* **Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
+      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name][google.cloud.location.ListLocationsRequest.name] field: *\n**Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
       "file": "SaasRolloutsClient/ListLocations/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
       "regionTag": "saasservicemgmt_v1beta1_generated_SaasRollouts_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1882,7 +1882,7 @@
       "regionTag": "saasservicemgmt_v1beta1_generated_SaasRollouts_ListRolloutKinds_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1928,7 +1928,7 @@
       "regionTag": "saasservicemgmt_v1beta1_generated_SaasRollouts_ListRollouts_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1974,7 +1974,7 @@
       "regionTag": "saasservicemgmt_v1beta1_generated_SaasRollouts_UpdateRollout_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2020,7 +2020,7 @@
       "regionTag": "saasservicemgmt_v1beta1_generated_SaasRollouts_UpdateRolloutKind_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }

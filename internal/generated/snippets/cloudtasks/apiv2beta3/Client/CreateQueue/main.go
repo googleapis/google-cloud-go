@@ -16,6 +16,8 @@
 
 // [START cloudtasks_v2beta3_generated_CloudTasks_CreateQueue_sync]
 
+//go:build examples
+
 package main
 
 import (

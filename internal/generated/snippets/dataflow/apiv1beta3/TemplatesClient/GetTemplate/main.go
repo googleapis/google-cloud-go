@@ -16,6 +16,8 @@
 
 // [START dataflow_v1beta3_generated_TemplatesService_GetTemplate_sync]
 
+//go:build examples
+
 package main
 
 import (

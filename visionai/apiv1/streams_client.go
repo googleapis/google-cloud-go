@@ -232,7 +232,7 @@ type StreamsClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *StreamsClient) Close() error {
 	return c.internalClient.Close()
@@ -630,7 +630,7 @@ func (c *streamsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *streamsGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -769,7 +769,7 @@ func (c *streamsRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *streamsRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.

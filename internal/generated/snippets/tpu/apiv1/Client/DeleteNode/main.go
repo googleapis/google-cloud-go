@@ -16,6 +16,8 @@
 
 // [START tpu_v1_generated_Tpu_DeleteNode_sync]
 
+//go:build examples
+
 package main
 
 import (

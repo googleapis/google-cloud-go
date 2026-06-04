@@ -16,6 +16,8 @@
 
 // [START telcoautomation_v1_generated_TelcoAutomation_RejectBlueprint_sync]
 
+//go:build examples
+
 package main
 
 import (

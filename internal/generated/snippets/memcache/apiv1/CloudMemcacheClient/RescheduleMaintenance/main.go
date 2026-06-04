@@ -16,6 +16,8 @@
 
 // [START memcache_v1_generated_CloudMemcache_RescheduleMaintenance_sync]
 
+//go:build examples
+
 package main
 
 import (

@@ -16,6 +16,8 @@
 
 // [START css_v1_generated_AccountsService_GetAccount_sync]
 
+//go:build examples
+
 package main
 
 import (

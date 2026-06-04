@@ -16,6 +16,8 @@
 
 // [START merchantapi_v1beta_generated_IssueResolutionService_RenderAccountIssues_sync]
 
+//go:build examples
+
 package main
 
 import (

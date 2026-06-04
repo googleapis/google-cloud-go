@@ -16,6 +16,8 @@
 
 // [START generativelanguage_v1beta2_generated_TextService_EmbedText_sync]
 
+//go:build examples
+
 package main
 
 import (

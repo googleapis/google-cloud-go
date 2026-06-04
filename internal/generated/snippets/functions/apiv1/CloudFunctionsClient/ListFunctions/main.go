@@ -16,6 +16,8 @@
 
 // [START cloudfunctions_v1_generated_CloudFunctionsService_ListFunctions_sync]
 
+//go:build examples
+
 package main
 
 import (

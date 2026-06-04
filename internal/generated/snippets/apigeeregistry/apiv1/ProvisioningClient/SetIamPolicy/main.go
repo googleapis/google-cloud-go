@@ -16,6 +16,8 @@
 
 // [START apigeeregistry_v1_generated_Provisioning_SetIamPolicy_sync]
 
+//go:build examples
+
 package main
 
 import (

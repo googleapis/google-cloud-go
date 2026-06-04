@@ -16,6 +16,8 @@
 
 // [START compute_v1_generated_Instances_SetMinCpuPlatform_sync]
 
+//go:build examples
+
 package main
 
 import (

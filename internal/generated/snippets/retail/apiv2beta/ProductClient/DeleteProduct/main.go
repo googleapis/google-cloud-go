@@ -16,6 +16,8 @@
 
 // [START retail_v2beta_generated_ProductService_DeleteProduct_sync]
 
+//go:build examples
+
 package main
 
 import (

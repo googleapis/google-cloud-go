@@ -132,7 +132,7 @@ type ExecutionsClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *ExecutionsClient) Close() error {
 	return c.internalClient.Close()
@@ -327,7 +327,7 @@ func (c *executionsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *executionsGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -442,7 +442,7 @@ func (c *executionsRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *executionsRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.

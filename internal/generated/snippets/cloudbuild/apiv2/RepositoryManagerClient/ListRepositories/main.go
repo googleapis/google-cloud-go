@@ -16,6 +16,8 @@
 
 // [START cloudbuild_v2_generated_RepositoryManager_ListRepositories_sync]
 
+//go:build examples
+
 package main
 
 import (

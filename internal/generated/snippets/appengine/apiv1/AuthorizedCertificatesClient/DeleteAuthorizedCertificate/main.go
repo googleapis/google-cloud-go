@@ -16,6 +16,8 @@
 
 // [START appengine_v1_generated_AuthorizedCertificates_DeleteAuthorizedCertificate_sync]
 
+//go:build examples
+
 package main
 
 import (

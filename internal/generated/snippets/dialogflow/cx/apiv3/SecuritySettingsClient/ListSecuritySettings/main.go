@@ -16,6 +16,8 @@
 
 // [START dialogflow_v3_generated_SecuritySettingsService_ListSecuritySettings_sync]
 
+//go:build examples
+
 package main
 
 import (

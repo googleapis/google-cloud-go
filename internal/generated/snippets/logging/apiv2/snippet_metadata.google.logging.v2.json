@@ -49,7 +49,7 @@
       "regionTag": "logging_v2_generated_ConfigServiceV2_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -95,7 +95,7 @@
       "regionTag": "logging_v2_generated_ConfigServiceV2_CopyLogEntries_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -141,7 +141,7 @@
       "regionTag": "logging_v2_generated_ConfigServiceV2_CreateBucket_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -187,7 +187,7 @@
       "regionTag": "logging_v2_generated_ConfigServiceV2_CreateBucketAsync_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -233,7 +233,7 @@
       "regionTag": "logging_v2_generated_ConfigServiceV2_CreateExclusion_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -279,7 +279,7 @@
       "regionTag": "logging_v2_generated_ConfigServiceV2_CreateLink_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -325,7 +325,7 @@
       "regionTag": "logging_v2_generated_ConfigServiceV2_CreateSink_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -371,7 +371,7 @@
       "regionTag": "logging_v2_generated_ConfigServiceV2_CreateView_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -416,7 +416,7 @@
       "regionTag": "logging_v2_generated_ConfigServiceV2_DeleteBucket_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -461,7 +461,7 @@
       "regionTag": "logging_v2_generated_ConfigServiceV2_DeleteExclusion_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -507,7 +507,7 @@
       "regionTag": "logging_v2_generated_ConfigServiceV2_DeleteLink_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -552,7 +552,7 @@
       "regionTag": "logging_v2_generated_ConfigServiceV2_DeleteSink_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -597,7 +597,7 @@
       "regionTag": "logging_v2_generated_ConfigServiceV2_DeleteView_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -643,7 +643,7 @@
       "regionTag": "logging_v2_generated_ConfigServiceV2_GetBucket_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -689,7 +689,7 @@
       "regionTag": "logging_v2_generated_ConfigServiceV2_GetCmekSettings_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -735,7 +735,7 @@
       "regionTag": "logging_v2_generated_ConfigServiceV2_GetExclusion_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -781,7 +781,7 @@
       "regionTag": "logging_v2_generated_ConfigServiceV2_GetLink_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -827,7 +827,7 @@
       "regionTag": "logging_v2_generated_ConfigServiceV2_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -873,7 +873,7 @@
       "regionTag": "logging_v2_generated_ConfigServiceV2_GetSettings_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -919,7 +919,7 @@
       "regionTag": "logging_v2_generated_ConfigServiceV2_GetSink_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -965,7 +965,7 @@
       "regionTag": "logging_v2_generated_ConfigServiceV2_GetView_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1011,7 +1011,7 @@
       "regionTag": "logging_v2_generated_ConfigServiceV2_ListBuckets_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1057,7 +1057,7 @@
       "regionTag": "logging_v2_generated_ConfigServiceV2_ListExclusions_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1103,7 +1103,7 @@
       "regionTag": "logging_v2_generated_ConfigServiceV2_ListLinks_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1149,7 +1149,7 @@
       "regionTag": "logging_v2_generated_ConfigServiceV2_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1195,7 +1195,7 @@
       "regionTag": "logging_v2_generated_ConfigServiceV2_ListSinks_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1241,7 +1241,7 @@
       "regionTag": "logging_v2_generated_ConfigServiceV2_ListViews_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1286,7 +1286,7 @@
       "regionTag": "logging_v2_generated_ConfigServiceV2_UndeleteBucket_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -1332,7 +1332,7 @@
       "regionTag": "logging_v2_generated_ConfigServiceV2_UpdateBucket_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1378,7 +1378,7 @@
       "regionTag": "logging_v2_generated_ConfigServiceV2_UpdateBucketAsync_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1424,7 +1424,7 @@
       "regionTag": "logging_v2_generated_ConfigServiceV2_UpdateCmekSettings_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1470,7 +1470,7 @@
       "regionTag": "logging_v2_generated_ConfigServiceV2_UpdateExclusion_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1516,7 +1516,7 @@
       "regionTag": "logging_v2_generated_ConfigServiceV2_UpdateSettings_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1562,7 +1562,7 @@
       "regionTag": "logging_v2_generated_ConfigServiceV2_UpdateSink_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1608,7 +1608,7 @@
       "regionTag": "logging_v2_generated_ConfigServiceV2_UpdateView_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1653,7 +1653,7 @@
       "regionTag": "logging_v2_generated_LoggingServiceV2_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -1698,7 +1698,7 @@
       "regionTag": "logging_v2_generated_LoggingServiceV2_DeleteLog_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -1744,7 +1744,7 @@
       "regionTag": "logging_v2_generated_LoggingServiceV2_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1790,7 +1790,7 @@
       "regionTag": "logging_v2_generated_LoggingServiceV2_ListLogEntries_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1836,7 +1836,7 @@
       "regionTag": "logging_v2_generated_LoggingServiceV2_ListLogs_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1882,7 +1882,7 @@
       "regionTag": "logging_v2_generated_LoggingServiceV2_ListMonitoredResourceDescriptors_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1928,7 +1928,7 @@
       "regionTag": "logging_v2_generated_LoggingServiceV2_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1970,7 +1970,7 @@
       "regionTag": "logging_v2_generated_LoggingServiceV2_TailLogEntries_sync",
       "segments": [
         {
-          "end": 69,
+          "end": 71,
           "start": 18,
           "type": "FULL"
         }
@@ -2016,7 +2016,7 @@
       "regionTag": "logging_v2_generated_LoggingServiceV2_WriteLogEntries_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2061,7 +2061,7 @@
       "regionTag": "logging_v2_generated_MetricsServiceV2_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -2107,7 +2107,7 @@
       "regionTag": "logging_v2_generated_MetricsServiceV2_CreateLogMetric_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2152,7 +2152,7 @@
       "regionTag": "logging_v2_generated_MetricsServiceV2_DeleteLogMetric_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -2198,7 +2198,7 @@
       "regionTag": "logging_v2_generated_MetricsServiceV2_GetLogMetric_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2244,7 +2244,7 @@
       "regionTag": "logging_v2_generated_MetricsServiceV2_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2290,7 +2290,7 @@
       "regionTag": "logging_v2_generated_MetricsServiceV2_ListLogMetrics_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2336,7 +2336,7 @@
       "regionTag": "logging_v2_generated_MetricsServiceV2_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2382,7 +2382,7 @@
       "regionTag": "logging_v2_generated_MetricsServiceV2_UpdateLogMetric_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }

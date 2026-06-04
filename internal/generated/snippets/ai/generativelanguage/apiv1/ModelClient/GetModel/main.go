@@ -16,6 +16,8 @@
 
 // [START generativelanguage_v1_generated_ModelService_GetModel_sync]
 
+//go:build examples
+
 package main
 
 import (

@@ -102,7 +102,7 @@ type PartnerLinkClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *PartnerLinkClient) Close() error {
 	return c.internalClient.Close()
@@ -265,7 +265,7 @@ func (c *partnerLinkGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *partnerLinkGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -360,7 +360,7 @@ func (c *partnerLinkRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *partnerLinkRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.

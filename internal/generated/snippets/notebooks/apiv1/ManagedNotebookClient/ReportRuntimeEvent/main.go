@@ -16,6 +16,8 @@
 
 // [START notebooks_v1_generated_ManagedNotebookService_ReportRuntimeEvent_sync]
 
+//go:build examples
+
 package main
 
 import (

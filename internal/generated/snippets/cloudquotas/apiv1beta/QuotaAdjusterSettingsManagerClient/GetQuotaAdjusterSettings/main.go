@@ -16,6 +16,8 @@
 
 // [START cloudquotas_v1beta_generated_QuotaAdjusterSettingsManager_GetQuotaAdjusterSettings_sync]
 
+//go:build examples
+
 package main
 
 import (

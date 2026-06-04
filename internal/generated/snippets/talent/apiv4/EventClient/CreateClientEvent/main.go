@@ -16,6 +16,8 @@
 
 // [START jobs_v4_generated_EventService_CreateClientEvent_sync]
 
+//go:build examples
+
 package main
 
 import (

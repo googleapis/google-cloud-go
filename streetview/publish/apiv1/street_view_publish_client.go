@@ -307,7 +307,7 @@ type StreetViewPublishClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *StreetViewPublishClient) Close() error {
 	return c.internalClient.Close()
@@ -749,7 +749,7 @@ func (c *streetViewPublishGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *streetViewPublishGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -870,7 +870,7 @@ func (c *streetViewPublishRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *streetViewPublishRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.

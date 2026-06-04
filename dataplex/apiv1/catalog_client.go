@@ -70,6 +70,7 @@ type CatalogCallOptions struct {
 	ListEntries        []gax.CallOption
 	GetEntry           []gax.CallOption
 	LookupEntry        []gax.CallOption
+	ModifyEntry        []gax.CallOption
 	SearchEntries      []gax.CallOption
 	CreateMetadataJob  []gax.CallOption
 	GetMetadataJob     []gax.CallOption
@@ -277,6 +278,7 @@ func defaultCatalogCallOptions() *CatalogCallOptions {
 				})
 			}),
 		},
+		ModifyEntry: []gax.CallOption{},
 		SearchEntries: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -290,16 +292,56 @@ func defaultCatalogCallOptions() *CatalogCallOptions {
 				})
 			}),
 		},
-		CreateMetadataJob:  []gax.CallOption{},
-		GetMetadataJob:     []gax.CallOption{},
-		ListMetadataJobs:   []gax.CallOption{},
-		CancelMetadataJob:  []gax.CallOption{},
-		CreateEntryLink:    []gax.CallOption{},
-		UpdateEntryLink:    []gax.CallOption{},
-		DeleteEntryLink:    []gax.CallOption{},
-		LookupEntryLinks:   []gax.CallOption{},
-		LookupContext:      []gax.CallOption{},
-		GetEntryLink:       []gax.CallOption{},
+		CreateMetadataJob: []gax.CallOption{},
+		GetMetadataJob:    []gax.CallOption{},
+		ListMetadataJobs:  []gax.CallOption{},
+		CancelMetadataJob: []gax.CallOption{},
+		CreateEntryLink: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateEntryLink: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.ResourceExhausted,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DeleteEntryLink: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		LookupEntryLinks: []gax.CallOption{
+			gax.WithTimeout(20000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.ResourceExhausted,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		LookupContext: []gax.CallOption{},
+		GetEntryLink: []gax.CallOption{
+			gax.WithTimeout(20000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.ResourceExhausted,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		CreateMetadataFeed: []gax.CallOption{},
 		GetMetadataFeed:    []gax.CallOption{},
 		ListMetadataFeeds:  []gax.CallOption{},
@@ -472,6 +514,7 @@ func defaultCatalogRESTCallOptions() *CatalogCallOptions {
 					http.StatusTooManyRequests)
 			}),
 		},
+		ModifyEntry: []gax.CallOption{},
 		SearchEntries: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -484,16 +527,53 @@ func defaultCatalogRESTCallOptions() *CatalogCallOptions {
 					http.StatusTooManyRequests)
 			}),
 		},
-		CreateMetadataJob:  []gax.CallOption{},
-		GetMetadataJob:     []gax.CallOption{},
-		ListMetadataJobs:   []gax.CallOption{},
-		CancelMetadataJob:  []gax.CallOption{},
-		CreateEntryLink:    []gax.CallOption{},
-		UpdateEntryLink:    []gax.CallOption{},
-		DeleteEntryLink:    []gax.CallOption{},
-		LookupEntryLinks:   []gax.CallOption{},
-		LookupContext:      []gax.CallOption{},
-		GetEntryLink:       []gax.CallOption{},
+		CreateMetadataJob: []gax.CallOption{},
+		GetMetadataJob:    []gax.CallOption{},
+		ListMetadataJobs:  []gax.CallOption{},
+		CancelMetadataJob: []gax.CallOption{},
+		CreateEntryLink: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateEntryLink: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests)
+			}),
+		},
+		DeleteEntryLink: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		LookupEntryLinks: []gax.CallOption{
+			gax.WithTimeout(20000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests)
+			}),
+		},
+		LookupContext: []gax.CallOption{},
+		GetEntryLink: []gax.CallOption{
+			gax.WithTimeout(20000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests)
+			}),
+		},
 		CreateMetadataFeed: []gax.CallOption{},
 		GetMetadataFeed:    []gax.CallOption{},
 		ListMetadataFeeds:  []gax.CallOption{},
@@ -546,6 +626,7 @@ type internalCatalogClient interface {
 	ListEntries(context.Context, *dataplexpb.ListEntriesRequest, ...gax.CallOption) *EntryIterator
 	GetEntry(context.Context, *dataplexpb.GetEntryRequest, ...gax.CallOption) (*dataplexpb.Entry, error)
 	LookupEntry(context.Context, *dataplexpb.LookupEntryRequest, ...gax.CallOption) (*dataplexpb.Entry, error)
+	ModifyEntry(context.Context, *dataplexpb.ModifyEntryRequest, ...gax.CallOption) (*dataplexpb.Entry, error)
 	SearchEntries(context.Context, *dataplexpb.SearchEntriesRequest, ...gax.CallOption) *SearchEntriesResultIterator
 	CreateMetadataJob(context.Context, *dataplexpb.CreateMetadataJobRequest, ...gax.CallOption) (*CreateMetadataJobOperation, error)
 	CreateMetadataJobOperation(name string) *CreateMetadataJobOperation
@@ -600,7 +681,7 @@ type CatalogClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *CatalogClient) Close() error {
 	return c.internalClient.Close()
@@ -780,6 +861,11 @@ func (c *CatalogClient) LookupEntry(ctx context.Context, req *dataplexpb.LookupE
 	return c.internalClient.LookupEntry(ctx, req, opts...)
 }
 
+// ModifyEntry modifies an entry using the permission on the source system.
+func (c *CatalogClient) ModifyEntry(ctx context.Context, req *dataplexpb.ModifyEntryRequest, opts ...gax.CallOption) (*dataplexpb.Entry, error) {
+	return c.internalClient.ModifyEntry(ctx, req, opts...)
+}
+
 // SearchEntries searches for Entries matching the given query and scope.
 func (c *CatalogClient) SearchEntries(ctx context.Context, req *dataplexpb.SearchEntriesRequest, opts ...gax.CallOption) *SearchEntriesResultIterator {
 	return c.internalClient.SearchEntries(ctx, req, opts...)
@@ -896,14 +982,21 @@ func (c *CatalogClient) GetLocation(ctx context.Context, req *locationpb.GetLoca
 }
 
 // ListLocations lists information about the supported locations for this service.
-// This method can be called in two ways:
 //
-//	List all public locations: Use the path GET /v1/locations.
+// This method lists locations based on the resource scope provided in
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)][google.cloud.location.ListLocationsRequest.name (at http://google.cloud.location.ListLocationsRequest.name)] field: *
+// Global locations: If name is empty, the method lists the
+// public locations available to all projects. * Project-specific
+// locations: If name follows the format
+// projects/{project}, the method lists locations visible to that
+// specific project. This includes public, private, or other
+// project-specific locations enabled for the project.
 //
-//	List project-visible locations: Use the path
-//	GET /v1/projects/{project_id}/locations. This may include public
-//	locations as well as private or other locations specifically visible
-//	to the project.
+// For gRPC and client library implementations, the resource name is
+// passed as the name field. For direct service calls, the resource
+// name is
+// incorporated into the request path based on the specific service
+// implementation and version.
 func (c *CatalogClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	return c.internalClient.ListLocations(ctx, req, opts...)
 }
@@ -1061,6 +1154,7 @@ func NewCatalogClient(ctx context.Context, opts ...option.ClientOption) (*Catalo
 		client.CallOptions.ListEntries = append(client.CallOptions.ListEntries, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetEntry = append(client.CallOptions.GetEntry, gax.WithClientMetrics(metrics))
 		client.CallOptions.LookupEntry = append(client.CallOptions.LookupEntry, gax.WithClientMetrics(metrics))
+		client.CallOptions.ModifyEntry = append(client.CallOptions.ModifyEntry, gax.WithClientMetrics(metrics))
 		client.CallOptions.SearchEntries = append(client.CallOptions.SearchEntries, gax.WithClientMetrics(metrics))
 		client.CallOptions.CreateMetadataJob = append(client.CallOptions.CreateMetadataJob, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetMetadataJob = append(client.CallOptions.GetMetadataJob, gax.WithClientMetrics(metrics))
@@ -1123,7 +1217,7 @@ func (c *catalogGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *catalogGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -1217,6 +1311,7 @@ func NewCatalogRESTClient(ctx context.Context, opts ...option.ClientOption) (*Ca
 		callOpts.ListEntries = append(callOpts.ListEntries, gax.WithClientMetrics(metrics))
 		callOpts.GetEntry = append(callOpts.GetEntry, gax.WithClientMetrics(metrics))
 		callOpts.LookupEntry = append(callOpts.LookupEntry, gax.WithClientMetrics(metrics))
+		callOpts.ModifyEntry = append(callOpts.ModifyEntry, gax.WithClientMetrics(metrics))
 		callOpts.SearchEntries = append(callOpts.SearchEntries, gax.WithClientMetrics(metrics))
 		callOpts.CreateMetadataJob = append(callOpts.CreateMetadataJob, gax.WithClientMetrics(metrics))
 		callOpts.GetMetadataJob = append(callOpts.GetMetadataJob, gax.WithClientMetrics(metrics))
@@ -1280,7 +1375,7 @@ func (c *catalogRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *catalogRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -1908,6 +2003,27 @@ func (c *catalogGRPCClient) LookupEntry(ctx context.Context, req *dataplexpb.Loo
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = executeRPC(ctx, c.catalogClient.LookupEntry, req, settings.GRPC, c.logger, "LookupEntry")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *catalogGRPCClient) ModifyEntry(ctx context.Context, req *dataplexpb.ModifyEntryRequest, opts ...gax.CallOption) (*dataplexpb.Entry, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataplex.v1.CatalogService/ModifyEntry")
+	}
+	opts = append((*c.CallOptions).ModifyEntry[0:len((*c.CallOptions).ModifyEntry):len((*c.CallOptions).ModifyEntry)], opts...)
+	var resp *dataplexpb.Entry
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.catalogClient.ModifyEntry, req, settings.GRPC, c.logger, "ModifyEntry")
 		return err
 	}, opts...)
 	if err != nil {
@@ -4126,6 +4242,66 @@ func (c *catalogRESTClient) LookupEntry(ctx context.Context, req *dataplexpb.Loo
 	return resp, nil
 }
 
+// ModifyEntry modifies an entry using the permission on the source system.
+func (c *catalogRESTClient) ModifyEntry(ctx context.Context, req *dataplexpb.ModifyEntryRequest, opts ...gax.CallOption) (*dataplexpb.Entry, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:modifyEntry", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataplex.v1.CatalogService/ModifyEntry")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*}:modifyEntry")
+	}
+	opts = append((*c.CallOptions).ModifyEntry[0:len((*c.CallOptions).ModifyEntry):len((*c.CallOptions).ModifyEntry)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &dataplexpb.Entry{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ModifyEntry")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
 // SearchEntries searches for Entries matching the given query and scope.
 func (c *catalogRESTClient) SearchEntries(ctx context.Context, req *dataplexpb.SearchEntriesRequest, opts ...gax.CallOption) *SearchEntriesResultIterator {
 	it := &SearchEntriesResultIterator{}
@@ -5283,14 +5459,21 @@ func (c *catalogRESTClient) GetLocation(ctx context.Context, req *locationpb.Get
 }
 
 // ListLocations lists information about the supported locations for this service.
-// This method can be called in two ways:
 //
-//	List all public locations: Use the path GET /v1/locations.
+// This method lists locations based on the resource scope provided in
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)][google.cloud.location.ListLocationsRequest.name (at http://google.cloud.location.ListLocationsRequest.name)] field: *
+// Global locations: If name is empty, the method lists the
+// public locations available to all projects. * Project-specific
+// locations: If name follows the format
+// projects/{project}, the method lists locations visible to that
+// specific project. This includes public, private, or other
+// project-specific locations enabled for the project.
 //
-//	List project-visible locations: Use the path
-//	GET /v1/projects/{project_id}/locations. This may include public
-//	locations as well as private or other locations specifically visible
-//	to the project.
+// For gRPC and client library implementations, the resource name is
+// passed as the name field. For direct service calls, the resource
+// name is
+// incorporated into the request path based on the specific service
+// implementation and version.
 func (c *catalogRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
 	req = proto.CloneOf(req)

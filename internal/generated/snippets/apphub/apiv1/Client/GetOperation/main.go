@@ -16,6 +16,8 @@
 
 // [START apphub_v1_generated_AppHub_GetOperation_sync]
 
+//go:build examples
+
 package main
 
 import (

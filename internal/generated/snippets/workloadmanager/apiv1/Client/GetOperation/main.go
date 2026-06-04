@@ -16,6 +16,8 @@
 
 // [START workloadmanager_v1_generated_WorkloadManager_GetOperation_sync]
 
+//go:build examples
+
 package main
 
 import (

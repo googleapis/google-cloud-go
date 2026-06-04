@@ -16,6 +16,8 @@
 
 // [START dataplex_v1_generated_BusinessGlossaryService_GetGlossary_sync]
 
+//go:build examples
+
 package main
 
 import (

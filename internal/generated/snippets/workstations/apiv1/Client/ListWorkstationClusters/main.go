@@ -16,6 +16,8 @@
 
 // [START workstations_v1_generated_Workstations_ListWorkstationClusters_sync]
 
+//go:build examples
+
 package main
 
 import (

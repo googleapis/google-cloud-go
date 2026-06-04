@@ -16,6 +16,8 @@
 
 // [START discoveryengine_v1beta_generated_SiteSearchEngineService_EnableAdvancedSiteSearch_sync]
 
+//go:build examples
+
 package main
 
 import (

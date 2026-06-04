@@ -50,7 +50,7 @@
       "regionTag": "jobs_v4beta1_generated_CompanyService_CreateCompany_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -95,7 +95,7 @@
       "regionTag": "jobs_v4beta1_generated_CompanyService_DeleteCompany_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -141,7 +141,7 @@
       "regionTag": "jobs_v4beta1_generated_CompanyService_GetCompany_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -187,7 +187,7 @@
       "regionTag": "jobs_v4beta1_generated_CompanyService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -233,7 +233,7 @@
       "regionTag": "jobs_v4beta1_generated_CompanyService_ListCompanies_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -279,7 +279,7 @@
       "regionTag": "jobs_v4beta1_generated_CompanyService_UpdateCompany_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -325,7 +325,7 @@
       "regionTag": "jobs_v4beta1_generated_Completion_CompleteQuery_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -371,7 +371,7 @@
       "regionTag": "jobs_v4beta1_generated_Completion_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -417,7 +417,7 @@
       "regionTag": "jobs_v4beta1_generated_EventService_CreateClientEvent_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -463,7 +463,7 @@
       "regionTag": "jobs_v4beta1_generated_EventService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -509,7 +509,7 @@
       "regionTag": "jobs_v4beta1_generated_JobService_BatchCreateJobs_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -554,7 +554,7 @@
       "regionTag": "jobs_v4beta1_generated_JobService_BatchDeleteJobs_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -600,7 +600,7 @@
       "regionTag": "jobs_v4beta1_generated_JobService_BatchUpdateJobs_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -646,7 +646,7 @@
       "regionTag": "jobs_v4beta1_generated_JobService_CreateJob_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -691,7 +691,7 @@
       "regionTag": "jobs_v4beta1_generated_JobService_DeleteJob_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -737,7 +737,7 @@
       "regionTag": "jobs_v4beta1_generated_JobService_GetJob_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -783,7 +783,7 @@
       "regionTag": "jobs_v4beta1_generated_JobService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -829,7 +829,7 @@
       "regionTag": "jobs_v4beta1_generated_JobService_ListJobs_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -875,7 +875,7 @@
       "regionTag": "jobs_v4beta1_generated_JobService_SearchJobs_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -921,7 +921,7 @@
       "regionTag": "jobs_v4beta1_generated_JobService_SearchJobsForAlert_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -967,7 +967,7 @@
       "regionTag": "jobs_v4beta1_generated_JobService_UpdateJob_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1013,7 +1013,7 @@
       "regionTag": "jobs_v4beta1_generated_TenantService_CreateTenant_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1058,7 +1058,7 @@
       "regionTag": "jobs_v4beta1_generated_TenantService_DeleteTenant_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -1104,7 +1104,7 @@
       "regionTag": "jobs_v4beta1_generated_TenantService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1150,7 +1150,7 @@
       "regionTag": "jobs_v4beta1_generated_TenantService_GetTenant_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1196,7 +1196,7 @@
       "regionTag": "jobs_v4beta1_generated_TenantService_ListTenants_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1242,7 +1242,7 @@
       "regionTag": "jobs_v4beta1_generated_TenantService_UpdateTenant_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }

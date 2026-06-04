@@ -16,6 +16,8 @@
 
 // [START documentai_v1beta3_generated_DocumentProcessorService_GetLocation_sync]
 
+//go:build examples
+
 package main
 
 import (

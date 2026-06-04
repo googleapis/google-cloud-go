@@ -16,6 +16,8 @@
 
 // [START backupdr_v1_generated_BackupDR_GetBackupVault_sync]
 
+//go:build examples
+
 package main
 
 import (

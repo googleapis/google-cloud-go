@@ -251,15 +251,9 @@ type BigQueryTableReference struct {
 	// Required. The table id.
 	TableId string `protobuf:"bytes,4,opt,name=table_id,json=tableId,proto3" json:"table_id,omitempty"`
 	// Optional. The schema of the datasource.
-	Schema *Schema `protobuf:"bytes,6,opt,name=schema,proto3" json:"schema,omitempty"`
-	// Optional. The location to restrict BigQuery operations to.
-	//
-	// If unspecified, this value defaults to the location of the endpoint.
-	//
-	// Examples: "us-central1", "europe-west1".
-	LocationBoundary *string `protobuf:"bytes,7,opt,name=location_boundary,json=locationBoundary,proto3,oneof" json:"location_boundary,omitempty"`
-	unknownFields    protoimpl.UnknownFields
-	sizeCache        protoimpl.SizeCache
+	Schema        *Schema `protobuf:"bytes,6,opt,name=schema,proto3" json:"schema,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *BigQueryTableReference) Reset() {
@@ -318,13 +312,6 @@ func (x *BigQueryTableReference) GetSchema() *Schema {
 		return x.Schema
 	}
 	return nil
-}
-
-func (x *BigQueryTableReference) GetLocationBoundary() string {
-	if x != nil && x.LocationBoundary != nil {
-		return *x.LocationBoundary
-	}
-	return ""
 }
 
 // Message representing references to Looker Studio datasources.
@@ -594,10 +581,8 @@ type BigQueryPropertyGraphReference struct {
 	DatasetId string `protobuf:"bytes,2,opt,name=dataset_id,json=datasetId,proto3" json:"dataset_id,omitempty"`
 	// Required. The property graph id.
 	PropertyGraphId string `protobuf:"bytes,3,opt,name=property_graph_id,json=propertyGraphId,proto3" json:"property_graph_id,omitempty"`
-	// Optional. The location boundary of the graph.
-	LocationBoundary *string `protobuf:"bytes,4,opt,name=location_boundary,json=locationBoundary,proto3,oneof" json:"location_boundary,omitempty"`
-	unknownFields    protoimpl.UnknownFields
-	sizeCache        protoimpl.SizeCache
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
 }
 
 func (x *BigQueryPropertyGraphReference) Reset() {
@@ -647,13 +632,6 @@ func (x *BigQueryPropertyGraphReference) GetDatasetId() string {
 func (x *BigQueryPropertyGraphReference) GetPropertyGraphId() string {
 	if x != nil {
 		return x.PropertyGraphId
-	}
-	return ""
-}
-
-func (x *BigQueryPropertyGraphReference) GetLocationBoundary() string {
-	if x != nil && x.LocationBoundary != nil {
-		return *x.LocationBoundary
 	}
 	return ""
 }
@@ -1171,16 +1149,14 @@ const file_google_cloud_geminidataanalytics_v1_datasource_proto_rawDesc = "" +
 	"\n" +
 	"references\"\x86\x01\n" +
 	"\x17BigQueryTableReferences\x12k\n" +
-	"\x10table_references\x18\x01 \x03(\v2;.google.cloud.geminidataanalytics.v1.BigQueryTableReferenceB\x03\xe0A\x01R\x0ftableReferences\"\x97\x02\n" +
+	"\x10table_references\x18\x01 \x03(\v2;.google.cloud.geminidataanalytics.v1.BigQueryTableReferenceB\x03\xe0A\x01R\x0ftableReferences\"\xca\x01\n" +
 	"\x16BigQueryTableReference\x12\"\n" +
 	"\n" +
 	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12\"\n" +
 	"\n" +
 	"dataset_id\x18\x03 \x01(\tB\x03\xe0A\x02R\tdatasetId\x12\x1e\n" +
 	"\btable_id\x18\x04 \x01(\tB\x03\xe0A\x02R\atableId\x12H\n" +
-	"\x06schema\x18\x06 \x01(\v2+.google.cloud.geminidataanalytics.v1.SchemaB\x03\xe0A\x01R\x06schema\x125\n" +
-	"\x11location_boundary\x18\a \x01(\tB\x03\xe0A\x01H\x00R\x10locationBoundary\x88\x01\x01B\x14\n" +
-	"\x12_location_boundary\"\x8e\x01\n" +
+	"\x06schema\x18\x06 \x01(\v2+.google.cloud.geminidataanalytics.v1.SchemaB\x03\xe0A\x01R\x06schema\"\x8e\x01\n" +
 	"\x1aStudioDatasourceReferences\x12p\n" +
 	"\x11studio_references\x18\x02 \x03(\v2>.google.cloud.geminidataanalytics.v1.StudioDatasourceReferenceB\x03\xe0A\x01R\x10studioReferences\"E\n" +
 	"\x19StudioDatasourceReference\x12(\n" +
@@ -1195,15 +1171,13 @@ const file_google_cloud_geminidataanalytics_v1_datasource_proto_rawDesc = "" +
 	"\aexplore\x18\x05 \x01(\tB\x03\xe0A\x02R\aexplore\x12H\n" +
 	"\x06schema\x18\b \x01(\v2+.google.cloud.geminidataanalytics.v1.SchemaB\x03\xe0A\x01R\x06schemaB\n" +
 	"\n" +
-	"\binstance\"\xe6\x01\n" +
+	"\binstance\"\x99\x01\n" +
 	"\x1eBigQueryPropertyGraphReference\x12\"\n" +
 	"\n" +
 	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12\"\n" +
 	"\n" +
 	"dataset_id\x18\x02 \x01(\tB\x03\xe0A\x02R\tdatasetId\x12/\n" +
-	"\x11property_graph_id\x18\x03 \x01(\tB\x03\xe0A\x02R\x0fpropertyGraphId\x125\n" +
-	"\x11location_boundary\x18\x04 \x01(\tB\x03\xe0A\x01H\x00R\x10locationBoundary\x88\x01\x01B\x14\n" +
-	"\x12_location_boundary\"\x7f\n" +
+	"\x11property_graph_id\x18\x03 \x01(\tB\x03\xe0A\x02R\x0fpropertyGraphId\"\x7f\n" +
 	"\x19PrivateLookerInstanceInfo\x12,\n" +
 	"\x12looker_instance_id\x18\x01 \x01(\tR\x10lookerInstanceId\x124\n" +
 	"\x16service_directory_name\x18\x02 \x01(\tR\x14serviceDirectoryName\"\xdf\x04\n" +
@@ -1313,12 +1287,10 @@ func file_google_cloud_geminidataanalytics_v1_datasource_proto_init() {
 		(*DatasourceReferences_Studio)(nil),
 		(*DatasourceReferences_Looker)(nil),
 	}
-	file_google_cloud_geminidataanalytics_v1_datasource_proto_msgTypes[2].OneofWrappers = []any{}
 	file_google_cloud_geminidataanalytics_v1_datasource_proto_msgTypes[6].OneofWrappers = []any{
 		(*LookerExploreReference_LookerInstanceUri)(nil),
 		(*LookerExploreReference_PrivateLookerInstanceInfo)(nil),
 	}
-	file_google_cloud_geminidataanalytics_v1_datasource_proto_msgTypes[7].OneofWrappers = []any{}
 	file_google_cloud_geminidataanalytics_v1_datasource_proto_msgTypes[9].OneofWrappers = []any{
 		(*Datasource_BigqueryTableReference)(nil),
 		(*Datasource_StudioDatasourceId)(nil),

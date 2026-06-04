@@ -16,6 +16,8 @@
 
 // [START webrisk_v1_generated_WebRiskService_DeleteOperation_sync]
 
+//go:build examples
+
 package main
 
 import (

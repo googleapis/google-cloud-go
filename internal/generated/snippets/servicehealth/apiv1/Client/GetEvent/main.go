@@ -16,6 +16,8 @@
 
 // [START servicehealth_v1_generated_ServiceHealth_GetEvent_sync]
 
+//go:build examples
+
 package main
 
 import (

@@ -16,6 +16,8 @@
 
 // [START batch_v1_generated_BatchService_DeleteJob_sync]
 
+//go:build examples
+
 package main
 
 import (

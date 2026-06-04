@@ -16,6 +16,8 @@
 
 // [START cloudresourcemanager_v2_generated_Folders_UpdateFolder_sync]
 
+//go:build examples
+
 package main
 
 import (

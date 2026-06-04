@@ -16,6 +16,8 @@
 
 // [START maintenance_v1beta_generated_Maintenance_ListResourceMaintenances_sync]
 
+//go:build examples
+
 package main
 
 import (

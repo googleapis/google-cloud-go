@@ -53,18 +53,17 @@ type TransformationResultStatusType int32
 const (
 	// Unused.
 	TransformationResultStatusType_STATE_TYPE_UNSPECIFIED TransformationResultStatusType = 0
-	// This will be set when a finding could not be transformed (i.e. outside user
+	// This is set when a finding cannot be transformed (i.e. outside user
 	// set bucket range).
 	TransformationResultStatusType_INVALID_TRANSFORM TransformationResultStatusType = 1
-	// This will be set when a BigQuery transformation was successful but could
-	// not be stored back in BigQuery because the transformed row exceeds
-	// BigQuery's max row size.
+	// This is set when a transformation is successful but cannot be stored in
+	// BigQuery because the transformed row exceeds BigQuery's max row size.
 	TransformationResultStatusType_BIGQUERY_MAX_ROW_SIZE_EXCEEDED TransformationResultStatusType = 2
-	// This will be set when there is a finding in the custom metadata of a file,
+	// This is set when there is a finding in the custom metadata of a file,
 	// but at the write time of the transformed file, this key / value pair is
 	// unretrievable.
 	TransformationResultStatusType_METADATA_UNRETRIEVABLE TransformationResultStatusType = 3
-	// This will be set when the transformation and storing of it is successful.
+	// This is set when the transformation and its storage are successful.
 	TransformationResultStatusType_SUCCESS TransformationResultStatusType = 4
 )
 
@@ -1464,6 +1463,61 @@ func (ByteContentItem_BytesType) EnumDescriptor() ([]byte, []int) {
 	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{10, 0}
 }
 
+// The type of message.
+// New values may be added in the future.
+type ConversationMessage_MessageType int32
+
+const (
+	// Unused.
+	ConversationMessage_MESSAGE_TYPE_UNSPECIFIED ConversationMessage_MessageType = 0
+	// Message contains content to be inspected.
+	ConversationMessage_CONTENT ConversationMessage_MessageType = 1
+	// Message contains context only and will not have findings reported from
+	// it during inspection or redacted from it during de-identification.
+	ConversationMessage_CONTEXT ConversationMessage_MessageType = 2
+)
+
+// Enum value maps for ConversationMessage_MessageType.
+var (
+	ConversationMessage_MessageType_name = map[int32]string{
+		0: "MESSAGE_TYPE_UNSPECIFIED",
+		1: "CONTENT",
+		2: "CONTEXT",
+	}
+	ConversationMessage_MessageType_value = map[string]int32{
+		"MESSAGE_TYPE_UNSPECIFIED": 0,
+		"CONTENT":                  1,
+		"CONTEXT":                  2,
+	}
+)
+
+func (x ConversationMessage_MessageType) Enum() *ConversationMessage_MessageType {
+	p := new(ConversationMessage_MessageType)
+	*p = x
+	return p
+}
+
+func (x ConversationMessage_MessageType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (ConversationMessage_MessageType) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_privacy_dlp_v2_dlp_proto_enumTypes[22].Descriptor()
+}
+
+func (ConversationMessage_MessageType) Type() protoreflect.EnumType {
+	return &file_google_privacy_dlp_v2_dlp_proto_enumTypes[22]
+}
+
+func (x ConversationMessage_MessageType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use ConversationMessage_MessageType.Descriptor instead.
+func (ConversationMessage_MessageType) EnumDescriptor() ([]byte, []int) {
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{14, 0}
+}
+
 // Predefined schemas for storing findings.
 // Only for use with external storage.
 type OutputStorageConfig_OutputSchema int32
@@ -1515,11 +1569,11 @@ func (x OutputStorageConfig_OutputSchema) String() string {
 }
 
 func (OutputStorageConfig_OutputSchema) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_privacy_dlp_v2_dlp_proto_enumTypes[22].Descriptor()
+	return file_google_privacy_dlp_v2_dlp_proto_enumTypes[23].Descriptor()
 }
 
 func (OutputStorageConfig_OutputSchema) Type() protoreflect.EnumType {
-	return &file_google_privacy_dlp_v2_dlp_proto_enumTypes[22]
+	return &file_google_privacy_dlp_v2_dlp_proto_enumTypes[23]
 }
 
 func (x OutputStorageConfig_OutputSchema) Number() protoreflect.EnumNumber {
@@ -1528,7 +1582,7 @@ func (x OutputStorageConfig_OutputSchema) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use OutputStorageConfig_OutputSchema.Descriptor instead.
 func (OutputStorageConfig_OutputSchema) EnumDescriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{38, 0}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{41, 0}
 }
 
 // The location scope for a feature.
@@ -1568,11 +1622,11 @@ func (x LocationSupport_RegionalizationScope) String() string {
 }
 
 func (LocationSupport_RegionalizationScope) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_privacy_dlp_v2_dlp_proto_enumTypes[23].Descriptor()
+	return file_google_privacy_dlp_v2_dlp_proto_enumTypes[24].Descriptor()
 }
 
 func (LocationSupport_RegionalizationScope) Type() protoreflect.EnumType {
-	return &file_google_privacy_dlp_v2_dlp_proto_enumTypes[23]
+	return &file_google_privacy_dlp_v2_dlp_proto_enumTypes[24]
 }
 
 func (x LocationSupport_RegionalizationScope) Number() protoreflect.EnumNumber {
@@ -1581,7 +1635,7 @@ func (x LocationSupport_RegionalizationScope) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use LocationSupport_RegionalizationScope.Descriptor instead.
 func (LocationSupport_RegionalizationScope) EnumDescriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{46, 0}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{49, 0}
 }
 
 // The launch status of an infoType.
@@ -1625,11 +1679,11 @@ func (x InfoTypeDescription_InfoTypeLaunchStatus) String() string {
 }
 
 func (InfoTypeDescription_InfoTypeLaunchStatus) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_privacy_dlp_v2_dlp_proto_enumTypes[24].Descriptor()
+	return file_google_privacy_dlp_v2_dlp_proto_enumTypes[25].Descriptor()
 }
 
 func (InfoTypeDescription_InfoTypeLaunchStatus) Type() protoreflect.EnumType {
-	return &file_google_privacy_dlp_v2_dlp_proto_enumTypes[24]
+	return &file_google_privacy_dlp_v2_dlp_proto_enumTypes[25]
 }
 
 func (x InfoTypeDescription_InfoTypeLaunchStatus) Number() protoreflect.EnumNumber {
@@ -1638,7 +1692,7 @@ func (x InfoTypeDescription_InfoTypeLaunchStatus) Number() protoreflect.EnumNumb
 
 // Deprecated: Use InfoTypeDescription_InfoTypeLaunchStatus.Descriptor instead.
 func (InfoTypeDescription_InfoTypeLaunchStatus) EnumDescriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{47, 0}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{50, 0}
 }
 
 // Enum of the current locations.
@@ -1880,11 +1934,11 @@ func (x InfoTypeCategory_LocationCategory) String() string {
 }
 
 func (InfoTypeCategory_LocationCategory) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_privacy_dlp_v2_dlp_proto_enumTypes[25].Descriptor()
+	return file_google_privacy_dlp_v2_dlp_proto_enumTypes[26].Descriptor()
 }
 
 func (InfoTypeCategory_LocationCategory) Type() protoreflect.EnumType {
-	return &file_google_privacy_dlp_v2_dlp_proto_enumTypes[25]
+	return &file_google_privacy_dlp_v2_dlp_proto_enumTypes[26]
 }
 
 func (x InfoTypeCategory_LocationCategory) Number() protoreflect.EnumNumber {
@@ -1893,7 +1947,7 @@ func (x InfoTypeCategory_LocationCategory) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use InfoTypeCategory_LocationCategory.Descriptor instead.
 func (InfoTypeCategory_LocationCategory) EnumDescriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{48, 0}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{51, 0}
 }
 
 // Enum of the current industries in the category.
@@ -1938,11 +1992,11 @@ func (x InfoTypeCategory_IndustryCategory) String() string {
 }
 
 func (InfoTypeCategory_IndustryCategory) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_privacy_dlp_v2_dlp_proto_enumTypes[26].Descriptor()
+	return file_google_privacy_dlp_v2_dlp_proto_enumTypes[27].Descriptor()
 }
 
 func (InfoTypeCategory_IndustryCategory) Type() protoreflect.EnumType {
-	return &file_google_privacy_dlp_v2_dlp_proto_enumTypes[26]
+	return &file_google_privacy_dlp_v2_dlp_proto_enumTypes[27]
 }
 
 func (x InfoTypeCategory_IndustryCategory) Number() protoreflect.EnumNumber {
@@ -1951,7 +2005,7 @@ func (x InfoTypeCategory_IndustryCategory) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use InfoTypeCategory_IndustryCategory.Descriptor instead.
 func (InfoTypeCategory_IndustryCategory) EnumDescriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{48, 1}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{51, 1}
 }
 
 // Enum of the current types in the category.
@@ -2020,11 +2074,11 @@ func (x InfoTypeCategory_TypeCategory) String() string {
 }
 
 func (InfoTypeCategory_TypeCategory) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_privacy_dlp_v2_dlp_proto_enumTypes[27].Descriptor()
+	return file_google_privacy_dlp_v2_dlp_proto_enumTypes[28].Descriptor()
 }
 
 func (InfoTypeCategory_TypeCategory) Type() protoreflect.EnumType {
-	return &file_google_privacy_dlp_v2_dlp_proto_enumTypes[27]
+	return &file_google_privacy_dlp_v2_dlp_proto_enumTypes[28]
 }
 
 func (x InfoTypeCategory_TypeCategory) Number() protoreflect.EnumNumber {
@@ -2033,7 +2087,7 @@ func (x InfoTypeCategory_TypeCategory) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use InfoTypeCategory_TypeCategory.Descriptor instead.
 func (InfoTypeCategory_TypeCategory) EnumDescriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{48, 2}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{51, 2}
 }
 
 // Components that make up time.
@@ -2089,11 +2143,11 @@ func (x TimePartConfig_TimePart) String() string {
 }
 
 func (TimePartConfig_TimePart) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_privacy_dlp_v2_dlp_proto_enumTypes[28].Descriptor()
+	return file_google_privacy_dlp_v2_dlp_proto_enumTypes[29].Descriptor()
 }
 
 func (TimePartConfig_TimePart) Type() protoreflect.EnumType {
-	return &file_google_privacy_dlp_v2_dlp_proto_enumTypes[28]
+	return &file_google_privacy_dlp_v2_dlp_proto_enumTypes[29]
 }
 
 func (x TimePartConfig_TimePart) Number() protoreflect.EnumNumber {
@@ -2102,7 +2156,7 @@ func (x TimePartConfig_TimePart) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use TimePartConfig_TimePart.Descriptor instead.
 func (TimePartConfig_TimePart) EnumDescriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{65, 0}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{68, 0}
 }
 
 // Convenience enum for indicating common characters to not transform.
@@ -2154,11 +2208,11 @@ func (x CharsToIgnore_CommonCharsToIgnore) String() string {
 }
 
 func (CharsToIgnore_CommonCharsToIgnore) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_privacy_dlp_v2_dlp_proto_enumTypes[29].Descriptor()
+	return file_google_privacy_dlp_v2_dlp_proto_enumTypes[30].Descriptor()
 }
 
 func (CharsToIgnore_CommonCharsToIgnore) Type() protoreflect.EnumType {
-	return &file_google_privacy_dlp_v2_dlp_proto_enumTypes[29]
+	return &file_google_privacy_dlp_v2_dlp_proto_enumTypes[30]
 }
 
 func (x CharsToIgnore_CommonCharsToIgnore) Number() protoreflect.EnumNumber {
@@ -2167,7 +2221,7 @@ func (x CharsToIgnore_CommonCharsToIgnore) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use CharsToIgnore_CommonCharsToIgnore.Descriptor instead.
 func (CharsToIgnore_CommonCharsToIgnore) EnumDescriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{72, 0}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{75, 0}
 }
 
 // These are commonly used subsets of the alphabet that the FFX mode
@@ -2217,11 +2271,11 @@ func (x CryptoReplaceFfxFpeConfig_FfxCommonNativeAlphabet) String() string {
 }
 
 func (CryptoReplaceFfxFpeConfig_FfxCommonNativeAlphabet) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_privacy_dlp_v2_dlp_proto_enumTypes[30].Descriptor()
+	return file_google_privacy_dlp_v2_dlp_proto_enumTypes[31].Descriptor()
 }
 
 func (CryptoReplaceFfxFpeConfig_FfxCommonNativeAlphabet) Type() protoreflect.EnumType {
-	return &file_google_privacy_dlp_v2_dlp_proto_enumTypes[30]
+	return &file_google_privacy_dlp_v2_dlp_proto_enumTypes[31]
 }
 
 func (x CryptoReplaceFfxFpeConfig_FfxCommonNativeAlphabet) Number() protoreflect.EnumNumber {
@@ -2230,7 +2284,7 @@ func (x CryptoReplaceFfxFpeConfig_FfxCommonNativeAlphabet) Number() protoreflect
 
 // Deprecated: Use CryptoReplaceFfxFpeConfig_FfxCommonNativeAlphabet.Descriptor instead.
 func (CryptoReplaceFfxFpeConfig_FfxCommonNativeAlphabet) EnumDescriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{76, 0}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{79, 0}
 }
 
 // Logical operators for conditional checks.
@@ -2266,11 +2320,11 @@ func (x RecordCondition_Expressions_LogicalOperator) String() string {
 }
 
 func (RecordCondition_Expressions_LogicalOperator) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_privacy_dlp_v2_dlp_proto_enumTypes[31].Descriptor()
+	return file_google_privacy_dlp_v2_dlp_proto_enumTypes[32].Descriptor()
 }
 
 func (RecordCondition_Expressions_LogicalOperator) Type() protoreflect.EnumType {
-	return &file_google_privacy_dlp_v2_dlp_proto_enumTypes[31]
+	return &file_google_privacy_dlp_v2_dlp_proto_enumTypes[32]
 }
 
 func (x RecordCondition_Expressions_LogicalOperator) Number() protoreflect.EnumNumber {
@@ -2279,7 +2333,7 @@ func (x RecordCondition_Expressions_LogicalOperator) Number() protoreflect.EnumN
 
 // Deprecated: Use RecordCondition_Expressions_LogicalOperator.Descriptor instead.
 func (RecordCondition_Expressions_LogicalOperator) EnumDescriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{86, 2, 0}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{89, 2, 0}
 }
 
 // Possible outcomes of transformations.
@@ -2319,11 +2373,11 @@ func (x TransformationSummary_TransformationResultCode) String() string {
 }
 
 func (TransformationSummary_TransformationResultCode) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_privacy_dlp_v2_dlp_proto_enumTypes[32].Descriptor()
+	return file_google_privacy_dlp_v2_dlp_proto_enumTypes[33].Descriptor()
 }
 
 func (TransformationSummary_TransformationResultCode) Type() protoreflect.EnumType {
-	return &file_google_privacy_dlp_v2_dlp_proto_enumTypes[32]
+	return &file_google_privacy_dlp_v2_dlp_proto_enumTypes[33]
 }
 
 func (x TransformationSummary_TransformationResultCode) Number() protoreflect.EnumNumber {
@@ -2332,7 +2386,7 @@ func (x TransformationSummary_TransformationResultCode) Number() protoreflect.En
 
 // Deprecated: Use TransformationSummary_TransformationResultCode.Descriptor instead.
 func (TransformationSummary_TransformationResultCode) EnumDescriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{88, 0}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{91, 0}
 }
 
 // Additional information about the error.
@@ -2372,11 +2426,11 @@ func (x Error_ErrorExtraInfo) String() string {
 }
 
 func (Error_ErrorExtraInfo) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_privacy_dlp_v2_dlp_proto_enumTypes[33].Descriptor()
+	return file_google_privacy_dlp_v2_dlp_proto_enumTypes[34].Descriptor()
 }
 
 func (Error_ErrorExtraInfo) Type() protoreflect.EnumType {
-	return &file_google_privacy_dlp_v2_dlp_proto_enumTypes[33]
+	return &file_google_privacy_dlp_v2_dlp_proto_enumTypes[34]
 }
 
 func (x Error_ErrorExtraInfo) Number() protoreflect.EnumNumber {
@@ -2385,7 +2439,7 @@ func (x Error_ErrorExtraInfo) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Error_ErrorExtraInfo.Descriptor instead.
 func (Error_ErrorExtraInfo) EnumDescriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{99, 0}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{102, 0}
 }
 
 // Whether the trigger is currently active. If PAUSED or CANCELLED, no jobs
@@ -2432,11 +2486,11 @@ func (x JobTrigger_Status) String() string {
 }
 
 func (JobTrigger_Status) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_privacy_dlp_v2_dlp_proto_enumTypes[34].Descriptor()
+	return file_google_privacy_dlp_v2_dlp_proto_enumTypes[35].Descriptor()
 }
 
 func (JobTrigger_Status) Type() protoreflect.EnumType {
-	return &file_google_privacy_dlp_v2_dlp_proto_enumTypes[34]
+	return &file_google_privacy_dlp_v2_dlp_proto_enumTypes[35]
 }
 
 func (x JobTrigger_Status) Number() protoreflect.EnumNumber {
@@ -2445,7 +2499,7 @@ func (x JobTrigger_Status) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use JobTrigger_Status.Descriptor instead.
 func (JobTrigger_Status) EnumDescriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{100, 0}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{103, 0}
 }
 
 // Types of event that can trigger an action.
@@ -2495,11 +2549,11 @@ func (x DataProfileAction_EventType) String() string {
 }
 
 func (DataProfileAction_EventType) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_privacy_dlp_v2_dlp_proto_enumTypes[35].Descriptor()
+	return file_google_privacy_dlp_v2_dlp_proto_enumTypes[36].Descriptor()
 }
 
 func (DataProfileAction_EventType) Type() protoreflect.EnumType {
-	return &file_google_privacy_dlp_v2_dlp_proto_enumTypes[35]
+	return &file_google_privacy_dlp_v2_dlp_proto_enumTypes[36]
 }
 
 func (x DataProfileAction_EventType) Number() protoreflect.EnumNumber {
@@ -2508,7 +2562,7 @@ func (x DataProfileAction_EventType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use DataProfileAction_EventType.Descriptor instead.
 func (DataProfileAction_EventType) EnumDescriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{124, 0}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{127, 0}
 }
 
 // The levels of detail that can be included in the Pub/Sub message.
@@ -2552,11 +2606,11 @@ func (x DataProfileAction_PubSubNotification_DetailLevel) String() string {
 }
 
 func (DataProfileAction_PubSubNotification_DetailLevel) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_privacy_dlp_v2_dlp_proto_enumTypes[36].Descriptor()
+	return file_google_privacy_dlp_v2_dlp_proto_enumTypes[37].Descriptor()
 }
 
 func (DataProfileAction_PubSubNotification_DetailLevel) Type() protoreflect.EnumType {
-	return &file_google_privacy_dlp_v2_dlp_proto_enumTypes[36]
+	return &file_google_privacy_dlp_v2_dlp_proto_enumTypes[37]
 }
 
 func (x DataProfileAction_PubSubNotification_DetailLevel) Number() protoreflect.EnumNumber {
@@ -2565,7 +2619,7 @@ func (x DataProfileAction_PubSubNotification_DetailLevel) Number() protoreflect.
 
 // Deprecated: Use DataProfileAction_PubSubNotification_DetailLevel.Descriptor instead.
 func (DataProfileAction_PubSubNotification_DetailLevel) EnumDescriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{124, 1, 0}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{127, 1, 0}
 }
 
 // Whether the discovery config is currently active. New options may be added
@@ -2606,11 +2660,11 @@ func (x DiscoveryConfig_Status) String() string {
 }
 
 func (DiscoveryConfig_Status) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_privacy_dlp_v2_dlp_proto_enumTypes[37].Descriptor()
+	return file_google_privacy_dlp_v2_dlp_proto_enumTypes[38].Descriptor()
 }
 
 func (DiscoveryConfig_Status) Type() protoreflect.EnumType {
-	return &file_google_privacy_dlp_v2_dlp_proto_enumTypes[37]
+	return &file_google_privacy_dlp_v2_dlp_proto_enumTypes[38]
 }
 
 func (x DiscoveryConfig_Status) Number() protoreflect.EnumNumber {
@@ -2619,7 +2673,7 @@ func (x DiscoveryConfig_Status) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use DiscoveryConfig_Status.Descriptor instead.
 func (DiscoveryConfig_Status) EnumDescriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{134, 0}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{137, 0}
 }
 
 // The database engines that should be profiled.
@@ -2663,11 +2717,11 @@ func (x DiscoveryCloudSqlConditions_DatabaseEngine) String() string {
 }
 
 func (DiscoveryCloudSqlConditions_DatabaseEngine) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_privacy_dlp_v2_dlp_proto_enumTypes[38].Descriptor()
+	return file_google_privacy_dlp_v2_dlp_proto_enumTypes[39].Descriptor()
 }
 
 func (DiscoveryCloudSqlConditions_DatabaseEngine) Type() protoreflect.EnumType {
-	return &file_google_privacy_dlp_v2_dlp_proto_enumTypes[38]
+	return &file_google_privacy_dlp_v2_dlp_proto_enumTypes[39]
 }
 
 func (x DiscoveryCloudSqlConditions_DatabaseEngine) Number() protoreflect.EnumNumber {
@@ -2676,7 +2730,7 @@ func (x DiscoveryCloudSqlConditions_DatabaseEngine) Number() protoreflect.EnumNu
 
 // Deprecated: Use DiscoveryCloudSqlConditions_DatabaseEngine.Descriptor instead.
 func (DiscoveryCloudSqlConditions_DatabaseEngine) EnumDescriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{151, 0}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{154, 0}
 }
 
 // Cloud SQL database resource types. New values can be added at a later time.
@@ -2716,11 +2770,11 @@ func (x DiscoveryCloudSqlConditions_DatabaseResourceType) String() string {
 }
 
 func (DiscoveryCloudSqlConditions_DatabaseResourceType) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_privacy_dlp_v2_dlp_proto_enumTypes[39].Descriptor()
+	return file_google_privacy_dlp_v2_dlp_proto_enumTypes[40].Descriptor()
 }
 
 func (DiscoveryCloudSqlConditions_DatabaseResourceType) Type() protoreflect.EnumType {
-	return &file_google_privacy_dlp_v2_dlp_proto_enumTypes[39]
+	return &file_google_privacy_dlp_v2_dlp_proto_enumTypes[40]
 }
 
 func (x DiscoveryCloudSqlConditions_DatabaseResourceType) Number() protoreflect.EnumNumber {
@@ -2729,7 +2783,7 @@ func (x DiscoveryCloudSqlConditions_DatabaseResourceType) Number() protoreflect.
 
 // Deprecated: Use DiscoveryCloudSqlConditions_DatabaseResourceType.Descriptor instead.
 func (DiscoveryCloudSqlConditions_DatabaseResourceType) EnumDescriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{151, 1}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{154, 1}
 }
 
 // The type of modification that causes a profile update.
@@ -2769,11 +2823,11 @@ func (x DiscoveryCloudSqlGenerationCadence_SchemaModifiedCadence_CloudSqlSchemaM
 }
 
 func (DiscoveryCloudSqlGenerationCadence_SchemaModifiedCadence_CloudSqlSchemaModification) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_privacy_dlp_v2_dlp_proto_enumTypes[40].Descriptor()
+	return file_google_privacy_dlp_v2_dlp_proto_enumTypes[41].Descriptor()
 }
 
 func (DiscoveryCloudSqlGenerationCadence_SchemaModifiedCadence_CloudSqlSchemaModification) Type() protoreflect.EnumType {
-	return &file_google_privacy_dlp_v2_dlp_proto_enumTypes[40]
+	return &file_google_privacy_dlp_v2_dlp_proto_enumTypes[41]
 }
 
 func (x DiscoveryCloudSqlGenerationCadence_SchemaModifiedCadence_CloudSqlSchemaModification) Number() protoreflect.EnumNumber {
@@ -2782,7 +2836,7 @@ func (x DiscoveryCloudSqlGenerationCadence_SchemaModifiedCadence_CloudSqlSchemaM
 
 // Deprecated: Use DiscoveryCloudSqlGenerationCadence_SchemaModifiedCadence_CloudSqlSchemaModification.Descriptor instead.
 func (DiscoveryCloudSqlGenerationCadence_SchemaModifiedCadence_CloudSqlSchemaModification) EnumDescriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{152, 0, 0}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{155, 0, 0}
 }
 
 // The attribute of an object. See
@@ -2852,11 +2906,11 @@ func (x DiscoveryCloudStorageConditions_CloudStorageObjectAttribute) String() st
 }
 
 func (DiscoveryCloudStorageConditions_CloudStorageObjectAttribute) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_privacy_dlp_v2_dlp_proto_enumTypes[41].Descriptor()
+	return file_google_privacy_dlp_v2_dlp_proto_enumTypes[42].Descriptor()
 }
 
 func (DiscoveryCloudStorageConditions_CloudStorageObjectAttribute) Type() protoreflect.EnumType {
-	return &file_google_privacy_dlp_v2_dlp_proto_enumTypes[41]
+	return &file_google_privacy_dlp_v2_dlp_proto_enumTypes[42]
 }
 
 func (x DiscoveryCloudStorageConditions_CloudStorageObjectAttribute) Number() protoreflect.EnumNumber {
@@ -2865,7 +2919,7 @@ func (x DiscoveryCloudStorageConditions_CloudStorageObjectAttribute) Number() pr
 
 // Deprecated: Use DiscoveryCloudStorageConditions_CloudStorageObjectAttribute.Descriptor instead.
 func (DiscoveryCloudStorageConditions_CloudStorageObjectAttribute) EnumDescriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{162, 0}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{165, 0}
 }
 
 // The attribute of a bucket.
@@ -2914,11 +2968,11 @@ func (x DiscoveryCloudStorageConditions_CloudStorageBucketAttribute) String() st
 }
 
 func (DiscoveryCloudStorageConditions_CloudStorageBucketAttribute) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_privacy_dlp_v2_dlp_proto_enumTypes[42].Descriptor()
+	return file_google_privacy_dlp_v2_dlp_proto_enumTypes[43].Descriptor()
 }
 
 func (DiscoveryCloudStorageConditions_CloudStorageBucketAttribute) Type() protoreflect.EnumType {
-	return &file_google_privacy_dlp_v2_dlp_proto_enumTypes[42]
+	return &file_google_privacy_dlp_v2_dlp_proto_enumTypes[43]
 }
 
 func (x DiscoveryCloudStorageConditions_CloudStorageBucketAttribute) Number() protoreflect.EnumNumber {
@@ -2927,7 +2981,7 @@ func (x DiscoveryCloudStorageConditions_CloudStorageBucketAttribute) Number() pr
 
 // Deprecated: Use DiscoveryCloudStorageConditions_CloudStorageBucketAttribute.Descriptor instead.
 func (DiscoveryCloudStorageConditions_CloudStorageBucketAttribute) EnumDescriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{162, 1}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{165, 1}
 }
 
 // Supported Amazon S3 bucket types.
@@ -2968,11 +3022,11 @@ func (x AmazonS3BucketConditions_BucketType) String() string {
 }
 
 func (AmazonS3BucketConditions_BucketType) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_privacy_dlp_v2_dlp_proto_enumTypes[43].Descriptor()
+	return file_google_privacy_dlp_v2_dlp_proto_enumTypes[44].Descriptor()
 }
 
 func (AmazonS3BucketConditions_BucketType) Type() protoreflect.EnumType {
-	return &file_google_privacy_dlp_v2_dlp_proto_enumTypes[43]
+	return &file_google_privacy_dlp_v2_dlp_proto_enumTypes[44]
 }
 
 func (x AmazonS3BucketConditions_BucketType) Number() protoreflect.EnumNumber {
@@ -2981,7 +3035,7 @@ func (x AmazonS3BucketConditions_BucketType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use AmazonS3BucketConditions_BucketType.Descriptor instead.
 func (AmazonS3BucketConditions_BucketType) EnumDescriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{175, 0}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{178, 0}
 }
 
 // Supported Amazon S3 object storage classes.
@@ -3034,11 +3088,11 @@ func (x AmazonS3BucketConditions_ObjectStorageClass) String() string {
 }
 
 func (AmazonS3BucketConditions_ObjectStorageClass) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_privacy_dlp_v2_dlp_proto_enumTypes[44].Descriptor()
+	return file_google_privacy_dlp_v2_dlp_proto_enumTypes[45].Descriptor()
 }
 
 func (AmazonS3BucketConditions_ObjectStorageClass) Type() protoreflect.EnumType {
-	return &file_google_privacy_dlp_v2_dlp_proto_enumTypes[44]
+	return &file_google_privacy_dlp_v2_dlp_proto_enumTypes[45]
 }
 
 func (x AmazonS3BucketConditions_ObjectStorageClass) Number() protoreflect.EnumNumber {
@@ -3047,7 +3101,7 @@ func (x AmazonS3BucketConditions_ObjectStorageClass) Number() protoreflect.EnumN
 
 // Deprecated: Use AmazonS3BucketConditions_ObjectStorageClass.Descriptor instead.
 func (AmazonS3BucketConditions_ObjectStorageClass) EnumDescriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{175, 1}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{178, 1}
 }
 
 // Possible states of a job. New items may be added.
@@ -3107,11 +3161,11 @@ func (x DlpJob_JobState) String() string {
 }
 
 func (DlpJob_JobState) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_privacy_dlp_v2_dlp_proto_enumTypes[45].Descriptor()
+	return file_google_privacy_dlp_v2_dlp_proto_enumTypes[46].Descriptor()
 }
 
 func (DlpJob_JobState) Type() protoreflect.EnumType {
-	return &file_google_privacy_dlp_v2_dlp_proto_enumTypes[45]
+	return &file_google_privacy_dlp_v2_dlp_proto_enumTypes[46]
 }
 
 func (x DlpJob_JobState) Number() protoreflect.EnumNumber {
@@ -3120,7 +3174,7 @@ func (x DlpJob_JobState) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use DlpJob_JobState.Descriptor instead.
 func (DlpJob_JobState) EnumDescriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{188, 0}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{191, 0}
 }
 
 // Various score levels for resources.
@@ -3174,11 +3228,11 @@ func (x DataRiskLevel_DataRiskLevelScore) String() string {
 }
 
 func (DataRiskLevel_DataRiskLevelScore) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_privacy_dlp_v2_dlp_proto_enumTypes[46].Descriptor()
+	return file_google_privacy_dlp_v2_dlp_proto_enumTypes[47].Descriptor()
 }
 
 func (DataRiskLevel_DataRiskLevelScore) Type() protoreflect.EnumType {
-	return &file_google_privacy_dlp_v2_dlp_proto_enumTypes[46]
+	return &file_google_privacy_dlp_v2_dlp_proto_enumTypes[47]
 }
 
 func (x DataRiskLevel_DataRiskLevelScore) Number() protoreflect.EnumNumber {
@@ -3187,7 +3241,7 @@ func (x DataRiskLevel_DataRiskLevelScore) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use DataRiskLevel_DataRiskLevelScore.Descriptor instead.
 func (DataRiskLevel_DataRiskLevelScore) EnumDescriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{228, 0}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{231, 0}
 }
 
 // Possible states of a profile. New items may be added.
@@ -3230,11 +3284,11 @@ func (x TableDataProfile_State) String() string {
 }
 
 func (TableDataProfile_State) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_privacy_dlp_v2_dlp_proto_enumTypes[47].Descriptor()
+	return file_google_privacy_dlp_v2_dlp_proto_enumTypes[48].Descriptor()
 }
 
 func (TableDataProfile_State) Type() protoreflect.EnumType {
-	return &file_google_privacy_dlp_v2_dlp_proto_enumTypes[47]
+	return &file_google_privacy_dlp_v2_dlp_proto_enumTypes[48]
 }
 
 func (x TableDataProfile_State) Number() protoreflect.EnumNumber {
@@ -3243,7 +3297,7 @@ func (x TableDataProfile_State) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use TableDataProfile_State.Descriptor instead.
 func (TableDataProfile_State) EnumDescriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{231, 0}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{234, 0}
 }
 
 // Possible states of a profile. New items may be added.
@@ -3286,11 +3340,11 @@ func (x ColumnDataProfile_State) String() string {
 }
 
 func (ColumnDataProfile_State) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_privacy_dlp_v2_dlp_proto_enumTypes[48].Descriptor()
+	return file_google_privacy_dlp_v2_dlp_proto_enumTypes[49].Descriptor()
 }
 
 func (ColumnDataProfile_State) Type() protoreflect.EnumType {
-	return &file_google_privacy_dlp_v2_dlp_proto_enumTypes[48]
+	return &file_google_privacy_dlp_v2_dlp_proto_enumTypes[49]
 }
 
 func (x ColumnDataProfile_State) Number() protoreflect.EnumNumber {
@@ -3299,7 +3353,7 @@ func (x ColumnDataProfile_State) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use ColumnDataProfile_State.Descriptor instead.
 func (ColumnDataProfile_State) EnumDescriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{235, 0}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{238, 0}
 }
 
 // Data types of the data in a column. Types may be added over time.
@@ -3404,11 +3458,11 @@ func (x ColumnDataProfile_ColumnDataType) String() string {
 }
 
 func (ColumnDataProfile_ColumnDataType) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_privacy_dlp_v2_dlp_proto_enumTypes[49].Descriptor()
+	return file_google_privacy_dlp_v2_dlp_proto_enumTypes[50].Descriptor()
 }
 
 func (ColumnDataProfile_ColumnDataType) Type() protoreflect.EnumType {
-	return &file_google_privacy_dlp_v2_dlp_proto_enumTypes[49]
+	return &file_google_privacy_dlp_v2_dlp_proto_enumTypes[50]
 }
 
 func (x ColumnDataProfile_ColumnDataType) Number() protoreflect.EnumNumber {
@@ -3417,7 +3471,7 @@ func (x ColumnDataProfile_ColumnDataType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use ColumnDataProfile_ColumnDataType.Descriptor instead.
 func (ColumnDataProfile_ColumnDataType) EnumDescriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{235, 1}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{238, 1}
 }
 
 // The possible policy states for a column.
@@ -3453,11 +3507,11 @@ func (x ColumnDataProfile_ColumnPolicyState) String() string {
 }
 
 func (ColumnDataProfile_ColumnPolicyState) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_privacy_dlp_v2_dlp_proto_enumTypes[50].Descriptor()
+	return file_google_privacy_dlp_v2_dlp_proto_enumTypes[51].Descriptor()
 }
 
 func (ColumnDataProfile_ColumnPolicyState) Type() protoreflect.EnumType {
-	return &file_google_privacy_dlp_v2_dlp_proto_enumTypes[50]
+	return &file_google_privacy_dlp_v2_dlp_proto_enumTypes[51]
 }
 
 func (x ColumnDataProfile_ColumnPolicyState) Number() protoreflect.EnumNumber {
@@ -3466,7 +3520,7 @@ func (x ColumnDataProfile_ColumnPolicyState) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use ColumnDataProfile_ColumnPolicyState.Descriptor instead.
 func (ColumnDataProfile_ColumnPolicyState) EnumDescriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{235, 2}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{238, 2}
 }
 
 // Possible states of a profile. New items may be added.
@@ -3509,11 +3563,11 @@ func (x FileStoreDataProfile_State) String() string {
 }
 
 func (FileStoreDataProfile_State) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_privacy_dlp_v2_dlp_proto_enumTypes[51].Descriptor()
+	return file_google_privacy_dlp_v2_dlp_proto_enumTypes[52].Descriptor()
 }
 
 func (FileStoreDataProfile_State) Type() protoreflect.EnumType {
-	return &file_google_privacy_dlp_v2_dlp_proto_enumTypes[51]
+	return &file_google_privacy_dlp_v2_dlp_proto_enumTypes[52]
 }
 
 func (x FileStoreDataProfile_State) Number() protoreflect.EnumNumber {
@@ -3522,7 +3576,7 @@ func (x FileStoreDataProfile_State) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use FileStoreDataProfile_State.Descriptor instead.
 func (FileStoreDataProfile_State) EnumDescriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{236, 0}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{239, 0}
 }
 
 // Various score levels for resources.
@@ -3562,11 +3616,11 @@ func (x DataProfilePubSubCondition_ProfileScoreBucket) String() string {
 }
 
 func (DataProfilePubSubCondition_ProfileScoreBucket) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_privacy_dlp_v2_dlp_proto_enumTypes[52].Descriptor()
+	return file_google_privacy_dlp_v2_dlp_proto_enumTypes[53].Descriptor()
 }
 
 func (DataProfilePubSubCondition_ProfileScoreBucket) Type() protoreflect.EnumType {
-	return &file_google_privacy_dlp_v2_dlp_proto_enumTypes[52]
+	return &file_google_privacy_dlp_v2_dlp_proto_enumTypes[53]
 }
 
 func (x DataProfilePubSubCondition_ProfileScoreBucket) Number() protoreflect.EnumNumber {
@@ -3575,7 +3629,7 @@ func (x DataProfilePubSubCondition_ProfileScoreBucket) Number() protoreflect.Enu
 
 // Deprecated: Use DataProfilePubSubCondition_ProfileScoreBucket.Descriptor instead.
 func (DataProfilePubSubCondition_ProfileScoreBucket) EnumDescriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{251, 0}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{254, 0}
 }
 
 // Logical operators for conditional checks.
@@ -3615,11 +3669,11 @@ func (x DataProfilePubSubCondition_PubSubExpressions_PubSubLogicalOperator) Stri
 }
 
 func (DataProfilePubSubCondition_PubSubExpressions_PubSubLogicalOperator) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_privacy_dlp_v2_dlp_proto_enumTypes[53].Descriptor()
+	return file_google_privacy_dlp_v2_dlp_proto_enumTypes[54].Descriptor()
 }
 
 func (DataProfilePubSubCondition_PubSubExpressions_PubSubLogicalOperator) Type() protoreflect.EnumType {
-	return &file_google_privacy_dlp_v2_dlp_proto_enumTypes[53]
+	return &file_google_privacy_dlp_v2_dlp_proto_enumTypes[54]
 }
 
 func (x DataProfilePubSubCondition_PubSubExpressions_PubSubLogicalOperator) Number() protoreflect.EnumNumber {
@@ -3628,7 +3682,7 @@ func (x DataProfilePubSubCondition_PubSubExpressions_PubSubLogicalOperator) Numb
 
 // Deprecated: Use DataProfilePubSubCondition_PubSubExpressions_PubSubLogicalOperator.Descriptor instead.
 func (DataProfilePubSubCondition_PubSubExpressions_PubSubLogicalOperator) EnumDescriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{251, 1, 0}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{254, 1, 0}
 }
 
 // Database engine of a Cloud SQL instance.
@@ -3669,11 +3723,11 @@ func (x CloudSqlProperties_DatabaseEngine) String() string {
 }
 
 func (CloudSqlProperties_DatabaseEngine) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_privacy_dlp_v2_dlp_proto_enumTypes[54].Descriptor()
+	return file_google_privacy_dlp_v2_dlp_proto_enumTypes[55].Descriptor()
 }
 
 func (CloudSqlProperties_DatabaseEngine) Type() protoreflect.EnumType {
-	return &file_google_privacy_dlp_v2_dlp_proto_enumTypes[54]
+	return &file_google_privacy_dlp_v2_dlp_proto_enumTypes[55]
 }
 
 func (x CloudSqlProperties_DatabaseEngine) Number() protoreflect.EnumNumber {
@@ -3682,7 +3736,7 @@ func (x CloudSqlProperties_DatabaseEngine) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use CloudSqlProperties_DatabaseEngine.Descriptor instead.
 func (CloudSqlProperties_DatabaseEngine) EnumDescriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{264, 0}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{267, 0}
 }
 
 // Cluster type. Each cluster corresponds to a set of file types.
@@ -3755,11 +3809,11 @@ func (x FileClusterType_Cluster) String() string {
 }
 
 func (FileClusterType_Cluster) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_privacy_dlp_v2_dlp_proto_enumTypes[55].Descriptor()
+	return file_google_privacy_dlp_v2_dlp_proto_enumTypes[56].Descriptor()
 }
 
 func (FileClusterType_Cluster) Type() protoreflect.EnumType {
-	return &file_google_privacy_dlp_v2_dlp_proto_enumTypes[55]
+	return &file_google_privacy_dlp_v2_dlp_proto_enumTypes[56]
 }
 
 func (x FileClusterType_Cluster) Number() protoreflect.EnumNumber {
@@ -3768,7 +3822,7 @@ func (x FileClusterType_Cluster) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use FileClusterType_Cluster.Descriptor instead.
 func (FileClusterType_Cluster) EnumDescriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{267, 0}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{270, 0}
 }
 
 // This enum defines the various domain categories a data profile can fall
@@ -3811,11 +3865,11 @@ func (x Domain_Category) String() string {
 }
 
 func (Domain_Category) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_privacy_dlp_v2_dlp_proto_enumTypes[56].Descriptor()
+	return file_google_privacy_dlp_v2_dlp_proto_enumTypes[57].Descriptor()
 }
 
 func (Domain_Category) Type() protoreflect.EnumType {
-	return &file_google_privacy_dlp_v2_dlp_proto_enumTypes[56]
+	return &file_google_privacy_dlp_v2_dlp_proto_enumTypes[57]
 }
 
 func (x Domain_Category) Number() protoreflect.EnumNumber {
@@ -3824,7 +3878,7 @@ func (x Domain_Category) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Domain_Category.Descriptor instead.
 func (Domain_Category) EnumDescriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{270, 0}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{273, 0}
 }
 
 // The signal used to determine the category.
@@ -3892,11 +3946,11 @@ func (x Domain_Signal) String() string {
 }
 
 func (Domain_Signal) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_privacy_dlp_v2_dlp_proto_enumTypes[57].Descriptor()
+	return file_google_privacy_dlp_v2_dlp_proto_enumTypes[58].Descriptor()
 }
 
 func (Domain_Signal) Type() protoreflect.EnumType {
-	return &file_google_privacy_dlp_v2_dlp_proto_enumTypes[57]
+	return &file_google_privacy_dlp_v2_dlp_proto_enumTypes[58]
 }
 
 func (x Domain_Signal) Number() protoreflect.EnumNumber {
@@ -3905,7 +3959,7 @@ func (x Domain_Signal) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Domain_Signal.Descriptor instead.
 func (Domain_Signal) EnumDescriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{270, 1}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{273, 1}
 }
 
 // List of excluded infoTypes.
@@ -4895,6 +4949,7 @@ type ContentItem struct {
 	//	*ContentItem_Value
 	//	*ContentItem_Table
 	//	*ContentItem_ByteItem
+	//	*ContentItem_Conversation
 	DataItem isContentItem_DataItem `protobuf_oneof:"data_item"`
 	// User provided metadata for the content.
 	ContentMetadata *ContentMetadata `protobuf:"bytes,6,opt,name=content_metadata,json=contentMetadata,proto3" json:"content_metadata,omitempty"`
@@ -4966,6 +5021,15 @@ func (x *ContentItem) GetByteItem() *ByteContentItem {
 	return nil
 }
 
+func (x *ContentItem) GetConversation() *Conversation {
+	if x != nil {
+		if x, ok := x.DataItem.(*ContentItem_Conversation); ok {
+			return x.Conversation
+		}
+	}
+	return nil
+}
+
 func (x *ContentItem) GetContentMetadata() *ContentMetadata {
 	if x != nil {
 		return x.ContentMetadata
@@ -4994,11 +5058,20 @@ type ContentItem_ByteItem struct {
 	ByteItem *ByteContentItem `protobuf:"bytes,5,opt,name=byte_item,json=byteItem,proto3,oneof"`
 }
 
+type ContentItem_Conversation struct {
+	// Represents a conversation (either complete or a slice).
+	// It is assumed that all included messages are contiguous and ordered in
+	// chronological order.
+	Conversation *Conversation `protobuf:"bytes,7,opt,name=conversation,proto3,oneof"`
+}
+
 func (*ContentItem_Value) isContentItem_DataItem() {}
 
 func (*ContentItem_Table) isContentItem_DataItem() {}
 
 func (*ContentItem_ByteItem) isContentItem_DataItem() {}
+
+func (*ContentItem_Conversation) isContentItem_DataItem() {}
 
 // Metadata on content to be scanned.
 type ContentMetadata struct {
@@ -5046,6 +5119,126 @@ func (x *ContentMetadata) GetProperties() []*KeyValueMetadataProperty {
 	return nil
 }
 
+// Complete conversation or slice of a conversation.
+// It is assumed that all included messages are contiguous and ordered in
+// chronological order.
+type Conversation struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Messages exchanged within this conversation.
+	// The maximum number of messages allowed is 50k.
+	// The order of the messages is assumed to be chronological and will be used
+	// to index findings in the response.
+	Messages      []*ConversationMessage `protobuf:"bytes,1,rep,name=messages,proto3" json:"messages,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Conversation) Reset() {
+	*x = Conversation{}
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[13]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Conversation) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Conversation) ProtoMessage() {}
+
+func (x *Conversation) ProtoReflect() protoreflect.Message {
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[13]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Conversation.ProtoReflect.Descriptor instead.
+func (*Conversation) Descriptor() ([]byte, []int) {
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{13}
+}
+
+func (x *Conversation) GetMessages() []*ConversationMessage {
+	if x != nil {
+		return x.Messages
+	}
+	return nil
+}
+
+// Single message in a conversation.
+type ConversationMessage struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The contents of this message.
+	Content string `protobuf:"bytes,1,opt,name=content,proto3" json:"content,omitempty"`
+	// The type of message.
+	MessageType ConversationMessage_MessageType `protobuf:"varint,2,opt,name=message_type,json=messageType,proto3,enum=google.privacy.dlp.v2.ConversationMessage_MessageType" json:"message_type,omitempty"`
+	// Optional. The identifier of the participant,
+	// for example, 'test-user' or 'gemini'.
+	// The participant ID can contain lowercase letters, numbers, and hyphens;
+	// that is, it must match the regular expression:
+	// `^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$`.
+	// The maximum length is 63 characters.
+	ParticipantId string `protobuf:"bytes,3,opt,name=participant_id,json=participantId,proto3" json:"participant_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ConversationMessage) Reset() {
+	*x = ConversationMessage{}
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[14]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ConversationMessage) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ConversationMessage) ProtoMessage() {}
+
+func (x *ConversationMessage) ProtoReflect() protoreflect.Message {
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[14]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ConversationMessage.ProtoReflect.Descriptor instead.
+func (*ConversationMessage) Descriptor() ([]byte, []int) {
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{14}
+}
+
+func (x *ConversationMessage) GetContent() string {
+	if x != nil {
+		return x.Content
+	}
+	return ""
+}
+
+func (x *ConversationMessage) GetMessageType() ConversationMessage_MessageType {
+	if x != nil {
+		return x.MessageType
+	}
+	return ConversationMessage_MESSAGE_TYPE_UNSPECIFIED
+}
+
+func (x *ConversationMessage) GetParticipantId() string {
+	if x != nil {
+		return x.ParticipantId
+	}
+	return ""
+}
+
 // Structured content to inspect. Up to 50,000 `Value`s per request allowed. See
 // https://cloud.google.com/sensitive-data-protection/docs/inspecting-structured-text#inspecting_a_table
 // to learn more.
@@ -5061,7 +5254,7 @@ type Table struct {
 
 func (x *Table) Reset() {
 	*x = Table{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[13]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5073,7 +5266,7 @@ func (x *Table) String() string {
 func (*Table) ProtoMessage() {}
 
 func (x *Table) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[13]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5086,7 +5279,7 @@ func (x *Table) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Table.ProtoReflect.Descriptor instead.
 func (*Table) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{13}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *Table) GetHeaders() []*FieldId {
@@ -5116,7 +5309,7 @@ type KeyValueMetadataProperty struct {
 
 func (x *KeyValueMetadataProperty) Reset() {
 	*x = KeyValueMetadataProperty{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[14]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5128,7 +5321,7 @@ func (x *KeyValueMetadataProperty) String() string {
 func (*KeyValueMetadataProperty) ProtoMessage() {}
 
 func (x *KeyValueMetadataProperty) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[14]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5141,7 +5334,7 @@ func (x *KeyValueMetadataProperty) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use KeyValueMetadataProperty.ProtoReflect.Descriptor instead.
 func (*KeyValueMetadataProperty) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{14}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *KeyValueMetadataProperty) GetKey() string {
@@ -5176,7 +5369,7 @@ type InspectResult struct {
 
 func (x *InspectResult) Reset() {
 	*x = InspectResult{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[15]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5188,7 +5381,7 @@ func (x *InspectResult) String() string {
 func (*InspectResult) ProtoMessage() {}
 
 func (x *InspectResult) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[15]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5201,7 +5394,7 @@ func (x *InspectResult) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use InspectResult.ProtoReflect.Descriptor instead.
 func (*InspectResult) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{15}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *InspectResult) GetFindings() []*Finding {
@@ -5275,7 +5468,7 @@ type Finding struct {
 
 func (x *Finding) Reset() {
 	*x = Finding{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[16]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5287,7 +5480,7 @@ func (x *Finding) String() string {
 func (*Finding) ProtoMessage() {}
 
 func (x *Finding) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[16]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5300,7 +5493,7 @@ func (x *Finding) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Finding.ProtoReflect.Descriptor instead.
 func (*Finding) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{16}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *Finding) GetName() string {
@@ -5418,7 +5611,7 @@ type Location struct {
 
 func (x *Location) Reset() {
 	*x = Location{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[17]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5430,7 +5623,7 @@ func (x *Location) String() string {
 func (*Location) ProtoMessage() {}
 
 func (x *Location) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[17]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5443,7 +5636,7 @@ func (x *Location) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Location.ProtoReflect.Descriptor instead.
 func (*Location) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{17}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *Location) GetByteRange() *Range {
@@ -5497,6 +5690,7 @@ type ContentLocation struct {
 	//	*ContentLocation_ImageLocation
 	//	*ContentLocation_DocumentLocation
 	//	*ContentLocation_MetadataLocation
+	//	*ContentLocation_ConversationLocation
 	Location isContentLocation_Location `protobuf_oneof:"location"`
 	// Finding container modification timestamp, if applicable. For Cloud Storage,
 	// this field contains the last file modification timestamp. For a BigQuery
@@ -5512,7 +5706,7 @@ type ContentLocation struct {
 
 func (x *ContentLocation) Reset() {
 	*x = ContentLocation{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[18]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5524,7 +5718,7 @@ func (x *ContentLocation) String() string {
 func (*ContentLocation) ProtoMessage() {}
 
 func (x *ContentLocation) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[18]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5537,7 +5731,7 @@ func (x *ContentLocation) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ContentLocation.ProtoReflect.Descriptor instead.
 func (*ContentLocation) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{18}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *ContentLocation) GetContainerName() string {
@@ -5590,6 +5784,15 @@ func (x *ContentLocation) GetMetadataLocation() *MetadataLocation {
 	return nil
 }
 
+func (x *ContentLocation) GetConversationLocation() *ConversationLocation {
+	if x != nil {
+		if x, ok := x.Location.(*ContentLocation_ConversationLocation); ok {
+			return x.ConversationLocation
+		}
+	}
+	return nil
+}
+
 func (x *ContentLocation) GetContainerTimestamp() *timestamppb.Timestamp {
 	if x != nil {
 		return x.ContainerTimestamp
@@ -5628,6 +5831,11 @@ type ContentLocation_MetadataLocation struct {
 	MetadataLocation *MetadataLocation `protobuf:"bytes,8,opt,name=metadata_location,json=metadataLocation,proto3,oneof"`
 }
 
+type ContentLocation_ConversationLocation struct {
+	// Location within a conversation.
+	ConversationLocation *ConversationLocation `protobuf:"bytes,10,opt,name=conversation_location,json=conversationLocation,proto3,oneof"`
+}
+
 func (*ContentLocation_RecordLocation) isContentLocation_Location() {}
 
 func (*ContentLocation_ImageLocation) isContentLocation_Location() {}
@@ -5635,6 +5843,97 @@ func (*ContentLocation_ImageLocation) isContentLocation_Location() {}
 func (*ContentLocation_DocumentLocation) isContentLocation_Location() {}
 
 func (*ContentLocation_MetadataLocation) isContentLocation_Location() {}
+
+func (*ContentLocation_ConversationLocation) isContentLocation_Location() {}
+
+// Location within a conversation.
+type ConversationLocation struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The location of the finding within a conversation.
+	//
+	// Types that are valid to be assigned to Location:
+	//
+	//	*ConversationLocation_MessageIndex
+	//	*ConversationLocation_AllMessages_
+	Location      isConversationLocation_Location `protobuf_oneof:"location"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ConversationLocation) Reset() {
+	*x = ConversationLocation{}
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[21]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ConversationLocation) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ConversationLocation) ProtoMessage() {}
+
+func (x *ConversationLocation) ProtoReflect() protoreflect.Message {
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[21]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ConversationLocation.ProtoReflect.Descriptor instead.
+func (*ConversationLocation) Descriptor() ([]byte, []int) {
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{21}
+}
+
+func (x *ConversationLocation) GetLocation() isConversationLocation_Location {
+	if x != nil {
+		return x.Location
+	}
+	return nil
+}
+
+func (x *ConversationLocation) GetMessageIndex() int32 {
+	if x != nil {
+		if x, ok := x.Location.(*ConversationLocation_MessageIndex); ok {
+			return x.MessageIndex
+		}
+	}
+	return 0
+}
+
+func (x *ConversationLocation) GetAllMessages() *ConversationLocation_AllMessages {
+	if x != nil {
+		if x, ok := x.Location.(*ConversationLocation_AllMessages_); ok {
+			return x.AllMessages
+		}
+	}
+	return nil
+}
+
+type isConversationLocation_Location interface {
+	isConversationLocation_Location()
+}
+
+type ConversationLocation_MessageIndex struct {
+	// Matches an index of a message in the conversation provided in the
+	// request.
+	MessageIndex int32 `protobuf:"varint,1,opt,name=message_index,json=messageIndex,proto3,oneof"`
+}
+
+type ConversationLocation_AllMessages_ struct {
+	// If set, indicates that the finding applies to all messages in the
+	// conversation.
+	AllMessages *ConversationLocation_AllMessages `protobuf:"bytes,2,opt,name=all_messages,json=allMessages,proto3,oneof"`
+}
+
+func (*ConversationLocation_MessageIndex) isConversationLocation_Location() {}
+
+func (*ConversationLocation_AllMessages_) isConversationLocation_Location() {}
 
 // Metadata Location
 type MetadataLocation struct {
@@ -5655,7 +5954,7 @@ type MetadataLocation struct {
 
 func (x *MetadataLocation) Reset() {
 	*x = MetadataLocation{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[19]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5667,7 +5966,7 @@ func (x *MetadataLocation) String() string {
 func (*MetadataLocation) ProtoMessage() {}
 
 func (x *MetadataLocation) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[19]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5680,7 +5979,7 @@ func (x *MetadataLocation) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MetadataLocation.ProtoReflect.Descriptor instead.
 func (*MetadataLocation) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{19}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *MetadataLocation) GetType() MetadataType {
@@ -5744,7 +6043,7 @@ type StorageMetadataLabel struct {
 
 func (x *StorageMetadataLabel) Reset() {
 	*x = StorageMetadataLabel{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[20]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5756,7 +6055,7 @@ func (x *StorageMetadataLabel) String() string {
 func (*StorageMetadataLabel) ProtoMessage() {}
 
 func (x *StorageMetadataLabel) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[20]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5769,7 +6068,7 @@ func (x *StorageMetadataLabel) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StorageMetadataLabel.ProtoReflect.Descriptor instead.
 func (*StorageMetadataLabel) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{20}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *StorageMetadataLabel) GetKey() string {
@@ -5795,7 +6094,7 @@ type KeyValueMetadataLabel struct {
 
 func (x *KeyValueMetadataLabel) Reset() {
 	*x = KeyValueMetadataLabel{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[21]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5807,7 +6106,7 @@ func (x *KeyValueMetadataLabel) String() string {
 func (*KeyValueMetadataLabel) ProtoMessage() {}
 
 func (x *KeyValueMetadataLabel) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[21]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5820,7 +6119,7 @@ func (x *KeyValueMetadataLabel) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use KeyValueMetadataLabel.ProtoReflect.Descriptor instead.
 func (*KeyValueMetadataLabel) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{21}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *KeyValueMetadataLabel) GetKey() string {
@@ -5842,7 +6141,7 @@ type DocumentLocation struct {
 
 func (x *DocumentLocation) Reset() {
 	*x = DocumentLocation{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[22]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5854,7 +6153,7 @@ func (x *DocumentLocation) String() string {
 func (*DocumentLocation) ProtoMessage() {}
 
 func (x *DocumentLocation) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[22]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5867,7 +6166,7 @@ func (x *DocumentLocation) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DocumentLocation.ProtoReflect.Descriptor instead.
 func (*DocumentLocation) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{22}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{25}
 }
 
 func (x *DocumentLocation) GetFileOffset() int64 {
@@ -5892,7 +6191,7 @@ type RecordLocation struct {
 
 func (x *RecordLocation) Reset() {
 	*x = RecordLocation{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[23]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5904,7 +6203,7 @@ func (x *RecordLocation) String() string {
 func (*RecordLocation) ProtoMessage() {}
 
 func (x *RecordLocation) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[23]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5917,7 +6216,7 @@ func (x *RecordLocation) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RecordLocation.ProtoReflect.Descriptor instead.
 func (*RecordLocation) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{23}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{26}
 }
 
 func (x *RecordLocation) GetRecordKey() *RecordKey {
@@ -5957,7 +6256,7 @@ type TableLocation struct {
 
 func (x *TableLocation) Reset() {
 	*x = TableLocation{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[24]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5969,7 +6268,7 @@ func (x *TableLocation) String() string {
 func (*TableLocation) ProtoMessage() {}
 
 func (x *TableLocation) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[24]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5982,7 +6281,7 @@ func (x *TableLocation) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TableLocation.ProtoReflect.Descriptor instead.
 func (*TableLocation) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{24}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{27}
 }
 
 func (x *TableLocation) GetRowIndex() int64 {
@@ -6036,7 +6335,7 @@ type Container struct {
 
 func (x *Container) Reset() {
 	*x = Container{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[25]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6048,7 +6347,7 @@ func (x *Container) String() string {
 func (*Container) ProtoMessage() {}
 
 func (x *Container) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[25]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6061,7 +6360,7 @@ func (x *Container) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Container.ProtoReflect.Descriptor instead.
 func (*Container) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{25}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{28}
 }
 
 func (x *Container) GetType() string {
@@ -6126,7 +6425,7 @@ type Range struct {
 
 func (x *Range) Reset() {
 	*x = Range{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[26]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[29]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6138,7 +6437,7 @@ func (x *Range) String() string {
 func (*Range) ProtoMessage() {}
 
 func (x *Range) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[26]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[29]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6151,7 +6450,7 @@ func (x *Range) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Range.ProtoReflect.Descriptor instead.
 func (*Range) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{26}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{29}
 }
 
 func (x *Range) GetStart() int64 {
@@ -6179,7 +6478,7 @@ type ImageLocation struct {
 
 func (x *ImageLocation) Reset() {
 	*x = ImageLocation{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[27]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[30]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6191,7 +6490,7 @@ func (x *ImageLocation) String() string {
 func (*ImageLocation) ProtoMessage() {}
 
 func (x *ImageLocation) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[27]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[30]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6204,7 +6503,7 @@ func (x *ImageLocation) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ImageLocation.ProtoReflect.Descriptor instead.
 func (*ImageLocation) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{27}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{30}
 }
 
 func (x *ImageLocation) GetBoundingBoxes() []*BoundingBox {
@@ -6231,7 +6530,7 @@ type BoundingBox struct {
 
 func (x *BoundingBox) Reset() {
 	*x = BoundingBox{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[28]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[31]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6243,7 +6542,7 @@ func (x *BoundingBox) String() string {
 func (*BoundingBox) ProtoMessage() {}
 
 func (x *BoundingBox) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[28]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[31]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6256,7 +6555,7 @@ func (x *BoundingBox) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BoundingBox.ProtoReflect.Descriptor instead.
 func (*BoundingBox) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{28}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{31}
 }
 
 func (x *BoundingBox) GetTop() int32 {
@@ -6342,7 +6641,7 @@ type RedactImageRequest struct {
 
 func (x *RedactImageRequest) Reset() {
 	*x = RedactImageRequest{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[29]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[32]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6354,7 +6653,7 @@ func (x *RedactImageRequest) String() string {
 func (*RedactImageRequest) ProtoMessage() {}
 
 func (x *RedactImageRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[29]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[32]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6367,7 +6666,7 @@ func (x *RedactImageRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RedactImageRequest.ProtoReflect.Descriptor instead.
 func (*RedactImageRequest) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{29}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{32}
 }
 
 func (x *RedactImageRequest) GetParent() string {
@@ -6441,7 +6740,7 @@ type Color struct {
 
 func (x *Color) Reset() {
 	*x = Color{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[30]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[33]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6453,7 +6752,7 @@ func (x *Color) String() string {
 func (*Color) ProtoMessage() {}
 
 func (x *Color) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[30]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[33]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6466,7 +6765,7 @@ func (x *Color) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Color.ProtoReflect.Descriptor instead.
 func (*Color) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{30}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{33}
 }
 
 func (x *Color) GetRed() float32 {
@@ -6507,7 +6806,7 @@ type RedactImageResponse struct {
 
 func (x *RedactImageResponse) Reset() {
 	*x = RedactImageResponse{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[31]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[34]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6519,7 +6818,7 @@ func (x *RedactImageResponse) String() string {
 func (*RedactImageResponse) ProtoMessage() {}
 
 func (x *RedactImageResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[31]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[34]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6532,7 +6831,7 @@ func (x *RedactImageResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RedactImageResponse.ProtoReflect.Descriptor instead.
 func (*RedactImageResponse) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{31}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{34}
 }
 
 func (x *RedactImageResponse) GetRedactedImage() []byte {
@@ -6613,7 +6912,7 @@ type DeidentifyContentRequest struct {
 
 func (x *DeidentifyContentRequest) Reset() {
 	*x = DeidentifyContentRequest{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[32]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[35]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6625,7 +6924,7 @@ func (x *DeidentifyContentRequest) String() string {
 func (*DeidentifyContentRequest) ProtoMessage() {}
 
 func (x *DeidentifyContentRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[32]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[35]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6638,7 +6937,7 @@ func (x *DeidentifyContentRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeidentifyContentRequest.ProtoReflect.Descriptor instead.
 func (*DeidentifyContentRequest) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{32}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{35}
 }
 
 func (x *DeidentifyContentRequest) GetParent() string {
@@ -6703,7 +7002,7 @@ type DeidentifyContentResponse struct {
 
 func (x *DeidentifyContentResponse) Reset() {
 	*x = DeidentifyContentResponse{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[33]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[36]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6715,7 +7014,7 @@ func (x *DeidentifyContentResponse) String() string {
 func (*DeidentifyContentResponse) ProtoMessage() {}
 
 func (x *DeidentifyContentResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[33]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[36]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6728,7 +7027,7 @@ func (x *DeidentifyContentResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeidentifyContentResponse.ProtoReflect.Descriptor instead.
 func (*DeidentifyContentResponse) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{33}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{36}
 }
 
 func (x *DeidentifyContentResponse) GetItem() *ContentItem {
@@ -6802,7 +7101,7 @@ type ReidentifyContentRequest struct {
 
 func (x *ReidentifyContentRequest) Reset() {
 	*x = ReidentifyContentRequest{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[34]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[37]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6814,7 +7113,7 @@ func (x *ReidentifyContentRequest) String() string {
 func (*ReidentifyContentRequest) ProtoMessage() {}
 
 func (x *ReidentifyContentRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[34]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[37]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6827,7 +7126,7 @@ func (x *ReidentifyContentRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReidentifyContentRequest.ProtoReflect.Descriptor instead.
 func (*ReidentifyContentRequest) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{34}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{37}
 }
 
 func (x *ReidentifyContentRequest) GetParent() string {
@@ -6892,7 +7191,7 @@ type ReidentifyContentResponse struct {
 
 func (x *ReidentifyContentResponse) Reset() {
 	*x = ReidentifyContentResponse{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[35]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[38]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6904,7 +7203,7 @@ func (x *ReidentifyContentResponse) String() string {
 func (*ReidentifyContentResponse) ProtoMessage() {}
 
 func (x *ReidentifyContentResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[35]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[38]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6917,7 +7216,7 @@ func (x *ReidentifyContentResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReidentifyContentResponse.ProtoReflect.Descriptor instead.
 func (*ReidentifyContentResponse) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{35}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{38}
 }
 
 func (x *ReidentifyContentResponse) GetItem() *ContentItem {
@@ -6973,7 +7272,7 @@ type InspectContentRequest struct {
 
 func (x *InspectContentRequest) Reset() {
 	*x = InspectContentRequest{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[36]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[39]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6985,7 +7284,7 @@ func (x *InspectContentRequest) String() string {
 func (*InspectContentRequest) ProtoMessage() {}
 
 func (x *InspectContentRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[36]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[39]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6998,7 +7297,7 @@ func (x *InspectContentRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use InspectContentRequest.ProtoReflect.Descriptor instead.
 func (*InspectContentRequest) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{36}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{39}
 }
 
 func (x *InspectContentRequest) GetParent() string {
@@ -7047,7 +7346,7 @@ type InspectContentResponse struct {
 
 func (x *InspectContentResponse) Reset() {
 	*x = InspectContentResponse{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[37]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[40]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7059,7 +7358,7 @@ func (x *InspectContentResponse) String() string {
 func (*InspectContentResponse) ProtoMessage() {}
 
 func (x *InspectContentResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[37]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[40]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7072,7 +7371,7 @@ func (x *InspectContentResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use InspectContentResponse.ProtoReflect.Descriptor instead.
 func (*InspectContentResponse) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{37}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{40}
 }
 
 func (x *InspectContentResponse) GetResult() *InspectResult {
@@ -7110,7 +7409,7 @@ type OutputStorageConfig struct {
 
 func (x *OutputStorageConfig) Reset() {
 	*x = OutputStorageConfig{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[38]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[41]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7122,7 +7421,7 @@ func (x *OutputStorageConfig) String() string {
 func (*OutputStorageConfig) ProtoMessage() {}
 
 func (x *OutputStorageConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[38]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[41]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7135,7 +7434,7 @@ func (x *OutputStorageConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OutputStorageConfig.ProtoReflect.Descriptor instead.
 func (*OutputStorageConfig) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{38}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{41}
 }
 
 func (x *OutputStorageConfig) GetType() isOutputStorageConfig_Type {
@@ -7224,7 +7523,7 @@ type InfoTypeStats struct {
 
 func (x *InfoTypeStats) Reset() {
 	*x = InfoTypeStats{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[39]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[42]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7236,7 +7535,7 @@ func (x *InfoTypeStats) String() string {
 func (*InfoTypeStats) ProtoMessage() {}
 
 func (x *InfoTypeStats) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[39]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[42]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7249,7 +7548,7 @@ func (x *InfoTypeStats) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use InfoTypeStats.ProtoReflect.Descriptor instead.
 func (*InfoTypeStats) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{39}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{42}
 }
 
 func (x *InfoTypeStats) GetInfoType() *InfoType {
@@ -7279,7 +7578,7 @@ type InspectDataSourceDetails struct {
 
 func (x *InspectDataSourceDetails) Reset() {
 	*x = InspectDataSourceDetails{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[40]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[43]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7291,7 +7590,7 @@ func (x *InspectDataSourceDetails) String() string {
 func (*InspectDataSourceDetails) ProtoMessage() {}
 
 func (x *InspectDataSourceDetails) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[40]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[43]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7304,7 +7603,7 @@ func (x *InspectDataSourceDetails) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use InspectDataSourceDetails.ProtoReflect.Descriptor instead.
 func (*InspectDataSourceDetails) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{40}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{43}
 }
 
 func (x *InspectDataSourceDetails) GetRequestedOptions() *InspectDataSourceDetails_RequestedOptions {
@@ -7339,7 +7638,7 @@ type DataProfileBigQueryRowSchema struct {
 
 func (x *DataProfileBigQueryRowSchema) Reset() {
 	*x = DataProfileBigQueryRowSchema{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[41]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[44]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7351,7 +7650,7 @@ func (x *DataProfileBigQueryRowSchema) String() string {
 func (*DataProfileBigQueryRowSchema) ProtoMessage() {}
 
 func (x *DataProfileBigQueryRowSchema) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[41]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[44]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7364,7 +7663,7 @@ func (x *DataProfileBigQueryRowSchema) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DataProfileBigQueryRowSchema.ProtoReflect.Descriptor instead.
 func (*DataProfileBigQueryRowSchema) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{41}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{44}
 }
 
 func (x *DataProfileBigQueryRowSchema) GetDataProfile() isDataProfileBigQueryRowSchema_DataProfile {
@@ -7446,7 +7745,7 @@ type HybridInspectStatistics struct {
 
 func (x *HybridInspectStatistics) Reset() {
 	*x = HybridInspectStatistics{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[42]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[45]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7458,7 +7757,7 @@ func (x *HybridInspectStatistics) String() string {
 func (*HybridInspectStatistics) ProtoMessage() {}
 
 func (x *HybridInspectStatistics) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[42]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[45]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7471,7 +7770,7 @@ func (x *HybridInspectStatistics) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HybridInspectStatistics.ProtoReflect.Descriptor instead.
 func (*HybridInspectStatistics) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{42}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{45}
 }
 
 func (x *HybridInspectStatistics) GetProcessedCount() int64 {
@@ -7510,7 +7809,7 @@ type ActionDetails struct {
 
 func (x *ActionDetails) Reset() {
 	*x = ActionDetails{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[43]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[46]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7522,7 +7821,7 @@ func (x *ActionDetails) String() string {
 func (*ActionDetails) ProtoMessage() {}
 
 func (x *ActionDetails) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[43]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[46]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7535,7 +7834,7 @@ func (x *ActionDetails) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ActionDetails.ProtoReflect.Descriptor instead.
 func (*ActionDetails) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{43}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{46}
 }
 
 func (x *ActionDetails) GetDetails() isActionDetails_Details {
@@ -7580,7 +7879,7 @@ type DeidentifyDataSourceStats struct {
 
 func (x *DeidentifyDataSourceStats) Reset() {
 	*x = DeidentifyDataSourceStats{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[44]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[47]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7592,7 +7891,7 @@ func (x *DeidentifyDataSourceStats) String() string {
 func (*DeidentifyDataSourceStats) ProtoMessage() {}
 
 func (x *DeidentifyDataSourceStats) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[44]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[47]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7605,7 +7904,7 @@ func (x *DeidentifyDataSourceStats) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeidentifyDataSourceStats.ProtoReflect.Descriptor instead.
 func (*DeidentifyDataSourceStats) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{44}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{47}
 }
 
 func (x *DeidentifyDataSourceStats) GetTransformedBytes() int64 {
@@ -7643,7 +7942,7 @@ type DeidentifyDataSourceDetails struct {
 
 func (x *DeidentifyDataSourceDetails) Reset() {
 	*x = DeidentifyDataSourceDetails{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[45]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[48]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7655,7 +7954,7 @@ func (x *DeidentifyDataSourceDetails) String() string {
 func (*DeidentifyDataSourceDetails) ProtoMessage() {}
 
 func (x *DeidentifyDataSourceDetails) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[45]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[48]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7668,7 +7967,7 @@ func (x *DeidentifyDataSourceDetails) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeidentifyDataSourceDetails.ProtoReflect.Descriptor instead.
 func (*DeidentifyDataSourceDetails) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{45}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{48}
 }
 
 func (x *DeidentifyDataSourceDetails) GetRequestedOptions() *DeidentifyDataSourceDetails_RequestedDeidentifyOptions {
@@ -7700,7 +7999,7 @@ type LocationSupport struct {
 
 func (x *LocationSupport) Reset() {
 	*x = LocationSupport{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[46]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[49]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7712,7 +8011,7 @@ func (x *LocationSupport) String() string {
 func (*LocationSupport) ProtoMessage() {}
 
 func (x *LocationSupport) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[46]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[49]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7725,7 +8024,7 @@ func (x *LocationSupport) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LocationSupport.ProtoReflect.Descriptor instead.
 func (*LocationSupport) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{46}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{49}
 }
 
 func (x *LocationSupport) GetRegionalizationScope() LocationSupport_RegionalizationScope {
@@ -7778,7 +8077,7 @@ type InfoTypeDescription struct {
 
 func (x *InfoTypeDescription) Reset() {
 	*x = InfoTypeDescription{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[47]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[50]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7790,7 +8089,7 @@ func (x *InfoTypeDescription) String() string {
 func (*InfoTypeDescription) ProtoMessage() {}
 
 func (x *InfoTypeDescription) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[47]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[50]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7803,7 +8102,7 @@ func (x *InfoTypeDescription) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use InfoTypeDescription.ProtoReflect.Descriptor instead.
 func (*InfoTypeDescription) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{47}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{50}
 }
 
 func (x *InfoTypeDescription) GetName() string {
@@ -7901,7 +8200,7 @@ type InfoTypeCategory struct {
 
 func (x *InfoTypeCategory) Reset() {
 	*x = InfoTypeCategory{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[48]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[51]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7913,7 +8212,7 @@ func (x *InfoTypeCategory) String() string {
 func (*InfoTypeCategory) ProtoMessage() {}
 
 func (x *InfoTypeCategory) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[48]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[51]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7926,7 +8225,7 @@ func (x *InfoTypeCategory) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use InfoTypeCategory.ProtoReflect.Descriptor instead.
 func (*InfoTypeCategory) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{48}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{51}
 }
 
 func (x *InfoTypeCategory) GetCategory() isInfoTypeCategory_Category {
@@ -8002,7 +8301,7 @@ type VersionDescription struct {
 
 func (x *VersionDescription) Reset() {
 	*x = VersionDescription{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[49]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[52]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8014,7 +8313,7 @@ func (x *VersionDescription) String() string {
 func (*VersionDescription) ProtoMessage() {}
 
 func (x *VersionDescription) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[49]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[52]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8027,7 +8326,7 @@ func (x *VersionDescription) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use VersionDescription.ProtoReflect.Descriptor instead.
 func (*VersionDescription) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{49}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{52}
 }
 
 func (x *VersionDescription) GetVersion() string {
@@ -8068,7 +8367,7 @@ type ListInfoTypesRequest struct {
 
 func (x *ListInfoTypesRequest) Reset() {
 	*x = ListInfoTypesRequest{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[50]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[53]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8080,7 +8379,7 @@ func (x *ListInfoTypesRequest) String() string {
 func (*ListInfoTypesRequest) ProtoMessage() {}
 
 func (x *ListInfoTypesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[50]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[53]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8093,7 +8392,7 @@ func (x *ListInfoTypesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListInfoTypesRequest.ProtoReflect.Descriptor instead.
 func (*ListInfoTypesRequest) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{50}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{53}
 }
 
 func (x *ListInfoTypesRequest) GetParent() string {
@@ -8135,7 +8434,7 @@ type ListInfoTypesResponse struct {
 
 func (x *ListInfoTypesResponse) Reset() {
 	*x = ListInfoTypesResponse{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[51]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[54]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8147,7 +8446,7 @@ func (x *ListInfoTypesResponse) String() string {
 func (*ListInfoTypesResponse) ProtoMessage() {}
 
 func (x *ListInfoTypesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[51]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[54]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8160,7 +8459,7 @@ func (x *ListInfoTypesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListInfoTypesResponse.ProtoReflect.Descriptor instead.
 func (*ListInfoTypesResponse) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{51}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{54}
 }
 
 func (x *ListInfoTypesResponse) GetInfoTypes() []*InfoTypeDescription {
@@ -8188,7 +8487,7 @@ type RiskAnalysisJobConfig struct {
 
 func (x *RiskAnalysisJobConfig) Reset() {
 	*x = RiskAnalysisJobConfig{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[52]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[55]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8200,7 +8499,7 @@ func (x *RiskAnalysisJobConfig) String() string {
 func (*RiskAnalysisJobConfig) ProtoMessage() {}
 
 func (x *RiskAnalysisJobConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[52]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[55]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8213,7 +8512,7 @@ func (x *RiskAnalysisJobConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RiskAnalysisJobConfig.ProtoReflect.Descriptor instead.
 func (*RiskAnalysisJobConfig) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{52}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{55}
 }
 
 func (x *RiskAnalysisJobConfig) GetPrivacyMetric() *PrivacyMetric {
@@ -8258,7 +8557,7 @@ type QuasiId struct {
 
 func (x *QuasiId) Reset() {
 	*x = QuasiId{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[53]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[56]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8270,7 +8569,7 @@ func (x *QuasiId) String() string {
 func (*QuasiId) ProtoMessage() {}
 
 func (x *QuasiId) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[53]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[56]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8283,7 +8582,7 @@ func (x *QuasiId) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use QuasiId.ProtoReflect.Descriptor instead.
 func (*QuasiId) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{53}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{56}
 }
 
 func (x *QuasiId) GetField() *FieldId {
@@ -8381,7 +8680,7 @@ type StatisticalTable struct {
 
 func (x *StatisticalTable) Reset() {
 	*x = StatisticalTable{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[54]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[57]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8393,7 +8692,7 @@ func (x *StatisticalTable) String() string {
 func (*StatisticalTable) ProtoMessage() {}
 
 func (x *StatisticalTable) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[54]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[57]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8406,7 +8705,7 @@ func (x *StatisticalTable) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StatisticalTable.ProtoReflect.Descriptor instead.
 func (*StatisticalTable) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{54}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{57}
 }
 
 func (x *StatisticalTable) GetTable() *BigQueryTable {
@@ -8450,7 +8749,7 @@ type PrivacyMetric struct {
 
 func (x *PrivacyMetric) Reset() {
 	*x = PrivacyMetric{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[55]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[58]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8462,7 +8761,7 @@ func (x *PrivacyMetric) String() string {
 func (*PrivacyMetric) ProtoMessage() {}
 
 func (x *PrivacyMetric) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[55]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[58]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8475,7 +8774,7 @@ func (x *PrivacyMetric) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PrivacyMetric.ProtoReflect.Descriptor instead.
 func (*PrivacyMetric) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{55}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{58}
 }
 
 func (x *PrivacyMetric) GetType() isPrivacyMetric_Type {
@@ -8611,7 +8910,7 @@ type AnalyzeDataSourceRiskDetails struct {
 
 func (x *AnalyzeDataSourceRiskDetails) Reset() {
 	*x = AnalyzeDataSourceRiskDetails{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[56]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[59]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8623,7 +8922,7 @@ func (x *AnalyzeDataSourceRiskDetails) String() string {
 func (*AnalyzeDataSourceRiskDetails) ProtoMessage() {}
 
 func (x *AnalyzeDataSourceRiskDetails) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[56]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[59]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8636,7 +8935,7 @@ func (x *AnalyzeDataSourceRiskDetails) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AnalyzeDataSourceRiskDetails.ProtoReflect.Descriptor instead.
 func (*AnalyzeDataSourceRiskDetails) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{56}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{59}
 }
 
 func (x *AnalyzeDataSourceRiskDetails) GetRequestedPrivacyMetric() *PrivacyMetric {
@@ -8782,7 +9081,7 @@ type ValueFrequency struct {
 
 func (x *ValueFrequency) Reset() {
 	*x = ValueFrequency{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[57]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[60]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8794,7 +9093,7 @@ func (x *ValueFrequency) String() string {
 func (*ValueFrequency) ProtoMessage() {}
 
 func (x *ValueFrequency) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[57]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[60]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8807,7 +9106,7 @@ func (x *ValueFrequency) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ValueFrequency.ProtoReflect.Descriptor instead.
 func (*ValueFrequency) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{57}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{60}
 }
 
 func (x *ValueFrequency) GetValue() *Value {
@@ -8851,7 +9150,7 @@ type Value struct {
 
 func (x *Value) Reset() {
 	*x = Value{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[58]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[61]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8863,7 +9162,7 @@ func (x *Value) String() string {
 func (*Value) ProtoMessage() {}
 
 func (x *Value) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[58]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[61]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8876,7 +9175,7 @@ func (x *Value) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Value.ProtoReflect.Descriptor instead.
 func (*Value) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{58}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{61}
 }
 
 func (x *Value) GetType() isValue_Type {
@@ -9033,7 +9332,7 @@ type QuoteInfo struct {
 
 func (x *QuoteInfo) Reset() {
 	*x = QuoteInfo{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[59]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[62]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9045,7 +9344,7 @@ func (x *QuoteInfo) String() string {
 func (*QuoteInfo) ProtoMessage() {}
 
 func (x *QuoteInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[59]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[62]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9058,7 +9357,7 @@ func (x *QuoteInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use QuoteInfo.ProtoReflect.Descriptor instead.
 func (*QuoteInfo) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{59}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{62}
 }
 
 func (x *QuoteInfo) GetParsedQuote() isQuoteInfo_ParsedQuote {
@@ -9107,7 +9406,7 @@ type DateTime struct {
 
 func (x *DateTime) Reset() {
 	*x = DateTime{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[60]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[63]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9119,7 +9418,7 @@ func (x *DateTime) String() string {
 func (*DateTime) ProtoMessage() {}
 
 func (x *DateTime) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[60]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[63]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9132,7 +9431,7 @@ func (x *DateTime) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DateTime.ProtoReflect.Descriptor instead.
 func (*DateTime) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{60}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{63}
 }
 
 func (x *DateTime) GetDate() *date.Date {
@@ -9183,7 +9482,7 @@ type DeidentifyConfig struct {
 
 func (x *DeidentifyConfig) Reset() {
 	*x = DeidentifyConfig{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[61]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[64]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9195,7 +9494,7 @@ func (x *DeidentifyConfig) String() string {
 func (*DeidentifyConfig) ProtoMessage() {}
 
 func (x *DeidentifyConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[61]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[64]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9208,7 +9507,7 @@ func (x *DeidentifyConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeidentifyConfig.ProtoReflect.Descriptor instead.
 func (*DeidentifyConfig) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{61}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{64}
 }
 
 func (x *DeidentifyConfig) GetTransformation() isDeidentifyConfig_Transformation {
@@ -9291,7 +9590,7 @@ type ImageTransformations struct {
 
 func (x *ImageTransformations) Reset() {
 	*x = ImageTransformations{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[62]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[65]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9303,7 +9602,7 @@ func (x *ImageTransformations) String() string {
 func (*ImageTransformations) ProtoMessage() {}
 
 func (x *ImageTransformations) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[62]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[65]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9316,7 +9615,7 @@ func (x *ImageTransformations) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ImageTransformations.ProtoReflect.Descriptor instead.
 func (*ImageTransformations) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{62}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{65}
 }
 
 func (x *ImageTransformations) GetTransforms() []*ImageTransformations_ImageTransformation {
@@ -9349,7 +9648,7 @@ type TransformationErrorHandling struct {
 
 func (x *TransformationErrorHandling) Reset() {
 	*x = TransformationErrorHandling{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[63]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[66]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9361,7 +9660,7 @@ func (x *TransformationErrorHandling) String() string {
 func (*TransformationErrorHandling) ProtoMessage() {}
 
 func (x *TransformationErrorHandling) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[63]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[66]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9374,7 +9673,7 @@ func (x *TransformationErrorHandling) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TransformationErrorHandling.ProtoReflect.Descriptor instead.
 func (*TransformationErrorHandling) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{63}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{66}
 }
 
 func (x *TransformationErrorHandling) GetMode() isTransformationErrorHandling_Mode {
@@ -9446,7 +9745,7 @@ type PrimitiveTransformation struct {
 
 func (x *PrimitiveTransformation) Reset() {
 	*x = PrimitiveTransformation{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[64]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[67]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9458,7 +9757,7 @@ func (x *PrimitiveTransformation) String() string {
 func (*PrimitiveTransformation) ProtoMessage() {}
 
 func (x *PrimitiveTransformation) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[64]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[67]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9471,7 +9770,7 @@ func (x *PrimitiveTransformation) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PrimitiveTransformation.ProtoReflect.Descriptor instead.
 func (*PrimitiveTransformation) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{64}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{67}
 }
 
 func (x *PrimitiveTransformation) GetTransformation() isPrimitiveTransformation_Transformation {
@@ -9693,7 +9992,7 @@ type TimePartConfig struct {
 
 func (x *TimePartConfig) Reset() {
 	*x = TimePartConfig{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[65]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[68]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9705,7 +10004,7 @@ func (x *TimePartConfig) String() string {
 func (*TimePartConfig) ProtoMessage() {}
 
 func (x *TimePartConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[65]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[68]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9718,7 +10017,7 @@ func (x *TimePartConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TimePartConfig.ProtoReflect.Descriptor instead.
 func (*TimePartConfig) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{65}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{68}
 }
 
 func (x *TimePartConfig) GetPartToExtract() TimePartConfig_TimePart {
@@ -9746,7 +10045,7 @@ type CryptoHashConfig struct {
 
 func (x *CryptoHashConfig) Reset() {
 	*x = CryptoHashConfig{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[66]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[69]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9758,7 +10057,7 @@ func (x *CryptoHashConfig) String() string {
 func (*CryptoHashConfig) ProtoMessage() {}
 
 func (x *CryptoHashConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[66]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[69]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9771,7 +10070,7 @@ func (x *CryptoHashConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CryptoHashConfig.ProtoReflect.Descriptor instead.
 func (*CryptoHashConfig) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{66}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{69}
 }
 
 func (x *CryptoHashConfig) GetCryptoKey() *CryptoKey {
@@ -9848,7 +10147,7 @@ type CryptoDeterministicConfig struct {
 
 func (x *CryptoDeterministicConfig) Reset() {
 	*x = CryptoDeterministicConfig{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[67]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[70]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9860,7 +10159,7 @@ func (x *CryptoDeterministicConfig) String() string {
 func (*CryptoDeterministicConfig) ProtoMessage() {}
 
 func (x *CryptoDeterministicConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[67]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[70]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9873,7 +10172,7 @@ func (x *CryptoDeterministicConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CryptoDeterministicConfig.ProtoReflect.Descriptor instead.
 func (*CryptoDeterministicConfig) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{67}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{70}
 }
 
 func (x *CryptoDeterministicConfig) GetCryptoKey() *CryptoKey {
@@ -9908,7 +10207,7 @@ type ReplaceValueConfig struct {
 
 func (x *ReplaceValueConfig) Reset() {
 	*x = ReplaceValueConfig{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[68]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[71]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9920,7 +10219,7 @@ func (x *ReplaceValueConfig) String() string {
 func (*ReplaceValueConfig) ProtoMessage() {}
 
 func (x *ReplaceValueConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[68]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[71]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9933,7 +10232,7 @@ func (x *ReplaceValueConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReplaceValueConfig.ProtoReflect.Descriptor instead.
 func (*ReplaceValueConfig) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{68}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{71}
 }
 
 func (x *ReplaceValueConfig) GetNewValue() *Value {
@@ -9958,7 +10257,7 @@ type ReplaceDictionaryConfig struct {
 
 func (x *ReplaceDictionaryConfig) Reset() {
 	*x = ReplaceDictionaryConfig{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[69]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[72]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9970,7 +10269,7 @@ func (x *ReplaceDictionaryConfig) String() string {
 func (*ReplaceDictionaryConfig) ProtoMessage() {}
 
 func (x *ReplaceDictionaryConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[69]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[72]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9983,7 +10282,7 @@ func (x *ReplaceDictionaryConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReplaceDictionaryConfig.ProtoReflect.Descriptor instead.
 func (*ReplaceDictionaryConfig) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{69}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{72}
 }
 
 func (x *ReplaceDictionaryConfig) GetType() isReplaceDictionaryConfig_Type {
@@ -10024,7 +10323,7 @@ type ReplaceWithInfoTypeConfig struct {
 
 func (x *ReplaceWithInfoTypeConfig) Reset() {
 	*x = ReplaceWithInfoTypeConfig{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[70]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[73]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10036,7 +10335,7 @@ func (x *ReplaceWithInfoTypeConfig) String() string {
 func (*ReplaceWithInfoTypeConfig) ProtoMessage() {}
 
 func (x *ReplaceWithInfoTypeConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[70]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[73]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10049,7 +10348,7 @@ func (x *ReplaceWithInfoTypeConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReplaceWithInfoTypeConfig.ProtoReflect.Descriptor instead.
 func (*ReplaceWithInfoTypeConfig) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{70}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{73}
 }
 
 // Redact a given value. For example, if used with an `InfoTypeTransformation`
@@ -10063,7 +10362,7 @@ type RedactConfig struct {
 
 func (x *RedactConfig) Reset() {
 	*x = RedactConfig{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[71]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[74]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10075,7 +10374,7 @@ func (x *RedactConfig) String() string {
 func (*RedactConfig) ProtoMessage() {}
 
 func (x *RedactConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[71]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[74]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10088,7 +10387,7 @@ func (x *RedactConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RedactConfig.ProtoReflect.Descriptor instead.
 func (*RedactConfig) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{71}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{74}
 }
 
 // Characters to skip when doing deidentification of a value. These will be left
@@ -10108,7 +10407,7 @@ type CharsToIgnore struct {
 
 func (x *CharsToIgnore) Reset() {
 	*x = CharsToIgnore{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[72]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[75]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10120,7 +10419,7 @@ func (x *CharsToIgnore) String() string {
 func (*CharsToIgnore) ProtoMessage() {}
 
 func (x *CharsToIgnore) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[72]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[75]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10133,7 +10432,7 @@ func (x *CharsToIgnore) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CharsToIgnore.ProtoReflect.Descriptor instead.
 func (*CharsToIgnore) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{72}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{75}
 }
 
 func (x *CharsToIgnore) GetCharacters() isCharsToIgnore_Characters {
@@ -10228,7 +10527,7 @@ type CharacterMaskConfig struct {
 
 func (x *CharacterMaskConfig) Reset() {
 	*x = CharacterMaskConfig{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[73]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[76]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10240,7 +10539,7 @@ func (x *CharacterMaskConfig) String() string {
 func (*CharacterMaskConfig) ProtoMessage() {}
 
 func (x *CharacterMaskConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[73]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[76]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10253,7 +10552,7 @@ func (x *CharacterMaskConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CharacterMaskConfig.ProtoReflect.Descriptor instead.
 func (*CharacterMaskConfig) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{73}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{76}
 }
 
 func (x *CharacterMaskConfig) GetMaskingCharacter() string {
@@ -10323,7 +10622,7 @@ type FixedSizeBucketingConfig struct {
 
 func (x *FixedSizeBucketingConfig) Reset() {
 	*x = FixedSizeBucketingConfig{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[74]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[77]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10335,7 +10634,7 @@ func (x *FixedSizeBucketingConfig) String() string {
 func (*FixedSizeBucketingConfig) ProtoMessage() {}
 
 func (x *FixedSizeBucketingConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[74]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[77]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10348,7 +10647,7 @@ func (x *FixedSizeBucketingConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FixedSizeBucketingConfig.ProtoReflect.Descriptor instead.
 func (*FixedSizeBucketingConfig) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{74}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{77}
 }
 
 func (x *FixedSizeBucketingConfig) GetLowerBound() *Value {
@@ -10394,7 +10693,7 @@ type BucketingConfig struct {
 
 func (x *BucketingConfig) Reset() {
 	*x = BucketingConfig{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[75]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[78]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10406,7 +10705,7 @@ func (x *BucketingConfig) String() string {
 func (*BucketingConfig) ProtoMessage() {}
 
 func (x *BucketingConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[75]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[78]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10419,7 +10718,7 @@ func (x *BucketingConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BucketingConfig.ProtoReflect.Descriptor instead.
 func (*BucketingConfig) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{75}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{78}
 }
 
 func (x *BucketingConfig) GetBuckets() []*BucketingConfig_Bucket {
@@ -10508,7 +10807,7 @@ type CryptoReplaceFfxFpeConfig struct {
 
 func (x *CryptoReplaceFfxFpeConfig) Reset() {
 	*x = CryptoReplaceFfxFpeConfig{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[76]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[79]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10520,7 +10819,7 @@ func (x *CryptoReplaceFfxFpeConfig) String() string {
 func (*CryptoReplaceFfxFpeConfig) ProtoMessage() {}
 
 func (x *CryptoReplaceFfxFpeConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[76]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[79]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10533,7 +10832,7 @@ func (x *CryptoReplaceFfxFpeConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CryptoReplaceFfxFpeConfig.ProtoReflect.Descriptor instead.
 func (*CryptoReplaceFfxFpeConfig) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{76}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{79}
 }
 
 func (x *CryptoReplaceFfxFpeConfig) GetCryptoKey() *CryptoKey {
@@ -10646,7 +10945,7 @@ type CryptoKey struct {
 
 func (x *CryptoKey) Reset() {
 	*x = CryptoKey{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[77]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[80]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10658,7 +10957,7 @@ func (x *CryptoKey) String() string {
 func (*CryptoKey) ProtoMessage() {}
 
 func (x *CryptoKey) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[77]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[80]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10671,7 +10970,7 @@ func (x *CryptoKey) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CryptoKey.ProtoReflect.Descriptor instead.
 func (*CryptoKey) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{77}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{80}
 }
 
 func (x *CryptoKey) GetSource() isCryptoKey_Source {
@@ -10750,7 +11049,7 @@ type TransientCryptoKey struct {
 
 func (x *TransientCryptoKey) Reset() {
 	*x = TransientCryptoKey{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[78]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[81]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10762,7 +11061,7 @@ func (x *TransientCryptoKey) String() string {
 func (*TransientCryptoKey) ProtoMessage() {}
 
 func (x *TransientCryptoKey) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[78]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[81]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10775,7 +11074,7 @@ func (x *TransientCryptoKey) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TransientCryptoKey.ProtoReflect.Descriptor instead.
 func (*TransientCryptoKey) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{78}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{81}
 }
 
 func (x *TransientCryptoKey) GetName() string {
@@ -10797,7 +11096,7 @@ type UnwrappedCryptoKey struct {
 
 func (x *UnwrappedCryptoKey) Reset() {
 	*x = UnwrappedCryptoKey{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[79]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[82]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10809,7 +11108,7 @@ func (x *UnwrappedCryptoKey) String() string {
 func (*UnwrappedCryptoKey) ProtoMessage() {}
 
 func (x *UnwrappedCryptoKey) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[79]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[82]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10822,7 +11121,7 @@ func (x *UnwrappedCryptoKey) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UnwrappedCryptoKey.ProtoReflect.Descriptor instead.
 func (*UnwrappedCryptoKey) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{79}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{82}
 }
 
 func (x *UnwrappedCryptoKey) GetKey() []byte {
@@ -10855,7 +11154,7 @@ type KmsWrappedCryptoKey struct {
 
 func (x *KmsWrappedCryptoKey) Reset() {
 	*x = KmsWrappedCryptoKey{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[80]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[83]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10867,7 +11166,7 @@ func (x *KmsWrappedCryptoKey) String() string {
 func (*KmsWrappedCryptoKey) ProtoMessage() {}
 
 func (x *KmsWrappedCryptoKey) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[80]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[83]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10880,7 +11179,7 @@ func (x *KmsWrappedCryptoKey) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use KmsWrappedCryptoKey.ProtoReflect.Descriptor instead.
 func (*KmsWrappedCryptoKey) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{80}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{83}
 }
 
 func (x *KmsWrappedCryptoKey) GetWrappedKey() []byte {
@@ -10929,7 +11228,7 @@ type DateShiftConfig struct {
 
 func (x *DateShiftConfig) Reset() {
 	*x = DateShiftConfig{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[81]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[84]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10941,7 +11240,7 @@ func (x *DateShiftConfig) String() string {
 func (*DateShiftConfig) ProtoMessage() {}
 
 func (x *DateShiftConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[81]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[84]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10954,7 +11253,7 @@ func (x *DateShiftConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DateShiftConfig.ProtoReflect.Descriptor instead.
 func (*DateShiftConfig) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{81}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{84}
 }
 
 func (x *DateShiftConfig) GetUpperBoundDays() int32 {
@@ -11022,7 +11321,7 @@ type InfoTypeTransformations struct {
 
 func (x *InfoTypeTransformations) Reset() {
 	*x = InfoTypeTransformations{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[82]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[85]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11034,7 +11333,7 @@ func (x *InfoTypeTransformations) String() string {
 func (*InfoTypeTransformations) ProtoMessage() {}
 
 func (x *InfoTypeTransformations) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[82]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[85]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11047,7 +11346,7 @@ func (x *InfoTypeTransformations) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use InfoTypeTransformations.ProtoReflect.Descriptor instead.
 func (*InfoTypeTransformations) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{82}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{85}
 }
 
 func (x *InfoTypeTransformations) GetTransformations() []*InfoTypeTransformations_InfoTypeTransformation {
@@ -11088,7 +11387,7 @@ type FieldTransformation struct {
 
 func (x *FieldTransformation) Reset() {
 	*x = FieldTransformation{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[83]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[86]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11100,7 +11399,7 @@ func (x *FieldTransformation) String() string {
 func (*FieldTransformation) ProtoMessage() {}
 
 func (x *FieldTransformation) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[83]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[86]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11113,7 +11412,7 @@ func (x *FieldTransformation) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FieldTransformation.ProtoReflect.Descriptor instead.
 func (*FieldTransformation) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{83}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{86}
 }
 
 func (x *FieldTransformation) GetFields() []*FieldId {
@@ -11189,7 +11488,7 @@ type RecordTransformations struct {
 
 func (x *RecordTransformations) Reset() {
 	*x = RecordTransformations{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[84]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[87]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11201,7 +11500,7 @@ func (x *RecordTransformations) String() string {
 func (*RecordTransformations) ProtoMessage() {}
 
 func (x *RecordTransformations) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[84]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[87]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11214,7 +11513,7 @@ func (x *RecordTransformations) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RecordTransformations.ProtoReflect.Descriptor instead.
 func (*RecordTransformations) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{84}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{87}
 }
 
 func (x *RecordTransformations) GetFieldTransformations() []*FieldTransformation {
@@ -11244,7 +11543,7 @@ type RecordSuppression struct {
 
 func (x *RecordSuppression) Reset() {
 	*x = RecordSuppression{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[85]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[88]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11256,7 +11555,7 @@ func (x *RecordSuppression) String() string {
 func (*RecordSuppression) ProtoMessage() {}
 
 func (x *RecordSuppression) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[85]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[88]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11269,7 +11568,7 @@ func (x *RecordSuppression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RecordSuppression.ProtoReflect.Descriptor instead.
 func (*RecordSuppression) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{85}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{88}
 }
 
 func (x *RecordSuppression) GetCondition() *RecordCondition {
@@ -11291,7 +11590,7 @@ type RecordCondition struct {
 
 func (x *RecordCondition) Reset() {
 	*x = RecordCondition{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[86]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[89]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11303,7 +11602,7 @@ func (x *RecordCondition) String() string {
 func (*RecordCondition) ProtoMessage() {}
 
 func (x *RecordCondition) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[86]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[89]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11316,7 +11615,7 @@ func (x *RecordCondition) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RecordCondition.ProtoReflect.Descriptor instead.
 func (*RecordCondition) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{86}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{89}
 }
 
 func (x *RecordCondition) GetExpressions() *RecordCondition_Expressions {
@@ -11339,7 +11638,7 @@ type TransformationOverview struct {
 
 func (x *TransformationOverview) Reset() {
 	*x = TransformationOverview{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[87]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[90]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11351,7 +11650,7 @@ func (x *TransformationOverview) String() string {
 func (*TransformationOverview) ProtoMessage() {}
 
 func (x *TransformationOverview) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[87]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[90]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11364,7 +11663,7 @@ func (x *TransformationOverview) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TransformationOverview.ProtoReflect.Descriptor instead.
 func (*TransformationOverview) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{87}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{90}
 }
 
 func (x *TransformationOverview) GetTransformedBytes() int64 {
@@ -11408,7 +11707,7 @@ type TransformationSummary struct {
 
 func (x *TransformationSummary) Reset() {
 	*x = TransformationSummary{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[88]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[91]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11420,7 +11719,7 @@ func (x *TransformationSummary) String() string {
 func (*TransformationSummary) ProtoMessage() {}
 
 func (x *TransformationSummary) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[88]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[91]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11433,7 +11732,7 @@ func (x *TransformationSummary) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TransformationSummary.ProtoReflect.Descriptor instead.
 func (*TransformationSummary) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{88}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{91}
 }
 
 func (x *TransformationSummary) GetInfoType() *InfoType {
@@ -11515,7 +11814,7 @@ type TransformationDescription struct {
 
 func (x *TransformationDescription) Reset() {
 	*x = TransformationDescription{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[89]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[92]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11527,7 +11826,7 @@ func (x *TransformationDescription) String() string {
 func (*TransformationDescription) ProtoMessage() {}
 
 func (x *TransformationDescription) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[89]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[92]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11540,7 +11839,7 @@ func (x *TransformationDescription) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TransformationDescription.ProtoReflect.Descriptor instead.
 func (*TransformationDescription) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{89}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{92}
 }
 
 func (x *TransformationDescription) GetType() TransformationType {
@@ -11604,7 +11903,7 @@ type TransformationDetails struct {
 
 func (x *TransformationDetails) Reset() {
 	*x = TransformationDetails{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[90]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[93]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11616,7 +11915,7 @@ func (x *TransformationDetails) String() string {
 func (*TransformationDetails) ProtoMessage() {}
 
 func (x *TransformationDetails) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[90]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[93]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11629,7 +11928,7 @@ func (x *TransformationDetails) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TransformationDetails.ProtoReflect.Descriptor instead.
 func (*TransformationDetails) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{90}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{93}
 }
 
 func (x *TransformationDetails) GetResourceName() string {
@@ -11693,7 +11992,7 @@ type TransformationLocation struct {
 
 func (x *TransformationLocation) Reset() {
 	*x = TransformationLocation{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[91]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[94]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11705,7 +12004,7 @@ func (x *TransformationLocation) String() string {
 func (*TransformationLocation) ProtoMessage() {}
 
 func (x *TransformationLocation) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[91]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[94]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11718,7 +12017,7 @@ func (x *TransformationLocation) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TransformationLocation.ProtoReflect.Descriptor instead.
 func (*TransformationLocation) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{91}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{94}
 }
 
 func (x *TransformationLocation) GetLocationType() isTransformationLocation_LocationType {
@@ -11790,7 +12089,7 @@ type RecordTransformation struct {
 
 func (x *RecordTransformation) Reset() {
 	*x = RecordTransformation{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[92]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[95]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11802,7 +12101,7 @@ func (x *RecordTransformation) String() string {
 func (*RecordTransformation) ProtoMessage() {}
 
 func (x *RecordTransformation) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[92]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[95]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11815,7 +12114,7 @@ func (x *RecordTransformation) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RecordTransformation.ProtoReflect.Descriptor instead.
 func (*RecordTransformation) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{92}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{95}
 }
 
 func (x *RecordTransformation) GetFieldId() *FieldId {
@@ -11853,7 +12152,7 @@ type TransformationResultStatus struct {
 
 func (x *TransformationResultStatus) Reset() {
 	*x = TransformationResultStatus{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[93]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[96]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11865,7 +12164,7 @@ func (x *TransformationResultStatus) String() string {
 func (*TransformationResultStatus) ProtoMessage() {}
 
 func (x *TransformationResultStatus) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[93]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[96]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11878,7 +12177,7 @@ func (x *TransformationResultStatus) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TransformationResultStatus.ProtoReflect.Descriptor instead.
 func (*TransformationResultStatus) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{93}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{96}
 }
 
 func (x *TransformationResultStatus) GetResultStatusType() TransformationResultStatusType {
@@ -11910,7 +12209,7 @@ type TransformationDetailsStorageConfig struct {
 
 func (x *TransformationDetailsStorageConfig) Reset() {
 	*x = TransformationDetailsStorageConfig{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[94]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[97]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11922,7 +12221,7 @@ func (x *TransformationDetailsStorageConfig) String() string {
 func (*TransformationDetailsStorageConfig) ProtoMessage() {}
 
 func (x *TransformationDetailsStorageConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[94]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[97]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11935,7 +12234,7 @@ func (x *TransformationDetailsStorageConfig) ProtoReflect() protoreflect.Message
 
 // Deprecated: Use TransformationDetailsStorageConfig.ProtoReflect.Descriptor instead.
 func (*TransformationDetailsStorageConfig) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{94}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{97}
 }
 
 func (x *TransformationDetailsStorageConfig) GetType() isTransformationDetailsStorageConfig_Type {
@@ -11985,7 +12284,7 @@ type Schedule struct {
 
 func (x *Schedule) Reset() {
 	*x = Schedule{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[95]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[98]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11997,7 +12296,7 @@ func (x *Schedule) String() string {
 func (*Schedule) ProtoMessage() {}
 
 func (x *Schedule) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[95]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[98]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12010,7 +12309,7 @@ func (x *Schedule) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Schedule.ProtoReflect.Descriptor instead.
 func (*Schedule) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{95}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{98}
 }
 
 func (x *Schedule) GetOption() isSchedule_Option {
@@ -12057,7 +12356,7 @@ type Manual struct {
 
 func (x *Manual) Reset() {
 	*x = Manual{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[96]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[99]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12069,7 +12368,7 @@ func (x *Manual) String() string {
 func (*Manual) ProtoMessage() {}
 
 func (x *Manual) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[96]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[99]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12082,7 +12381,7 @@ func (x *Manual) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Manual.ProtoReflect.Descriptor instead.
 func (*Manual) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{96}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{99}
 }
 
 // The inspectTemplate contains a configuration (set of types of sensitive data
@@ -12114,7 +12413,7 @@ type InspectTemplate struct {
 
 func (x *InspectTemplate) Reset() {
 	*x = InspectTemplate{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[97]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[100]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12126,7 +12425,7 @@ func (x *InspectTemplate) String() string {
 func (*InspectTemplate) ProtoMessage() {}
 
 func (x *InspectTemplate) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[97]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[100]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12139,7 +12438,7 @@ func (x *InspectTemplate) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use InspectTemplate.ProtoReflect.Descriptor instead.
 func (*InspectTemplate) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{97}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{100}
 }
 
 func (x *InspectTemplate) GetName() string {
@@ -12212,7 +12511,7 @@ type DeidentifyTemplate struct {
 
 func (x *DeidentifyTemplate) Reset() {
 	*x = DeidentifyTemplate{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[98]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[101]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12224,7 +12523,7 @@ func (x *DeidentifyTemplate) String() string {
 func (*DeidentifyTemplate) ProtoMessage() {}
 
 func (x *DeidentifyTemplate) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[98]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[101]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12237,7 +12536,7 @@ func (x *DeidentifyTemplate) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeidentifyTemplate.ProtoReflect.Descriptor instead.
 func (*DeidentifyTemplate) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{98}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{101}
 }
 
 func (x *DeidentifyTemplate) GetName() string {
@@ -12299,7 +12598,7 @@ type Error struct {
 
 func (x *Error) Reset() {
 	*x = Error{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[99]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[102]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12311,7 +12610,7 @@ func (x *Error) String() string {
 func (*Error) ProtoMessage() {}
 
 func (x *Error) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[99]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[102]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12324,7 +12623,7 @@ func (x *Error) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Error.ProtoReflect.Descriptor instead.
 func (*Error) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{99}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{102}
 }
 
 func (x *Error) GetDetails() *status.Status {
@@ -12391,7 +12690,7 @@ type JobTrigger struct {
 
 func (x *JobTrigger) Reset() {
 	*x = JobTrigger{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[100]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[103]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12403,7 +12702,7 @@ func (x *JobTrigger) String() string {
 func (*JobTrigger) ProtoMessage() {}
 
 func (x *JobTrigger) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[100]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[103]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12416,7 +12715,7 @@ func (x *JobTrigger) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use JobTrigger.ProtoReflect.Descriptor instead.
 func (*JobTrigger) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{100}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{103}
 }
 
 func (x *JobTrigger) GetName() string {
@@ -12533,7 +12832,7 @@ type Action struct {
 
 func (x *Action) Reset() {
 	*x = Action{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[101]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[104]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12545,7 +12844,7 @@ func (x *Action) String() string {
 func (*Action) ProtoMessage() {}
 
 func (x *Action) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[101]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[104]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12558,7 +12857,7 @@ func (x *Action) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Action.ProtoReflect.Descriptor instead.
 func (*Action) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{101}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{104}
 }
 
 func (x *Action) GetAction() isAction_Action {
@@ -12738,7 +13037,7 @@ type TransformationConfig struct {
 
 func (x *TransformationConfig) Reset() {
 	*x = TransformationConfig{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[102]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[105]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12750,7 +13049,7 @@ func (x *TransformationConfig) String() string {
 func (*TransformationConfig) ProtoMessage() {}
 
 func (x *TransformationConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[102]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[105]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12763,7 +13062,7 @@ func (x *TransformationConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TransformationConfig.ProtoReflect.Descriptor instead.
 func (*TransformationConfig) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{102}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{105}
 }
 
 func (x *TransformationConfig) GetDeidentifyTemplate() string {
@@ -12826,7 +13125,7 @@ type CreateInspectTemplateRequest struct {
 
 func (x *CreateInspectTemplateRequest) Reset() {
 	*x = CreateInspectTemplateRequest{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[103]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[106]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12838,7 +13137,7 @@ func (x *CreateInspectTemplateRequest) String() string {
 func (*CreateInspectTemplateRequest) ProtoMessage() {}
 
 func (x *CreateInspectTemplateRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[103]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[106]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12851,7 +13150,7 @@ func (x *CreateInspectTemplateRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateInspectTemplateRequest.ProtoReflect.Descriptor instead.
 func (*CreateInspectTemplateRequest) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{103}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{106}
 }
 
 func (x *CreateInspectTemplateRequest) GetParent() string {
@@ -12899,7 +13198,7 @@ type UpdateInspectTemplateRequest struct {
 
 func (x *UpdateInspectTemplateRequest) Reset() {
 	*x = UpdateInspectTemplateRequest{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[104]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[107]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12911,7 +13210,7 @@ func (x *UpdateInspectTemplateRequest) String() string {
 func (*UpdateInspectTemplateRequest) ProtoMessage() {}
 
 func (x *UpdateInspectTemplateRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[104]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[107]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12924,7 +13223,7 @@ func (x *UpdateInspectTemplateRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateInspectTemplateRequest.ProtoReflect.Descriptor instead.
 func (*UpdateInspectTemplateRequest) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{104}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{107}
 }
 
 func (x *UpdateInspectTemplateRequest) GetName() string {
@@ -12961,7 +13260,7 @@ type GetInspectTemplateRequest struct {
 
 func (x *GetInspectTemplateRequest) Reset() {
 	*x = GetInspectTemplateRequest{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[105]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[108]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12973,7 +13272,7 @@ func (x *GetInspectTemplateRequest) String() string {
 func (*GetInspectTemplateRequest) ProtoMessage() {}
 
 func (x *GetInspectTemplateRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[105]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[108]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12986,7 +13285,7 @@ func (x *GetInspectTemplateRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetInspectTemplateRequest.ProtoReflect.Descriptor instead.
 func (*GetInspectTemplateRequest) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{105}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{108}
 }
 
 func (x *GetInspectTemplateRequest) GetName() string {
@@ -13048,7 +13347,7 @@ type ListInspectTemplatesRequest struct {
 
 func (x *ListInspectTemplatesRequest) Reset() {
 	*x = ListInspectTemplatesRequest{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[106]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[109]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13060,7 +13359,7 @@ func (x *ListInspectTemplatesRequest) String() string {
 func (*ListInspectTemplatesRequest) ProtoMessage() {}
 
 func (x *ListInspectTemplatesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[106]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[109]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13073,7 +13372,7 @@ func (x *ListInspectTemplatesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListInspectTemplatesRequest.ProtoReflect.Descriptor instead.
 func (*ListInspectTemplatesRequest) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{106}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{109}
 }
 
 func (x *ListInspectTemplatesRequest) GetParent() string {
@@ -13125,7 +13424,7 @@ type ListInspectTemplatesResponse struct {
 
 func (x *ListInspectTemplatesResponse) Reset() {
 	*x = ListInspectTemplatesResponse{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[107]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[110]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13137,7 +13436,7 @@ func (x *ListInspectTemplatesResponse) String() string {
 func (*ListInspectTemplatesResponse) ProtoMessage() {}
 
 func (x *ListInspectTemplatesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[107]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[110]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13150,7 +13449,7 @@ func (x *ListInspectTemplatesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListInspectTemplatesResponse.ProtoReflect.Descriptor instead.
 func (*ListInspectTemplatesResponse) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{107}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{110}
 }
 
 func (x *ListInspectTemplatesResponse) GetInspectTemplates() []*InspectTemplate {
@@ -13180,7 +13479,7 @@ type DeleteInspectTemplateRequest struct {
 
 func (x *DeleteInspectTemplateRequest) Reset() {
 	*x = DeleteInspectTemplateRequest{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[108]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[111]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13192,7 +13491,7 @@ func (x *DeleteInspectTemplateRequest) String() string {
 func (*DeleteInspectTemplateRequest) ProtoMessage() {}
 
 func (x *DeleteInspectTemplateRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[108]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[111]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13205,7 +13504,7 @@ func (x *DeleteInspectTemplateRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteInspectTemplateRequest.ProtoReflect.Descriptor instead.
 func (*DeleteInspectTemplateRequest) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{108}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{111}
 }
 
 func (x *DeleteInspectTemplateRequest) GetName() string {
@@ -13250,7 +13549,7 @@ type CreateJobTriggerRequest struct {
 
 func (x *CreateJobTriggerRequest) Reset() {
 	*x = CreateJobTriggerRequest{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[109]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[112]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13262,7 +13561,7 @@ func (x *CreateJobTriggerRequest) String() string {
 func (*CreateJobTriggerRequest) ProtoMessage() {}
 
 func (x *CreateJobTriggerRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[109]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[112]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13275,7 +13574,7 @@ func (x *CreateJobTriggerRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateJobTriggerRequest.ProtoReflect.Descriptor instead.
 func (*CreateJobTriggerRequest) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{109}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{112}
 }
 
 func (x *CreateJobTriggerRequest) GetParent() string {
@@ -13318,7 +13617,7 @@ type ActivateJobTriggerRequest struct {
 
 func (x *ActivateJobTriggerRequest) Reset() {
 	*x = ActivateJobTriggerRequest{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[110]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[113]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13330,7 +13629,7 @@ func (x *ActivateJobTriggerRequest) String() string {
 func (*ActivateJobTriggerRequest) ProtoMessage() {}
 
 func (x *ActivateJobTriggerRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[110]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[113]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13343,7 +13642,7 @@ func (x *ActivateJobTriggerRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ActivateJobTriggerRequest.ProtoReflect.Descriptor instead.
 func (*ActivateJobTriggerRequest) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{110}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{113}
 }
 
 func (x *ActivateJobTriggerRequest) GetName() string {
@@ -13369,7 +13668,7 @@ type UpdateJobTriggerRequest struct {
 
 func (x *UpdateJobTriggerRequest) Reset() {
 	*x = UpdateJobTriggerRequest{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[111]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[114]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13381,7 +13680,7 @@ func (x *UpdateJobTriggerRequest) String() string {
 func (*UpdateJobTriggerRequest) ProtoMessage() {}
 
 func (x *UpdateJobTriggerRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[111]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[114]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13394,7 +13693,7 @@ func (x *UpdateJobTriggerRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateJobTriggerRequest.ProtoReflect.Descriptor instead.
 func (*UpdateJobTriggerRequest) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{111}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{114}
 }
 
 func (x *UpdateJobTriggerRequest) GetName() string {
@@ -13430,7 +13729,7 @@ type GetJobTriggerRequest struct {
 
 func (x *GetJobTriggerRequest) Reset() {
 	*x = GetJobTriggerRequest{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[112]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[115]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13442,7 +13741,7 @@ func (x *GetJobTriggerRequest) String() string {
 func (*GetJobTriggerRequest) ProtoMessage() {}
 
 func (x *GetJobTriggerRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[112]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[115]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13455,7 +13754,7 @@ func (x *GetJobTriggerRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetJobTriggerRequest.ProtoReflect.Descriptor instead.
 func (*GetJobTriggerRequest) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{112}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{115}
 }
 
 func (x *GetJobTriggerRequest) GetName() string {
@@ -13497,7 +13796,7 @@ type CreateDiscoveryConfigRequest struct {
 
 func (x *CreateDiscoveryConfigRequest) Reset() {
 	*x = CreateDiscoveryConfigRequest{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[113]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[116]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13509,7 +13808,7 @@ func (x *CreateDiscoveryConfigRequest) String() string {
 func (*CreateDiscoveryConfigRequest) ProtoMessage() {}
 
 func (x *CreateDiscoveryConfigRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[113]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[116]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13522,7 +13821,7 @@ func (x *CreateDiscoveryConfigRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateDiscoveryConfigRequest.ProtoReflect.Descriptor instead.
 func (*CreateDiscoveryConfigRequest) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{113}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{116}
 }
 
 func (x *CreateDiscoveryConfigRequest) GetParent() string {
@@ -13562,7 +13861,7 @@ type UpdateDiscoveryConfigRequest struct {
 
 func (x *UpdateDiscoveryConfigRequest) Reset() {
 	*x = UpdateDiscoveryConfigRequest{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[114]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[117]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13574,7 +13873,7 @@ func (x *UpdateDiscoveryConfigRequest) String() string {
 func (*UpdateDiscoveryConfigRequest) ProtoMessage() {}
 
 func (x *UpdateDiscoveryConfigRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[114]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[117]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13587,7 +13886,7 @@ func (x *UpdateDiscoveryConfigRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateDiscoveryConfigRequest.ProtoReflect.Descriptor instead.
 func (*UpdateDiscoveryConfigRequest) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{114}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{117}
 }
 
 func (x *UpdateDiscoveryConfigRequest) GetName() string {
@@ -13623,7 +13922,7 @@ type GetDiscoveryConfigRequest struct {
 
 func (x *GetDiscoveryConfigRequest) Reset() {
 	*x = GetDiscoveryConfigRequest{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[115]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[118]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13635,7 +13934,7 @@ func (x *GetDiscoveryConfigRequest) String() string {
 func (*GetDiscoveryConfigRequest) ProtoMessage() {}
 
 func (x *GetDiscoveryConfigRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[115]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[118]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13648,7 +13947,7 @@ func (x *GetDiscoveryConfigRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetDiscoveryConfigRequest.ProtoReflect.Descriptor instead.
 func (*GetDiscoveryConfigRequest) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{115}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{118}
 }
 
 func (x *GetDiscoveryConfigRequest) GetName() string {
@@ -13697,7 +13996,7 @@ type ListDiscoveryConfigsRequest struct {
 
 func (x *ListDiscoveryConfigsRequest) Reset() {
 	*x = ListDiscoveryConfigsRequest{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[116]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[119]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13709,7 +14008,7 @@ func (x *ListDiscoveryConfigsRequest) String() string {
 func (*ListDiscoveryConfigsRequest) ProtoMessage() {}
 
 func (x *ListDiscoveryConfigsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[116]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[119]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13722,7 +14021,7 @@ func (x *ListDiscoveryConfigsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListDiscoveryConfigsRequest.ProtoReflect.Descriptor instead.
 func (*ListDiscoveryConfigsRequest) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{116}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{119}
 }
 
 func (x *ListDiscoveryConfigsRequest) GetParent() string {
@@ -13767,7 +14066,7 @@ type ListDiscoveryConfigsResponse struct {
 
 func (x *ListDiscoveryConfigsResponse) Reset() {
 	*x = ListDiscoveryConfigsResponse{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[117]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[120]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13779,7 +14078,7 @@ func (x *ListDiscoveryConfigsResponse) String() string {
 func (*ListDiscoveryConfigsResponse) ProtoMessage() {}
 
 func (x *ListDiscoveryConfigsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[117]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[120]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13792,7 +14091,7 @@ func (x *ListDiscoveryConfigsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListDiscoveryConfigsResponse.ProtoReflect.Descriptor instead.
 func (*ListDiscoveryConfigsResponse) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{117}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{120}
 }
 
 func (x *ListDiscoveryConfigsResponse) GetDiscoveryConfigs() []*DiscoveryConfig {
@@ -13821,7 +14120,7 @@ type DeleteDiscoveryConfigRequest struct {
 
 func (x *DeleteDiscoveryConfigRequest) Reset() {
 	*x = DeleteDiscoveryConfigRequest{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[118]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[121]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13833,7 +14132,7 @@ func (x *DeleteDiscoveryConfigRequest) String() string {
 func (*DeleteDiscoveryConfigRequest) ProtoMessage() {}
 
 func (x *DeleteDiscoveryConfigRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[118]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[121]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13846,7 +14145,7 @@ func (x *DeleteDiscoveryConfigRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteDiscoveryConfigRequest.ProtoReflect.Descriptor instead.
 func (*DeleteDiscoveryConfigRequest) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{118}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{121}
 }
 
 func (x *DeleteDiscoveryConfigRequest) GetName() string {
@@ -13898,7 +14197,7 @@ type CreateDlpJobRequest struct {
 
 func (x *CreateDlpJobRequest) Reset() {
 	*x = CreateDlpJobRequest{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[119]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[122]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13910,7 +14209,7 @@ func (x *CreateDlpJobRequest) String() string {
 func (*CreateDlpJobRequest) ProtoMessage() {}
 
 func (x *CreateDlpJobRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[119]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[122]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13923,7 +14222,7 @@ func (x *CreateDlpJobRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateDlpJobRequest.ProtoReflect.Descriptor instead.
 func (*CreateDlpJobRequest) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{119}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{122}
 }
 
 func (x *CreateDlpJobRequest) GetParent() string {
@@ -14071,7 +14370,7 @@ type ListJobTriggersRequest struct {
 
 func (x *ListJobTriggersRequest) Reset() {
 	*x = ListJobTriggersRequest{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[120]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[123]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14083,7 +14382,7 @@ func (x *ListJobTriggersRequest) String() string {
 func (*ListJobTriggersRequest) ProtoMessage() {}
 
 func (x *ListJobTriggersRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[120]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[123]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14096,7 +14395,7 @@ func (x *ListJobTriggersRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListJobTriggersRequest.ProtoReflect.Descriptor instead.
 func (*ListJobTriggersRequest) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{120}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{123}
 }
 
 func (x *ListJobTriggersRequest) GetParent() string {
@@ -14162,7 +14461,7 @@ type ListJobTriggersResponse struct {
 
 func (x *ListJobTriggersResponse) Reset() {
 	*x = ListJobTriggersResponse{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[121]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[124]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14174,7 +14473,7 @@ func (x *ListJobTriggersResponse) String() string {
 func (*ListJobTriggersResponse) ProtoMessage() {}
 
 func (x *ListJobTriggersResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[121]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[124]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14187,7 +14486,7 @@ func (x *ListJobTriggersResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListJobTriggersResponse.ProtoReflect.Descriptor instead.
 func (*ListJobTriggersResponse) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{121}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{124}
 }
 
 func (x *ListJobTriggersResponse) GetJobTriggers() []*JobTrigger {
@@ -14216,7 +14515,7 @@ type DeleteJobTriggerRequest struct {
 
 func (x *DeleteJobTriggerRequest) Reset() {
 	*x = DeleteJobTriggerRequest{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[122]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[125]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14228,7 +14527,7 @@ func (x *DeleteJobTriggerRequest) String() string {
 func (*DeleteJobTriggerRequest) ProtoMessage() {}
 
 func (x *DeleteJobTriggerRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[122]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[125]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14241,7 +14540,7 @@ func (x *DeleteJobTriggerRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteJobTriggerRequest.ProtoReflect.Descriptor instead.
 func (*DeleteJobTriggerRequest) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{122}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{125}
 }
 
 func (x *DeleteJobTriggerRequest) GetName() string {
@@ -14270,7 +14569,7 @@ type InspectJobConfig struct {
 
 func (x *InspectJobConfig) Reset() {
 	*x = InspectJobConfig{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[123]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[126]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14282,7 +14581,7 @@ func (x *InspectJobConfig) String() string {
 func (*InspectJobConfig) ProtoMessage() {}
 
 func (x *InspectJobConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[123]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[126]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14295,7 +14594,7 @@ func (x *InspectJobConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use InspectJobConfig.ProtoReflect.Descriptor instead.
 func (*InspectJobConfig) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{123}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{126}
 }
 
 func (x *InspectJobConfig) GetStorageConfig() *StorageConfig {
@@ -14346,7 +14645,7 @@ type DataProfileAction struct {
 
 func (x *DataProfileAction) Reset() {
 	*x = DataProfileAction{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[124]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[127]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14358,7 +14657,7 @@ func (x *DataProfileAction) String() string {
 func (*DataProfileAction) ProtoMessage() {}
 
 func (x *DataProfileAction) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[124]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[127]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14371,7 +14670,7 @@ func (x *DataProfileAction) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DataProfileAction.ProtoReflect.Descriptor instead.
 func (*DataProfileAction) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{124}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{127}
 }
 
 func (x *DataProfileAction) GetAction() isDataProfileAction_Action {
@@ -14522,7 +14821,7 @@ type DataProfileFinding struct {
 
 func (x *DataProfileFinding) Reset() {
 	*x = DataProfileFinding{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[125]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[128]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14534,7 +14833,7 @@ func (x *DataProfileFinding) String() string {
 func (*DataProfileFinding) ProtoMessage() {}
 
 func (x *DataProfileFinding) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[125]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[128]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14547,7 +14846,7 @@ func (x *DataProfileFinding) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DataProfileFinding.ProtoReflect.Descriptor instead.
 func (*DataProfileFinding) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{125}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{128}
 }
 
 func (x *DataProfileFinding) GetQuote() string {
@@ -14644,7 +14943,7 @@ type DataProfileFindingLocation struct {
 
 func (x *DataProfileFindingLocation) Reset() {
 	*x = DataProfileFindingLocation{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[126]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[129]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14656,7 +14955,7 @@ func (x *DataProfileFindingLocation) String() string {
 func (*DataProfileFindingLocation) ProtoMessage() {}
 
 func (x *DataProfileFindingLocation) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[126]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[129]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14669,7 +14968,7 @@ func (x *DataProfileFindingLocation) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DataProfileFindingLocation.ProtoReflect.Descriptor instead.
 func (*DataProfileFindingLocation) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{126}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{129}
 }
 
 func (x *DataProfileFindingLocation) GetContainerName() string {
@@ -14719,7 +15018,7 @@ type DataProfileFindingRecordLocation struct {
 
 func (x *DataProfileFindingRecordLocation) Reset() {
 	*x = DataProfileFindingRecordLocation{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[127]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[130]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14731,7 +15030,7 @@ func (x *DataProfileFindingRecordLocation) String() string {
 func (*DataProfileFindingRecordLocation) ProtoMessage() {}
 
 func (x *DataProfileFindingRecordLocation) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[127]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[130]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14744,7 +15043,7 @@ func (x *DataProfileFindingRecordLocation) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DataProfileFindingRecordLocation.ProtoReflect.Descriptor instead.
 func (*DataProfileFindingRecordLocation) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{127}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{130}
 }
 
 func (x *DataProfileFindingRecordLocation) GetField() *FieldId {
@@ -14796,7 +15095,7 @@ type DataProfileJobConfig struct {
 
 func (x *DataProfileJobConfig) Reset() {
 	*x = DataProfileJobConfig{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[128]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[131]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14808,7 +15107,7 @@ func (x *DataProfileJobConfig) String() string {
 func (*DataProfileJobConfig) ProtoMessage() {}
 
 func (x *DataProfileJobConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[128]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[131]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14821,7 +15120,7 @@ func (x *DataProfileJobConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DataProfileJobConfig.ProtoReflect.Descriptor instead.
 func (*DataProfileJobConfig) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{128}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{131}
 }
 
 func (x *DataProfileJobConfig) GetLocation() *DataProfileLocation {
@@ -14879,7 +15178,7 @@ type BigQueryRegex struct {
 
 func (x *BigQueryRegex) Reset() {
 	*x = BigQueryRegex{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[129]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[132]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14891,7 +15190,7 @@ func (x *BigQueryRegex) String() string {
 func (*BigQueryRegex) ProtoMessage() {}
 
 func (x *BigQueryRegex) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[129]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[132]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14904,7 +15203,7 @@ func (x *BigQueryRegex) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BigQueryRegex.ProtoReflect.Descriptor instead.
 func (*BigQueryRegex) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{129}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{132}
 }
 
 func (x *BigQueryRegex) GetProjectIdRegex() string {
@@ -14941,7 +15240,7 @@ type BigQueryRegexes struct {
 
 func (x *BigQueryRegexes) Reset() {
 	*x = BigQueryRegexes{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[130]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[133]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14953,7 +15252,7 @@ func (x *BigQueryRegexes) String() string {
 func (*BigQueryRegexes) ProtoMessage() {}
 
 func (x *BigQueryRegexes) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[130]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[133]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14966,7 +15265,7 @@ func (x *BigQueryRegexes) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BigQueryRegexes.ProtoReflect.Descriptor instead.
 func (*BigQueryRegexes) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{130}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{133}
 }
 
 func (x *BigQueryRegexes) GetPatterns() []*BigQueryRegex {
@@ -14987,7 +15286,7 @@ type BigQueryTableTypes struct {
 
 func (x *BigQueryTableTypes) Reset() {
 	*x = BigQueryTableTypes{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[131]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[134]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14999,7 +15298,7 @@ func (x *BigQueryTableTypes) String() string {
 func (*BigQueryTableTypes) ProtoMessage() {}
 
 func (x *BigQueryTableTypes) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[131]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[134]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -15012,7 +15311,7 @@ func (x *BigQueryTableTypes) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BigQueryTableTypes.ProtoReflect.Descriptor instead.
 func (*BigQueryTableTypes) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{131}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{134}
 }
 
 func (x *BigQueryTableTypes) GetTypes() []BigQueryTableType {
@@ -15031,7 +15330,7 @@ type Disabled struct {
 
 func (x *Disabled) Reset() {
 	*x = Disabled{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[132]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[135]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -15043,7 +15342,7 @@ func (x *Disabled) String() string {
 func (*Disabled) ProtoMessage() {}
 
 func (x *Disabled) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[132]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[135]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -15056,7 +15355,7 @@ func (x *Disabled) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Disabled.ProtoReflect.Descriptor instead.
 func (*Disabled) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{132}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{135}
 }
 
 // The data that will be profiled.
@@ -15075,7 +15374,7 @@ type DataProfileLocation struct {
 
 func (x *DataProfileLocation) Reset() {
 	*x = DataProfileLocation{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[133]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[136]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -15087,7 +15386,7 @@ func (x *DataProfileLocation) String() string {
 func (*DataProfileLocation) ProtoMessage() {}
 
 func (x *DataProfileLocation) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[133]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[136]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -15100,7 +15399,7 @@ func (x *DataProfileLocation) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DataProfileLocation.ProtoReflect.Descriptor instead.
 func (*DataProfileLocation) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{133}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{136}
 }
 
 func (x *DataProfileLocation) GetLocation() isDataProfileLocation_Location {
@@ -15209,7 +15508,7 @@ type DiscoveryConfig struct {
 
 func (x *DiscoveryConfig) Reset() {
 	*x = DiscoveryConfig{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[134]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[137]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -15221,7 +15520,7 @@ func (x *DiscoveryConfig) String() string {
 func (*DiscoveryConfig) ProtoMessage() {}
 
 func (x *DiscoveryConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[134]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[137]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -15234,7 +15533,7 @@ func (x *DiscoveryConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DiscoveryConfig.ProtoReflect.Descriptor instead.
 func (*DiscoveryConfig) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{134}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{137}
 }
 
 func (x *DiscoveryConfig) GetName() string {
@@ -15348,7 +15647,7 @@ type DiscoveryTarget struct {
 
 func (x *DiscoveryTarget) Reset() {
 	*x = DiscoveryTarget{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[135]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[138]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -15360,7 +15659,7 @@ func (x *DiscoveryTarget) String() string {
 func (*DiscoveryTarget) ProtoMessage() {}
 
 func (x *DiscoveryTarget) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[135]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[138]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -15373,7 +15672,7 @@ func (x *DiscoveryTarget) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DiscoveryTarget.ProtoReflect.Descriptor instead.
 func (*DiscoveryTarget) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{135}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{138}
 }
 
 func (x *DiscoveryTarget) GetTarget() isDiscoveryTarget_Target {
@@ -15520,7 +15819,7 @@ type BigQueryDiscoveryTarget struct {
 
 func (x *BigQueryDiscoveryTarget) Reset() {
 	*x = BigQueryDiscoveryTarget{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[136]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[139]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -15532,7 +15831,7 @@ func (x *BigQueryDiscoveryTarget) String() string {
 func (*BigQueryDiscoveryTarget) ProtoMessage() {}
 
 func (x *BigQueryDiscoveryTarget) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[136]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[139]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -15545,7 +15844,7 @@ func (x *BigQueryDiscoveryTarget) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BigQueryDiscoveryTarget.ProtoReflect.Descriptor instead.
 func (*BigQueryDiscoveryTarget) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{136}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{139}
 }
 
 func (x *BigQueryDiscoveryTarget) GetFilter() *DiscoveryBigQueryFilter {
@@ -15629,7 +15928,7 @@ type DiscoveryBigQueryFilter struct {
 
 func (x *DiscoveryBigQueryFilter) Reset() {
 	*x = DiscoveryBigQueryFilter{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[137]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[140]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -15641,7 +15940,7 @@ func (x *DiscoveryBigQueryFilter) String() string {
 func (*DiscoveryBigQueryFilter) ProtoMessage() {}
 
 func (x *DiscoveryBigQueryFilter) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[137]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[140]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -15654,7 +15953,7 @@ func (x *DiscoveryBigQueryFilter) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DiscoveryBigQueryFilter.ProtoReflect.Descriptor instead.
 func (*DiscoveryBigQueryFilter) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{137}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{140}
 }
 
 func (x *DiscoveryBigQueryFilter) GetFilter() isDiscoveryBigQueryFilter_Filter {
@@ -15740,7 +16039,7 @@ type BigQueryTableCollection struct {
 
 func (x *BigQueryTableCollection) Reset() {
 	*x = BigQueryTableCollection{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[138]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[141]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -15752,7 +16051,7 @@ func (x *BigQueryTableCollection) String() string {
 func (*BigQueryTableCollection) ProtoMessage() {}
 
 func (x *BigQueryTableCollection) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[138]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[141]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -15765,7 +16064,7 @@ func (x *BigQueryTableCollection) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BigQueryTableCollection.ProtoReflect.Descriptor instead.
 func (*BigQueryTableCollection) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{138}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{141}
 }
 
 func (x *BigQueryTableCollection) GetPattern() isBigQueryTableCollection_Pattern {
@@ -15822,7 +16121,7 @@ type DiscoveryBigQueryConditions struct {
 
 func (x *DiscoveryBigQueryConditions) Reset() {
 	*x = DiscoveryBigQueryConditions{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[139]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[142]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -15834,7 +16133,7 @@ func (x *DiscoveryBigQueryConditions) String() string {
 func (*DiscoveryBigQueryConditions) ProtoMessage() {}
 
 func (x *DiscoveryBigQueryConditions) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[139]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[142]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -15847,7 +16146,7 @@ func (x *DiscoveryBigQueryConditions) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DiscoveryBigQueryConditions.ProtoReflect.Descriptor instead.
 func (*DiscoveryBigQueryConditions) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{139}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{142}
 }
 
 func (x *DiscoveryBigQueryConditions) GetCreatedAfter() *timestamppb.Timestamp {
@@ -15930,7 +16229,7 @@ type DiscoveryGenerationCadence struct {
 
 func (x *DiscoveryGenerationCadence) Reset() {
 	*x = DiscoveryGenerationCadence{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[140]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[143]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -15942,7 +16241,7 @@ func (x *DiscoveryGenerationCadence) String() string {
 func (*DiscoveryGenerationCadence) ProtoMessage() {}
 
 func (x *DiscoveryGenerationCadence) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[140]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[143]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -15955,7 +16254,7 @@ func (x *DiscoveryGenerationCadence) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DiscoveryGenerationCadence.ProtoReflect.Descriptor instead.
 func (*DiscoveryGenerationCadence) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{140}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{143}
 }
 
 func (x *DiscoveryGenerationCadence) GetSchemaModifiedCadence() *DiscoverySchemaModifiedCadence {
@@ -16002,7 +16301,7 @@ type DiscoveryTableModifiedCadence struct {
 
 func (x *DiscoveryTableModifiedCadence) Reset() {
 	*x = DiscoveryTableModifiedCadence{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[141]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[144]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -16014,7 +16313,7 @@ func (x *DiscoveryTableModifiedCadence) String() string {
 func (*DiscoveryTableModifiedCadence) ProtoMessage() {}
 
 func (x *DiscoveryTableModifiedCadence) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[141]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[144]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -16027,7 +16326,7 @@ func (x *DiscoveryTableModifiedCadence) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DiscoveryTableModifiedCadence.ProtoReflect.Descriptor instead.
 func (*DiscoveryTableModifiedCadence) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{141}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{144}
 }
 
 func (x *DiscoveryTableModifiedCadence) GetTypes() []BigQueryTableModification {
@@ -16060,7 +16359,7 @@ type DiscoverySchemaModifiedCadence struct {
 
 func (x *DiscoverySchemaModifiedCadence) Reset() {
 	*x = DiscoverySchemaModifiedCadence{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[142]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[145]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -16072,7 +16371,7 @@ func (x *DiscoverySchemaModifiedCadence) String() string {
 func (*DiscoverySchemaModifiedCadence) ProtoMessage() {}
 
 func (x *DiscoverySchemaModifiedCadence) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[142]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[145]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -16085,7 +16384,7 @@ func (x *DiscoverySchemaModifiedCadence) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DiscoverySchemaModifiedCadence.ProtoReflect.Descriptor instead.
 func (*DiscoverySchemaModifiedCadence) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{142}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{145}
 }
 
 func (x *DiscoverySchemaModifiedCadence) GetTypes() []BigQuerySchemaModification {
@@ -16115,7 +16414,7 @@ type DiscoveryInspectTemplateModifiedCadence struct {
 
 func (x *DiscoveryInspectTemplateModifiedCadence) Reset() {
 	*x = DiscoveryInspectTemplateModifiedCadence{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[143]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[146]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -16127,7 +16426,7 @@ func (x *DiscoveryInspectTemplateModifiedCadence) String() string {
 func (*DiscoveryInspectTemplateModifiedCadence) ProtoMessage() {}
 
 func (x *DiscoveryInspectTemplateModifiedCadence) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[143]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[146]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -16140,7 +16439,7 @@ func (x *DiscoveryInspectTemplateModifiedCadence) ProtoReflect() protoreflect.Me
 
 // Deprecated: Use DiscoveryInspectTemplateModifiedCadence.ProtoReflect.Descriptor instead.
 func (*DiscoveryInspectTemplateModifiedCadence) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{143}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{146}
 }
 
 func (x *DiscoveryInspectTemplateModifiedCadence) GetFrequency() DataProfileUpdateFrequency {
@@ -16172,7 +16471,7 @@ type CloudSqlDiscoveryTarget struct {
 
 func (x *CloudSqlDiscoveryTarget) Reset() {
 	*x = CloudSqlDiscoveryTarget{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[144]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[147]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -16184,7 +16483,7 @@ func (x *CloudSqlDiscoveryTarget) String() string {
 func (*CloudSqlDiscoveryTarget) ProtoMessage() {}
 
 func (x *CloudSqlDiscoveryTarget) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[144]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[147]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -16197,7 +16496,7 @@ func (x *CloudSqlDiscoveryTarget) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CloudSqlDiscoveryTarget.ProtoReflect.Descriptor instead.
 func (*CloudSqlDiscoveryTarget) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{144}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{147}
 }
 
 func (x *CloudSqlDiscoveryTarget) GetFilter() *DiscoveryCloudSqlFilter {
@@ -16281,7 +16580,7 @@ type DiscoveryCloudSqlFilter struct {
 
 func (x *DiscoveryCloudSqlFilter) Reset() {
 	*x = DiscoveryCloudSqlFilter{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[145]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[148]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -16293,7 +16592,7 @@ func (x *DiscoveryCloudSqlFilter) String() string {
 func (*DiscoveryCloudSqlFilter) ProtoMessage() {}
 
 func (x *DiscoveryCloudSqlFilter) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[145]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[148]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -16306,7 +16605,7 @@ func (x *DiscoveryCloudSqlFilter) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DiscoveryCloudSqlFilter.ProtoReflect.Descriptor instead.
 func (*DiscoveryCloudSqlFilter) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{145}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{148}
 }
 
 func (x *DiscoveryCloudSqlFilter) GetFilter() isDiscoveryCloudSqlFilter_Filter {
@@ -16389,7 +16688,7 @@ type DatabaseResourceCollection struct {
 
 func (x *DatabaseResourceCollection) Reset() {
 	*x = DatabaseResourceCollection{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[146]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[149]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -16401,7 +16700,7 @@ func (x *DatabaseResourceCollection) String() string {
 func (*DatabaseResourceCollection) ProtoMessage() {}
 
 func (x *DatabaseResourceCollection) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[146]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[149]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -16414,7 +16713,7 @@ func (x *DatabaseResourceCollection) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DatabaseResourceCollection.ProtoReflect.Descriptor instead.
 func (*DatabaseResourceCollection) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{146}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{149}
 }
 
 func (x *DatabaseResourceCollection) GetPattern() isDatabaseResourceCollection_Pattern {
@@ -16459,7 +16758,7 @@ type DatabaseResourceRegexes struct {
 
 func (x *DatabaseResourceRegexes) Reset() {
 	*x = DatabaseResourceRegexes{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[147]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[150]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -16471,7 +16770,7 @@ func (x *DatabaseResourceRegexes) String() string {
 func (*DatabaseResourceRegexes) ProtoMessage() {}
 
 func (x *DatabaseResourceRegexes) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[147]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[150]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -16484,7 +16783,7 @@ func (x *DatabaseResourceRegexes) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DatabaseResourceRegexes.ProtoReflect.Descriptor instead.
 func (*DatabaseResourceRegexes) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{147}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{150}
 }
 
 func (x *DatabaseResourceRegexes) GetPatterns() []*DatabaseResourceRegex {
@@ -16518,7 +16817,7 @@ type DatabaseResourceRegex struct {
 
 func (x *DatabaseResourceRegex) Reset() {
 	*x = DatabaseResourceRegex{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[148]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[151]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -16530,7 +16829,7 @@ func (x *DatabaseResourceRegex) String() string {
 func (*DatabaseResourceRegex) ProtoMessage() {}
 
 func (x *DatabaseResourceRegex) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[148]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[151]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -16543,7 +16842,7 @@ func (x *DatabaseResourceRegex) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DatabaseResourceRegex.ProtoReflect.Descriptor instead.
 func (*DatabaseResourceRegex) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{148}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{151}
 }
 
 func (x *DatabaseResourceRegex) GetProjectIdRegex() string {
@@ -16583,7 +16882,7 @@ type AllOtherDatabaseResources struct {
 
 func (x *AllOtherDatabaseResources) Reset() {
 	*x = AllOtherDatabaseResources{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[149]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[152]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -16595,7 +16894,7 @@ func (x *AllOtherDatabaseResources) String() string {
 func (*AllOtherDatabaseResources) ProtoMessage() {}
 
 func (x *AllOtherDatabaseResources) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[149]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[152]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -16608,7 +16907,7 @@ func (x *AllOtherDatabaseResources) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AllOtherDatabaseResources.ProtoReflect.Descriptor instead.
 func (*AllOtherDatabaseResources) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{149}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{152}
 }
 
 // Identifies a single database resource, like a table within a database.
@@ -16631,7 +16930,7 @@ type DatabaseResourceReference struct {
 
 func (x *DatabaseResourceReference) Reset() {
 	*x = DatabaseResourceReference{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[150]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[153]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -16643,7 +16942,7 @@ func (x *DatabaseResourceReference) String() string {
 func (*DatabaseResourceReference) ProtoMessage() {}
 
 func (x *DatabaseResourceReference) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[150]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[153]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -16656,7 +16955,7 @@ func (x *DatabaseResourceReference) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DatabaseResourceReference.ProtoReflect.Descriptor instead.
 func (*DatabaseResourceReference) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{150}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{153}
 }
 
 func (x *DatabaseResourceReference) GetProjectId() string {
@@ -16704,7 +17003,7 @@ type DiscoveryCloudSqlConditions struct {
 
 func (x *DiscoveryCloudSqlConditions) Reset() {
 	*x = DiscoveryCloudSqlConditions{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[151]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[154]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -16716,7 +17015,7 @@ func (x *DiscoveryCloudSqlConditions) String() string {
 func (*DiscoveryCloudSqlConditions) ProtoMessage() {}
 
 func (x *DiscoveryCloudSqlConditions) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[151]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[154]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -16729,7 +17028,7 @@ func (x *DiscoveryCloudSqlConditions) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DiscoveryCloudSqlConditions.ProtoReflect.Descriptor instead.
 func (*DiscoveryCloudSqlConditions) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{151}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{154}
 }
 
 func (x *DiscoveryCloudSqlConditions) GetDatabaseEngines() []DiscoveryCloudSqlConditions_DatabaseEngine {
@@ -16768,7 +17067,7 @@ type DiscoveryCloudSqlGenerationCadence struct {
 
 func (x *DiscoveryCloudSqlGenerationCadence) Reset() {
 	*x = DiscoveryCloudSqlGenerationCadence{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[152]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[155]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -16780,7 +17079,7 @@ func (x *DiscoveryCloudSqlGenerationCadence) String() string {
 func (*DiscoveryCloudSqlGenerationCadence) ProtoMessage() {}
 
 func (x *DiscoveryCloudSqlGenerationCadence) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[152]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[155]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -16793,7 +17092,7 @@ func (x *DiscoveryCloudSqlGenerationCadence) ProtoReflect() protoreflect.Message
 
 // Deprecated: Use DiscoveryCloudSqlGenerationCadence.ProtoReflect.Descriptor instead.
 func (*DiscoveryCloudSqlGenerationCadence) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{152}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{155}
 }
 
 func (x *DiscoveryCloudSqlGenerationCadence) GetSchemaModifiedCadence() *DiscoveryCloudSqlGenerationCadence_SchemaModifiedCadence {
@@ -16837,7 +17136,7 @@ type SecretsDiscoveryTarget struct {
 
 func (x *SecretsDiscoveryTarget) Reset() {
 	*x = SecretsDiscoveryTarget{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[153]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[156]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -16849,7 +17148,7 @@ func (x *SecretsDiscoveryTarget) String() string {
 func (*SecretsDiscoveryTarget) ProtoMessage() {}
 
 func (x *SecretsDiscoveryTarget) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[153]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[156]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -16862,7 +17161,7 @@ func (x *SecretsDiscoveryTarget) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SecretsDiscoveryTarget.ProtoReflect.Descriptor instead.
 func (*SecretsDiscoveryTarget) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{153}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{156}
 }
 
 // Target used to match against for discovery with Cloud Storage buckets.
@@ -16887,7 +17186,7 @@ type CloudStorageDiscoveryTarget struct {
 
 func (x *CloudStorageDiscoveryTarget) Reset() {
 	*x = CloudStorageDiscoveryTarget{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[154]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[157]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -16899,7 +17198,7 @@ func (x *CloudStorageDiscoveryTarget) String() string {
 func (*CloudStorageDiscoveryTarget) ProtoMessage() {}
 
 func (x *CloudStorageDiscoveryTarget) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[154]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[157]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -16912,7 +17211,7 @@ func (x *CloudStorageDiscoveryTarget) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CloudStorageDiscoveryTarget.ProtoReflect.Descriptor instead.
 func (*CloudStorageDiscoveryTarget) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{154}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{157}
 }
 
 func (x *CloudStorageDiscoveryTarget) GetFilter() *DiscoveryCloudStorageFilter {
@@ -16996,7 +17295,7 @@ type DiscoveryCloudStorageFilter struct {
 
 func (x *DiscoveryCloudStorageFilter) Reset() {
 	*x = DiscoveryCloudStorageFilter{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[155]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[158]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -17008,7 +17307,7 @@ func (x *DiscoveryCloudStorageFilter) String() string {
 func (*DiscoveryCloudStorageFilter) ProtoMessage() {}
 
 func (x *DiscoveryCloudStorageFilter) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[155]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[158]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -17021,7 +17320,7 @@ func (x *DiscoveryCloudStorageFilter) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DiscoveryCloudStorageFilter.ProtoReflect.Descriptor instead.
 func (*DiscoveryCloudStorageFilter) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{155}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{158}
 }
 
 func (x *DiscoveryCloudStorageFilter) GetFilter() isDiscoveryCloudStorageFilter_Filter {
@@ -17117,7 +17416,7 @@ type FileStoreCollection struct {
 
 func (x *FileStoreCollection) Reset() {
 	*x = FileStoreCollection{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[156]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[159]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -17129,7 +17428,7 @@ func (x *FileStoreCollection) String() string {
 func (*FileStoreCollection) ProtoMessage() {}
 
 func (x *FileStoreCollection) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[156]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[159]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -17142,7 +17441,7 @@ func (x *FileStoreCollection) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FileStoreCollection.ProtoReflect.Descriptor instead.
 func (*FileStoreCollection) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{156}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{159}
 }
 
 func (x *FileStoreCollection) GetPattern() isFileStoreCollection_Pattern {
@@ -17194,7 +17493,7 @@ type FileStoreRegexes struct {
 
 func (x *FileStoreRegexes) Reset() {
 	*x = FileStoreRegexes{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[157]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[160]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -17206,7 +17505,7 @@ func (x *FileStoreRegexes) String() string {
 func (*FileStoreRegexes) ProtoMessage() {}
 
 func (x *FileStoreRegexes) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[157]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[160]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -17219,7 +17518,7 @@ func (x *FileStoreRegexes) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FileStoreRegexes.ProtoReflect.Descriptor instead.
 func (*FileStoreRegexes) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{157}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{160}
 }
 
 func (x *FileStoreRegexes) GetPatterns() []*FileStoreRegex {
@@ -17244,7 +17543,7 @@ type FileStoreRegex struct {
 
 func (x *FileStoreRegex) Reset() {
 	*x = FileStoreRegex{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[158]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[161]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -17256,7 +17555,7 @@ func (x *FileStoreRegex) String() string {
 func (*FileStoreRegex) ProtoMessage() {}
 
 func (x *FileStoreRegex) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[158]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[161]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -17269,7 +17568,7 @@ func (x *FileStoreRegex) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FileStoreRegex.ProtoReflect.Descriptor instead.
 func (*FileStoreRegex) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{158}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{161}
 }
 
 func (x *FileStoreRegex) GetResourceRegex() isFileStoreRegex_ResourceRegex {
@@ -17317,7 +17616,7 @@ type CloudStorageRegex struct {
 
 func (x *CloudStorageRegex) Reset() {
 	*x = CloudStorageRegex{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[159]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[162]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -17329,7 +17628,7 @@ func (x *CloudStorageRegex) String() string {
 func (*CloudStorageRegex) ProtoMessage() {}
 
 func (x *CloudStorageRegex) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[159]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[162]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -17342,7 +17641,7 @@ func (x *CloudStorageRegex) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CloudStorageRegex.ProtoReflect.Descriptor instead.
 func (*CloudStorageRegex) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{159}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{162}
 }
 
 func (x *CloudStorageRegex) GetProjectIdRegex() string {
@@ -17373,7 +17672,7 @@ type CloudStorageResourceReference struct {
 
 func (x *CloudStorageResourceReference) Reset() {
 	*x = CloudStorageResourceReference{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[160]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[163]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -17385,7 +17684,7 @@ func (x *CloudStorageResourceReference) String() string {
 func (*CloudStorageResourceReference) ProtoMessage() {}
 
 func (x *CloudStorageResourceReference) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[160]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[163]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -17398,7 +17697,7 @@ func (x *CloudStorageResourceReference) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CloudStorageResourceReference.ProtoReflect.Descriptor instead.
 func (*CloudStorageResourceReference) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{160}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{163}
 }
 
 func (x *CloudStorageResourceReference) GetBucketName() string {
@@ -17434,7 +17733,7 @@ type DiscoveryCloudStorageGenerationCadence struct {
 
 func (x *DiscoveryCloudStorageGenerationCadence) Reset() {
 	*x = DiscoveryCloudStorageGenerationCadence{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[161]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[164]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -17446,7 +17745,7 @@ func (x *DiscoveryCloudStorageGenerationCadence) String() string {
 func (*DiscoveryCloudStorageGenerationCadence) ProtoMessage() {}
 
 func (x *DiscoveryCloudStorageGenerationCadence) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[161]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[164]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -17459,7 +17758,7 @@ func (x *DiscoveryCloudStorageGenerationCadence) ProtoReflect() protoreflect.Mes
 
 // Deprecated: Use DiscoveryCloudStorageGenerationCadence.ProtoReflect.Descriptor instead.
 func (*DiscoveryCloudStorageGenerationCadence) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{161}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{164}
 }
 
 func (x *DiscoveryCloudStorageGenerationCadence) GetRefreshFrequency() DataProfileUpdateFrequency {
@@ -17496,7 +17795,7 @@ type DiscoveryCloudStorageConditions struct {
 
 func (x *DiscoveryCloudStorageConditions) Reset() {
 	*x = DiscoveryCloudStorageConditions{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[162]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[165]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -17508,7 +17807,7 @@ func (x *DiscoveryCloudStorageConditions) String() string {
 func (*DiscoveryCloudStorageConditions) ProtoMessage() {}
 
 func (x *DiscoveryCloudStorageConditions) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[162]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[165]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -17521,7 +17820,7 @@ func (x *DiscoveryCloudStorageConditions) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DiscoveryCloudStorageConditions.ProtoReflect.Descriptor instead.
 func (*DiscoveryCloudStorageConditions) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{162}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{165}
 }
 
 func (x *DiscoveryCloudStorageConditions) GetIncludedObjectAttributes() []DiscoveryCloudStorageConditions_CloudStorageObjectAttribute {
@@ -17561,7 +17860,7 @@ type DiscoveryFileStoreConditions struct {
 
 func (x *DiscoveryFileStoreConditions) Reset() {
 	*x = DiscoveryFileStoreConditions{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[163]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[166]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -17573,7 +17872,7 @@ func (x *DiscoveryFileStoreConditions) String() string {
 func (*DiscoveryFileStoreConditions) ProtoMessage() {}
 
 func (x *DiscoveryFileStoreConditions) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[163]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[166]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -17586,7 +17885,7 @@ func (x *DiscoveryFileStoreConditions) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DiscoveryFileStoreConditions.ProtoReflect.Descriptor instead.
 func (*DiscoveryFileStoreConditions) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{163}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{166}
 }
 
 func (x *DiscoveryFileStoreConditions) GetCreatedAfter() *timestamppb.Timestamp {
@@ -17660,7 +17959,7 @@ type OtherCloudDiscoveryTarget struct {
 
 func (x *OtherCloudDiscoveryTarget) Reset() {
 	*x = OtherCloudDiscoveryTarget{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[164]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[167]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -17672,7 +17971,7 @@ func (x *OtherCloudDiscoveryTarget) String() string {
 func (*OtherCloudDiscoveryTarget) ProtoMessage() {}
 
 func (x *OtherCloudDiscoveryTarget) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[164]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[167]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -17685,7 +17984,7 @@ func (x *OtherCloudDiscoveryTarget) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OtherCloudDiscoveryTarget.ProtoReflect.Descriptor instead.
 func (*OtherCloudDiscoveryTarget) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{164}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{167}
 }
 
 func (x *OtherCloudDiscoveryTarget) GetDataSourceType() *DataSourceType {
@@ -17774,7 +18073,7 @@ type DiscoveryOtherCloudFilter struct {
 
 func (x *DiscoveryOtherCloudFilter) Reset() {
 	*x = DiscoveryOtherCloudFilter{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[165]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[168]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -17786,7 +18085,7 @@ func (x *DiscoveryOtherCloudFilter) String() string {
 func (*DiscoveryOtherCloudFilter) ProtoMessage() {}
 
 func (x *DiscoveryOtherCloudFilter) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[165]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[168]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -17799,7 +18098,7 @@ func (x *DiscoveryOtherCloudFilter) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DiscoveryOtherCloudFilter.ProtoReflect.Descriptor instead.
 func (*DiscoveryOtherCloudFilter) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{165}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{168}
 }
 
 func (x *DiscoveryOtherCloudFilter) GetFilter() isDiscoveryOtherCloudFilter_Filter {
@@ -17880,7 +18179,7 @@ type OtherCloudResourceCollection struct {
 
 func (x *OtherCloudResourceCollection) Reset() {
 	*x = OtherCloudResourceCollection{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[166]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[169]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -17892,7 +18191,7 @@ func (x *OtherCloudResourceCollection) String() string {
 func (*OtherCloudResourceCollection) ProtoMessage() {}
 
 func (x *OtherCloudResourceCollection) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[166]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[169]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -17905,7 +18204,7 @@ func (x *OtherCloudResourceCollection) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OtherCloudResourceCollection.ProtoReflect.Descriptor instead.
 func (*OtherCloudResourceCollection) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{166}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{169}
 }
 
 func (x *OtherCloudResourceCollection) GetPattern() isOtherCloudResourceCollection_Pattern {
@@ -17950,7 +18249,7 @@ type OtherCloudResourceRegexes struct {
 
 func (x *OtherCloudResourceRegexes) Reset() {
 	*x = OtherCloudResourceRegexes{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[167]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[170]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -17962,7 +18261,7 @@ func (x *OtherCloudResourceRegexes) String() string {
 func (*OtherCloudResourceRegexes) ProtoMessage() {}
 
 func (x *OtherCloudResourceRegexes) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[167]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[170]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -17975,7 +18274,7 @@ func (x *OtherCloudResourceRegexes) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OtherCloudResourceRegexes.ProtoReflect.Descriptor instead.
 func (*OtherCloudResourceRegexes) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{167}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{170}
 }
 
 func (x *OtherCloudResourceRegexes) GetPatterns() []*OtherCloudResourceRegex {
@@ -18003,7 +18302,7 @@ type OtherCloudResourceRegex struct {
 
 func (x *OtherCloudResourceRegex) Reset() {
 	*x = OtherCloudResourceRegex{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[168]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[171]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -18015,7 +18314,7 @@ func (x *OtherCloudResourceRegex) String() string {
 func (*OtherCloudResourceRegex) ProtoMessage() {}
 
 func (x *OtherCloudResourceRegex) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[168]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[171]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -18028,7 +18327,7 @@ func (x *OtherCloudResourceRegex) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OtherCloudResourceRegex.ProtoReflect.Descriptor instead.
 func (*OtherCloudResourceRegex) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{168}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{171}
 }
 
 func (x *OtherCloudResourceRegex) GetResourceRegex() isOtherCloudResourceRegex_ResourceRegex {
@@ -18070,7 +18369,7 @@ type AwsAccountRegex struct {
 
 func (x *AwsAccountRegex) Reset() {
 	*x = AwsAccountRegex{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[169]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[172]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -18082,7 +18381,7 @@ func (x *AwsAccountRegex) String() string {
 func (*AwsAccountRegex) ProtoMessage() {}
 
 func (x *AwsAccountRegex) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[169]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[172]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -18095,7 +18394,7 @@ func (x *AwsAccountRegex) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AwsAccountRegex.ProtoReflect.Descriptor instead.
 func (*AwsAccountRegex) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{169}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{172}
 }
 
 func (x *AwsAccountRegex) GetAccountIdRegex() string {
@@ -18119,7 +18418,7 @@ type AmazonS3BucketRegex struct {
 
 func (x *AmazonS3BucketRegex) Reset() {
 	*x = AmazonS3BucketRegex{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[170]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[173]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -18131,7 +18430,7 @@ func (x *AmazonS3BucketRegex) String() string {
 func (*AmazonS3BucketRegex) ProtoMessage() {}
 
 func (x *AmazonS3BucketRegex) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[170]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[173]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -18144,7 +18443,7 @@ func (x *AmazonS3BucketRegex) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AmazonS3BucketRegex.ProtoReflect.Descriptor instead.
 func (*AmazonS3BucketRegex) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{170}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{173}
 }
 
 func (x *AmazonS3BucketRegex) GetAwsAccountRegex() *AwsAccountRegex {
@@ -18176,7 +18475,7 @@ type OtherCloudSingleResourceReference struct {
 
 func (x *OtherCloudSingleResourceReference) Reset() {
 	*x = OtherCloudSingleResourceReference{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[171]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[174]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -18188,7 +18487,7 @@ func (x *OtherCloudSingleResourceReference) String() string {
 func (*OtherCloudSingleResourceReference) ProtoMessage() {}
 
 func (x *OtherCloudSingleResourceReference) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[171]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[174]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -18201,7 +18500,7 @@ func (x *OtherCloudSingleResourceReference) ProtoReflect() protoreflect.Message 
 
 // Deprecated: Use OtherCloudSingleResourceReference.ProtoReflect.Descriptor instead.
 func (*OtherCloudSingleResourceReference) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{171}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{174}
 }
 
 func (x *OtherCloudSingleResourceReference) GetResource() isOtherCloudSingleResourceReference_Resource {
@@ -18243,7 +18542,7 @@ type AwsAccount struct {
 
 func (x *AwsAccount) Reset() {
 	*x = AwsAccount{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[172]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[175]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -18255,7 +18554,7 @@ func (x *AwsAccount) String() string {
 func (*AwsAccount) ProtoMessage() {}
 
 func (x *AwsAccount) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[172]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[175]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -18268,7 +18567,7 @@ func (x *AwsAccount) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AwsAccount.ProtoReflect.Descriptor instead.
 func (*AwsAccount) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{172}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{175}
 }
 
 func (x *AwsAccount) GetAccountId() string {
@@ -18291,7 +18590,7 @@ type AmazonS3Bucket struct {
 
 func (x *AmazonS3Bucket) Reset() {
 	*x = AmazonS3Bucket{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[173]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[176]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -18303,7 +18602,7 @@ func (x *AmazonS3Bucket) String() string {
 func (*AmazonS3Bucket) ProtoMessage() {}
 
 func (x *AmazonS3Bucket) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[173]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[176]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -18316,7 +18615,7 @@ func (x *AmazonS3Bucket) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AmazonS3Bucket.ProtoReflect.Descriptor instead.
 func (*AmazonS3Bucket) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{173}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{176}
 }
 
 func (x *AmazonS3Bucket) GetAwsAccount() *AwsAccount {
@@ -18352,7 +18651,7 @@ type DiscoveryOtherCloudConditions struct {
 
 func (x *DiscoveryOtherCloudConditions) Reset() {
 	*x = DiscoveryOtherCloudConditions{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[174]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[177]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -18364,7 +18663,7 @@ func (x *DiscoveryOtherCloudConditions) String() string {
 func (*DiscoveryOtherCloudConditions) ProtoMessage() {}
 
 func (x *DiscoveryOtherCloudConditions) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[174]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[177]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -18377,7 +18676,7 @@ func (x *DiscoveryOtherCloudConditions) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DiscoveryOtherCloudConditions.ProtoReflect.Descriptor instead.
 func (*DiscoveryOtherCloudConditions) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{174}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{177}
 }
 
 func (x *DiscoveryOtherCloudConditions) GetMinAge() *durationpb.Duration {
@@ -18430,7 +18729,7 @@ type AmazonS3BucketConditions struct {
 
 func (x *AmazonS3BucketConditions) Reset() {
 	*x = AmazonS3BucketConditions{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[175]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[178]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -18442,7 +18741,7 @@ func (x *AmazonS3BucketConditions) String() string {
 func (*AmazonS3BucketConditions) ProtoMessage() {}
 
 func (x *AmazonS3BucketConditions) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[175]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[178]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -18455,7 +18754,7 @@ func (x *AmazonS3BucketConditions) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AmazonS3BucketConditions.ProtoReflect.Descriptor instead.
 func (*AmazonS3BucketConditions) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{175}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{178}
 }
 
 func (x *AmazonS3BucketConditions) GetBucketTypes() []AmazonS3BucketConditions_BucketType {
@@ -18490,7 +18789,7 @@ type DiscoveryOtherCloudGenerationCadence struct {
 
 func (x *DiscoveryOtherCloudGenerationCadence) Reset() {
 	*x = DiscoveryOtherCloudGenerationCadence{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[176]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[179]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -18502,7 +18801,7 @@ func (x *DiscoveryOtherCloudGenerationCadence) String() string {
 func (*DiscoveryOtherCloudGenerationCadence) ProtoMessage() {}
 
 func (x *DiscoveryOtherCloudGenerationCadence) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[176]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[179]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -18515,7 +18814,7 @@ func (x *DiscoveryOtherCloudGenerationCadence) ProtoReflect() protoreflect.Messa
 
 // Deprecated: Use DiscoveryOtherCloudGenerationCadence.ProtoReflect.Descriptor instead.
 func (*DiscoveryOtherCloudGenerationCadence) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{176}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{179}
 }
 
 func (x *DiscoveryOtherCloudGenerationCadence) GetRefreshFrequency() DataProfileUpdateFrequency {
@@ -18549,7 +18848,7 @@ type DiscoveryStartingLocation struct {
 
 func (x *DiscoveryStartingLocation) Reset() {
 	*x = DiscoveryStartingLocation{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[177]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[180]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -18561,7 +18860,7 @@ func (x *DiscoveryStartingLocation) String() string {
 func (*DiscoveryStartingLocation) ProtoMessage() {}
 
 func (x *DiscoveryStartingLocation) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[177]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[180]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -18574,7 +18873,7 @@ func (x *DiscoveryStartingLocation) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DiscoveryStartingLocation.ProtoReflect.Descriptor instead.
 func (*DiscoveryStartingLocation) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{177}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{180}
 }
 
 func (x *DiscoveryStartingLocation) GetLocation() isDiscoveryStartingLocation_Location {
@@ -18635,7 +18934,7 @@ type OtherCloudDiscoveryStartingLocation struct {
 
 func (x *OtherCloudDiscoveryStartingLocation) Reset() {
 	*x = OtherCloudDiscoveryStartingLocation{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[178]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[181]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -18647,7 +18946,7 @@ func (x *OtherCloudDiscoveryStartingLocation) String() string {
 func (*OtherCloudDiscoveryStartingLocation) ProtoMessage() {}
 
 func (x *OtherCloudDiscoveryStartingLocation) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[178]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[181]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -18660,7 +18959,7 @@ func (x *OtherCloudDiscoveryStartingLocation) ProtoReflect() protoreflect.Messag
 
 // Deprecated: Use OtherCloudDiscoveryStartingLocation.ProtoReflect.Descriptor instead.
 func (*OtherCloudDiscoveryStartingLocation) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{178}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{181}
 }
 
 func (x *OtherCloudDiscoveryStartingLocation) GetLocation() isOtherCloudDiscoveryStartingLocation_Location {
@@ -18700,7 +18999,7 @@ type AllOtherResources struct {
 
 func (x *AllOtherResources) Reset() {
 	*x = AllOtherResources{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[179]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[182]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -18712,7 +19011,7 @@ func (x *AllOtherResources) String() string {
 func (*AllOtherResources) ProtoMessage() {}
 
 func (x *AllOtherResources) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[179]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[182]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -18725,7 +19024,7 @@ func (x *AllOtherResources) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AllOtherResources.ProtoReflect.Descriptor instead.
 func (*AllOtherResources) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{179}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{182}
 }
 
 // Target used to match against for discovery with Vertex AI datasets.
@@ -18750,7 +19049,7 @@ type VertexDatasetDiscoveryTarget struct {
 
 func (x *VertexDatasetDiscoveryTarget) Reset() {
 	*x = VertexDatasetDiscoveryTarget{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[180]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[183]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -18762,7 +19061,7 @@ func (x *VertexDatasetDiscoveryTarget) String() string {
 func (*VertexDatasetDiscoveryTarget) ProtoMessage() {}
 
 func (x *VertexDatasetDiscoveryTarget) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[180]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[183]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -18775,7 +19074,7 @@ func (x *VertexDatasetDiscoveryTarget) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use VertexDatasetDiscoveryTarget.ProtoReflect.Descriptor instead.
 func (*VertexDatasetDiscoveryTarget) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{180}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{183}
 }
 
 func (x *VertexDatasetDiscoveryTarget) GetFilter() *DiscoveryVertexDatasetFilter {
@@ -18859,7 +19158,7 @@ type DiscoveryVertexDatasetFilter struct {
 
 func (x *DiscoveryVertexDatasetFilter) Reset() {
 	*x = DiscoveryVertexDatasetFilter{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[181]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[184]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -18871,7 +19170,7 @@ func (x *DiscoveryVertexDatasetFilter) String() string {
 func (*DiscoveryVertexDatasetFilter) ProtoMessage() {}
 
 func (x *DiscoveryVertexDatasetFilter) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[181]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[184]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -18884,7 +19183,7 @@ func (x *DiscoveryVertexDatasetFilter) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DiscoveryVertexDatasetFilter.ProtoReflect.Descriptor instead.
 func (*DiscoveryVertexDatasetFilter) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{181}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{184}
 }
 
 func (x *DiscoveryVertexDatasetFilter) GetFilter() isDiscoveryVertexDatasetFilter_Filter {
@@ -18966,7 +19265,7 @@ type VertexDatasetCollection struct {
 
 func (x *VertexDatasetCollection) Reset() {
 	*x = VertexDatasetCollection{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[182]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[185]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -18978,7 +19277,7 @@ func (x *VertexDatasetCollection) String() string {
 func (*VertexDatasetCollection) ProtoMessage() {}
 
 func (x *VertexDatasetCollection) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[182]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[185]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -18991,7 +19290,7 @@ func (x *VertexDatasetCollection) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use VertexDatasetCollection.ProtoReflect.Descriptor instead.
 func (*VertexDatasetCollection) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{182}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{185}
 }
 
 func (x *VertexDatasetCollection) GetPattern() isVertexDatasetCollection_Pattern {
@@ -19035,7 +19334,7 @@ type VertexDatasetRegexes struct {
 
 func (x *VertexDatasetRegexes) Reset() {
 	*x = VertexDatasetRegexes{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[183]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[186]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -19047,7 +19346,7 @@ func (x *VertexDatasetRegexes) String() string {
 func (*VertexDatasetRegexes) ProtoMessage() {}
 
 func (x *VertexDatasetRegexes) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[183]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[186]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -19060,7 +19359,7 @@ func (x *VertexDatasetRegexes) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use VertexDatasetRegexes.ProtoReflect.Descriptor instead.
 func (*VertexDatasetRegexes) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{183}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{186}
 }
 
 func (x *VertexDatasetRegexes) GetPatterns() []*VertexDatasetRegex {
@@ -19082,7 +19381,7 @@ type VertexDatasetRegex struct {
 
 func (x *VertexDatasetRegex) Reset() {
 	*x = VertexDatasetRegex{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[184]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[187]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -19094,7 +19393,7 @@ func (x *VertexDatasetRegex) String() string {
 func (*VertexDatasetRegex) ProtoMessage() {}
 
 func (x *VertexDatasetRegex) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[184]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[187]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -19107,7 +19406,7 @@ func (x *VertexDatasetRegex) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use VertexDatasetRegex.ProtoReflect.Descriptor instead.
 func (*VertexDatasetRegex) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{184}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{187}
 }
 
 func (x *VertexDatasetRegex) GetProjectIdRegex() string {
@@ -19133,7 +19432,7 @@ type VertexDatasetResourceReference struct {
 
 func (x *VertexDatasetResourceReference) Reset() {
 	*x = VertexDatasetResourceReference{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[185]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[188]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -19145,7 +19444,7 @@ func (x *VertexDatasetResourceReference) String() string {
 func (*VertexDatasetResourceReference) ProtoMessage() {}
 
 func (x *VertexDatasetResourceReference) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[185]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[188]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -19158,7 +19457,7 @@ func (x *VertexDatasetResourceReference) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use VertexDatasetResourceReference.ProtoReflect.Descriptor instead.
 func (*VertexDatasetResourceReference) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{185}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{188}
 }
 
 func (x *VertexDatasetResourceReference) GetDatasetResourceName() string {
@@ -19184,7 +19483,7 @@ type DiscoveryVertexDatasetConditions struct {
 
 func (x *DiscoveryVertexDatasetConditions) Reset() {
 	*x = DiscoveryVertexDatasetConditions{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[186]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[189]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -19196,7 +19495,7 @@ func (x *DiscoveryVertexDatasetConditions) String() string {
 func (*DiscoveryVertexDatasetConditions) ProtoMessage() {}
 
 func (x *DiscoveryVertexDatasetConditions) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[186]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[189]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -19209,7 +19508,7 @@ func (x *DiscoveryVertexDatasetConditions) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DiscoveryVertexDatasetConditions.ProtoReflect.Descriptor instead.
 func (*DiscoveryVertexDatasetConditions) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{186}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{189}
 }
 
 func (x *DiscoveryVertexDatasetConditions) GetCreatedAfter() *timestamppb.Timestamp {
@@ -19246,7 +19545,7 @@ type DiscoveryVertexDatasetGenerationCadence struct {
 
 func (x *DiscoveryVertexDatasetGenerationCadence) Reset() {
 	*x = DiscoveryVertexDatasetGenerationCadence{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[187]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[190]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -19258,7 +19557,7 @@ func (x *DiscoveryVertexDatasetGenerationCadence) String() string {
 func (*DiscoveryVertexDatasetGenerationCadence) ProtoMessage() {}
 
 func (x *DiscoveryVertexDatasetGenerationCadence) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[187]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[190]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -19271,7 +19570,7 @@ func (x *DiscoveryVertexDatasetGenerationCadence) ProtoReflect() protoreflect.Me
 
 // Deprecated: Use DiscoveryVertexDatasetGenerationCadence.ProtoReflect.Descriptor instead.
 func (*DiscoveryVertexDatasetGenerationCadence) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{187}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{190}
 }
 
 func (x *DiscoveryVertexDatasetGenerationCadence) GetRefreshFrequency() DataProfileUpdateFrequency {
@@ -19325,7 +19624,7 @@ type DlpJob struct {
 
 func (x *DlpJob) Reset() {
 	*x = DlpJob{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[188]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[191]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -19337,7 +19636,7 @@ func (x *DlpJob) String() string {
 func (*DlpJob) ProtoMessage() {}
 
 func (x *DlpJob) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[188]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[191]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -19350,7 +19649,7 @@ func (x *DlpJob) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DlpJob.ProtoReflect.Descriptor instead.
 func (*DlpJob) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{188}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{191}
 }
 
 func (x *DlpJob) GetName() string {
@@ -19478,7 +19777,7 @@ type GetDlpJobRequest struct {
 
 func (x *GetDlpJobRequest) Reset() {
 	*x = GetDlpJobRequest{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[189]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[192]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -19490,7 +19789,7 @@ func (x *GetDlpJobRequest) String() string {
 func (*GetDlpJobRequest) ProtoMessage() {}
 
 func (x *GetDlpJobRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[189]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[192]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -19503,7 +19802,7 @@ func (x *GetDlpJobRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetDlpJobRequest.ProtoReflect.Descriptor instead.
 func (*GetDlpJobRequest) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{189}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{192}
 }
 
 func (x *GetDlpJobRequest) GetName() string {
@@ -19594,7 +19893,7 @@ type ListDlpJobsRequest struct {
 
 func (x *ListDlpJobsRequest) Reset() {
 	*x = ListDlpJobsRequest{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[190]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[193]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -19606,7 +19905,7 @@ func (x *ListDlpJobsRequest) String() string {
 func (*ListDlpJobsRequest) ProtoMessage() {}
 
 func (x *ListDlpJobsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[190]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[193]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -19619,7 +19918,7 @@ func (x *ListDlpJobsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListDlpJobsRequest.ProtoReflect.Descriptor instead.
 func (*ListDlpJobsRequest) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{190}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{193}
 }
 
 func (x *ListDlpJobsRequest) GetParent() string {
@@ -19684,7 +19983,7 @@ type ListDlpJobsResponse struct {
 
 func (x *ListDlpJobsResponse) Reset() {
 	*x = ListDlpJobsResponse{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[191]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[194]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -19696,7 +19995,7 @@ func (x *ListDlpJobsResponse) String() string {
 func (*ListDlpJobsResponse) ProtoMessage() {}
 
 func (x *ListDlpJobsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[191]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[194]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -19709,7 +20008,7 @@ func (x *ListDlpJobsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListDlpJobsResponse.ProtoReflect.Descriptor instead.
 func (*ListDlpJobsResponse) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{191}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{194}
 }
 
 func (x *ListDlpJobsResponse) GetJobs() []*DlpJob {
@@ -19737,7 +20036,7 @@ type CancelDlpJobRequest struct {
 
 func (x *CancelDlpJobRequest) Reset() {
 	*x = CancelDlpJobRequest{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[192]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[195]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -19749,7 +20048,7 @@ func (x *CancelDlpJobRequest) String() string {
 func (*CancelDlpJobRequest) ProtoMessage() {}
 
 func (x *CancelDlpJobRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[192]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[195]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -19762,7 +20061,7 @@ func (x *CancelDlpJobRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CancelDlpJobRequest.ProtoReflect.Descriptor instead.
 func (*CancelDlpJobRequest) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{192}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{195}
 }
 
 func (x *CancelDlpJobRequest) GetName() string {
@@ -19783,7 +20082,7 @@ type FinishDlpJobRequest struct {
 
 func (x *FinishDlpJobRequest) Reset() {
 	*x = FinishDlpJobRequest{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[193]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[196]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -19795,7 +20094,7 @@ func (x *FinishDlpJobRequest) String() string {
 func (*FinishDlpJobRequest) ProtoMessage() {}
 
 func (x *FinishDlpJobRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[193]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[196]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -19808,7 +20107,7 @@ func (x *FinishDlpJobRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FinishDlpJobRequest.ProtoReflect.Descriptor instead.
 func (*FinishDlpJobRequest) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{193}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{196}
 }
 
 func (x *FinishDlpJobRequest) GetName() string {
@@ -19829,7 +20128,7 @@ type DeleteDlpJobRequest struct {
 
 func (x *DeleteDlpJobRequest) Reset() {
 	*x = DeleteDlpJobRequest{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[194]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[197]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -19841,7 +20140,7 @@ func (x *DeleteDlpJobRequest) String() string {
 func (*DeleteDlpJobRequest) ProtoMessage() {}
 
 func (x *DeleteDlpJobRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[194]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[197]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -19854,7 +20153,7 @@ func (x *DeleteDlpJobRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteDlpJobRequest.ProtoReflect.Descriptor instead.
 func (*DeleteDlpJobRequest) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{194}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{197}
 }
 
 func (x *DeleteDlpJobRequest) GetName() string {
@@ -19903,7 +20202,7 @@ type CreateDeidentifyTemplateRequest struct {
 
 func (x *CreateDeidentifyTemplateRequest) Reset() {
 	*x = CreateDeidentifyTemplateRequest{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[195]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[198]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -19915,7 +20214,7 @@ func (x *CreateDeidentifyTemplateRequest) String() string {
 func (*CreateDeidentifyTemplateRequest) ProtoMessage() {}
 
 func (x *CreateDeidentifyTemplateRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[195]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[198]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -19928,7 +20227,7 @@ func (x *CreateDeidentifyTemplateRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateDeidentifyTemplateRequest.ProtoReflect.Descriptor instead.
 func (*CreateDeidentifyTemplateRequest) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{195}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{198}
 }
 
 func (x *CreateDeidentifyTemplateRequest) GetParent() string {
@@ -19977,7 +20276,7 @@ type UpdateDeidentifyTemplateRequest struct {
 
 func (x *UpdateDeidentifyTemplateRequest) Reset() {
 	*x = UpdateDeidentifyTemplateRequest{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[196]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[199]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -19989,7 +20288,7 @@ func (x *UpdateDeidentifyTemplateRequest) String() string {
 func (*UpdateDeidentifyTemplateRequest) ProtoMessage() {}
 
 func (x *UpdateDeidentifyTemplateRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[196]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[199]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -20002,7 +20301,7 @@ func (x *UpdateDeidentifyTemplateRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateDeidentifyTemplateRequest.ProtoReflect.Descriptor instead.
 func (*UpdateDeidentifyTemplateRequest) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{196}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{199}
 }
 
 func (x *UpdateDeidentifyTemplateRequest) GetName() string {
@@ -20039,7 +20338,7 @@ type GetDeidentifyTemplateRequest struct {
 
 func (x *GetDeidentifyTemplateRequest) Reset() {
 	*x = GetDeidentifyTemplateRequest{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[197]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[200]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -20051,7 +20350,7 @@ func (x *GetDeidentifyTemplateRequest) String() string {
 func (*GetDeidentifyTemplateRequest) ProtoMessage() {}
 
 func (x *GetDeidentifyTemplateRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[197]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[200]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -20064,7 +20363,7 @@ func (x *GetDeidentifyTemplateRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetDeidentifyTemplateRequest.ProtoReflect.Descriptor instead.
 func (*GetDeidentifyTemplateRequest) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{197}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{200}
 }
 
 func (x *GetDeidentifyTemplateRequest) GetName() string {
@@ -20126,7 +20425,7 @@ type ListDeidentifyTemplatesRequest struct {
 
 func (x *ListDeidentifyTemplatesRequest) Reset() {
 	*x = ListDeidentifyTemplatesRequest{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[198]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[201]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -20138,7 +20437,7 @@ func (x *ListDeidentifyTemplatesRequest) String() string {
 func (*ListDeidentifyTemplatesRequest) ProtoMessage() {}
 
 func (x *ListDeidentifyTemplatesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[198]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[201]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -20151,7 +20450,7 @@ func (x *ListDeidentifyTemplatesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListDeidentifyTemplatesRequest.ProtoReflect.Descriptor instead.
 func (*ListDeidentifyTemplatesRequest) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{198}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{201}
 }
 
 func (x *ListDeidentifyTemplatesRequest) GetParent() string {
@@ -20204,7 +20503,7 @@ type ListDeidentifyTemplatesResponse struct {
 
 func (x *ListDeidentifyTemplatesResponse) Reset() {
 	*x = ListDeidentifyTemplatesResponse{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[199]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[202]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -20216,7 +20515,7 @@ func (x *ListDeidentifyTemplatesResponse) String() string {
 func (*ListDeidentifyTemplatesResponse) ProtoMessage() {}
 
 func (x *ListDeidentifyTemplatesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[199]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[202]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -20229,7 +20528,7 @@ func (x *ListDeidentifyTemplatesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListDeidentifyTemplatesResponse.ProtoReflect.Descriptor instead.
 func (*ListDeidentifyTemplatesResponse) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{199}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{202}
 }
 
 func (x *ListDeidentifyTemplatesResponse) GetDeidentifyTemplates() []*DeidentifyTemplate {
@@ -20260,7 +20559,7 @@ type DeleteDeidentifyTemplateRequest struct {
 
 func (x *DeleteDeidentifyTemplateRequest) Reset() {
 	*x = DeleteDeidentifyTemplateRequest{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[200]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[203]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -20272,7 +20571,7 @@ func (x *DeleteDeidentifyTemplateRequest) String() string {
 func (*DeleteDeidentifyTemplateRequest) ProtoMessage() {}
 
 func (x *DeleteDeidentifyTemplateRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[200]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[203]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -20285,7 +20584,7 @@ func (x *DeleteDeidentifyTemplateRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteDeidentifyTemplateRequest.ProtoReflect.Descriptor instead.
 func (*DeleteDeidentifyTemplateRequest) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{200}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{203}
 }
 
 func (x *DeleteDeidentifyTemplateRequest) GetName() string {
@@ -20321,7 +20620,7 @@ type LargeCustomDictionaryConfig struct {
 
 func (x *LargeCustomDictionaryConfig) Reset() {
 	*x = LargeCustomDictionaryConfig{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[201]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[204]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -20333,7 +20632,7 @@ func (x *LargeCustomDictionaryConfig) String() string {
 func (*LargeCustomDictionaryConfig) ProtoMessage() {}
 
 func (x *LargeCustomDictionaryConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[201]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[204]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -20346,7 +20645,7 @@ func (x *LargeCustomDictionaryConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LargeCustomDictionaryConfig.ProtoReflect.Descriptor instead.
 func (*LargeCustomDictionaryConfig) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{201}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{204}
 }
 
 func (x *LargeCustomDictionaryConfig) GetOutputPath() *CloudStoragePath {
@@ -20410,7 +20709,7 @@ type LargeCustomDictionaryStats struct {
 
 func (x *LargeCustomDictionaryStats) Reset() {
 	*x = LargeCustomDictionaryStats{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[202]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[205]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -20422,7 +20721,7 @@ func (x *LargeCustomDictionaryStats) String() string {
 func (*LargeCustomDictionaryStats) ProtoMessage() {}
 
 func (x *LargeCustomDictionaryStats) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[202]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[205]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -20435,7 +20734,7 @@ func (x *LargeCustomDictionaryStats) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LargeCustomDictionaryStats.ProtoReflect.Descriptor instead.
 func (*LargeCustomDictionaryStats) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{202}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{205}
 }
 
 func (x *LargeCustomDictionaryStats) GetApproxNumPhrases() int64 {
@@ -20468,7 +20767,7 @@ type StoredInfoTypeConfig struct {
 
 func (x *StoredInfoTypeConfig) Reset() {
 	*x = StoredInfoTypeConfig{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[203]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[206]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -20480,7 +20779,7 @@ func (x *StoredInfoTypeConfig) String() string {
 func (*StoredInfoTypeConfig) ProtoMessage() {}
 
 func (x *StoredInfoTypeConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[203]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[206]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -20493,7 +20792,7 @@ func (x *StoredInfoTypeConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StoredInfoTypeConfig.ProtoReflect.Descriptor instead.
 func (*StoredInfoTypeConfig) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{203}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{206}
 }
 
 func (x *StoredInfoTypeConfig) GetDisplayName() string {
@@ -20584,7 +20883,7 @@ type StoredInfoTypeStats struct {
 
 func (x *StoredInfoTypeStats) Reset() {
 	*x = StoredInfoTypeStats{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[204]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[207]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -20596,7 +20895,7 @@ func (x *StoredInfoTypeStats) String() string {
 func (*StoredInfoTypeStats) ProtoMessage() {}
 
 func (x *StoredInfoTypeStats) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[204]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[207]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -20609,7 +20908,7 @@ func (x *StoredInfoTypeStats) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StoredInfoTypeStats.ProtoReflect.Descriptor instead.
 func (*StoredInfoTypeStats) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{204}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{207}
 }
 
 func (x *StoredInfoTypeStats) GetType() isStoredInfoTypeStats_Type {
@@ -20673,7 +20972,7 @@ type StoredInfoTypeVersion struct {
 
 func (x *StoredInfoTypeVersion) Reset() {
 	*x = StoredInfoTypeVersion{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[205]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[208]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -20685,7 +20984,7 @@ func (x *StoredInfoTypeVersion) String() string {
 func (*StoredInfoTypeVersion) ProtoMessage() {}
 
 func (x *StoredInfoTypeVersion) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[205]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[208]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -20698,7 +20997,7 @@ func (x *StoredInfoTypeVersion) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StoredInfoTypeVersion.ProtoReflect.Descriptor instead.
 func (*StoredInfoTypeVersion) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{205}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{208}
 }
 
 func (x *StoredInfoTypeVersion) GetConfig() *StoredInfoTypeConfig {
@@ -20753,7 +21052,7 @@ type StoredInfoType struct {
 
 func (x *StoredInfoType) Reset() {
 	*x = StoredInfoType{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[206]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[209]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -20765,7 +21064,7 @@ func (x *StoredInfoType) String() string {
 func (*StoredInfoType) ProtoMessage() {}
 
 func (x *StoredInfoType) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[206]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[209]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -20778,7 +21077,7 @@ func (x *StoredInfoType) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StoredInfoType.ProtoReflect.Descriptor instead.
 func (*StoredInfoType) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{206}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{209}
 }
 
 func (x *StoredInfoType) GetName() string {
@@ -20841,7 +21140,7 @@ type CreateStoredInfoTypeRequest struct {
 
 func (x *CreateStoredInfoTypeRequest) Reset() {
 	*x = CreateStoredInfoTypeRequest{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[207]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[210]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -20853,7 +21152,7 @@ func (x *CreateStoredInfoTypeRequest) String() string {
 func (*CreateStoredInfoTypeRequest) ProtoMessage() {}
 
 func (x *CreateStoredInfoTypeRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[207]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[210]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -20866,7 +21165,7 @@ func (x *CreateStoredInfoTypeRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateStoredInfoTypeRequest.ProtoReflect.Descriptor instead.
 func (*CreateStoredInfoTypeRequest) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{207}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{210}
 }
 
 func (x *CreateStoredInfoTypeRequest) GetParent() string {
@@ -20916,7 +21215,7 @@ type UpdateStoredInfoTypeRequest struct {
 
 func (x *UpdateStoredInfoTypeRequest) Reset() {
 	*x = UpdateStoredInfoTypeRequest{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[208]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[211]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -20928,7 +21227,7 @@ func (x *UpdateStoredInfoTypeRequest) String() string {
 func (*UpdateStoredInfoTypeRequest) ProtoMessage() {}
 
 func (x *UpdateStoredInfoTypeRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[208]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[211]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -20941,7 +21240,7 @@ func (x *UpdateStoredInfoTypeRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateStoredInfoTypeRequest.ProtoReflect.Descriptor instead.
 func (*UpdateStoredInfoTypeRequest) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{208}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{211}
 }
 
 func (x *UpdateStoredInfoTypeRequest) GetName() string {
@@ -20978,7 +21277,7 @@ type GetStoredInfoTypeRequest struct {
 
 func (x *GetStoredInfoTypeRequest) Reset() {
 	*x = GetStoredInfoTypeRequest{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[209]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[212]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -20990,7 +21289,7 @@ func (x *GetStoredInfoTypeRequest) String() string {
 func (*GetStoredInfoTypeRequest) ProtoMessage() {}
 
 func (x *GetStoredInfoTypeRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[209]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[212]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -21003,7 +21302,7 @@ func (x *GetStoredInfoTypeRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetStoredInfoTypeRequest.ProtoReflect.Descriptor instead.
 func (*GetStoredInfoTypeRequest) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{209}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{212}
 }
 
 func (x *GetStoredInfoTypeRequest) GetName() string {
@@ -21062,7 +21361,7 @@ type ListStoredInfoTypesRequest struct {
 
 func (x *ListStoredInfoTypesRequest) Reset() {
 	*x = ListStoredInfoTypesRequest{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[210]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[213]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -21074,7 +21373,7 @@ func (x *ListStoredInfoTypesRequest) String() string {
 func (*ListStoredInfoTypesRequest) ProtoMessage() {}
 
 func (x *ListStoredInfoTypesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[210]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[213]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -21087,7 +21386,7 @@ func (x *ListStoredInfoTypesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListStoredInfoTypesRequest.ProtoReflect.Descriptor instead.
 func (*ListStoredInfoTypesRequest) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{210}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{213}
 }
 
 func (x *ListStoredInfoTypesRequest) GetParent() string {
@@ -21139,7 +21438,7 @@ type ListStoredInfoTypesResponse struct {
 
 func (x *ListStoredInfoTypesResponse) Reset() {
 	*x = ListStoredInfoTypesResponse{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[211]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[214]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -21151,7 +21450,7 @@ func (x *ListStoredInfoTypesResponse) String() string {
 func (*ListStoredInfoTypesResponse) ProtoMessage() {}
 
 func (x *ListStoredInfoTypesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[211]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[214]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -21164,7 +21463,7 @@ func (x *ListStoredInfoTypesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListStoredInfoTypesResponse.ProtoReflect.Descriptor instead.
 func (*ListStoredInfoTypesResponse) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{211}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{214}
 }
 
 func (x *ListStoredInfoTypesResponse) GetStoredInfoTypes() []*StoredInfoType {
@@ -21194,7 +21493,7 @@ type DeleteStoredInfoTypeRequest struct {
 
 func (x *DeleteStoredInfoTypeRequest) Reset() {
 	*x = DeleteStoredInfoTypeRequest{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[212]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[215]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -21206,7 +21505,7 @@ func (x *DeleteStoredInfoTypeRequest) String() string {
 func (*DeleteStoredInfoTypeRequest) ProtoMessage() {}
 
 func (x *DeleteStoredInfoTypeRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[212]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[215]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -21219,7 +21518,7 @@ func (x *DeleteStoredInfoTypeRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteStoredInfoTypeRequest.ProtoReflect.Descriptor instead.
 func (*DeleteStoredInfoTypeRequest) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{212}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{215}
 }
 
 func (x *DeleteStoredInfoTypeRequest) GetName() string {
@@ -21243,7 +21542,7 @@ type HybridInspectJobTriggerRequest struct {
 
 func (x *HybridInspectJobTriggerRequest) Reset() {
 	*x = HybridInspectJobTriggerRequest{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[213]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[216]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -21255,7 +21554,7 @@ func (x *HybridInspectJobTriggerRequest) String() string {
 func (*HybridInspectJobTriggerRequest) ProtoMessage() {}
 
 func (x *HybridInspectJobTriggerRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[213]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[216]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -21268,7 +21567,7 @@ func (x *HybridInspectJobTriggerRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HybridInspectJobTriggerRequest.ProtoReflect.Descriptor instead.
 func (*HybridInspectJobTriggerRequest) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{213}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{216}
 }
 
 func (x *HybridInspectJobTriggerRequest) GetName() string {
@@ -21299,7 +21598,7 @@ type HybridInspectDlpJobRequest struct {
 
 func (x *HybridInspectDlpJobRequest) Reset() {
 	*x = HybridInspectDlpJobRequest{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[214]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[217]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -21311,7 +21610,7 @@ func (x *HybridInspectDlpJobRequest) String() string {
 func (*HybridInspectDlpJobRequest) ProtoMessage() {}
 
 func (x *HybridInspectDlpJobRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[214]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[217]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -21324,7 +21623,7 @@ func (x *HybridInspectDlpJobRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HybridInspectDlpJobRequest.ProtoReflect.Descriptor instead.
 func (*HybridInspectDlpJobRequest) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{214}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{217}
 }
 
 func (x *HybridInspectDlpJobRequest) GetName() string {
@@ -21355,7 +21654,7 @@ type HybridContentItem struct {
 
 func (x *HybridContentItem) Reset() {
 	*x = HybridContentItem{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[215]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[218]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -21367,7 +21666,7 @@ func (x *HybridContentItem) String() string {
 func (*HybridContentItem) ProtoMessage() {}
 
 func (x *HybridContentItem) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[215]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[218]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -21380,7 +21679,7 @@ func (x *HybridContentItem) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HybridContentItem.ProtoReflect.Descriptor instead.
 func (*HybridContentItem) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{215}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{218}
 }
 
 func (x *HybridContentItem) GetItem() *ContentItem {
@@ -21441,7 +21740,7 @@ type HybridFindingDetails struct {
 
 func (x *HybridFindingDetails) Reset() {
 	*x = HybridFindingDetails{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[216]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[219]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -21453,7 +21752,7 @@ func (x *HybridFindingDetails) String() string {
 func (*HybridFindingDetails) ProtoMessage() {}
 
 func (x *HybridFindingDetails) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[216]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[219]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -21466,7 +21765,7 @@ func (x *HybridFindingDetails) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HybridFindingDetails.ProtoReflect.Descriptor instead.
 func (*HybridFindingDetails) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{216}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{219}
 }
 
 func (x *HybridFindingDetails) GetContainerDetails() *Container {
@@ -21513,7 +21812,7 @@ type HybridInspectResponse struct {
 
 func (x *HybridInspectResponse) Reset() {
 	*x = HybridInspectResponse{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[217]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[220]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -21525,7 +21824,7 @@ func (x *HybridInspectResponse) String() string {
 func (*HybridInspectResponse) ProtoMessage() {}
 
 func (x *HybridInspectResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[217]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[220]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -21538,7 +21837,7 @@ func (x *HybridInspectResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HybridInspectResponse.ProtoReflect.Descriptor instead.
 func (*HybridInspectResponse) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{217}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{220}
 }
 
 // Specifies the relationship between bounding boxes for image findings.
@@ -21559,7 +21858,7 @@ type ImageContainmentType struct {
 
 func (x *ImageContainmentType) Reset() {
 	*x = ImageContainmentType{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[218]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[221]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -21571,7 +21870,7 @@ func (x *ImageContainmentType) String() string {
 func (*ImageContainmentType) ProtoMessage() {}
 
 func (x *ImageContainmentType) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[218]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[221]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -21584,7 +21883,7 @@ func (x *ImageContainmentType) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ImageContainmentType.ProtoReflect.Descriptor instead.
 func (*ImageContainmentType) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{218}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{221}
 }
 
 func (x *ImageContainmentType) GetType() isImageContainmentType_Type {
@@ -21658,7 +21957,7 @@ type Overlap struct {
 
 func (x *Overlap) Reset() {
 	*x = Overlap{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[219]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[222]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -21670,7 +21969,7 @@ func (x *Overlap) String() string {
 func (*Overlap) ProtoMessage() {}
 
 func (x *Overlap) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[219]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[222]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -21683,7 +21982,7 @@ func (x *Overlap) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Overlap.ProtoReflect.Descriptor instead.
 func (*Overlap) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{219}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{222}
 }
 
 // Defines a condition where one bounding box encloses another.
@@ -21695,7 +21994,7 @@ type Encloses struct {
 
 func (x *Encloses) Reset() {
 	*x = Encloses{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[220]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[223]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -21707,7 +22006,7 @@ func (x *Encloses) String() string {
 func (*Encloses) ProtoMessage() {}
 
 func (x *Encloses) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[220]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[223]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -21720,7 +22019,7 @@ func (x *Encloses) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Encloses.ProtoReflect.Descriptor instead.
 func (*Encloses) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{220}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{223}
 }
 
 // Defines a condition where one bounding box is fully inside another.
@@ -21732,7 +22031,7 @@ type FullyInside struct {
 
 func (x *FullyInside) Reset() {
 	*x = FullyInside{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[221]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[224]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -21744,7 +22043,7 @@ func (x *FullyInside) String() string {
 func (*FullyInside) ProtoMessage() {}
 
 func (x *FullyInside) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[221]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[224]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -21757,7 +22056,7 @@ func (x *FullyInside) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FullyInside.ProtoReflect.Descriptor instead.
 func (*FullyInside) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{221}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{224}
 }
 
 // Request to list the profiles generated for a given organization or project.
@@ -21822,7 +22121,7 @@ type ListProjectDataProfilesRequest struct {
 
 func (x *ListProjectDataProfilesRequest) Reset() {
 	*x = ListProjectDataProfilesRequest{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[222]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[225]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -21834,7 +22133,7 @@ func (x *ListProjectDataProfilesRequest) String() string {
 func (*ListProjectDataProfilesRequest) ProtoMessage() {}
 
 func (x *ListProjectDataProfilesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[222]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[225]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -21847,7 +22146,7 @@ func (x *ListProjectDataProfilesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListProjectDataProfilesRequest.ProtoReflect.Descriptor instead.
 func (*ListProjectDataProfilesRequest) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{222}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{225}
 }
 
 func (x *ListProjectDataProfilesRequest) GetParent() string {
@@ -21898,7 +22197,7 @@ type ListProjectDataProfilesResponse struct {
 
 func (x *ListProjectDataProfilesResponse) Reset() {
 	*x = ListProjectDataProfilesResponse{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[223]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[226]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -21910,7 +22209,7 @@ func (x *ListProjectDataProfilesResponse) String() string {
 func (*ListProjectDataProfilesResponse) ProtoMessage() {}
 
 func (x *ListProjectDataProfilesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[223]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[226]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -21923,7 +22222,7 @@ func (x *ListProjectDataProfilesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListProjectDataProfilesResponse.ProtoReflect.Descriptor instead.
 func (*ListProjectDataProfilesResponse) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{223}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{226}
 }
 
 func (x *ListProjectDataProfilesResponse) GetProjectDataProfiles() []*ProjectDataProfile {
@@ -22015,7 +22314,7 @@ type ListTableDataProfilesRequest struct {
 
 func (x *ListTableDataProfilesRequest) Reset() {
 	*x = ListTableDataProfilesRequest{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[224]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[227]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -22027,7 +22326,7 @@ func (x *ListTableDataProfilesRequest) String() string {
 func (*ListTableDataProfilesRequest) ProtoMessage() {}
 
 func (x *ListTableDataProfilesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[224]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[227]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -22040,7 +22339,7 @@ func (x *ListTableDataProfilesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListTableDataProfilesRequest.ProtoReflect.Descriptor instead.
 func (*ListTableDataProfilesRequest) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{224}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{227}
 }
 
 func (x *ListTableDataProfilesRequest) GetParent() string {
@@ -22091,7 +22390,7 @@ type ListTableDataProfilesResponse struct {
 
 func (x *ListTableDataProfilesResponse) Reset() {
 	*x = ListTableDataProfilesResponse{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[225]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[228]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -22103,7 +22402,7 @@ func (x *ListTableDataProfilesResponse) String() string {
 func (*ListTableDataProfilesResponse) ProtoMessage() {}
 
 func (x *ListTableDataProfilesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[225]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[228]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -22116,7 +22415,7 @@ func (x *ListTableDataProfilesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListTableDataProfilesResponse.ProtoReflect.Descriptor instead.
 func (*ListTableDataProfilesResponse) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{225}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{228}
 }
 
 func (x *ListTableDataProfilesResponse) GetTableDataProfiles() []*TableDataProfile {
@@ -22209,7 +22508,7 @@ type ListColumnDataProfilesRequest struct {
 
 func (x *ListColumnDataProfilesRequest) Reset() {
 	*x = ListColumnDataProfilesRequest{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[226]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[229]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -22221,7 +22520,7 @@ func (x *ListColumnDataProfilesRequest) String() string {
 func (*ListColumnDataProfilesRequest) ProtoMessage() {}
 
 func (x *ListColumnDataProfilesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[226]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[229]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -22234,7 +22533,7 @@ func (x *ListColumnDataProfilesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListColumnDataProfilesRequest.ProtoReflect.Descriptor instead.
 func (*ListColumnDataProfilesRequest) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{226}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{229}
 }
 
 func (x *ListColumnDataProfilesRequest) GetParent() string {
@@ -22285,7 +22584,7 @@ type ListColumnDataProfilesResponse struct {
 
 func (x *ListColumnDataProfilesResponse) Reset() {
 	*x = ListColumnDataProfilesResponse{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[227]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[230]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -22297,7 +22596,7 @@ func (x *ListColumnDataProfilesResponse) String() string {
 func (*ListColumnDataProfilesResponse) ProtoMessage() {}
 
 func (x *ListColumnDataProfilesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[227]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[230]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -22310,7 +22609,7 @@ func (x *ListColumnDataProfilesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListColumnDataProfilesResponse.ProtoReflect.Descriptor instead.
 func (*ListColumnDataProfilesResponse) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{227}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{230}
 }
 
 func (x *ListColumnDataProfilesResponse) GetColumnDataProfiles() []*ColumnDataProfile {
@@ -22339,7 +22638,7 @@ type DataRiskLevel struct {
 
 func (x *DataRiskLevel) Reset() {
 	*x = DataRiskLevel{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[228]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[231]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -22351,7 +22650,7 @@ func (x *DataRiskLevel) String() string {
 func (*DataRiskLevel) ProtoMessage() {}
 
 func (x *DataRiskLevel) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[228]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[231]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -22364,7 +22663,7 @@ func (x *DataRiskLevel) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DataRiskLevel.ProtoReflect.Descriptor instead.
 func (*DataRiskLevel) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{228}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{231}
 }
 
 func (x *DataRiskLevel) GetScore() DataRiskLevel_DataRiskLevelScore {
@@ -22400,7 +22699,7 @@ type ProjectDataProfile struct {
 
 func (x *ProjectDataProfile) Reset() {
 	*x = ProjectDataProfile{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[229]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[232]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -22412,7 +22711,7 @@ func (x *ProjectDataProfile) String() string {
 func (*ProjectDataProfile) ProtoMessage() {}
 
 func (x *ProjectDataProfile) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[229]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[232]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -22425,7 +22724,7 @@ func (x *ProjectDataProfile) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ProjectDataProfile.ProtoReflect.Descriptor instead.
 func (*ProjectDataProfile) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{229}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{232}
 }
 
 func (x *ProjectDataProfile) GetName() string {
@@ -22510,7 +22809,7 @@ type DataProfileConfigSnapshot struct {
 
 func (x *DataProfileConfigSnapshot) Reset() {
 	*x = DataProfileConfigSnapshot{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[230]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[233]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -22522,7 +22821,7 @@ func (x *DataProfileConfigSnapshot) String() string {
 func (*DataProfileConfigSnapshot) ProtoMessage() {}
 
 func (x *DataProfileConfigSnapshot) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[230]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[233]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -22535,7 +22834,7 @@ func (x *DataProfileConfigSnapshot) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DataProfileConfigSnapshot.ProtoReflect.Descriptor instead.
 func (*DataProfileConfigSnapshot) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{230}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{233}
 }
 
 func (x *DataProfileConfigSnapshot) GetInspectConfig() *InspectConfig {
@@ -22652,7 +22951,7 @@ type TableDataProfile struct {
 
 func (x *TableDataProfile) Reset() {
 	*x = TableDataProfile{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[231]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[234]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -22664,7 +22963,7 @@ func (x *TableDataProfile) String() string {
 func (*TableDataProfile) ProtoMessage() {}
 
 func (x *TableDataProfile) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[231]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[234]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -22677,7 +22976,7 @@ func (x *TableDataProfile) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TableDataProfile.ProtoReflect.Descriptor instead.
 func (*TableDataProfile) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{231}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{234}
 }
 
 func (x *TableDataProfile) GetName() string {
@@ -22904,7 +23203,7 @@ type ProfileStatus struct {
 
 func (x *ProfileStatus) Reset() {
 	*x = ProfileStatus{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[232]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[235]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -22916,7 +23215,7 @@ func (x *ProfileStatus) String() string {
 func (*ProfileStatus) ProtoMessage() {}
 
 func (x *ProfileStatus) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[232]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[235]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -22929,7 +23228,7 @@ func (x *ProfileStatus) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ProfileStatus.ProtoReflect.Descriptor instead.
 func (*ProfileStatus) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{232}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{235}
 }
 
 func (x *ProfileStatus) GetStatus() *status.Status {
@@ -22961,7 +23260,7 @@ type InfoTypeSummary struct {
 
 func (x *InfoTypeSummary) Reset() {
 	*x = InfoTypeSummary{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[233]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[236]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -22973,7 +23272,7 @@ func (x *InfoTypeSummary) String() string {
 func (*InfoTypeSummary) ProtoMessage() {}
 
 func (x *InfoTypeSummary) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[233]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[236]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -22986,7 +23285,7 @@ func (x *InfoTypeSummary) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use InfoTypeSummary.ProtoReflect.Descriptor instead.
 func (*InfoTypeSummary) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{233}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{236}
 }
 
 func (x *InfoTypeSummary) GetInfoType() *InfoType {
@@ -23021,7 +23320,7 @@ type OtherInfoTypeSummary struct {
 
 func (x *OtherInfoTypeSummary) Reset() {
 	*x = OtherInfoTypeSummary{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[234]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[237]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -23033,7 +23332,7 @@ func (x *OtherInfoTypeSummary) String() string {
 func (*OtherInfoTypeSummary) ProtoMessage() {}
 
 func (x *OtherInfoTypeSummary) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[234]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[237]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -23046,7 +23345,7 @@ func (x *OtherInfoTypeSummary) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OtherInfoTypeSummary.ProtoReflect.Descriptor instead.
 func (*OtherInfoTypeSummary) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{234}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{237}
 }
 
 func (x *OtherInfoTypeSummary) GetInfoType() *InfoType {
@@ -23127,7 +23426,7 @@ type ColumnDataProfile struct {
 
 func (x *ColumnDataProfile) Reset() {
 	*x = ColumnDataProfile{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[235]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[238]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -23139,7 +23438,7 @@ func (x *ColumnDataProfile) String() string {
 func (*ColumnDataProfile) ProtoMessage() {}
 
 func (x *ColumnDataProfile) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[235]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[238]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -23152,7 +23451,7 @@ func (x *ColumnDataProfile) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ColumnDataProfile.ProtoReflect.Descriptor instead.
 func (*ColumnDataProfile) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{235}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{238}
 }
 
 func (x *ColumnDataProfile) GetName() string {
@@ -23390,7 +23689,7 @@ type FileStoreDataProfile struct {
 
 func (x *FileStoreDataProfile) Reset() {
 	*x = FileStoreDataProfile{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[236]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[239]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -23402,7 +23701,7 @@ func (x *FileStoreDataProfile) String() string {
 func (*FileStoreDataProfile) ProtoMessage() {}
 
 func (x *FileStoreDataProfile) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[236]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[239]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -23415,7 +23714,7 @@ func (x *FileStoreDataProfile) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FileStoreDataProfile.ProtoReflect.Descriptor instead.
 func (*FileStoreDataProfile) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{236}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{239}
 }
 
 func (x *FileStoreDataProfile) GetName() string {
@@ -23628,7 +23927,7 @@ type Tag struct {
 
 func (x *Tag) Reset() {
 	*x = Tag{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[237]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[240]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -23640,7 +23939,7 @@ func (x *Tag) String() string {
 func (*Tag) ProtoMessage() {}
 
 func (x *Tag) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[237]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[240]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -23653,7 +23952,7 @@ func (x *Tag) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Tag.ProtoReflect.Descriptor instead.
 func (*Tag) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{237}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{240}
 }
 
 func (x *Tag) GetNamespacedTagValue() string {
@@ -23689,7 +23988,7 @@ type TagFilters struct {
 
 func (x *TagFilters) Reset() {
 	*x = TagFilters{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[238]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[241]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -23701,7 +24000,7 @@ func (x *TagFilters) String() string {
 func (*TagFilters) ProtoMessage() {}
 
 func (x *TagFilters) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[238]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[241]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -23714,7 +24013,7 @@ func (x *TagFilters) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TagFilters.ProtoReflect.Descriptor instead.
 func (*TagFilters) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{238}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{241}
 }
 
 func (x *TagFilters) GetTagFilters() []*TagFilter {
@@ -23741,7 +24040,7 @@ type TagFilter struct {
 
 func (x *TagFilter) Reset() {
 	*x = TagFilter{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[239]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[242]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -23753,7 +24052,7 @@ func (x *TagFilter) String() string {
 func (*TagFilter) ProtoMessage() {}
 
 func (x *TagFilter) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[239]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[242]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -23766,7 +24065,7 @@ func (x *TagFilter) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TagFilter.ProtoReflect.Descriptor instead.
 func (*TagFilter) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{239}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{242}
 }
 
 func (x *TagFilter) GetFormat() isTagFilter_Format {
@@ -23832,7 +24131,7 @@ type RelatedResource struct {
 
 func (x *RelatedResource) Reset() {
 	*x = RelatedResource{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[240]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[243]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -23844,7 +24143,7 @@ func (x *RelatedResource) String() string {
 func (*RelatedResource) ProtoMessage() {}
 
 func (x *RelatedResource) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[240]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[243]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -23857,7 +24156,7 @@ func (x *RelatedResource) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RelatedResource.ProtoReflect.Descriptor instead.
 func (*RelatedResource) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{240}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{243}
 }
 
 func (x *RelatedResource) GetFullResource() string {
@@ -23878,7 +24177,7 @@ type FileStoreInfoTypeSummary struct {
 
 func (x *FileStoreInfoTypeSummary) Reset() {
 	*x = FileStoreInfoTypeSummary{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[241]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[244]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -23890,7 +24189,7 @@ func (x *FileStoreInfoTypeSummary) String() string {
 func (*FileStoreInfoTypeSummary) ProtoMessage() {}
 
 func (x *FileStoreInfoTypeSummary) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[241]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[244]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -23903,7 +24202,7 @@ func (x *FileStoreInfoTypeSummary) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FileStoreInfoTypeSummary.ProtoReflect.Descriptor instead.
 func (*FileStoreInfoTypeSummary) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{241}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{244}
 }
 
 func (x *FileStoreInfoTypeSummary) GetInfoType() *InfoType {
@@ -23924,7 +24223,7 @@ type FileExtensionInfo struct {
 
 func (x *FileExtensionInfo) Reset() {
 	*x = FileExtensionInfo{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[242]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[245]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -23936,7 +24235,7 @@ func (x *FileExtensionInfo) String() string {
 func (*FileExtensionInfo) ProtoMessage() {}
 
 func (x *FileExtensionInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[242]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[245]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -23949,7 +24248,7 @@ func (x *FileExtensionInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FileExtensionInfo.ProtoReflect.Descriptor instead.
 func (*FileExtensionInfo) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{242}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{245}
 }
 
 func (x *FileExtensionInfo) GetFileExtension() string {
@@ -23992,7 +24291,7 @@ type FileClusterSummary struct {
 
 func (x *FileClusterSummary) Reset() {
 	*x = FileClusterSummary{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[243]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[246]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -24004,7 +24303,7 @@ func (x *FileClusterSummary) String() string {
 func (*FileClusterSummary) ProtoMessage() {}
 
 func (x *FileClusterSummary) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[243]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[246]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -24017,7 +24316,7 @@ func (x *FileClusterSummary) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FileClusterSummary.ProtoReflect.Descriptor instead.
 func (*FileClusterSummary) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{243}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{246}
 }
 
 func (x *FileClusterSummary) GetFileClusterType() *FileClusterType {
@@ -24088,7 +24387,7 @@ type GetProjectDataProfileRequest struct {
 
 func (x *GetProjectDataProfileRequest) Reset() {
 	*x = GetProjectDataProfileRequest{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[244]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[247]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -24100,7 +24399,7 @@ func (x *GetProjectDataProfileRequest) String() string {
 func (*GetProjectDataProfileRequest) ProtoMessage() {}
 
 func (x *GetProjectDataProfileRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[244]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[247]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -24113,7 +24412,7 @@ func (x *GetProjectDataProfileRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetProjectDataProfileRequest.ProtoReflect.Descriptor instead.
 func (*GetProjectDataProfileRequest) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{244}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{247}
 }
 
 func (x *GetProjectDataProfileRequest) GetName() string {
@@ -24135,7 +24434,7 @@ type GetFileStoreDataProfileRequest struct {
 
 func (x *GetFileStoreDataProfileRequest) Reset() {
 	*x = GetFileStoreDataProfileRequest{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[245]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[248]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -24147,7 +24446,7 @@ func (x *GetFileStoreDataProfileRequest) String() string {
 func (*GetFileStoreDataProfileRequest) ProtoMessage() {}
 
 func (x *GetFileStoreDataProfileRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[245]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[248]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -24160,7 +24459,7 @@ func (x *GetFileStoreDataProfileRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetFileStoreDataProfileRequest.ProtoReflect.Descriptor instead.
 func (*GetFileStoreDataProfileRequest) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{245}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{248}
 }
 
 func (x *GetFileStoreDataProfileRequest) GetName() string {
@@ -24251,7 +24550,7 @@ type ListFileStoreDataProfilesRequest struct {
 
 func (x *ListFileStoreDataProfilesRequest) Reset() {
 	*x = ListFileStoreDataProfilesRequest{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[246]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[249]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -24263,7 +24562,7 @@ func (x *ListFileStoreDataProfilesRequest) String() string {
 func (*ListFileStoreDataProfilesRequest) ProtoMessage() {}
 
 func (x *ListFileStoreDataProfilesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[246]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[249]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -24276,7 +24575,7 @@ func (x *ListFileStoreDataProfilesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListFileStoreDataProfilesRequest.ProtoReflect.Descriptor instead.
 func (*ListFileStoreDataProfilesRequest) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{246}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{249}
 }
 
 func (x *ListFileStoreDataProfilesRequest) GetParent() string {
@@ -24328,7 +24627,7 @@ type ListFileStoreDataProfilesResponse struct {
 
 func (x *ListFileStoreDataProfilesResponse) Reset() {
 	*x = ListFileStoreDataProfilesResponse{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[247]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[250]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -24340,7 +24639,7 @@ func (x *ListFileStoreDataProfilesResponse) String() string {
 func (*ListFileStoreDataProfilesResponse) ProtoMessage() {}
 
 func (x *ListFileStoreDataProfilesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[247]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[250]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -24353,7 +24652,7 @@ func (x *ListFileStoreDataProfilesResponse) ProtoReflect() protoreflect.Message 
 
 // Deprecated: Use ListFileStoreDataProfilesResponse.ProtoReflect.Descriptor instead.
 func (*ListFileStoreDataProfilesResponse) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{247}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{250}
 }
 
 func (x *ListFileStoreDataProfilesResponse) GetFileStoreDataProfiles() []*FileStoreDataProfile {
@@ -24381,7 +24680,7 @@ type DeleteFileStoreDataProfileRequest struct {
 
 func (x *DeleteFileStoreDataProfileRequest) Reset() {
 	*x = DeleteFileStoreDataProfileRequest{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[248]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[251]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -24393,7 +24692,7 @@ func (x *DeleteFileStoreDataProfileRequest) String() string {
 func (*DeleteFileStoreDataProfileRequest) ProtoMessage() {}
 
 func (x *DeleteFileStoreDataProfileRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[248]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[251]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -24406,7 +24705,7 @@ func (x *DeleteFileStoreDataProfileRequest) ProtoReflect() protoreflect.Message 
 
 // Deprecated: Use DeleteFileStoreDataProfileRequest.ProtoReflect.Descriptor instead.
 func (*DeleteFileStoreDataProfileRequest) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{248}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{251}
 }
 
 func (x *DeleteFileStoreDataProfileRequest) GetName() string {
@@ -24428,7 +24727,7 @@ type GetTableDataProfileRequest struct {
 
 func (x *GetTableDataProfileRequest) Reset() {
 	*x = GetTableDataProfileRequest{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[249]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[252]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -24440,7 +24739,7 @@ func (x *GetTableDataProfileRequest) String() string {
 func (*GetTableDataProfileRequest) ProtoMessage() {}
 
 func (x *GetTableDataProfileRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[249]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[252]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -24453,7 +24752,7 @@ func (x *GetTableDataProfileRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetTableDataProfileRequest.ProtoReflect.Descriptor instead.
 func (*GetTableDataProfileRequest) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{249}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{252}
 }
 
 func (x *GetTableDataProfileRequest) GetName() string {
@@ -24475,7 +24774,7 @@ type GetColumnDataProfileRequest struct {
 
 func (x *GetColumnDataProfileRequest) Reset() {
 	*x = GetColumnDataProfileRequest{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[250]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[253]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -24487,7 +24786,7 @@ func (x *GetColumnDataProfileRequest) String() string {
 func (*GetColumnDataProfileRequest) ProtoMessage() {}
 
 func (x *GetColumnDataProfileRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[250]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[253]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -24500,7 +24799,7 @@ func (x *GetColumnDataProfileRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetColumnDataProfileRequest.ProtoReflect.Descriptor instead.
 func (*GetColumnDataProfileRequest) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{250}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{253}
 }
 
 func (x *GetColumnDataProfileRequest) GetName() string {
@@ -24521,7 +24820,7 @@ type DataProfilePubSubCondition struct {
 
 func (x *DataProfilePubSubCondition) Reset() {
 	*x = DataProfilePubSubCondition{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[251]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[254]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -24533,7 +24832,7 @@ func (x *DataProfilePubSubCondition) String() string {
 func (*DataProfilePubSubCondition) ProtoMessage() {}
 
 func (x *DataProfilePubSubCondition) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[251]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[254]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -24546,7 +24845,7 @@ func (x *DataProfilePubSubCondition) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DataProfilePubSubCondition.ProtoReflect.Descriptor instead.
 func (*DataProfilePubSubCondition) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{251}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{254}
 }
 
 func (x *DataProfilePubSubCondition) GetExpressions() *DataProfilePubSubCondition_PubSubExpressions {
@@ -24577,7 +24876,7 @@ type DataProfilePubSubMessage struct {
 
 func (x *DataProfilePubSubMessage) Reset() {
 	*x = DataProfilePubSubMessage{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[252]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[255]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -24589,7 +24888,7 @@ func (x *DataProfilePubSubMessage) String() string {
 func (*DataProfilePubSubMessage) ProtoMessage() {}
 
 func (x *DataProfilePubSubMessage) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[252]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[255]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -24602,7 +24901,7 @@ func (x *DataProfilePubSubMessage) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DataProfilePubSubMessage.ProtoReflect.Descriptor instead.
 func (*DataProfilePubSubMessage) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{252}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{255}
 }
 
 func (x *DataProfilePubSubMessage) GetProfile() *TableDataProfile {
@@ -24647,7 +24946,7 @@ type CreateConnectionRequest struct {
 
 func (x *CreateConnectionRequest) Reset() {
 	*x = CreateConnectionRequest{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[253]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[256]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -24659,7 +24958,7 @@ func (x *CreateConnectionRequest) String() string {
 func (*CreateConnectionRequest) ProtoMessage() {}
 
 func (x *CreateConnectionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[253]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[256]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -24672,7 +24971,7 @@ func (x *CreateConnectionRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateConnectionRequest.ProtoReflect.Descriptor instead.
 func (*CreateConnectionRequest) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{253}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{256}
 }
 
 func (x *CreateConnectionRequest) GetParent() string {
@@ -24701,7 +25000,7 @@ type GetConnectionRequest struct {
 
 func (x *GetConnectionRequest) Reset() {
 	*x = GetConnectionRequest{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[254]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[257]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -24713,7 +25012,7 @@ func (x *GetConnectionRequest) String() string {
 func (*GetConnectionRequest) ProtoMessage() {}
 
 func (x *GetConnectionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[254]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[257]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -24726,7 +25025,7 @@ func (x *GetConnectionRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetConnectionRequest.ProtoReflect.Descriptor instead.
 func (*GetConnectionRequest) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{254}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{257}
 }
 
 func (x *GetConnectionRequest) GetName() string {
@@ -24758,7 +25057,7 @@ type ListConnectionsRequest struct {
 
 func (x *ListConnectionsRequest) Reset() {
 	*x = ListConnectionsRequest{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[255]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[258]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -24770,7 +25069,7 @@ func (x *ListConnectionsRequest) String() string {
 func (*ListConnectionsRequest) ProtoMessage() {}
 
 func (x *ListConnectionsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[255]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[258]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -24783,7 +25082,7 @@ func (x *ListConnectionsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListConnectionsRequest.ProtoReflect.Descriptor instead.
 func (*ListConnectionsRequest) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{255}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{258}
 }
 
 func (x *ListConnectionsRequest) GetParent() string {
@@ -24836,7 +25135,7 @@ type SearchConnectionsRequest struct {
 
 func (x *SearchConnectionsRequest) Reset() {
 	*x = SearchConnectionsRequest{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[256]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[259]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -24848,7 +25147,7 @@ func (x *SearchConnectionsRequest) String() string {
 func (*SearchConnectionsRequest) ProtoMessage() {}
 
 func (x *SearchConnectionsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[256]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[259]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -24861,7 +25160,7 @@ func (x *SearchConnectionsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SearchConnectionsRequest.ProtoReflect.Descriptor instead.
 func (*SearchConnectionsRequest) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{256}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{259}
 }
 
 func (x *SearchConnectionsRequest) GetParent() string {
@@ -24906,7 +25205,7 @@ type ListConnectionsResponse struct {
 
 func (x *ListConnectionsResponse) Reset() {
 	*x = ListConnectionsResponse{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[257]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[260]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -24918,7 +25217,7 @@ func (x *ListConnectionsResponse) String() string {
 func (*ListConnectionsResponse) ProtoMessage() {}
 
 func (x *ListConnectionsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[257]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[260]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -24931,7 +25230,7 @@ func (x *ListConnectionsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListConnectionsResponse.ProtoReflect.Descriptor instead.
 func (*ListConnectionsResponse) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{257}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{260}
 }
 
 func (x *ListConnectionsResponse) GetConnections() []*Connection {
@@ -24964,7 +25263,7 @@ type SearchConnectionsResponse struct {
 
 func (x *SearchConnectionsResponse) Reset() {
 	*x = SearchConnectionsResponse{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[258]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[261]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -24976,7 +25275,7 @@ func (x *SearchConnectionsResponse) String() string {
 func (*SearchConnectionsResponse) ProtoMessage() {}
 
 func (x *SearchConnectionsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[258]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[261]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -24989,7 +25288,7 @@ func (x *SearchConnectionsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SearchConnectionsResponse.ProtoReflect.Descriptor instead.
 func (*SearchConnectionsResponse) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{258}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{261}
 }
 
 func (x *SearchConnectionsResponse) GetConnections() []*Connection {
@@ -25022,7 +25321,7 @@ type UpdateConnectionRequest struct {
 
 func (x *UpdateConnectionRequest) Reset() {
 	*x = UpdateConnectionRequest{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[259]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[262]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -25034,7 +25333,7 @@ func (x *UpdateConnectionRequest) String() string {
 func (*UpdateConnectionRequest) ProtoMessage() {}
 
 func (x *UpdateConnectionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[259]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[262]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -25047,7 +25346,7 @@ func (x *UpdateConnectionRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateConnectionRequest.ProtoReflect.Descriptor instead.
 func (*UpdateConnectionRequest) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{259}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{262}
 }
 
 func (x *UpdateConnectionRequest) GetName() string {
@@ -25083,7 +25382,7 @@ type DeleteConnectionRequest struct {
 
 func (x *DeleteConnectionRequest) Reset() {
 	*x = DeleteConnectionRequest{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[260]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[263]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -25095,7 +25394,7 @@ func (x *DeleteConnectionRequest) String() string {
 func (*DeleteConnectionRequest) ProtoMessage() {}
 
 func (x *DeleteConnectionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[260]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[263]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -25108,7 +25407,7 @@ func (x *DeleteConnectionRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteConnectionRequest.ProtoReflect.Descriptor instead.
 func (*DeleteConnectionRequest) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{260}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{263}
 }
 
 func (x *DeleteConnectionRequest) GetName() string {
@@ -25142,7 +25441,7 @@ type Connection struct {
 
 func (x *Connection) Reset() {
 	*x = Connection{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[261]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[264]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -25154,7 +25453,7 @@ func (x *Connection) String() string {
 func (*Connection) ProtoMessage() {}
 
 func (x *Connection) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[261]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[264]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -25167,7 +25466,7 @@ func (x *Connection) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Connection.ProtoReflect.Descriptor instead.
 func (*Connection) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{261}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{264}
 }
 
 func (x *Connection) GetName() string {
@@ -25235,7 +25534,7 @@ type SecretManagerCredential struct {
 
 func (x *SecretManagerCredential) Reset() {
 	*x = SecretManagerCredential{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[262]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[265]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -25247,7 +25546,7 @@ func (x *SecretManagerCredential) String() string {
 func (*SecretManagerCredential) ProtoMessage() {}
 
 func (x *SecretManagerCredential) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[262]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[265]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -25260,7 +25559,7 @@ func (x *SecretManagerCredential) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SecretManagerCredential.ProtoReflect.Descriptor instead.
 func (*SecretManagerCredential) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{262}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{265}
 }
 
 func (x *SecretManagerCredential) GetUsername() string {
@@ -25289,7 +25588,7 @@ type CloudSqlIamCredential struct {
 
 func (x *CloudSqlIamCredential) Reset() {
 	*x = CloudSqlIamCredential{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[263]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[266]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -25301,7 +25600,7 @@ func (x *CloudSqlIamCredential) String() string {
 func (*CloudSqlIamCredential) ProtoMessage() {}
 
 func (x *CloudSqlIamCredential) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[263]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[266]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -25314,7 +25613,7 @@ func (x *CloudSqlIamCredential) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CloudSqlIamCredential.ProtoReflect.Descriptor instead.
 func (*CloudSqlIamCredential) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{263}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{266}
 }
 
 // Cloud SQL connection properties.
@@ -25350,7 +25649,7 @@ type CloudSqlProperties struct {
 
 func (x *CloudSqlProperties) Reset() {
 	*x = CloudSqlProperties{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[264]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[267]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -25362,7 +25661,7 @@ func (x *CloudSqlProperties) String() string {
 func (*CloudSqlProperties) ProtoMessage() {}
 
 func (x *CloudSqlProperties) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[264]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[267]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -25375,7 +25674,7 @@ func (x *CloudSqlProperties) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CloudSqlProperties.ProtoReflect.Descriptor instead.
 func (*CloudSqlProperties) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{264}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{267}
 }
 
 func (x *CloudSqlProperties) GetConnectionName() string {
@@ -25453,7 +25752,7 @@ type DeleteTableDataProfileRequest struct {
 
 func (x *DeleteTableDataProfileRequest) Reset() {
 	*x = DeleteTableDataProfileRequest{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[265]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[268]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -25465,7 +25764,7 @@ func (x *DeleteTableDataProfileRequest) String() string {
 func (*DeleteTableDataProfileRequest) ProtoMessage() {}
 
 func (x *DeleteTableDataProfileRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[265]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[268]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -25478,7 +25777,7 @@ func (x *DeleteTableDataProfileRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteTableDataProfileRequest.ProtoReflect.Descriptor instead.
 func (*DeleteTableDataProfileRequest) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{265}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{268}
 }
 
 func (x *DeleteTableDataProfileRequest) GetName() string {
@@ -25505,7 +25804,7 @@ type DataSourceType struct {
 
 func (x *DataSourceType) Reset() {
 	*x = DataSourceType{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[266]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[269]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -25517,7 +25816,7 @@ func (x *DataSourceType) String() string {
 func (*DataSourceType) ProtoMessage() {}
 
 func (x *DataSourceType) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[266]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[269]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -25530,7 +25829,7 @@ func (x *DataSourceType) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DataSourceType.ProtoReflect.Descriptor instead.
 func (*DataSourceType) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{266}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{269}
 }
 
 func (x *DataSourceType) GetDataSource() string {
@@ -25555,7 +25854,7 @@ type FileClusterType struct {
 
 func (x *FileClusterType) Reset() {
 	*x = FileClusterType{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[267]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[270]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -25567,7 +25866,7 @@ func (x *FileClusterType) String() string {
 func (*FileClusterType) ProtoMessage() {}
 
 func (x *FileClusterType) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[267]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[270]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -25580,7 +25879,7 @@ func (x *FileClusterType) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FileClusterType.ProtoReflect.Descriptor instead.
 func (*FileClusterType) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{267}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{270}
 }
 
 func (x *FileClusterType) GetFileClusterType() isFileClusterType_FileClusterType {
@@ -25625,7 +25924,7 @@ type ProcessingLocation struct {
 
 func (x *ProcessingLocation) Reset() {
 	*x = ProcessingLocation{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[268]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[271]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -25637,7 +25936,7 @@ func (x *ProcessingLocation) String() string {
 func (*ProcessingLocation) ProtoMessage() {}
 
 func (x *ProcessingLocation) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[268]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[271]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -25650,7 +25949,7 @@ func (x *ProcessingLocation) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ProcessingLocation.ProtoReflect.Descriptor instead.
 func (*ProcessingLocation) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{268}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{271}
 }
 
 func (x *ProcessingLocation) GetImageFallbackLocation() *ProcessingLocation_ImageFallbackLocation {
@@ -25680,7 +25979,7 @@ type SaveToGcsFindingsOutput struct {
 
 func (x *SaveToGcsFindingsOutput) Reset() {
 	*x = SaveToGcsFindingsOutput{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[269]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[272]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -25692,7 +25991,7 @@ func (x *SaveToGcsFindingsOutput) String() string {
 func (*SaveToGcsFindingsOutput) ProtoMessage() {}
 
 func (x *SaveToGcsFindingsOutput) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[269]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[272]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -25705,7 +26004,7 @@ func (x *SaveToGcsFindingsOutput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SaveToGcsFindingsOutput.ProtoReflect.Descriptor instead.
 func (*SaveToGcsFindingsOutput) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{269}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{272}
 }
 
 func (x *SaveToGcsFindingsOutput) GetFindings() []*Finding {
@@ -25728,7 +26027,7 @@ type Domain struct {
 
 func (x *Domain) Reset() {
 	*x = Domain{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[270]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[273]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -25740,7 +26039,7 @@ func (x *Domain) String() string {
 func (*Domain) ProtoMessage() {}
 
 func (x *Domain) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[270]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[273]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -25753,7 +26052,7 @@ func (x *Domain) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Domain.ProtoReflect.Descriptor instead.
 func (*Domain) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{270}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{273}
 }
 
 func (x *Domain) GetCategory() Domain_Category {
@@ -25790,7 +26089,7 @@ type InspectConfig_InfoTypeLikelihood struct {
 
 func (x *InspectConfig_InfoTypeLikelihood) Reset() {
 	*x = InspectConfig_InfoTypeLikelihood{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[271]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[274]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -25802,7 +26101,7 @@ func (x *InspectConfig_InfoTypeLikelihood) String() string {
 func (*InspectConfig_InfoTypeLikelihood) ProtoMessage() {}
 
 func (x *InspectConfig_InfoTypeLikelihood) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[271]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[274]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -25873,7 +26172,7 @@ type InspectConfig_FindingLimits struct {
 
 func (x *InspectConfig_FindingLimits) Reset() {
 	*x = InspectConfig_FindingLimits{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[272]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[275]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -25885,7 +26184,7 @@ func (x *InspectConfig_FindingLimits) String() string {
 func (*InspectConfig_FindingLimits) ProtoMessage() {}
 
 func (x *InspectConfig_FindingLimits) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[272]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[275]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -25939,7 +26238,7 @@ type InspectConfig_FindingLimits_InfoTypeLimit struct {
 
 func (x *InspectConfig_FindingLimits_InfoTypeLimit) Reset() {
 	*x = InspectConfig_FindingLimits_InfoTypeLimit{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[273]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[276]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -25951,7 +26250,7 @@ func (x *InspectConfig_FindingLimits_InfoTypeLimit) String() string {
 func (*InspectConfig_FindingLimits_InfoTypeLimit) ProtoMessage() {}
 
 func (x *InspectConfig_FindingLimits_InfoTypeLimit) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[273]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[276]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -25992,7 +26291,7 @@ type Table_Row struct {
 
 func (x *Table_Row) Reset() {
 	*x = Table_Row{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[274]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[277]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -26004,7 +26303,7 @@ func (x *Table_Row) String() string {
 func (*Table_Row) ProtoMessage() {}
 
 func (x *Table_Row) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[274]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[277]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -26017,7 +26316,7 @@ func (x *Table_Row) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Table_Row.ProtoReflect.Descriptor instead.
 func (*Table_Row) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{13, 0}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{15, 0}
 }
 
 func (x *Table_Row) GetValues() []*Value {
@@ -26025,6 +26324,44 @@ func (x *Table_Row) GetValues() []*Value {
 		return x.Values
 	}
 	return nil
+}
+
+// If set, indicates that the finding applies to all messages in the
+// conversation.
+type ConversationLocation_AllMessages struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ConversationLocation_AllMessages) Reset() {
+	*x = ConversationLocation_AllMessages{}
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[279]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ConversationLocation_AllMessages) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ConversationLocation_AllMessages) ProtoMessage() {}
+
+func (x *ConversationLocation_AllMessages) ProtoReflect() protoreflect.Message {
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[279]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ConversationLocation_AllMessages.ProtoReflect.Descriptor instead.
+func (*ConversationLocation_AllMessages) Descriptor() ([]byte, []int) {
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{21, 0}
 }
 
 // Configuration for determining how redaction of images should occur.
@@ -26046,7 +26383,7 @@ type RedactImageRequest_ImageRedactionConfig struct {
 
 func (x *RedactImageRequest_ImageRedactionConfig) Reset() {
 	*x = RedactImageRequest_ImageRedactionConfig{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[276]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[280]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -26058,7 +26395,7 @@ func (x *RedactImageRequest_ImageRedactionConfig) String() string {
 func (*RedactImageRequest_ImageRedactionConfig) ProtoMessage() {}
 
 func (x *RedactImageRequest_ImageRedactionConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[276]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[280]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -26071,7 +26408,7 @@ func (x *RedactImageRequest_ImageRedactionConfig) ProtoReflect() protoreflect.Me
 
 // Deprecated: Use RedactImageRequest_ImageRedactionConfig.ProtoReflect.Descriptor instead.
 func (*RedactImageRequest_ImageRedactionConfig) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{29, 0}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{32, 0}
 }
 
 func (x *RedactImageRequest_ImageRedactionConfig) GetTarget() isRedactImageRequest_ImageRedactionConfig_Target {
@@ -26144,7 +26481,7 @@ type InspectDataSourceDetails_RequestedOptions struct {
 
 func (x *InspectDataSourceDetails_RequestedOptions) Reset() {
 	*x = InspectDataSourceDetails_RequestedOptions{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[277]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[281]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -26156,7 +26493,7 @@ func (x *InspectDataSourceDetails_RequestedOptions) String() string {
 func (*InspectDataSourceDetails_RequestedOptions) ProtoMessage() {}
 
 func (x *InspectDataSourceDetails_RequestedOptions) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[277]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[281]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -26169,7 +26506,7 @@ func (x *InspectDataSourceDetails_RequestedOptions) ProtoReflect() protoreflect.
 
 // Deprecated: Use InspectDataSourceDetails_RequestedOptions.ProtoReflect.Descriptor instead.
 func (*InspectDataSourceDetails_RequestedOptions) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{40, 0}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{43, 0}
 }
 
 func (x *InspectDataSourceDetails_RequestedOptions) GetSnapshotInspectTemplate() *InspectTemplate {
@@ -26207,7 +26544,7 @@ type InspectDataSourceDetails_Result struct {
 
 func (x *InspectDataSourceDetails_Result) Reset() {
 	*x = InspectDataSourceDetails_Result{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[278]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[282]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -26219,7 +26556,7 @@ func (x *InspectDataSourceDetails_Result) String() string {
 func (*InspectDataSourceDetails_Result) ProtoMessage() {}
 
 func (x *InspectDataSourceDetails_Result) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[278]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[282]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -26232,7 +26569,7 @@ func (x *InspectDataSourceDetails_Result) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use InspectDataSourceDetails_Result.ProtoReflect.Descriptor instead.
 func (*InspectDataSourceDetails_Result) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{40, 1}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{43, 1}
 }
 
 func (x *InspectDataSourceDetails_Result) GetProcessedBytes() int64 {
@@ -26289,7 +26626,7 @@ type DeidentifyDataSourceDetails_RequestedDeidentifyOptions struct {
 
 func (x *DeidentifyDataSourceDetails_RequestedDeidentifyOptions) Reset() {
 	*x = DeidentifyDataSourceDetails_RequestedDeidentifyOptions{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[279]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[283]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -26301,7 +26638,7 @@ func (x *DeidentifyDataSourceDetails_RequestedDeidentifyOptions) String() string
 func (*DeidentifyDataSourceDetails_RequestedDeidentifyOptions) ProtoMessage() {}
 
 func (x *DeidentifyDataSourceDetails_RequestedDeidentifyOptions) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[279]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[283]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -26314,7 +26651,7 @@ func (x *DeidentifyDataSourceDetails_RequestedDeidentifyOptions) ProtoReflect() 
 
 // Deprecated: Use DeidentifyDataSourceDetails_RequestedDeidentifyOptions.ProtoReflect.Descriptor instead.
 func (*DeidentifyDataSourceDetails_RequestedDeidentifyOptions) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{45, 0}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{48, 0}
 }
 
 func (x *DeidentifyDataSourceDetails_RequestedDeidentifyOptions) GetSnapshotDeidentifyTemplate() *DeidentifyTemplate {
@@ -26354,7 +26691,7 @@ type StatisticalTable_QuasiIdentifierField struct {
 
 func (x *StatisticalTable_QuasiIdentifierField) Reset() {
 	*x = StatisticalTable_QuasiIdentifierField{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[280]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[284]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -26366,7 +26703,7 @@ func (x *StatisticalTable_QuasiIdentifierField) String() string {
 func (*StatisticalTable_QuasiIdentifierField) ProtoMessage() {}
 
 func (x *StatisticalTable_QuasiIdentifierField) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[280]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[284]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -26379,7 +26716,7 @@ func (x *StatisticalTable_QuasiIdentifierField) ProtoReflect() protoreflect.Mess
 
 // Deprecated: Use StatisticalTable_QuasiIdentifierField.ProtoReflect.Descriptor instead.
 func (*StatisticalTable_QuasiIdentifierField) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{54, 0}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{57, 0}
 }
 
 func (x *StatisticalTable_QuasiIdentifierField) GetField() *FieldId {
@@ -26409,7 +26746,7 @@ type PrivacyMetric_NumericalStatsConfig struct {
 
 func (x *PrivacyMetric_NumericalStatsConfig) Reset() {
 	*x = PrivacyMetric_NumericalStatsConfig{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[281]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[285]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -26421,7 +26758,7 @@ func (x *PrivacyMetric_NumericalStatsConfig) String() string {
 func (*PrivacyMetric_NumericalStatsConfig) ProtoMessage() {}
 
 func (x *PrivacyMetric_NumericalStatsConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[281]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[285]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -26434,7 +26771,7 @@ func (x *PrivacyMetric_NumericalStatsConfig) ProtoReflect() protoreflect.Message
 
 // Deprecated: Use PrivacyMetric_NumericalStatsConfig.ProtoReflect.Descriptor instead.
 func (*PrivacyMetric_NumericalStatsConfig) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{55, 0}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{58, 0}
 }
 
 func (x *PrivacyMetric_NumericalStatsConfig) GetField() *FieldId {
@@ -26459,7 +26796,7 @@ type PrivacyMetric_CategoricalStatsConfig struct {
 
 func (x *PrivacyMetric_CategoricalStatsConfig) Reset() {
 	*x = PrivacyMetric_CategoricalStatsConfig{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[282]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[286]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -26471,7 +26808,7 @@ func (x *PrivacyMetric_CategoricalStatsConfig) String() string {
 func (*PrivacyMetric_CategoricalStatsConfig) ProtoMessage() {}
 
 func (x *PrivacyMetric_CategoricalStatsConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[282]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[286]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -26484,7 +26821,7 @@ func (x *PrivacyMetric_CategoricalStatsConfig) ProtoReflect() protoreflect.Messa
 
 // Deprecated: Use PrivacyMetric_CategoricalStatsConfig.ProtoReflect.Descriptor instead.
 func (*PrivacyMetric_CategoricalStatsConfig) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{55, 1}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{58, 1}
 }
 
 func (x *PrivacyMetric_CategoricalStatsConfig) GetField() *FieldId {
@@ -26520,7 +26857,7 @@ type PrivacyMetric_KAnonymityConfig struct {
 
 func (x *PrivacyMetric_KAnonymityConfig) Reset() {
 	*x = PrivacyMetric_KAnonymityConfig{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[283]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[287]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -26532,7 +26869,7 @@ func (x *PrivacyMetric_KAnonymityConfig) String() string {
 func (*PrivacyMetric_KAnonymityConfig) ProtoMessage() {}
 
 func (x *PrivacyMetric_KAnonymityConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[283]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[287]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -26545,7 +26882,7 @@ func (x *PrivacyMetric_KAnonymityConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PrivacyMetric_KAnonymityConfig.ProtoReflect.Descriptor instead.
 func (*PrivacyMetric_KAnonymityConfig) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{55, 2}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{58, 2}
 }
 
 func (x *PrivacyMetric_KAnonymityConfig) GetQuasiIds() []*FieldId {
@@ -26577,7 +26914,7 @@ type PrivacyMetric_LDiversityConfig struct {
 
 func (x *PrivacyMetric_LDiversityConfig) Reset() {
 	*x = PrivacyMetric_LDiversityConfig{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[284]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[288]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -26589,7 +26926,7 @@ func (x *PrivacyMetric_LDiversityConfig) String() string {
 func (*PrivacyMetric_LDiversityConfig) ProtoMessage() {}
 
 func (x *PrivacyMetric_LDiversityConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[284]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[288]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -26602,7 +26939,7 @@ func (x *PrivacyMetric_LDiversityConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PrivacyMetric_LDiversityConfig.ProtoReflect.Descriptor instead.
 func (*PrivacyMetric_LDiversityConfig) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{55, 3}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{58, 3}
 }
 
 func (x *PrivacyMetric_LDiversityConfig) GetQuasiIds() []*FieldId {
@@ -26644,7 +26981,7 @@ type PrivacyMetric_KMapEstimationConfig struct {
 
 func (x *PrivacyMetric_KMapEstimationConfig) Reset() {
 	*x = PrivacyMetric_KMapEstimationConfig{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[285]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[289]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -26656,7 +26993,7 @@ func (x *PrivacyMetric_KMapEstimationConfig) String() string {
 func (*PrivacyMetric_KMapEstimationConfig) ProtoMessage() {}
 
 func (x *PrivacyMetric_KMapEstimationConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[285]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[289]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -26669,7 +27006,7 @@ func (x *PrivacyMetric_KMapEstimationConfig) ProtoReflect() protoreflect.Message
 
 // Deprecated: Use PrivacyMetric_KMapEstimationConfig.ProtoReflect.Descriptor instead.
 func (*PrivacyMetric_KMapEstimationConfig) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{55, 4}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{58, 4}
 }
 
 func (x *PrivacyMetric_KMapEstimationConfig) GetQuasiIds() []*PrivacyMetric_KMapEstimationConfig_TaggedField {
@@ -26716,7 +27053,7 @@ type PrivacyMetric_DeltaPresenceEstimationConfig struct {
 
 func (x *PrivacyMetric_DeltaPresenceEstimationConfig) Reset() {
 	*x = PrivacyMetric_DeltaPresenceEstimationConfig{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[286]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[290]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -26728,7 +27065,7 @@ func (x *PrivacyMetric_DeltaPresenceEstimationConfig) String() string {
 func (*PrivacyMetric_DeltaPresenceEstimationConfig) ProtoMessage() {}
 
 func (x *PrivacyMetric_DeltaPresenceEstimationConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[286]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[290]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -26741,7 +27078,7 @@ func (x *PrivacyMetric_DeltaPresenceEstimationConfig) ProtoReflect() protoreflec
 
 // Deprecated: Use PrivacyMetric_DeltaPresenceEstimationConfig.ProtoReflect.Descriptor instead.
 func (*PrivacyMetric_DeltaPresenceEstimationConfig) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{55, 5}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{58, 5}
 }
 
 func (x *PrivacyMetric_DeltaPresenceEstimationConfig) GetQuasiIds() []*QuasiId {
@@ -26786,7 +27123,7 @@ type PrivacyMetric_KMapEstimationConfig_TaggedField struct {
 
 func (x *PrivacyMetric_KMapEstimationConfig_TaggedField) Reset() {
 	*x = PrivacyMetric_KMapEstimationConfig_TaggedField{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[287]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[291]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -26798,7 +27135,7 @@ func (x *PrivacyMetric_KMapEstimationConfig_TaggedField) String() string {
 func (*PrivacyMetric_KMapEstimationConfig_TaggedField) ProtoMessage() {}
 
 func (x *PrivacyMetric_KMapEstimationConfig_TaggedField) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[287]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[291]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -26811,7 +27148,7 @@ func (x *PrivacyMetric_KMapEstimationConfig_TaggedField) ProtoReflect() protoref
 
 // Deprecated: Use PrivacyMetric_KMapEstimationConfig_TaggedField.ProtoReflect.Descriptor instead.
 func (*PrivacyMetric_KMapEstimationConfig_TaggedField) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{55, 4, 0}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{58, 4, 0}
 }
 
 func (x *PrivacyMetric_KMapEstimationConfig_TaggedField) GetField() *FieldId {
@@ -26912,7 +27249,7 @@ type PrivacyMetric_KMapEstimationConfig_AuxiliaryTable struct {
 
 func (x *PrivacyMetric_KMapEstimationConfig_AuxiliaryTable) Reset() {
 	*x = PrivacyMetric_KMapEstimationConfig_AuxiliaryTable{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[288]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[292]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -26924,7 +27261,7 @@ func (x *PrivacyMetric_KMapEstimationConfig_AuxiliaryTable) String() string {
 func (*PrivacyMetric_KMapEstimationConfig_AuxiliaryTable) ProtoMessage() {}
 
 func (x *PrivacyMetric_KMapEstimationConfig_AuxiliaryTable) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[288]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[292]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -26937,7 +27274,7 @@ func (x *PrivacyMetric_KMapEstimationConfig_AuxiliaryTable) ProtoReflect() proto
 
 // Deprecated: Use PrivacyMetric_KMapEstimationConfig_AuxiliaryTable.ProtoReflect.Descriptor instead.
 func (*PrivacyMetric_KMapEstimationConfig_AuxiliaryTable) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{55, 4, 1}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{58, 4, 1}
 }
 
 func (x *PrivacyMetric_KMapEstimationConfig_AuxiliaryTable) GetTable() *BigQueryTable {
@@ -26975,7 +27312,7 @@ type PrivacyMetric_KMapEstimationConfig_AuxiliaryTable_QuasiIdField struct {
 
 func (x *PrivacyMetric_KMapEstimationConfig_AuxiliaryTable_QuasiIdField) Reset() {
 	*x = PrivacyMetric_KMapEstimationConfig_AuxiliaryTable_QuasiIdField{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[289]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[293]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -26987,7 +27324,7 @@ func (x *PrivacyMetric_KMapEstimationConfig_AuxiliaryTable_QuasiIdField) String(
 func (*PrivacyMetric_KMapEstimationConfig_AuxiliaryTable_QuasiIdField) ProtoMessage() {}
 
 func (x *PrivacyMetric_KMapEstimationConfig_AuxiliaryTable_QuasiIdField) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[289]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[293]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -27000,7 +27337,7 @@ func (x *PrivacyMetric_KMapEstimationConfig_AuxiliaryTable_QuasiIdField) ProtoRe
 
 // Deprecated: Use PrivacyMetric_KMapEstimationConfig_AuxiliaryTable_QuasiIdField.ProtoReflect.Descriptor instead.
 func (*PrivacyMetric_KMapEstimationConfig_AuxiliaryTable_QuasiIdField) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{55, 4, 1, 0}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{58, 4, 1, 0}
 }
 
 func (x *PrivacyMetric_KMapEstimationConfig_AuxiliaryTable_QuasiIdField) GetField() *FieldId {
@@ -27033,7 +27370,7 @@ type AnalyzeDataSourceRiskDetails_NumericalStatsResult struct {
 
 func (x *AnalyzeDataSourceRiskDetails_NumericalStatsResult) Reset() {
 	*x = AnalyzeDataSourceRiskDetails_NumericalStatsResult{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[290]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[294]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -27045,7 +27382,7 @@ func (x *AnalyzeDataSourceRiskDetails_NumericalStatsResult) String() string {
 func (*AnalyzeDataSourceRiskDetails_NumericalStatsResult) ProtoMessage() {}
 
 func (x *AnalyzeDataSourceRiskDetails_NumericalStatsResult) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[290]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[294]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -27058,7 +27395,7 @@ func (x *AnalyzeDataSourceRiskDetails_NumericalStatsResult) ProtoReflect() proto
 
 // Deprecated: Use AnalyzeDataSourceRiskDetails_NumericalStatsResult.ProtoReflect.Descriptor instead.
 func (*AnalyzeDataSourceRiskDetails_NumericalStatsResult) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{56, 0}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{59, 0}
 }
 
 func (x *AnalyzeDataSourceRiskDetails_NumericalStatsResult) GetMinValue() *Value {
@@ -27093,7 +27430,7 @@ type AnalyzeDataSourceRiskDetails_CategoricalStatsResult struct {
 
 func (x *AnalyzeDataSourceRiskDetails_CategoricalStatsResult) Reset() {
 	*x = AnalyzeDataSourceRiskDetails_CategoricalStatsResult{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[291]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[295]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -27105,7 +27442,7 @@ func (x *AnalyzeDataSourceRiskDetails_CategoricalStatsResult) String() string {
 func (*AnalyzeDataSourceRiskDetails_CategoricalStatsResult) ProtoMessage() {}
 
 func (x *AnalyzeDataSourceRiskDetails_CategoricalStatsResult) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[291]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[295]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -27118,7 +27455,7 @@ func (x *AnalyzeDataSourceRiskDetails_CategoricalStatsResult) ProtoReflect() pro
 
 // Deprecated: Use AnalyzeDataSourceRiskDetails_CategoricalStatsResult.ProtoReflect.Descriptor instead.
 func (*AnalyzeDataSourceRiskDetails_CategoricalStatsResult) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{56, 1}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{59, 1}
 }
 
 func (x *AnalyzeDataSourceRiskDetails_CategoricalStatsResult) GetValueFrequencyHistogramBuckets() []*AnalyzeDataSourceRiskDetails_CategoricalStatsResult_CategoricalStatsHistogramBucket {
@@ -27139,7 +27476,7 @@ type AnalyzeDataSourceRiskDetails_KAnonymityResult struct {
 
 func (x *AnalyzeDataSourceRiskDetails_KAnonymityResult) Reset() {
 	*x = AnalyzeDataSourceRiskDetails_KAnonymityResult{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[292]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[296]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -27151,7 +27488,7 @@ func (x *AnalyzeDataSourceRiskDetails_KAnonymityResult) String() string {
 func (*AnalyzeDataSourceRiskDetails_KAnonymityResult) ProtoMessage() {}
 
 func (x *AnalyzeDataSourceRiskDetails_KAnonymityResult) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[292]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[296]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -27164,7 +27501,7 @@ func (x *AnalyzeDataSourceRiskDetails_KAnonymityResult) ProtoReflect() protorefl
 
 // Deprecated: Use AnalyzeDataSourceRiskDetails_KAnonymityResult.ProtoReflect.Descriptor instead.
 func (*AnalyzeDataSourceRiskDetails_KAnonymityResult) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{56, 2}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{59, 2}
 }
 
 func (x *AnalyzeDataSourceRiskDetails_KAnonymityResult) GetEquivalenceClassHistogramBuckets() []*AnalyzeDataSourceRiskDetails_KAnonymityResult_KAnonymityHistogramBucket {
@@ -27185,7 +27522,7 @@ type AnalyzeDataSourceRiskDetails_LDiversityResult struct {
 
 func (x *AnalyzeDataSourceRiskDetails_LDiversityResult) Reset() {
 	*x = AnalyzeDataSourceRiskDetails_LDiversityResult{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[293]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[297]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -27197,7 +27534,7 @@ func (x *AnalyzeDataSourceRiskDetails_LDiversityResult) String() string {
 func (*AnalyzeDataSourceRiskDetails_LDiversityResult) ProtoMessage() {}
 
 func (x *AnalyzeDataSourceRiskDetails_LDiversityResult) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[293]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[297]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -27210,7 +27547,7 @@ func (x *AnalyzeDataSourceRiskDetails_LDiversityResult) ProtoReflect() protorefl
 
 // Deprecated: Use AnalyzeDataSourceRiskDetails_LDiversityResult.ProtoReflect.Descriptor instead.
 func (*AnalyzeDataSourceRiskDetails_LDiversityResult) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{56, 3}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{59, 3}
 }
 
 func (x *AnalyzeDataSourceRiskDetails_LDiversityResult) GetSensitiveValueFrequencyHistogramBuckets() []*AnalyzeDataSourceRiskDetails_LDiversityResult_LDiversityHistogramBucket {
@@ -27241,7 +27578,7 @@ type AnalyzeDataSourceRiskDetails_KMapEstimationResult struct {
 
 func (x *AnalyzeDataSourceRiskDetails_KMapEstimationResult) Reset() {
 	*x = AnalyzeDataSourceRiskDetails_KMapEstimationResult{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[294]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[298]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -27253,7 +27590,7 @@ func (x *AnalyzeDataSourceRiskDetails_KMapEstimationResult) String() string {
 func (*AnalyzeDataSourceRiskDetails_KMapEstimationResult) ProtoMessage() {}
 
 func (x *AnalyzeDataSourceRiskDetails_KMapEstimationResult) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[294]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[298]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -27266,7 +27603,7 @@ func (x *AnalyzeDataSourceRiskDetails_KMapEstimationResult) ProtoReflect() proto
 
 // Deprecated: Use AnalyzeDataSourceRiskDetails_KMapEstimationResult.ProtoReflect.Descriptor instead.
 func (*AnalyzeDataSourceRiskDetails_KMapEstimationResult) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{56, 4}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{59, 4}
 }
 
 func (x *AnalyzeDataSourceRiskDetails_KMapEstimationResult) GetKMapEstimationHistogram() []*AnalyzeDataSourceRiskDetails_KMapEstimationResult_KMapEstimationHistogramBucket {
@@ -27297,7 +27634,7 @@ type AnalyzeDataSourceRiskDetails_DeltaPresenceEstimationResult struct {
 
 func (x *AnalyzeDataSourceRiskDetails_DeltaPresenceEstimationResult) Reset() {
 	*x = AnalyzeDataSourceRiskDetails_DeltaPresenceEstimationResult{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[295]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[299]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -27309,7 +27646,7 @@ func (x *AnalyzeDataSourceRiskDetails_DeltaPresenceEstimationResult) String() st
 func (*AnalyzeDataSourceRiskDetails_DeltaPresenceEstimationResult) ProtoMessage() {}
 
 func (x *AnalyzeDataSourceRiskDetails_DeltaPresenceEstimationResult) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[295]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[299]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -27322,7 +27659,7 @@ func (x *AnalyzeDataSourceRiskDetails_DeltaPresenceEstimationResult) ProtoReflec
 
 // Deprecated: Use AnalyzeDataSourceRiskDetails_DeltaPresenceEstimationResult.ProtoReflect.Descriptor instead.
 func (*AnalyzeDataSourceRiskDetails_DeltaPresenceEstimationResult) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{56, 5}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{59, 5}
 }
 
 func (x *AnalyzeDataSourceRiskDetails_DeltaPresenceEstimationResult) GetDeltaPresenceEstimationHistogram() []*AnalyzeDataSourceRiskDetails_DeltaPresenceEstimationResult_DeltaPresenceEstimationHistogramBucket {
@@ -27343,7 +27680,7 @@ type AnalyzeDataSourceRiskDetails_RequestedRiskAnalysisOptions struct {
 
 func (x *AnalyzeDataSourceRiskDetails_RequestedRiskAnalysisOptions) Reset() {
 	*x = AnalyzeDataSourceRiskDetails_RequestedRiskAnalysisOptions{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[296]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[300]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -27355,7 +27692,7 @@ func (x *AnalyzeDataSourceRiskDetails_RequestedRiskAnalysisOptions) String() str
 func (*AnalyzeDataSourceRiskDetails_RequestedRiskAnalysisOptions) ProtoMessage() {}
 
 func (x *AnalyzeDataSourceRiskDetails_RequestedRiskAnalysisOptions) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[296]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[300]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -27368,7 +27705,7 @@ func (x *AnalyzeDataSourceRiskDetails_RequestedRiskAnalysisOptions) ProtoReflect
 
 // Deprecated: Use AnalyzeDataSourceRiskDetails_RequestedRiskAnalysisOptions.ProtoReflect.Descriptor instead.
 func (*AnalyzeDataSourceRiskDetails_RequestedRiskAnalysisOptions) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{56, 6}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{59, 6}
 }
 
 func (x *AnalyzeDataSourceRiskDetails_RequestedRiskAnalysisOptions) GetJobConfig() *RiskAnalysisJobConfig {
@@ -27398,7 +27735,7 @@ type AnalyzeDataSourceRiskDetails_CategoricalStatsResult_CategoricalStatsHistogr
 
 func (x *AnalyzeDataSourceRiskDetails_CategoricalStatsResult_CategoricalStatsHistogramBucket) Reset() {
 	*x = AnalyzeDataSourceRiskDetails_CategoricalStatsResult_CategoricalStatsHistogramBucket{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[297]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[301]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -27411,7 +27748,7 @@ func (*AnalyzeDataSourceRiskDetails_CategoricalStatsResult_CategoricalStatsHisto
 }
 
 func (x *AnalyzeDataSourceRiskDetails_CategoricalStatsResult_CategoricalStatsHistogramBucket) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[297]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[301]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -27424,7 +27761,7 @@ func (x *AnalyzeDataSourceRiskDetails_CategoricalStatsResult_CategoricalStatsHis
 
 // Deprecated: Use AnalyzeDataSourceRiskDetails_CategoricalStatsResult_CategoricalStatsHistogramBucket.ProtoReflect.Descriptor instead.
 func (*AnalyzeDataSourceRiskDetails_CategoricalStatsResult_CategoricalStatsHistogramBucket) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{56, 1, 0}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{59, 1, 0}
 }
 
 func (x *AnalyzeDataSourceRiskDetails_CategoricalStatsResult_CategoricalStatsHistogramBucket) GetValueFrequencyLowerBound() int64 {
@@ -27478,7 +27815,7 @@ type AnalyzeDataSourceRiskDetails_KAnonymityResult_KAnonymityEquivalenceClass st
 
 func (x *AnalyzeDataSourceRiskDetails_KAnonymityResult_KAnonymityEquivalenceClass) Reset() {
 	*x = AnalyzeDataSourceRiskDetails_KAnonymityResult_KAnonymityEquivalenceClass{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[298]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[302]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -27490,7 +27827,7 @@ func (x *AnalyzeDataSourceRiskDetails_KAnonymityResult_KAnonymityEquivalenceClas
 func (*AnalyzeDataSourceRiskDetails_KAnonymityResult_KAnonymityEquivalenceClass) ProtoMessage() {}
 
 func (x *AnalyzeDataSourceRiskDetails_KAnonymityResult_KAnonymityEquivalenceClass) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[298]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[302]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -27503,7 +27840,7 @@ func (x *AnalyzeDataSourceRiskDetails_KAnonymityResult_KAnonymityEquivalenceClas
 
 // Deprecated: Use AnalyzeDataSourceRiskDetails_KAnonymityResult_KAnonymityEquivalenceClass.ProtoReflect.Descriptor instead.
 func (*AnalyzeDataSourceRiskDetails_KAnonymityResult_KAnonymityEquivalenceClass) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{56, 2, 0}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{59, 2, 0}
 }
 
 func (x *AnalyzeDataSourceRiskDetails_KAnonymityResult_KAnonymityEquivalenceClass) GetQuasiIdsValues() []*Value {
@@ -27540,7 +27877,7 @@ type AnalyzeDataSourceRiskDetails_KAnonymityResult_KAnonymityHistogramBucket str
 
 func (x *AnalyzeDataSourceRiskDetails_KAnonymityResult_KAnonymityHistogramBucket) Reset() {
 	*x = AnalyzeDataSourceRiskDetails_KAnonymityResult_KAnonymityHistogramBucket{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[299]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[303]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -27552,7 +27889,7 @@ func (x *AnalyzeDataSourceRiskDetails_KAnonymityResult_KAnonymityHistogramBucket
 func (*AnalyzeDataSourceRiskDetails_KAnonymityResult_KAnonymityHistogramBucket) ProtoMessage() {}
 
 func (x *AnalyzeDataSourceRiskDetails_KAnonymityResult_KAnonymityHistogramBucket) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[299]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[303]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -27565,7 +27902,7 @@ func (x *AnalyzeDataSourceRiskDetails_KAnonymityResult_KAnonymityHistogramBucket
 
 // Deprecated: Use AnalyzeDataSourceRiskDetails_KAnonymityResult_KAnonymityHistogramBucket.ProtoReflect.Descriptor instead.
 func (*AnalyzeDataSourceRiskDetails_KAnonymityResult_KAnonymityHistogramBucket) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{56, 2, 1}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{59, 2, 1}
 }
 
 func (x *AnalyzeDataSourceRiskDetails_KAnonymityResult_KAnonymityHistogramBucket) GetEquivalenceClassSizeLowerBound() int64 {
@@ -27621,7 +27958,7 @@ type AnalyzeDataSourceRiskDetails_LDiversityResult_LDiversityEquivalenceClass st
 
 func (x *AnalyzeDataSourceRiskDetails_LDiversityResult_LDiversityEquivalenceClass) Reset() {
 	*x = AnalyzeDataSourceRiskDetails_LDiversityResult_LDiversityEquivalenceClass{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[300]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[304]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -27633,7 +27970,7 @@ func (x *AnalyzeDataSourceRiskDetails_LDiversityResult_LDiversityEquivalenceClas
 func (*AnalyzeDataSourceRiskDetails_LDiversityResult_LDiversityEquivalenceClass) ProtoMessage() {}
 
 func (x *AnalyzeDataSourceRiskDetails_LDiversityResult_LDiversityEquivalenceClass) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[300]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[304]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -27646,7 +27983,7 @@ func (x *AnalyzeDataSourceRiskDetails_LDiversityResult_LDiversityEquivalenceClas
 
 // Deprecated: Use AnalyzeDataSourceRiskDetails_LDiversityResult_LDiversityEquivalenceClass.ProtoReflect.Descriptor instead.
 func (*AnalyzeDataSourceRiskDetails_LDiversityResult_LDiversityEquivalenceClass) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{56, 3, 0}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{59, 3, 0}
 }
 
 func (x *AnalyzeDataSourceRiskDetails_LDiversityResult_LDiversityEquivalenceClass) GetQuasiIdsValues() []*Value {
@@ -27699,7 +28036,7 @@ type AnalyzeDataSourceRiskDetails_LDiversityResult_LDiversityHistogramBucket str
 
 func (x *AnalyzeDataSourceRiskDetails_LDiversityResult_LDiversityHistogramBucket) Reset() {
 	*x = AnalyzeDataSourceRiskDetails_LDiversityResult_LDiversityHistogramBucket{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[301]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[305]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -27711,7 +28048,7 @@ func (x *AnalyzeDataSourceRiskDetails_LDiversityResult_LDiversityHistogramBucket
 func (*AnalyzeDataSourceRiskDetails_LDiversityResult_LDiversityHistogramBucket) ProtoMessage() {}
 
 func (x *AnalyzeDataSourceRiskDetails_LDiversityResult_LDiversityHistogramBucket) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[301]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[305]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -27724,7 +28061,7 @@ func (x *AnalyzeDataSourceRiskDetails_LDiversityResult_LDiversityHistogramBucket
 
 // Deprecated: Use AnalyzeDataSourceRiskDetails_LDiversityResult_LDiversityHistogramBucket.ProtoReflect.Descriptor instead.
 func (*AnalyzeDataSourceRiskDetails_LDiversityResult_LDiversityHistogramBucket) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{56, 3, 1}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{59, 3, 1}
 }
 
 func (x *AnalyzeDataSourceRiskDetails_LDiversityResult_LDiversityHistogramBucket) GetSensitiveValueFrequencyLowerBound() int64 {
@@ -27775,7 +28112,7 @@ type AnalyzeDataSourceRiskDetails_KMapEstimationResult_KMapEstimationQuasiIdValu
 
 func (x *AnalyzeDataSourceRiskDetails_KMapEstimationResult_KMapEstimationQuasiIdValues) Reset() {
 	*x = AnalyzeDataSourceRiskDetails_KMapEstimationResult_KMapEstimationQuasiIdValues{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[302]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[306]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -27788,7 +28125,7 @@ func (*AnalyzeDataSourceRiskDetails_KMapEstimationResult_KMapEstimationQuasiIdVa
 }
 
 func (x *AnalyzeDataSourceRiskDetails_KMapEstimationResult_KMapEstimationQuasiIdValues) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[302]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[306]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -27801,7 +28138,7 @@ func (x *AnalyzeDataSourceRiskDetails_KMapEstimationResult_KMapEstimationQuasiId
 
 // Deprecated: Use AnalyzeDataSourceRiskDetails_KMapEstimationResult_KMapEstimationQuasiIdValues.ProtoReflect.Descriptor instead.
 func (*AnalyzeDataSourceRiskDetails_KMapEstimationResult_KMapEstimationQuasiIdValues) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{56, 4, 0}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{59, 4, 0}
 }
 
 func (x *AnalyzeDataSourceRiskDetails_KMapEstimationResult_KMapEstimationQuasiIdValues) GetQuasiIdsValues() []*Value {
@@ -27847,7 +28184,7 @@ type AnalyzeDataSourceRiskDetails_KMapEstimationResult_KMapEstimationHistogramBu
 
 func (x *AnalyzeDataSourceRiskDetails_KMapEstimationResult_KMapEstimationHistogramBucket) Reset() {
 	*x = AnalyzeDataSourceRiskDetails_KMapEstimationResult_KMapEstimationHistogramBucket{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[303]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[307]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -27860,7 +28197,7 @@ func (*AnalyzeDataSourceRiskDetails_KMapEstimationResult_KMapEstimationHistogram
 }
 
 func (x *AnalyzeDataSourceRiskDetails_KMapEstimationResult_KMapEstimationHistogramBucket) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[303]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[307]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -27873,7 +28210,7 @@ func (x *AnalyzeDataSourceRiskDetails_KMapEstimationResult_KMapEstimationHistogr
 
 // Deprecated: Use AnalyzeDataSourceRiskDetails_KMapEstimationResult_KMapEstimationHistogramBucket.ProtoReflect.Descriptor instead.
 func (*AnalyzeDataSourceRiskDetails_KMapEstimationResult_KMapEstimationHistogramBucket) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{56, 4, 1}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{59, 4, 1}
 }
 
 func (x *AnalyzeDataSourceRiskDetails_KMapEstimationResult_KMapEstimationHistogramBucket) GetMinAnonymity() int64 {
@@ -27931,7 +28268,7 @@ type AnalyzeDataSourceRiskDetails_DeltaPresenceEstimationResult_DeltaPresenceEst
 
 func (x *AnalyzeDataSourceRiskDetails_DeltaPresenceEstimationResult_DeltaPresenceEstimationQuasiIdValues) Reset() {
 	*x = AnalyzeDataSourceRiskDetails_DeltaPresenceEstimationResult_DeltaPresenceEstimationQuasiIdValues{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[304]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[308]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -27944,7 +28281,7 @@ func (*AnalyzeDataSourceRiskDetails_DeltaPresenceEstimationResult_DeltaPresenceE
 }
 
 func (x *AnalyzeDataSourceRiskDetails_DeltaPresenceEstimationResult_DeltaPresenceEstimationQuasiIdValues) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[304]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[308]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -27957,7 +28294,7 @@ func (x *AnalyzeDataSourceRiskDetails_DeltaPresenceEstimationResult_DeltaPresenc
 
 // Deprecated: Use AnalyzeDataSourceRiskDetails_DeltaPresenceEstimationResult_DeltaPresenceEstimationQuasiIdValues.ProtoReflect.Descriptor instead.
 func (*AnalyzeDataSourceRiskDetails_DeltaPresenceEstimationResult_DeltaPresenceEstimationQuasiIdValues) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{56, 5, 0}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{59, 5, 0}
 }
 
 func (x *AnalyzeDataSourceRiskDetails_DeltaPresenceEstimationResult_DeltaPresenceEstimationQuasiIdValues) GetQuasiIdsValues() []*Value {
@@ -28004,7 +28341,7 @@ type AnalyzeDataSourceRiskDetails_DeltaPresenceEstimationResult_DeltaPresenceEst
 
 func (x *AnalyzeDataSourceRiskDetails_DeltaPresenceEstimationResult_DeltaPresenceEstimationHistogramBucket) Reset() {
 	*x = AnalyzeDataSourceRiskDetails_DeltaPresenceEstimationResult_DeltaPresenceEstimationHistogramBucket{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[305]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[309]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -28017,7 +28354,7 @@ func (*AnalyzeDataSourceRiskDetails_DeltaPresenceEstimationResult_DeltaPresenceE
 }
 
 func (x *AnalyzeDataSourceRiskDetails_DeltaPresenceEstimationResult_DeltaPresenceEstimationHistogramBucket) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[305]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[309]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -28030,7 +28367,7 @@ func (x *AnalyzeDataSourceRiskDetails_DeltaPresenceEstimationResult_DeltaPresenc
 
 // Deprecated: Use AnalyzeDataSourceRiskDetails_DeltaPresenceEstimationResult_DeltaPresenceEstimationHistogramBucket.ProtoReflect.Descriptor instead.
 func (*AnalyzeDataSourceRiskDetails_DeltaPresenceEstimationResult_DeltaPresenceEstimationHistogramBucket) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{56, 5, 1}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{59, 5, 1}
 }
 
 func (x *AnalyzeDataSourceRiskDetails_DeltaPresenceEstimationResult_DeltaPresenceEstimationHistogramBucket) GetMinProbability() float64 {
@@ -28080,7 +28417,7 @@ type DateTime_TimeZone struct {
 
 func (x *DateTime_TimeZone) Reset() {
 	*x = DateTime_TimeZone{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[306]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[310]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -28092,7 +28429,7 @@ func (x *DateTime_TimeZone) String() string {
 func (*DateTime_TimeZone) ProtoMessage() {}
 
 func (x *DateTime_TimeZone) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[306]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[310]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -28105,7 +28442,7 @@ func (x *DateTime_TimeZone) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DateTime_TimeZone.ProtoReflect.Descriptor instead.
 func (*DateTime_TimeZone) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{60, 0}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{63, 0}
 }
 
 func (x *DateTime_TimeZone) GetOffsetMinutes() int32 {
@@ -28135,7 +28472,7 @@ type ImageTransformations_ImageTransformation struct {
 
 func (x *ImageTransformations_ImageTransformation) Reset() {
 	*x = ImageTransformations_ImageTransformation{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[307]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[311]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -28147,7 +28484,7 @@ func (x *ImageTransformations_ImageTransformation) String() string {
 func (*ImageTransformations_ImageTransformation) ProtoMessage() {}
 
 func (x *ImageTransformations_ImageTransformation) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[307]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[311]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -28160,7 +28497,7 @@ func (x *ImageTransformations_ImageTransformation) ProtoReflect() protoreflect.M
 
 // Deprecated: Use ImageTransformations_ImageTransformation.ProtoReflect.Descriptor instead.
 func (*ImageTransformations_ImageTransformation) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{62, 0}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{65, 0}
 }
 
 func (x *ImageTransformations_ImageTransformation) GetTarget() isImageTransformations_ImageTransformation_Target {
@@ -28247,7 +28584,7 @@ type ImageTransformations_ImageTransformation_SelectedInfoTypes struct {
 
 func (x *ImageTransformations_ImageTransformation_SelectedInfoTypes) Reset() {
 	*x = ImageTransformations_ImageTransformation_SelectedInfoTypes{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[308]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[312]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -28259,7 +28596,7 @@ func (x *ImageTransformations_ImageTransformation_SelectedInfoTypes) String() st
 func (*ImageTransformations_ImageTransformation_SelectedInfoTypes) ProtoMessage() {}
 
 func (x *ImageTransformations_ImageTransformation_SelectedInfoTypes) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[308]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[312]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -28272,7 +28609,7 @@ func (x *ImageTransformations_ImageTransformation_SelectedInfoTypes) ProtoReflec
 
 // Deprecated: Use ImageTransformations_ImageTransformation_SelectedInfoTypes.ProtoReflect.Descriptor instead.
 func (*ImageTransformations_ImageTransformation_SelectedInfoTypes) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{62, 0, 0}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{65, 0, 0}
 }
 
 func (x *ImageTransformations_ImageTransformation_SelectedInfoTypes) GetInfoTypes() []*InfoType {
@@ -28291,7 +28628,7 @@ type ImageTransformations_ImageTransformation_AllInfoTypes struct {
 
 func (x *ImageTransformations_ImageTransformation_AllInfoTypes) Reset() {
 	*x = ImageTransformations_ImageTransformation_AllInfoTypes{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[309]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[313]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -28303,7 +28640,7 @@ func (x *ImageTransformations_ImageTransformation_AllInfoTypes) String() string 
 func (*ImageTransformations_ImageTransformation_AllInfoTypes) ProtoMessage() {}
 
 func (x *ImageTransformations_ImageTransformation_AllInfoTypes) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[309]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[313]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -28316,7 +28653,7 @@ func (x *ImageTransformations_ImageTransformation_AllInfoTypes) ProtoReflect() p
 
 // Deprecated: Use ImageTransformations_ImageTransformation_AllInfoTypes.ProtoReflect.Descriptor instead.
 func (*ImageTransformations_ImageTransformation_AllInfoTypes) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{62, 0, 1}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{65, 0, 1}
 }
 
 // Apply to all text.
@@ -28328,7 +28665,7 @@ type ImageTransformations_ImageTransformation_AllText struct {
 
 func (x *ImageTransformations_ImageTransformation_AllText) Reset() {
 	*x = ImageTransformations_ImageTransformation_AllText{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[310]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[314]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -28340,7 +28677,7 @@ func (x *ImageTransformations_ImageTransformation_AllText) String() string {
 func (*ImageTransformations_ImageTransformation_AllText) ProtoMessage() {}
 
 func (x *ImageTransformations_ImageTransformation_AllText) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[310]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[314]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -28353,7 +28690,7 @@ func (x *ImageTransformations_ImageTransformation_AllText) ProtoReflect() protor
 
 // Deprecated: Use ImageTransformations_ImageTransformation_AllText.ProtoReflect.Descriptor instead.
 func (*ImageTransformations_ImageTransformation_AllText) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{62, 0, 2}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{65, 0, 2}
 }
 
 // Throw an error and fail the request when a transformation error occurs.
@@ -28365,7 +28702,7 @@ type TransformationErrorHandling_ThrowError struct {
 
 func (x *TransformationErrorHandling_ThrowError) Reset() {
 	*x = TransformationErrorHandling_ThrowError{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[311]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[315]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -28377,7 +28714,7 @@ func (x *TransformationErrorHandling_ThrowError) String() string {
 func (*TransformationErrorHandling_ThrowError) ProtoMessage() {}
 
 func (x *TransformationErrorHandling_ThrowError) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[311]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[315]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -28390,7 +28727,7 @@ func (x *TransformationErrorHandling_ThrowError) ProtoReflect() protoreflect.Mes
 
 // Deprecated: Use TransformationErrorHandling_ThrowError.ProtoReflect.Descriptor instead.
 func (*TransformationErrorHandling_ThrowError) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{63, 0}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{66, 0}
 }
 
 // Skips the data without modifying it if the requested transformation would
@@ -28405,7 +28742,7 @@ type TransformationErrorHandling_LeaveUntransformed struct {
 
 func (x *TransformationErrorHandling_LeaveUntransformed) Reset() {
 	*x = TransformationErrorHandling_LeaveUntransformed{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[312]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[316]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -28417,7 +28754,7 @@ func (x *TransformationErrorHandling_LeaveUntransformed) String() string {
 func (*TransformationErrorHandling_LeaveUntransformed) ProtoMessage() {}
 
 func (x *TransformationErrorHandling_LeaveUntransformed) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[312]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[316]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -28430,7 +28767,7 @@ func (x *TransformationErrorHandling_LeaveUntransformed) ProtoReflect() protoref
 
 // Deprecated: Use TransformationErrorHandling_LeaveUntransformed.ProtoReflect.Descriptor instead.
 func (*TransformationErrorHandling_LeaveUntransformed) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{63, 1}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{66, 1}
 }
 
 // Bucket is represented as a range, along with replacement values.
@@ -28449,7 +28786,7 @@ type BucketingConfig_Bucket struct {
 
 func (x *BucketingConfig_Bucket) Reset() {
 	*x = BucketingConfig_Bucket{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[313]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[317]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -28461,7 +28798,7 @@ func (x *BucketingConfig_Bucket) String() string {
 func (*BucketingConfig_Bucket) ProtoMessage() {}
 
 func (x *BucketingConfig_Bucket) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[313]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[317]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -28474,7 +28811,7 @@ func (x *BucketingConfig_Bucket) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BucketingConfig_Bucket.ProtoReflect.Descriptor instead.
 func (*BucketingConfig_Bucket) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{75, 0}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{78, 0}
 }
 
 func (x *BucketingConfig_Bucket) GetMin() *Value {
@@ -28514,7 +28851,7 @@ type InfoTypeTransformations_InfoTypeTransformation struct {
 
 func (x *InfoTypeTransformations_InfoTypeTransformation) Reset() {
 	*x = InfoTypeTransformations_InfoTypeTransformation{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[314]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[318]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -28526,7 +28863,7 @@ func (x *InfoTypeTransformations_InfoTypeTransformation) String() string {
 func (*InfoTypeTransformations_InfoTypeTransformation) ProtoMessage() {}
 
 func (x *InfoTypeTransformations_InfoTypeTransformation) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[314]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[318]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -28539,7 +28876,7 @@ func (x *InfoTypeTransformations_InfoTypeTransformation) ProtoReflect() protoref
 
 // Deprecated: Use InfoTypeTransformations_InfoTypeTransformation.ProtoReflect.Descriptor instead.
 func (*InfoTypeTransformations_InfoTypeTransformation) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{82, 0}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{85, 0}
 }
 
 func (x *InfoTypeTransformations_InfoTypeTransformation) GetInfoTypes() []*InfoType {
@@ -28589,7 +28926,7 @@ type RecordCondition_Condition struct {
 
 func (x *RecordCondition_Condition) Reset() {
 	*x = RecordCondition_Condition{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[315]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[319]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -28601,7 +28938,7 @@ func (x *RecordCondition_Condition) String() string {
 func (*RecordCondition_Condition) ProtoMessage() {}
 
 func (x *RecordCondition_Condition) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[315]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[319]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -28614,7 +28951,7 @@ func (x *RecordCondition_Condition) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RecordCondition_Condition.ProtoReflect.Descriptor instead.
 func (*RecordCondition_Condition) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{86, 0}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{89, 0}
 }
 
 func (x *RecordCondition_Condition) GetField() *FieldId {
@@ -28649,7 +28986,7 @@ type RecordCondition_Conditions struct {
 
 func (x *RecordCondition_Conditions) Reset() {
 	*x = RecordCondition_Conditions{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[316]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[320]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -28661,7 +28998,7 @@ func (x *RecordCondition_Conditions) String() string {
 func (*RecordCondition_Conditions) ProtoMessage() {}
 
 func (x *RecordCondition_Conditions) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[316]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[320]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -28674,7 +29011,7 @@ func (x *RecordCondition_Conditions) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RecordCondition_Conditions.ProtoReflect.Descriptor instead.
 func (*RecordCondition_Conditions) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{86, 1}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{89, 1}
 }
 
 func (x *RecordCondition_Conditions) GetConditions() []*RecordCondition_Condition {
@@ -28702,7 +29039,7 @@ type RecordCondition_Expressions struct {
 
 func (x *RecordCondition_Expressions) Reset() {
 	*x = RecordCondition_Expressions{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[317]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[321]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -28714,7 +29051,7 @@ func (x *RecordCondition_Expressions) String() string {
 func (*RecordCondition_Expressions) ProtoMessage() {}
 
 func (x *RecordCondition_Expressions) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[317]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[321]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -28727,7 +29064,7 @@ func (x *RecordCondition_Expressions) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RecordCondition_Expressions.ProtoReflect.Descriptor instead.
 func (*RecordCondition_Expressions) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{86, 2}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{89, 2}
 }
 
 func (x *RecordCondition_Expressions) GetLogicalOperator() RecordCondition_Expressions_LogicalOperator {
@@ -28781,7 +29118,7 @@ type TransformationSummary_SummaryResult struct {
 
 func (x *TransformationSummary_SummaryResult) Reset() {
 	*x = TransformationSummary_SummaryResult{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[318]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[322]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -28793,7 +29130,7 @@ func (x *TransformationSummary_SummaryResult) String() string {
 func (*TransformationSummary_SummaryResult) ProtoMessage() {}
 
 func (x *TransformationSummary_SummaryResult) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[318]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[322]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -28806,7 +29143,7 @@ func (x *TransformationSummary_SummaryResult) ProtoReflect() protoreflect.Messag
 
 // Deprecated: Use TransformationSummary_SummaryResult.ProtoReflect.Descriptor instead.
 func (*TransformationSummary_SummaryResult) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{88, 0}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{91, 0}
 }
 
 func (x *TransformationSummary_SummaryResult) GetCount() int64 {
@@ -28846,7 +29183,7 @@ type JobTrigger_Trigger struct {
 
 func (x *JobTrigger_Trigger) Reset() {
 	*x = JobTrigger_Trigger{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[319]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[323]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -28858,7 +29195,7 @@ func (x *JobTrigger_Trigger) String() string {
 func (*JobTrigger_Trigger) ProtoMessage() {}
 
 func (x *JobTrigger_Trigger) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[319]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[323]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -28871,7 +29208,7 @@ func (x *JobTrigger_Trigger) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use JobTrigger_Trigger.ProtoReflect.Descriptor instead.
 func (*JobTrigger_Trigger) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{100, 0}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{103, 0}
 }
 
 func (x *JobTrigger_Trigger) GetTrigger() isJobTrigger_Trigger_Trigger {
@@ -28931,7 +29268,7 @@ type Action_SaveFindings struct {
 
 func (x *Action_SaveFindings) Reset() {
 	*x = Action_SaveFindings{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[320]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[324]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -28943,7 +29280,7 @@ func (x *Action_SaveFindings) String() string {
 func (*Action_SaveFindings) ProtoMessage() {}
 
 func (x *Action_SaveFindings) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[320]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[324]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -28956,7 +29293,7 @@ func (x *Action_SaveFindings) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Action_SaveFindings.ProtoReflect.Descriptor instead.
 func (*Action_SaveFindings) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{101, 0}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{104, 0}
 }
 
 func (x *Action_SaveFindings) GetOutputConfig() *OutputStorageConfig {
@@ -28984,7 +29321,7 @@ type Action_PublishToPubSub struct {
 
 func (x *Action_PublishToPubSub) Reset() {
 	*x = Action_PublishToPubSub{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[321]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[325]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -28996,7 +29333,7 @@ func (x *Action_PublishToPubSub) String() string {
 func (*Action_PublishToPubSub) ProtoMessage() {}
 
 func (x *Action_PublishToPubSub) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[321]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[325]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -29009,7 +29346,7 @@ func (x *Action_PublishToPubSub) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Action_PublishToPubSub.ProtoReflect.Descriptor instead.
 func (*Action_PublishToPubSub) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{101, 1}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{104, 1}
 }
 
 func (x *Action_PublishToPubSub) GetTopic() string {
@@ -29035,7 +29372,7 @@ type Action_PublishSummaryToCscc struct {
 
 func (x *Action_PublishSummaryToCscc) Reset() {
 	*x = Action_PublishSummaryToCscc{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[322]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[326]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -29047,7 +29384,7 @@ func (x *Action_PublishSummaryToCscc) String() string {
 func (*Action_PublishSummaryToCscc) ProtoMessage() {}
 
 func (x *Action_PublishSummaryToCscc) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[322]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[326]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -29060,7 +29397,7 @@ func (x *Action_PublishSummaryToCscc) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Action_PublishSummaryToCscc.ProtoReflect.Descriptor instead.
 func (*Action_PublishSummaryToCscc) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{101, 2}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{104, 2}
 }
 
 // Publish findings of a DlpJob to Data Catalog. In Data Catalog, tag
@@ -29089,7 +29426,7 @@ type Action_PublishFindingsToCloudDataCatalog struct {
 
 func (x *Action_PublishFindingsToCloudDataCatalog) Reset() {
 	*x = Action_PublishFindingsToCloudDataCatalog{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[323]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[327]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -29101,7 +29438,7 @@ func (x *Action_PublishFindingsToCloudDataCatalog) String() string {
 func (*Action_PublishFindingsToCloudDataCatalog) ProtoMessage() {}
 
 func (x *Action_PublishFindingsToCloudDataCatalog) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[323]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[327]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -29114,7 +29451,7 @@ func (x *Action_PublishFindingsToCloudDataCatalog) ProtoReflect() protoreflect.M
 
 // Deprecated: Use Action_PublishFindingsToCloudDataCatalog.ProtoReflect.Descriptor instead.
 func (*Action_PublishFindingsToCloudDataCatalog) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{101, 3}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{104, 3}
 }
 
 // Publish findings of a DlpJob to Dataplex Universal Catalog as a
@@ -29138,7 +29475,7 @@ type Action_PublishFindingsToDataplexCatalog struct {
 
 func (x *Action_PublishFindingsToDataplexCatalog) Reset() {
 	*x = Action_PublishFindingsToDataplexCatalog{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[324]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[328]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -29150,7 +29487,7 @@ func (x *Action_PublishFindingsToDataplexCatalog) String() string {
 func (*Action_PublishFindingsToDataplexCatalog) ProtoMessage() {}
 
 func (x *Action_PublishFindingsToDataplexCatalog) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[324]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[328]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -29163,7 +29500,7 @@ func (x *Action_PublishFindingsToDataplexCatalog) ProtoReflect() protoreflect.Me
 
 // Deprecated: Use Action_PublishFindingsToDataplexCatalog.ProtoReflect.Descriptor instead.
 func (*Action_PublishFindingsToDataplexCatalog) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{101, 4}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{104, 4}
 }
 
 // Create a de-identified copy of a storage bucket. Only compatible
@@ -29257,7 +29594,7 @@ type Action_Deidentify struct {
 
 func (x *Action_Deidentify) Reset() {
 	*x = Action_Deidentify{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[325]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[329]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -29269,7 +29606,7 @@ func (x *Action_Deidentify) String() string {
 func (*Action_Deidentify) ProtoMessage() {}
 
 func (x *Action_Deidentify) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[325]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[329]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -29282,7 +29619,7 @@ func (x *Action_Deidentify) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Action_Deidentify.ProtoReflect.Descriptor instead.
 func (*Action_Deidentify) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{101, 5}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{104, 5}
 }
 
 func (x *Action_Deidentify) GetTransformationConfig() *TransformationConfig {
@@ -29350,7 +29687,7 @@ type Action_JobNotificationEmails struct {
 
 func (x *Action_JobNotificationEmails) Reset() {
 	*x = Action_JobNotificationEmails{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[326]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[330]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -29362,7 +29699,7 @@ func (x *Action_JobNotificationEmails) String() string {
 func (*Action_JobNotificationEmails) ProtoMessage() {}
 
 func (x *Action_JobNotificationEmails) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[326]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[330]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -29375,7 +29712,7 @@ func (x *Action_JobNotificationEmails) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Action_JobNotificationEmails.ProtoReflect.Descriptor instead.
 func (*Action_JobNotificationEmails) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{101, 6}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{104, 6}
 }
 
 // Enable Stackdriver metric dlp.googleapis.com/finding_count. This
@@ -29390,7 +29727,7 @@ type Action_PublishToStackdriver struct {
 
 func (x *Action_PublishToStackdriver) Reset() {
 	*x = Action_PublishToStackdriver{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[327]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[331]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -29402,7 +29739,7 @@ func (x *Action_PublishToStackdriver) String() string {
 func (*Action_PublishToStackdriver) ProtoMessage() {}
 
 func (x *Action_PublishToStackdriver) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[327]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[331]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -29415,7 +29752,7 @@ func (x *Action_PublishToStackdriver) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Action_PublishToStackdriver.ProtoReflect.Descriptor instead.
 func (*Action_PublishToStackdriver) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{101, 7}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{104, 7}
 }
 
 // If set, the detailed data profiles will be persisted to the location
@@ -29445,7 +29782,7 @@ type DataProfileAction_Export struct {
 	//     visible to queries by the time your topic receives the Pub/Sub
 	//     notification.
 	//   - The best practice is to use the same table for an entire organization
-	//     so that you can take advantage of the [provided Looker
+	//     so that you can take advantage of the [provided Data Studio
 	//     reports](https://cloud.google.com/sensitive-data-protection/docs/analyze-data-profiles#use_a_premade_report).
 	//     If you use VPC Service Controls to define security perimeters, then
 	//     you must use a separate table for each boundary.
@@ -29464,7 +29801,7 @@ type DataProfileAction_Export struct {
 
 func (x *DataProfileAction_Export) Reset() {
 	*x = DataProfileAction_Export{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[328]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[332]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -29476,7 +29813,7 @@ func (x *DataProfileAction_Export) String() string {
 func (*DataProfileAction_Export) ProtoMessage() {}
 
 func (x *DataProfileAction_Export) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[328]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[332]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -29489,7 +29826,7 @@ func (x *DataProfileAction_Export) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DataProfileAction_Export.ProtoReflect.Descriptor instead.
 func (*DataProfileAction_Export) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{124, 0}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{127, 0}
 }
 
 func (x *DataProfileAction_Export) GetProfileTable() *BigQueryTable {
@@ -29530,7 +29867,7 @@ type DataProfileAction_PubSubNotification struct {
 
 func (x *DataProfileAction_PubSubNotification) Reset() {
 	*x = DataProfileAction_PubSubNotification{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[329]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[333]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -29542,7 +29879,7 @@ func (x *DataProfileAction_PubSubNotification) String() string {
 func (*DataProfileAction_PubSubNotification) ProtoMessage() {}
 
 func (x *DataProfileAction_PubSubNotification) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[329]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[333]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -29555,7 +29892,7 @@ func (x *DataProfileAction_PubSubNotification) ProtoReflect() protoreflect.Messa
 
 // Deprecated: Use DataProfileAction_PubSubNotification.ProtoReflect.Descriptor instead.
 func (*DataProfileAction_PubSubNotification) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{124, 1}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{127, 1}
 }
 
 func (x *DataProfileAction_PubSubNotification) GetTopic() string {
@@ -29595,7 +29932,7 @@ type DataProfileAction_PublishToChronicle struct {
 
 func (x *DataProfileAction_PublishToChronicle) Reset() {
 	*x = DataProfileAction_PublishToChronicle{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[330]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[334]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -29607,7 +29944,7 @@ func (x *DataProfileAction_PublishToChronicle) String() string {
 func (*DataProfileAction_PublishToChronicle) ProtoMessage() {}
 
 func (x *DataProfileAction_PublishToChronicle) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[330]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[334]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -29620,7 +29957,7 @@ func (x *DataProfileAction_PublishToChronicle) ProtoReflect() protoreflect.Messa
 
 // Deprecated: Use DataProfileAction_PublishToChronicle.ProtoReflect.Descriptor instead.
 func (*DataProfileAction_PublishToChronicle) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{124, 2}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{127, 2}
 }
 
 // If set, a summary finding will be created or updated in Security Command
@@ -29633,7 +29970,7 @@ type DataProfileAction_PublishToSecurityCommandCenter struct {
 
 func (x *DataProfileAction_PublishToSecurityCommandCenter) Reset() {
 	*x = DataProfileAction_PublishToSecurityCommandCenter{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[331]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[335]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -29645,7 +29982,7 @@ func (x *DataProfileAction_PublishToSecurityCommandCenter) String() string {
 func (*DataProfileAction_PublishToSecurityCommandCenter) ProtoMessage() {}
 
 func (x *DataProfileAction_PublishToSecurityCommandCenter) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[331]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[335]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -29658,7 +29995,7 @@ func (x *DataProfileAction_PublishToSecurityCommandCenter) ProtoReflect() protor
 
 // Deprecated: Use DataProfileAction_PublishToSecurityCommandCenter.ProtoReflect.Descriptor instead.
 func (*DataProfileAction_PublishToSecurityCommandCenter) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{124, 3}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{127, 3}
 }
 
 // Create Dataplex Universal Catalog aspects for profiled resources with the
@@ -29679,7 +30016,7 @@ type DataProfileAction_PublishToDataplexCatalog struct {
 
 func (x *DataProfileAction_PublishToDataplexCatalog) Reset() {
 	*x = DataProfileAction_PublishToDataplexCatalog{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[332]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[336]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -29691,7 +30028,7 @@ func (x *DataProfileAction_PublishToDataplexCatalog) String() string {
 func (*DataProfileAction_PublishToDataplexCatalog) ProtoMessage() {}
 
 func (x *DataProfileAction_PublishToDataplexCatalog) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[332]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[336]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -29704,7 +30041,7 @@ func (x *DataProfileAction_PublishToDataplexCatalog) ProtoReflect() protoreflect
 
 // Deprecated: Use DataProfileAction_PublishToDataplexCatalog.ProtoReflect.Descriptor instead.
 func (*DataProfileAction_PublishToDataplexCatalog) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{124, 4}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{127, 4}
 }
 
 func (x *DataProfileAction_PublishToDataplexCatalog) GetLowerDataRiskToLow() bool {
@@ -29746,7 +30083,7 @@ type DataProfileAction_TagResources struct {
 
 func (x *DataProfileAction_TagResources) Reset() {
 	*x = DataProfileAction_TagResources{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[333]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[337]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -29758,7 +30095,7 @@ func (x *DataProfileAction_TagResources) String() string {
 func (*DataProfileAction_TagResources) ProtoMessage() {}
 
 func (x *DataProfileAction_TagResources) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[333]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[337]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -29771,7 +30108,7 @@ func (x *DataProfileAction_TagResources) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DataProfileAction_TagResources.ProtoReflect.Descriptor instead.
 func (*DataProfileAction_TagResources) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{124, 5}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{127, 5}
 }
 
 func (x *DataProfileAction_TagResources) GetTagConditions() []*DataProfileAction_TagResources_TagCondition {
@@ -29813,7 +30150,7 @@ type DataProfileAction_TagResources_TagCondition struct {
 
 func (x *DataProfileAction_TagResources_TagCondition) Reset() {
 	*x = DataProfileAction_TagResources_TagCondition{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[334]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[338]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -29825,7 +30162,7 @@ func (x *DataProfileAction_TagResources_TagCondition) String() string {
 func (*DataProfileAction_TagResources_TagCondition) ProtoMessage() {}
 
 func (x *DataProfileAction_TagResources_TagCondition) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[334]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[338]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -29838,7 +30175,7 @@ func (x *DataProfileAction_TagResources_TagCondition) ProtoReflect() protoreflec
 
 // Deprecated: Use DataProfileAction_TagResources_TagCondition.ProtoReflect.Descriptor instead.
 func (*DataProfileAction_TagResources_TagCondition) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{124, 5, 0}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{127, 5, 0}
 }
 
 func (x *DataProfileAction_TagResources_TagCondition) GetTag() *DataProfileAction_TagResources_TagValue {
@@ -29892,7 +30229,7 @@ type DataProfileAction_TagResources_TagValue struct {
 
 func (x *DataProfileAction_TagResources_TagValue) Reset() {
 	*x = DataProfileAction_TagResources_TagValue{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[335]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[339]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -29904,7 +30241,7 @@ func (x *DataProfileAction_TagResources_TagValue) String() string {
 func (*DataProfileAction_TagResources_TagValue) ProtoMessage() {}
 
 func (x *DataProfileAction_TagResources_TagValue) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[335]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[339]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -29917,7 +30254,7 @@ func (x *DataProfileAction_TagResources_TagValue) ProtoReflect() protoreflect.Me
 
 // Deprecated: Use DataProfileAction_TagResources_TagValue.ProtoReflect.Descriptor instead.
 func (*DataProfileAction_TagResources_TagValue) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{124, 5, 1}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{127, 5, 1}
 }
 
 func (x *DataProfileAction_TagResources_TagValue) GetFormat() isDataProfileAction_TagResources_TagValue_Format {
@@ -29966,7 +30303,7 @@ type DiscoveryConfig_OrgConfig struct {
 
 func (x *DiscoveryConfig_OrgConfig) Reset() {
 	*x = DiscoveryConfig_OrgConfig{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[336]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[340]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -29978,7 +30315,7 @@ func (x *DiscoveryConfig_OrgConfig) String() string {
 func (*DiscoveryConfig_OrgConfig) ProtoMessage() {}
 
 func (x *DiscoveryConfig_OrgConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[336]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[340]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -29991,7 +30328,7 @@ func (x *DiscoveryConfig_OrgConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DiscoveryConfig_OrgConfig.ProtoReflect.Descriptor instead.
 func (*DiscoveryConfig_OrgConfig) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{134, 0}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{137, 0}
 }
 
 func (x *DiscoveryConfig_OrgConfig) GetLocation() *DiscoveryStartingLocation {
@@ -30019,7 +30356,7 @@ type DiscoveryBigQueryFilter_AllOtherBigQueryTables struct {
 
 func (x *DiscoveryBigQueryFilter_AllOtherBigQueryTables) Reset() {
 	*x = DiscoveryBigQueryFilter_AllOtherBigQueryTables{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[337]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[341]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -30031,7 +30368,7 @@ func (x *DiscoveryBigQueryFilter_AllOtherBigQueryTables) String() string {
 func (*DiscoveryBigQueryFilter_AllOtherBigQueryTables) ProtoMessage() {}
 
 func (x *DiscoveryBigQueryFilter_AllOtherBigQueryTables) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[337]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[341]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -30044,7 +30381,7 @@ func (x *DiscoveryBigQueryFilter_AllOtherBigQueryTables) ProtoReflect() protoref
 
 // Deprecated: Use DiscoveryBigQueryFilter_AllOtherBigQueryTables.ProtoReflect.Descriptor instead.
 func (*DiscoveryBigQueryFilter_AllOtherBigQueryTables) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{137, 0}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{140, 0}
 }
 
 // There is an OR relationship between these attributes. They are used to
@@ -30063,7 +30400,7 @@ type DiscoveryBigQueryConditions_OrConditions struct {
 
 func (x *DiscoveryBigQueryConditions_OrConditions) Reset() {
 	*x = DiscoveryBigQueryConditions_OrConditions{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[338]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[342]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -30075,7 +30412,7 @@ func (x *DiscoveryBigQueryConditions_OrConditions) String() string {
 func (*DiscoveryBigQueryConditions_OrConditions) ProtoMessage() {}
 
 func (x *DiscoveryBigQueryConditions_OrConditions) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[338]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[342]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -30088,7 +30425,7 @@ func (x *DiscoveryBigQueryConditions_OrConditions) ProtoReflect() protoreflect.M
 
 // Deprecated: Use DiscoveryBigQueryConditions_OrConditions.ProtoReflect.Descriptor instead.
 func (*DiscoveryBigQueryConditions_OrConditions) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{139, 0}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{142, 0}
 }
 
 func (x *DiscoveryBigQueryConditions_OrConditions) GetMinRowCount() int32 {
@@ -30120,7 +30457,7 @@ type DiscoveryCloudSqlGenerationCadence_SchemaModifiedCadence struct {
 
 func (x *DiscoveryCloudSqlGenerationCadence_SchemaModifiedCadence) Reset() {
 	*x = DiscoveryCloudSqlGenerationCadence_SchemaModifiedCadence{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[339]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[343]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -30132,7 +30469,7 @@ func (x *DiscoveryCloudSqlGenerationCadence_SchemaModifiedCadence) String() stri
 func (*DiscoveryCloudSqlGenerationCadence_SchemaModifiedCadence) ProtoMessage() {}
 
 func (x *DiscoveryCloudSqlGenerationCadence_SchemaModifiedCadence) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[339]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[343]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -30145,7 +30482,7 @@ func (x *DiscoveryCloudSqlGenerationCadence_SchemaModifiedCadence) ProtoReflect(
 
 // Deprecated: Use DiscoveryCloudSqlGenerationCadence_SchemaModifiedCadence.ProtoReflect.Descriptor instead.
 func (*DiscoveryCloudSqlGenerationCadence_SchemaModifiedCadence) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{152, 0}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{155, 0}
 }
 
 func (x *DiscoveryCloudSqlGenerationCadence_SchemaModifiedCadence) GetTypes() []DiscoveryCloudSqlGenerationCadence_SchemaModifiedCadence_CloudSqlSchemaModification {
@@ -30178,7 +30515,7 @@ type OtherCloudDiscoveryStartingLocation_AwsDiscoveryStartingLocation struct {
 
 func (x *OtherCloudDiscoveryStartingLocation_AwsDiscoveryStartingLocation) Reset() {
 	*x = OtherCloudDiscoveryStartingLocation_AwsDiscoveryStartingLocation{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[340]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[344]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -30190,7 +30527,7 @@ func (x *OtherCloudDiscoveryStartingLocation_AwsDiscoveryStartingLocation) Strin
 func (*OtherCloudDiscoveryStartingLocation_AwsDiscoveryStartingLocation) ProtoMessage() {}
 
 func (x *OtherCloudDiscoveryStartingLocation_AwsDiscoveryStartingLocation) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[340]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[344]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -30203,7 +30540,7 @@ func (x *OtherCloudDiscoveryStartingLocation_AwsDiscoveryStartingLocation) Proto
 
 // Deprecated: Use OtherCloudDiscoveryStartingLocation_AwsDiscoveryStartingLocation.ProtoReflect.Descriptor instead.
 func (*OtherCloudDiscoveryStartingLocation_AwsDiscoveryStartingLocation) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{178, 0}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{181, 0}
 }
 
 func (x *OtherCloudDiscoveryStartingLocation_AwsDiscoveryStartingLocation) GetScope() isOtherCloudDiscoveryStartingLocation_AwsDiscoveryStartingLocation_Scope {
@@ -30271,7 +30608,7 @@ type DataProfilePubSubCondition_PubSubCondition struct {
 
 func (x *DataProfilePubSubCondition_PubSubCondition) Reset() {
 	*x = DataProfilePubSubCondition_PubSubCondition{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[345]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[349]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -30283,7 +30620,7 @@ func (x *DataProfilePubSubCondition_PubSubCondition) String() string {
 func (*DataProfilePubSubCondition_PubSubCondition) ProtoMessage() {}
 
 func (x *DataProfilePubSubCondition_PubSubCondition) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[345]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[349]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -30296,7 +30633,7 @@ func (x *DataProfilePubSubCondition_PubSubCondition) ProtoReflect() protoreflect
 
 // Deprecated: Use DataProfilePubSubCondition_PubSubCondition.ProtoReflect.Descriptor instead.
 func (*DataProfilePubSubCondition_PubSubCondition) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{251, 0}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{254, 0}
 }
 
 func (x *DataProfilePubSubCondition_PubSubCondition) GetValue() isDataProfilePubSubCondition_PubSubCondition_Value {
@@ -30357,7 +30694,7 @@ type DataProfilePubSubCondition_PubSubExpressions struct {
 
 func (x *DataProfilePubSubCondition_PubSubExpressions) Reset() {
 	*x = DataProfilePubSubCondition_PubSubExpressions{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[346]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[350]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -30369,7 +30706,7 @@ func (x *DataProfilePubSubCondition_PubSubExpressions) String() string {
 func (*DataProfilePubSubCondition_PubSubExpressions) ProtoMessage() {}
 
 func (x *DataProfilePubSubCondition_PubSubExpressions) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[346]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[350]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -30382,7 +30719,7 @@ func (x *DataProfilePubSubCondition_PubSubExpressions) ProtoReflect() protorefle
 
 // Deprecated: Use DataProfilePubSubCondition_PubSubExpressions.ProtoReflect.Descriptor instead.
 func (*DataProfilePubSubCondition_PubSubExpressions) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{251, 1}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{254, 1}
 }
 
 func (x *DataProfilePubSubCondition_PubSubExpressions) GetLogicalOperator() DataProfilePubSubCondition_PubSubExpressions_PubSubLogicalOperator {
@@ -30409,7 +30746,7 @@ type ProcessingLocation_MultiRegionProcessing struct {
 
 func (x *ProcessingLocation_MultiRegionProcessing) Reset() {
 	*x = ProcessingLocation_MultiRegionProcessing{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[347]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[351]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -30421,7 +30758,7 @@ func (x *ProcessingLocation_MultiRegionProcessing) String() string {
 func (*ProcessingLocation_MultiRegionProcessing) ProtoMessage() {}
 
 func (x *ProcessingLocation_MultiRegionProcessing) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[347]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[351]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -30434,7 +30771,7 @@ func (x *ProcessingLocation_MultiRegionProcessing) ProtoReflect() protoreflect.M
 
 // Deprecated: Use ProcessingLocation_MultiRegionProcessing.ProtoReflect.Descriptor instead.
 func (*ProcessingLocation_MultiRegionProcessing) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{268, 0}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{271, 0}
 }
 
 // Processing occurs in the global region.
@@ -30446,7 +30783,7 @@ type ProcessingLocation_GlobalProcessing struct {
 
 func (x *ProcessingLocation_GlobalProcessing) Reset() {
 	*x = ProcessingLocation_GlobalProcessing{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[348]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[352]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -30458,7 +30795,7 @@ func (x *ProcessingLocation_GlobalProcessing) String() string {
 func (*ProcessingLocation_GlobalProcessing) ProtoMessage() {}
 
 func (x *ProcessingLocation_GlobalProcessing) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[348]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[352]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -30471,7 +30808,7 @@ func (x *ProcessingLocation_GlobalProcessing) ProtoReflect() protoreflect.Messag
 
 // Deprecated: Use ProcessingLocation_GlobalProcessing.ProtoReflect.Descriptor instead.
 func (*ProcessingLocation_GlobalProcessing) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{268, 1}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{271, 1}
 }
 
 // Configure image processing to fall back to any of the following processing
@@ -30490,7 +30827,7 @@ type ProcessingLocation_ImageFallbackLocation struct {
 
 func (x *ProcessingLocation_ImageFallbackLocation) Reset() {
 	*x = ProcessingLocation_ImageFallbackLocation{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[349]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[353]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -30502,7 +30839,7 @@ func (x *ProcessingLocation_ImageFallbackLocation) String() string {
 func (*ProcessingLocation_ImageFallbackLocation) ProtoMessage() {}
 
 func (x *ProcessingLocation_ImageFallbackLocation) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[349]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[353]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -30515,7 +30852,7 @@ func (x *ProcessingLocation_ImageFallbackLocation) ProtoReflect() protoreflect.M
 
 // Deprecated: Use ProcessingLocation_ImageFallbackLocation.ProtoReflect.Descriptor instead.
 func (*ProcessingLocation_ImageFallbackLocation) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{268, 2}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{271, 2}
 }
 
 func (x *ProcessingLocation_ImageFallbackLocation) GetMultiRegionProcessing() *ProcessingLocation_MultiRegionProcessing {
@@ -30548,7 +30885,7 @@ type ProcessingLocation_DocumentFallbackLocation struct {
 
 func (x *ProcessingLocation_DocumentFallbackLocation) Reset() {
 	*x = ProcessingLocation_DocumentFallbackLocation{}
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[350]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[354]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -30560,7 +30897,7 @@ func (x *ProcessingLocation_DocumentFallbackLocation) String() string {
 func (*ProcessingLocation_DocumentFallbackLocation) ProtoMessage() {}
 
 func (x *ProcessingLocation_DocumentFallbackLocation) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[350]
+	mi := &file_google_privacy_dlp_v2_dlp_proto_msgTypes[354]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -30573,7 +30910,7 @@ func (x *ProcessingLocation_DocumentFallbackLocation) ProtoReflect() protoreflec
 
 // Deprecated: Use ProcessingLocation_DocumentFallbackLocation.ProtoReflect.Descriptor instead.
 func (*ProcessingLocation_DocumentFallbackLocation) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{268, 3}
+	return file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP(), []int{271, 3}
 }
 
 func (x *ProcessingLocation_DocumentFallbackLocation) GetMultiRegionProcessing() *ProcessingLocation_MultiRegionProcessing {
@@ -30686,17 +31023,28 @@ const file_google_privacy_dlp_v2_dlp_proto_rawDesc = "" +
 	"\x05VIDEO\x10\x10\x12\x0e\n" +
 	"\n" +
 	"EXECUTABLE\x10\x11\x12\f\n" +
-	"\bAI_MODEL\x10\x12\"\x82\x02\n" +
+	"\bAI_MODEL\x10\x12\"\xcd\x02\n" +
 	"\vContentItem\x12\x16\n" +
 	"\x05value\x18\x03 \x01(\tH\x00R\x05value\x124\n" +
 	"\x05table\x18\x04 \x01(\v2\x1c.google.privacy.dlp.v2.TableH\x00R\x05table\x12E\n" +
-	"\tbyte_item\x18\x05 \x01(\v2&.google.privacy.dlp.v2.ByteContentItemH\x00R\bbyteItem\x12Q\n" +
+	"\tbyte_item\x18\x05 \x01(\v2&.google.privacy.dlp.v2.ByteContentItemH\x00R\bbyteItem\x12I\n" +
+	"\fconversation\x18\a \x01(\v2#.google.privacy.dlp.v2.ConversationH\x00R\fconversation\x12Q\n" +
 	"\x10content_metadata\x18\x06 \x01(\v2&.google.privacy.dlp.v2.ContentMetadataR\x0fcontentMetadataB\v\n" +
 	"\tdata_item\"b\n" +
 	"\x0fContentMetadata\x12O\n" +
 	"\n" +
 	"properties\x18\x02 \x03(\v2/.google.privacy.dlp.v2.KeyValueMetadataPropertyR\n" +
-	"properties\"\xb4\x01\n" +
+	"properties\"V\n" +
+	"\fConversation\x12F\n" +
+	"\bmessages\x18\x01 \x03(\v2*.google.privacy.dlp.v2.ConversationMessageR\bmessages\"\xf8\x01\n" +
+	"\x13ConversationMessage\x12\x18\n" +
+	"\acontent\x18\x01 \x01(\tR\acontent\x12Y\n" +
+	"\fmessage_type\x18\x02 \x01(\x0e26.google.privacy.dlp.v2.ConversationMessage.MessageTypeR\vmessageType\x12%\n" +
+	"\x0eparticipant_id\x18\x03 \x01(\tR\rparticipantId\"E\n" +
+	"\vMessageType\x12\x1c\n" +
+	"\x18MESSAGE_TYPE_UNSPECIFIED\x10\x00\x12\v\n" +
+	"\aCONTENT\x10\x01\x12\v\n" +
+	"\aCONTEXT\x10\x02\"\xb4\x01\n" +
 	"\x05Table\x128\n" +
 	"\aheaders\x18\x01 \x03(\v2\x1e.google.privacy.dlp.v2.FieldIdR\aheaders\x124\n" +
 	"\x04rows\x18\x02 \x03(\v2 .google.privacy.dlp.v2.Table.RowR\x04rows\x1a;\n" +
@@ -30740,15 +31088,23 @@ const file_google_privacy_dlp_v2_dlp_proto_rawDesc = "" +
 	"byte_range\x18\x01 \x01(\v2\x1c.google.privacy.dlp.v2.RangeR\tbyteRange\x12E\n" +
 	"\x0fcodepoint_range\x18\x02 \x01(\v2\x1c.google.privacy.dlp.v2.RangeR\x0ecodepointRange\x12S\n" +
 	"\x11content_locations\x18\a \x03(\v2&.google.privacy.dlp.v2.ContentLocationR\x10contentLocations\x12>\n" +
-	"\tcontainer\x18\b \x01(\v2 .google.privacy.dlp.v2.ContainerR\tcontainer\"\x8f\x04\n" +
+	"\tcontainer\x18\b \x01(\v2 .google.privacy.dlp.v2.ContainerR\tcontainer\"\xf3\x04\n" +
 	"\x0fContentLocation\x12%\n" +
 	"\x0econtainer_name\x18\x01 \x01(\tR\rcontainerName\x12P\n" +
 	"\x0frecord_location\x18\x02 \x01(\v2%.google.privacy.dlp.v2.RecordLocationH\x00R\x0erecordLocation\x12M\n" +
 	"\x0eimage_location\x18\x03 \x01(\v2$.google.privacy.dlp.v2.ImageLocationH\x00R\rimageLocation\x12V\n" +
 	"\x11document_location\x18\x05 \x01(\v2'.google.privacy.dlp.v2.DocumentLocationH\x00R\x10documentLocation\x12V\n" +
-	"\x11metadata_location\x18\b \x01(\v2'.google.privacy.dlp.v2.MetadataLocationH\x00R\x10metadataLocation\x12K\n" +
+	"\x11metadata_location\x18\b \x01(\v2'.google.privacy.dlp.v2.MetadataLocationH\x00R\x10metadataLocation\x12b\n" +
+	"\x15conversation_location\x18\n" +
+	" \x01(\v2+.google.privacy.dlp.v2.ConversationLocationH\x00R\x14conversationLocation\x12K\n" +
 	"\x13container_timestamp\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\x12containerTimestamp\x12+\n" +
 	"\x11container_version\x18\a \x01(\tR\x10containerVersionB\n" +
+	"\n" +
+	"\blocation\"\xb6\x01\n" +
+	"\x14ConversationLocation\x12%\n" +
+	"\rmessage_index\x18\x01 \x01(\x05H\x00R\fmessageIndex\x12\\\n" +
+	"\fall_messages\x18\x02 \x01(\v27.google.privacy.dlp.v2.ConversationLocation.AllMessagesH\x00R\vallMessages\x1a\r\n" +
+	"\vAllMessagesB\n" +
 	"\n" +
 	"\blocation\"\x91\x02\n" +
 	"\x10MetadataLocation\x127\n" +
@@ -32772,8 +33128,8 @@ func file_google_privacy_dlp_v2_dlp_proto_rawDescGZIP() []byte {
 	return file_google_privacy_dlp_v2_dlp_proto_rawDescData
 }
 
-var file_google_privacy_dlp_v2_dlp_proto_enumTypes = make([]protoimpl.EnumInfo, 58)
-var file_google_privacy_dlp_v2_dlp_proto_msgTypes = make([]protoimpl.MessageInfo, 351)
+var file_google_privacy_dlp_v2_dlp_proto_enumTypes = make([]protoimpl.EnumInfo, 59)
+var file_google_privacy_dlp_v2_dlp_proto_msgTypes = make([]protoimpl.MessageInfo, 355)
 var file_google_privacy_dlp_v2_dlp_proto_goTypes = []any{
 	(TransformationResultStatusType)(0),                    // 0: google.privacy.dlp.v2.TransformationResultStatusType
 	(TransformationContainerType)(0),                       // 1: google.privacy.dlp.v2.TransformationContainerType
@@ -32797,1145 +33153,1155 @@ var file_google_privacy_dlp_v2_dlp_proto_goTypes = []any{
 	(UniquenessScoreLevel)(0),                              // 19: google.privacy.dlp.v2.UniquenessScoreLevel
 	(ConnectionState)(0),                                   // 20: google.privacy.dlp.v2.ConnectionState
 	(ByteContentItem_BytesType)(0),                         // 21: google.privacy.dlp.v2.ByteContentItem.BytesType
-	(OutputStorageConfig_OutputSchema)(0),                  // 22: google.privacy.dlp.v2.OutputStorageConfig.OutputSchema
-	(LocationSupport_RegionalizationScope)(0),              // 23: google.privacy.dlp.v2.LocationSupport.RegionalizationScope
-	(InfoTypeDescription_InfoTypeLaunchStatus)(0),          // 24: google.privacy.dlp.v2.InfoTypeDescription.InfoTypeLaunchStatus
-	(InfoTypeCategory_LocationCategory)(0),                 // 25: google.privacy.dlp.v2.InfoTypeCategory.LocationCategory
-	(InfoTypeCategory_IndustryCategory)(0),                 // 26: google.privacy.dlp.v2.InfoTypeCategory.IndustryCategory
-	(InfoTypeCategory_TypeCategory)(0),                     // 27: google.privacy.dlp.v2.InfoTypeCategory.TypeCategory
-	(TimePartConfig_TimePart)(0),                           // 28: google.privacy.dlp.v2.TimePartConfig.TimePart
-	(CharsToIgnore_CommonCharsToIgnore)(0),                 // 29: google.privacy.dlp.v2.CharsToIgnore.CommonCharsToIgnore
-	(CryptoReplaceFfxFpeConfig_FfxCommonNativeAlphabet)(0), // 30: google.privacy.dlp.v2.CryptoReplaceFfxFpeConfig.FfxCommonNativeAlphabet
-	(RecordCondition_Expressions_LogicalOperator)(0),       // 31: google.privacy.dlp.v2.RecordCondition.Expressions.LogicalOperator
-	(TransformationSummary_TransformationResultCode)(0),    // 32: google.privacy.dlp.v2.TransformationSummary.TransformationResultCode
-	(Error_ErrorExtraInfo)(0),                              // 33: google.privacy.dlp.v2.Error.ErrorExtraInfo
-	(JobTrigger_Status)(0),                                 // 34: google.privacy.dlp.v2.JobTrigger.Status
-	(DataProfileAction_EventType)(0),                       // 35: google.privacy.dlp.v2.DataProfileAction.EventType
-	(DataProfileAction_PubSubNotification_DetailLevel)(0),  // 36: google.privacy.dlp.v2.DataProfileAction.PubSubNotification.DetailLevel
-	(DiscoveryConfig_Status)(0),                            // 37: google.privacy.dlp.v2.DiscoveryConfig.Status
-	(DiscoveryCloudSqlConditions_DatabaseEngine)(0),        // 38: google.privacy.dlp.v2.DiscoveryCloudSqlConditions.DatabaseEngine
-	(DiscoveryCloudSqlConditions_DatabaseResourceType)(0),  // 39: google.privacy.dlp.v2.DiscoveryCloudSqlConditions.DatabaseResourceType
-	(DiscoveryCloudSqlGenerationCadence_SchemaModifiedCadence_CloudSqlSchemaModification)(0), // 40: google.privacy.dlp.v2.DiscoveryCloudSqlGenerationCadence.SchemaModifiedCadence.CloudSqlSchemaModification
-	(DiscoveryCloudStorageConditions_CloudStorageObjectAttribute)(0),                         // 41: google.privacy.dlp.v2.DiscoveryCloudStorageConditions.CloudStorageObjectAttribute
-	(DiscoveryCloudStorageConditions_CloudStorageBucketAttribute)(0),                         // 42: google.privacy.dlp.v2.DiscoveryCloudStorageConditions.CloudStorageBucketAttribute
-	(AmazonS3BucketConditions_BucketType)(0),                                                 // 43: google.privacy.dlp.v2.AmazonS3BucketConditions.BucketType
-	(AmazonS3BucketConditions_ObjectStorageClass)(0),                                         // 44: google.privacy.dlp.v2.AmazonS3BucketConditions.ObjectStorageClass
-	(DlpJob_JobState)(0),                                                    // 45: google.privacy.dlp.v2.DlpJob.JobState
-	(DataRiskLevel_DataRiskLevelScore)(0),                                   // 46: google.privacy.dlp.v2.DataRiskLevel.DataRiskLevelScore
-	(TableDataProfile_State)(0),                                             // 47: google.privacy.dlp.v2.TableDataProfile.State
-	(ColumnDataProfile_State)(0),                                            // 48: google.privacy.dlp.v2.ColumnDataProfile.State
-	(ColumnDataProfile_ColumnDataType)(0),                                   // 49: google.privacy.dlp.v2.ColumnDataProfile.ColumnDataType
-	(ColumnDataProfile_ColumnPolicyState)(0),                                // 50: google.privacy.dlp.v2.ColumnDataProfile.ColumnPolicyState
-	(FileStoreDataProfile_State)(0),                                         // 51: google.privacy.dlp.v2.FileStoreDataProfile.State
-	(DataProfilePubSubCondition_ProfileScoreBucket)(0),                      // 52: google.privacy.dlp.v2.DataProfilePubSubCondition.ProfileScoreBucket
-	(DataProfilePubSubCondition_PubSubExpressions_PubSubLogicalOperator)(0), // 53: google.privacy.dlp.v2.DataProfilePubSubCondition.PubSubExpressions.PubSubLogicalOperator
-	(CloudSqlProperties_DatabaseEngine)(0),                                  // 54: google.privacy.dlp.v2.CloudSqlProperties.DatabaseEngine
-	(FileClusterType_Cluster)(0),                                            // 55: google.privacy.dlp.v2.FileClusterType.Cluster
-	(Domain_Category)(0),                                                    // 56: google.privacy.dlp.v2.Domain.Category
-	(Domain_Signal)(0),                                                      // 57: google.privacy.dlp.v2.Domain.Signal
-	(*ExcludeInfoTypes)(nil),                                                // 58: google.privacy.dlp.v2.ExcludeInfoTypes
-	(*ExcludeByHotword)(nil),                                                // 59: google.privacy.dlp.v2.ExcludeByHotword
-	(*ExcludeByImageFindings)(nil),                                          // 60: google.privacy.dlp.v2.ExcludeByImageFindings
-	(*ExclusionRule)(nil),                                                   // 61: google.privacy.dlp.v2.ExclusionRule
-	(*AdjustByMatchingInfoTypes)(nil),                                       // 62: google.privacy.dlp.v2.AdjustByMatchingInfoTypes
-	(*AdjustByImageFindings)(nil),                                           // 63: google.privacy.dlp.v2.AdjustByImageFindings
-	(*AdjustmentRule)(nil),                                                  // 64: google.privacy.dlp.v2.AdjustmentRule
-	(*InspectionRule)(nil),                                                  // 65: google.privacy.dlp.v2.InspectionRule
-	(*InspectionRuleSet)(nil),                                               // 66: google.privacy.dlp.v2.InspectionRuleSet
-	(*InspectConfig)(nil),                                                   // 67: google.privacy.dlp.v2.InspectConfig
-	(*ByteContentItem)(nil),                                                 // 68: google.privacy.dlp.v2.ByteContentItem
-	(*ContentItem)(nil),                                                     // 69: google.privacy.dlp.v2.ContentItem
-	(*ContentMetadata)(nil),                                                 // 70: google.privacy.dlp.v2.ContentMetadata
-	(*Table)(nil),                                                           // 71: google.privacy.dlp.v2.Table
-	(*KeyValueMetadataProperty)(nil),                                        // 72: google.privacy.dlp.v2.KeyValueMetadataProperty
-	(*InspectResult)(nil),                                                   // 73: google.privacy.dlp.v2.InspectResult
-	(*Finding)(nil),                                                         // 74: google.privacy.dlp.v2.Finding
-	(*Location)(nil),                                                        // 75: google.privacy.dlp.v2.Location
-	(*ContentLocation)(nil),                                                 // 76: google.privacy.dlp.v2.ContentLocation
-	(*MetadataLocation)(nil),                                                // 77: google.privacy.dlp.v2.MetadataLocation
-	(*StorageMetadataLabel)(nil),                                            // 78: google.privacy.dlp.v2.StorageMetadataLabel
-	(*KeyValueMetadataLabel)(nil),                                           // 79: google.privacy.dlp.v2.KeyValueMetadataLabel
-	(*DocumentLocation)(nil),                                                // 80: google.privacy.dlp.v2.DocumentLocation
-	(*RecordLocation)(nil),                                                  // 81: google.privacy.dlp.v2.RecordLocation
-	(*TableLocation)(nil),                                                   // 82: google.privacy.dlp.v2.TableLocation
-	(*Container)(nil),                                                       // 83: google.privacy.dlp.v2.Container
-	(*Range)(nil),                                                           // 84: google.privacy.dlp.v2.Range
-	(*ImageLocation)(nil),                                                   // 85: google.privacy.dlp.v2.ImageLocation
-	(*BoundingBox)(nil),                                                     // 86: google.privacy.dlp.v2.BoundingBox
-	(*RedactImageRequest)(nil),                                              // 87: google.privacy.dlp.v2.RedactImageRequest
-	(*Color)(nil),                                                           // 88: google.privacy.dlp.v2.Color
-	(*RedactImageResponse)(nil),                                             // 89: google.privacy.dlp.v2.RedactImageResponse
-	(*DeidentifyContentRequest)(nil),                                        // 90: google.privacy.dlp.v2.DeidentifyContentRequest
-	(*DeidentifyContentResponse)(nil),                                       // 91: google.privacy.dlp.v2.DeidentifyContentResponse
-	(*ReidentifyContentRequest)(nil),                                        // 92: google.privacy.dlp.v2.ReidentifyContentRequest
-	(*ReidentifyContentResponse)(nil),                                       // 93: google.privacy.dlp.v2.ReidentifyContentResponse
-	(*InspectContentRequest)(nil),                                           // 94: google.privacy.dlp.v2.InspectContentRequest
-	(*InspectContentResponse)(nil),                                          // 95: google.privacy.dlp.v2.InspectContentResponse
-	(*OutputStorageConfig)(nil),                                             // 96: google.privacy.dlp.v2.OutputStorageConfig
-	(*InfoTypeStats)(nil),                                                   // 97: google.privacy.dlp.v2.InfoTypeStats
-	(*InspectDataSourceDetails)(nil),                                        // 98: google.privacy.dlp.v2.InspectDataSourceDetails
-	(*DataProfileBigQueryRowSchema)(nil),                                    // 99: google.privacy.dlp.v2.DataProfileBigQueryRowSchema
-	(*HybridInspectStatistics)(nil),                                         // 100: google.privacy.dlp.v2.HybridInspectStatistics
-	(*ActionDetails)(nil),                                                   // 101: google.privacy.dlp.v2.ActionDetails
-	(*DeidentifyDataSourceStats)(nil),                                       // 102: google.privacy.dlp.v2.DeidentifyDataSourceStats
-	(*DeidentifyDataSourceDetails)(nil),                                     // 103: google.privacy.dlp.v2.DeidentifyDataSourceDetails
-	(*LocationSupport)(nil),                                                 // 104: google.privacy.dlp.v2.LocationSupport
-	(*InfoTypeDescription)(nil),                                             // 105: google.privacy.dlp.v2.InfoTypeDescription
-	(*InfoTypeCategory)(nil),                                                // 106: google.privacy.dlp.v2.InfoTypeCategory
-	(*VersionDescription)(nil),                                              // 107: google.privacy.dlp.v2.VersionDescription
-	(*ListInfoTypesRequest)(nil),                                            // 108: google.privacy.dlp.v2.ListInfoTypesRequest
-	(*ListInfoTypesResponse)(nil),                                           // 109: google.privacy.dlp.v2.ListInfoTypesResponse
-	(*RiskAnalysisJobConfig)(nil),                                           // 110: google.privacy.dlp.v2.RiskAnalysisJobConfig
-	(*QuasiId)(nil),                                                         // 111: google.privacy.dlp.v2.QuasiId
-	(*StatisticalTable)(nil),                                                // 112: google.privacy.dlp.v2.StatisticalTable
-	(*PrivacyMetric)(nil),                                                   // 113: google.privacy.dlp.v2.PrivacyMetric
-	(*AnalyzeDataSourceRiskDetails)(nil),                                    // 114: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails
-	(*ValueFrequency)(nil),                                                  // 115: google.privacy.dlp.v2.ValueFrequency
-	(*Value)(nil),                                                           // 116: google.privacy.dlp.v2.Value
-	(*QuoteInfo)(nil),                                                       // 117: google.privacy.dlp.v2.QuoteInfo
-	(*DateTime)(nil),                                                        // 118: google.privacy.dlp.v2.DateTime
-	(*DeidentifyConfig)(nil),                                                // 119: google.privacy.dlp.v2.DeidentifyConfig
-	(*ImageTransformations)(nil),                                            // 120: google.privacy.dlp.v2.ImageTransformations
-	(*TransformationErrorHandling)(nil),                                     // 121: google.privacy.dlp.v2.TransformationErrorHandling
-	(*PrimitiveTransformation)(nil),                                         // 122: google.privacy.dlp.v2.PrimitiveTransformation
-	(*TimePartConfig)(nil),                                                  // 123: google.privacy.dlp.v2.TimePartConfig
-	(*CryptoHashConfig)(nil),                                                // 124: google.privacy.dlp.v2.CryptoHashConfig
-	(*CryptoDeterministicConfig)(nil),                                       // 125: google.privacy.dlp.v2.CryptoDeterministicConfig
-	(*ReplaceValueConfig)(nil),                                              // 126: google.privacy.dlp.v2.ReplaceValueConfig
-	(*ReplaceDictionaryConfig)(nil),                                         // 127: google.privacy.dlp.v2.ReplaceDictionaryConfig
-	(*ReplaceWithInfoTypeConfig)(nil),                                       // 128: google.privacy.dlp.v2.ReplaceWithInfoTypeConfig
-	(*RedactConfig)(nil),                                                    // 129: google.privacy.dlp.v2.RedactConfig
-	(*CharsToIgnore)(nil),                                                   // 130: google.privacy.dlp.v2.CharsToIgnore
-	(*CharacterMaskConfig)(nil),                                             // 131: google.privacy.dlp.v2.CharacterMaskConfig
-	(*FixedSizeBucketingConfig)(nil),                                        // 132: google.privacy.dlp.v2.FixedSizeBucketingConfig
-	(*BucketingConfig)(nil),                                                 // 133: google.privacy.dlp.v2.BucketingConfig
-	(*CryptoReplaceFfxFpeConfig)(nil),                                       // 134: google.privacy.dlp.v2.CryptoReplaceFfxFpeConfig
-	(*CryptoKey)(nil),                                                       // 135: google.privacy.dlp.v2.CryptoKey
-	(*TransientCryptoKey)(nil),                                              // 136: google.privacy.dlp.v2.TransientCryptoKey
-	(*UnwrappedCryptoKey)(nil),                                              // 137: google.privacy.dlp.v2.UnwrappedCryptoKey
-	(*KmsWrappedCryptoKey)(nil),                                             // 138: google.privacy.dlp.v2.KmsWrappedCryptoKey
-	(*DateShiftConfig)(nil),                                                 // 139: google.privacy.dlp.v2.DateShiftConfig
-	(*InfoTypeTransformations)(nil),                                         // 140: google.privacy.dlp.v2.InfoTypeTransformations
-	(*FieldTransformation)(nil),                                             // 141: google.privacy.dlp.v2.FieldTransformation
-	(*RecordTransformations)(nil),                                           // 142: google.privacy.dlp.v2.RecordTransformations
-	(*RecordSuppression)(nil),                                               // 143: google.privacy.dlp.v2.RecordSuppression
-	(*RecordCondition)(nil),                                                 // 144: google.privacy.dlp.v2.RecordCondition
-	(*TransformationOverview)(nil),                                          // 145: google.privacy.dlp.v2.TransformationOverview
-	(*TransformationSummary)(nil),                                           // 146: google.privacy.dlp.v2.TransformationSummary
-	(*TransformationDescription)(nil),                                       // 147: google.privacy.dlp.v2.TransformationDescription
-	(*TransformationDetails)(nil),                                           // 148: google.privacy.dlp.v2.TransformationDetails
-	(*TransformationLocation)(nil),                                          // 149: google.privacy.dlp.v2.TransformationLocation
-	(*RecordTransformation)(nil),                                            // 150: google.privacy.dlp.v2.RecordTransformation
-	(*TransformationResultStatus)(nil),                                      // 151: google.privacy.dlp.v2.TransformationResultStatus
-	(*TransformationDetailsStorageConfig)(nil),                              // 152: google.privacy.dlp.v2.TransformationDetailsStorageConfig
-	(*Schedule)(nil),                                                        // 153: google.privacy.dlp.v2.Schedule
-	(*Manual)(nil),                                                          // 154: google.privacy.dlp.v2.Manual
-	(*InspectTemplate)(nil),                                                 // 155: google.privacy.dlp.v2.InspectTemplate
-	(*DeidentifyTemplate)(nil),                                              // 156: google.privacy.dlp.v2.DeidentifyTemplate
-	(*Error)(nil),                                                           // 157: google.privacy.dlp.v2.Error
-	(*JobTrigger)(nil),                                                      // 158: google.privacy.dlp.v2.JobTrigger
-	(*Action)(nil),                                                          // 159: google.privacy.dlp.v2.Action
-	(*TransformationConfig)(nil),                                            // 160: google.privacy.dlp.v2.TransformationConfig
-	(*CreateInspectTemplateRequest)(nil),                                    // 161: google.privacy.dlp.v2.CreateInspectTemplateRequest
-	(*UpdateInspectTemplateRequest)(nil),                                    // 162: google.privacy.dlp.v2.UpdateInspectTemplateRequest
-	(*GetInspectTemplateRequest)(nil),                                       // 163: google.privacy.dlp.v2.GetInspectTemplateRequest
-	(*ListInspectTemplatesRequest)(nil),                                     // 164: google.privacy.dlp.v2.ListInspectTemplatesRequest
-	(*ListInspectTemplatesResponse)(nil),                                    // 165: google.privacy.dlp.v2.ListInspectTemplatesResponse
-	(*DeleteInspectTemplateRequest)(nil),                                    // 166: google.privacy.dlp.v2.DeleteInspectTemplateRequest
-	(*CreateJobTriggerRequest)(nil),                                         // 167: google.privacy.dlp.v2.CreateJobTriggerRequest
-	(*ActivateJobTriggerRequest)(nil),                                       // 168: google.privacy.dlp.v2.ActivateJobTriggerRequest
-	(*UpdateJobTriggerRequest)(nil),                                         // 169: google.privacy.dlp.v2.UpdateJobTriggerRequest
-	(*GetJobTriggerRequest)(nil),                                            // 170: google.privacy.dlp.v2.GetJobTriggerRequest
-	(*CreateDiscoveryConfigRequest)(nil),                                    // 171: google.privacy.dlp.v2.CreateDiscoveryConfigRequest
-	(*UpdateDiscoveryConfigRequest)(nil),                                    // 172: google.privacy.dlp.v2.UpdateDiscoveryConfigRequest
-	(*GetDiscoveryConfigRequest)(nil),                                       // 173: google.privacy.dlp.v2.GetDiscoveryConfigRequest
-	(*ListDiscoveryConfigsRequest)(nil),                                     // 174: google.privacy.dlp.v2.ListDiscoveryConfigsRequest
-	(*ListDiscoveryConfigsResponse)(nil),                                    // 175: google.privacy.dlp.v2.ListDiscoveryConfigsResponse
-	(*DeleteDiscoveryConfigRequest)(nil),                                    // 176: google.privacy.dlp.v2.DeleteDiscoveryConfigRequest
-	(*CreateDlpJobRequest)(nil),                                             // 177: google.privacy.dlp.v2.CreateDlpJobRequest
-	(*ListJobTriggersRequest)(nil),                                          // 178: google.privacy.dlp.v2.ListJobTriggersRequest
-	(*ListJobTriggersResponse)(nil),                                         // 179: google.privacy.dlp.v2.ListJobTriggersResponse
-	(*DeleteJobTriggerRequest)(nil),                                         // 180: google.privacy.dlp.v2.DeleteJobTriggerRequest
-	(*InspectJobConfig)(nil),                                                // 181: google.privacy.dlp.v2.InspectJobConfig
-	(*DataProfileAction)(nil),                                               // 182: google.privacy.dlp.v2.DataProfileAction
-	(*DataProfileFinding)(nil),                                              // 183: google.privacy.dlp.v2.DataProfileFinding
-	(*DataProfileFindingLocation)(nil),                                      // 184: google.privacy.dlp.v2.DataProfileFindingLocation
-	(*DataProfileFindingRecordLocation)(nil),                                // 185: google.privacy.dlp.v2.DataProfileFindingRecordLocation
-	(*DataProfileJobConfig)(nil),                                            // 186: google.privacy.dlp.v2.DataProfileJobConfig
-	(*BigQueryRegex)(nil),                                                   // 187: google.privacy.dlp.v2.BigQueryRegex
-	(*BigQueryRegexes)(nil),                                                 // 188: google.privacy.dlp.v2.BigQueryRegexes
-	(*BigQueryTableTypes)(nil),                                              // 189: google.privacy.dlp.v2.BigQueryTableTypes
-	(*Disabled)(nil),                                                        // 190: google.privacy.dlp.v2.Disabled
-	(*DataProfileLocation)(nil),                                             // 191: google.privacy.dlp.v2.DataProfileLocation
-	(*DiscoveryConfig)(nil),                                                 // 192: google.privacy.dlp.v2.DiscoveryConfig
-	(*DiscoveryTarget)(nil),                                                 // 193: google.privacy.dlp.v2.DiscoveryTarget
-	(*BigQueryDiscoveryTarget)(nil),                                         // 194: google.privacy.dlp.v2.BigQueryDiscoveryTarget
-	(*DiscoveryBigQueryFilter)(nil),                                         // 195: google.privacy.dlp.v2.DiscoveryBigQueryFilter
-	(*BigQueryTableCollection)(nil),                                         // 196: google.privacy.dlp.v2.BigQueryTableCollection
-	(*DiscoveryBigQueryConditions)(nil),                                     // 197: google.privacy.dlp.v2.DiscoveryBigQueryConditions
-	(*DiscoveryGenerationCadence)(nil),                                      // 198: google.privacy.dlp.v2.DiscoveryGenerationCadence
-	(*DiscoveryTableModifiedCadence)(nil),                                   // 199: google.privacy.dlp.v2.DiscoveryTableModifiedCadence
-	(*DiscoverySchemaModifiedCadence)(nil),                                  // 200: google.privacy.dlp.v2.DiscoverySchemaModifiedCadence
-	(*DiscoveryInspectTemplateModifiedCadence)(nil),                         // 201: google.privacy.dlp.v2.DiscoveryInspectTemplateModifiedCadence
-	(*CloudSqlDiscoveryTarget)(nil),                                         // 202: google.privacy.dlp.v2.CloudSqlDiscoveryTarget
-	(*DiscoveryCloudSqlFilter)(nil),                                         // 203: google.privacy.dlp.v2.DiscoveryCloudSqlFilter
-	(*DatabaseResourceCollection)(nil),                                      // 204: google.privacy.dlp.v2.DatabaseResourceCollection
-	(*DatabaseResourceRegexes)(nil),                                         // 205: google.privacy.dlp.v2.DatabaseResourceRegexes
-	(*DatabaseResourceRegex)(nil),                                           // 206: google.privacy.dlp.v2.DatabaseResourceRegex
-	(*AllOtherDatabaseResources)(nil),                                       // 207: google.privacy.dlp.v2.AllOtherDatabaseResources
-	(*DatabaseResourceReference)(nil),                                       // 208: google.privacy.dlp.v2.DatabaseResourceReference
-	(*DiscoveryCloudSqlConditions)(nil),                                     // 209: google.privacy.dlp.v2.DiscoveryCloudSqlConditions
-	(*DiscoveryCloudSqlGenerationCadence)(nil),                              // 210: google.privacy.dlp.v2.DiscoveryCloudSqlGenerationCadence
-	(*SecretsDiscoveryTarget)(nil),                                          // 211: google.privacy.dlp.v2.SecretsDiscoveryTarget
-	(*CloudStorageDiscoveryTarget)(nil),                                     // 212: google.privacy.dlp.v2.CloudStorageDiscoveryTarget
-	(*DiscoveryCloudStorageFilter)(nil),                                     // 213: google.privacy.dlp.v2.DiscoveryCloudStorageFilter
-	(*FileStoreCollection)(nil),                                             // 214: google.privacy.dlp.v2.FileStoreCollection
-	(*FileStoreRegexes)(nil),                                                // 215: google.privacy.dlp.v2.FileStoreRegexes
-	(*FileStoreRegex)(nil),                                                  // 216: google.privacy.dlp.v2.FileStoreRegex
-	(*CloudStorageRegex)(nil),                                               // 217: google.privacy.dlp.v2.CloudStorageRegex
-	(*CloudStorageResourceReference)(nil),                                   // 218: google.privacy.dlp.v2.CloudStorageResourceReference
-	(*DiscoveryCloudStorageGenerationCadence)(nil),                          // 219: google.privacy.dlp.v2.DiscoveryCloudStorageGenerationCadence
-	(*DiscoveryCloudStorageConditions)(nil),                                 // 220: google.privacy.dlp.v2.DiscoveryCloudStorageConditions
-	(*DiscoveryFileStoreConditions)(nil),                                    // 221: google.privacy.dlp.v2.DiscoveryFileStoreConditions
-	(*OtherCloudDiscoveryTarget)(nil),                                       // 222: google.privacy.dlp.v2.OtherCloudDiscoveryTarget
-	(*DiscoveryOtherCloudFilter)(nil),                                       // 223: google.privacy.dlp.v2.DiscoveryOtherCloudFilter
-	(*OtherCloudResourceCollection)(nil),                                    // 224: google.privacy.dlp.v2.OtherCloudResourceCollection
-	(*OtherCloudResourceRegexes)(nil),                                       // 225: google.privacy.dlp.v2.OtherCloudResourceRegexes
-	(*OtherCloudResourceRegex)(nil),                                         // 226: google.privacy.dlp.v2.OtherCloudResourceRegex
-	(*AwsAccountRegex)(nil),                                                 // 227: google.privacy.dlp.v2.AwsAccountRegex
-	(*AmazonS3BucketRegex)(nil),                                             // 228: google.privacy.dlp.v2.AmazonS3BucketRegex
-	(*OtherCloudSingleResourceReference)(nil),                               // 229: google.privacy.dlp.v2.OtherCloudSingleResourceReference
-	(*AwsAccount)(nil),                                                      // 230: google.privacy.dlp.v2.AwsAccount
-	(*AmazonS3Bucket)(nil),                                                  // 231: google.privacy.dlp.v2.AmazonS3Bucket
-	(*DiscoveryOtherCloudConditions)(nil),                                   // 232: google.privacy.dlp.v2.DiscoveryOtherCloudConditions
-	(*AmazonS3BucketConditions)(nil),                                        // 233: google.privacy.dlp.v2.AmazonS3BucketConditions
-	(*DiscoveryOtherCloudGenerationCadence)(nil),                            // 234: google.privacy.dlp.v2.DiscoveryOtherCloudGenerationCadence
-	(*DiscoveryStartingLocation)(nil),                                       // 235: google.privacy.dlp.v2.DiscoveryStartingLocation
-	(*OtherCloudDiscoveryStartingLocation)(nil),                             // 236: google.privacy.dlp.v2.OtherCloudDiscoveryStartingLocation
-	(*AllOtherResources)(nil),                                               // 237: google.privacy.dlp.v2.AllOtherResources
-	(*VertexDatasetDiscoveryTarget)(nil),                                    // 238: google.privacy.dlp.v2.VertexDatasetDiscoveryTarget
-	(*DiscoveryVertexDatasetFilter)(nil),                                    // 239: google.privacy.dlp.v2.DiscoveryVertexDatasetFilter
-	(*VertexDatasetCollection)(nil),                                         // 240: google.privacy.dlp.v2.VertexDatasetCollection
-	(*VertexDatasetRegexes)(nil),                                            // 241: google.privacy.dlp.v2.VertexDatasetRegexes
-	(*VertexDatasetRegex)(nil),                                              // 242: google.privacy.dlp.v2.VertexDatasetRegex
-	(*VertexDatasetResourceReference)(nil),                                  // 243: google.privacy.dlp.v2.VertexDatasetResourceReference
-	(*DiscoveryVertexDatasetConditions)(nil),                                // 244: google.privacy.dlp.v2.DiscoveryVertexDatasetConditions
-	(*DiscoveryVertexDatasetGenerationCadence)(nil),                         // 245: google.privacy.dlp.v2.DiscoveryVertexDatasetGenerationCadence
-	(*DlpJob)(nil),                                                          // 246: google.privacy.dlp.v2.DlpJob
-	(*GetDlpJobRequest)(nil),                                                // 247: google.privacy.dlp.v2.GetDlpJobRequest
-	(*ListDlpJobsRequest)(nil),                                              // 248: google.privacy.dlp.v2.ListDlpJobsRequest
-	(*ListDlpJobsResponse)(nil),                                             // 249: google.privacy.dlp.v2.ListDlpJobsResponse
-	(*CancelDlpJobRequest)(nil),                                             // 250: google.privacy.dlp.v2.CancelDlpJobRequest
-	(*FinishDlpJobRequest)(nil),                                             // 251: google.privacy.dlp.v2.FinishDlpJobRequest
-	(*DeleteDlpJobRequest)(nil),                                             // 252: google.privacy.dlp.v2.DeleteDlpJobRequest
-	(*CreateDeidentifyTemplateRequest)(nil),                                 // 253: google.privacy.dlp.v2.CreateDeidentifyTemplateRequest
-	(*UpdateDeidentifyTemplateRequest)(nil),                                 // 254: google.privacy.dlp.v2.UpdateDeidentifyTemplateRequest
-	(*GetDeidentifyTemplateRequest)(nil),                                    // 255: google.privacy.dlp.v2.GetDeidentifyTemplateRequest
-	(*ListDeidentifyTemplatesRequest)(nil),                                  // 256: google.privacy.dlp.v2.ListDeidentifyTemplatesRequest
-	(*ListDeidentifyTemplatesResponse)(nil),                                 // 257: google.privacy.dlp.v2.ListDeidentifyTemplatesResponse
-	(*DeleteDeidentifyTemplateRequest)(nil),                                 // 258: google.privacy.dlp.v2.DeleteDeidentifyTemplateRequest
-	(*LargeCustomDictionaryConfig)(nil),                                     // 259: google.privacy.dlp.v2.LargeCustomDictionaryConfig
-	(*LargeCustomDictionaryStats)(nil),                                      // 260: google.privacy.dlp.v2.LargeCustomDictionaryStats
-	(*StoredInfoTypeConfig)(nil),                                            // 261: google.privacy.dlp.v2.StoredInfoTypeConfig
-	(*StoredInfoTypeStats)(nil),                                             // 262: google.privacy.dlp.v2.StoredInfoTypeStats
-	(*StoredInfoTypeVersion)(nil),                                           // 263: google.privacy.dlp.v2.StoredInfoTypeVersion
-	(*StoredInfoType)(nil),                                                  // 264: google.privacy.dlp.v2.StoredInfoType
-	(*CreateStoredInfoTypeRequest)(nil),                                     // 265: google.privacy.dlp.v2.CreateStoredInfoTypeRequest
-	(*UpdateStoredInfoTypeRequest)(nil),                                     // 266: google.privacy.dlp.v2.UpdateStoredInfoTypeRequest
-	(*GetStoredInfoTypeRequest)(nil),                                        // 267: google.privacy.dlp.v2.GetStoredInfoTypeRequest
-	(*ListStoredInfoTypesRequest)(nil),                                      // 268: google.privacy.dlp.v2.ListStoredInfoTypesRequest
-	(*ListStoredInfoTypesResponse)(nil),                                     // 269: google.privacy.dlp.v2.ListStoredInfoTypesResponse
-	(*DeleteStoredInfoTypeRequest)(nil),                                     // 270: google.privacy.dlp.v2.DeleteStoredInfoTypeRequest
-	(*HybridInspectJobTriggerRequest)(nil),                                  // 271: google.privacy.dlp.v2.HybridInspectJobTriggerRequest
-	(*HybridInspectDlpJobRequest)(nil),                                      // 272: google.privacy.dlp.v2.HybridInspectDlpJobRequest
-	(*HybridContentItem)(nil),                                               // 273: google.privacy.dlp.v2.HybridContentItem
-	(*HybridFindingDetails)(nil),                                            // 274: google.privacy.dlp.v2.HybridFindingDetails
-	(*HybridInspectResponse)(nil),                                           // 275: google.privacy.dlp.v2.HybridInspectResponse
-	(*ImageContainmentType)(nil),                                            // 276: google.privacy.dlp.v2.ImageContainmentType
-	(*Overlap)(nil),                                                         // 277: google.privacy.dlp.v2.Overlap
-	(*Encloses)(nil),                                                        // 278: google.privacy.dlp.v2.Encloses
-	(*FullyInside)(nil),                                                     // 279: google.privacy.dlp.v2.FullyInside
-	(*ListProjectDataProfilesRequest)(nil),                                  // 280: google.privacy.dlp.v2.ListProjectDataProfilesRequest
-	(*ListProjectDataProfilesResponse)(nil),                                 // 281: google.privacy.dlp.v2.ListProjectDataProfilesResponse
-	(*ListTableDataProfilesRequest)(nil),                                    // 282: google.privacy.dlp.v2.ListTableDataProfilesRequest
-	(*ListTableDataProfilesResponse)(nil),                                   // 283: google.privacy.dlp.v2.ListTableDataProfilesResponse
-	(*ListColumnDataProfilesRequest)(nil),                                   // 284: google.privacy.dlp.v2.ListColumnDataProfilesRequest
-	(*ListColumnDataProfilesResponse)(nil),                                  // 285: google.privacy.dlp.v2.ListColumnDataProfilesResponse
-	(*DataRiskLevel)(nil),                                                   // 286: google.privacy.dlp.v2.DataRiskLevel
-	(*ProjectDataProfile)(nil),                                              // 287: google.privacy.dlp.v2.ProjectDataProfile
-	(*DataProfileConfigSnapshot)(nil),                                       // 288: google.privacy.dlp.v2.DataProfileConfigSnapshot
-	(*TableDataProfile)(nil),                                                // 289: google.privacy.dlp.v2.TableDataProfile
-	(*ProfileStatus)(nil),                                                   // 290: google.privacy.dlp.v2.ProfileStatus
-	(*InfoTypeSummary)(nil),                                                 // 291: google.privacy.dlp.v2.InfoTypeSummary
-	(*OtherInfoTypeSummary)(nil),                                            // 292: google.privacy.dlp.v2.OtherInfoTypeSummary
-	(*ColumnDataProfile)(nil),                                               // 293: google.privacy.dlp.v2.ColumnDataProfile
-	(*FileStoreDataProfile)(nil),                                            // 294: google.privacy.dlp.v2.FileStoreDataProfile
-	(*Tag)(nil),                                                             // 295: google.privacy.dlp.v2.Tag
-	(*TagFilters)(nil),                                                      // 296: google.privacy.dlp.v2.TagFilters
-	(*TagFilter)(nil),                                                       // 297: google.privacy.dlp.v2.TagFilter
-	(*RelatedResource)(nil),                                                 // 298: google.privacy.dlp.v2.RelatedResource
-	(*FileStoreInfoTypeSummary)(nil),                                        // 299: google.privacy.dlp.v2.FileStoreInfoTypeSummary
-	(*FileExtensionInfo)(nil),                                               // 300: google.privacy.dlp.v2.FileExtensionInfo
-	(*FileClusterSummary)(nil),                                              // 301: google.privacy.dlp.v2.FileClusterSummary
-	(*GetProjectDataProfileRequest)(nil),                                    // 302: google.privacy.dlp.v2.GetProjectDataProfileRequest
-	(*GetFileStoreDataProfileRequest)(nil),                                  // 303: google.privacy.dlp.v2.GetFileStoreDataProfileRequest
-	(*ListFileStoreDataProfilesRequest)(nil),                                // 304: google.privacy.dlp.v2.ListFileStoreDataProfilesRequest
-	(*ListFileStoreDataProfilesResponse)(nil),                               // 305: google.privacy.dlp.v2.ListFileStoreDataProfilesResponse
-	(*DeleteFileStoreDataProfileRequest)(nil),                               // 306: google.privacy.dlp.v2.DeleteFileStoreDataProfileRequest
-	(*GetTableDataProfileRequest)(nil),                                      // 307: google.privacy.dlp.v2.GetTableDataProfileRequest
-	(*GetColumnDataProfileRequest)(nil),                                     // 308: google.privacy.dlp.v2.GetColumnDataProfileRequest
-	(*DataProfilePubSubCondition)(nil),                                      // 309: google.privacy.dlp.v2.DataProfilePubSubCondition
-	(*DataProfilePubSubMessage)(nil),                                        // 310: google.privacy.dlp.v2.DataProfilePubSubMessage
-	(*CreateConnectionRequest)(nil),                                         // 311: google.privacy.dlp.v2.CreateConnectionRequest
-	(*GetConnectionRequest)(nil),                                            // 312: google.privacy.dlp.v2.GetConnectionRequest
-	(*ListConnectionsRequest)(nil),                                          // 313: google.privacy.dlp.v2.ListConnectionsRequest
-	(*SearchConnectionsRequest)(nil),                                        // 314: google.privacy.dlp.v2.SearchConnectionsRequest
-	(*ListConnectionsResponse)(nil),                                         // 315: google.privacy.dlp.v2.ListConnectionsResponse
-	(*SearchConnectionsResponse)(nil),                                       // 316: google.privacy.dlp.v2.SearchConnectionsResponse
-	(*UpdateConnectionRequest)(nil),                                         // 317: google.privacy.dlp.v2.UpdateConnectionRequest
-	(*DeleteConnectionRequest)(nil),                                         // 318: google.privacy.dlp.v2.DeleteConnectionRequest
-	(*Connection)(nil),                                                      // 319: google.privacy.dlp.v2.Connection
-	(*SecretManagerCredential)(nil),                                         // 320: google.privacy.dlp.v2.SecretManagerCredential
-	(*CloudSqlIamCredential)(nil),                                           // 321: google.privacy.dlp.v2.CloudSqlIamCredential
-	(*CloudSqlProperties)(nil),                                              // 322: google.privacy.dlp.v2.CloudSqlProperties
-	(*DeleteTableDataProfileRequest)(nil),                                   // 323: google.privacy.dlp.v2.DeleteTableDataProfileRequest
-	(*DataSourceType)(nil),                                                  // 324: google.privacy.dlp.v2.DataSourceType
-	(*FileClusterType)(nil),                                                 // 325: google.privacy.dlp.v2.FileClusterType
-	(*ProcessingLocation)(nil),                                              // 326: google.privacy.dlp.v2.ProcessingLocation
-	(*SaveToGcsFindingsOutput)(nil),                                         // 327: google.privacy.dlp.v2.SaveToGcsFindingsOutput
-	(*Domain)(nil),                                                          // 328: google.privacy.dlp.v2.Domain
-	(*InspectConfig_InfoTypeLikelihood)(nil),                                // 329: google.privacy.dlp.v2.InspectConfig.InfoTypeLikelihood
-	(*InspectConfig_FindingLimits)(nil),                                     // 330: google.privacy.dlp.v2.InspectConfig.FindingLimits
-	(*InspectConfig_FindingLimits_InfoTypeLimit)(nil),                       // 331: google.privacy.dlp.v2.InspectConfig.FindingLimits.InfoTypeLimit
-	(*Table_Row)(nil),                                                       // 332: google.privacy.dlp.v2.Table.Row
-	nil,                                                                     // 333: google.privacy.dlp.v2.Finding.LabelsEntry
-	(*RedactImageRequest_ImageRedactionConfig)(nil),                         // 334: google.privacy.dlp.v2.RedactImageRequest.ImageRedactionConfig
-	(*InspectDataSourceDetails_RequestedOptions)(nil),                       // 335: google.privacy.dlp.v2.InspectDataSourceDetails.RequestedOptions
-	(*InspectDataSourceDetails_Result)(nil),                                 // 336: google.privacy.dlp.v2.InspectDataSourceDetails.Result
-	(*DeidentifyDataSourceDetails_RequestedDeidentifyOptions)(nil),          // 337: google.privacy.dlp.v2.DeidentifyDataSourceDetails.RequestedDeidentifyOptions
-	(*StatisticalTable_QuasiIdentifierField)(nil),                           // 338: google.privacy.dlp.v2.StatisticalTable.QuasiIdentifierField
-	(*PrivacyMetric_NumericalStatsConfig)(nil),                              // 339: google.privacy.dlp.v2.PrivacyMetric.NumericalStatsConfig
-	(*PrivacyMetric_CategoricalStatsConfig)(nil),                            // 340: google.privacy.dlp.v2.PrivacyMetric.CategoricalStatsConfig
-	(*PrivacyMetric_KAnonymityConfig)(nil),                                  // 341: google.privacy.dlp.v2.PrivacyMetric.KAnonymityConfig
-	(*PrivacyMetric_LDiversityConfig)(nil),                                  // 342: google.privacy.dlp.v2.PrivacyMetric.LDiversityConfig
-	(*PrivacyMetric_KMapEstimationConfig)(nil),                              // 343: google.privacy.dlp.v2.PrivacyMetric.KMapEstimationConfig
-	(*PrivacyMetric_DeltaPresenceEstimationConfig)(nil),                     // 344: google.privacy.dlp.v2.PrivacyMetric.DeltaPresenceEstimationConfig
-	(*PrivacyMetric_KMapEstimationConfig_TaggedField)(nil),                  // 345: google.privacy.dlp.v2.PrivacyMetric.KMapEstimationConfig.TaggedField
-	(*PrivacyMetric_KMapEstimationConfig_AuxiliaryTable)(nil),               // 346: google.privacy.dlp.v2.PrivacyMetric.KMapEstimationConfig.AuxiliaryTable
-	(*PrivacyMetric_KMapEstimationConfig_AuxiliaryTable_QuasiIdField)(nil),  // 347: google.privacy.dlp.v2.PrivacyMetric.KMapEstimationConfig.AuxiliaryTable.QuasiIdField
-	(*AnalyzeDataSourceRiskDetails_NumericalStatsResult)(nil),               // 348: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.NumericalStatsResult
-	(*AnalyzeDataSourceRiskDetails_CategoricalStatsResult)(nil),             // 349: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.CategoricalStatsResult
-	(*AnalyzeDataSourceRiskDetails_KAnonymityResult)(nil),                   // 350: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.KAnonymityResult
-	(*AnalyzeDataSourceRiskDetails_LDiversityResult)(nil),                   // 351: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.LDiversityResult
-	(*AnalyzeDataSourceRiskDetails_KMapEstimationResult)(nil),               // 352: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.KMapEstimationResult
-	(*AnalyzeDataSourceRiskDetails_DeltaPresenceEstimationResult)(nil),      // 353: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.DeltaPresenceEstimationResult
-	(*AnalyzeDataSourceRiskDetails_RequestedRiskAnalysisOptions)(nil),       // 354: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.RequestedRiskAnalysisOptions
-	(*AnalyzeDataSourceRiskDetails_CategoricalStatsResult_CategoricalStatsHistogramBucket)(nil),               // 355: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.CategoricalStatsResult.CategoricalStatsHistogramBucket
-	(*AnalyzeDataSourceRiskDetails_KAnonymityResult_KAnonymityEquivalenceClass)(nil),                          // 356: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.KAnonymityResult.KAnonymityEquivalenceClass
-	(*AnalyzeDataSourceRiskDetails_KAnonymityResult_KAnonymityHistogramBucket)(nil),                           // 357: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.KAnonymityResult.KAnonymityHistogramBucket
-	(*AnalyzeDataSourceRiskDetails_LDiversityResult_LDiversityEquivalenceClass)(nil),                          // 358: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.LDiversityResult.LDiversityEquivalenceClass
-	(*AnalyzeDataSourceRiskDetails_LDiversityResult_LDiversityHistogramBucket)(nil),                           // 359: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.LDiversityResult.LDiversityHistogramBucket
-	(*AnalyzeDataSourceRiskDetails_KMapEstimationResult_KMapEstimationQuasiIdValues)(nil),                     // 360: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.KMapEstimationResult.KMapEstimationQuasiIdValues
-	(*AnalyzeDataSourceRiskDetails_KMapEstimationResult_KMapEstimationHistogramBucket)(nil),                   // 361: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.KMapEstimationResult.KMapEstimationHistogramBucket
-	(*AnalyzeDataSourceRiskDetails_DeltaPresenceEstimationResult_DeltaPresenceEstimationQuasiIdValues)(nil),   // 362: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.DeltaPresenceEstimationResult.DeltaPresenceEstimationQuasiIdValues
-	(*AnalyzeDataSourceRiskDetails_DeltaPresenceEstimationResult_DeltaPresenceEstimationHistogramBucket)(nil), // 363: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.DeltaPresenceEstimationResult.DeltaPresenceEstimationHistogramBucket
-	(*DateTime_TimeZone)(nil),                                                // 364: google.privacy.dlp.v2.DateTime.TimeZone
-	(*ImageTransformations_ImageTransformation)(nil),                         // 365: google.privacy.dlp.v2.ImageTransformations.ImageTransformation
-	(*ImageTransformations_ImageTransformation_SelectedInfoTypes)(nil),       // 366: google.privacy.dlp.v2.ImageTransformations.ImageTransformation.SelectedInfoTypes
-	(*ImageTransformations_ImageTransformation_AllInfoTypes)(nil),            // 367: google.privacy.dlp.v2.ImageTransformations.ImageTransformation.AllInfoTypes
-	(*ImageTransformations_ImageTransformation_AllText)(nil),                 // 368: google.privacy.dlp.v2.ImageTransformations.ImageTransformation.AllText
-	(*TransformationErrorHandling_ThrowError)(nil),                           // 369: google.privacy.dlp.v2.TransformationErrorHandling.ThrowError
-	(*TransformationErrorHandling_LeaveUntransformed)(nil),                   // 370: google.privacy.dlp.v2.TransformationErrorHandling.LeaveUntransformed
-	(*BucketingConfig_Bucket)(nil),                                           // 371: google.privacy.dlp.v2.BucketingConfig.Bucket
-	(*InfoTypeTransformations_InfoTypeTransformation)(nil),                   // 372: google.privacy.dlp.v2.InfoTypeTransformations.InfoTypeTransformation
-	(*RecordCondition_Condition)(nil),                                        // 373: google.privacy.dlp.v2.RecordCondition.Condition
-	(*RecordCondition_Conditions)(nil),                                       // 374: google.privacy.dlp.v2.RecordCondition.Conditions
-	(*RecordCondition_Expressions)(nil),                                      // 375: google.privacy.dlp.v2.RecordCondition.Expressions
-	(*TransformationSummary_SummaryResult)(nil),                              // 376: google.privacy.dlp.v2.TransformationSummary.SummaryResult
-	(*JobTrigger_Trigger)(nil),                                               // 377: google.privacy.dlp.v2.JobTrigger.Trigger
-	(*Action_SaveFindings)(nil),                                              // 378: google.privacy.dlp.v2.Action.SaveFindings
-	(*Action_PublishToPubSub)(nil),                                           // 379: google.privacy.dlp.v2.Action.PublishToPubSub
-	(*Action_PublishSummaryToCscc)(nil),                                      // 380: google.privacy.dlp.v2.Action.PublishSummaryToCscc
-	(*Action_PublishFindingsToCloudDataCatalog)(nil),                         // 381: google.privacy.dlp.v2.Action.PublishFindingsToCloudDataCatalog
-	(*Action_PublishFindingsToDataplexCatalog)(nil),                          // 382: google.privacy.dlp.v2.Action.PublishFindingsToDataplexCatalog
-	(*Action_Deidentify)(nil),                                                // 383: google.privacy.dlp.v2.Action.Deidentify
-	(*Action_JobNotificationEmails)(nil),                                     // 384: google.privacy.dlp.v2.Action.JobNotificationEmails
-	(*Action_PublishToStackdriver)(nil),                                      // 385: google.privacy.dlp.v2.Action.PublishToStackdriver
-	(*DataProfileAction_Export)(nil),                                         // 386: google.privacy.dlp.v2.DataProfileAction.Export
-	(*DataProfileAction_PubSubNotification)(nil),                             // 387: google.privacy.dlp.v2.DataProfileAction.PubSubNotification
-	(*DataProfileAction_PublishToChronicle)(nil),                             // 388: google.privacy.dlp.v2.DataProfileAction.PublishToChronicle
-	(*DataProfileAction_PublishToSecurityCommandCenter)(nil),                 // 389: google.privacy.dlp.v2.DataProfileAction.PublishToSecurityCommandCenter
-	(*DataProfileAction_PublishToDataplexCatalog)(nil),                       // 390: google.privacy.dlp.v2.DataProfileAction.PublishToDataplexCatalog
-	(*DataProfileAction_TagResources)(nil),                                   // 391: google.privacy.dlp.v2.DataProfileAction.TagResources
-	(*DataProfileAction_TagResources_TagCondition)(nil),                      // 392: google.privacy.dlp.v2.DataProfileAction.TagResources.TagCondition
-	(*DataProfileAction_TagResources_TagValue)(nil),                          // 393: google.privacy.dlp.v2.DataProfileAction.TagResources.TagValue
-	(*DiscoveryConfig_OrgConfig)(nil),                                        // 394: google.privacy.dlp.v2.DiscoveryConfig.OrgConfig
-	(*DiscoveryBigQueryFilter_AllOtherBigQueryTables)(nil),                   // 395: google.privacy.dlp.v2.DiscoveryBigQueryFilter.AllOtherBigQueryTables
-	(*DiscoveryBigQueryConditions_OrConditions)(nil),                         // 396: google.privacy.dlp.v2.DiscoveryBigQueryConditions.OrConditions
-	(*DiscoveryCloudSqlGenerationCadence_SchemaModifiedCadence)(nil),         // 397: google.privacy.dlp.v2.DiscoveryCloudSqlGenerationCadence.SchemaModifiedCadence
-	(*OtherCloudDiscoveryStartingLocation_AwsDiscoveryStartingLocation)(nil), // 398: google.privacy.dlp.v2.OtherCloudDiscoveryStartingLocation.AwsDiscoveryStartingLocation
-	nil, // 399: google.privacy.dlp.v2.HybridFindingDetails.LabelsEntry
-	nil, // 400: google.privacy.dlp.v2.TableDataProfile.ResourceLabelsEntry
-	nil, // 401: google.privacy.dlp.v2.FileStoreDataProfile.ResourceAttributesEntry
-	nil, // 402: google.privacy.dlp.v2.FileStoreDataProfile.ResourceLabelsEntry
-	(*DataProfilePubSubCondition_PubSubCondition)(nil),   // 403: google.privacy.dlp.v2.DataProfilePubSubCondition.PubSubCondition
-	(*DataProfilePubSubCondition_PubSubExpressions)(nil), // 404: google.privacy.dlp.v2.DataProfilePubSubCondition.PubSubExpressions
-	(*ProcessingLocation_MultiRegionProcessing)(nil),     // 405: google.privacy.dlp.v2.ProcessingLocation.MultiRegionProcessing
-	(*ProcessingLocation_GlobalProcessing)(nil),          // 406: google.privacy.dlp.v2.ProcessingLocation.GlobalProcessing
-	(*ProcessingLocation_ImageFallbackLocation)(nil),     // 407: google.privacy.dlp.v2.ProcessingLocation.ImageFallbackLocation
-	(*ProcessingLocation_DocumentFallbackLocation)(nil),  // 408: google.privacy.dlp.v2.ProcessingLocation.DocumentFallbackLocation
-	(*InfoType)(nil),                                          // 409: google.privacy.dlp.v2.InfoType
-	(*CustomInfoType_Regex)(nil),                              // 410: google.privacy.dlp.v2.CustomInfoType.Regex
-	(*CustomInfoType_DetectionRule_Proximity)(nil),            // 411: google.privacy.dlp.v2.CustomInfoType.DetectionRule.Proximity
-	(*CustomInfoType_Dictionary)(nil),                         // 412: google.privacy.dlp.v2.CustomInfoType.Dictionary
-	(Likelihood)(0),                                           // 413: google.privacy.dlp.v2.Likelihood
-	(*CustomInfoType_DetectionRule_LikelihoodAdjustment)(nil), // 414: google.privacy.dlp.v2.CustomInfoType.DetectionRule.LikelihoodAdjustment
-	(*CustomInfoType_DetectionRule_HotwordRule)(nil),          // 415: google.privacy.dlp.v2.CustomInfoType.DetectionRule.HotwordRule
-	(*CustomInfoType)(nil),                                    // 416: google.privacy.dlp.v2.CustomInfoType
-	(*FieldId)(nil),                                           // 417: google.privacy.dlp.v2.FieldId
-	(*timestamppb.Timestamp)(nil),                             // 418: google.protobuf.Timestamp
-	(*RecordKey)(nil),                                         // 419: google.privacy.dlp.v2.RecordKey
-	(*BigQueryTable)(nil),                                     // 420: google.privacy.dlp.v2.BigQueryTable
-	(*CloudStoragePath)(nil),                                  // 421: google.privacy.dlp.v2.CloudStoragePath
-	(*SensitivityScore)(nil),                                  // 422: google.privacy.dlp.v2.SensitivityScore
-	(*emptypb.Empty)(nil),                                     // 423: google.protobuf.Empty
-	(*timeofday.TimeOfDay)(nil),                               // 424: google.type.TimeOfDay
-	(*date.Date)(nil),                                         // 425: google.type.Date
-	(dayofweek.DayOfWeek)(0),                                  // 426: google.type.DayOfWeek
-	(*CustomInfoType_Dictionary_WordList)(nil),                // 427: google.privacy.dlp.v2.CustomInfoType.Dictionary.WordList
-	(*status.Status)(nil),                                     // 428: google.rpc.Status
-	(*durationpb.Duration)(nil),                               // 429: google.protobuf.Duration
-	(*fieldmaskpb.FieldMask)(nil),                             // 430: google.protobuf.FieldMask
-	(*StorageConfig)(nil),                                     // 431: google.privacy.dlp.v2.StorageConfig
-	(*TableReference)(nil),                                    // 432: google.privacy.dlp.v2.TableReference
-	(*CloudStorageFileSet)(nil),                               // 433: google.privacy.dlp.v2.CloudStorageFileSet
-	(*BigQueryField)(nil),                                     // 434: google.privacy.dlp.v2.BigQueryField
-	(*TableOptions)(nil),                                      // 435: google.privacy.dlp.v2.TableOptions
-	(*EntityId)(nil),                                          // 436: google.privacy.dlp.v2.EntityId
-	(FileType)(0),                                             // 437: google.privacy.dlp.v2.FileType
+	(ConversationMessage_MessageType)(0),                   // 22: google.privacy.dlp.v2.ConversationMessage.MessageType
+	(OutputStorageConfig_OutputSchema)(0),                  // 23: google.privacy.dlp.v2.OutputStorageConfig.OutputSchema
+	(LocationSupport_RegionalizationScope)(0),              // 24: google.privacy.dlp.v2.LocationSupport.RegionalizationScope
+	(InfoTypeDescription_InfoTypeLaunchStatus)(0),          // 25: google.privacy.dlp.v2.InfoTypeDescription.InfoTypeLaunchStatus
+	(InfoTypeCategory_LocationCategory)(0),                 // 26: google.privacy.dlp.v2.InfoTypeCategory.LocationCategory
+	(InfoTypeCategory_IndustryCategory)(0),                 // 27: google.privacy.dlp.v2.InfoTypeCategory.IndustryCategory
+	(InfoTypeCategory_TypeCategory)(0),                     // 28: google.privacy.dlp.v2.InfoTypeCategory.TypeCategory
+	(TimePartConfig_TimePart)(0),                           // 29: google.privacy.dlp.v2.TimePartConfig.TimePart
+	(CharsToIgnore_CommonCharsToIgnore)(0),                 // 30: google.privacy.dlp.v2.CharsToIgnore.CommonCharsToIgnore
+	(CryptoReplaceFfxFpeConfig_FfxCommonNativeAlphabet)(0), // 31: google.privacy.dlp.v2.CryptoReplaceFfxFpeConfig.FfxCommonNativeAlphabet
+	(RecordCondition_Expressions_LogicalOperator)(0),       // 32: google.privacy.dlp.v2.RecordCondition.Expressions.LogicalOperator
+	(TransformationSummary_TransformationResultCode)(0),    // 33: google.privacy.dlp.v2.TransformationSummary.TransformationResultCode
+	(Error_ErrorExtraInfo)(0),                              // 34: google.privacy.dlp.v2.Error.ErrorExtraInfo
+	(JobTrigger_Status)(0),                                 // 35: google.privacy.dlp.v2.JobTrigger.Status
+	(DataProfileAction_EventType)(0),                       // 36: google.privacy.dlp.v2.DataProfileAction.EventType
+	(DataProfileAction_PubSubNotification_DetailLevel)(0),  // 37: google.privacy.dlp.v2.DataProfileAction.PubSubNotification.DetailLevel
+	(DiscoveryConfig_Status)(0),                            // 38: google.privacy.dlp.v2.DiscoveryConfig.Status
+	(DiscoveryCloudSqlConditions_DatabaseEngine)(0),        // 39: google.privacy.dlp.v2.DiscoveryCloudSqlConditions.DatabaseEngine
+	(DiscoveryCloudSqlConditions_DatabaseResourceType)(0),  // 40: google.privacy.dlp.v2.DiscoveryCloudSqlConditions.DatabaseResourceType
+	(DiscoveryCloudSqlGenerationCadence_SchemaModifiedCadence_CloudSqlSchemaModification)(0), // 41: google.privacy.dlp.v2.DiscoveryCloudSqlGenerationCadence.SchemaModifiedCadence.CloudSqlSchemaModification
+	(DiscoveryCloudStorageConditions_CloudStorageObjectAttribute)(0),                         // 42: google.privacy.dlp.v2.DiscoveryCloudStorageConditions.CloudStorageObjectAttribute
+	(DiscoveryCloudStorageConditions_CloudStorageBucketAttribute)(0),                         // 43: google.privacy.dlp.v2.DiscoveryCloudStorageConditions.CloudStorageBucketAttribute
+	(AmazonS3BucketConditions_BucketType)(0),                                                 // 44: google.privacy.dlp.v2.AmazonS3BucketConditions.BucketType
+	(AmazonS3BucketConditions_ObjectStorageClass)(0),                                         // 45: google.privacy.dlp.v2.AmazonS3BucketConditions.ObjectStorageClass
+	(DlpJob_JobState)(0),                                                    // 46: google.privacy.dlp.v2.DlpJob.JobState
+	(DataRiskLevel_DataRiskLevelScore)(0),                                   // 47: google.privacy.dlp.v2.DataRiskLevel.DataRiskLevelScore
+	(TableDataProfile_State)(0),                                             // 48: google.privacy.dlp.v2.TableDataProfile.State
+	(ColumnDataProfile_State)(0),                                            // 49: google.privacy.dlp.v2.ColumnDataProfile.State
+	(ColumnDataProfile_ColumnDataType)(0),                                   // 50: google.privacy.dlp.v2.ColumnDataProfile.ColumnDataType
+	(ColumnDataProfile_ColumnPolicyState)(0),                                // 51: google.privacy.dlp.v2.ColumnDataProfile.ColumnPolicyState
+	(FileStoreDataProfile_State)(0),                                         // 52: google.privacy.dlp.v2.FileStoreDataProfile.State
+	(DataProfilePubSubCondition_ProfileScoreBucket)(0),                      // 53: google.privacy.dlp.v2.DataProfilePubSubCondition.ProfileScoreBucket
+	(DataProfilePubSubCondition_PubSubExpressions_PubSubLogicalOperator)(0), // 54: google.privacy.dlp.v2.DataProfilePubSubCondition.PubSubExpressions.PubSubLogicalOperator
+	(CloudSqlProperties_DatabaseEngine)(0),                                  // 55: google.privacy.dlp.v2.CloudSqlProperties.DatabaseEngine
+	(FileClusterType_Cluster)(0),                                            // 56: google.privacy.dlp.v2.FileClusterType.Cluster
+	(Domain_Category)(0),                                                    // 57: google.privacy.dlp.v2.Domain.Category
+	(Domain_Signal)(0),                                                      // 58: google.privacy.dlp.v2.Domain.Signal
+	(*ExcludeInfoTypes)(nil),                                                // 59: google.privacy.dlp.v2.ExcludeInfoTypes
+	(*ExcludeByHotword)(nil),                                                // 60: google.privacy.dlp.v2.ExcludeByHotword
+	(*ExcludeByImageFindings)(nil),                                          // 61: google.privacy.dlp.v2.ExcludeByImageFindings
+	(*ExclusionRule)(nil),                                                   // 62: google.privacy.dlp.v2.ExclusionRule
+	(*AdjustByMatchingInfoTypes)(nil),                                       // 63: google.privacy.dlp.v2.AdjustByMatchingInfoTypes
+	(*AdjustByImageFindings)(nil),                                           // 64: google.privacy.dlp.v2.AdjustByImageFindings
+	(*AdjustmentRule)(nil),                                                  // 65: google.privacy.dlp.v2.AdjustmentRule
+	(*InspectionRule)(nil),                                                  // 66: google.privacy.dlp.v2.InspectionRule
+	(*InspectionRuleSet)(nil),                                               // 67: google.privacy.dlp.v2.InspectionRuleSet
+	(*InspectConfig)(nil),                                                   // 68: google.privacy.dlp.v2.InspectConfig
+	(*ByteContentItem)(nil),                                                 // 69: google.privacy.dlp.v2.ByteContentItem
+	(*ContentItem)(nil),                                                     // 70: google.privacy.dlp.v2.ContentItem
+	(*ContentMetadata)(nil),                                                 // 71: google.privacy.dlp.v2.ContentMetadata
+	(*Conversation)(nil),                                                    // 72: google.privacy.dlp.v2.Conversation
+	(*ConversationMessage)(nil),                                             // 73: google.privacy.dlp.v2.ConversationMessage
+	(*Table)(nil),                                                           // 74: google.privacy.dlp.v2.Table
+	(*KeyValueMetadataProperty)(nil),                                        // 75: google.privacy.dlp.v2.KeyValueMetadataProperty
+	(*InspectResult)(nil),                                                   // 76: google.privacy.dlp.v2.InspectResult
+	(*Finding)(nil),                                                         // 77: google.privacy.dlp.v2.Finding
+	(*Location)(nil),                                                        // 78: google.privacy.dlp.v2.Location
+	(*ContentLocation)(nil),                                                 // 79: google.privacy.dlp.v2.ContentLocation
+	(*ConversationLocation)(nil),                                            // 80: google.privacy.dlp.v2.ConversationLocation
+	(*MetadataLocation)(nil),                                                // 81: google.privacy.dlp.v2.MetadataLocation
+	(*StorageMetadataLabel)(nil),                                            // 82: google.privacy.dlp.v2.StorageMetadataLabel
+	(*KeyValueMetadataLabel)(nil),                                           // 83: google.privacy.dlp.v2.KeyValueMetadataLabel
+	(*DocumentLocation)(nil),                                                // 84: google.privacy.dlp.v2.DocumentLocation
+	(*RecordLocation)(nil),                                                  // 85: google.privacy.dlp.v2.RecordLocation
+	(*TableLocation)(nil),                                                   // 86: google.privacy.dlp.v2.TableLocation
+	(*Container)(nil),                                                       // 87: google.privacy.dlp.v2.Container
+	(*Range)(nil),                                                           // 88: google.privacy.dlp.v2.Range
+	(*ImageLocation)(nil),                                                   // 89: google.privacy.dlp.v2.ImageLocation
+	(*BoundingBox)(nil),                                                     // 90: google.privacy.dlp.v2.BoundingBox
+	(*RedactImageRequest)(nil),                                              // 91: google.privacy.dlp.v2.RedactImageRequest
+	(*Color)(nil),                                                           // 92: google.privacy.dlp.v2.Color
+	(*RedactImageResponse)(nil),                                             // 93: google.privacy.dlp.v2.RedactImageResponse
+	(*DeidentifyContentRequest)(nil),                                        // 94: google.privacy.dlp.v2.DeidentifyContentRequest
+	(*DeidentifyContentResponse)(nil),                                       // 95: google.privacy.dlp.v2.DeidentifyContentResponse
+	(*ReidentifyContentRequest)(nil),                                        // 96: google.privacy.dlp.v2.ReidentifyContentRequest
+	(*ReidentifyContentResponse)(nil),                                       // 97: google.privacy.dlp.v2.ReidentifyContentResponse
+	(*InspectContentRequest)(nil),                                           // 98: google.privacy.dlp.v2.InspectContentRequest
+	(*InspectContentResponse)(nil),                                          // 99: google.privacy.dlp.v2.InspectContentResponse
+	(*OutputStorageConfig)(nil),                                             // 100: google.privacy.dlp.v2.OutputStorageConfig
+	(*InfoTypeStats)(nil),                                                   // 101: google.privacy.dlp.v2.InfoTypeStats
+	(*InspectDataSourceDetails)(nil),                                        // 102: google.privacy.dlp.v2.InspectDataSourceDetails
+	(*DataProfileBigQueryRowSchema)(nil),                                    // 103: google.privacy.dlp.v2.DataProfileBigQueryRowSchema
+	(*HybridInspectStatistics)(nil),                                         // 104: google.privacy.dlp.v2.HybridInspectStatistics
+	(*ActionDetails)(nil),                                                   // 105: google.privacy.dlp.v2.ActionDetails
+	(*DeidentifyDataSourceStats)(nil),                                       // 106: google.privacy.dlp.v2.DeidentifyDataSourceStats
+	(*DeidentifyDataSourceDetails)(nil),                                     // 107: google.privacy.dlp.v2.DeidentifyDataSourceDetails
+	(*LocationSupport)(nil),                                                 // 108: google.privacy.dlp.v2.LocationSupport
+	(*InfoTypeDescription)(nil),                                             // 109: google.privacy.dlp.v2.InfoTypeDescription
+	(*InfoTypeCategory)(nil),                                                // 110: google.privacy.dlp.v2.InfoTypeCategory
+	(*VersionDescription)(nil),                                              // 111: google.privacy.dlp.v2.VersionDescription
+	(*ListInfoTypesRequest)(nil),                                            // 112: google.privacy.dlp.v2.ListInfoTypesRequest
+	(*ListInfoTypesResponse)(nil),                                           // 113: google.privacy.dlp.v2.ListInfoTypesResponse
+	(*RiskAnalysisJobConfig)(nil),                                           // 114: google.privacy.dlp.v2.RiskAnalysisJobConfig
+	(*QuasiId)(nil),                                                         // 115: google.privacy.dlp.v2.QuasiId
+	(*StatisticalTable)(nil),                                                // 116: google.privacy.dlp.v2.StatisticalTable
+	(*PrivacyMetric)(nil),                                                   // 117: google.privacy.dlp.v2.PrivacyMetric
+	(*AnalyzeDataSourceRiskDetails)(nil),                                    // 118: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails
+	(*ValueFrequency)(nil),                                                  // 119: google.privacy.dlp.v2.ValueFrequency
+	(*Value)(nil),                                                           // 120: google.privacy.dlp.v2.Value
+	(*QuoteInfo)(nil),                                                       // 121: google.privacy.dlp.v2.QuoteInfo
+	(*DateTime)(nil),                                                        // 122: google.privacy.dlp.v2.DateTime
+	(*DeidentifyConfig)(nil),                                                // 123: google.privacy.dlp.v2.DeidentifyConfig
+	(*ImageTransformations)(nil),                                            // 124: google.privacy.dlp.v2.ImageTransformations
+	(*TransformationErrorHandling)(nil),                                     // 125: google.privacy.dlp.v2.TransformationErrorHandling
+	(*PrimitiveTransformation)(nil),                                         // 126: google.privacy.dlp.v2.PrimitiveTransformation
+	(*TimePartConfig)(nil),                                                  // 127: google.privacy.dlp.v2.TimePartConfig
+	(*CryptoHashConfig)(nil),                                                // 128: google.privacy.dlp.v2.CryptoHashConfig
+	(*CryptoDeterministicConfig)(nil),                                       // 129: google.privacy.dlp.v2.CryptoDeterministicConfig
+	(*ReplaceValueConfig)(nil),                                              // 130: google.privacy.dlp.v2.ReplaceValueConfig
+	(*ReplaceDictionaryConfig)(nil),                                         // 131: google.privacy.dlp.v2.ReplaceDictionaryConfig
+	(*ReplaceWithInfoTypeConfig)(nil),                                       // 132: google.privacy.dlp.v2.ReplaceWithInfoTypeConfig
+	(*RedactConfig)(nil),                                                    // 133: google.privacy.dlp.v2.RedactConfig
+	(*CharsToIgnore)(nil),                                                   // 134: google.privacy.dlp.v2.CharsToIgnore
+	(*CharacterMaskConfig)(nil),                                             // 135: google.privacy.dlp.v2.CharacterMaskConfig
+	(*FixedSizeBucketingConfig)(nil),                                        // 136: google.privacy.dlp.v2.FixedSizeBucketingConfig
+	(*BucketingConfig)(nil),                                                 // 137: google.privacy.dlp.v2.BucketingConfig
+	(*CryptoReplaceFfxFpeConfig)(nil),                                       // 138: google.privacy.dlp.v2.CryptoReplaceFfxFpeConfig
+	(*CryptoKey)(nil),                                                       // 139: google.privacy.dlp.v2.CryptoKey
+	(*TransientCryptoKey)(nil),                                              // 140: google.privacy.dlp.v2.TransientCryptoKey
+	(*UnwrappedCryptoKey)(nil),                                              // 141: google.privacy.dlp.v2.UnwrappedCryptoKey
+	(*KmsWrappedCryptoKey)(nil),                                             // 142: google.privacy.dlp.v2.KmsWrappedCryptoKey
+	(*DateShiftConfig)(nil),                                                 // 143: google.privacy.dlp.v2.DateShiftConfig
+	(*InfoTypeTransformations)(nil),                                         // 144: google.privacy.dlp.v2.InfoTypeTransformations
+	(*FieldTransformation)(nil),                                             // 145: google.privacy.dlp.v2.FieldTransformation
+	(*RecordTransformations)(nil),                                           // 146: google.privacy.dlp.v2.RecordTransformations
+	(*RecordSuppression)(nil),                                               // 147: google.privacy.dlp.v2.RecordSuppression
+	(*RecordCondition)(nil),                                                 // 148: google.privacy.dlp.v2.RecordCondition
+	(*TransformationOverview)(nil),                                          // 149: google.privacy.dlp.v2.TransformationOverview
+	(*TransformationSummary)(nil),                                           // 150: google.privacy.dlp.v2.TransformationSummary
+	(*TransformationDescription)(nil),                                       // 151: google.privacy.dlp.v2.TransformationDescription
+	(*TransformationDetails)(nil),                                           // 152: google.privacy.dlp.v2.TransformationDetails
+	(*TransformationLocation)(nil),                                          // 153: google.privacy.dlp.v2.TransformationLocation
+	(*RecordTransformation)(nil),                                            // 154: google.privacy.dlp.v2.RecordTransformation
+	(*TransformationResultStatus)(nil),                                      // 155: google.privacy.dlp.v2.TransformationResultStatus
+	(*TransformationDetailsStorageConfig)(nil),                              // 156: google.privacy.dlp.v2.TransformationDetailsStorageConfig
+	(*Schedule)(nil),                                                        // 157: google.privacy.dlp.v2.Schedule
+	(*Manual)(nil),                                                          // 158: google.privacy.dlp.v2.Manual
+	(*InspectTemplate)(nil),                                                 // 159: google.privacy.dlp.v2.InspectTemplate
+	(*DeidentifyTemplate)(nil),                                              // 160: google.privacy.dlp.v2.DeidentifyTemplate
+	(*Error)(nil),                                                           // 161: google.privacy.dlp.v2.Error
+	(*JobTrigger)(nil),                                                      // 162: google.privacy.dlp.v2.JobTrigger
+	(*Action)(nil),                                                          // 163: google.privacy.dlp.v2.Action
+	(*TransformationConfig)(nil),                                            // 164: google.privacy.dlp.v2.TransformationConfig
+	(*CreateInspectTemplateRequest)(nil),                                    // 165: google.privacy.dlp.v2.CreateInspectTemplateRequest
+	(*UpdateInspectTemplateRequest)(nil),                                    // 166: google.privacy.dlp.v2.UpdateInspectTemplateRequest
+	(*GetInspectTemplateRequest)(nil),                                       // 167: google.privacy.dlp.v2.GetInspectTemplateRequest
+	(*ListInspectTemplatesRequest)(nil),                                     // 168: google.privacy.dlp.v2.ListInspectTemplatesRequest
+	(*ListInspectTemplatesResponse)(nil),                                    // 169: google.privacy.dlp.v2.ListInspectTemplatesResponse
+	(*DeleteInspectTemplateRequest)(nil),                                    // 170: google.privacy.dlp.v2.DeleteInspectTemplateRequest
+	(*CreateJobTriggerRequest)(nil),                                         // 171: google.privacy.dlp.v2.CreateJobTriggerRequest
+	(*ActivateJobTriggerRequest)(nil),                                       // 172: google.privacy.dlp.v2.ActivateJobTriggerRequest
+	(*UpdateJobTriggerRequest)(nil),                                         // 173: google.privacy.dlp.v2.UpdateJobTriggerRequest
+	(*GetJobTriggerRequest)(nil),                                            // 174: google.privacy.dlp.v2.GetJobTriggerRequest
+	(*CreateDiscoveryConfigRequest)(nil),                                    // 175: google.privacy.dlp.v2.CreateDiscoveryConfigRequest
+	(*UpdateDiscoveryConfigRequest)(nil),                                    // 176: google.privacy.dlp.v2.UpdateDiscoveryConfigRequest
+	(*GetDiscoveryConfigRequest)(nil),                                       // 177: google.privacy.dlp.v2.GetDiscoveryConfigRequest
+	(*ListDiscoveryConfigsRequest)(nil),                                     // 178: google.privacy.dlp.v2.ListDiscoveryConfigsRequest
+	(*ListDiscoveryConfigsResponse)(nil),                                    // 179: google.privacy.dlp.v2.ListDiscoveryConfigsResponse
+	(*DeleteDiscoveryConfigRequest)(nil),                                    // 180: google.privacy.dlp.v2.DeleteDiscoveryConfigRequest
+	(*CreateDlpJobRequest)(nil),                                             // 181: google.privacy.dlp.v2.CreateDlpJobRequest
+	(*ListJobTriggersRequest)(nil),                                          // 182: google.privacy.dlp.v2.ListJobTriggersRequest
+	(*ListJobTriggersResponse)(nil),                                         // 183: google.privacy.dlp.v2.ListJobTriggersResponse
+	(*DeleteJobTriggerRequest)(nil),                                         // 184: google.privacy.dlp.v2.DeleteJobTriggerRequest
+	(*InspectJobConfig)(nil),                                                // 185: google.privacy.dlp.v2.InspectJobConfig
+	(*DataProfileAction)(nil),                                               // 186: google.privacy.dlp.v2.DataProfileAction
+	(*DataProfileFinding)(nil),                                              // 187: google.privacy.dlp.v2.DataProfileFinding
+	(*DataProfileFindingLocation)(nil),                                      // 188: google.privacy.dlp.v2.DataProfileFindingLocation
+	(*DataProfileFindingRecordLocation)(nil),                                // 189: google.privacy.dlp.v2.DataProfileFindingRecordLocation
+	(*DataProfileJobConfig)(nil),                                            // 190: google.privacy.dlp.v2.DataProfileJobConfig
+	(*BigQueryRegex)(nil),                                                   // 191: google.privacy.dlp.v2.BigQueryRegex
+	(*BigQueryRegexes)(nil),                                                 // 192: google.privacy.dlp.v2.BigQueryRegexes
+	(*BigQueryTableTypes)(nil),                                              // 193: google.privacy.dlp.v2.BigQueryTableTypes
+	(*Disabled)(nil),                                                        // 194: google.privacy.dlp.v2.Disabled
+	(*DataProfileLocation)(nil),                                             // 195: google.privacy.dlp.v2.DataProfileLocation
+	(*DiscoveryConfig)(nil),                                                 // 196: google.privacy.dlp.v2.DiscoveryConfig
+	(*DiscoveryTarget)(nil),                                                 // 197: google.privacy.dlp.v2.DiscoveryTarget
+	(*BigQueryDiscoveryTarget)(nil),                                         // 198: google.privacy.dlp.v2.BigQueryDiscoveryTarget
+	(*DiscoveryBigQueryFilter)(nil),                                         // 199: google.privacy.dlp.v2.DiscoveryBigQueryFilter
+	(*BigQueryTableCollection)(nil),                                         // 200: google.privacy.dlp.v2.BigQueryTableCollection
+	(*DiscoveryBigQueryConditions)(nil),                                     // 201: google.privacy.dlp.v2.DiscoveryBigQueryConditions
+	(*DiscoveryGenerationCadence)(nil),                                      // 202: google.privacy.dlp.v2.DiscoveryGenerationCadence
+	(*DiscoveryTableModifiedCadence)(nil),                                   // 203: google.privacy.dlp.v2.DiscoveryTableModifiedCadence
+	(*DiscoverySchemaModifiedCadence)(nil),                                  // 204: google.privacy.dlp.v2.DiscoverySchemaModifiedCadence
+	(*DiscoveryInspectTemplateModifiedCadence)(nil),                         // 205: google.privacy.dlp.v2.DiscoveryInspectTemplateModifiedCadence
+	(*CloudSqlDiscoveryTarget)(nil),                                         // 206: google.privacy.dlp.v2.CloudSqlDiscoveryTarget
+	(*DiscoveryCloudSqlFilter)(nil),                                         // 207: google.privacy.dlp.v2.DiscoveryCloudSqlFilter
+	(*DatabaseResourceCollection)(nil),                                      // 208: google.privacy.dlp.v2.DatabaseResourceCollection
+	(*DatabaseResourceRegexes)(nil),                                         // 209: google.privacy.dlp.v2.DatabaseResourceRegexes
+	(*DatabaseResourceRegex)(nil),                                           // 210: google.privacy.dlp.v2.DatabaseResourceRegex
+	(*AllOtherDatabaseResources)(nil),                                       // 211: google.privacy.dlp.v2.AllOtherDatabaseResources
+	(*DatabaseResourceReference)(nil),                                       // 212: google.privacy.dlp.v2.DatabaseResourceReference
+	(*DiscoveryCloudSqlConditions)(nil),                                     // 213: google.privacy.dlp.v2.DiscoveryCloudSqlConditions
+	(*DiscoveryCloudSqlGenerationCadence)(nil),                              // 214: google.privacy.dlp.v2.DiscoveryCloudSqlGenerationCadence
+	(*SecretsDiscoveryTarget)(nil),                                          // 215: google.privacy.dlp.v2.SecretsDiscoveryTarget
+	(*CloudStorageDiscoveryTarget)(nil),                                     // 216: google.privacy.dlp.v2.CloudStorageDiscoveryTarget
+	(*DiscoveryCloudStorageFilter)(nil),                                     // 217: google.privacy.dlp.v2.DiscoveryCloudStorageFilter
+	(*FileStoreCollection)(nil),                                             // 218: google.privacy.dlp.v2.FileStoreCollection
+	(*FileStoreRegexes)(nil),                                                // 219: google.privacy.dlp.v2.FileStoreRegexes
+	(*FileStoreRegex)(nil),                                                  // 220: google.privacy.dlp.v2.FileStoreRegex
+	(*CloudStorageRegex)(nil),                                               // 221: google.privacy.dlp.v2.CloudStorageRegex
+	(*CloudStorageResourceReference)(nil),                                   // 222: google.privacy.dlp.v2.CloudStorageResourceReference
+	(*DiscoveryCloudStorageGenerationCadence)(nil),                          // 223: google.privacy.dlp.v2.DiscoveryCloudStorageGenerationCadence
+	(*DiscoveryCloudStorageConditions)(nil),                                 // 224: google.privacy.dlp.v2.DiscoveryCloudStorageConditions
+	(*DiscoveryFileStoreConditions)(nil),                                    // 225: google.privacy.dlp.v2.DiscoveryFileStoreConditions
+	(*OtherCloudDiscoveryTarget)(nil),                                       // 226: google.privacy.dlp.v2.OtherCloudDiscoveryTarget
+	(*DiscoveryOtherCloudFilter)(nil),                                       // 227: google.privacy.dlp.v2.DiscoveryOtherCloudFilter
+	(*OtherCloudResourceCollection)(nil),                                    // 228: google.privacy.dlp.v2.OtherCloudResourceCollection
+	(*OtherCloudResourceRegexes)(nil),                                       // 229: google.privacy.dlp.v2.OtherCloudResourceRegexes
+	(*OtherCloudResourceRegex)(nil),                                         // 230: google.privacy.dlp.v2.OtherCloudResourceRegex
+	(*AwsAccountRegex)(nil),                                                 // 231: google.privacy.dlp.v2.AwsAccountRegex
+	(*AmazonS3BucketRegex)(nil),                                             // 232: google.privacy.dlp.v2.AmazonS3BucketRegex
+	(*OtherCloudSingleResourceReference)(nil),                               // 233: google.privacy.dlp.v2.OtherCloudSingleResourceReference
+	(*AwsAccount)(nil),                                                      // 234: google.privacy.dlp.v2.AwsAccount
+	(*AmazonS3Bucket)(nil),                                                  // 235: google.privacy.dlp.v2.AmazonS3Bucket
+	(*DiscoveryOtherCloudConditions)(nil),                                   // 236: google.privacy.dlp.v2.DiscoveryOtherCloudConditions
+	(*AmazonS3BucketConditions)(nil),                                        // 237: google.privacy.dlp.v2.AmazonS3BucketConditions
+	(*DiscoveryOtherCloudGenerationCadence)(nil),                            // 238: google.privacy.dlp.v2.DiscoveryOtherCloudGenerationCadence
+	(*DiscoveryStartingLocation)(nil),                                       // 239: google.privacy.dlp.v2.DiscoveryStartingLocation
+	(*OtherCloudDiscoveryStartingLocation)(nil),                             // 240: google.privacy.dlp.v2.OtherCloudDiscoveryStartingLocation
+	(*AllOtherResources)(nil),                                               // 241: google.privacy.dlp.v2.AllOtherResources
+	(*VertexDatasetDiscoveryTarget)(nil),                                    // 242: google.privacy.dlp.v2.VertexDatasetDiscoveryTarget
+	(*DiscoveryVertexDatasetFilter)(nil),                                    // 243: google.privacy.dlp.v2.DiscoveryVertexDatasetFilter
+	(*VertexDatasetCollection)(nil),                                         // 244: google.privacy.dlp.v2.VertexDatasetCollection
+	(*VertexDatasetRegexes)(nil),                                            // 245: google.privacy.dlp.v2.VertexDatasetRegexes
+	(*VertexDatasetRegex)(nil),                                              // 246: google.privacy.dlp.v2.VertexDatasetRegex
+	(*VertexDatasetResourceReference)(nil),                                  // 247: google.privacy.dlp.v2.VertexDatasetResourceReference
+	(*DiscoveryVertexDatasetConditions)(nil),                                // 248: google.privacy.dlp.v2.DiscoveryVertexDatasetConditions
+	(*DiscoveryVertexDatasetGenerationCadence)(nil),                         // 249: google.privacy.dlp.v2.DiscoveryVertexDatasetGenerationCadence
+	(*DlpJob)(nil),                                                          // 250: google.privacy.dlp.v2.DlpJob
+	(*GetDlpJobRequest)(nil),                                                // 251: google.privacy.dlp.v2.GetDlpJobRequest
+	(*ListDlpJobsRequest)(nil),                                              // 252: google.privacy.dlp.v2.ListDlpJobsRequest
+	(*ListDlpJobsResponse)(nil),                                             // 253: google.privacy.dlp.v2.ListDlpJobsResponse
+	(*CancelDlpJobRequest)(nil),                                             // 254: google.privacy.dlp.v2.CancelDlpJobRequest
+	(*FinishDlpJobRequest)(nil),                                             // 255: google.privacy.dlp.v2.FinishDlpJobRequest
+	(*DeleteDlpJobRequest)(nil),                                             // 256: google.privacy.dlp.v2.DeleteDlpJobRequest
+	(*CreateDeidentifyTemplateRequest)(nil),                                 // 257: google.privacy.dlp.v2.CreateDeidentifyTemplateRequest
+	(*UpdateDeidentifyTemplateRequest)(nil),                                 // 258: google.privacy.dlp.v2.UpdateDeidentifyTemplateRequest
+	(*GetDeidentifyTemplateRequest)(nil),                                    // 259: google.privacy.dlp.v2.GetDeidentifyTemplateRequest
+	(*ListDeidentifyTemplatesRequest)(nil),                                  // 260: google.privacy.dlp.v2.ListDeidentifyTemplatesRequest
+	(*ListDeidentifyTemplatesResponse)(nil),                                 // 261: google.privacy.dlp.v2.ListDeidentifyTemplatesResponse
+	(*DeleteDeidentifyTemplateRequest)(nil),                                 // 262: google.privacy.dlp.v2.DeleteDeidentifyTemplateRequest
+	(*LargeCustomDictionaryConfig)(nil),                                     // 263: google.privacy.dlp.v2.LargeCustomDictionaryConfig
+	(*LargeCustomDictionaryStats)(nil),                                      // 264: google.privacy.dlp.v2.LargeCustomDictionaryStats
+	(*StoredInfoTypeConfig)(nil),                                            // 265: google.privacy.dlp.v2.StoredInfoTypeConfig
+	(*StoredInfoTypeStats)(nil),                                             // 266: google.privacy.dlp.v2.StoredInfoTypeStats
+	(*StoredInfoTypeVersion)(nil),                                           // 267: google.privacy.dlp.v2.StoredInfoTypeVersion
+	(*StoredInfoType)(nil),                                                  // 268: google.privacy.dlp.v2.StoredInfoType
+	(*CreateStoredInfoTypeRequest)(nil),                                     // 269: google.privacy.dlp.v2.CreateStoredInfoTypeRequest
+	(*UpdateStoredInfoTypeRequest)(nil),                                     // 270: google.privacy.dlp.v2.UpdateStoredInfoTypeRequest
+	(*GetStoredInfoTypeRequest)(nil),                                        // 271: google.privacy.dlp.v2.GetStoredInfoTypeRequest
+	(*ListStoredInfoTypesRequest)(nil),                                      // 272: google.privacy.dlp.v2.ListStoredInfoTypesRequest
+	(*ListStoredInfoTypesResponse)(nil),                                     // 273: google.privacy.dlp.v2.ListStoredInfoTypesResponse
+	(*DeleteStoredInfoTypeRequest)(nil),                                     // 274: google.privacy.dlp.v2.DeleteStoredInfoTypeRequest
+	(*HybridInspectJobTriggerRequest)(nil),                                  // 275: google.privacy.dlp.v2.HybridInspectJobTriggerRequest
+	(*HybridInspectDlpJobRequest)(nil),                                      // 276: google.privacy.dlp.v2.HybridInspectDlpJobRequest
+	(*HybridContentItem)(nil),                                               // 277: google.privacy.dlp.v2.HybridContentItem
+	(*HybridFindingDetails)(nil),                                            // 278: google.privacy.dlp.v2.HybridFindingDetails
+	(*HybridInspectResponse)(nil),                                           // 279: google.privacy.dlp.v2.HybridInspectResponse
+	(*ImageContainmentType)(nil),                                            // 280: google.privacy.dlp.v2.ImageContainmentType
+	(*Overlap)(nil),                                                         // 281: google.privacy.dlp.v2.Overlap
+	(*Encloses)(nil),                                                        // 282: google.privacy.dlp.v2.Encloses
+	(*FullyInside)(nil),                                                     // 283: google.privacy.dlp.v2.FullyInside
+	(*ListProjectDataProfilesRequest)(nil),                                  // 284: google.privacy.dlp.v2.ListProjectDataProfilesRequest
+	(*ListProjectDataProfilesResponse)(nil),                                 // 285: google.privacy.dlp.v2.ListProjectDataProfilesResponse
+	(*ListTableDataProfilesRequest)(nil),                                    // 286: google.privacy.dlp.v2.ListTableDataProfilesRequest
+	(*ListTableDataProfilesResponse)(nil),                                   // 287: google.privacy.dlp.v2.ListTableDataProfilesResponse
+	(*ListColumnDataProfilesRequest)(nil),                                   // 288: google.privacy.dlp.v2.ListColumnDataProfilesRequest
+	(*ListColumnDataProfilesResponse)(nil),                                  // 289: google.privacy.dlp.v2.ListColumnDataProfilesResponse
+	(*DataRiskLevel)(nil),                                                   // 290: google.privacy.dlp.v2.DataRiskLevel
+	(*ProjectDataProfile)(nil),                                              // 291: google.privacy.dlp.v2.ProjectDataProfile
+	(*DataProfileConfigSnapshot)(nil),                                       // 292: google.privacy.dlp.v2.DataProfileConfigSnapshot
+	(*TableDataProfile)(nil),                                                // 293: google.privacy.dlp.v2.TableDataProfile
+	(*ProfileStatus)(nil),                                                   // 294: google.privacy.dlp.v2.ProfileStatus
+	(*InfoTypeSummary)(nil),                                                 // 295: google.privacy.dlp.v2.InfoTypeSummary
+	(*OtherInfoTypeSummary)(nil),                                            // 296: google.privacy.dlp.v2.OtherInfoTypeSummary
+	(*ColumnDataProfile)(nil),                                               // 297: google.privacy.dlp.v2.ColumnDataProfile
+	(*FileStoreDataProfile)(nil),                                            // 298: google.privacy.dlp.v2.FileStoreDataProfile
+	(*Tag)(nil),                                                             // 299: google.privacy.dlp.v2.Tag
+	(*TagFilters)(nil),                                                      // 300: google.privacy.dlp.v2.TagFilters
+	(*TagFilter)(nil),                                                       // 301: google.privacy.dlp.v2.TagFilter
+	(*RelatedResource)(nil),                                                 // 302: google.privacy.dlp.v2.RelatedResource
+	(*FileStoreInfoTypeSummary)(nil),                                        // 303: google.privacy.dlp.v2.FileStoreInfoTypeSummary
+	(*FileExtensionInfo)(nil),                                               // 304: google.privacy.dlp.v2.FileExtensionInfo
+	(*FileClusterSummary)(nil),                                              // 305: google.privacy.dlp.v2.FileClusterSummary
+	(*GetProjectDataProfileRequest)(nil),                                    // 306: google.privacy.dlp.v2.GetProjectDataProfileRequest
+	(*GetFileStoreDataProfileRequest)(nil),                                  // 307: google.privacy.dlp.v2.GetFileStoreDataProfileRequest
+	(*ListFileStoreDataProfilesRequest)(nil),                                // 308: google.privacy.dlp.v2.ListFileStoreDataProfilesRequest
+	(*ListFileStoreDataProfilesResponse)(nil),                               // 309: google.privacy.dlp.v2.ListFileStoreDataProfilesResponse
+	(*DeleteFileStoreDataProfileRequest)(nil),                               // 310: google.privacy.dlp.v2.DeleteFileStoreDataProfileRequest
+	(*GetTableDataProfileRequest)(nil),                                      // 311: google.privacy.dlp.v2.GetTableDataProfileRequest
+	(*GetColumnDataProfileRequest)(nil),                                     // 312: google.privacy.dlp.v2.GetColumnDataProfileRequest
+	(*DataProfilePubSubCondition)(nil),                                      // 313: google.privacy.dlp.v2.DataProfilePubSubCondition
+	(*DataProfilePubSubMessage)(nil),                                        // 314: google.privacy.dlp.v2.DataProfilePubSubMessage
+	(*CreateConnectionRequest)(nil),                                         // 315: google.privacy.dlp.v2.CreateConnectionRequest
+	(*GetConnectionRequest)(nil),                                            // 316: google.privacy.dlp.v2.GetConnectionRequest
+	(*ListConnectionsRequest)(nil),                                          // 317: google.privacy.dlp.v2.ListConnectionsRequest
+	(*SearchConnectionsRequest)(nil),                                        // 318: google.privacy.dlp.v2.SearchConnectionsRequest
+	(*ListConnectionsResponse)(nil),                                         // 319: google.privacy.dlp.v2.ListConnectionsResponse
+	(*SearchConnectionsResponse)(nil),                                       // 320: google.privacy.dlp.v2.SearchConnectionsResponse
+	(*UpdateConnectionRequest)(nil),                                         // 321: google.privacy.dlp.v2.UpdateConnectionRequest
+	(*DeleteConnectionRequest)(nil),                                         // 322: google.privacy.dlp.v2.DeleteConnectionRequest
+	(*Connection)(nil),                                                      // 323: google.privacy.dlp.v2.Connection
+	(*SecretManagerCredential)(nil),                                         // 324: google.privacy.dlp.v2.SecretManagerCredential
+	(*CloudSqlIamCredential)(nil),                                           // 325: google.privacy.dlp.v2.CloudSqlIamCredential
+	(*CloudSqlProperties)(nil),                                              // 326: google.privacy.dlp.v2.CloudSqlProperties
+	(*DeleteTableDataProfileRequest)(nil),                                   // 327: google.privacy.dlp.v2.DeleteTableDataProfileRequest
+	(*DataSourceType)(nil),                                                  // 328: google.privacy.dlp.v2.DataSourceType
+	(*FileClusterType)(nil),                                                 // 329: google.privacy.dlp.v2.FileClusterType
+	(*ProcessingLocation)(nil),                                              // 330: google.privacy.dlp.v2.ProcessingLocation
+	(*SaveToGcsFindingsOutput)(nil),                                         // 331: google.privacy.dlp.v2.SaveToGcsFindingsOutput
+	(*Domain)(nil),                                                          // 332: google.privacy.dlp.v2.Domain
+	(*InspectConfig_InfoTypeLikelihood)(nil),                                // 333: google.privacy.dlp.v2.InspectConfig.InfoTypeLikelihood
+	(*InspectConfig_FindingLimits)(nil),                                     // 334: google.privacy.dlp.v2.InspectConfig.FindingLimits
+	(*InspectConfig_FindingLimits_InfoTypeLimit)(nil),                       // 335: google.privacy.dlp.v2.InspectConfig.FindingLimits.InfoTypeLimit
+	(*Table_Row)(nil),                                                       // 336: google.privacy.dlp.v2.Table.Row
+	nil,                                                                     // 337: google.privacy.dlp.v2.Finding.LabelsEntry
+	(*ConversationLocation_AllMessages)(nil),                                // 338: google.privacy.dlp.v2.ConversationLocation.AllMessages
+	(*RedactImageRequest_ImageRedactionConfig)(nil),                         // 339: google.privacy.dlp.v2.RedactImageRequest.ImageRedactionConfig
+	(*InspectDataSourceDetails_RequestedOptions)(nil),                       // 340: google.privacy.dlp.v2.InspectDataSourceDetails.RequestedOptions
+	(*InspectDataSourceDetails_Result)(nil),                                 // 341: google.privacy.dlp.v2.InspectDataSourceDetails.Result
+	(*DeidentifyDataSourceDetails_RequestedDeidentifyOptions)(nil),          // 342: google.privacy.dlp.v2.DeidentifyDataSourceDetails.RequestedDeidentifyOptions
+	(*StatisticalTable_QuasiIdentifierField)(nil),                           // 343: google.privacy.dlp.v2.StatisticalTable.QuasiIdentifierField
+	(*PrivacyMetric_NumericalStatsConfig)(nil),                              // 344: google.privacy.dlp.v2.PrivacyMetric.NumericalStatsConfig
+	(*PrivacyMetric_CategoricalStatsConfig)(nil),                            // 345: google.privacy.dlp.v2.PrivacyMetric.CategoricalStatsConfig
+	(*PrivacyMetric_KAnonymityConfig)(nil),                                  // 346: google.privacy.dlp.v2.PrivacyMetric.KAnonymityConfig
+	(*PrivacyMetric_LDiversityConfig)(nil),                                  // 347: google.privacy.dlp.v2.PrivacyMetric.LDiversityConfig
+	(*PrivacyMetric_KMapEstimationConfig)(nil),                              // 348: google.privacy.dlp.v2.PrivacyMetric.KMapEstimationConfig
+	(*PrivacyMetric_DeltaPresenceEstimationConfig)(nil),                     // 349: google.privacy.dlp.v2.PrivacyMetric.DeltaPresenceEstimationConfig
+	(*PrivacyMetric_KMapEstimationConfig_TaggedField)(nil),                  // 350: google.privacy.dlp.v2.PrivacyMetric.KMapEstimationConfig.TaggedField
+	(*PrivacyMetric_KMapEstimationConfig_AuxiliaryTable)(nil),               // 351: google.privacy.dlp.v2.PrivacyMetric.KMapEstimationConfig.AuxiliaryTable
+	(*PrivacyMetric_KMapEstimationConfig_AuxiliaryTable_QuasiIdField)(nil),  // 352: google.privacy.dlp.v2.PrivacyMetric.KMapEstimationConfig.AuxiliaryTable.QuasiIdField
+	(*AnalyzeDataSourceRiskDetails_NumericalStatsResult)(nil),               // 353: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.NumericalStatsResult
+	(*AnalyzeDataSourceRiskDetails_CategoricalStatsResult)(nil),             // 354: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.CategoricalStatsResult
+	(*AnalyzeDataSourceRiskDetails_KAnonymityResult)(nil),                   // 355: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.KAnonymityResult
+	(*AnalyzeDataSourceRiskDetails_LDiversityResult)(nil),                   // 356: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.LDiversityResult
+	(*AnalyzeDataSourceRiskDetails_KMapEstimationResult)(nil),               // 357: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.KMapEstimationResult
+	(*AnalyzeDataSourceRiskDetails_DeltaPresenceEstimationResult)(nil),      // 358: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.DeltaPresenceEstimationResult
+	(*AnalyzeDataSourceRiskDetails_RequestedRiskAnalysisOptions)(nil),       // 359: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.RequestedRiskAnalysisOptions
+	(*AnalyzeDataSourceRiskDetails_CategoricalStatsResult_CategoricalStatsHistogramBucket)(nil),               // 360: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.CategoricalStatsResult.CategoricalStatsHistogramBucket
+	(*AnalyzeDataSourceRiskDetails_KAnonymityResult_KAnonymityEquivalenceClass)(nil),                          // 361: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.KAnonymityResult.KAnonymityEquivalenceClass
+	(*AnalyzeDataSourceRiskDetails_KAnonymityResult_KAnonymityHistogramBucket)(nil),                           // 362: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.KAnonymityResult.KAnonymityHistogramBucket
+	(*AnalyzeDataSourceRiskDetails_LDiversityResult_LDiversityEquivalenceClass)(nil),                          // 363: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.LDiversityResult.LDiversityEquivalenceClass
+	(*AnalyzeDataSourceRiskDetails_LDiversityResult_LDiversityHistogramBucket)(nil),                           // 364: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.LDiversityResult.LDiversityHistogramBucket
+	(*AnalyzeDataSourceRiskDetails_KMapEstimationResult_KMapEstimationQuasiIdValues)(nil),                     // 365: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.KMapEstimationResult.KMapEstimationQuasiIdValues
+	(*AnalyzeDataSourceRiskDetails_KMapEstimationResult_KMapEstimationHistogramBucket)(nil),                   // 366: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.KMapEstimationResult.KMapEstimationHistogramBucket
+	(*AnalyzeDataSourceRiskDetails_DeltaPresenceEstimationResult_DeltaPresenceEstimationQuasiIdValues)(nil),   // 367: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.DeltaPresenceEstimationResult.DeltaPresenceEstimationQuasiIdValues
+	(*AnalyzeDataSourceRiskDetails_DeltaPresenceEstimationResult_DeltaPresenceEstimationHistogramBucket)(nil), // 368: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.DeltaPresenceEstimationResult.DeltaPresenceEstimationHistogramBucket
+	(*DateTime_TimeZone)(nil),                                                // 369: google.privacy.dlp.v2.DateTime.TimeZone
+	(*ImageTransformations_ImageTransformation)(nil),                         // 370: google.privacy.dlp.v2.ImageTransformations.ImageTransformation
+	(*ImageTransformations_ImageTransformation_SelectedInfoTypes)(nil),       // 371: google.privacy.dlp.v2.ImageTransformations.ImageTransformation.SelectedInfoTypes
+	(*ImageTransformations_ImageTransformation_AllInfoTypes)(nil),            // 372: google.privacy.dlp.v2.ImageTransformations.ImageTransformation.AllInfoTypes
+	(*ImageTransformations_ImageTransformation_AllText)(nil),                 // 373: google.privacy.dlp.v2.ImageTransformations.ImageTransformation.AllText
+	(*TransformationErrorHandling_ThrowError)(nil),                           // 374: google.privacy.dlp.v2.TransformationErrorHandling.ThrowError
+	(*TransformationErrorHandling_LeaveUntransformed)(nil),                   // 375: google.privacy.dlp.v2.TransformationErrorHandling.LeaveUntransformed
+	(*BucketingConfig_Bucket)(nil),                                           // 376: google.privacy.dlp.v2.BucketingConfig.Bucket
+	(*InfoTypeTransformations_InfoTypeTransformation)(nil),                   // 377: google.privacy.dlp.v2.InfoTypeTransformations.InfoTypeTransformation
+	(*RecordCondition_Condition)(nil),                                        // 378: google.privacy.dlp.v2.RecordCondition.Condition
+	(*RecordCondition_Conditions)(nil),                                       // 379: google.privacy.dlp.v2.RecordCondition.Conditions
+	(*RecordCondition_Expressions)(nil),                                      // 380: google.privacy.dlp.v2.RecordCondition.Expressions
+	(*TransformationSummary_SummaryResult)(nil),                              // 381: google.privacy.dlp.v2.TransformationSummary.SummaryResult
+	(*JobTrigger_Trigger)(nil),                                               // 382: google.privacy.dlp.v2.JobTrigger.Trigger
+	(*Action_SaveFindings)(nil),                                              // 383: google.privacy.dlp.v2.Action.SaveFindings
+	(*Action_PublishToPubSub)(nil),                                           // 384: google.privacy.dlp.v2.Action.PublishToPubSub
+	(*Action_PublishSummaryToCscc)(nil),                                      // 385: google.privacy.dlp.v2.Action.PublishSummaryToCscc
+	(*Action_PublishFindingsToCloudDataCatalog)(nil),                         // 386: google.privacy.dlp.v2.Action.PublishFindingsToCloudDataCatalog
+	(*Action_PublishFindingsToDataplexCatalog)(nil),                          // 387: google.privacy.dlp.v2.Action.PublishFindingsToDataplexCatalog
+	(*Action_Deidentify)(nil),                                                // 388: google.privacy.dlp.v2.Action.Deidentify
+	(*Action_JobNotificationEmails)(nil),                                     // 389: google.privacy.dlp.v2.Action.JobNotificationEmails
+	(*Action_PublishToStackdriver)(nil),                                      // 390: google.privacy.dlp.v2.Action.PublishToStackdriver
+	(*DataProfileAction_Export)(nil),                                         // 391: google.privacy.dlp.v2.DataProfileAction.Export
+	(*DataProfileAction_PubSubNotification)(nil),                             // 392: google.privacy.dlp.v2.DataProfileAction.PubSubNotification
+	(*DataProfileAction_PublishToChronicle)(nil),                             // 393: google.privacy.dlp.v2.DataProfileAction.PublishToChronicle
+	(*DataProfileAction_PublishToSecurityCommandCenter)(nil),                 // 394: google.privacy.dlp.v2.DataProfileAction.PublishToSecurityCommandCenter
+	(*DataProfileAction_PublishToDataplexCatalog)(nil),                       // 395: google.privacy.dlp.v2.DataProfileAction.PublishToDataplexCatalog
+	(*DataProfileAction_TagResources)(nil),                                   // 396: google.privacy.dlp.v2.DataProfileAction.TagResources
+	(*DataProfileAction_TagResources_TagCondition)(nil),                      // 397: google.privacy.dlp.v2.DataProfileAction.TagResources.TagCondition
+	(*DataProfileAction_TagResources_TagValue)(nil),                          // 398: google.privacy.dlp.v2.DataProfileAction.TagResources.TagValue
+	(*DiscoveryConfig_OrgConfig)(nil),                                        // 399: google.privacy.dlp.v2.DiscoveryConfig.OrgConfig
+	(*DiscoveryBigQueryFilter_AllOtherBigQueryTables)(nil),                   // 400: google.privacy.dlp.v2.DiscoveryBigQueryFilter.AllOtherBigQueryTables
+	(*DiscoveryBigQueryConditions_OrConditions)(nil),                         // 401: google.privacy.dlp.v2.DiscoveryBigQueryConditions.OrConditions
+	(*DiscoveryCloudSqlGenerationCadence_SchemaModifiedCadence)(nil),         // 402: google.privacy.dlp.v2.DiscoveryCloudSqlGenerationCadence.SchemaModifiedCadence
+	(*OtherCloudDiscoveryStartingLocation_AwsDiscoveryStartingLocation)(nil), // 403: google.privacy.dlp.v2.OtherCloudDiscoveryStartingLocation.AwsDiscoveryStartingLocation
+	nil, // 404: google.privacy.dlp.v2.HybridFindingDetails.LabelsEntry
+	nil, // 405: google.privacy.dlp.v2.TableDataProfile.ResourceLabelsEntry
+	nil, // 406: google.privacy.dlp.v2.FileStoreDataProfile.ResourceAttributesEntry
+	nil, // 407: google.privacy.dlp.v2.FileStoreDataProfile.ResourceLabelsEntry
+	(*DataProfilePubSubCondition_PubSubCondition)(nil),   // 408: google.privacy.dlp.v2.DataProfilePubSubCondition.PubSubCondition
+	(*DataProfilePubSubCondition_PubSubExpressions)(nil), // 409: google.privacy.dlp.v2.DataProfilePubSubCondition.PubSubExpressions
+	(*ProcessingLocation_MultiRegionProcessing)(nil),     // 410: google.privacy.dlp.v2.ProcessingLocation.MultiRegionProcessing
+	(*ProcessingLocation_GlobalProcessing)(nil),          // 411: google.privacy.dlp.v2.ProcessingLocation.GlobalProcessing
+	(*ProcessingLocation_ImageFallbackLocation)(nil),     // 412: google.privacy.dlp.v2.ProcessingLocation.ImageFallbackLocation
+	(*ProcessingLocation_DocumentFallbackLocation)(nil),  // 413: google.privacy.dlp.v2.ProcessingLocation.DocumentFallbackLocation
+	(*InfoType)(nil),                                          // 414: google.privacy.dlp.v2.InfoType
+	(*CustomInfoType_Regex)(nil),                              // 415: google.privacy.dlp.v2.CustomInfoType.Regex
+	(*CustomInfoType_DetectionRule_Proximity)(nil),            // 416: google.privacy.dlp.v2.CustomInfoType.DetectionRule.Proximity
+	(*CustomInfoType_Dictionary)(nil),                         // 417: google.privacy.dlp.v2.CustomInfoType.Dictionary
+	(Likelihood)(0),                                           // 418: google.privacy.dlp.v2.Likelihood
+	(*CustomInfoType_DetectionRule_LikelihoodAdjustment)(nil), // 419: google.privacy.dlp.v2.CustomInfoType.DetectionRule.LikelihoodAdjustment
+	(*CustomInfoType_DetectionRule_HotwordRule)(nil),          // 420: google.privacy.dlp.v2.CustomInfoType.DetectionRule.HotwordRule
+	(*CustomInfoType)(nil),                                    // 421: google.privacy.dlp.v2.CustomInfoType
+	(*FieldId)(nil),                                           // 422: google.privacy.dlp.v2.FieldId
+	(*timestamppb.Timestamp)(nil),                             // 423: google.protobuf.Timestamp
+	(*RecordKey)(nil),                                         // 424: google.privacy.dlp.v2.RecordKey
+	(*BigQueryTable)(nil),                                     // 425: google.privacy.dlp.v2.BigQueryTable
+	(*CloudStoragePath)(nil),                                  // 426: google.privacy.dlp.v2.CloudStoragePath
+	(*SensitivityScore)(nil),                                  // 427: google.privacy.dlp.v2.SensitivityScore
+	(*emptypb.Empty)(nil),                                     // 428: google.protobuf.Empty
+	(*timeofday.TimeOfDay)(nil),                               // 429: google.type.TimeOfDay
+	(*date.Date)(nil),                                         // 430: google.type.Date
+	(dayofweek.DayOfWeek)(0),                                  // 431: google.type.DayOfWeek
+	(*CustomInfoType_Dictionary_WordList)(nil),                // 432: google.privacy.dlp.v2.CustomInfoType.Dictionary.WordList
+	(*status.Status)(nil),                                     // 433: google.rpc.Status
+	(*durationpb.Duration)(nil),                               // 434: google.protobuf.Duration
+	(*fieldmaskpb.FieldMask)(nil),                             // 435: google.protobuf.FieldMask
+	(*StorageConfig)(nil),                                     // 436: google.privacy.dlp.v2.StorageConfig
+	(*TableReference)(nil),                                    // 437: google.privacy.dlp.v2.TableReference
+	(*CloudStorageFileSet)(nil),                               // 438: google.privacy.dlp.v2.CloudStorageFileSet
+	(*BigQueryField)(nil),                                     // 439: google.privacy.dlp.v2.BigQueryField
+	(*TableOptions)(nil),                                      // 440: google.privacy.dlp.v2.TableOptions
+	(*EntityId)(nil),                                          // 441: google.privacy.dlp.v2.EntityId
+	(FileType)(0),                                             // 442: google.privacy.dlp.v2.FileType
 }
 var file_google_privacy_dlp_v2_dlp_proto_depIdxs = []int32{
-	409, // 0: google.privacy.dlp.v2.ExcludeInfoTypes.info_types:type_name -> google.privacy.dlp.v2.InfoType
-	410, // 1: google.privacy.dlp.v2.ExcludeByHotword.hotword_regex:type_name -> google.privacy.dlp.v2.CustomInfoType.Regex
-	411, // 2: google.privacy.dlp.v2.ExcludeByHotword.proximity:type_name -> google.privacy.dlp.v2.CustomInfoType.DetectionRule.Proximity
-	409, // 3: google.privacy.dlp.v2.ExcludeByImageFindings.info_types:type_name -> google.privacy.dlp.v2.InfoType
-	276, // 4: google.privacy.dlp.v2.ExcludeByImageFindings.image_containment_type:type_name -> google.privacy.dlp.v2.ImageContainmentType
-	412, // 5: google.privacy.dlp.v2.ExclusionRule.dictionary:type_name -> google.privacy.dlp.v2.CustomInfoType.Dictionary
-	410, // 6: google.privacy.dlp.v2.ExclusionRule.regex:type_name -> google.privacy.dlp.v2.CustomInfoType.Regex
-	58,  // 7: google.privacy.dlp.v2.ExclusionRule.exclude_info_types:type_name -> google.privacy.dlp.v2.ExcludeInfoTypes
-	59,  // 8: google.privacy.dlp.v2.ExclusionRule.exclude_by_hotword:type_name -> google.privacy.dlp.v2.ExcludeByHotword
-	60,  // 9: google.privacy.dlp.v2.ExclusionRule.exclude_by_image_findings:type_name -> google.privacy.dlp.v2.ExcludeByImageFindings
+	414, // 0: google.privacy.dlp.v2.ExcludeInfoTypes.info_types:type_name -> google.privacy.dlp.v2.InfoType
+	415, // 1: google.privacy.dlp.v2.ExcludeByHotword.hotword_regex:type_name -> google.privacy.dlp.v2.CustomInfoType.Regex
+	416, // 2: google.privacy.dlp.v2.ExcludeByHotword.proximity:type_name -> google.privacy.dlp.v2.CustomInfoType.DetectionRule.Proximity
+	414, // 3: google.privacy.dlp.v2.ExcludeByImageFindings.info_types:type_name -> google.privacy.dlp.v2.InfoType
+	280, // 4: google.privacy.dlp.v2.ExcludeByImageFindings.image_containment_type:type_name -> google.privacy.dlp.v2.ImageContainmentType
+	417, // 5: google.privacy.dlp.v2.ExclusionRule.dictionary:type_name -> google.privacy.dlp.v2.CustomInfoType.Dictionary
+	415, // 6: google.privacy.dlp.v2.ExclusionRule.regex:type_name -> google.privacy.dlp.v2.CustomInfoType.Regex
+	59,  // 7: google.privacy.dlp.v2.ExclusionRule.exclude_info_types:type_name -> google.privacy.dlp.v2.ExcludeInfoTypes
+	60,  // 8: google.privacy.dlp.v2.ExclusionRule.exclude_by_hotword:type_name -> google.privacy.dlp.v2.ExcludeByHotword
+	61,  // 9: google.privacy.dlp.v2.ExclusionRule.exclude_by_image_findings:type_name -> google.privacy.dlp.v2.ExcludeByImageFindings
 	10,  // 10: google.privacy.dlp.v2.ExclusionRule.matching_type:type_name -> google.privacy.dlp.v2.MatchingType
-	409, // 11: google.privacy.dlp.v2.AdjustByMatchingInfoTypes.info_types:type_name -> google.privacy.dlp.v2.InfoType
-	413, // 12: google.privacy.dlp.v2.AdjustByMatchingInfoTypes.min_likelihood:type_name -> google.privacy.dlp.v2.Likelihood
+	414, // 11: google.privacy.dlp.v2.AdjustByMatchingInfoTypes.info_types:type_name -> google.privacy.dlp.v2.InfoType
+	418, // 12: google.privacy.dlp.v2.AdjustByMatchingInfoTypes.min_likelihood:type_name -> google.privacy.dlp.v2.Likelihood
 	10,  // 13: google.privacy.dlp.v2.AdjustByMatchingInfoTypes.matching_type:type_name -> google.privacy.dlp.v2.MatchingType
-	409, // 14: google.privacy.dlp.v2.AdjustByImageFindings.info_types:type_name -> google.privacy.dlp.v2.InfoType
-	413, // 15: google.privacy.dlp.v2.AdjustByImageFindings.min_likelihood:type_name -> google.privacy.dlp.v2.Likelihood
-	276, // 16: google.privacy.dlp.v2.AdjustByImageFindings.image_containment_type:type_name -> google.privacy.dlp.v2.ImageContainmentType
-	62,  // 17: google.privacy.dlp.v2.AdjustmentRule.adjust_by_matching_info_types:type_name -> google.privacy.dlp.v2.AdjustByMatchingInfoTypes
-	63,  // 18: google.privacy.dlp.v2.AdjustmentRule.adjust_by_image_findings:type_name -> google.privacy.dlp.v2.AdjustByImageFindings
-	414, // 19: google.privacy.dlp.v2.AdjustmentRule.likelihood_adjustment:type_name -> google.privacy.dlp.v2.CustomInfoType.DetectionRule.LikelihoodAdjustment
-	415, // 20: google.privacy.dlp.v2.InspectionRule.hotword_rule:type_name -> google.privacy.dlp.v2.CustomInfoType.DetectionRule.HotwordRule
-	61,  // 21: google.privacy.dlp.v2.InspectionRule.exclusion_rule:type_name -> google.privacy.dlp.v2.ExclusionRule
-	64,  // 22: google.privacy.dlp.v2.InspectionRule.adjustment_rule:type_name -> google.privacy.dlp.v2.AdjustmentRule
-	409, // 23: google.privacy.dlp.v2.InspectionRuleSet.info_types:type_name -> google.privacy.dlp.v2.InfoType
-	65,  // 24: google.privacy.dlp.v2.InspectionRuleSet.rules:type_name -> google.privacy.dlp.v2.InspectionRule
-	409, // 25: google.privacy.dlp.v2.InspectConfig.info_types:type_name -> google.privacy.dlp.v2.InfoType
-	413, // 26: google.privacy.dlp.v2.InspectConfig.min_likelihood:type_name -> google.privacy.dlp.v2.Likelihood
-	329, // 27: google.privacy.dlp.v2.InspectConfig.min_likelihood_per_info_type:type_name -> google.privacy.dlp.v2.InspectConfig.InfoTypeLikelihood
-	330, // 28: google.privacy.dlp.v2.InspectConfig.limits:type_name -> google.privacy.dlp.v2.InspectConfig.FindingLimits
-	416, // 29: google.privacy.dlp.v2.InspectConfig.custom_info_types:type_name -> google.privacy.dlp.v2.CustomInfoType
+	414, // 14: google.privacy.dlp.v2.AdjustByImageFindings.info_types:type_name -> google.privacy.dlp.v2.InfoType
+	418, // 15: google.privacy.dlp.v2.AdjustByImageFindings.min_likelihood:type_name -> google.privacy.dlp.v2.Likelihood
+	280, // 16: google.privacy.dlp.v2.AdjustByImageFindings.image_containment_type:type_name -> google.privacy.dlp.v2.ImageContainmentType
+	63,  // 17: google.privacy.dlp.v2.AdjustmentRule.adjust_by_matching_info_types:type_name -> google.privacy.dlp.v2.AdjustByMatchingInfoTypes
+	64,  // 18: google.privacy.dlp.v2.AdjustmentRule.adjust_by_image_findings:type_name -> google.privacy.dlp.v2.AdjustByImageFindings
+	419, // 19: google.privacy.dlp.v2.AdjustmentRule.likelihood_adjustment:type_name -> google.privacy.dlp.v2.CustomInfoType.DetectionRule.LikelihoodAdjustment
+	420, // 20: google.privacy.dlp.v2.InspectionRule.hotword_rule:type_name -> google.privacy.dlp.v2.CustomInfoType.DetectionRule.HotwordRule
+	62,  // 21: google.privacy.dlp.v2.InspectionRule.exclusion_rule:type_name -> google.privacy.dlp.v2.ExclusionRule
+	65,  // 22: google.privacy.dlp.v2.InspectionRule.adjustment_rule:type_name -> google.privacy.dlp.v2.AdjustmentRule
+	414, // 23: google.privacy.dlp.v2.InspectionRuleSet.info_types:type_name -> google.privacy.dlp.v2.InfoType
+	66,  // 24: google.privacy.dlp.v2.InspectionRuleSet.rules:type_name -> google.privacy.dlp.v2.InspectionRule
+	414, // 25: google.privacy.dlp.v2.InspectConfig.info_types:type_name -> google.privacy.dlp.v2.InfoType
+	418, // 26: google.privacy.dlp.v2.InspectConfig.min_likelihood:type_name -> google.privacy.dlp.v2.Likelihood
+	333, // 27: google.privacy.dlp.v2.InspectConfig.min_likelihood_per_info_type:type_name -> google.privacy.dlp.v2.InspectConfig.InfoTypeLikelihood
+	334, // 28: google.privacy.dlp.v2.InspectConfig.limits:type_name -> google.privacy.dlp.v2.InspectConfig.FindingLimits
+	421, // 29: google.privacy.dlp.v2.InspectConfig.custom_info_types:type_name -> google.privacy.dlp.v2.CustomInfoType
 	11,  // 30: google.privacy.dlp.v2.InspectConfig.content_options:type_name -> google.privacy.dlp.v2.ContentOption
-	66,  // 31: google.privacy.dlp.v2.InspectConfig.rule_set:type_name -> google.privacy.dlp.v2.InspectionRuleSet
+	67,  // 31: google.privacy.dlp.v2.InspectConfig.rule_set:type_name -> google.privacy.dlp.v2.InspectionRuleSet
 	21,  // 32: google.privacy.dlp.v2.ByteContentItem.type:type_name -> google.privacy.dlp.v2.ByteContentItem.BytesType
-	71,  // 33: google.privacy.dlp.v2.ContentItem.table:type_name -> google.privacy.dlp.v2.Table
-	68,  // 34: google.privacy.dlp.v2.ContentItem.byte_item:type_name -> google.privacy.dlp.v2.ByteContentItem
-	70,  // 35: google.privacy.dlp.v2.ContentItem.content_metadata:type_name -> google.privacy.dlp.v2.ContentMetadata
-	72,  // 36: google.privacy.dlp.v2.ContentMetadata.properties:type_name -> google.privacy.dlp.v2.KeyValueMetadataProperty
-	417, // 37: google.privacy.dlp.v2.Table.headers:type_name -> google.privacy.dlp.v2.FieldId
-	332, // 38: google.privacy.dlp.v2.Table.rows:type_name -> google.privacy.dlp.v2.Table.Row
-	74,  // 39: google.privacy.dlp.v2.InspectResult.findings:type_name -> google.privacy.dlp.v2.Finding
-	409, // 40: google.privacy.dlp.v2.Finding.info_type:type_name -> google.privacy.dlp.v2.InfoType
-	413, // 41: google.privacy.dlp.v2.Finding.likelihood:type_name -> google.privacy.dlp.v2.Likelihood
-	75,  // 42: google.privacy.dlp.v2.Finding.location:type_name -> google.privacy.dlp.v2.Location
-	418, // 43: google.privacy.dlp.v2.Finding.create_time:type_name -> google.protobuf.Timestamp
-	117, // 44: google.privacy.dlp.v2.Finding.quote_info:type_name -> google.privacy.dlp.v2.QuoteInfo
-	333, // 45: google.privacy.dlp.v2.Finding.labels:type_name -> google.privacy.dlp.v2.Finding.LabelsEntry
-	418, // 46: google.privacy.dlp.v2.Finding.job_create_time:type_name -> google.protobuf.Timestamp
-	84,  // 47: google.privacy.dlp.v2.Location.byte_range:type_name -> google.privacy.dlp.v2.Range
-	84,  // 48: google.privacy.dlp.v2.Location.codepoint_range:type_name -> google.privacy.dlp.v2.Range
-	76,  // 49: google.privacy.dlp.v2.Location.content_locations:type_name -> google.privacy.dlp.v2.ContentLocation
-	83,  // 50: google.privacy.dlp.v2.Location.container:type_name -> google.privacy.dlp.v2.Container
-	81,  // 51: google.privacy.dlp.v2.ContentLocation.record_location:type_name -> google.privacy.dlp.v2.RecordLocation
-	85,  // 52: google.privacy.dlp.v2.ContentLocation.image_location:type_name -> google.privacy.dlp.v2.ImageLocation
-	80,  // 53: google.privacy.dlp.v2.ContentLocation.document_location:type_name -> google.privacy.dlp.v2.DocumentLocation
-	77,  // 54: google.privacy.dlp.v2.ContentLocation.metadata_location:type_name -> google.privacy.dlp.v2.MetadataLocation
-	418, // 55: google.privacy.dlp.v2.ContentLocation.container_timestamp:type_name -> google.protobuf.Timestamp
-	12,  // 56: google.privacy.dlp.v2.MetadataLocation.type:type_name -> google.privacy.dlp.v2.MetadataType
-	78,  // 57: google.privacy.dlp.v2.MetadataLocation.storage_label:type_name -> google.privacy.dlp.v2.StorageMetadataLabel
-	79,  // 58: google.privacy.dlp.v2.MetadataLocation.key_value_metadata_label:type_name -> google.privacy.dlp.v2.KeyValueMetadataLabel
-	419, // 59: google.privacy.dlp.v2.RecordLocation.record_key:type_name -> google.privacy.dlp.v2.RecordKey
-	417, // 60: google.privacy.dlp.v2.RecordLocation.field_id:type_name -> google.privacy.dlp.v2.FieldId
-	82,  // 61: google.privacy.dlp.v2.RecordLocation.table_location:type_name -> google.privacy.dlp.v2.TableLocation
-	418, // 62: google.privacy.dlp.v2.Container.update_time:type_name -> google.protobuf.Timestamp
-	86,  // 63: google.privacy.dlp.v2.ImageLocation.bounding_boxes:type_name -> google.privacy.dlp.v2.BoundingBox
-	67,  // 64: google.privacy.dlp.v2.RedactImageRequest.inspect_config:type_name -> google.privacy.dlp.v2.InspectConfig
-	334, // 65: google.privacy.dlp.v2.RedactImageRequest.image_redaction_configs:type_name -> google.privacy.dlp.v2.RedactImageRequest.ImageRedactionConfig
-	68,  // 66: google.privacy.dlp.v2.RedactImageRequest.byte_item:type_name -> google.privacy.dlp.v2.ByteContentItem
-	73,  // 67: google.privacy.dlp.v2.RedactImageResponse.inspect_result:type_name -> google.privacy.dlp.v2.InspectResult
-	119, // 68: google.privacy.dlp.v2.DeidentifyContentRequest.deidentify_config:type_name -> google.privacy.dlp.v2.DeidentifyConfig
-	67,  // 69: google.privacy.dlp.v2.DeidentifyContentRequest.inspect_config:type_name -> google.privacy.dlp.v2.InspectConfig
-	69,  // 70: google.privacy.dlp.v2.DeidentifyContentRequest.item:type_name -> google.privacy.dlp.v2.ContentItem
-	69,  // 71: google.privacy.dlp.v2.DeidentifyContentResponse.item:type_name -> google.privacy.dlp.v2.ContentItem
-	145, // 72: google.privacy.dlp.v2.DeidentifyContentResponse.overview:type_name -> google.privacy.dlp.v2.TransformationOverview
-	119, // 73: google.privacy.dlp.v2.ReidentifyContentRequest.reidentify_config:type_name -> google.privacy.dlp.v2.DeidentifyConfig
-	67,  // 74: google.privacy.dlp.v2.ReidentifyContentRequest.inspect_config:type_name -> google.privacy.dlp.v2.InspectConfig
-	69,  // 75: google.privacy.dlp.v2.ReidentifyContentRequest.item:type_name -> google.privacy.dlp.v2.ContentItem
-	69,  // 76: google.privacy.dlp.v2.ReidentifyContentResponse.item:type_name -> google.privacy.dlp.v2.ContentItem
-	145, // 77: google.privacy.dlp.v2.ReidentifyContentResponse.overview:type_name -> google.privacy.dlp.v2.TransformationOverview
-	67,  // 78: google.privacy.dlp.v2.InspectContentRequest.inspect_config:type_name -> google.privacy.dlp.v2.InspectConfig
-	69,  // 79: google.privacy.dlp.v2.InspectContentRequest.item:type_name -> google.privacy.dlp.v2.ContentItem
-	73,  // 80: google.privacy.dlp.v2.InspectContentResponse.result:type_name -> google.privacy.dlp.v2.InspectResult
-	420, // 81: google.privacy.dlp.v2.OutputStorageConfig.table:type_name -> google.privacy.dlp.v2.BigQueryTable
-	421, // 82: google.privacy.dlp.v2.OutputStorageConfig.storage_path:type_name -> google.privacy.dlp.v2.CloudStoragePath
-	22,  // 83: google.privacy.dlp.v2.OutputStorageConfig.output_schema:type_name -> google.privacy.dlp.v2.OutputStorageConfig.OutputSchema
-	409, // 84: google.privacy.dlp.v2.InfoTypeStats.info_type:type_name -> google.privacy.dlp.v2.InfoType
-	335, // 85: google.privacy.dlp.v2.InspectDataSourceDetails.requested_options:type_name -> google.privacy.dlp.v2.InspectDataSourceDetails.RequestedOptions
-	336, // 86: google.privacy.dlp.v2.InspectDataSourceDetails.result:type_name -> google.privacy.dlp.v2.InspectDataSourceDetails.Result
-	289, // 87: google.privacy.dlp.v2.DataProfileBigQueryRowSchema.table_profile:type_name -> google.privacy.dlp.v2.TableDataProfile
-	293, // 88: google.privacy.dlp.v2.DataProfileBigQueryRowSchema.column_profile:type_name -> google.privacy.dlp.v2.ColumnDataProfile
-	294, // 89: google.privacy.dlp.v2.DataProfileBigQueryRowSchema.file_store_profile:type_name -> google.privacy.dlp.v2.FileStoreDataProfile
-	103, // 90: google.privacy.dlp.v2.ActionDetails.deidentify_details:type_name -> google.privacy.dlp.v2.DeidentifyDataSourceDetails
-	337, // 91: google.privacy.dlp.v2.DeidentifyDataSourceDetails.requested_options:type_name -> google.privacy.dlp.v2.DeidentifyDataSourceDetails.RequestedDeidentifyOptions
-	102, // 92: google.privacy.dlp.v2.DeidentifyDataSourceDetails.deidentify_stats:type_name -> google.privacy.dlp.v2.DeidentifyDataSourceStats
-	23,  // 93: google.privacy.dlp.v2.LocationSupport.regionalization_scope:type_name -> google.privacy.dlp.v2.LocationSupport.RegionalizationScope
-	13,  // 94: google.privacy.dlp.v2.InfoTypeDescription.supported_by:type_name -> google.privacy.dlp.v2.InfoTypeSupportedBy
-	104, // 95: google.privacy.dlp.v2.InfoTypeDescription.location_support:type_name -> google.privacy.dlp.v2.LocationSupport
-	107, // 96: google.privacy.dlp.v2.InfoTypeDescription.versions:type_name -> google.privacy.dlp.v2.VersionDescription
-	106, // 97: google.privacy.dlp.v2.InfoTypeDescription.categories:type_name -> google.privacy.dlp.v2.InfoTypeCategory
-	422, // 98: google.privacy.dlp.v2.InfoTypeDescription.sensitivity_score:type_name -> google.privacy.dlp.v2.SensitivityScore
-	24,  // 99: google.privacy.dlp.v2.InfoTypeDescription.launch_status:type_name -> google.privacy.dlp.v2.InfoTypeDescription.InfoTypeLaunchStatus
-	25,  // 100: google.privacy.dlp.v2.InfoTypeCategory.location_category:type_name -> google.privacy.dlp.v2.InfoTypeCategory.LocationCategory
-	26,  // 101: google.privacy.dlp.v2.InfoTypeCategory.industry_category:type_name -> google.privacy.dlp.v2.InfoTypeCategory.IndustryCategory
-	27,  // 102: google.privacy.dlp.v2.InfoTypeCategory.type_category:type_name -> google.privacy.dlp.v2.InfoTypeCategory.TypeCategory
-	105, // 103: google.privacy.dlp.v2.ListInfoTypesResponse.info_types:type_name -> google.privacy.dlp.v2.InfoTypeDescription
-	113, // 104: google.privacy.dlp.v2.RiskAnalysisJobConfig.privacy_metric:type_name -> google.privacy.dlp.v2.PrivacyMetric
-	420, // 105: google.privacy.dlp.v2.RiskAnalysisJobConfig.source_table:type_name -> google.privacy.dlp.v2.BigQueryTable
-	159, // 106: google.privacy.dlp.v2.RiskAnalysisJobConfig.actions:type_name -> google.privacy.dlp.v2.Action
-	417, // 107: google.privacy.dlp.v2.QuasiId.field:type_name -> google.privacy.dlp.v2.FieldId
-	409, // 108: google.privacy.dlp.v2.QuasiId.info_type:type_name -> google.privacy.dlp.v2.InfoType
-	423, // 109: google.privacy.dlp.v2.QuasiId.inferred:type_name -> google.protobuf.Empty
-	420, // 110: google.privacy.dlp.v2.StatisticalTable.table:type_name -> google.privacy.dlp.v2.BigQueryTable
-	338, // 111: google.privacy.dlp.v2.StatisticalTable.quasi_ids:type_name -> google.privacy.dlp.v2.StatisticalTable.QuasiIdentifierField
-	417, // 112: google.privacy.dlp.v2.StatisticalTable.relative_frequency:type_name -> google.privacy.dlp.v2.FieldId
-	339, // 113: google.privacy.dlp.v2.PrivacyMetric.numerical_stats_config:type_name -> google.privacy.dlp.v2.PrivacyMetric.NumericalStatsConfig
-	340, // 114: google.privacy.dlp.v2.PrivacyMetric.categorical_stats_config:type_name -> google.privacy.dlp.v2.PrivacyMetric.CategoricalStatsConfig
-	341, // 115: google.privacy.dlp.v2.PrivacyMetric.k_anonymity_config:type_name -> google.privacy.dlp.v2.PrivacyMetric.KAnonymityConfig
-	342, // 116: google.privacy.dlp.v2.PrivacyMetric.l_diversity_config:type_name -> google.privacy.dlp.v2.PrivacyMetric.LDiversityConfig
-	343, // 117: google.privacy.dlp.v2.PrivacyMetric.k_map_estimation_config:type_name -> google.privacy.dlp.v2.PrivacyMetric.KMapEstimationConfig
-	344, // 118: google.privacy.dlp.v2.PrivacyMetric.delta_presence_estimation_config:type_name -> google.privacy.dlp.v2.PrivacyMetric.DeltaPresenceEstimationConfig
-	113, // 119: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.requested_privacy_metric:type_name -> google.privacy.dlp.v2.PrivacyMetric
-	420, // 120: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.requested_source_table:type_name -> google.privacy.dlp.v2.BigQueryTable
-	348, // 121: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.numerical_stats_result:type_name -> google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.NumericalStatsResult
-	349, // 122: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.categorical_stats_result:type_name -> google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.CategoricalStatsResult
-	350, // 123: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.k_anonymity_result:type_name -> google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.KAnonymityResult
-	351, // 124: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.l_diversity_result:type_name -> google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.LDiversityResult
-	352, // 125: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.k_map_estimation_result:type_name -> google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.KMapEstimationResult
-	353, // 126: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.delta_presence_estimation_result:type_name -> google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.DeltaPresenceEstimationResult
-	354, // 127: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.requested_options:type_name -> google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.RequestedRiskAnalysisOptions
-	116, // 128: google.privacy.dlp.v2.ValueFrequency.value:type_name -> google.privacy.dlp.v2.Value
-	418, // 129: google.privacy.dlp.v2.Value.timestamp_value:type_name -> google.protobuf.Timestamp
-	424, // 130: google.privacy.dlp.v2.Value.time_value:type_name -> google.type.TimeOfDay
-	425, // 131: google.privacy.dlp.v2.Value.date_value:type_name -> google.type.Date
-	426, // 132: google.privacy.dlp.v2.Value.day_of_week_value:type_name -> google.type.DayOfWeek
-	118, // 133: google.privacy.dlp.v2.QuoteInfo.date_time:type_name -> google.privacy.dlp.v2.DateTime
-	425, // 134: google.privacy.dlp.v2.DateTime.date:type_name -> google.type.Date
-	426, // 135: google.privacy.dlp.v2.DateTime.day_of_week:type_name -> google.type.DayOfWeek
-	424, // 136: google.privacy.dlp.v2.DateTime.time:type_name -> google.type.TimeOfDay
-	364, // 137: google.privacy.dlp.v2.DateTime.time_zone:type_name -> google.privacy.dlp.v2.DateTime.TimeZone
-	140, // 138: google.privacy.dlp.v2.DeidentifyConfig.info_type_transformations:type_name -> google.privacy.dlp.v2.InfoTypeTransformations
-	142, // 139: google.privacy.dlp.v2.DeidentifyConfig.record_transformations:type_name -> google.privacy.dlp.v2.RecordTransformations
-	120, // 140: google.privacy.dlp.v2.DeidentifyConfig.image_transformations:type_name -> google.privacy.dlp.v2.ImageTransformations
-	121, // 141: google.privacy.dlp.v2.DeidentifyConfig.transformation_error_handling:type_name -> google.privacy.dlp.v2.TransformationErrorHandling
-	365, // 142: google.privacy.dlp.v2.ImageTransformations.transforms:type_name -> google.privacy.dlp.v2.ImageTransformations.ImageTransformation
-	369, // 143: google.privacy.dlp.v2.TransformationErrorHandling.throw_error:type_name -> google.privacy.dlp.v2.TransformationErrorHandling.ThrowError
-	370, // 144: google.privacy.dlp.v2.TransformationErrorHandling.leave_untransformed:type_name -> google.privacy.dlp.v2.TransformationErrorHandling.LeaveUntransformed
-	126, // 145: google.privacy.dlp.v2.PrimitiveTransformation.replace_config:type_name -> google.privacy.dlp.v2.ReplaceValueConfig
-	129, // 146: google.privacy.dlp.v2.PrimitiveTransformation.redact_config:type_name -> google.privacy.dlp.v2.RedactConfig
-	131, // 147: google.privacy.dlp.v2.PrimitiveTransformation.character_mask_config:type_name -> google.privacy.dlp.v2.CharacterMaskConfig
-	134, // 148: google.privacy.dlp.v2.PrimitiveTransformation.crypto_replace_ffx_fpe_config:type_name -> google.privacy.dlp.v2.CryptoReplaceFfxFpeConfig
-	132, // 149: google.privacy.dlp.v2.PrimitiveTransformation.fixed_size_bucketing_config:type_name -> google.privacy.dlp.v2.FixedSizeBucketingConfig
-	133, // 150: google.privacy.dlp.v2.PrimitiveTransformation.bucketing_config:type_name -> google.privacy.dlp.v2.BucketingConfig
-	128, // 151: google.privacy.dlp.v2.PrimitiveTransformation.replace_with_info_type_config:type_name -> google.privacy.dlp.v2.ReplaceWithInfoTypeConfig
-	123, // 152: google.privacy.dlp.v2.PrimitiveTransformation.time_part_config:type_name -> google.privacy.dlp.v2.TimePartConfig
-	124, // 153: google.privacy.dlp.v2.PrimitiveTransformation.crypto_hash_config:type_name -> google.privacy.dlp.v2.CryptoHashConfig
-	139, // 154: google.privacy.dlp.v2.PrimitiveTransformation.date_shift_config:type_name -> google.privacy.dlp.v2.DateShiftConfig
-	125, // 155: google.privacy.dlp.v2.PrimitiveTransformation.crypto_deterministic_config:type_name -> google.privacy.dlp.v2.CryptoDeterministicConfig
-	127, // 156: google.privacy.dlp.v2.PrimitiveTransformation.replace_dictionary_config:type_name -> google.privacy.dlp.v2.ReplaceDictionaryConfig
-	28,  // 157: google.privacy.dlp.v2.TimePartConfig.part_to_extract:type_name -> google.privacy.dlp.v2.TimePartConfig.TimePart
-	135, // 158: google.privacy.dlp.v2.CryptoHashConfig.crypto_key:type_name -> google.privacy.dlp.v2.CryptoKey
-	135, // 159: google.privacy.dlp.v2.CryptoDeterministicConfig.crypto_key:type_name -> google.privacy.dlp.v2.CryptoKey
-	409, // 160: google.privacy.dlp.v2.CryptoDeterministicConfig.surrogate_info_type:type_name -> google.privacy.dlp.v2.InfoType
-	417, // 161: google.privacy.dlp.v2.CryptoDeterministicConfig.context:type_name -> google.privacy.dlp.v2.FieldId
-	116, // 162: google.privacy.dlp.v2.ReplaceValueConfig.new_value:type_name -> google.privacy.dlp.v2.Value
-	427, // 163: google.privacy.dlp.v2.ReplaceDictionaryConfig.word_list:type_name -> google.privacy.dlp.v2.CustomInfoType.Dictionary.WordList
-	29,  // 164: google.privacy.dlp.v2.CharsToIgnore.common_characters_to_ignore:type_name -> google.privacy.dlp.v2.CharsToIgnore.CommonCharsToIgnore
-	130, // 165: google.privacy.dlp.v2.CharacterMaskConfig.characters_to_ignore:type_name -> google.privacy.dlp.v2.CharsToIgnore
-	116, // 166: google.privacy.dlp.v2.FixedSizeBucketingConfig.lower_bound:type_name -> google.privacy.dlp.v2.Value
-	116, // 167: google.privacy.dlp.v2.FixedSizeBucketingConfig.upper_bound:type_name -> google.privacy.dlp.v2.Value
-	371, // 168: google.privacy.dlp.v2.BucketingConfig.buckets:type_name -> google.privacy.dlp.v2.BucketingConfig.Bucket
-	135, // 169: google.privacy.dlp.v2.CryptoReplaceFfxFpeConfig.crypto_key:type_name -> google.privacy.dlp.v2.CryptoKey
-	417, // 170: google.privacy.dlp.v2.CryptoReplaceFfxFpeConfig.context:type_name -> google.privacy.dlp.v2.FieldId
-	30,  // 171: google.privacy.dlp.v2.CryptoReplaceFfxFpeConfig.common_alphabet:type_name -> google.privacy.dlp.v2.CryptoReplaceFfxFpeConfig.FfxCommonNativeAlphabet
-	409, // 172: google.privacy.dlp.v2.CryptoReplaceFfxFpeConfig.surrogate_info_type:type_name -> google.privacy.dlp.v2.InfoType
-	136, // 173: google.privacy.dlp.v2.CryptoKey.transient:type_name -> google.privacy.dlp.v2.TransientCryptoKey
-	137, // 174: google.privacy.dlp.v2.CryptoKey.unwrapped:type_name -> google.privacy.dlp.v2.UnwrappedCryptoKey
-	138, // 175: google.privacy.dlp.v2.CryptoKey.kms_wrapped:type_name -> google.privacy.dlp.v2.KmsWrappedCryptoKey
-	417, // 176: google.privacy.dlp.v2.DateShiftConfig.context:type_name -> google.privacy.dlp.v2.FieldId
-	135, // 177: google.privacy.dlp.v2.DateShiftConfig.crypto_key:type_name -> google.privacy.dlp.v2.CryptoKey
-	372, // 178: google.privacy.dlp.v2.InfoTypeTransformations.transformations:type_name -> google.privacy.dlp.v2.InfoTypeTransformations.InfoTypeTransformation
-	417, // 179: google.privacy.dlp.v2.FieldTransformation.fields:type_name -> google.privacy.dlp.v2.FieldId
-	144, // 180: google.privacy.dlp.v2.FieldTransformation.condition:type_name -> google.privacy.dlp.v2.RecordCondition
-	122, // 181: google.privacy.dlp.v2.FieldTransformation.primitive_transformation:type_name -> google.privacy.dlp.v2.PrimitiveTransformation
-	140, // 182: google.privacy.dlp.v2.FieldTransformation.info_type_transformations:type_name -> google.privacy.dlp.v2.InfoTypeTransformations
-	141, // 183: google.privacy.dlp.v2.RecordTransformations.field_transformations:type_name -> google.privacy.dlp.v2.FieldTransformation
-	143, // 184: google.privacy.dlp.v2.RecordTransformations.record_suppressions:type_name -> google.privacy.dlp.v2.RecordSuppression
-	144, // 185: google.privacy.dlp.v2.RecordSuppression.condition:type_name -> google.privacy.dlp.v2.RecordCondition
-	375, // 186: google.privacy.dlp.v2.RecordCondition.expressions:type_name -> google.privacy.dlp.v2.RecordCondition.Expressions
-	146, // 187: google.privacy.dlp.v2.TransformationOverview.transformation_summaries:type_name -> google.privacy.dlp.v2.TransformationSummary
-	409, // 188: google.privacy.dlp.v2.TransformationSummary.info_type:type_name -> google.privacy.dlp.v2.InfoType
-	417, // 189: google.privacy.dlp.v2.TransformationSummary.field:type_name -> google.privacy.dlp.v2.FieldId
-	122, // 190: google.privacy.dlp.v2.TransformationSummary.transformation:type_name -> google.privacy.dlp.v2.PrimitiveTransformation
-	141, // 191: google.privacy.dlp.v2.TransformationSummary.field_transformations:type_name -> google.privacy.dlp.v2.FieldTransformation
-	143, // 192: google.privacy.dlp.v2.TransformationSummary.record_suppress:type_name -> google.privacy.dlp.v2.RecordSuppression
-	376, // 193: google.privacy.dlp.v2.TransformationSummary.results:type_name -> google.privacy.dlp.v2.TransformationSummary.SummaryResult
-	2,   // 194: google.privacy.dlp.v2.TransformationDescription.type:type_name -> google.privacy.dlp.v2.TransformationType
-	409, // 195: google.privacy.dlp.v2.TransformationDescription.info_type:type_name -> google.privacy.dlp.v2.InfoType
-	147, // 196: google.privacy.dlp.v2.TransformationDetails.transformation:type_name -> google.privacy.dlp.v2.TransformationDescription
-	151, // 197: google.privacy.dlp.v2.TransformationDetails.status_details:type_name -> google.privacy.dlp.v2.TransformationResultStatus
-	149, // 198: google.privacy.dlp.v2.TransformationDetails.transformation_location:type_name -> google.privacy.dlp.v2.TransformationLocation
-	150, // 199: google.privacy.dlp.v2.TransformationLocation.record_transformation:type_name -> google.privacy.dlp.v2.RecordTransformation
-	1,   // 200: google.privacy.dlp.v2.TransformationLocation.container_type:type_name -> google.privacy.dlp.v2.TransformationContainerType
-	417, // 201: google.privacy.dlp.v2.RecordTransformation.field_id:type_name -> google.privacy.dlp.v2.FieldId
-	418, // 202: google.privacy.dlp.v2.RecordTransformation.container_timestamp:type_name -> google.protobuf.Timestamp
-	0,   // 203: google.privacy.dlp.v2.TransformationResultStatus.result_status_type:type_name -> google.privacy.dlp.v2.TransformationResultStatusType
-	428, // 204: google.privacy.dlp.v2.TransformationResultStatus.details:type_name -> google.rpc.Status
-	420, // 205: google.privacy.dlp.v2.TransformationDetailsStorageConfig.table:type_name -> google.privacy.dlp.v2.BigQueryTable
-	429, // 206: google.privacy.dlp.v2.Schedule.recurrence_period_duration:type_name -> google.protobuf.Duration
-	418, // 207: google.privacy.dlp.v2.InspectTemplate.create_time:type_name -> google.protobuf.Timestamp
-	418, // 208: google.privacy.dlp.v2.InspectTemplate.update_time:type_name -> google.protobuf.Timestamp
-	67,  // 209: google.privacy.dlp.v2.InspectTemplate.inspect_config:type_name -> google.privacy.dlp.v2.InspectConfig
-	418, // 210: google.privacy.dlp.v2.DeidentifyTemplate.create_time:type_name -> google.protobuf.Timestamp
-	418, // 211: google.privacy.dlp.v2.DeidentifyTemplate.update_time:type_name -> google.protobuf.Timestamp
-	119, // 212: google.privacy.dlp.v2.DeidentifyTemplate.deidentify_config:type_name -> google.privacy.dlp.v2.DeidentifyConfig
-	428, // 213: google.privacy.dlp.v2.Error.details:type_name -> google.rpc.Status
-	418, // 214: google.privacy.dlp.v2.Error.timestamps:type_name -> google.protobuf.Timestamp
-	33,  // 215: google.privacy.dlp.v2.Error.extra_info:type_name -> google.privacy.dlp.v2.Error.ErrorExtraInfo
-	181, // 216: google.privacy.dlp.v2.JobTrigger.inspect_job:type_name -> google.privacy.dlp.v2.InspectJobConfig
-	377, // 217: google.privacy.dlp.v2.JobTrigger.triggers:type_name -> google.privacy.dlp.v2.JobTrigger.Trigger
-	157, // 218: google.privacy.dlp.v2.JobTrigger.errors:type_name -> google.privacy.dlp.v2.Error
-	418, // 219: google.privacy.dlp.v2.JobTrigger.create_time:type_name -> google.protobuf.Timestamp
-	418, // 220: google.privacy.dlp.v2.JobTrigger.update_time:type_name -> google.protobuf.Timestamp
-	418, // 221: google.privacy.dlp.v2.JobTrigger.last_run_time:type_name -> google.protobuf.Timestamp
-	34,  // 222: google.privacy.dlp.v2.JobTrigger.status:type_name -> google.privacy.dlp.v2.JobTrigger.Status
-	378, // 223: google.privacy.dlp.v2.Action.save_findings:type_name -> google.privacy.dlp.v2.Action.SaveFindings
-	379, // 224: google.privacy.dlp.v2.Action.pub_sub:type_name -> google.privacy.dlp.v2.Action.PublishToPubSub
-	380, // 225: google.privacy.dlp.v2.Action.publish_summary_to_cscc:type_name -> google.privacy.dlp.v2.Action.PublishSummaryToCscc
-	381, // 226: google.privacy.dlp.v2.Action.publish_findings_to_cloud_data_catalog:type_name -> google.privacy.dlp.v2.Action.PublishFindingsToCloudDataCatalog
-	382, // 227: google.privacy.dlp.v2.Action.publish_findings_to_dataplex_catalog:type_name -> google.privacy.dlp.v2.Action.PublishFindingsToDataplexCatalog
-	383, // 228: google.privacy.dlp.v2.Action.deidentify:type_name -> google.privacy.dlp.v2.Action.Deidentify
-	384, // 229: google.privacy.dlp.v2.Action.job_notification_emails:type_name -> google.privacy.dlp.v2.Action.JobNotificationEmails
-	385, // 230: google.privacy.dlp.v2.Action.publish_to_stackdriver:type_name -> google.privacy.dlp.v2.Action.PublishToStackdriver
-	155, // 231: google.privacy.dlp.v2.CreateInspectTemplateRequest.inspect_template:type_name -> google.privacy.dlp.v2.InspectTemplate
-	155, // 232: google.privacy.dlp.v2.UpdateInspectTemplateRequest.inspect_template:type_name -> google.privacy.dlp.v2.InspectTemplate
-	430, // 233: google.privacy.dlp.v2.UpdateInspectTemplateRequest.update_mask:type_name -> google.protobuf.FieldMask
-	155, // 234: google.privacy.dlp.v2.ListInspectTemplatesResponse.inspect_templates:type_name -> google.privacy.dlp.v2.InspectTemplate
-	158, // 235: google.privacy.dlp.v2.CreateJobTriggerRequest.job_trigger:type_name -> google.privacy.dlp.v2.JobTrigger
-	158, // 236: google.privacy.dlp.v2.UpdateJobTriggerRequest.job_trigger:type_name -> google.privacy.dlp.v2.JobTrigger
-	430, // 237: google.privacy.dlp.v2.UpdateJobTriggerRequest.update_mask:type_name -> google.protobuf.FieldMask
-	192, // 238: google.privacy.dlp.v2.CreateDiscoveryConfigRequest.discovery_config:type_name -> google.privacy.dlp.v2.DiscoveryConfig
-	192, // 239: google.privacy.dlp.v2.UpdateDiscoveryConfigRequest.discovery_config:type_name -> google.privacy.dlp.v2.DiscoveryConfig
-	430, // 240: google.privacy.dlp.v2.UpdateDiscoveryConfigRequest.update_mask:type_name -> google.protobuf.FieldMask
-	192, // 241: google.privacy.dlp.v2.ListDiscoveryConfigsResponse.discovery_configs:type_name -> google.privacy.dlp.v2.DiscoveryConfig
-	181, // 242: google.privacy.dlp.v2.CreateDlpJobRequest.inspect_job:type_name -> google.privacy.dlp.v2.InspectJobConfig
-	110, // 243: google.privacy.dlp.v2.CreateDlpJobRequest.risk_job:type_name -> google.privacy.dlp.v2.RiskAnalysisJobConfig
-	14,  // 244: google.privacy.dlp.v2.ListJobTriggersRequest.type:type_name -> google.privacy.dlp.v2.DlpJobType
-	158, // 245: google.privacy.dlp.v2.ListJobTriggersResponse.job_triggers:type_name -> google.privacy.dlp.v2.JobTrigger
-	431, // 246: google.privacy.dlp.v2.InspectJobConfig.storage_config:type_name -> google.privacy.dlp.v2.StorageConfig
-	67,  // 247: google.privacy.dlp.v2.InspectJobConfig.inspect_config:type_name -> google.privacy.dlp.v2.InspectConfig
-	159, // 248: google.privacy.dlp.v2.InspectJobConfig.actions:type_name -> google.privacy.dlp.v2.Action
-	386, // 249: google.privacy.dlp.v2.DataProfileAction.export_data:type_name -> google.privacy.dlp.v2.DataProfileAction.Export
-	387, // 250: google.privacy.dlp.v2.DataProfileAction.pub_sub_notification:type_name -> google.privacy.dlp.v2.DataProfileAction.PubSubNotification
-	388, // 251: google.privacy.dlp.v2.DataProfileAction.publish_to_chronicle:type_name -> google.privacy.dlp.v2.DataProfileAction.PublishToChronicle
-	389, // 252: google.privacy.dlp.v2.DataProfileAction.publish_to_scc:type_name -> google.privacy.dlp.v2.DataProfileAction.PublishToSecurityCommandCenter
-	391, // 253: google.privacy.dlp.v2.DataProfileAction.tag_resources:type_name -> google.privacy.dlp.v2.DataProfileAction.TagResources
-	390, // 254: google.privacy.dlp.v2.DataProfileAction.publish_to_dataplex_catalog:type_name -> google.privacy.dlp.v2.DataProfileAction.PublishToDataplexCatalog
-	409, // 255: google.privacy.dlp.v2.DataProfileFinding.infotype:type_name -> google.privacy.dlp.v2.InfoType
-	117, // 256: google.privacy.dlp.v2.DataProfileFinding.quote_info:type_name -> google.privacy.dlp.v2.QuoteInfo
-	418, // 257: google.privacy.dlp.v2.DataProfileFinding.timestamp:type_name -> google.protobuf.Timestamp
-	184, // 258: google.privacy.dlp.v2.DataProfileFinding.location:type_name -> google.privacy.dlp.v2.DataProfileFindingLocation
-	16,  // 259: google.privacy.dlp.v2.DataProfileFinding.resource_visibility:type_name -> google.privacy.dlp.v2.ResourceVisibility
-	324, // 260: google.privacy.dlp.v2.DataProfileFinding.data_source_type:type_name -> google.privacy.dlp.v2.DataSourceType
-	185, // 261: google.privacy.dlp.v2.DataProfileFindingLocation.data_profile_finding_record_location:type_name -> google.privacy.dlp.v2.DataProfileFindingRecordLocation
-	417, // 262: google.privacy.dlp.v2.DataProfileFindingRecordLocation.field:type_name -> google.privacy.dlp.v2.FieldId
-	191, // 263: google.privacy.dlp.v2.DataProfileJobConfig.location:type_name -> google.privacy.dlp.v2.DataProfileLocation
-	236, // 264: google.privacy.dlp.v2.DataProfileJobConfig.other_cloud_starting_location:type_name -> google.privacy.dlp.v2.OtherCloudDiscoveryStartingLocation
-	182, // 265: google.privacy.dlp.v2.DataProfileJobConfig.data_profile_actions:type_name -> google.privacy.dlp.v2.DataProfileAction
-	187, // 266: google.privacy.dlp.v2.BigQueryRegexes.patterns:type_name -> google.privacy.dlp.v2.BigQueryRegex
-	5,   // 267: google.privacy.dlp.v2.BigQueryTableTypes.types:type_name -> google.privacy.dlp.v2.BigQueryTableType
-	394, // 268: google.privacy.dlp.v2.DiscoveryConfig.org_config:type_name -> google.privacy.dlp.v2.DiscoveryConfig.OrgConfig
-	236, // 269: google.privacy.dlp.v2.DiscoveryConfig.other_cloud_starting_location:type_name -> google.privacy.dlp.v2.OtherCloudDiscoveryStartingLocation
-	182, // 270: google.privacy.dlp.v2.DiscoveryConfig.actions:type_name -> google.privacy.dlp.v2.DataProfileAction
-	193, // 271: google.privacy.dlp.v2.DiscoveryConfig.targets:type_name -> google.privacy.dlp.v2.DiscoveryTarget
-	157, // 272: google.privacy.dlp.v2.DiscoveryConfig.errors:type_name -> google.privacy.dlp.v2.Error
-	418, // 273: google.privacy.dlp.v2.DiscoveryConfig.create_time:type_name -> google.protobuf.Timestamp
-	418, // 274: google.privacy.dlp.v2.DiscoveryConfig.update_time:type_name -> google.protobuf.Timestamp
-	418, // 275: google.privacy.dlp.v2.DiscoveryConfig.last_run_time:type_name -> google.protobuf.Timestamp
-	37,  // 276: google.privacy.dlp.v2.DiscoveryConfig.status:type_name -> google.privacy.dlp.v2.DiscoveryConfig.Status
-	326, // 277: google.privacy.dlp.v2.DiscoveryConfig.processing_location:type_name -> google.privacy.dlp.v2.ProcessingLocation
-	194, // 278: google.privacy.dlp.v2.DiscoveryTarget.big_query_target:type_name -> google.privacy.dlp.v2.BigQueryDiscoveryTarget
-	202, // 279: google.privacy.dlp.v2.DiscoveryTarget.cloud_sql_target:type_name -> google.privacy.dlp.v2.CloudSqlDiscoveryTarget
-	211, // 280: google.privacy.dlp.v2.DiscoveryTarget.secrets_target:type_name -> google.privacy.dlp.v2.SecretsDiscoveryTarget
-	212, // 281: google.privacy.dlp.v2.DiscoveryTarget.cloud_storage_target:type_name -> google.privacy.dlp.v2.CloudStorageDiscoveryTarget
-	222, // 282: google.privacy.dlp.v2.DiscoveryTarget.other_cloud_target:type_name -> google.privacy.dlp.v2.OtherCloudDiscoveryTarget
-	238, // 283: google.privacy.dlp.v2.DiscoveryTarget.vertex_dataset_target:type_name -> google.privacy.dlp.v2.VertexDatasetDiscoveryTarget
-	195, // 284: google.privacy.dlp.v2.BigQueryDiscoveryTarget.filter:type_name -> google.privacy.dlp.v2.DiscoveryBigQueryFilter
-	197, // 285: google.privacy.dlp.v2.BigQueryDiscoveryTarget.conditions:type_name -> google.privacy.dlp.v2.DiscoveryBigQueryConditions
-	198, // 286: google.privacy.dlp.v2.BigQueryDiscoveryTarget.cadence:type_name -> google.privacy.dlp.v2.DiscoveryGenerationCadence
-	190, // 287: google.privacy.dlp.v2.BigQueryDiscoveryTarget.disabled:type_name -> google.privacy.dlp.v2.Disabled
-	196, // 288: google.privacy.dlp.v2.DiscoveryBigQueryFilter.tables:type_name -> google.privacy.dlp.v2.BigQueryTableCollection
-	395, // 289: google.privacy.dlp.v2.DiscoveryBigQueryFilter.other_tables:type_name -> google.privacy.dlp.v2.DiscoveryBigQueryFilter.AllOtherBigQueryTables
-	432, // 290: google.privacy.dlp.v2.DiscoveryBigQueryFilter.table_reference:type_name -> google.privacy.dlp.v2.TableReference
-	188, // 291: google.privacy.dlp.v2.BigQueryTableCollection.include_regexes:type_name -> google.privacy.dlp.v2.BigQueryRegexes
-	418, // 292: google.privacy.dlp.v2.DiscoveryBigQueryConditions.created_after:type_name -> google.protobuf.Timestamp
-	189, // 293: google.privacy.dlp.v2.DiscoveryBigQueryConditions.types:type_name -> google.privacy.dlp.v2.BigQueryTableTypes
-	4,   // 294: google.privacy.dlp.v2.DiscoveryBigQueryConditions.type_collection:type_name -> google.privacy.dlp.v2.BigQueryTableTypeCollection
-	396, // 295: google.privacy.dlp.v2.DiscoveryBigQueryConditions.or_conditions:type_name -> google.privacy.dlp.v2.DiscoveryBigQueryConditions.OrConditions
-	200, // 296: google.privacy.dlp.v2.DiscoveryGenerationCadence.schema_modified_cadence:type_name -> google.privacy.dlp.v2.DiscoverySchemaModifiedCadence
-	199, // 297: google.privacy.dlp.v2.DiscoveryGenerationCadence.table_modified_cadence:type_name -> google.privacy.dlp.v2.DiscoveryTableModifiedCadence
-	201, // 298: google.privacy.dlp.v2.DiscoveryGenerationCadence.inspect_template_modified_cadence:type_name -> google.privacy.dlp.v2.DiscoveryInspectTemplateModifiedCadence
-	6,   // 299: google.privacy.dlp.v2.DiscoveryGenerationCadence.refresh_frequency:type_name -> google.privacy.dlp.v2.DataProfileUpdateFrequency
-	7,   // 300: google.privacy.dlp.v2.DiscoveryTableModifiedCadence.types:type_name -> google.privacy.dlp.v2.BigQueryTableModification
-	6,   // 301: google.privacy.dlp.v2.DiscoveryTableModifiedCadence.frequency:type_name -> google.privacy.dlp.v2.DataProfileUpdateFrequency
-	8,   // 302: google.privacy.dlp.v2.DiscoverySchemaModifiedCadence.types:type_name -> google.privacy.dlp.v2.BigQuerySchemaModification
-	6,   // 303: google.privacy.dlp.v2.DiscoverySchemaModifiedCadence.frequency:type_name -> google.privacy.dlp.v2.DataProfileUpdateFrequency
-	6,   // 304: google.privacy.dlp.v2.DiscoveryInspectTemplateModifiedCadence.frequency:type_name -> google.privacy.dlp.v2.DataProfileUpdateFrequency
-	203, // 305: google.privacy.dlp.v2.CloudSqlDiscoveryTarget.filter:type_name -> google.privacy.dlp.v2.DiscoveryCloudSqlFilter
-	209, // 306: google.privacy.dlp.v2.CloudSqlDiscoveryTarget.conditions:type_name -> google.privacy.dlp.v2.DiscoveryCloudSqlConditions
-	210, // 307: google.privacy.dlp.v2.CloudSqlDiscoveryTarget.generation_cadence:type_name -> google.privacy.dlp.v2.DiscoveryCloudSqlGenerationCadence
-	190, // 308: google.privacy.dlp.v2.CloudSqlDiscoveryTarget.disabled:type_name -> google.privacy.dlp.v2.Disabled
-	204, // 309: google.privacy.dlp.v2.DiscoveryCloudSqlFilter.collection:type_name -> google.privacy.dlp.v2.DatabaseResourceCollection
-	207, // 310: google.privacy.dlp.v2.DiscoveryCloudSqlFilter.others:type_name -> google.privacy.dlp.v2.AllOtherDatabaseResources
-	208, // 311: google.privacy.dlp.v2.DiscoveryCloudSqlFilter.database_resource_reference:type_name -> google.privacy.dlp.v2.DatabaseResourceReference
-	205, // 312: google.privacy.dlp.v2.DatabaseResourceCollection.include_regexes:type_name -> google.privacy.dlp.v2.DatabaseResourceRegexes
-	206, // 313: google.privacy.dlp.v2.DatabaseResourceRegexes.patterns:type_name -> google.privacy.dlp.v2.DatabaseResourceRegex
-	38,  // 314: google.privacy.dlp.v2.DiscoveryCloudSqlConditions.database_engines:type_name -> google.privacy.dlp.v2.DiscoveryCloudSqlConditions.DatabaseEngine
-	39,  // 315: google.privacy.dlp.v2.DiscoveryCloudSqlConditions.types:type_name -> google.privacy.dlp.v2.DiscoveryCloudSqlConditions.DatabaseResourceType
-	397, // 316: google.privacy.dlp.v2.DiscoveryCloudSqlGenerationCadence.schema_modified_cadence:type_name -> google.privacy.dlp.v2.DiscoveryCloudSqlGenerationCadence.SchemaModifiedCadence
-	6,   // 317: google.privacy.dlp.v2.DiscoveryCloudSqlGenerationCadence.refresh_frequency:type_name -> google.privacy.dlp.v2.DataProfileUpdateFrequency
-	201, // 318: google.privacy.dlp.v2.DiscoveryCloudSqlGenerationCadence.inspect_template_modified_cadence:type_name -> google.privacy.dlp.v2.DiscoveryInspectTemplateModifiedCadence
-	213, // 319: google.privacy.dlp.v2.CloudStorageDiscoveryTarget.filter:type_name -> google.privacy.dlp.v2.DiscoveryCloudStorageFilter
-	221, // 320: google.privacy.dlp.v2.CloudStorageDiscoveryTarget.conditions:type_name -> google.privacy.dlp.v2.DiscoveryFileStoreConditions
-	219, // 321: google.privacy.dlp.v2.CloudStorageDiscoveryTarget.generation_cadence:type_name -> google.privacy.dlp.v2.DiscoveryCloudStorageGenerationCadence
-	190, // 322: google.privacy.dlp.v2.CloudStorageDiscoveryTarget.disabled:type_name -> google.privacy.dlp.v2.Disabled
-	214, // 323: google.privacy.dlp.v2.DiscoveryCloudStorageFilter.collection:type_name -> google.privacy.dlp.v2.FileStoreCollection
-	218, // 324: google.privacy.dlp.v2.DiscoveryCloudStorageFilter.cloud_storage_resource_reference:type_name -> google.privacy.dlp.v2.CloudStorageResourceReference
-	237, // 325: google.privacy.dlp.v2.DiscoveryCloudStorageFilter.others:type_name -> google.privacy.dlp.v2.AllOtherResources
-	215, // 326: google.privacy.dlp.v2.FileStoreCollection.include_regexes:type_name -> google.privacy.dlp.v2.FileStoreRegexes
-	296, // 327: google.privacy.dlp.v2.FileStoreCollection.include_tags:type_name -> google.privacy.dlp.v2.TagFilters
-	216, // 328: google.privacy.dlp.v2.FileStoreRegexes.patterns:type_name -> google.privacy.dlp.v2.FileStoreRegex
-	217, // 329: google.privacy.dlp.v2.FileStoreRegex.cloud_storage_regex:type_name -> google.privacy.dlp.v2.CloudStorageRegex
-	6,   // 330: google.privacy.dlp.v2.DiscoveryCloudStorageGenerationCadence.refresh_frequency:type_name -> google.privacy.dlp.v2.DataProfileUpdateFrequency
-	201, // 331: google.privacy.dlp.v2.DiscoveryCloudStorageGenerationCadence.inspect_template_modified_cadence:type_name -> google.privacy.dlp.v2.DiscoveryInspectTemplateModifiedCadence
-	41,  // 332: google.privacy.dlp.v2.DiscoveryCloudStorageConditions.included_object_attributes:type_name -> google.privacy.dlp.v2.DiscoveryCloudStorageConditions.CloudStorageObjectAttribute
-	42,  // 333: google.privacy.dlp.v2.DiscoveryCloudStorageConditions.included_bucket_attributes:type_name -> google.privacy.dlp.v2.DiscoveryCloudStorageConditions.CloudStorageBucketAttribute
-	418, // 334: google.privacy.dlp.v2.DiscoveryFileStoreConditions.created_after:type_name -> google.protobuf.Timestamp
-	429, // 335: google.privacy.dlp.v2.DiscoveryFileStoreConditions.min_age:type_name -> google.protobuf.Duration
-	220, // 336: google.privacy.dlp.v2.DiscoveryFileStoreConditions.cloud_storage_conditions:type_name -> google.privacy.dlp.v2.DiscoveryCloudStorageConditions
-	324, // 337: google.privacy.dlp.v2.OtherCloudDiscoveryTarget.data_source_type:type_name -> google.privacy.dlp.v2.DataSourceType
-	223, // 338: google.privacy.dlp.v2.OtherCloudDiscoveryTarget.filter:type_name -> google.privacy.dlp.v2.DiscoveryOtherCloudFilter
-	232, // 339: google.privacy.dlp.v2.OtherCloudDiscoveryTarget.conditions:type_name -> google.privacy.dlp.v2.DiscoveryOtherCloudConditions
-	234, // 340: google.privacy.dlp.v2.OtherCloudDiscoveryTarget.generation_cadence:type_name -> google.privacy.dlp.v2.DiscoveryOtherCloudGenerationCadence
-	190, // 341: google.privacy.dlp.v2.OtherCloudDiscoveryTarget.disabled:type_name -> google.privacy.dlp.v2.Disabled
-	224, // 342: google.privacy.dlp.v2.DiscoveryOtherCloudFilter.collection:type_name -> google.privacy.dlp.v2.OtherCloudResourceCollection
-	229, // 343: google.privacy.dlp.v2.DiscoveryOtherCloudFilter.single_resource:type_name -> google.privacy.dlp.v2.OtherCloudSingleResourceReference
-	237, // 344: google.privacy.dlp.v2.DiscoveryOtherCloudFilter.others:type_name -> google.privacy.dlp.v2.AllOtherResources
-	225, // 345: google.privacy.dlp.v2.OtherCloudResourceCollection.include_regexes:type_name -> google.privacy.dlp.v2.OtherCloudResourceRegexes
-	226, // 346: google.privacy.dlp.v2.OtherCloudResourceRegexes.patterns:type_name -> google.privacy.dlp.v2.OtherCloudResourceRegex
-	228, // 347: google.privacy.dlp.v2.OtherCloudResourceRegex.amazon_s3_bucket_regex:type_name -> google.privacy.dlp.v2.AmazonS3BucketRegex
-	227, // 348: google.privacy.dlp.v2.AmazonS3BucketRegex.aws_account_regex:type_name -> google.privacy.dlp.v2.AwsAccountRegex
-	231, // 349: google.privacy.dlp.v2.OtherCloudSingleResourceReference.amazon_s3_bucket:type_name -> google.privacy.dlp.v2.AmazonS3Bucket
-	230, // 350: google.privacy.dlp.v2.AmazonS3Bucket.aws_account:type_name -> google.privacy.dlp.v2.AwsAccount
-	429, // 351: google.privacy.dlp.v2.DiscoveryOtherCloudConditions.min_age:type_name -> google.protobuf.Duration
-	233, // 352: google.privacy.dlp.v2.DiscoveryOtherCloudConditions.amazon_s3_bucket_conditions:type_name -> google.privacy.dlp.v2.AmazonS3BucketConditions
-	43,  // 353: google.privacy.dlp.v2.AmazonS3BucketConditions.bucket_types:type_name -> google.privacy.dlp.v2.AmazonS3BucketConditions.BucketType
-	44,  // 354: google.privacy.dlp.v2.AmazonS3BucketConditions.object_storage_classes:type_name -> google.privacy.dlp.v2.AmazonS3BucketConditions.ObjectStorageClass
-	6,   // 355: google.privacy.dlp.v2.DiscoveryOtherCloudGenerationCadence.refresh_frequency:type_name -> google.privacy.dlp.v2.DataProfileUpdateFrequency
-	201, // 356: google.privacy.dlp.v2.DiscoveryOtherCloudGenerationCadence.inspect_template_modified_cadence:type_name -> google.privacy.dlp.v2.DiscoveryInspectTemplateModifiedCadence
-	398, // 357: google.privacy.dlp.v2.OtherCloudDiscoveryStartingLocation.aws_location:type_name -> google.privacy.dlp.v2.OtherCloudDiscoveryStartingLocation.AwsDiscoveryStartingLocation
-	239, // 358: google.privacy.dlp.v2.VertexDatasetDiscoveryTarget.filter:type_name -> google.privacy.dlp.v2.DiscoveryVertexDatasetFilter
-	244, // 359: google.privacy.dlp.v2.VertexDatasetDiscoveryTarget.conditions:type_name -> google.privacy.dlp.v2.DiscoveryVertexDatasetConditions
-	245, // 360: google.privacy.dlp.v2.VertexDatasetDiscoveryTarget.generation_cadence:type_name -> google.privacy.dlp.v2.DiscoveryVertexDatasetGenerationCadence
-	190, // 361: google.privacy.dlp.v2.VertexDatasetDiscoveryTarget.disabled:type_name -> google.privacy.dlp.v2.Disabled
-	240, // 362: google.privacy.dlp.v2.DiscoveryVertexDatasetFilter.collection:type_name -> google.privacy.dlp.v2.VertexDatasetCollection
-	243, // 363: google.privacy.dlp.v2.DiscoveryVertexDatasetFilter.vertex_dataset_resource_reference:type_name -> google.privacy.dlp.v2.VertexDatasetResourceReference
-	237, // 364: google.privacy.dlp.v2.DiscoveryVertexDatasetFilter.others:type_name -> google.privacy.dlp.v2.AllOtherResources
-	241, // 365: google.privacy.dlp.v2.VertexDatasetCollection.vertex_dataset_regexes:type_name -> google.privacy.dlp.v2.VertexDatasetRegexes
-	242, // 366: google.privacy.dlp.v2.VertexDatasetRegexes.patterns:type_name -> google.privacy.dlp.v2.VertexDatasetRegex
-	418, // 367: google.privacy.dlp.v2.DiscoveryVertexDatasetConditions.created_after:type_name -> google.protobuf.Timestamp
-	429, // 368: google.privacy.dlp.v2.DiscoveryVertexDatasetConditions.min_age:type_name -> google.protobuf.Duration
-	6,   // 369: google.privacy.dlp.v2.DiscoveryVertexDatasetGenerationCadence.refresh_frequency:type_name -> google.privacy.dlp.v2.DataProfileUpdateFrequency
-	201, // 370: google.privacy.dlp.v2.DiscoveryVertexDatasetGenerationCadence.inspect_template_modified_cadence:type_name -> google.privacy.dlp.v2.DiscoveryInspectTemplateModifiedCadence
-	14,  // 371: google.privacy.dlp.v2.DlpJob.type:type_name -> google.privacy.dlp.v2.DlpJobType
-	45,  // 372: google.privacy.dlp.v2.DlpJob.state:type_name -> google.privacy.dlp.v2.DlpJob.JobState
-	114, // 373: google.privacy.dlp.v2.DlpJob.risk_details:type_name -> google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails
-	98,  // 374: google.privacy.dlp.v2.DlpJob.inspect_details:type_name -> google.privacy.dlp.v2.InspectDataSourceDetails
-	418, // 375: google.privacy.dlp.v2.DlpJob.create_time:type_name -> google.protobuf.Timestamp
-	418, // 376: google.privacy.dlp.v2.DlpJob.start_time:type_name -> google.protobuf.Timestamp
-	418, // 377: google.privacy.dlp.v2.DlpJob.end_time:type_name -> google.protobuf.Timestamp
-	418, // 378: google.privacy.dlp.v2.DlpJob.last_modified:type_name -> google.protobuf.Timestamp
-	157, // 379: google.privacy.dlp.v2.DlpJob.errors:type_name -> google.privacy.dlp.v2.Error
-	101, // 380: google.privacy.dlp.v2.DlpJob.action_details:type_name -> google.privacy.dlp.v2.ActionDetails
-	14,  // 381: google.privacy.dlp.v2.ListDlpJobsRequest.type:type_name -> google.privacy.dlp.v2.DlpJobType
-	246, // 382: google.privacy.dlp.v2.ListDlpJobsResponse.jobs:type_name -> google.privacy.dlp.v2.DlpJob
-	156, // 383: google.privacy.dlp.v2.CreateDeidentifyTemplateRequest.deidentify_template:type_name -> google.privacy.dlp.v2.DeidentifyTemplate
-	156, // 384: google.privacy.dlp.v2.UpdateDeidentifyTemplateRequest.deidentify_template:type_name -> google.privacy.dlp.v2.DeidentifyTemplate
-	430, // 385: google.privacy.dlp.v2.UpdateDeidentifyTemplateRequest.update_mask:type_name -> google.protobuf.FieldMask
-	156, // 386: google.privacy.dlp.v2.ListDeidentifyTemplatesResponse.deidentify_templates:type_name -> google.privacy.dlp.v2.DeidentifyTemplate
-	421, // 387: google.privacy.dlp.v2.LargeCustomDictionaryConfig.output_path:type_name -> google.privacy.dlp.v2.CloudStoragePath
-	433, // 388: google.privacy.dlp.v2.LargeCustomDictionaryConfig.cloud_storage_file_set:type_name -> google.privacy.dlp.v2.CloudStorageFileSet
-	434, // 389: google.privacy.dlp.v2.LargeCustomDictionaryConfig.big_query_field:type_name -> google.privacy.dlp.v2.BigQueryField
-	259, // 390: google.privacy.dlp.v2.StoredInfoTypeConfig.large_custom_dictionary:type_name -> google.privacy.dlp.v2.LargeCustomDictionaryConfig
-	412, // 391: google.privacy.dlp.v2.StoredInfoTypeConfig.dictionary:type_name -> google.privacy.dlp.v2.CustomInfoType.Dictionary
-	410, // 392: google.privacy.dlp.v2.StoredInfoTypeConfig.regex:type_name -> google.privacy.dlp.v2.CustomInfoType.Regex
-	260, // 393: google.privacy.dlp.v2.StoredInfoTypeStats.large_custom_dictionary:type_name -> google.privacy.dlp.v2.LargeCustomDictionaryStats
-	261, // 394: google.privacy.dlp.v2.StoredInfoTypeVersion.config:type_name -> google.privacy.dlp.v2.StoredInfoTypeConfig
-	418, // 395: google.privacy.dlp.v2.StoredInfoTypeVersion.create_time:type_name -> google.protobuf.Timestamp
-	15,  // 396: google.privacy.dlp.v2.StoredInfoTypeVersion.state:type_name -> google.privacy.dlp.v2.StoredInfoTypeState
-	157, // 397: google.privacy.dlp.v2.StoredInfoTypeVersion.errors:type_name -> google.privacy.dlp.v2.Error
-	262, // 398: google.privacy.dlp.v2.StoredInfoTypeVersion.stats:type_name -> google.privacy.dlp.v2.StoredInfoTypeStats
-	263, // 399: google.privacy.dlp.v2.StoredInfoType.current_version:type_name -> google.privacy.dlp.v2.StoredInfoTypeVersion
-	263, // 400: google.privacy.dlp.v2.StoredInfoType.pending_versions:type_name -> google.privacy.dlp.v2.StoredInfoTypeVersion
-	261, // 401: google.privacy.dlp.v2.CreateStoredInfoTypeRequest.config:type_name -> google.privacy.dlp.v2.StoredInfoTypeConfig
-	261, // 402: google.privacy.dlp.v2.UpdateStoredInfoTypeRequest.config:type_name -> google.privacy.dlp.v2.StoredInfoTypeConfig
-	430, // 403: google.privacy.dlp.v2.UpdateStoredInfoTypeRequest.update_mask:type_name -> google.protobuf.FieldMask
-	264, // 404: google.privacy.dlp.v2.ListStoredInfoTypesResponse.stored_info_types:type_name -> google.privacy.dlp.v2.StoredInfoType
-	273, // 405: google.privacy.dlp.v2.HybridInspectJobTriggerRequest.hybrid_item:type_name -> google.privacy.dlp.v2.HybridContentItem
-	273, // 406: google.privacy.dlp.v2.HybridInspectDlpJobRequest.hybrid_item:type_name -> google.privacy.dlp.v2.HybridContentItem
-	69,  // 407: google.privacy.dlp.v2.HybridContentItem.item:type_name -> google.privacy.dlp.v2.ContentItem
-	274, // 408: google.privacy.dlp.v2.HybridContentItem.finding_details:type_name -> google.privacy.dlp.v2.HybridFindingDetails
-	83,  // 409: google.privacy.dlp.v2.HybridFindingDetails.container_details:type_name -> google.privacy.dlp.v2.Container
-	435, // 410: google.privacy.dlp.v2.HybridFindingDetails.table_options:type_name -> google.privacy.dlp.v2.TableOptions
-	399, // 411: google.privacy.dlp.v2.HybridFindingDetails.labels:type_name -> google.privacy.dlp.v2.HybridFindingDetails.LabelsEntry
-	278, // 412: google.privacy.dlp.v2.ImageContainmentType.encloses:type_name -> google.privacy.dlp.v2.Encloses
-	279, // 413: google.privacy.dlp.v2.ImageContainmentType.fully_inside:type_name -> google.privacy.dlp.v2.FullyInside
-	277, // 414: google.privacy.dlp.v2.ImageContainmentType.overlaps:type_name -> google.privacy.dlp.v2.Overlap
-	287, // 415: google.privacy.dlp.v2.ListProjectDataProfilesResponse.project_data_profiles:type_name -> google.privacy.dlp.v2.ProjectDataProfile
-	289, // 416: google.privacy.dlp.v2.ListTableDataProfilesResponse.table_data_profiles:type_name -> google.privacy.dlp.v2.TableDataProfile
-	293, // 417: google.privacy.dlp.v2.ListColumnDataProfilesResponse.column_data_profiles:type_name -> google.privacy.dlp.v2.ColumnDataProfile
-	46,  // 418: google.privacy.dlp.v2.DataRiskLevel.score:type_name -> google.privacy.dlp.v2.DataRiskLevel.DataRiskLevelScore
-	418, // 419: google.privacy.dlp.v2.ProjectDataProfile.profile_last_generated:type_name -> google.protobuf.Timestamp
-	422, // 420: google.privacy.dlp.v2.ProjectDataProfile.sensitivity_score:type_name -> google.privacy.dlp.v2.SensitivityScore
-	286, // 421: google.privacy.dlp.v2.ProjectDataProfile.data_risk_level:type_name -> google.privacy.dlp.v2.DataRiskLevel
-	290, // 422: google.privacy.dlp.v2.ProjectDataProfile.profile_status:type_name -> google.privacy.dlp.v2.ProfileStatus
-	67,  // 423: google.privacy.dlp.v2.DataProfileConfigSnapshot.inspect_config:type_name -> google.privacy.dlp.v2.InspectConfig
-	186, // 424: google.privacy.dlp.v2.DataProfileConfigSnapshot.data_profile_job:type_name -> google.privacy.dlp.v2.DataProfileJobConfig
-	192, // 425: google.privacy.dlp.v2.DataProfileConfigSnapshot.discovery_config:type_name -> google.privacy.dlp.v2.DiscoveryConfig
-	418, // 426: google.privacy.dlp.v2.DataProfileConfigSnapshot.inspect_template_modified_time:type_name -> google.protobuf.Timestamp
-	324, // 427: google.privacy.dlp.v2.TableDataProfile.data_source_type:type_name -> google.privacy.dlp.v2.DataSourceType
-	290, // 428: google.privacy.dlp.v2.TableDataProfile.profile_status:type_name -> google.privacy.dlp.v2.ProfileStatus
-	47,  // 429: google.privacy.dlp.v2.TableDataProfile.state:type_name -> google.privacy.dlp.v2.TableDataProfile.State
-	422, // 430: google.privacy.dlp.v2.TableDataProfile.sensitivity_score:type_name -> google.privacy.dlp.v2.SensitivityScore
-	286, // 431: google.privacy.dlp.v2.TableDataProfile.data_risk_level:type_name -> google.privacy.dlp.v2.DataRiskLevel
-	291, // 432: google.privacy.dlp.v2.TableDataProfile.predicted_info_types:type_name -> google.privacy.dlp.v2.InfoTypeSummary
-	292, // 433: google.privacy.dlp.v2.TableDataProfile.other_info_types:type_name -> google.privacy.dlp.v2.OtherInfoTypeSummary
-	288, // 434: google.privacy.dlp.v2.TableDataProfile.config_snapshot:type_name -> google.privacy.dlp.v2.DataProfileConfigSnapshot
-	418, // 435: google.privacy.dlp.v2.TableDataProfile.last_modified_time:type_name -> google.protobuf.Timestamp
-	418, // 436: google.privacy.dlp.v2.TableDataProfile.expiration_time:type_name -> google.protobuf.Timestamp
-	17,  // 437: google.privacy.dlp.v2.TableDataProfile.encryption_status:type_name -> google.privacy.dlp.v2.EncryptionStatus
-	16,  // 438: google.privacy.dlp.v2.TableDataProfile.resource_visibility:type_name -> google.privacy.dlp.v2.ResourceVisibility
-	418, // 439: google.privacy.dlp.v2.TableDataProfile.profile_last_generated:type_name -> google.protobuf.Timestamp
-	400, // 440: google.privacy.dlp.v2.TableDataProfile.resource_labels:type_name -> google.privacy.dlp.v2.TableDataProfile.ResourceLabelsEntry
-	418, // 441: google.privacy.dlp.v2.TableDataProfile.create_time:type_name -> google.protobuf.Timestamp
-	420, // 442: google.privacy.dlp.v2.TableDataProfile.sample_findings_table:type_name -> google.privacy.dlp.v2.BigQueryTable
-	295, // 443: google.privacy.dlp.v2.TableDataProfile.tags:type_name -> google.privacy.dlp.v2.Tag
-	298, // 444: google.privacy.dlp.v2.TableDataProfile.related_resources:type_name -> google.privacy.dlp.v2.RelatedResource
-	328, // 445: google.privacy.dlp.v2.TableDataProfile.domains:type_name -> google.privacy.dlp.v2.Domain
-	428, // 446: google.privacy.dlp.v2.ProfileStatus.status:type_name -> google.rpc.Status
-	418, // 447: google.privacy.dlp.v2.ProfileStatus.timestamp:type_name -> google.protobuf.Timestamp
-	409, // 448: google.privacy.dlp.v2.InfoTypeSummary.info_type:type_name -> google.privacy.dlp.v2.InfoType
-	409, // 449: google.privacy.dlp.v2.OtherInfoTypeSummary.info_type:type_name -> google.privacy.dlp.v2.InfoType
-	290, // 450: google.privacy.dlp.v2.ColumnDataProfile.profile_status:type_name -> google.privacy.dlp.v2.ProfileStatus
-	48,  // 451: google.privacy.dlp.v2.ColumnDataProfile.state:type_name -> google.privacy.dlp.v2.ColumnDataProfile.State
-	418, // 452: google.privacy.dlp.v2.ColumnDataProfile.profile_last_generated:type_name -> google.protobuf.Timestamp
-	422, // 453: google.privacy.dlp.v2.ColumnDataProfile.sensitivity_score:type_name -> google.privacy.dlp.v2.SensitivityScore
-	286, // 454: google.privacy.dlp.v2.ColumnDataProfile.data_risk_level:type_name -> google.privacy.dlp.v2.DataRiskLevel
-	291, // 455: google.privacy.dlp.v2.ColumnDataProfile.column_info_type:type_name -> google.privacy.dlp.v2.InfoTypeSummary
-	292, // 456: google.privacy.dlp.v2.ColumnDataProfile.other_matches:type_name -> google.privacy.dlp.v2.OtherInfoTypeSummary
-	18,  // 457: google.privacy.dlp.v2.ColumnDataProfile.estimated_null_percentage:type_name -> google.privacy.dlp.v2.NullPercentageLevel
-	19,  // 458: google.privacy.dlp.v2.ColumnDataProfile.estimated_uniqueness_score:type_name -> google.privacy.dlp.v2.UniquenessScoreLevel
-	49,  // 459: google.privacy.dlp.v2.ColumnDataProfile.column_type:type_name -> google.privacy.dlp.v2.ColumnDataProfile.ColumnDataType
-	50,  // 460: google.privacy.dlp.v2.ColumnDataProfile.policy_state:type_name -> google.privacy.dlp.v2.ColumnDataProfile.ColumnPolicyState
-	324, // 461: google.privacy.dlp.v2.FileStoreDataProfile.data_source_type:type_name -> google.privacy.dlp.v2.DataSourceType
-	288, // 462: google.privacy.dlp.v2.FileStoreDataProfile.config_snapshot:type_name -> google.privacy.dlp.v2.DataProfileConfigSnapshot
-	290, // 463: google.privacy.dlp.v2.FileStoreDataProfile.profile_status:type_name -> google.privacy.dlp.v2.ProfileStatus
-	51,  // 464: google.privacy.dlp.v2.FileStoreDataProfile.state:type_name -> google.privacy.dlp.v2.FileStoreDataProfile.State
-	418, // 465: google.privacy.dlp.v2.FileStoreDataProfile.profile_last_generated:type_name -> google.protobuf.Timestamp
-	16,  // 466: google.privacy.dlp.v2.FileStoreDataProfile.resource_visibility:type_name -> google.privacy.dlp.v2.ResourceVisibility
-	422, // 467: google.privacy.dlp.v2.FileStoreDataProfile.sensitivity_score:type_name -> google.privacy.dlp.v2.SensitivityScore
-	286, // 468: google.privacy.dlp.v2.FileStoreDataProfile.data_risk_level:type_name -> google.privacy.dlp.v2.DataRiskLevel
-	418, // 469: google.privacy.dlp.v2.FileStoreDataProfile.create_time:type_name -> google.protobuf.Timestamp
-	418, // 470: google.privacy.dlp.v2.FileStoreDataProfile.last_modified_time:type_name -> google.protobuf.Timestamp
-	301, // 471: google.privacy.dlp.v2.FileStoreDataProfile.file_cluster_summaries:type_name -> google.privacy.dlp.v2.FileClusterSummary
-	401, // 472: google.privacy.dlp.v2.FileStoreDataProfile.resource_attributes:type_name -> google.privacy.dlp.v2.FileStoreDataProfile.ResourceAttributesEntry
-	402, // 473: google.privacy.dlp.v2.FileStoreDataProfile.resource_labels:type_name -> google.privacy.dlp.v2.FileStoreDataProfile.ResourceLabelsEntry
-	299, // 474: google.privacy.dlp.v2.FileStoreDataProfile.file_store_info_type_summaries:type_name -> google.privacy.dlp.v2.FileStoreInfoTypeSummary
-	420, // 475: google.privacy.dlp.v2.FileStoreDataProfile.sample_findings_table:type_name -> google.privacy.dlp.v2.BigQueryTable
-	295, // 476: google.privacy.dlp.v2.FileStoreDataProfile.tags:type_name -> google.privacy.dlp.v2.Tag
-	298, // 477: google.privacy.dlp.v2.FileStoreDataProfile.related_resources:type_name -> google.privacy.dlp.v2.RelatedResource
-	328, // 478: google.privacy.dlp.v2.FileStoreDataProfile.domains:type_name -> google.privacy.dlp.v2.Domain
-	297, // 479: google.privacy.dlp.v2.TagFilters.tag_filters:type_name -> google.privacy.dlp.v2.TagFilter
-	409, // 480: google.privacy.dlp.v2.FileStoreInfoTypeSummary.info_type:type_name -> google.privacy.dlp.v2.InfoType
-	325, // 481: google.privacy.dlp.v2.FileClusterSummary.file_cluster_type:type_name -> google.privacy.dlp.v2.FileClusterType
-	299, // 482: google.privacy.dlp.v2.FileClusterSummary.file_store_info_type_summaries:type_name -> google.privacy.dlp.v2.FileStoreInfoTypeSummary
-	422, // 483: google.privacy.dlp.v2.FileClusterSummary.sensitivity_score:type_name -> google.privacy.dlp.v2.SensitivityScore
-	286, // 484: google.privacy.dlp.v2.FileClusterSummary.data_risk_level:type_name -> google.privacy.dlp.v2.DataRiskLevel
-	157, // 485: google.privacy.dlp.v2.FileClusterSummary.errors:type_name -> google.privacy.dlp.v2.Error
-	300, // 486: google.privacy.dlp.v2.FileClusterSummary.file_extensions_scanned:type_name -> google.privacy.dlp.v2.FileExtensionInfo
-	300, // 487: google.privacy.dlp.v2.FileClusterSummary.file_extensions_seen:type_name -> google.privacy.dlp.v2.FileExtensionInfo
-	294, // 488: google.privacy.dlp.v2.ListFileStoreDataProfilesResponse.file_store_data_profiles:type_name -> google.privacy.dlp.v2.FileStoreDataProfile
-	404, // 489: google.privacy.dlp.v2.DataProfilePubSubCondition.expressions:type_name -> google.privacy.dlp.v2.DataProfilePubSubCondition.PubSubExpressions
-	289, // 490: google.privacy.dlp.v2.DataProfilePubSubMessage.profile:type_name -> google.privacy.dlp.v2.TableDataProfile
-	294, // 491: google.privacy.dlp.v2.DataProfilePubSubMessage.file_store_profile:type_name -> google.privacy.dlp.v2.FileStoreDataProfile
-	35,  // 492: google.privacy.dlp.v2.DataProfilePubSubMessage.event:type_name -> google.privacy.dlp.v2.DataProfileAction.EventType
-	319, // 493: google.privacy.dlp.v2.CreateConnectionRequest.connection:type_name -> google.privacy.dlp.v2.Connection
-	319, // 494: google.privacy.dlp.v2.ListConnectionsResponse.connections:type_name -> google.privacy.dlp.v2.Connection
-	319, // 495: google.privacy.dlp.v2.SearchConnectionsResponse.connections:type_name -> google.privacy.dlp.v2.Connection
-	319, // 496: google.privacy.dlp.v2.UpdateConnectionRequest.connection:type_name -> google.privacy.dlp.v2.Connection
-	430, // 497: google.privacy.dlp.v2.UpdateConnectionRequest.update_mask:type_name -> google.protobuf.FieldMask
-	20,  // 498: google.privacy.dlp.v2.Connection.state:type_name -> google.privacy.dlp.v2.ConnectionState
-	157, // 499: google.privacy.dlp.v2.Connection.errors:type_name -> google.privacy.dlp.v2.Error
-	322, // 500: google.privacy.dlp.v2.Connection.cloud_sql:type_name -> google.privacy.dlp.v2.CloudSqlProperties
-	320, // 501: google.privacy.dlp.v2.CloudSqlProperties.username_password:type_name -> google.privacy.dlp.v2.SecretManagerCredential
-	321, // 502: google.privacy.dlp.v2.CloudSqlProperties.cloud_sql_iam:type_name -> google.privacy.dlp.v2.CloudSqlIamCredential
-	54,  // 503: google.privacy.dlp.v2.CloudSqlProperties.database_engine:type_name -> google.privacy.dlp.v2.CloudSqlProperties.DatabaseEngine
-	55,  // 504: google.privacy.dlp.v2.FileClusterType.cluster:type_name -> google.privacy.dlp.v2.FileClusterType.Cluster
-	407, // 505: google.privacy.dlp.v2.ProcessingLocation.image_fallback_location:type_name -> google.privacy.dlp.v2.ProcessingLocation.ImageFallbackLocation
-	408, // 506: google.privacy.dlp.v2.ProcessingLocation.document_fallback_location:type_name -> google.privacy.dlp.v2.ProcessingLocation.DocumentFallbackLocation
-	74,  // 507: google.privacy.dlp.v2.SaveToGcsFindingsOutput.findings:type_name -> google.privacy.dlp.v2.Finding
-	56,  // 508: google.privacy.dlp.v2.Domain.category:type_name -> google.privacy.dlp.v2.Domain.Category
-	57,  // 509: google.privacy.dlp.v2.Domain.signals:type_name -> google.privacy.dlp.v2.Domain.Signal
-	409, // 510: google.privacy.dlp.v2.InspectConfig.InfoTypeLikelihood.info_type:type_name -> google.privacy.dlp.v2.InfoType
-	413, // 511: google.privacy.dlp.v2.InspectConfig.InfoTypeLikelihood.min_likelihood:type_name -> google.privacy.dlp.v2.Likelihood
-	331, // 512: google.privacy.dlp.v2.InspectConfig.FindingLimits.max_findings_per_info_type:type_name -> google.privacy.dlp.v2.InspectConfig.FindingLimits.InfoTypeLimit
-	409, // 513: google.privacy.dlp.v2.InspectConfig.FindingLimits.InfoTypeLimit.info_type:type_name -> google.privacy.dlp.v2.InfoType
-	116, // 514: google.privacy.dlp.v2.Table.Row.values:type_name -> google.privacy.dlp.v2.Value
-	409, // 515: google.privacy.dlp.v2.RedactImageRequest.ImageRedactionConfig.info_type:type_name -> google.privacy.dlp.v2.InfoType
-	88,  // 516: google.privacy.dlp.v2.RedactImageRequest.ImageRedactionConfig.redaction_color:type_name -> google.privacy.dlp.v2.Color
-	155, // 517: google.privacy.dlp.v2.InspectDataSourceDetails.RequestedOptions.snapshot_inspect_template:type_name -> google.privacy.dlp.v2.InspectTemplate
-	181, // 518: google.privacy.dlp.v2.InspectDataSourceDetails.RequestedOptions.job_config:type_name -> google.privacy.dlp.v2.InspectJobConfig
-	97,  // 519: google.privacy.dlp.v2.InspectDataSourceDetails.Result.info_type_stats:type_name -> google.privacy.dlp.v2.InfoTypeStats
-	100, // 520: google.privacy.dlp.v2.InspectDataSourceDetails.Result.hybrid_stats:type_name -> google.privacy.dlp.v2.HybridInspectStatistics
-	156, // 521: google.privacy.dlp.v2.DeidentifyDataSourceDetails.RequestedDeidentifyOptions.snapshot_deidentify_template:type_name -> google.privacy.dlp.v2.DeidentifyTemplate
-	156, // 522: google.privacy.dlp.v2.DeidentifyDataSourceDetails.RequestedDeidentifyOptions.snapshot_structured_deidentify_template:type_name -> google.privacy.dlp.v2.DeidentifyTemplate
-	156, // 523: google.privacy.dlp.v2.DeidentifyDataSourceDetails.RequestedDeidentifyOptions.snapshot_image_redact_template:type_name -> google.privacy.dlp.v2.DeidentifyTemplate
-	417, // 524: google.privacy.dlp.v2.StatisticalTable.QuasiIdentifierField.field:type_name -> google.privacy.dlp.v2.FieldId
-	417, // 525: google.privacy.dlp.v2.PrivacyMetric.NumericalStatsConfig.field:type_name -> google.privacy.dlp.v2.FieldId
-	417, // 526: google.privacy.dlp.v2.PrivacyMetric.CategoricalStatsConfig.field:type_name -> google.privacy.dlp.v2.FieldId
-	417, // 527: google.privacy.dlp.v2.PrivacyMetric.KAnonymityConfig.quasi_ids:type_name -> google.privacy.dlp.v2.FieldId
-	436, // 528: google.privacy.dlp.v2.PrivacyMetric.KAnonymityConfig.entity_id:type_name -> google.privacy.dlp.v2.EntityId
-	417, // 529: google.privacy.dlp.v2.PrivacyMetric.LDiversityConfig.quasi_ids:type_name -> google.privacy.dlp.v2.FieldId
-	417, // 530: google.privacy.dlp.v2.PrivacyMetric.LDiversityConfig.sensitive_attribute:type_name -> google.privacy.dlp.v2.FieldId
-	345, // 531: google.privacy.dlp.v2.PrivacyMetric.KMapEstimationConfig.quasi_ids:type_name -> google.privacy.dlp.v2.PrivacyMetric.KMapEstimationConfig.TaggedField
-	346, // 532: google.privacy.dlp.v2.PrivacyMetric.KMapEstimationConfig.auxiliary_tables:type_name -> google.privacy.dlp.v2.PrivacyMetric.KMapEstimationConfig.AuxiliaryTable
-	111, // 533: google.privacy.dlp.v2.PrivacyMetric.DeltaPresenceEstimationConfig.quasi_ids:type_name -> google.privacy.dlp.v2.QuasiId
-	112, // 534: google.privacy.dlp.v2.PrivacyMetric.DeltaPresenceEstimationConfig.auxiliary_tables:type_name -> google.privacy.dlp.v2.StatisticalTable
-	417, // 535: google.privacy.dlp.v2.PrivacyMetric.KMapEstimationConfig.TaggedField.field:type_name -> google.privacy.dlp.v2.FieldId
-	409, // 536: google.privacy.dlp.v2.PrivacyMetric.KMapEstimationConfig.TaggedField.info_type:type_name -> google.privacy.dlp.v2.InfoType
-	423, // 537: google.privacy.dlp.v2.PrivacyMetric.KMapEstimationConfig.TaggedField.inferred:type_name -> google.protobuf.Empty
-	420, // 538: google.privacy.dlp.v2.PrivacyMetric.KMapEstimationConfig.AuxiliaryTable.table:type_name -> google.privacy.dlp.v2.BigQueryTable
-	347, // 539: google.privacy.dlp.v2.PrivacyMetric.KMapEstimationConfig.AuxiliaryTable.quasi_ids:type_name -> google.privacy.dlp.v2.PrivacyMetric.KMapEstimationConfig.AuxiliaryTable.QuasiIdField
-	417, // 540: google.privacy.dlp.v2.PrivacyMetric.KMapEstimationConfig.AuxiliaryTable.relative_frequency:type_name -> google.privacy.dlp.v2.FieldId
-	417, // 541: google.privacy.dlp.v2.PrivacyMetric.KMapEstimationConfig.AuxiliaryTable.QuasiIdField.field:type_name -> google.privacy.dlp.v2.FieldId
-	116, // 542: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.NumericalStatsResult.min_value:type_name -> google.privacy.dlp.v2.Value
-	116, // 543: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.NumericalStatsResult.max_value:type_name -> google.privacy.dlp.v2.Value
-	116, // 544: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.NumericalStatsResult.quantile_values:type_name -> google.privacy.dlp.v2.Value
-	355, // 545: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.CategoricalStatsResult.value_frequency_histogram_buckets:type_name -> google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.CategoricalStatsResult.CategoricalStatsHistogramBucket
-	357, // 546: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.KAnonymityResult.equivalence_class_histogram_buckets:type_name -> google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.KAnonymityResult.KAnonymityHistogramBucket
-	359, // 547: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.LDiversityResult.sensitive_value_frequency_histogram_buckets:type_name -> google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.LDiversityResult.LDiversityHistogramBucket
-	361, // 548: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.KMapEstimationResult.k_map_estimation_histogram:type_name -> google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.KMapEstimationResult.KMapEstimationHistogramBucket
-	363, // 549: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.DeltaPresenceEstimationResult.delta_presence_estimation_histogram:type_name -> google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.DeltaPresenceEstimationResult.DeltaPresenceEstimationHistogramBucket
-	110, // 550: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.RequestedRiskAnalysisOptions.job_config:type_name -> google.privacy.dlp.v2.RiskAnalysisJobConfig
-	115, // 551: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.CategoricalStatsResult.CategoricalStatsHistogramBucket.bucket_values:type_name -> google.privacy.dlp.v2.ValueFrequency
-	116, // 552: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.KAnonymityResult.KAnonymityEquivalenceClass.quasi_ids_values:type_name -> google.privacy.dlp.v2.Value
-	356, // 553: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.KAnonymityResult.KAnonymityHistogramBucket.bucket_values:type_name -> google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.KAnonymityResult.KAnonymityEquivalenceClass
-	116, // 554: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.LDiversityResult.LDiversityEquivalenceClass.quasi_ids_values:type_name -> google.privacy.dlp.v2.Value
-	115, // 555: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.LDiversityResult.LDiversityEquivalenceClass.top_sensitive_values:type_name -> google.privacy.dlp.v2.ValueFrequency
-	358, // 556: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.LDiversityResult.LDiversityHistogramBucket.bucket_values:type_name -> google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.LDiversityResult.LDiversityEquivalenceClass
-	116, // 557: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.KMapEstimationResult.KMapEstimationQuasiIdValues.quasi_ids_values:type_name -> google.privacy.dlp.v2.Value
-	360, // 558: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.KMapEstimationResult.KMapEstimationHistogramBucket.bucket_values:type_name -> google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.KMapEstimationResult.KMapEstimationQuasiIdValues
-	116, // 559: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.DeltaPresenceEstimationResult.DeltaPresenceEstimationQuasiIdValues.quasi_ids_values:type_name -> google.privacy.dlp.v2.Value
-	362, // 560: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.DeltaPresenceEstimationResult.DeltaPresenceEstimationHistogramBucket.bucket_values:type_name -> google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.DeltaPresenceEstimationResult.DeltaPresenceEstimationQuasiIdValues
-	366, // 561: google.privacy.dlp.v2.ImageTransformations.ImageTransformation.selected_info_types:type_name -> google.privacy.dlp.v2.ImageTransformations.ImageTransformation.SelectedInfoTypes
-	367, // 562: google.privacy.dlp.v2.ImageTransformations.ImageTransformation.all_info_types:type_name -> google.privacy.dlp.v2.ImageTransformations.ImageTransformation.AllInfoTypes
-	368, // 563: google.privacy.dlp.v2.ImageTransformations.ImageTransformation.all_text:type_name -> google.privacy.dlp.v2.ImageTransformations.ImageTransformation.AllText
-	88,  // 564: google.privacy.dlp.v2.ImageTransformations.ImageTransformation.redaction_color:type_name -> google.privacy.dlp.v2.Color
-	409, // 565: google.privacy.dlp.v2.ImageTransformations.ImageTransformation.SelectedInfoTypes.info_types:type_name -> google.privacy.dlp.v2.InfoType
-	116, // 566: google.privacy.dlp.v2.BucketingConfig.Bucket.min:type_name -> google.privacy.dlp.v2.Value
-	116, // 567: google.privacy.dlp.v2.BucketingConfig.Bucket.max:type_name -> google.privacy.dlp.v2.Value
-	116, // 568: google.privacy.dlp.v2.BucketingConfig.Bucket.replacement_value:type_name -> google.privacy.dlp.v2.Value
-	409, // 569: google.privacy.dlp.v2.InfoTypeTransformations.InfoTypeTransformation.info_types:type_name -> google.privacy.dlp.v2.InfoType
-	122, // 570: google.privacy.dlp.v2.InfoTypeTransformations.InfoTypeTransformation.primitive_transformation:type_name -> google.privacy.dlp.v2.PrimitiveTransformation
-	417, // 571: google.privacy.dlp.v2.RecordCondition.Condition.field:type_name -> google.privacy.dlp.v2.FieldId
-	9,   // 572: google.privacy.dlp.v2.RecordCondition.Condition.operator:type_name -> google.privacy.dlp.v2.RelationalOperator
-	116, // 573: google.privacy.dlp.v2.RecordCondition.Condition.value:type_name -> google.privacy.dlp.v2.Value
-	373, // 574: google.privacy.dlp.v2.RecordCondition.Conditions.conditions:type_name -> google.privacy.dlp.v2.RecordCondition.Condition
-	31,  // 575: google.privacy.dlp.v2.RecordCondition.Expressions.logical_operator:type_name -> google.privacy.dlp.v2.RecordCondition.Expressions.LogicalOperator
-	374, // 576: google.privacy.dlp.v2.RecordCondition.Expressions.conditions:type_name -> google.privacy.dlp.v2.RecordCondition.Conditions
-	32,  // 577: google.privacy.dlp.v2.TransformationSummary.SummaryResult.code:type_name -> google.privacy.dlp.v2.TransformationSummary.TransformationResultCode
-	153, // 578: google.privacy.dlp.v2.JobTrigger.Trigger.schedule:type_name -> google.privacy.dlp.v2.Schedule
-	154, // 579: google.privacy.dlp.v2.JobTrigger.Trigger.manual:type_name -> google.privacy.dlp.v2.Manual
-	96,  // 580: google.privacy.dlp.v2.Action.SaveFindings.output_config:type_name -> google.privacy.dlp.v2.OutputStorageConfig
-	160, // 581: google.privacy.dlp.v2.Action.Deidentify.transformation_config:type_name -> google.privacy.dlp.v2.TransformationConfig
-	152, // 582: google.privacy.dlp.v2.Action.Deidentify.transformation_details_storage_config:type_name -> google.privacy.dlp.v2.TransformationDetailsStorageConfig
-	437, // 583: google.privacy.dlp.v2.Action.Deidentify.file_types_to_transform:type_name -> google.privacy.dlp.v2.FileType
-	420, // 584: google.privacy.dlp.v2.DataProfileAction.Export.profile_table:type_name -> google.privacy.dlp.v2.BigQueryTable
-	420, // 585: google.privacy.dlp.v2.DataProfileAction.Export.sample_findings_table:type_name -> google.privacy.dlp.v2.BigQueryTable
-	35,  // 586: google.privacy.dlp.v2.DataProfileAction.PubSubNotification.event:type_name -> google.privacy.dlp.v2.DataProfileAction.EventType
-	309, // 587: google.privacy.dlp.v2.DataProfileAction.PubSubNotification.pubsub_condition:type_name -> google.privacy.dlp.v2.DataProfilePubSubCondition
-	36,  // 588: google.privacy.dlp.v2.DataProfileAction.PubSubNotification.detail_of_message:type_name -> google.privacy.dlp.v2.DataProfileAction.PubSubNotification.DetailLevel
-	392, // 589: google.privacy.dlp.v2.DataProfileAction.TagResources.tag_conditions:type_name -> google.privacy.dlp.v2.DataProfileAction.TagResources.TagCondition
-	3,   // 590: google.privacy.dlp.v2.DataProfileAction.TagResources.profile_generations_to_tag:type_name -> google.privacy.dlp.v2.ProfileGeneration
-	393, // 591: google.privacy.dlp.v2.DataProfileAction.TagResources.TagCondition.tag:type_name -> google.privacy.dlp.v2.DataProfileAction.TagResources.TagValue
-	422, // 592: google.privacy.dlp.v2.DataProfileAction.TagResources.TagCondition.sensitivity_score:type_name -> google.privacy.dlp.v2.SensitivityScore
-	235, // 593: google.privacy.dlp.v2.DiscoveryConfig.OrgConfig.location:type_name -> google.privacy.dlp.v2.DiscoveryStartingLocation
-	429, // 594: google.privacy.dlp.v2.DiscoveryBigQueryConditions.OrConditions.min_age:type_name -> google.protobuf.Duration
-	40,  // 595: google.privacy.dlp.v2.DiscoveryCloudSqlGenerationCadence.SchemaModifiedCadence.types:type_name -> google.privacy.dlp.v2.DiscoveryCloudSqlGenerationCadence.SchemaModifiedCadence.CloudSqlSchemaModification
-	6,   // 596: google.privacy.dlp.v2.DiscoveryCloudSqlGenerationCadence.SchemaModifiedCadence.frequency:type_name -> google.privacy.dlp.v2.DataProfileUpdateFrequency
-	116, // 597: google.privacy.dlp.v2.FileStoreDataProfile.ResourceAttributesEntry.value:type_name -> google.privacy.dlp.v2.Value
-	52,  // 598: google.privacy.dlp.v2.DataProfilePubSubCondition.PubSubCondition.minimum_risk_score:type_name -> google.privacy.dlp.v2.DataProfilePubSubCondition.ProfileScoreBucket
-	52,  // 599: google.privacy.dlp.v2.DataProfilePubSubCondition.PubSubCondition.minimum_sensitivity_score:type_name -> google.privacy.dlp.v2.DataProfilePubSubCondition.ProfileScoreBucket
-	53,  // 600: google.privacy.dlp.v2.DataProfilePubSubCondition.PubSubExpressions.logical_operator:type_name -> google.privacy.dlp.v2.DataProfilePubSubCondition.PubSubExpressions.PubSubLogicalOperator
-	403, // 601: google.privacy.dlp.v2.DataProfilePubSubCondition.PubSubExpressions.conditions:type_name -> google.privacy.dlp.v2.DataProfilePubSubCondition.PubSubCondition
-	405, // 602: google.privacy.dlp.v2.ProcessingLocation.ImageFallbackLocation.multi_region_processing:type_name -> google.privacy.dlp.v2.ProcessingLocation.MultiRegionProcessing
-	406, // 603: google.privacy.dlp.v2.ProcessingLocation.ImageFallbackLocation.global_processing:type_name -> google.privacy.dlp.v2.ProcessingLocation.GlobalProcessing
-	405, // 604: google.privacy.dlp.v2.ProcessingLocation.DocumentFallbackLocation.multi_region_processing:type_name -> google.privacy.dlp.v2.ProcessingLocation.MultiRegionProcessing
-	406, // 605: google.privacy.dlp.v2.ProcessingLocation.DocumentFallbackLocation.global_processing:type_name -> google.privacy.dlp.v2.ProcessingLocation.GlobalProcessing
-	94,  // 606: google.privacy.dlp.v2.DlpService.InspectContent:input_type -> google.privacy.dlp.v2.InspectContentRequest
-	87,  // 607: google.privacy.dlp.v2.DlpService.RedactImage:input_type -> google.privacy.dlp.v2.RedactImageRequest
-	90,  // 608: google.privacy.dlp.v2.DlpService.DeidentifyContent:input_type -> google.privacy.dlp.v2.DeidentifyContentRequest
-	92,  // 609: google.privacy.dlp.v2.DlpService.ReidentifyContent:input_type -> google.privacy.dlp.v2.ReidentifyContentRequest
-	108, // 610: google.privacy.dlp.v2.DlpService.ListInfoTypes:input_type -> google.privacy.dlp.v2.ListInfoTypesRequest
-	161, // 611: google.privacy.dlp.v2.DlpService.CreateInspectTemplate:input_type -> google.privacy.dlp.v2.CreateInspectTemplateRequest
-	162, // 612: google.privacy.dlp.v2.DlpService.UpdateInspectTemplate:input_type -> google.privacy.dlp.v2.UpdateInspectTemplateRequest
-	163, // 613: google.privacy.dlp.v2.DlpService.GetInspectTemplate:input_type -> google.privacy.dlp.v2.GetInspectTemplateRequest
-	164, // 614: google.privacy.dlp.v2.DlpService.ListInspectTemplates:input_type -> google.privacy.dlp.v2.ListInspectTemplatesRequest
-	166, // 615: google.privacy.dlp.v2.DlpService.DeleteInspectTemplate:input_type -> google.privacy.dlp.v2.DeleteInspectTemplateRequest
-	253, // 616: google.privacy.dlp.v2.DlpService.CreateDeidentifyTemplate:input_type -> google.privacy.dlp.v2.CreateDeidentifyTemplateRequest
-	254, // 617: google.privacy.dlp.v2.DlpService.UpdateDeidentifyTemplate:input_type -> google.privacy.dlp.v2.UpdateDeidentifyTemplateRequest
-	255, // 618: google.privacy.dlp.v2.DlpService.GetDeidentifyTemplate:input_type -> google.privacy.dlp.v2.GetDeidentifyTemplateRequest
-	256, // 619: google.privacy.dlp.v2.DlpService.ListDeidentifyTemplates:input_type -> google.privacy.dlp.v2.ListDeidentifyTemplatesRequest
-	258, // 620: google.privacy.dlp.v2.DlpService.DeleteDeidentifyTemplate:input_type -> google.privacy.dlp.v2.DeleteDeidentifyTemplateRequest
-	167, // 621: google.privacy.dlp.v2.DlpService.CreateJobTrigger:input_type -> google.privacy.dlp.v2.CreateJobTriggerRequest
-	169, // 622: google.privacy.dlp.v2.DlpService.UpdateJobTrigger:input_type -> google.privacy.dlp.v2.UpdateJobTriggerRequest
-	271, // 623: google.privacy.dlp.v2.DlpService.HybridInspectJobTrigger:input_type -> google.privacy.dlp.v2.HybridInspectJobTriggerRequest
-	170, // 624: google.privacy.dlp.v2.DlpService.GetJobTrigger:input_type -> google.privacy.dlp.v2.GetJobTriggerRequest
-	178, // 625: google.privacy.dlp.v2.DlpService.ListJobTriggers:input_type -> google.privacy.dlp.v2.ListJobTriggersRequest
-	180, // 626: google.privacy.dlp.v2.DlpService.DeleteJobTrigger:input_type -> google.privacy.dlp.v2.DeleteJobTriggerRequest
-	168, // 627: google.privacy.dlp.v2.DlpService.ActivateJobTrigger:input_type -> google.privacy.dlp.v2.ActivateJobTriggerRequest
-	171, // 628: google.privacy.dlp.v2.DlpService.CreateDiscoveryConfig:input_type -> google.privacy.dlp.v2.CreateDiscoveryConfigRequest
-	172, // 629: google.privacy.dlp.v2.DlpService.UpdateDiscoveryConfig:input_type -> google.privacy.dlp.v2.UpdateDiscoveryConfigRequest
-	173, // 630: google.privacy.dlp.v2.DlpService.GetDiscoveryConfig:input_type -> google.privacy.dlp.v2.GetDiscoveryConfigRequest
-	174, // 631: google.privacy.dlp.v2.DlpService.ListDiscoveryConfigs:input_type -> google.privacy.dlp.v2.ListDiscoveryConfigsRequest
-	176, // 632: google.privacy.dlp.v2.DlpService.DeleteDiscoveryConfig:input_type -> google.privacy.dlp.v2.DeleteDiscoveryConfigRequest
-	177, // 633: google.privacy.dlp.v2.DlpService.CreateDlpJob:input_type -> google.privacy.dlp.v2.CreateDlpJobRequest
-	248, // 634: google.privacy.dlp.v2.DlpService.ListDlpJobs:input_type -> google.privacy.dlp.v2.ListDlpJobsRequest
-	247, // 635: google.privacy.dlp.v2.DlpService.GetDlpJob:input_type -> google.privacy.dlp.v2.GetDlpJobRequest
-	252, // 636: google.privacy.dlp.v2.DlpService.DeleteDlpJob:input_type -> google.privacy.dlp.v2.DeleteDlpJobRequest
-	250, // 637: google.privacy.dlp.v2.DlpService.CancelDlpJob:input_type -> google.privacy.dlp.v2.CancelDlpJobRequest
-	265, // 638: google.privacy.dlp.v2.DlpService.CreateStoredInfoType:input_type -> google.privacy.dlp.v2.CreateStoredInfoTypeRequest
-	266, // 639: google.privacy.dlp.v2.DlpService.UpdateStoredInfoType:input_type -> google.privacy.dlp.v2.UpdateStoredInfoTypeRequest
-	267, // 640: google.privacy.dlp.v2.DlpService.GetStoredInfoType:input_type -> google.privacy.dlp.v2.GetStoredInfoTypeRequest
-	268, // 641: google.privacy.dlp.v2.DlpService.ListStoredInfoTypes:input_type -> google.privacy.dlp.v2.ListStoredInfoTypesRequest
-	270, // 642: google.privacy.dlp.v2.DlpService.DeleteStoredInfoType:input_type -> google.privacy.dlp.v2.DeleteStoredInfoTypeRequest
-	280, // 643: google.privacy.dlp.v2.DlpService.ListProjectDataProfiles:input_type -> google.privacy.dlp.v2.ListProjectDataProfilesRequest
-	282, // 644: google.privacy.dlp.v2.DlpService.ListTableDataProfiles:input_type -> google.privacy.dlp.v2.ListTableDataProfilesRequest
-	284, // 645: google.privacy.dlp.v2.DlpService.ListColumnDataProfiles:input_type -> google.privacy.dlp.v2.ListColumnDataProfilesRequest
-	302, // 646: google.privacy.dlp.v2.DlpService.GetProjectDataProfile:input_type -> google.privacy.dlp.v2.GetProjectDataProfileRequest
-	304, // 647: google.privacy.dlp.v2.DlpService.ListFileStoreDataProfiles:input_type -> google.privacy.dlp.v2.ListFileStoreDataProfilesRequest
-	303, // 648: google.privacy.dlp.v2.DlpService.GetFileStoreDataProfile:input_type -> google.privacy.dlp.v2.GetFileStoreDataProfileRequest
-	306, // 649: google.privacy.dlp.v2.DlpService.DeleteFileStoreDataProfile:input_type -> google.privacy.dlp.v2.DeleteFileStoreDataProfileRequest
-	307, // 650: google.privacy.dlp.v2.DlpService.GetTableDataProfile:input_type -> google.privacy.dlp.v2.GetTableDataProfileRequest
-	308, // 651: google.privacy.dlp.v2.DlpService.GetColumnDataProfile:input_type -> google.privacy.dlp.v2.GetColumnDataProfileRequest
-	323, // 652: google.privacy.dlp.v2.DlpService.DeleteTableDataProfile:input_type -> google.privacy.dlp.v2.DeleteTableDataProfileRequest
-	272, // 653: google.privacy.dlp.v2.DlpService.HybridInspectDlpJob:input_type -> google.privacy.dlp.v2.HybridInspectDlpJobRequest
-	251, // 654: google.privacy.dlp.v2.DlpService.FinishDlpJob:input_type -> google.privacy.dlp.v2.FinishDlpJobRequest
-	311, // 655: google.privacy.dlp.v2.DlpService.CreateConnection:input_type -> google.privacy.dlp.v2.CreateConnectionRequest
-	312, // 656: google.privacy.dlp.v2.DlpService.GetConnection:input_type -> google.privacy.dlp.v2.GetConnectionRequest
-	313, // 657: google.privacy.dlp.v2.DlpService.ListConnections:input_type -> google.privacy.dlp.v2.ListConnectionsRequest
-	314, // 658: google.privacy.dlp.v2.DlpService.SearchConnections:input_type -> google.privacy.dlp.v2.SearchConnectionsRequest
-	318, // 659: google.privacy.dlp.v2.DlpService.DeleteConnection:input_type -> google.privacy.dlp.v2.DeleteConnectionRequest
-	317, // 660: google.privacy.dlp.v2.DlpService.UpdateConnection:input_type -> google.privacy.dlp.v2.UpdateConnectionRequest
-	95,  // 661: google.privacy.dlp.v2.DlpService.InspectContent:output_type -> google.privacy.dlp.v2.InspectContentResponse
-	89,  // 662: google.privacy.dlp.v2.DlpService.RedactImage:output_type -> google.privacy.dlp.v2.RedactImageResponse
-	91,  // 663: google.privacy.dlp.v2.DlpService.DeidentifyContent:output_type -> google.privacy.dlp.v2.DeidentifyContentResponse
-	93,  // 664: google.privacy.dlp.v2.DlpService.ReidentifyContent:output_type -> google.privacy.dlp.v2.ReidentifyContentResponse
-	109, // 665: google.privacy.dlp.v2.DlpService.ListInfoTypes:output_type -> google.privacy.dlp.v2.ListInfoTypesResponse
-	155, // 666: google.privacy.dlp.v2.DlpService.CreateInspectTemplate:output_type -> google.privacy.dlp.v2.InspectTemplate
-	155, // 667: google.privacy.dlp.v2.DlpService.UpdateInspectTemplate:output_type -> google.privacy.dlp.v2.InspectTemplate
-	155, // 668: google.privacy.dlp.v2.DlpService.GetInspectTemplate:output_type -> google.privacy.dlp.v2.InspectTemplate
-	165, // 669: google.privacy.dlp.v2.DlpService.ListInspectTemplates:output_type -> google.privacy.dlp.v2.ListInspectTemplatesResponse
-	423, // 670: google.privacy.dlp.v2.DlpService.DeleteInspectTemplate:output_type -> google.protobuf.Empty
-	156, // 671: google.privacy.dlp.v2.DlpService.CreateDeidentifyTemplate:output_type -> google.privacy.dlp.v2.DeidentifyTemplate
-	156, // 672: google.privacy.dlp.v2.DlpService.UpdateDeidentifyTemplate:output_type -> google.privacy.dlp.v2.DeidentifyTemplate
-	156, // 673: google.privacy.dlp.v2.DlpService.GetDeidentifyTemplate:output_type -> google.privacy.dlp.v2.DeidentifyTemplate
-	257, // 674: google.privacy.dlp.v2.DlpService.ListDeidentifyTemplates:output_type -> google.privacy.dlp.v2.ListDeidentifyTemplatesResponse
-	423, // 675: google.privacy.dlp.v2.DlpService.DeleteDeidentifyTemplate:output_type -> google.protobuf.Empty
-	158, // 676: google.privacy.dlp.v2.DlpService.CreateJobTrigger:output_type -> google.privacy.dlp.v2.JobTrigger
-	158, // 677: google.privacy.dlp.v2.DlpService.UpdateJobTrigger:output_type -> google.privacy.dlp.v2.JobTrigger
-	275, // 678: google.privacy.dlp.v2.DlpService.HybridInspectJobTrigger:output_type -> google.privacy.dlp.v2.HybridInspectResponse
-	158, // 679: google.privacy.dlp.v2.DlpService.GetJobTrigger:output_type -> google.privacy.dlp.v2.JobTrigger
-	179, // 680: google.privacy.dlp.v2.DlpService.ListJobTriggers:output_type -> google.privacy.dlp.v2.ListJobTriggersResponse
-	423, // 681: google.privacy.dlp.v2.DlpService.DeleteJobTrigger:output_type -> google.protobuf.Empty
-	246, // 682: google.privacy.dlp.v2.DlpService.ActivateJobTrigger:output_type -> google.privacy.dlp.v2.DlpJob
-	192, // 683: google.privacy.dlp.v2.DlpService.CreateDiscoveryConfig:output_type -> google.privacy.dlp.v2.DiscoveryConfig
-	192, // 684: google.privacy.dlp.v2.DlpService.UpdateDiscoveryConfig:output_type -> google.privacy.dlp.v2.DiscoveryConfig
-	192, // 685: google.privacy.dlp.v2.DlpService.GetDiscoveryConfig:output_type -> google.privacy.dlp.v2.DiscoveryConfig
-	175, // 686: google.privacy.dlp.v2.DlpService.ListDiscoveryConfigs:output_type -> google.privacy.dlp.v2.ListDiscoveryConfigsResponse
-	423, // 687: google.privacy.dlp.v2.DlpService.DeleteDiscoveryConfig:output_type -> google.protobuf.Empty
-	246, // 688: google.privacy.dlp.v2.DlpService.CreateDlpJob:output_type -> google.privacy.dlp.v2.DlpJob
-	249, // 689: google.privacy.dlp.v2.DlpService.ListDlpJobs:output_type -> google.privacy.dlp.v2.ListDlpJobsResponse
-	246, // 690: google.privacy.dlp.v2.DlpService.GetDlpJob:output_type -> google.privacy.dlp.v2.DlpJob
-	423, // 691: google.privacy.dlp.v2.DlpService.DeleteDlpJob:output_type -> google.protobuf.Empty
-	423, // 692: google.privacy.dlp.v2.DlpService.CancelDlpJob:output_type -> google.protobuf.Empty
-	264, // 693: google.privacy.dlp.v2.DlpService.CreateStoredInfoType:output_type -> google.privacy.dlp.v2.StoredInfoType
-	264, // 694: google.privacy.dlp.v2.DlpService.UpdateStoredInfoType:output_type -> google.privacy.dlp.v2.StoredInfoType
-	264, // 695: google.privacy.dlp.v2.DlpService.GetStoredInfoType:output_type -> google.privacy.dlp.v2.StoredInfoType
-	269, // 696: google.privacy.dlp.v2.DlpService.ListStoredInfoTypes:output_type -> google.privacy.dlp.v2.ListStoredInfoTypesResponse
-	423, // 697: google.privacy.dlp.v2.DlpService.DeleteStoredInfoType:output_type -> google.protobuf.Empty
-	281, // 698: google.privacy.dlp.v2.DlpService.ListProjectDataProfiles:output_type -> google.privacy.dlp.v2.ListProjectDataProfilesResponse
-	283, // 699: google.privacy.dlp.v2.DlpService.ListTableDataProfiles:output_type -> google.privacy.dlp.v2.ListTableDataProfilesResponse
-	285, // 700: google.privacy.dlp.v2.DlpService.ListColumnDataProfiles:output_type -> google.privacy.dlp.v2.ListColumnDataProfilesResponse
-	287, // 701: google.privacy.dlp.v2.DlpService.GetProjectDataProfile:output_type -> google.privacy.dlp.v2.ProjectDataProfile
-	305, // 702: google.privacy.dlp.v2.DlpService.ListFileStoreDataProfiles:output_type -> google.privacy.dlp.v2.ListFileStoreDataProfilesResponse
-	294, // 703: google.privacy.dlp.v2.DlpService.GetFileStoreDataProfile:output_type -> google.privacy.dlp.v2.FileStoreDataProfile
-	423, // 704: google.privacy.dlp.v2.DlpService.DeleteFileStoreDataProfile:output_type -> google.protobuf.Empty
-	289, // 705: google.privacy.dlp.v2.DlpService.GetTableDataProfile:output_type -> google.privacy.dlp.v2.TableDataProfile
-	293, // 706: google.privacy.dlp.v2.DlpService.GetColumnDataProfile:output_type -> google.privacy.dlp.v2.ColumnDataProfile
-	423, // 707: google.privacy.dlp.v2.DlpService.DeleteTableDataProfile:output_type -> google.protobuf.Empty
-	275, // 708: google.privacy.dlp.v2.DlpService.HybridInspectDlpJob:output_type -> google.privacy.dlp.v2.HybridInspectResponse
-	423, // 709: google.privacy.dlp.v2.DlpService.FinishDlpJob:output_type -> google.protobuf.Empty
-	319, // 710: google.privacy.dlp.v2.DlpService.CreateConnection:output_type -> google.privacy.dlp.v2.Connection
-	319, // 711: google.privacy.dlp.v2.DlpService.GetConnection:output_type -> google.privacy.dlp.v2.Connection
-	315, // 712: google.privacy.dlp.v2.DlpService.ListConnections:output_type -> google.privacy.dlp.v2.ListConnectionsResponse
-	316, // 713: google.privacy.dlp.v2.DlpService.SearchConnections:output_type -> google.privacy.dlp.v2.SearchConnectionsResponse
-	423, // 714: google.privacy.dlp.v2.DlpService.DeleteConnection:output_type -> google.protobuf.Empty
-	319, // 715: google.privacy.dlp.v2.DlpService.UpdateConnection:output_type -> google.privacy.dlp.v2.Connection
-	661, // [661:716] is the sub-list for method output_type
-	606, // [606:661] is the sub-list for method input_type
-	606, // [606:606] is the sub-list for extension type_name
-	606, // [606:606] is the sub-list for extension extendee
-	0,   // [0:606] is the sub-list for field type_name
+	74,  // 33: google.privacy.dlp.v2.ContentItem.table:type_name -> google.privacy.dlp.v2.Table
+	69,  // 34: google.privacy.dlp.v2.ContentItem.byte_item:type_name -> google.privacy.dlp.v2.ByteContentItem
+	72,  // 35: google.privacy.dlp.v2.ContentItem.conversation:type_name -> google.privacy.dlp.v2.Conversation
+	71,  // 36: google.privacy.dlp.v2.ContentItem.content_metadata:type_name -> google.privacy.dlp.v2.ContentMetadata
+	75,  // 37: google.privacy.dlp.v2.ContentMetadata.properties:type_name -> google.privacy.dlp.v2.KeyValueMetadataProperty
+	73,  // 38: google.privacy.dlp.v2.Conversation.messages:type_name -> google.privacy.dlp.v2.ConversationMessage
+	22,  // 39: google.privacy.dlp.v2.ConversationMessage.message_type:type_name -> google.privacy.dlp.v2.ConversationMessage.MessageType
+	422, // 40: google.privacy.dlp.v2.Table.headers:type_name -> google.privacy.dlp.v2.FieldId
+	336, // 41: google.privacy.dlp.v2.Table.rows:type_name -> google.privacy.dlp.v2.Table.Row
+	77,  // 42: google.privacy.dlp.v2.InspectResult.findings:type_name -> google.privacy.dlp.v2.Finding
+	414, // 43: google.privacy.dlp.v2.Finding.info_type:type_name -> google.privacy.dlp.v2.InfoType
+	418, // 44: google.privacy.dlp.v2.Finding.likelihood:type_name -> google.privacy.dlp.v2.Likelihood
+	78,  // 45: google.privacy.dlp.v2.Finding.location:type_name -> google.privacy.dlp.v2.Location
+	423, // 46: google.privacy.dlp.v2.Finding.create_time:type_name -> google.protobuf.Timestamp
+	121, // 47: google.privacy.dlp.v2.Finding.quote_info:type_name -> google.privacy.dlp.v2.QuoteInfo
+	337, // 48: google.privacy.dlp.v2.Finding.labels:type_name -> google.privacy.dlp.v2.Finding.LabelsEntry
+	423, // 49: google.privacy.dlp.v2.Finding.job_create_time:type_name -> google.protobuf.Timestamp
+	88,  // 50: google.privacy.dlp.v2.Location.byte_range:type_name -> google.privacy.dlp.v2.Range
+	88,  // 51: google.privacy.dlp.v2.Location.codepoint_range:type_name -> google.privacy.dlp.v2.Range
+	79,  // 52: google.privacy.dlp.v2.Location.content_locations:type_name -> google.privacy.dlp.v2.ContentLocation
+	87,  // 53: google.privacy.dlp.v2.Location.container:type_name -> google.privacy.dlp.v2.Container
+	85,  // 54: google.privacy.dlp.v2.ContentLocation.record_location:type_name -> google.privacy.dlp.v2.RecordLocation
+	89,  // 55: google.privacy.dlp.v2.ContentLocation.image_location:type_name -> google.privacy.dlp.v2.ImageLocation
+	84,  // 56: google.privacy.dlp.v2.ContentLocation.document_location:type_name -> google.privacy.dlp.v2.DocumentLocation
+	81,  // 57: google.privacy.dlp.v2.ContentLocation.metadata_location:type_name -> google.privacy.dlp.v2.MetadataLocation
+	80,  // 58: google.privacy.dlp.v2.ContentLocation.conversation_location:type_name -> google.privacy.dlp.v2.ConversationLocation
+	423, // 59: google.privacy.dlp.v2.ContentLocation.container_timestamp:type_name -> google.protobuf.Timestamp
+	338, // 60: google.privacy.dlp.v2.ConversationLocation.all_messages:type_name -> google.privacy.dlp.v2.ConversationLocation.AllMessages
+	12,  // 61: google.privacy.dlp.v2.MetadataLocation.type:type_name -> google.privacy.dlp.v2.MetadataType
+	82,  // 62: google.privacy.dlp.v2.MetadataLocation.storage_label:type_name -> google.privacy.dlp.v2.StorageMetadataLabel
+	83,  // 63: google.privacy.dlp.v2.MetadataLocation.key_value_metadata_label:type_name -> google.privacy.dlp.v2.KeyValueMetadataLabel
+	424, // 64: google.privacy.dlp.v2.RecordLocation.record_key:type_name -> google.privacy.dlp.v2.RecordKey
+	422, // 65: google.privacy.dlp.v2.RecordLocation.field_id:type_name -> google.privacy.dlp.v2.FieldId
+	86,  // 66: google.privacy.dlp.v2.RecordLocation.table_location:type_name -> google.privacy.dlp.v2.TableLocation
+	423, // 67: google.privacy.dlp.v2.Container.update_time:type_name -> google.protobuf.Timestamp
+	90,  // 68: google.privacy.dlp.v2.ImageLocation.bounding_boxes:type_name -> google.privacy.dlp.v2.BoundingBox
+	68,  // 69: google.privacy.dlp.v2.RedactImageRequest.inspect_config:type_name -> google.privacy.dlp.v2.InspectConfig
+	339, // 70: google.privacy.dlp.v2.RedactImageRequest.image_redaction_configs:type_name -> google.privacy.dlp.v2.RedactImageRequest.ImageRedactionConfig
+	69,  // 71: google.privacy.dlp.v2.RedactImageRequest.byte_item:type_name -> google.privacy.dlp.v2.ByteContentItem
+	76,  // 72: google.privacy.dlp.v2.RedactImageResponse.inspect_result:type_name -> google.privacy.dlp.v2.InspectResult
+	123, // 73: google.privacy.dlp.v2.DeidentifyContentRequest.deidentify_config:type_name -> google.privacy.dlp.v2.DeidentifyConfig
+	68,  // 74: google.privacy.dlp.v2.DeidentifyContentRequest.inspect_config:type_name -> google.privacy.dlp.v2.InspectConfig
+	70,  // 75: google.privacy.dlp.v2.DeidentifyContentRequest.item:type_name -> google.privacy.dlp.v2.ContentItem
+	70,  // 76: google.privacy.dlp.v2.DeidentifyContentResponse.item:type_name -> google.privacy.dlp.v2.ContentItem
+	149, // 77: google.privacy.dlp.v2.DeidentifyContentResponse.overview:type_name -> google.privacy.dlp.v2.TransformationOverview
+	123, // 78: google.privacy.dlp.v2.ReidentifyContentRequest.reidentify_config:type_name -> google.privacy.dlp.v2.DeidentifyConfig
+	68,  // 79: google.privacy.dlp.v2.ReidentifyContentRequest.inspect_config:type_name -> google.privacy.dlp.v2.InspectConfig
+	70,  // 80: google.privacy.dlp.v2.ReidentifyContentRequest.item:type_name -> google.privacy.dlp.v2.ContentItem
+	70,  // 81: google.privacy.dlp.v2.ReidentifyContentResponse.item:type_name -> google.privacy.dlp.v2.ContentItem
+	149, // 82: google.privacy.dlp.v2.ReidentifyContentResponse.overview:type_name -> google.privacy.dlp.v2.TransformationOverview
+	68,  // 83: google.privacy.dlp.v2.InspectContentRequest.inspect_config:type_name -> google.privacy.dlp.v2.InspectConfig
+	70,  // 84: google.privacy.dlp.v2.InspectContentRequest.item:type_name -> google.privacy.dlp.v2.ContentItem
+	76,  // 85: google.privacy.dlp.v2.InspectContentResponse.result:type_name -> google.privacy.dlp.v2.InspectResult
+	425, // 86: google.privacy.dlp.v2.OutputStorageConfig.table:type_name -> google.privacy.dlp.v2.BigQueryTable
+	426, // 87: google.privacy.dlp.v2.OutputStorageConfig.storage_path:type_name -> google.privacy.dlp.v2.CloudStoragePath
+	23,  // 88: google.privacy.dlp.v2.OutputStorageConfig.output_schema:type_name -> google.privacy.dlp.v2.OutputStorageConfig.OutputSchema
+	414, // 89: google.privacy.dlp.v2.InfoTypeStats.info_type:type_name -> google.privacy.dlp.v2.InfoType
+	340, // 90: google.privacy.dlp.v2.InspectDataSourceDetails.requested_options:type_name -> google.privacy.dlp.v2.InspectDataSourceDetails.RequestedOptions
+	341, // 91: google.privacy.dlp.v2.InspectDataSourceDetails.result:type_name -> google.privacy.dlp.v2.InspectDataSourceDetails.Result
+	293, // 92: google.privacy.dlp.v2.DataProfileBigQueryRowSchema.table_profile:type_name -> google.privacy.dlp.v2.TableDataProfile
+	297, // 93: google.privacy.dlp.v2.DataProfileBigQueryRowSchema.column_profile:type_name -> google.privacy.dlp.v2.ColumnDataProfile
+	298, // 94: google.privacy.dlp.v2.DataProfileBigQueryRowSchema.file_store_profile:type_name -> google.privacy.dlp.v2.FileStoreDataProfile
+	107, // 95: google.privacy.dlp.v2.ActionDetails.deidentify_details:type_name -> google.privacy.dlp.v2.DeidentifyDataSourceDetails
+	342, // 96: google.privacy.dlp.v2.DeidentifyDataSourceDetails.requested_options:type_name -> google.privacy.dlp.v2.DeidentifyDataSourceDetails.RequestedDeidentifyOptions
+	106, // 97: google.privacy.dlp.v2.DeidentifyDataSourceDetails.deidentify_stats:type_name -> google.privacy.dlp.v2.DeidentifyDataSourceStats
+	24,  // 98: google.privacy.dlp.v2.LocationSupport.regionalization_scope:type_name -> google.privacy.dlp.v2.LocationSupport.RegionalizationScope
+	13,  // 99: google.privacy.dlp.v2.InfoTypeDescription.supported_by:type_name -> google.privacy.dlp.v2.InfoTypeSupportedBy
+	108, // 100: google.privacy.dlp.v2.InfoTypeDescription.location_support:type_name -> google.privacy.dlp.v2.LocationSupport
+	111, // 101: google.privacy.dlp.v2.InfoTypeDescription.versions:type_name -> google.privacy.dlp.v2.VersionDescription
+	110, // 102: google.privacy.dlp.v2.InfoTypeDescription.categories:type_name -> google.privacy.dlp.v2.InfoTypeCategory
+	427, // 103: google.privacy.dlp.v2.InfoTypeDescription.sensitivity_score:type_name -> google.privacy.dlp.v2.SensitivityScore
+	25,  // 104: google.privacy.dlp.v2.InfoTypeDescription.launch_status:type_name -> google.privacy.dlp.v2.InfoTypeDescription.InfoTypeLaunchStatus
+	26,  // 105: google.privacy.dlp.v2.InfoTypeCategory.location_category:type_name -> google.privacy.dlp.v2.InfoTypeCategory.LocationCategory
+	27,  // 106: google.privacy.dlp.v2.InfoTypeCategory.industry_category:type_name -> google.privacy.dlp.v2.InfoTypeCategory.IndustryCategory
+	28,  // 107: google.privacy.dlp.v2.InfoTypeCategory.type_category:type_name -> google.privacy.dlp.v2.InfoTypeCategory.TypeCategory
+	109, // 108: google.privacy.dlp.v2.ListInfoTypesResponse.info_types:type_name -> google.privacy.dlp.v2.InfoTypeDescription
+	117, // 109: google.privacy.dlp.v2.RiskAnalysisJobConfig.privacy_metric:type_name -> google.privacy.dlp.v2.PrivacyMetric
+	425, // 110: google.privacy.dlp.v2.RiskAnalysisJobConfig.source_table:type_name -> google.privacy.dlp.v2.BigQueryTable
+	163, // 111: google.privacy.dlp.v2.RiskAnalysisJobConfig.actions:type_name -> google.privacy.dlp.v2.Action
+	422, // 112: google.privacy.dlp.v2.QuasiId.field:type_name -> google.privacy.dlp.v2.FieldId
+	414, // 113: google.privacy.dlp.v2.QuasiId.info_type:type_name -> google.privacy.dlp.v2.InfoType
+	428, // 114: google.privacy.dlp.v2.QuasiId.inferred:type_name -> google.protobuf.Empty
+	425, // 115: google.privacy.dlp.v2.StatisticalTable.table:type_name -> google.privacy.dlp.v2.BigQueryTable
+	343, // 116: google.privacy.dlp.v2.StatisticalTable.quasi_ids:type_name -> google.privacy.dlp.v2.StatisticalTable.QuasiIdentifierField
+	422, // 117: google.privacy.dlp.v2.StatisticalTable.relative_frequency:type_name -> google.privacy.dlp.v2.FieldId
+	344, // 118: google.privacy.dlp.v2.PrivacyMetric.numerical_stats_config:type_name -> google.privacy.dlp.v2.PrivacyMetric.NumericalStatsConfig
+	345, // 119: google.privacy.dlp.v2.PrivacyMetric.categorical_stats_config:type_name -> google.privacy.dlp.v2.PrivacyMetric.CategoricalStatsConfig
+	346, // 120: google.privacy.dlp.v2.PrivacyMetric.k_anonymity_config:type_name -> google.privacy.dlp.v2.PrivacyMetric.KAnonymityConfig
+	347, // 121: google.privacy.dlp.v2.PrivacyMetric.l_diversity_config:type_name -> google.privacy.dlp.v2.PrivacyMetric.LDiversityConfig
+	348, // 122: google.privacy.dlp.v2.PrivacyMetric.k_map_estimation_config:type_name -> google.privacy.dlp.v2.PrivacyMetric.KMapEstimationConfig
+	349, // 123: google.privacy.dlp.v2.PrivacyMetric.delta_presence_estimation_config:type_name -> google.privacy.dlp.v2.PrivacyMetric.DeltaPresenceEstimationConfig
+	117, // 124: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.requested_privacy_metric:type_name -> google.privacy.dlp.v2.PrivacyMetric
+	425, // 125: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.requested_source_table:type_name -> google.privacy.dlp.v2.BigQueryTable
+	353, // 126: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.numerical_stats_result:type_name -> google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.NumericalStatsResult
+	354, // 127: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.categorical_stats_result:type_name -> google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.CategoricalStatsResult
+	355, // 128: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.k_anonymity_result:type_name -> google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.KAnonymityResult
+	356, // 129: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.l_diversity_result:type_name -> google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.LDiversityResult
+	357, // 130: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.k_map_estimation_result:type_name -> google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.KMapEstimationResult
+	358, // 131: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.delta_presence_estimation_result:type_name -> google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.DeltaPresenceEstimationResult
+	359, // 132: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.requested_options:type_name -> google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.RequestedRiskAnalysisOptions
+	120, // 133: google.privacy.dlp.v2.ValueFrequency.value:type_name -> google.privacy.dlp.v2.Value
+	423, // 134: google.privacy.dlp.v2.Value.timestamp_value:type_name -> google.protobuf.Timestamp
+	429, // 135: google.privacy.dlp.v2.Value.time_value:type_name -> google.type.TimeOfDay
+	430, // 136: google.privacy.dlp.v2.Value.date_value:type_name -> google.type.Date
+	431, // 137: google.privacy.dlp.v2.Value.day_of_week_value:type_name -> google.type.DayOfWeek
+	122, // 138: google.privacy.dlp.v2.QuoteInfo.date_time:type_name -> google.privacy.dlp.v2.DateTime
+	430, // 139: google.privacy.dlp.v2.DateTime.date:type_name -> google.type.Date
+	431, // 140: google.privacy.dlp.v2.DateTime.day_of_week:type_name -> google.type.DayOfWeek
+	429, // 141: google.privacy.dlp.v2.DateTime.time:type_name -> google.type.TimeOfDay
+	369, // 142: google.privacy.dlp.v2.DateTime.time_zone:type_name -> google.privacy.dlp.v2.DateTime.TimeZone
+	144, // 143: google.privacy.dlp.v2.DeidentifyConfig.info_type_transformations:type_name -> google.privacy.dlp.v2.InfoTypeTransformations
+	146, // 144: google.privacy.dlp.v2.DeidentifyConfig.record_transformations:type_name -> google.privacy.dlp.v2.RecordTransformations
+	124, // 145: google.privacy.dlp.v2.DeidentifyConfig.image_transformations:type_name -> google.privacy.dlp.v2.ImageTransformations
+	125, // 146: google.privacy.dlp.v2.DeidentifyConfig.transformation_error_handling:type_name -> google.privacy.dlp.v2.TransformationErrorHandling
+	370, // 147: google.privacy.dlp.v2.ImageTransformations.transforms:type_name -> google.privacy.dlp.v2.ImageTransformations.ImageTransformation
+	374, // 148: google.privacy.dlp.v2.TransformationErrorHandling.throw_error:type_name -> google.privacy.dlp.v2.TransformationErrorHandling.ThrowError
+	375, // 149: google.privacy.dlp.v2.TransformationErrorHandling.leave_untransformed:type_name -> google.privacy.dlp.v2.TransformationErrorHandling.LeaveUntransformed
+	130, // 150: google.privacy.dlp.v2.PrimitiveTransformation.replace_config:type_name -> google.privacy.dlp.v2.ReplaceValueConfig
+	133, // 151: google.privacy.dlp.v2.PrimitiveTransformation.redact_config:type_name -> google.privacy.dlp.v2.RedactConfig
+	135, // 152: google.privacy.dlp.v2.PrimitiveTransformation.character_mask_config:type_name -> google.privacy.dlp.v2.CharacterMaskConfig
+	138, // 153: google.privacy.dlp.v2.PrimitiveTransformation.crypto_replace_ffx_fpe_config:type_name -> google.privacy.dlp.v2.CryptoReplaceFfxFpeConfig
+	136, // 154: google.privacy.dlp.v2.PrimitiveTransformation.fixed_size_bucketing_config:type_name -> google.privacy.dlp.v2.FixedSizeBucketingConfig
+	137, // 155: google.privacy.dlp.v2.PrimitiveTransformation.bucketing_config:type_name -> google.privacy.dlp.v2.BucketingConfig
+	132, // 156: google.privacy.dlp.v2.PrimitiveTransformation.replace_with_info_type_config:type_name -> google.privacy.dlp.v2.ReplaceWithInfoTypeConfig
+	127, // 157: google.privacy.dlp.v2.PrimitiveTransformation.time_part_config:type_name -> google.privacy.dlp.v2.TimePartConfig
+	128, // 158: google.privacy.dlp.v2.PrimitiveTransformation.crypto_hash_config:type_name -> google.privacy.dlp.v2.CryptoHashConfig
+	143, // 159: google.privacy.dlp.v2.PrimitiveTransformation.date_shift_config:type_name -> google.privacy.dlp.v2.DateShiftConfig
+	129, // 160: google.privacy.dlp.v2.PrimitiveTransformation.crypto_deterministic_config:type_name -> google.privacy.dlp.v2.CryptoDeterministicConfig
+	131, // 161: google.privacy.dlp.v2.PrimitiveTransformation.replace_dictionary_config:type_name -> google.privacy.dlp.v2.ReplaceDictionaryConfig
+	29,  // 162: google.privacy.dlp.v2.TimePartConfig.part_to_extract:type_name -> google.privacy.dlp.v2.TimePartConfig.TimePart
+	139, // 163: google.privacy.dlp.v2.CryptoHashConfig.crypto_key:type_name -> google.privacy.dlp.v2.CryptoKey
+	139, // 164: google.privacy.dlp.v2.CryptoDeterministicConfig.crypto_key:type_name -> google.privacy.dlp.v2.CryptoKey
+	414, // 165: google.privacy.dlp.v2.CryptoDeterministicConfig.surrogate_info_type:type_name -> google.privacy.dlp.v2.InfoType
+	422, // 166: google.privacy.dlp.v2.CryptoDeterministicConfig.context:type_name -> google.privacy.dlp.v2.FieldId
+	120, // 167: google.privacy.dlp.v2.ReplaceValueConfig.new_value:type_name -> google.privacy.dlp.v2.Value
+	432, // 168: google.privacy.dlp.v2.ReplaceDictionaryConfig.word_list:type_name -> google.privacy.dlp.v2.CustomInfoType.Dictionary.WordList
+	30,  // 169: google.privacy.dlp.v2.CharsToIgnore.common_characters_to_ignore:type_name -> google.privacy.dlp.v2.CharsToIgnore.CommonCharsToIgnore
+	134, // 170: google.privacy.dlp.v2.CharacterMaskConfig.characters_to_ignore:type_name -> google.privacy.dlp.v2.CharsToIgnore
+	120, // 171: google.privacy.dlp.v2.FixedSizeBucketingConfig.lower_bound:type_name -> google.privacy.dlp.v2.Value
+	120, // 172: google.privacy.dlp.v2.FixedSizeBucketingConfig.upper_bound:type_name -> google.privacy.dlp.v2.Value
+	376, // 173: google.privacy.dlp.v2.BucketingConfig.buckets:type_name -> google.privacy.dlp.v2.BucketingConfig.Bucket
+	139, // 174: google.privacy.dlp.v2.CryptoReplaceFfxFpeConfig.crypto_key:type_name -> google.privacy.dlp.v2.CryptoKey
+	422, // 175: google.privacy.dlp.v2.CryptoReplaceFfxFpeConfig.context:type_name -> google.privacy.dlp.v2.FieldId
+	31,  // 176: google.privacy.dlp.v2.CryptoReplaceFfxFpeConfig.common_alphabet:type_name -> google.privacy.dlp.v2.CryptoReplaceFfxFpeConfig.FfxCommonNativeAlphabet
+	414, // 177: google.privacy.dlp.v2.CryptoReplaceFfxFpeConfig.surrogate_info_type:type_name -> google.privacy.dlp.v2.InfoType
+	140, // 178: google.privacy.dlp.v2.CryptoKey.transient:type_name -> google.privacy.dlp.v2.TransientCryptoKey
+	141, // 179: google.privacy.dlp.v2.CryptoKey.unwrapped:type_name -> google.privacy.dlp.v2.UnwrappedCryptoKey
+	142, // 180: google.privacy.dlp.v2.CryptoKey.kms_wrapped:type_name -> google.privacy.dlp.v2.KmsWrappedCryptoKey
+	422, // 181: google.privacy.dlp.v2.DateShiftConfig.context:type_name -> google.privacy.dlp.v2.FieldId
+	139, // 182: google.privacy.dlp.v2.DateShiftConfig.crypto_key:type_name -> google.privacy.dlp.v2.CryptoKey
+	377, // 183: google.privacy.dlp.v2.InfoTypeTransformations.transformations:type_name -> google.privacy.dlp.v2.InfoTypeTransformations.InfoTypeTransformation
+	422, // 184: google.privacy.dlp.v2.FieldTransformation.fields:type_name -> google.privacy.dlp.v2.FieldId
+	148, // 185: google.privacy.dlp.v2.FieldTransformation.condition:type_name -> google.privacy.dlp.v2.RecordCondition
+	126, // 186: google.privacy.dlp.v2.FieldTransformation.primitive_transformation:type_name -> google.privacy.dlp.v2.PrimitiveTransformation
+	144, // 187: google.privacy.dlp.v2.FieldTransformation.info_type_transformations:type_name -> google.privacy.dlp.v2.InfoTypeTransformations
+	145, // 188: google.privacy.dlp.v2.RecordTransformations.field_transformations:type_name -> google.privacy.dlp.v2.FieldTransformation
+	147, // 189: google.privacy.dlp.v2.RecordTransformations.record_suppressions:type_name -> google.privacy.dlp.v2.RecordSuppression
+	148, // 190: google.privacy.dlp.v2.RecordSuppression.condition:type_name -> google.privacy.dlp.v2.RecordCondition
+	380, // 191: google.privacy.dlp.v2.RecordCondition.expressions:type_name -> google.privacy.dlp.v2.RecordCondition.Expressions
+	150, // 192: google.privacy.dlp.v2.TransformationOverview.transformation_summaries:type_name -> google.privacy.dlp.v2.TransformationSummary
+	414, // 193: google.privacy.dlp.v2.TransformationSummary.info_type:type_name -> google.privacy.dlp.v2.InfoType
+	422, // 194: google.privacy.dlp.v2.TransformationSummary.field:type_name -> google.privacy.dlp.v2.FieldId
+	126, // 195: google.privacy.dlp.v2.TransformationSummary.transformation:type_name -> google.privacy.dlp.v2.PrimitiveTransformation
+	145, // 196: google.privacy.dlp.v2.TransformationSummary.field_transformations:type_name -> google.privacy.dlp.v2.FieldTransformation
+	147, // 197: google.privacy.dlp.v2.TransformationSummary.record_suppress:type_name -> google.privacy.dlp.v2.RecordSuppression
+	381, // 198: google.privacy.dlp.v2.TransformationSummary.results:type_name -> google.privacy.dlp.v2.TransformationSummary.SummaryResult
+	2,   // 199: google.privacy.dlp.v2.TransformationDescription.type:type_name -> google.privacy.dlp.v2.TransformationType
+	414, // 200: google.privacy.dlp.v2.TransformationDescription.info_type:type_name -> google.privacy.dlp.v2.InfoType
+	151, // 201: google.privacy.dlp.v2.TransformationDetails.transformation:type_name -> google.privacy.dlp.v2.TransformationDescription
+	155, // 202: google.privacy.dlp.v2.TransformationDetails.status_details:type_name -> google.privacy.dlp.v2.TransformationResultStatus
+	153, // 203: google.privacy.dlp.v2.TransformationDetails.transformation_location:type_name -> google.privacy.dlp.v2.TransformationLocation
+	154, // 204: google.privacy.dlp.v2.TransformationLocation.record_transformation:type_name -> google.privacy.dlp.v2.RecordTransformation
+	1,   // 205: google.privacy.dlp.v2.TransformationLocation.container_type:type_name -> google.privacy.dlp.v2.TransformationContainerType
+	422, // 206: google.privacy.dlp.v2.RecordTransformation.field_id:type_name -> google.privacy.dlp.v2.FieldId
+	423, // 207: google.privacy.dlp.v2.RecordTransformation.container_timestamp:type_name -> google.protobuf.Timestamp
+	0,   // 208: google.privacy.dlp.v2.TransformationResultStatus.result_status_type:type_name -> google.privacy.dlp.v2.TransformationResultStatusType
+	433, // 209: google.privacy.dlp.v2.TransformationResultStatus.details:type_name -> google.rpc.Status
+	425, // 210: google.privacy.dlp.v2.TransformationDetailsStorageConfig.table:type_name -> google.privacy.dlp.v2.BigQueryTable
+	434, // 211: google.privacy.dlp.v2.Schedule.recurrence_period_duration:type_name -> google.protobuf.Duration
+	423, // 212: google.privacy.dlp.v2.InspectTemplate.create_time:type_name -> google.protobuf.Timestamp
+	423, // 213: google.privacy.dlp.v2.InspectTemplate.update_time:type_name -> google.protobuf.Timestamp
+	68,  // 214: google.privacy.dlp.v2.InspectTemplate.inspect_config:type_name -> google.privacy.dlp.v2.InspectConfig
+	423, // 215: google.privacy.dlp.v2.DeidentifyTemplate.create_time:type_name -> google.protobuf.Timestamp
+	423, // 216: google.privacy.dlp.v2.DeidentifyTemplate.update_time:type_name -> google.protobuf.Timestamp
+	123, // 217: google.privacy.dlp.v2.DeidentifyTemplate.deidentify_config:type_name -> google.privacy.dlp.v2.DeidentifyConfig
+	433, // 218: google.privacy.dlp.v2.Error.details:type_name -> google.rpc.Status
+	423, // 219: google.privacy.dlp.v2.Error.timestamps:type_name -> google.protobuf.Timestamp
+	34,  // 220: google.privacy.dlp.v2.Error.extra_info:type_name -> google.privacy.dlp.v2.Error.ErrorExtraInfo
+	185, // 221: google.privacy.dlp.v2.JobTrigger.inspect_job:type_name -> google.privacy.dlp.v2.InspectJobConfig
+	382, // 222: google.privacy.dlp.v2.JobTrigger.triggers:type_name -> google.privacy.dlp.v2.JobTrigger.Trigger
+	161, // 223: google.privacy.dlp.v2.JobTrigger.errors:type_name -> google.privacy.dlp.v2.Error
+	423, // 224: google.privacy.dlp.v2.JobTrigger.create_time:type_name -> google.protobuf.Timestamp
+	423, // 225: google.privacy.dlp.v2.JobTrigger.update_time:type_name -> google.protobuf.Timestamp
+	423, // 226: google.privacy.dlp.v2.JobTrigger.last_run_time:type_name -> google.protobuf.Timestamp
+	35,  // 227: google.privacy.dlp.v2.JobTrigger.status:type_name -> google.privacy.dlp.v2.JobTrigger.Status
+	383, // 228: google.privacy.dlp.v2.Action.save_findings:type_name -> google.privacy.dlp.v2.Action.SaveFindings
+	384, // 229: google.privacy.dlp.v2.Action.pub_sub:type_name -> google.privacy.dlp.v2.Action.PublishToPubSub
+	385, // 230: google.privacy.dlp.v2.Action.publish_summary_to_cscc:type_name -> google.privacy.dlp.v2.Action.PublishSummaryToCscc
+	386, // 231: google.privacy.dlp.v2.Action.publish_findings_to_cloud_data_catalog:type_name -> google.privacy.dlp.v2.Action.PublishFindingsToCloudDataCatalog
+	387, // 232: google.privacy.dlp.v2.Action.publish_findings_to_dataplex_catalog:type_name -> google.privacy.dlp.v2.Action.PublishFindingsToDataplexCatalog
+	388, // 233: google.privacy.dlp.v2.Action.deidentify:type_name -> google.privacy.dlp.v2.Action.Deidentify
+	389, // 234: google.privacy.dlp.v2.Action.job_notification_emails:type_name -> google.privacy.dlp.v2.Action.JobNotificationEmails
+	390, // 235: google.privacy.dlp.v2.Action.publish_to_stackdriver:type_name -> google.privacy.dlp.v2.Action.PublishToStackdriver
+	159, // 236: google.privacy.dlp.v2.CreateInspectTemplateRequest.inspect_template:type_name -> google.privacy.dlp.v2.InspectTemplate
+	159, // 237: google.privacy.dlp.v2.UpdateInspectTemplateRequest.inspect_template:type_name -> google.privacy.dlp.v2.InspectTemplate
+	435, // 238: google.privacy.dlp.v2.UpdateInspectTemplateRequest.update_mask:type_name -> google.protobuf.FieldMask
+	159, // 239: google.privacy.dlp.v2.ListInspectTemplatesResponse.inspect_templates:type_name -> google.privacy.dlp.v2.InspectTemplate
+	162, // 240: google.privacy.dlp.v2.CreateJobTriggerRequest.job_trigger:type_name -> google.privacy.dlp.v2.JobTrigger
+	162, // 241: google.privacy.dlp.v2.UpdateJobTriggerRequest.job_trigger:type_name -> google.privacy.dlp.v2.JobTrigger
+	435, // 242: google.privacy.dlp.v2.UpdateJobTriggerRequest.update_mask:type_name -> google.protobuf.FieldMask
+	196, // 243: google.privacy.dlp.v2.CreateDiscoveryConfigRequest.discovery_config:type_name -> google.privacy.dlp.v2.DiscoveryConfig
+	196, // 244: google.privacy.dlp.v2.UpdateDiscoveryConfigRequest.discovery_config:type_name -> google.privacy.dlp.v2.DiscoveryConfig
+	435, // 245: google.privacy.dlp.v2.UpdateDiscoveryConfigRequest.update_mask:type_name -> google.protobuf.FieldMask
+	196, // 246: google.privacy.dlp.v2.ListDiscoveryConfigsResponse.discovery_configs:type_name -> google.privacy.dlp.v2.DiscoveryConfig
+	185, // 247: google.privacy.dlp.v2.CreateDlpJobRequest.inspect_job:type_name -> google.privacy.dlp.v2.InspectJobConfig
+	114, // 248: google.privacy.dlp.v2.CreateDlpJobRequest.risk_job:type_name -> google.privacy.dlp.v2.RiskAnalysisJobConfig
+	14,  // 249: google.privacy.dlp.v2.ListJobTriggersRequest.type:type_name -> google.privacy.dlp.v2.DlpJobType
+	162, // 250: google.privacy.dlp.v2.ListJobTriggersResponse.job_triggers:type_name -> google.privacy.dlp.v2.JobTrigger
+	436, // 251: google.privacy.dlp.v2.InspectJobConfig.storage_config:type_name -> google.privacy.dlp.v2.StorageConfig
+	68,  // 252: google.privacy.dlp.v2.InspectJobConfig.inspect_config:type_name -> google.privacy.dlp.v2.InspectConfig
+	163, // 253: google.privacy.dlp.v2.InspectJobConfig.actions:type_name -> google.privacy.dlp.v2.Action
+	391, // 254: google.privacy.dlp.v2.DataProfileAction.export_data:type_name -> google.privacy.dlp.v2.DataProfileAction.Export
+	392, // 255: google.privacy.dlp.v2.DataProfileAction.pub_sub_notification:type_name -> google.privacy.dlp.v2.DataProfileAction.PubSubNotification
+	393, // 256: google.privacy.dlp.v2.DataProfileAction.publish_to_chronicle:type_name -> google.privacy.dlp.v2.DataProfileAction.PublishToChronicle
+	394, // 257: google.privacy.dlp.v2.DataProfileAction.publish_to_scc:type_name -> google.privacy.dlp.v2.DataProfileAction.PublishToSecurityCommandCenter
+	396, // 258: google.privacy.dlp.v2.DataProfileAction.tag_resources:type_name -> google.privacy.dlp.v2.DataProfileAction.TagResources
+	395, // 259: google.privacy.dlp.v2.DataProfileAction.publish_to_dataplex_catalog:type_name -> google.privacy.dlp.v2.DataProfileAction.PublishToDataplexCatalog
+	414, // 260: google.privacy.dlp.v2.DataProfileFinding.infotype:type_name -> google.privacy.dlp.v2.InfoType
+	121, // 261: google.privacy.dlp.v2.DataProfileFinding.quote_info:type_name -> google.privacy.dlp.v2.QuoteInfo
+	423, // 262: google.privacy.dlp.v2.DataProfileFinding.timestamp:type_name -> google.protobuf.Timestamp
+	188, // 263: google.privacy.dlp.v2.DataProfileFinding.location:type_name -> google.privacy.dlp.v2.DataProfileFindingLocation
+	16,  // 264: google.privacy.dlp.v2.DataProfileFinding.resource_visibility:type_name -> google.privacy.dlp.v2.ResourceVisibility
+	328, // 265: google.privacy.dlp.v2.DataProfileFinding.data_source_type:type_name -> google.privacy.dlp.v2.DataSourceType
+	189, // 266: google.privacy.dlp.v2.DataProfileFindingLocation.data_profile_finding_record_location:type_name -> google.privacy.dlp.v2.DataProfileFindingRecordLocation
+	422, // 267: google.privacy.dlp.v2.DataProfileFindingRecordLocation.field:type_name -> google.privacy.dlp.v2.FieldId
+	195, // 268: google.privacy.dlp.v2.DataProfileJobConfig.location:type_name -> google.privacy.dlp.v2.DataProfileLocation
+	240, // 269: google.privacy.dlp.v2.DataProfileJobConfig.other_cloud_starting_location:type_name -> google.privacy.dlp.v2.OtherCloudDiscoveryStartingLocation
+	186, // 270: google.privacy.dlp.v2.DataProfileJobConfig.data_profile_actions:type_name -> google.privacy.dlp.v2.DataProfileAction
+	191, // 271: google.privacy.dlp.v2.BigQueryRegexes.patterns:type_name -> google.privacy.dlp.v2.BigQueryRegex
+	5,   // 272: google.privacy.dlp.v2.BigQueryTableTypes.types:type_name -> google.privacy.dlp.v2.BigQueryTableType
+	399, // 273: google.privacy.dlp.v2.DiscoveryConfig.org_config:type_name -> google.privacy.dlp.v2.DiscoveryConfig.OrgConfig
+	240, // 274: google.privacy.dlp.v2.DiscoveryConfig.other_cloud_starting_location:type_name -> google.privacy.dlp.v2.OtherCloudDiscoveryStartingLocation
+	186, // 275: google.privacy.dlp.v2.DiscoveryConfig.actions:type_name -> google.privacy.dlp.v2.DataProfileAction
+	197, // 276: google.privacy.dlp.v2.DiscoveryConfig.targets:type_name -> google.privacy.dlp.v2.DiscoveryTarget
+	161, // 277: google.privacy.dlp.v2.DiscoveryConfig.errors:type_name -> google.privacy.dlp.v2.Error
+	423, // 278: google.privacy.dlp.v2.DiscoveryConfig.create_time:type_name -> google.protobuf.Timestamp
+	423, // 279: google.privacy.dlp.v2.DiscoveryConfig.update_time:type_name -> google.protobuf.Timestamp
+	423, // 280: google.privacy.dlp.v2.DiscoveryConfig.last_run_time:type_name -> google.protobuf.Timestamp
+	38,  // 281: google.privacy.dlp.v2.DiscoveryConfig.status:type_name -> google.privacy.dlp.v2.DiscoveryConfig.Status
+	330, // 282: google.privacy.dlp.v2.DiscoveryConfig.processing_location:type_name -> google.privacy.dlp.v2.ProcessingLocation
+	198, // 283: google.privacy.dlp.v2.DiscoveryTarget.big_query_target:type_name -> google.privacy.dlp.v2.BigQueryDiscoveryTarget
+	206, // 284: google.privacy.dlp.v2.DiscoveryTarget.cloud_sql_target:type_name -> google.privacy.dlp.v2.CloudSqlDiscoveryTarget
+	215, // 285: google.privacy.dlp.v2.DiscoveryTarget.secrets_target:type_name -> google.privacy.dlp.v2.SecretsDiscoveryTarget
+	216, // 286: google.privacy.dlp.v2.DiscoveryTarget.cloud_storage_target:type_name -> google.privacy.dlp.v2.CloudStorageDiscoveryTarget
+	226, // 287: google.privacy.dlp.v2.DiscoveryTarget.other_cloud_target:type_name -> google.privacy.dlp.v2.OtherCloudDiscoveryTarget
+	242, // 288: google.privacy.dlp.v2.DiscoveryTarget.vertex_dataset_target:type_name -> google.privacy.dlp.v2.VertexDatasetDiscoveryTarget
+	199, // 289: google.privacy.dlp.v2.BigQueryDiscoveryTarget.filter:type_name -> google.privacy.dlp.v2.DiscoveryBigQueryFilter
+	201, // 290: google.privacy.dlp.v2.BigQueryDiscoveryTarget.conditions:type_name -> google.privacy.dlp.v2.DiscoveryBigQueryConditions
+	202, // 291: google.privacy.dlp.v2.BigQueryDiscoveryTarget.cadence:type_name -> google.privacy.dlp.v2.DiscoveryGenerationCadence
+	194, // 292: google.privacy.dlp.v2.BigQueryDiscoveryTarget.disabled:type_name -> google.privacy.dlp.v2.Disabled
+	200, // 293: google.privacy.dlp.v2.DiscoveryBigQueryFilter.tables:type_name -> google.privacy.dlp.v2.BigQueryTableCollection
+	400, // 294: google.privacy.dlp.v2.DiscoveryBigQueryFilter.other_tables:type_name -> google.privacy.dlp.v2.DiscoveryBigQueryFilter.AllOtherBigQueryTables
+	437, // 295: google.privacy.dlp.v2.DiscoveryBigQueryFilter.table_reference:type_name -> google.privacy.dlp.v2.TableReference
+	192, // 296: google.privacy.dlp.v2.BigQueryTableCollection.include_regexes:type_name -> google.privacy.dlp.v2.BigQueryRegexes
+	423, // 297: google.privacy.dlp.v2.DiscoveryBigQueryConditions.created_after:type_name -> google.protobuf.Timestamp
+	193, // 298: google.privacy.dlp.v2.DiscoveryBigQueryConditions.types:type_name -> google.privacy.dlp.v2.BigQueryTableTypes
+	4,   // 299: google.privacy.dlp.v2.DiscoveryBigQueryConditions.type_collection:type_name -> google.privacy.dlp.v2.BigQueryTableTypeCollection
+	401, // 300: google.privacy.dlp.v2.DiscoveryBigQueryConditions.or_conditions:type_name -> google.privacy.dlp.v2.DiscoveryBigQueryConditions.OrConditions
+	204, // 301: google.privacy.dlp.v2.DiscoveryGenerationCadence.schema_modified_cadence:type_name -> google.privacy.dlp.v2.DiscoverySchemaModifiedCadence
+	203, // 302: google.privacy.dlp.v2.DiscoveryGenerationCadence.table_modified_cadence:type_name -> google.privacy.dlp.v2.DiscoveryTableModifiedCadence
+	205, // 303: google.privacy.dlp.v2.DiscoveryGenerationCadence.inspect_template_modified_cadence:type_name -> google.privacy.dlp.v2.DiscoveryInspectTemplateModifiedCadence
+	6,   // 304: google.privacy.dlp.v2.DiscoveryGenerationCadence.refresh_frequency:type_name -> google.privacy.dlp.v2.DataProfileUpdateFrequency
+	7,   // 305: google.privacy.dlp.v2.DiscoveryTableModifiedCadence.types:type_name -> google.privacy.dlp.v2.BigQueryTableModification
+	6,   // 306: google.privacy.dlp.v2.DiscoveryTableModifiedCadence.frequency:type_name -> google.privacy.dlp.v2.DataProfileUpdateFrequency
+	8,   // 307: google.privacy.dlp.v2.DiscoverySchemaModifiedCadence.types:type_name -> google.privacy.dlp.v2.BigQuerySchemaModification
+	6,   // 308: google.privacy.dlp.v2.DiscoverySchemaModifiedCadence.frequency:type_name -> google.privacy.dlp.v2.DataProfileUpdateFrequency
+	6,   // 309: google.privacy.dlp.v2.DiscoveryInspectTemplateModifiedCadence.frequency:type_name -> google.privacy.dlp.v2.DataProfileUpdateFrequency
+	207, // 310: google.privacy.dlp.v2.CloudSqlDiscoveryTarget.filter:type_name -> google.privacy.dlp.v2.DiscoveryCloudSqlFilter
+	213, // 311: google.privacy.dlp.v2.CloudSqlDiscoveryTarget.conditions:type_name -> google.privacy.dlp.v2.DiscoveryCloudSqlConditions
+	214, // 312: google.privacy.dlp.v2.CloudSqlDiscoveryTarget.generation_cadence:type_name -> google.privacy.dlp.v2.DiscoveryCloudSqlGenerationCadence
+	194, // 313: google.privacy.dlp.v2.CloudSqlDiscoveryTarget.disabled:type_name -> google.privacy.dlp.v2.Disabled
+	208, // 314: google.privacy.dlp.v2.DiscoveryCloudSqlFilter.collection:type_name -> google.privacy.dlp.v2.DatabaseResourceCollection
+	211, // 315: google.privacy.dlp.v2.DiscoveryCloudSqlFilter.others:type_name -> google.privacy.dlp.v2.AllOtherDatabaseResources
+	212, // 316: google.privacy.dlp.v2.DiscoveryCloudSqlFilter.database_resource_reference:type_name -> google.privacy.dlp.v2.DatabaseResourceReference
+	209, // 317: google.privacy.dlp.v2.DatabaseResourceCollection.include_regexes:type_name -> google.privacy.dlp.v2.DatabaseResourceRegexes
+	210, // 318: google.privacy.dlp.v2.DatabaseResourceRegexes.patterns:type_name -> google.privacy.dlp.v2.DatabaseResourceRegex
+	39,  // 319: google.privacy.dlp.v2.DiscoveryCloudSqlConditions.database_engines:type_name -> google.privacy.dlp.v2.DiscoveryCloudSqlConditions.DatabaseEngine
+	40,  // 320: google.privacy.dlp.v2.DiscoveryCloudSqlConditions.types:type_name -> google.privacy.dlp.v2.DiscoveryCloudSqlConditions.DatabaseResourceType
+	402, // 321: google.privacy.dlp.v2.DiscoveryCloudSqlGenerationCadence.schema_modified_cadence:type_name -> google.privacy.dlp.v2.DiscoveryCloudSqlGenerationCadence.SchemaModifiedCadence
+	6,   // 322: google.privacy.dlp.v2.DiscoveryCloudSqlGenerationCadence.refresh_frequency:type_name -> google.privacy.dlp.v2.DataProfileUpdateFrequency
+	205, // 323: google.privacy.dlp.v2.DiscoveryCloudSqlGenerationCadence.inspect_template_modified_cadence:type_name -> google.privacy.dlp.v2.DiscoveryInspectTemplateModifiedCadence
+	217, // 324: google.privacy.dlp.v2.CloudStorageDiscoveryTarget.filter:type_name -> google.privacy.dlp.v2.DiscoveryCloudStorageFilter
+	225, // 325: google.privacy.dlp.v2.CloudStorageDiscoveryTarget.conditions:type_name -> google.privacy.dlp.v2.DiscoveryFileStoreConditions
+	223, // 326: google.privacy.dlp.v2.CloudStorageDiscoveryTarget.generation_cadence:type_name -> google.privacy.dlp.v2.DiscoveryCloudStorageGenerationCadence
+	194, // 327: google.privacy.dlp.v2.CloudStorageDiscoveryTarget.disabled:type_name -> google.privacy.dlp.v2.Disabled
+	218, // 328: google.privacy.dlp.v2.DiscoveryCloudStorageFilter.collection:type_name -> google.privacy.dlp.v2.FileStoreCollection
+	222, // 329: google.privacy.dlp.v2.DiscoveryCloudStorageFilter.cloud_storage_resource_reference:type_name -> google.privacy.dlp.v2.CloudStorageResourceReference
+	241, // 330: google.privacy.dlp.v2.DiscoveryCloudStorageFilter.others:type_name -> google.privacy.dlp.v2.AllOtherResources
+	219, // 331: google.privacy.dlp.v2.FileStoreCollection.include_regexes:type_name -> google.privacy.dlp.v2.FileStoreRegexes
+	300, // 332: google.privacy.dlp.v2.FileStoreCollection.include_tags:type_name -> google.privacy.dlp.v2.TagFilters
+	220, // 333: google.privacy.dlp.v2.FileStoreRegexes.patterns:type_name -> google.privacy.dlp.v2.FileStoreRegex
+	221, // 334: google.privacy.dlp.v2.FileStoreRegex.cloud_storage_regex:type_name -> google.privacy.dlp.v2.CloudStorageRegex
+	6,   // 335: google.privacy.dlp.v2.DiscoveryCloudStorageGenerationCadence.refresh_frequency:type_name -> google.privacy.dlp.v2.DataProfileUpdateFrequency
+	205, // 336: google.privacy.dlp.v2.DiscoveryCloudStorageGenerationCadence.inspect_template_modified_cadence:type_name -> google.privacy.dlp.v2.DiscoveryInspectTemplateModifiedCadence
+	42,  // 337: google.privacy.dlp.v2.DiscoveryCloudStorageConditions.included_object_attributes:type_name -> google.privacy.dlp.v2.DiscoveryCloudStorageConditions.CloudStorageObjectAttribute
+	43,  // 338: google.privacy.dlp.v2.DiscoveryCloudStorageConditions.included_bucket_attributes:type_name -> google.privacy.dlp.v2.DiscoveryCloudStorageConditions.CloudStorageBucketAttribute
+	423, // 339: google.privacy.dlp.v2.DiscoveryFileStoreConditions.created_after:type_name -> google.protobuf.Timestamp
+	434, // 340: google.privacy.dlp.v2.DiscoveryFileStoreConditions.min_age:type_name -> google.protobuf.Duration
+	224, // 341: google.privacy.dlp.v2.DiscoveryFileStoreConditions.cloud_storage_conditions:type_name -> google.privacy.dlp.v2.DiscoveryCloudStorageConditions
+	328, // 342: google.privacy.dlp.v2.OtherCloudDiscoveryTarget.data_source_type:type_name -> google.privacy.dlp.v2.DataSourceType
+	227, // 343: google.privacy.dlp.v2.OtherCloudDiscoveryTarget.filter:type_name -> google.privacy.dlp.v2.DiscoveryOtherCloudFilter
+	236, // 344: google.privacy.dlp.v2.OtherCloudDiscoveryTarget.conditions:type_name -> google.privacy.dlp.v2.DiscoveryOtherCloudConditions
+	238, // 345: google.privacy.dlp.v2.OtherCloudDiscoveryTarget.generation_cadence:type_name -> google.privacy.dlp.v2.DiscoveryOtherCloudGenerationCadence
+	194, // 346: google.privacy.dlp.v2.OtherCloudDiscoveryTarget.disabled:type_name -> google.privacy.dlp.v2.Disabled
+	228, // 347: google.privacy.dlp.v2.DiscoveryOtherCloudFilter.collection:type_name -> google.privacy.dlp.v2.OtherCloudResourceCollection
+	233, // 348: google.privacy.dlp.v2.DiscoveryOtherCloudFilter.single_resource:type_name -> google.privacy.dlp.v2.OtherCloudSingleResourceReference
+	241, // 349: google.privacy.dlp.v2.DiscoveryOtherCloudFilter.others:type_name -> google.privacy.dlp.v2.AllOtherResources
+	229, // 350: google.privacy.dlp.v2.OtherCloudResourceCollection.include_regexes:type_name -> google.privacy.dlp.v2.OtherCloudResourceRegexes
+	230, // 351: google.privacy.dlp.v2.OtherCloudResourceRegexes.patterns:type_name -> google.privacy.dlp.v2.OtherCloudResourceRegex
+	232, // 352: google.privacy.dlp.v2.OtherCloudResourceRegex.amazon_s3_bucket_regex:type_name -> google.privacy.dlp.v2.AmazonS3BucketRegex
+	231, // 353: google.privacy.dlp.v2.AmazonS3BucketRegex.aws_account_regex:type_name -> google.privacy.dlp.v2.AwsAccountRegex
+	235, // 354: google.privacy.dlp.v2.OtherCloudSingleResourceReference.amazon_s3_bucket:type_name -> google.privacy.dlp.v2.AmazonS3Bucket
+	234, // 355: google.privacy.dlp.v2.AmazonS3Bucket.aws_account:type_name -> google.privacy.dlp.v2.AwsAccount
+	434, // 356: google.privacy.dlp.v2.DiscoveryOtherCloudConditions.min_age:type_name -> google.protobuf.Duration
+	237, // 357: google.privacy.dlp.v2.DiscoveryOtherCloudConditions.amazon_s3_bucket_conditions:type_name -> google.privacy.dlp.v2.AmazonS3BucketConditions
+	44,  // 358: google.privacy.dlp.v2.AmazonS3BucketConditions.bucket_types:type_name -> google.privacy.dlp.v2.AmazonS3BucketConditions.BucketType
+	45,  // 359: google.privacy.dlp.v2.AmazonS3BucketConditions.object_storage_classes:type_name -> google.privacy.dlp.v2.AmazonS3BucketConditions.ObjectStorageClass
+	6,   // 360: google.privacy.dlp.v2.DiscoveryOtherCloudGenerationCadence.refresh_frequency:type_name -> google.privacy.dlp.v2.DataProfileUpdateFrequency
+	205, // 361: google.privacy.dlp.v2.DiscoveryOtherCloudGenerationCadence.inspect_template_modified_cadence:type_name -> google.privacy.dlp.v2.DiscoveryInspectTemplateModifiedCadence
+	403, // 362: google.privacy.dlp.v2.OtherCloudDiscoveryStartingLocation.aws_location:type_name -> google.privacy.dlp.v2.OtherCloudDiscoveryStartingLocation.AwsDiscoveryStartingLocation
+	243, // 363: google.privacy.dlp.v2.VertexDatasetDiscoveryTarget.filter:type_name -> google.privacy.dlp.v2.DiscoveryVertexDatasetFilter
+	248, // 364: google.privacy.dlp.v2.VertexDatasetDiscoveryTarget.conditions:type_name -> google.privacy.dlp.v2.DiscoveryVertexDatasetConditions
+	249, // 365: google.privacy.dlp.v2.VertexDatasetDiscoveryTarget.generation_cadence:type_name -> google.privacy.dlp.v2.DiscoveryVertexDatasetGenerationCadence
+	194, // 366: google.privacy.dlp.v2.VertexDatasetDiscoveryTarget.disabled:type_name -> google.privacy.dlp.v2.Disabled
+	244, // 367: google.privacy.dlp.v2.DiscoveryVertexDatasetFilter.collection:type_name -> google.privacy.dlp.v2.VertexDatasetCollection
+	247, // 368: google.privacy.dlp.v2.DiscoveryVertexDatasetFilter.vertex_dataset_resource_reference:type_name -> google.privacy.dlp.v2.VertexDatasetResourceReference
+	241, // 369: google.privacy.dlp.v2.DiscoveryVertexDatasetFilter.others:type_name -> google.privacy.dlp.v2.AllOtherResources
+	245, // 370: google.privacy.dlp.v2.VertexDatasetCollection.vertex_dataset_regexes:type_name -> google.privacy.dlp.v2.VertexDatasetRegexes
+	246, // 371: google.privacy.dlp.v2.VertexDatasetRegexes.patterns:type_name -> google.privacy.dlp.v2.VertexDatasetRegex
+	423, // 372: google.privacy.dlp.v2.DiscoveryVertexDatasetConditions.created_after:type_name -> google.protobuf.Timestamp
+	434, // 373: google.privacy.dlp.v2.DiscoveryVertexDatasetConditions.min_age:type_name -> google.protobuf.Duration
+	6,   // 374: google.privacy.dlp.v2.DiscoveryVertexDatasetGenerationCadence.refresh_frequency:type_name -> google.privacy.dlp.v2.DataProfileUpdateFrequency
+	205, // 375: google.privacy.dlp.v2.DiscoveryVertexDatasetGenerationCadence.inspect_template_modified_cadence:type_name -> google.privacy.dlp.v2.DiscoveryInspectTemplateModifiedCadence
+	14,  // 376: google.privacy.dlp.v2.DlpJob.type:type_name -> google.privacy.dlp.v2.DlpJobType
+	46,  // 377: google.privacy.dlp.v2.DlpJob.state:type_name -> google.privacy.dlp.v2.DlpJob.JobState
+	118, // 378: google.privacy.dlp.v2.DlpJob.risk_details:type_name -> google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails
+	102, // 379: google.privacy.dlp.v2.DlpJob.inspect_details:type_name -> google.privacy.dlp.v2.InspectDataSourceDetails
+	423, // 380: google.privacy.dlp.v2.DlpJob.create_time:type_name -> google.protobuf.Timestamp
+	423, // 381: google.privacy.dlp.v2.DlpJob.start_time:type_name -> google.protobuf.Timestamp
+	423, // 382: google.privacy.dlp.v2.DlpJob.end_time:type_name -> google.protobuf.Timestamp
+	423, // 383: google.privacy.dlp.v2.DlpJob.last_modified:type_name -> google.protobuf.Timestamp
+	161, // 384: google.privacy.dlp.v2.DlpJob.errors:type_name -> google.privacy.dlp.v2.Error
+	105, // 385: google.privacy.dlp.v2.DlpJob.action_details:type_name -> google.privacy.dlp.v2.ActionDetails
+	14,  // 386: google.privacy.dlp.v2.ListDlpJobsRequest.type:type_name -> google.privacy.dlp.v2.DlpJobType
+	250, // 387: google.privacy.dlp.v2.ListDlpJobsResponse.jobs:type_name -> google.privacy.dlp.v2.DlpJob
+	160, // 388: google.privacy.dlp.v2.CreateDeidentifyTemplateRequest.deidentify_template:type_name -> google.privacy.dlp.v2.DeidentifyTemplate
+	160, // 389: google.privacy.dlp.v2.UpdateDeidentifyTemplateRequest.deidentify_template:type_name -> google.privacy.dlp.v2.DeidentifyTemplate
+	435, // 390: google.privacy.dlp.v2.UpdateDeidentifyTemplateRequest.update_mask:type_name -> google.protobuf.FieldMask
+	160, // 391: google.privacy.dlp.v2.ListDeidentifyTemplatesResponse.deidentify_templates:type_name -> google.privacy.dlp.v2.DeidentifyTemplate
+	426, // 392: google.privacy.dlp.v2.LargeCustomDictionaryConfig.output_path:type_name -> google.privacy.dlp.v2.CloudStoragePath
+	438, // 393: google.privacy.dlp.v2.LargeCustomDictionaryConfig.cloud_storage_file_set:type_name -> google.privacy.dlp.v2.CloudStorageFileSet
+	439, // 394: google.privacy.dlp.v2.LargeCustomDictionaryConfig.big_query_field:type_name -> google.privacy.dlp.v2.BigQueryField
+	263, // 395: google.privacy.dlp.v2.StoredInfoTypeConfig.large_custom_dictionary:type_name -> google.privacy.dlp.v2.LargeCustomDictionaryConfig
+	417, // 396: google.privacy.dlp.v2.StoredInfoTypeConfig.dictionary:type_name -> google.privacy.dlp.v2.CustomInfoType.Dictionary
+	415, // 397: google.privacy.dlp.v2.StoredInfoTypeConfig.regex:type_name -> google.privacy.dlp.v2.CustomInfoType.Regex
+	264, // 398: google.privacy.dlp.v2.StoredInfoTypeStats.large_custom_dictionary:type_name -> google.privacy.dlp.v2.LargeCustomDictionaryStats
+	265, // 399: google.privacy.dlp.v2.StoredInfoTypeVersion.config:type_name -> google.privacy.dlp.v2.StoredInfoTypeConfig
+	423, // 400: google.privacy.dlp.v2.StoredInfoTypeVersion.create_time:type_name -> google.protobuf.Timestamp
+	15,  // 401: google.privacy.dlp.v2.StoredInfoTypeVersion.state:type_name -> google.privacy.dlp.v2.StoredInfoTypeState
+	161, // 402: google.privacy.dlp.v2.StoredInfoTypeVersion.errors:type_name -> google.privacy.dlp.v2.Error
+	266, // 403: google.privacy.dlp.v2.StoredInfoTypeVersion.stats:type_name -> google.privacy.dlp.v2.StoredInfoTypeStats
+	267, // 404: google.privacy.dlp.v2.StoredInfoType.current_version:type_name -> google.privacy.dlp.v2.StoredInfoTypeVersion
+	267, // 405: google.privacy.dlp.v2.StoredInfoType.pending_versions:type_name -> google.privacy.dlp.v2.StoredInfoTypeVersion
+	265, // 406: google.privacy.dlp.v2.CreateStoredInfoTypeRequest.config:type_name -> google.privacy.dlp.v2.StoredInfoTypeConfig
+	265, // 407: google.privacy.dlp.v2.UpdateStoredInfoTypeRequest.config:type_name -> google.privacy.dlp.v2.StoredInfoTypeConfig
+	435, // 408: google.privacy.dlp.v2.UpdateStoredInfoTypeRequest.update_mask:type_name -> google.protobuf.FieldMask
+	268, // 409: google.privacy.dlp.v2.ListStoredInfoTypesResponse.stored_info_types:type_name -> google.privacy.dlp.v2.StoredInfoType
+	277, // 410: google.privacy.dlp.v2.HybridInspectJobTriggerRequest.hybrid_item:type_name -> google.privacy.dlp.v2.HybridContentItem
+	277, // 411: google.privacy.dlp.v2.HybridInspectDlpJobRequest.hybrid_item:type_name -> google.privacy.dlp.v2.HybridContentItem
+	70,  // 412: google.privacy.dlp.v2.HybridContentItem.item:type_name -> google.privacy.dlp.v2.ContentItem
+	278, // 413: google.privacy.dlp.v2.HybridContentItem.finding_details:type_name -> google.privacy.dlp.v2.HybridFindingDetails
+	87,  // 414: google.privacy.dlp.v2.HybridFindingDetails.container_details:type_name -> google.privacy.dlp.v2.Container
+	440, // 415: google.privacy.dlp.v2.HybridFindingDetails.table_options:type_name -> google.privacy.dlp.v2.TableOptions
+	404, // 416: google.privacy.dlp.v2.HybridFindingDetails.labels:type_name -> google.privacy.dlp.v2.HybridFindingDetails.LabelsEntry
+	282, // 417: google.privacy.dlp.v2.ImageContainmentType.encloses:type_name -> google.privacy.dlp.v2.Encloses
+	283, // 418: google.privacy.dlp.v2.ImageContainmentType.fully_inside:type_name -> google.privacy.dlp.v2.FullyInside
+	281, // 419: google.privacy.dlp.v2.ImageContainmentType.overlaps:type_name -> google.privacy.dlp.v2.Overlap
+	291, // 420: google.privacy.dlp.v2.ListProjectDataProfilesResponse.project_data_profiles:type_name -> google.privacy.dlp.v2.ProjectDataProfile
+	293, // 421: google.privacy.dlp.v2.ListTableDataProfilesResponse.table_data_profiles:type_name -> google.privacy.dlp.v2.TableDataProfile
+	297, // 422: google.privacy.dlp.v2.ListColumnDataProfilesResponse.column_data_profiles:type_name -> google.privacy.dlp.v2.ColumnDataProfile
+	47,  // 423: google.privacy.dlp.v2.DataRiskLevel.score:type_name -> google.privacy.dlp.v2.DataRiskLevel.DataRiskLevelScore
+	423, // 424: google.privacy.dlp.v2.ProjectDataProfile.profile_last_generated:type_name -> google.protobuf.Timestamp
+	427, // 425: google.privacy.dlp.v2.ProjectDataProfile.sensitivity_score:type_name -> google.privacy.dlp.v2.SensitivityScore
+	290, // 426: google.privacy.dlp.v2.ProjectDataProfile.data_risk_level:type_name -> google.privacy.dlp.v2.DataRiskLevel
+	294, // 427: google.privacy.dlp.v2.ProjectDataProfile.profile_status:type_name -> google.privacy.dlp.v2.ProfileStatus
+	68,  // 428: google.privacy.dlp.v2.DataProfileConfigSnapshot.inspect_config:type_name -> google.privacy.dlp.v2.InspectConfig
+	190, // 429: google.privacy.dlp.v2.DataProfileConfigSnapshot.data_profile_job:type_name -> google.privacy.dlp.v2.DataProfileJobConfig
+	196, // 430: google.privacy.dlp.v2.DataProfileConfigSnapshot.discovery_config:type_name -> google.privacy.dlp.v2.DiscoveryConfig
+	423, // 431: google.privacy.dlp.v2.DataProfileConfigSnapshot.inspect_template_modified_time:type_name -> google.protobuf.Timestamp
+	328, // 432: google.privacy.dlp.v2.TableDataProfile.data_source_type:type_name -> google.privacy.dlp.v2.DataSourceType
+	294, // 433: google.privacy.dlp.v2.TableDataProfile.profile_status:type_name -> google.privacy.dlp.v2.ProfileStatus
+	48,  // 434: google.privacy.dlp.v2.TableDataProfile.state:type_name -> google.privacy.dlp.v2.TableDataProfile.State
+	427, // 435: google.privacy.dlp.v2.TableDataProfile.sensitivity_score:type_name -> google.privacy.dlp.v2.SensitivityScore
+	290, // 436: google.privacy.dlp.v2.TableDataProfile.data_risk_level:type_name -> google.privacy.dlp.v2.DataRiskLevel
+	295, // 437: google.privacy.dlp.v2.TableDataProfile.predicted_info_types:type_name -> google.privacy.dlp.v2.InfoTypeSummary
+	296, // 438: google.privacy.dlp.v2.TableDataProfile.other_info_types:type_name -> google.privacy.dlp.v2.OtherInfoTypeSummary
+	292, // 439: google.privacy.dlp.v2.TableDataProfile.config_snapshot:type_name -> google.privacy.dlp.v2.DataProfileConfigSnapshot
+	423, // 440: google.privacy.dlp.v2.TableDataProfile.last_modified_time:type_name -> google.protobuf.Timestamp
+	423, // 441: google.privacy.dlp.v2.TableDataProfile.expiration_time:type_name -> google.protobuf.Timestamp
+	17,  // 442: google.privacy.dlp.v2.TableDataProfile.encryption_status:type_name -> google.privacy.dlp.v2.EncryptionStatus
+	16,  // 443: google.privacy.dlp.v2.TableDataProfile.resource_visibility:type_name -> google.privacy.dlp.v2.ResourceVisibility
+	423, // 444: google.privacy.dlp.v2.TableDataProfile.profile_last_generated:type_name -> google.protobuf.Timestamp
+	405, // 445: google.privacy.dlp.v2.TableDataProfile.resource_labels:type_name -> google.privacy.dlp.v2.TableDataProfile.ResourceLabelsEntry
+	423, // 446: google.privacy.dlp.v2.TableDataProfile.create_time:type_name -> google.protobuf.Timestamp
+	425, // 447: google.privacy.dlp.v2.TableDataProfile.sample_findings_table:type_name -> google.privacy.dlp.v2.BigQueryTable
+	299, // 448: google.privacy.dlp.v2.TableDataProfile.tags:type_name -> google.privacy.dlp.v2.Tag
+	302, // 449: google.privacy.dlp.v2.TableDataProfile.related_resources:type_name -> google.privacy.dlp.v2.RelatedResource
+	332, // 450: google.privacy.dlp.v2.TableDataProfile.domains:type_name -> google.privacy.dlp.v2.Domain
+	433, // 451: google.privacy.dlp.v2.ProfileStatus.status:type_name -> google.rpc.Status
+	423, // 452: google.privacy.dlp.v2.ProfileStatus.timestamp:type_name -> google.protobuf.Timestamp
+	414, // 453: google.privacy.dlp.v2.InfoTypeSummary.info_type:type_name -> google.privacy.dlp.v2.InfoType
+	414, // 454: google.privacy.dlp.v2.OtherInfoTypeSummary.info_type:type_name -> google.privacy.dlp.v2.InfoType
+	294, // 455: google.privacy.dlp.v2.ColumnDataProfile.profile_status:type_name -> google.privacy.dlp.v2.ProfileStatus
+	49,  // 456: google.privacy.dlp.v2.ColumnDataProfile.state:type_name -> google.privacy.dlp.v2.ColumnDataProfile.State
+	423, // 457: google.privacy.dlp.v2.ColumnDataProfile.profile_last_generated:type_name -> google.protobuf.Timestamp
+	427, // 458: google.privacy.dlp.v2.ColumnDataProfile.sensitivity_score:type_name -> google.privacy.dlp.v2.SensitivityScore
+	290, // 459: google.privacy.dlp.v2.ColumnDataProfile.data_risk_level:type_name -> google.privacy.dlp.v2.DataRiskLevel
+	295, // 460: google.privacy.dlp.v2.ColumnDataProfile.column_info_type:type_name -> google.privacy.dlp.v2.InfoTypeSummary
+	296, // 461: google.privacy.dlp.v2.ColumnDataProfile.other_matches:type_name -> google.privacy.dlp.v2.OtherInfoTypeSummary
+	18,  // 462: google.privacy.dlp.v2.ColumnDataProfile.estimated_null_percentage:type_name -> google.privacy.dlp.v2.NullPercentageLevel
+	19,  // 463: google.privacy.dlp.v2.ColumnDataProfile.estimated_uniqueness_score:type_name -> google.privacy.dlp.v2.UniquenessScoreLevel
+	50,  // 464: google.privacy.dlp.v2.ColumnDataProfile.column_type:type_name -> google.privacy.dlp.v2.ColumnDataProfile.ColumnDataType
+	51,  // 465: google.privacy.dlp.v2.ColumnDataProfile.policy_state:type_name -> google.privacy.dlp.v2.ColumnDataProfile.ColumnPolicyState
+	328, // 466: google.privacy.dlp.v2.FileStoreDataProfile.data_source_type:type_name -> google.privacy.dlp.v2.DataSourceType
+	292, // 467: google.privacy.dlp.v2.FileStoreDataProfile.config_snapshot:type_name -> google.privacy.dlp.v2.DataProfileConfigSnapshot
+	294, // 468: google.privacy.dlp.v2.FileStoreDataProfile.profile_status:type_name -> google.privacy.dlp.v2.ProfileStatus
+	52,  // 469: google.privacy.dlp.v2.FileStoreDataProfile.state:type_name -> google.privacy.dlp.v2.FileStoreDataProfile.State
+	423, // 470: google.privacy.dlp.v2.FileStoreDataProfile.profile_last_generated:type_name -> google.protobuf.Timestamp
+	16,  // 471: google.privacy.dlp.v2.FileStoreDataProfile.resource_visibility:type_name -> google.privacy.dlp.v2.ResourceVisibility
+	427, // 472: google.privacy.dlp.v2.FileStoreDataProfile.sensitivity_score:type_name -> google.privacy.dlp.v2.SensitivityScore
+	290, // 473: google.privacy.dlp.v2.FileStoreDataProfile.data_risk_level:type_name -> google.privacy.dlp.v2.DataRiskLevel
+	423, // 474: google.privacy.dlp.v2.FileStoreDataProfile.create_time:type_name -> google.protobuf.Timestamp
+	423, // 475: google.privacy.dlp.v2.FileStoreDataProfile.last_modified_time:type_name -> google.protobuf.Timestamp
+	305, // 476: google.privacy.dlp.v2.FileStoreDataProfile.file_cluster_summaries:type_name -> google.privacy.dlp.v2.FileClusterSummary
+	406, // 477: google.privacy.dlp.v2.FileStoreDataProfile.resource_attributes:type_name -> google.privacy.dlp.v2.FileStoreDataProfile.ResourceAttributesEntry
+	407, // 478: google.privacy.dlp.v2.FileStoreDataProfile.resource_labels:type_name -> google.privacy.dlp.v2.FileStoreDataProfile.ResourceLabelsEntry
+	303, // 479: google.privacy.dlp.v2.FileStoreDataProfile.file_store_info_type_summaries:type_name -> google.privacy.dlp.v2.FileStoreInfoTypeSummary
+	425, // 480: google.privacy.dlp.v2.FileStoreDataProfile.sample_findings_table:type_name -> google.privacy.dlp.v2.BigQueryTable
+	299, // 481: google.privacy.dlp.v2.FileStoreDataProfile.tags:type_name -> google.privacy.dlp.v2.Tag
+	302, // 482: google.privacy.dlp.v2.FileStoreDataProfile.related_resources:type_name -> google.privacy.dlp.v2.RelatedResource
+	332, // 483: google.privacy.dlp.v2.FileStoreDataProfile.domains:type_name -> google.privacy.dlp.v2.Domain
+	301, // 484: google.privacy.dlp.v2.TagFilters.tag_filters:type_name -> google.privacy.dlp.v2.TagFilter
+	414, // 485: google.privacy.dlp.v2.FileStoreInfoTypeSummary.info_type:type_name -> google.privacy.dlp.v2.InfoType
+	329, // 486: google.privacy.dlp.v2.FileClusterSummary.file_cluster_type:type_name -> google.privacy.dlp.v2.FileClusterType
+	303, // 487: google.privacy.dlp.v2.FileClusterSummary.file_store_info_type_summaries:type_name -> google.privacy.dlp.v2.FileStoreInfoTypeSummary
+	427, // 488: google.privacy.dlp.v2.FileClusterSummary.sensitivity_score:type_name -> google.privacy.dlp.v2.SensitivityScore
+	290, // 489: google.privacy.dlp.v2.FileClusterSummary.data_risk_level:type_name -> google.privacy.dlp.v2.DataRiskLevel
+	161, // 490: google.privacy.dlp.v2.FileClusterSummary.errors:type_name -> google.privacy.dlp.v2.Error
+	304, // 491: google.privacy.dlp.v2.FileClusterSummary.file_extensions_scanned:type_name -> google.privacy.dlp.v2.FileExtensionInfo
+	304, // 492: google.privacy.dlp.v2.FileClusterSummary.file_extensions_seen:type_name -> google.privacy.dlp.v2.FileExtensionInfo
+	298, // 493: google.privacy.dlp.v2.ListFileStoreDataProfilesResponse.file_store_data_profiles:type_name -> google.privacy.dlp.v2.FileStoreDataProfile
+	409, // 494: google.privacy.dlp.v2.DataProfilePubSubCondition.expressions:type_name -> google.privacy.dlp.v2.DataProfilePubSubCondition.PubSubExpressions
+	293, // 495: google.privacy.dlp.v2.DataProfilePubSubMessage.profile:type_name -> google.privacy.dlp.v2.TableDataProfile
+	298, // 496: google.privacy.dlp.v2.DataProfilePubSubMessage.file_store_profile:type_name -> google.privacy.dlp.v2.FileStoreDataProfile
+	36,  // 497: google.privacy.dlp.v2.DataProfilePubSubMessage.event:type_name -> google.privacy.dlp.v2.DataProfileAction.EventType
+	323, // 498: google.privacy.dlp.v2.CreateConnectionRequest.connection:type_name -> google.privacy.dlp.v2.Connection
+	323, // 499: google.privacy.dlp.v2.ListConnectionsResponse.connections:type_name -> google.privacy.dlp.v2.Connection
+	323, // 500: google.privacy.dlp.v2.SearchConnectionsResponse.connections:type_name -> google.privacy.dlp.v2.Connection
+	323, // 501: google.privacy.dlp.v2.UpdateConnectionRequest.connection:type_name -> google.privacy.dlp.v2.Connection
+	435, // 502: google.privacy.dlp.v2.UpdateConnectionRequest.update_mask:type_name -> google.protobuf.FieldMask
+	20,  // 503: google.privacy.dlp.v2.Connection.state:type_name -> google.privacy.dlp.v2.ConnectionState
+	161, // 504: google.privacy.dlp.v2.Connection.errors:type_name -> google.privacy.dlp.v2.Error
+	326, // 505: google.privacy.dlp.v2.Connection.cloud_sql:type_name -> google.privacy.dlp.v2.CloudSqlProperties
+	324, // 506: google.privacy.dlp.v2.CloudSqlProperties.username_password:type_name -> google.privacy.dlp.v2.SecretManagerCredential
+	325, // 507: google.privacy.dlp.v2.CloudSqlProperties.cloud_sql_iam:type_name -> google.privacy.dlp.v2.CloudSqlIamCredential
+	55,  // 508: google.privacy.dlp.v2.CloudSqlProperties.database_engine:type_name -> google.privacy.dlp.v2.CloudSqlProperties.DatabaseEngine
+	56,  // 509: google.privacy.dlp.v2.FileClusterType.cluster:type_name -> google.privacy.dlp.v2.FileClusterType.Cluster
+	412, // 510: google.privacy.dlp.v2.ProcessingLocation.image_fallback_location:type_name -> google.privacy.dlp.v2.ProcessingLocation.ImageFallbackLocation
+	413, // 511: google.privacy.dlp.v2.ProcessingLocation.document_fallback_location:type_name -> google.privacy.dlp.v2.ProcessingLocation.DocumentFallbackLocation
+	77,  // 512: google.privacy.dlp.v2.SaveToGcsFindingsOutput.findings:type_name -> google.privacy.dlp.v2.Finding
+	57,  // 513: google.privacy.dlp.v2.Domain.category:type_name -> google.privacy.dlp.v2.Domain.Category
+	58,  // 514: google.privacy.dlp.v2.Domain.signals:type_name -> google.privacy.dlp.v2.Domain.Signal
+	414, // 515: google.privacy.dlp.v2.InspectConfig.InfoTypeLikelihood.info_type:type_name -> google.privacy.dlp.v2.InfoType
+	418, // 516: google.privacy.dlp.v2.InspectConfig.InfoTypeLikelihood.min_likelihood:type_name -> google.privacy.dlp.v2.Likelihood
+	335, // 517: google.privacy.dlp.v2.InspectConfig.FindingLimits.max_findings_per_info_type:type_name -> google.privacy.dlp.v2.InspectConfig.FindingLimits.InfoTypeLimit
+	414, // 518: google.privacy.dlp.v2.InspectConfig.FindingLimits.InfoTypeLimit.info_type:type_name -> google.privacy.dlp.v2.InfoType
+	120, // 519: google.privacy.dlp.v2.Table.Row.values:type_name -> google.privacy.dlp.v2.Value
+	414, // 520: google.privacy.dlp.v2.RedactImageRequest.ImageRedactionConfig.info_type:type_name -> google.privacy.dlp.v2.InfoType
+	92,  // 521: google.privacy.dlp.v2.RedactImageRequest.ImageRedactionConfig.redaction_color:type_name -> google.privacy.dlp.v2.Color
+	159, // 522: google.privacy.dlp.v2.InspectDataSourceDetails.RequestedOptions.snapshot_inspect_template:type_name -> google.privacy.dlp.v2.InspectTemplate
+	185, // 523: google.privacy.dlp.v2.InspectDataSourceDetails.RequestedOptions.job_config:type_name -> google.privacy.dlp.v2.InspectJobConfig
+	101, // 524: google.privacy.dlp.v2.InspectDataSourceDetails.Result.info_type_stats:type_name -> google.privacy.dlp.v2.InfoTypeStats
+	104, // 525: google.privacy.dlp.v2.InspectDataSourceDetails.Result.hybrid_stats:type_name -> google.privacy.dlp.v2.HybridInspectStatistics
+	160, // 526: google.privacy.dlp.v2.DeidentifyDataSourceDetails.RequestedDeidentifyOptions.snapshot_deidentify_template:type_name -> google.privacy.dlp.v2.DeidentifyTemplate
+	160, // 527: google.privacy.dlp.v2.DeidentifyDataSourceDetails.RequestedDeidentifyOptions.snapshot_structured_deidentify_template:type_name -> google.privacy.dlp.v2.DeidentifyTemplate
+	160, // 528: google.privacy.dlp.v2.DeidentifyDataSourceDetails.RequestedDeidentifyOptions.snapshot_image_redact_template:type_name -> google.privacy.dlp.v2.DeidentifyTemplate
+	422, // 529: google.privacy.dlp.v2.StatisticalTable.QuasiIdentifierField.field:type_name -> google.privacy.dlp.v2.FieldId
+	422, // 530: google.privacy.dlp.v2.PrivacyMetric.NumericalStatsConfig.field:type_name -> google.privacy.dlp.v2.FieldId
+	422, // 531: google.privacy.dlp.v2.PrivacyMetric.CategoricalStatsConfig.field:type_name -> google.privacy.dlp.v2.FieldId
+	422, // 532: google.privacy.dlp.v2.PrivacyMetric.KAnonymityConfig.quasi_ids:type_name -> google.privacy.dlp.v2.FieldId
+	441, // 533: google.privacy.dlp.v2.PrivacyMetric.KAnonymityConfig.entity_id:type_name -> google.privacy.dlp.v2.EntityId
+	422, // 534: google.privacy.dlp.v2.PrivacyMetric.LDiversityConfig.quasi_ids:type_name -> google.privacy.dlp.v2.FieldId
+	422, // 535: google.privacy.dlp.v2.PrivacyMetric.LDiversityConfig.sensitive_attribute:type_name -> google.privacy.dlp.v2.FieldId
+	350, // 536: google.privacy.dlp.v2.PrivacyMetric.KMapEstimationConfig.quasi_ids:type_name -> google.privacy.dlp.v2.PrivacyMetric.KMapEstimationConfig.TaggedField
+	351, // 537: google.privacy.dlp.v2.PrivacyMetric.KMapEstimationConfig.auxiliary_tables:type_name -> google.privacy.dlp.v2.PrivacyMetric.KMapEstimationConfig.AuxiliaryTable
+	115, // 538: google.privacy.dlp.v2.PrivacyMetric.DeltaPresenceEstimationConfig.quasi_ids:type_name -> google.privacy.dlp.v2.QuasiId
+	116, // 539: google.privacy.dlp.v2.PrivacyMetric.DeltaPresenceEstimationConfig.auxiliary_tables:type_name -> google.privacy.dlp.v2.StatisticalTable
+	422, // 540: google.privacy.dlp.v2.PrivacyMetric.KMapEstimationConfig.TaggedField.field:type_name -> google.privacy.dlp.v2.FieldId
+	414, // 541: google.privacy.dlp.v2.PrivacyMetric.KMapEstimationConfig.TaggedField.info_type:type_name -> google.privacy.dlp.v2.InfoType
+	428, // 542: google.privacy.dlp.v2.PrivacyMetric.KMapEstimationConfig.TaggedField.inferred:type_name -> google.protobuf.Empty
+	425, // 543: google.privacy.dlp.v2.PrivacyMetric.KMapEstimationConfig.AuxiliaryTable.table:type_name -> google.privacy.dlp.v2.BigQueryTable
+	352, // 544: google.privacy.dlp.v2.PrivacyMetric.KMapEstimationConfig.AuxiliaryTable.quasi_ids:type_name -> google.privacy.dlp.v2.PrivacyMetric.KMapEstimationConfig.AuxiliaryTable.QuasiIdField
+	422, // 545: google.privacy.dlp.v2.PrivacyMetric.KMapEstimationConfig.AuxiliaryTable.relative_frequency:type_name -> google.privacy.dlp.v2.FieldId
+	422, // 546: google.privacy.dlp.v2.PrivacyMetric.KMapEstimationConfig.AuxiliaryTable.QuasiIdField.field:type_name -> google.privacy.dlp.v2.FieldId
+	120, // 547: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.NumericalStatsResult.min_value:type_name -> google.privacy.dlp.v2.Value
+	120, // 548: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.NumericalStatsResult.max_value:type_name -> google.privacy.dlp.v2.Value
+	120, // 549: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.NumericalStatsResult.quantile_values:type_name -> google.privacy.dlp.v2.Value
+	360, // 550: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.CategoricalStatsResult.value_frequency_histogram_buckets:type_name -> google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.CategoricalStatsResult.CategoricalStatsHistogramBucket
+	362, // 551: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.KAnonymityResult.equivalence_class_histogram_buckets:type_name -> google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.KAnonymityResult.KAnonymityHistogramBucket
+	364, // 552: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.LDiversityResult.sensitive_value_frequency_histogram_buckets:type_name -> google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.LDiversityResult.LDiversityHistogramBucket
+	366, // 553: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.KMapEstimationResult.k_map_estimation_histogram:type_name -> google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.KMapEstimationResult.KMapEstimationHistogramBucket
+	368, // 554: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.DeltaPresenceEstimationResult.delta_presence_estimation_histogram:type_name -> google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.DeltaPresenceEstimationResult.DeltaPresenceEstimationHistogramBucket
+	114, // 555: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.RequestedRiskAnalysisOptions.job_config:type_name -> google.privacy.dlp.v2.RiskAnalysisJobConfig
+	119, // 556: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.CategoricalStatsResult.CategoricalStatsHistogramBucket.bucket_values:type_name -> google.privacy.dlp.v2.ValueFrequency
+	120, // 557: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.KAnonymityResult.KAnonymityEquivalenceClass.quasi_ids_values:type_name -> google.privacy.dlp.v2.Value
+	361, // 558: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.KAnonymityResult.KAnonymityHistogramBucket.bucket_values:type_name -> google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.KAnonymityResult.KAnonymityEquivalenceClass
+	120, // 559: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.LDiversityResult.LDiversityEquivalenceClass.quasi_ids_values:type_name -> google.privacy.dlp.v2.Value
+	119, // 560: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.LDiversityResult.LDiversityEquivalenceClass.top_sensitive_values:type_name -> google.privacy.dlp.v2.ValueFrequency
+	363, // 561: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.LDiversityResult.LDiversityHistogramBucket.bucket_values:type_name -> google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.LDiversityResult.LDiversityEquivalenceClass
+	120, // 562: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.KMapEstimationResult.KMapEstimationQuasiIdValues.quasi_ids_values:type_name -> google.privacy.dlp.v2.Value
+	365, // 563: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.KMapEstimationResult.KMapEstimationHistogramBucket.bucket_values:type_name -> google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.KMapEstimationResult.KMapEstimationQuasiIdValues
+	120, // 564: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.DeltaPresenceEstimationResult.DeltaPresenceEstimationQuasiIdValues.quasi_ids_values:type_name -> google.privacy.dlp.v2.Value
+	367, // 565: google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.DeltaPresenceEstimationResult.DeltaPresenceEstimationHistogramBucket.bucket_values:type_name -> google.privacy.dlp.v2.AnalyzeDataSourceRiskDetails.DeltaPresenceEstimationResult.DeltaPresenceEstimationQuasiIdValues
+	371, // 566: google.privacy.dlp.v2.ImageTransformations.ImageTransformation.selected_info_types:type_name -> google.privacy.dlp.v2.ImageTransformations.ImageTransformation.SelectedInfoTypes
+	372, // 567: google.privacy.dlp.v2.ImageTransformations.ImageTransformation.all_info_types:type_name -> google.privacy.dlp.v2.ImageTransformations.ImageTransformation.AllInfoTypes
+	373, // 568: google.privacy.dlp.v2.ImageTransformations.ImageTransformation.all_text:type_name -> google.privacy.dlp.v2.ImageTransformations.ImageTransformation.AllText
+	92,  // 569: google.privacy.dlp.v2.ImageTransformations.ImageTransformation.redaction_color:type_name -> google.privacy.dlp.v2.Color
+	414, // 570: google.privacy.dlp.v2.ImageTransformations.ImageTransformation.SelectedInfoTypes.info_types:type_name -> google.privacy.dlp.v2.InfoType
+	120, // 571: google.privacy.dlp.v2.BucketingConfig.Bucket.min:type_name -> google.privacy.dlp.v2.Value
+	120, // 572: google.privacy.dlp.v2.BucketingConfig.Bucket.max:type_name -> google.privacy.dlp.v2.Value
+	120, // 573: google.privacy.dlp.v2.BucketingConfig.Bucket.replacement_value:type_name -> google.privacy.dlp.v2.Value
+	414, // 574: google.privacy.dlp.v2.InfoTypeTransformations.InfoTypeTransformation.info_types:type_name -> google.privacy.dlp.v2.InfoType
+	126, // 575: google.privacy.dlp.v2.InfoTypeTransformations.InfoTypeTransformation.primitive_transformation:type_name -> google.privacy.dlp.v2.PrimitiveTransformation
+	422, // 576: google.privacy.dlp.v2.RecordCondition.Condition.field:type_name -> google.privacy.dlp.v2.FieldId
+	9,   // 577: google.privacy.dlp.v2.RecordCondition.Condition.operator:type_name -> google.privacy.dlp.v2.RelationalOperator
+	120, // 578: google.privacy.dlp.v2.RecordCondition.Condition.value:type_name -> google.privacy.dlp.v2.Value
+	378, // 579: google.privacy.dlp.v2.RecordCondition.Conditions.conditions:type_name -> google.privacy.dlp.v2.RecordCondition.Condition
+	32,  // 580: google.privacy.dlp.v2.RecordCondition.Expressions.logical_operator:type_name -> google.privacy.dlp.v2.RecordCondition.Expressions.LogicalOperator
+	379, // 581: google.privacy.dlp.v2.RecordCondition.Expressions.conditions:type_name -> google.privacy.dlp.v2.RecordCondition.Conditions
+	33,  // 582: google.privacy.dlp.v2.TransformationSummary.SummaryResult.code:type_name -> google.privacy.dlp.v2.TransformationSummary.TransformationResultCode
+	157, // 583: google.privacy.dlp.v2.JobTrigger.Trigger.schedule:type_name -> google.privacy.dlp.v2.Schedule
+	158, // 584: google.privacy.dlp.v2.JobTrigger.Trigger.manual:type_name -> google.privacy.dlp.v2.Manual
+	100, // 585: google.privacy.dlp.v2.Action.SaveFindings.output_config:type_name -> google.privacy.dlp.v2.OutputStorageConfig
+	164, // 586: google.privacy.dlp.v2.Action.Deidentify.transformation_config:type_name -> google.privacy.dlp.v2.TransformationConfig
+	156, // 587: google.privacy.dlp.v2.Action.Deidentify.transformation_details_storage_config:type_name -> google.privacy.dlp.v2.TransformationDetailsStorageConfig
+	442, // 588: google.privacy.dlp.v2.Action.Deidentify.file_types_to_transform:type_name -> google.privacy.dlp.v2.FileType
+	425, // 589: google.privacy.dlp.v2.DataProfileAction.Export.profile_table:type_name -> google.privacy.dlp.v2.BigQueryTable
+	425, // 590: google.privacy.dlp.v2.DataProfileAction.Export.sample_findings_table:type_name -> google.privacy.dlp.v2.BigQueryTable
+	36,  // 591: google.privacy.dlp.v2.DataProfileAction.PubSubNotification.event:type_name -> google.privacy.dlp.v2.DataProfileAction.EventType
+	313, // 592: google.privacy.dlp.v2.DataProfileAction.PubSubNotification.pubsub_condition:type_name -> google.privacy.dlp.v2.DataProfilePubSubCondition
+	37,  // 593: google.privacy.dlp.v2.DataProfileAction.PubSubNotification.detail_of_message:type_name -> google.privacy.dlp.v2.DataProfileAction.PubSubNotification.DetailLevel
+	397, // 594: google.privacy.dlp.v2.DataProfileAction.TagResources.tag_conditions:type_name -> google.privacy.dlp.v2.DataProfileAction.TagResources.TagCondition
+	3,   // 595: google.privacy.dlp.v2.DataProfileAction.TagResources.profile_generations_to_tag:type_name -> google.privacy.dlp.v2.ProfileGeneration
+	398, // 596: google.privacy.dlp.v2.DataProfileAction.TagResources.TagCondition.tag:type_name -> google.privacy.dlp.v2.DataProfileAction.TagResources.TagValue
+	427, // 597: google.privacy.dlp.v2.DataProfileAction.TagResources.TagCondition.sensitivity_score:type_name -> google.privacy.dlp.v2.SensitivityScore
+	239, // 598: google.privacy.dlp.v2.DiscoveryConfig.OrgConfig.location:type_name -> google.privacy.dlp.v2.DiscoveryStartingLocation
+	434, // 599: google.privacy.dlp.v2.DiscoveryBigQueryConditions.OrConditions.min_age:type_name -> google.protobuf.Duration
+	41,  // 600: google.privacy.dlp.v2.DiscoveryCloudSqlGenerationCadence.SchemaModifiedCadence.types:type_name -> google.privacy.dlp.v2.DiscoveryCloudSqlGenerationCadence.SchemaModifiedCadence.CloudSqlSchemaModification
+	6,   // 601: google.privacy.dlp.v2.DiscoveryCloudSqlGenerationCadence.SchemaModifiedCadence.frequency:type_name -> google.privacy.dlp.v2.DataProfileUpdateFrequency
+	120, // 602: google.privacy.dlp.v2.FileStoreDataProfile.ResourceAttributesEntry.value:type_name -> google.privacy.dlp.v2.Value
+	53,  // 603: google.privacy.dlp.v2.DataProfilePubSubCondition.PubSubCondition.minimum_risk_score:type_name -> google.privacy.dlp.v2.DataProfilePubSubCondition.ProfileScoreBucket
+	53,  // 604: google.privacy.dlp.v2.DataProfilePubSubCondition.PubSubCondition.minimum_sensitivity_score:type_name -> google.privacy.dlp.v2.DataProfilePubSubCondition.ProfileScoreBucket
+	54,  // 605: google.privacy.dlp.v2.DataProfilePubSubCondition.PubSubExpressions.logical_operator:type_name -> google.privacy.dlp.v2.DataProfilePubSubCondition.PubSubExpressions.PubSubLogicalOperator
+	408, // 606: google.privacy.dlp.v2.DataProfilePubSubCondition.PubSubExpressions.conditions:type_name -> google.privacy.dlp.v2.DataProfilePubSubCondition.PubSubCondition
+	410, // 607: google.privacy.dlp.v2.ProcessingLocation.ImageFallbackLocation.multi_region_processing:type_name -> google.privacy.dlp.v2.ProcessingLocation.MultiRegionProcessing
+	411, // 608: google.privacy.dlp.v2.ProcessingLocation.ImageFallbackLocation.global_processing:type_name -> google.privacy.dlp.v2.ProcessingLocation.GlobalProcessing
+	410, // 609: google.privacy.dlp.v2.ProcessingLocation.DocumentFallbackLocation.multi_region_processing:type_name -> google.privacy.dlp.v2.ProcessingLocation.MultiRegionProcessing
+	411, // 610: google.privacy.dlp.v2.ProcessingLocation.DocumentFallbackLocation.global_processing:type_name -> google.privacy.dlp.v2.ProcessingLocation.GlobalProcessing
+	98,  // 611: google.privacy.dlp.v2.DlpService.InspectContent:input_type -> google.privacy.dlp.v2.InspectContentRequest
+	91,  // 612: google.privacy.dlp.v2.DlpService.RedactImage:input_type -> google.privacy.dlp.v2.RedactImageRequest
+	94,  // 613: google.privacy.dlp.v2.DlpService.DeidentifyContent:input_type -> google.privacy.dlp.v2.DeidentifyContentRequest
+	96,  // 614: google.privacy.dlp.v2.DlpService.ReidentifyContent:input_type -> google.privacy.dlp.v2.ReidentifyContentRequest
+	112, // 615: google.privacy.dlp.v2.DlpService.ListInfoTypes:input_type -> google.privacy.dlp.v2.ListInfoTypesRequest
+	165, // 616: google.privacy.dlp.v2.DlpService.CreateInspectTemplate:input_type -> google.privacy.dlp.v2.CreateInspectTemplateRequest
+	166, // 617: google.privacy.dlp.v2.DlpService.UpdateInspectTemplate:input_type -> google.privacy.dlp.v2.UpdateInspectTemplateRequest
+	167, // 618: google.privacy.dlp.v2.DlpService.GetInspectTemplate:input_type -> google.privacy.dlp.v2.GetInspectTemplateRequest
+	168, // 619: google.privacy.dlp.v2.DlpService.ListInspectTemplates:input_type -> google.privacy.dlp.v2.ListInspectTemplatesRequest
+	170, // 620: google.privacy.dlp.v2.DlpService.DeleteInspectTemplate:input_type -> google.privacy.dlp.v2.DeleteInspectTemplateRequest
+	257, // 621: google.privacy.dlp.v2.DlpService.CreateDeidentifyTemplate:input_type -> google.privacy.dlp.v2.CreateDeidentifyTemplateRequest
+	258, // 622: google.privacy.dlp.v2.DlpService.UpdateDeidentifyTemplate:input_type -> google.privacy.dlp.v2.UpdateDeidentifyTemplateRequest
+	259, // 623: google.privacy.dlp.v2.DlpService.GetDeidentifyTemplate:input_type -> google.privacy.dlp.v2.GetDeidentifyTemplateRequest
+	260, // 624: google.privacy.dlp.v2.DlpService.ListDeidentifyTemplates:input_type -> google.privacy.dlp.v2.ListDeidentifyTemplatesRequest
+	262, // 625: google.privacy.dlp.v2.DlpService.DeleteDeidentifyTemplate:input_type -> google.privacy.dlp.v2.DeleteDeidentifyTemplateRequest
+	171, // 626: google.privacy.dlp.v2.DlpService.CreateJobTrigger:input_type -> google.privacy.dlp.v2.CreateJobTriggerRequest
+	173, // 627: google.privacy.dlp.v2.DlpService.UpdateJobTrigger:input_type -> google.privacy.dlp.v2.UpdateJobTriggerRequest
+	275, // 628: google.privacy.dlp.v2.DlpService.HybridInspectJobTrigger:input_type -> google.privacy.dlp.v2.HybridInspectJobTriggerRequest
+	174, // 629: google.privacy.dlp.v2.DlpService.GetJobTrigger:input_type -> google.privacy.dlp.v2.GetJobTriggerRequest
+	182, // 630: google.privacy.dlp.v2.DlpService.ListJobTriggers:input_type -> google.privacy.dlp.v2.ListJobTriggersRequest
+	184, // 631: google.privacy.dlp.v2.DlpService.DeleteJobTrigger:input_type -> google.privacy.dlp.v2.DeleteJobTriggerRequest
+	172, // 632: google.privacy.dlp.v2.DlpService.ActivateJobTrigger:input_type -> google.privacy.dlp.v2.ActivateJobTriggerRequest
+	175, // 633: google.privacy.dlp.v2.DlpService.CreateDiscoveryConfig:input_type -> google.privacy.dlp.v2.CreateDiscoveryConfigRequest
+	176, // 634: google.privacy.dlp.v2.DlpService.UpdateDiscoveryConfig:input_type -> google.privacy.dlp.v2.UpdateDiscoveryConfigRequest
+	177, // 635: google.privacy.dlp.v2.DlpService.GetDiscoveryConfig:input_type -> google.privacy.dlp.v2.GetDiscoveryConfigRequest
+	178, // 636: google.privacy.dlp.v2.DlpService.ListDiscoveryConfigs:input_type -> google.privacy.dlp.v2.ListDiscoveryConfigsRequest
+	180, // 637: google.privacy.dlp.v2.DlpService.DeleteDiscoveryConfig:input_type -> google.privacy.dlp.v2.DeleteDiscoveryConfigRequest
+	181, // 638: google.privacy.dlp.v2.DlpService.CreateDlpJob:input_type -> google.privacy.dlp.v2.CreateDlpJobRequest
+	252, // 639: google.privacy.dlp.v2.DlpService.ListDlpJobs:input_type -> google.privacy.dlp.v2.ListDlpJobsRequest
+	251, // 640: google.privacy.dlp.v2.DlpService.GetDlpJob:input_type -> google.privacy.dlp.v2.GetDlpJobRequest
+	256, // 641: google.privacy.dlp.v2.DlpService.DeleteDlpJob:input_type -> google.privacy.dlp.v2.DeleteDlpJobRequest
+	254, // 642: google.privacy.dlp.v2.DlpService.CancelDlpJob:input_type -> google.privacy.dlp.v2.CancelDlpJobRequest
+	269, // 643: google.privacy.dlp.v2.DlpService.CreateStoredInfoType:input_type -> google.privacy.dlp.v2.CreateStoredInfoTypeRequest
+	270, // 644: google.privacy.dlp.v2.DlpService.UpdateStoredInfoType:input_type -> google.privacy.dlp.v2.UpdateStoredInfoTypeRequest
+	271, // 645: google.privacy.dlp.v2.DlpService.GetStoredInfoType:input_type -> google.privacy.dlp.v2.GetStoredInfoTypeRequest
+	272, // 646: google.privacy.dlp.v2.DlpService.ListStoredInfoTypes:input_type -> google.privacy.dlp.v2.ListStoredInfoTypesRequest
+	274, // 647: google.privacy.dlp.v2.DlpService.DeleteStoredInfoType:input_type -> google.privacy.dlp.v2.DeleteStoredInfoTypeRequest
+	284, // 648: google.privacy.dlp.v2.DlpService.ListProjectDataProfiles:input_type -> google.privacy.dlp.v2.ListProjectDataProfilesRequest
+	286, // 649: google.privacy.dlp.v2.DlpService.ListTableDataProfiles:input_type -> google.privacy.dlp.v2.ListTableDataProfilesRequest
+	288, // 650: google.privacy.dlp.v2.DlpService.ListColumnDataProfiles:input_type -> google.privacy.dlp.v2.ListColumnDataProfilesRequest
+	306, // 651: google.privacy.dlp.v2.DlpService.GetProjectDataProfile:input_type -> google.privacy.dlp.v2.GetProjectDataProfileRequest
+	308, // 652: google.privacy.dlp.v2.DlpService.ListFileStoreDataProfiles:input_type -> google.privacy.dlp.v2.ListFileStoreDataProfilesRequest
+	307, // 653: google.privacy.dlp.v2.DlpService.GetFileStoreDataProfile:input_type -> google.privacy.dlp.v2.GetFileStoreDataProfileRequest
+	310, // 654: google.privacy.dlp.v2.DlpService.DeleteFileStoreDataProfile:input_type -> google.privacy.dlp.v2.DeleteFileStoreDataProfileRequest
+	311, // 655: google.privacy.dlp.v2.DlpService.GetTableDataProfile:input_type -> google.privacy.dlp.v2.GetTableDataProfileRequest
+	312, // 656: google.privacy.dlp.v2.DlpService.GetColumnDataProfile:input_type -> google.privacy.dlp.v2.GetColumnDataProfileRequest
+	327, // 657: google.privacy.dlp.v2.DlpService.DeleteTableDataProfile:input_type -> google.privacy.dlp.v2.DeleteTableDataProfileRequest
+	276, // 658: google.privacy.dlp.v2.DlpService.HybridInspectDlpJob:input_type -> google.privacy.dlp.v2.HybridInspectDlpJobRequest
+	255, // 659: google.privacy.dlp.v2.DlpService.FinishDlpJob:input_type -> google.privacy.dlp.v2.FinishDlpJobRequest
+	315, // 660: google.privacy.dlp.v2.DlpService.CreateConnection:input_type -> google.privacy.dlp.v2.CreateConnectionRequest
+	316, // 661: google.privacy.dlp.v2.DlpService.GetConnection:input_type -> google.privacy.dlp.v2.GetConnectionRequest
+	317, // 662: google.privacy.dlp.v2.DlpService.ListConnections:input_type -> google.privacy.dlp.v2.ListConnectionsRequest
+	318, // 663: google.privacy.dlp.v2.DlpService.SearchConnections:input_type -> google.privacy.dlp.v2.SearchConnectionsRequest
+	322, // 664: google.privacy.dlp.v2.DlpService.DeleteConnection:input_type -> google.privacy.dlp.v2.DeleteConnectionRequest
+	321, // 665: google.privacy.dlp.v2.DlpService.UpdateConnection:input_type -> google.privacy.dlp.v2.UpdateConnectionRequest
+	99,  // 666: google.privacy.dlp.v2.DlpService.InspectContent:output_type -> google.privacy.dlp.v2.InspectContentResponse
+	93,  // 667: google.privacy.dlp.v2.DlpService.RedactImage:output_type -> google.privacy.dlp.v2.RedactImageResponse
+	95,  // 668: google.privacy.dlp.v2.DlpService.DeidentifyContent:output_type -> google.privacy.dlp.v2.DeidentifyContentResponse
+	97,  // 669: google.privacy.dlp.v2.DlpService.ReidentifyContent:output_type -> google.privacy.dlp.v2.ReidentifyContentResponse
+	113, // 670: google.privacy.dlp.v2.DlpService.ListInfoTypes:output_type -> google.privacy.dlp.v2.ListInfoTypesResponse
+	159, // 671: google.privacy.dlp.v2.DlpService.CreateInspectTemplate:output_type -> google.privacy.dlp.v2.InspectTemplate
+	159, // 672: google.privacy.dlp.v2.DlpService.UpdateInspectTemplate:output_type -> google.privacy.dlp.v2.InspectTemplate
+	159, // 673: google.privacy.dlp.v2.DlpService.GetInspectTemplate:output_type -> google.privacy.dlp.v2.InspectTemplate
+	169, // 674: google.privacy.dlp.v2.DlpService.ListInspectTemplates:output_type -> google.privacy.dlp.v2.ListInspectTemplatesResponse
+	428, // 675: google.privacy.dlp.v2.DlpService.DeleteInspectTemplate:output_type -> google.protobuf.Empty
+	160, // 676: google.privacy.dlp.v2.DlpService.CreateDeidentifyTemplate:output_type -> google.privacy.dlp.v2.DeidentifyTemplate
+	160, // 677: google.privacy.dlp.v2.DlpService.UpdateDeidentifyTemplate:output_type -> google.privacy.dlp.v2.DeidentifyTemplate
+	160, // 678: google.privacy.dlp.v2.DlpService.GetDeidentifyTemplate:output_type -> google.privacy.dlp.v2.DeidentifyTemplate
+	261, // 679: google.privacy.dlp.v2.DlpService.ListDeidentifyTemplates:output_type -> google.privacy.dlp.v2.ListDeidentifyTemplatesResponse
+	428, // 680: google.privacy.dlp.v2.DlpService.DeleteDeidentifyTemplate:output_type -> google.protobuf.Empty
+	162, // 681: google.privacy.dlp.v2.DlpService.CreateJobTrigger:output_type -> google.privacy.dlp.v2.JobTrigger
+	162, // 682: google.privacy.dlp.v2.DlpService.UpdateJobTrigger:output_type -> google.privacy.dlp.v2.JobTrigger
+	279, // 683: google.privacy.dlp.v2.DlpService.HybridInspectJobTrigger:output_type -> google.privacy.dlp.v2.HybridInspectResponse
+	162, // 684: google.privacy.dlp.v2.DlpService.GetJobTrigger:output_type -> google.privacy.dlp.v2.JobTrigger
+	183, // 685: google.privacy.dlp.v2.DlpService.ListJobTriggers:output_type -> google.privacy.dlp.v2.ListJobTriggersResponse
+	428, // 686: google.privacy.dlp.v2.DlpService.DeleteJobTrigger:output_type -> google.protobuf.Empty
+	250, // 687: google.privacy.dlp.v2.DlpService.ActivateJobTrigger:output_type -> google.privacy.dlp.v2.DlpJob
+	196, // 688: google.privacy.dlp.v2.DlpService.CreateDiscoveryConfig:output_type -> google.privacy.dlp.v2.DiscoveryConfig
+	196, // 689: google.privacy.dlp.v2.DlpService.UpdateDiscoveryConfig:output_type -> google.privacy.dlp.v2.DiscoveryConfig
+	196, // 690: google.privacy.dlp.v2.DlpService.GetDiscoveryConfig:output_type -> google.privacy.dlp.v2.DiscoveryConfig
+	179, // 691: google.privacy.dlp.v2.DlpService.ListDiscoveryConfigs:output_type -> google.privacy.dlp.v2.ListDiscoveryConfigsResponse
+	428, // 692: google.privacy.dlp.v2.DlpService.DeleteDiscoveryConfig:output_type -> google.protobuf.Empty
+	250, // 693: google.privacy.dlp.v2.DlpService.CreateDlpJob:output_type -> google.privacy.dlp.v2.DlpJob
+	253, // 694: google.privacy.dlp.v2.DlpService.ListDlpJobs:output_type -> google.privacy.dlp.v2.ListDlpJobsResponse
+	250, // 695: google.privacy.dlp.v2.DlpService.GetDlpJob:output_type -> google.privacy.dlp.v2.DlpJob
+	428, // 696: google.privacy.dlp.v2.DlpService.DeleteDlpJob:output_type -> google.protobuf.Empty
+	428, // 697: google.privacy.dlp.v2.DlpService.CancelDlpJob:output_type -> google.protobuf.Empty
+	268, // 698: google.privacy.dlp.v2.DlpService.CreateStoredInfoType:output_type -> google.privacy.dlp.v2.StoredInfoType
+	268, // 699: google.privacy.dlp.v2.DlpService.UpdateStoredInfoType:output_type -> google.privacy.dlp.v2.StoredInfoType
+	268, // 700: google.privacy.dlp.v2.DlpService.GetStoredInfoType:output_type -> google.privacy.dlp.v2.StoredInfoType
+	273, // 701: google.privacy.dlp.v2.DlpService.ListStoredInfoTypes:output_type -> google.privacy.dlp.v2.ListStoredInfoTypesResponse
+	428, // 702: google.privacy.dlp.v2.DlpService.DeleteStoredInfoType:output_type -> google.protobuf.Empty
+	285, // 703: google.privacy.dlp.v2.DlpService.ListProjectDataProfiles:output_type -> google.privacy.dlp.v2.ListProjectDataProfilesResponse
+	287, // 704: google.privacy.dlp.v2.DlpService.ListTableDataProfiles:output_type -> google.privacy.dlp.v2.ListTableDataProfilesResponse
+	289, // 705: google.privacy.dlp.v2.DlpService.ListColumnDataProfiles:output_type -> google.privacy.dlp.v2.ListColumnDataProfilesResponse
+	291, // 706: google.privacy.dlp.v2.DlpService.GetProjectDataProfile:output_type -> google.privacy.dlp.v2.ProjectDataProfile
+	309, // 707: google.privacy.dlp.v2.DlpService.ListFileStoreDataProfiles:output_type -> google.privacy.dlp.v2.ListFileStoreDataProfilesResponse
+	298, // 708: google.privacy.dlp.v2.DlpService.GetFileStoreDataProfile:output_type -> google.privacy.dlp.v2.FileStoreDataProfile
+	428, // 709: google.privacy.dlp.v2.DlpService.DeleteFileStoreDataProfile:output_type -> google.protobuf.Empty
+	293, // 710: google.privacy.dlp.v2.DlpService.GetTableDataProfile:output_type -> google.privacy.dlp.v2.TableDataProfile
+	297, // 711: google.privacy.dlp.v2.DlpService.GetColumnDataProfile:output_type -> google.privacy.dlp.v2.ColumnDataProfile
+	428, // 712: google.privacy.dlp.v2.DlpService.DeleteTableDataProfile:output_type -> google.protobuf.Empty
+	279, // 713: google.privacy.dlp.v2.DlpService.HybridInspectDlpJob:output_type -> google.privacy.dlp.v2.HybridInspectResponse
+	428, // 714: google.privacy.dlp.v2.DlpService.FinishDlpJob:output_type -> google.protobuf.Empty
+	323, // 715: google.privacy.dlp.v2.DlpService.CreateConnection:output_type -> google.privacy.dlp.v2.Connection
+	323, // 716: google.privacy.dlp.v2.DlpService.GetConnection:output_type -> google.privacy.dlp.v2.Connection
+	319, // 717: google.privacy.dlp.v2.DlpService.ListConnections:output_type -> google.privacy.dlp.v2.ListConnectionsResponse
+	320, // 718: google.privacy.dlp.v2.DlpService.SearchConnections:output_type -> google.privacy.dlp.v2.SearchConnectionsResponse
+	428, // 719: google.privacy.dlp.v2.DlpService.DeleteConnection:output_type -> google.protobuf.Empty
+	323, // 720: google.privacy.dlp.v2.DlpService.UpdateConnection:output_type -> google.privacy.dlp.v2.Connection
+	666, // [666:721] is the sub-list for method output_type
+	611, // [611:666] is the sub-list for method input_type
+	611, // [611:611] is the sub-list for extension type_name
+	611, // [611:611] is the sub-list for extension extendee
+	0,   // [0:611] is the sub-list for field type_name
 }
 
 func init() { file_google_privacy_dlp_v2_dlp_proto_init() }
@@ -33964,40 +34330,46 @@ func file_google_privacy_dlp_v2_dlp_proto_init() {
 		(*ContentItem_Value)(nil),
 		(*ContentItem_Table)(nil),
 		(*ContentItem_ByteItem)(nil),
+		(*ContentItem_Conversation)(nil),
 	}
-	file_google_privacy_dlp_v2_dlp_proto_msgTypes[18].OneofWrappers = []any{
+	file_google_privacy_dlp_v2_dlp_proto_msgTypes[20].OneofWrappers = []any{
 		(*ContentLocation_RecordLocation)(nil),
 		(*ContentLocation_ImageLocation)(nil),
 		(*ContentLocation_DocumentLocation)(nil),
 		(*ContentLocation_MetadataLocation)(nil),
+		(*ContentLocation_ConversationLocation)(nil),
 	}
-	file_google_privacy_dlp_v2_dlp_proto_msgTypes[19].OneofWrappers = []any{
+	file_google_privacy_dlp_v2_dlp_proto_msgTypes[21].OneofWrappers = []any{
+		(*ConversationLocation_MessageIndex)(nil),
+		(*ConversationLocation_AllMessages_)(nil),
+	}
+	file_google_privacy_dlp_v2_dlp_proto_msgTypes[22].OneofWrappers = []any{
 		(*MetadataLocation_StorageLabel)(nil),
 		(*MetadataLocation_KeyValueMetadataLabel)(nil),
 	}
-	file_google_privacy_dlp_v2_dlp_proto_msgTypes[38].OneofWrappers = []any{
+	file_google_privacy_dlp_v2_dlp_proto_msgTypes[41].OneofWrappers = []any{
 		(*OutputStorageConfig_Table)(nil),
 		(*OutputStorageConfig_StoragePath)(nil),
 	}
-	file_google_privacy_dlp_v2_dlp_proto_msgTypes[41].OneofWrappers = []any{
+	file_google_privacy_dlp_v2_dlp_proto_msgTypes[44].OneofWrappers = []any{
 		(*DataProfileBigQueryRowSchema_TableProfile)(nil),
 		(*DataProfileBigQueryRowSchema_ColumnProfile)(nil),
 		(*DataProfileBigQueryRowSchema_FileStoreProfile)(nil),
 	}
-	file_google_privacy_dlp_v2_dlp_proto_msgTypes[43].OneofWrappers = []any{
+	file_google_privacy_dlp_v2_dlp_proto_msgTypes[46].OneofWrappers = []any{
 		(*ActionDetails_DeidentifyDetails)(nil),
 	}
-	file_google_privacy_dlp_v2_dlp_proto_msgTypes[48].OneofWrappers = []any{
+	file_google_privacy_dlp_v2_dlp_proto_msgTypes[51].OneofWrappers = []any{
 		(*InfoTypeCategory_LocationCategory_)(nil),
 		(*InfoTypeCategory_IndustryCategory_)(nil),
 		(*InfoTypeCategory_TypeCategory_)(nil),
 	}
-	file_google_privacy_dlp_v2_dlp_proto_msgTypes[53].OneofWrappers = []any{
+	file_google_privacy_dlp_v2_dlp_proto_msgTypes[56].OneofWrappers = []any{
 		(*QuasiId_InfoType)(nil),
 		(*QuasiId_CustomTag)(nil),
 		(*QuasiId_Inferred)(nil),
 	}
-	file_google_privacy_dlp_v2_dlp_proto_msgTypes[55].OneofWrappers = []any{
+	file_google_privacy_dlp_v2_dlp_proto_msgTypes[58].OneofWrappers = []any{
 		(*PrivacyMetric_NumericalStatsConfig_)(nil),
 		(*PrivacyMetric_CategoricalStatsConfig_)(nil),
 		(*PrivacyMetric_KAnonymityConfig_)(nil),
@@ -34005,7 +34377,7 @@ func file_google_privacy_dlp_v2_dlp_proto_init() {
 		(*PrivacyMetric_KMapEstimationConfig_)(nil),
 		(*PrivacyMetric_DeltaPresenceEstimationConfig_)(nil),
 	}
-	file_google_privacy_dlp_v2_dlp_proto_msgTypes[56].OneofWrappers = []any{
+	file_google_privacy_dlp_v2_dlp_proto_msgTypes[59].OneofWrappers = []any{
 		(*AnalyzeDataSourceRiskDetails_NumericalStatsResult_)(nil),
 		(*AnalyzeDataSourceRiskDetails_CategoricalStatsResult_)(nil),
 		(*AnalyzeDataSourceRiskDetails_KAnonymityResult_)(nil),
@@ -34013,7 +34385,7 @@ func file_google_privacy_dlp_v2_dlp_proto_init() {
 		(*AnalyzeDataSourceRiskDetails_KMapEstimationResult_)(nil),
 		(*AnalyzeDataSourceRiskDetails_DeltaPresenceEstimationResult_)(nil),
 	}
-	file_google_privacy_dlp_v2_dlp_proto_msgTypes[58].OneofWrappers = []any{
+	file_google_privacy_dlp_v2_dlp_proto_msgTypes[61].OneofWrappers = []any{
 		(*Value_IntegerValue)(nil),
 		(*Value_FloatValue)(nil),
 		(*Value_StringValue)(nil),
@@ -34023,19 +34395,19 @@ func file_google_privacy_dlp_v2_dlp_proto_init() {
 		(*Value_DateValue)(nil),
 		(*Value_DayOfWeekValue)(nil),
 	}
-	file_google_privacy_dlp_v2_dlp_proto_msgTypes[59].OneofWrappers = []any{
+	file_google_privacy_dlp_v2_dlp_proto_msgTypes[62].OneofWrappers = []any{
 		(*QuoteInfo_DateTime)(nil),
 	}
-	file_google_privacy_dlp_v2_dlp_proto_msgTypes[61].OneofWrappers = []any{
+	file_google_privacy_dlp_v2_dlp_proto_msgTypes[64].OneofWrappers = []any{
 		(*DeidentifyConfig_InfoTypeTransformations)(nil),
 		(*DeidentifyConfig_RecordTransformations)(nil),
 		(*DeidentifyConfig_ImageTransformations)(nil),
 	}
-	file_google_privacy_dlp_v2_dlp_proto_msgTypes[63].OneofWrappers = []any{
+	file_google_privacy_dlp_v2_dlp_proto_msgTypes[66].OneofWrappers = []any{
 		(*TransformationErrorHandling_ThrowError_)(nil),
 		(*TransformationErrorHandling_LeaveUntransformed_)(nil),
 	}
-	file_google_privacy_dlp_v2_dlp_proto_msgTypes[64].OneofWrappers = []any{
+	file_google_privacy_dlp_v2_dlp_proto_msgTypes[67].OneofWrappers = []any{
 		(*PrimitiveTransformation_ReplaceConfig)(nil),
 		(*PrimitiveTransformation_RedactConfig)(nil),
 		(*PrimitiveTransformation_CharacterMaskConfig)(nil),
@@ -34049,44 +34421,44 @@ func file_google_privacy_dlp_v2_dlp_proto_init() {
 		(*PrimitiveTransformation_CryptoDeterministicConfig)(nil),
 		(*PrimitiveTransformation_ReplaceDictionaryConfig)(nil),
 	}
-	file_google_privacy_dlp_v2_dlp_proto_msgTypes[69].OneofWrappers = []any{
+	file_google_privacy_dlp_v2_dlp_proto_msgTypes[72].OneofWrappers = []any{
 		(*ReplaceDictionaryConfig_WordList)(nil),
 	}
-	file_google_privacy_dlp_v2_dlp_proto_msgTypes[72].OneofWrappers = []any{
+	file_google_privacy_dlp_v2_dlp_proto_msgTypes[75].OneofWrappers = []any{
 		(*CharsToIgnore_CharactersToSkip)(nil),
 		(*CharsToIgnore_CommonCharactersToIgnore)(nil),
 	}
-	file_google_privacy_dlp_v2_dlp_proto_msgTypes[76].OneofWrappers = []any{
+	file_google_privacy_dlp_v2_dlp_proto_msgTypes[79].OneofWrappers = []any{
 		(*CryptoReplaceFfxFpeConfig_CommonAlphabet)(nil),
 		(*CryptoReplaceFfxFpeConfig_CustomAlphabet)(nil),
 		(*CryptoReplaceFfxFpeConfig_Radix)(nil),
 	}
-	file_google_privacy_dlp_v2_dlp_proto_msgTypes[77].OneofWrappers = []any{
+	file_google_privacy_dlp_v2_dlp_proto_msgTypes[80].OneofWrappers = []any{
 		(*CryptoKey_Transient)(nil),
 		(*CryptoKey_Unwrapped)(nil),
 		(*CryptoKey_KmsWrapped)(nil),
 	}
-	file_google_privacy_dlp_v2_dlp_proto_msgTypes[81].OneofWrappers = []any{
+	file_google_privacy_dlp_v2_dlp_proto_msgTypes[84].OneofWrappers = []any{
 		(*DateShiftConfig_CryptoKey)(nil),
 	}
-	file_google_privacy_dlp_v2_dlp_proto_msgTypes[83].OneofWrappers = []any{
+	file_google_privacy_dlp_v2_dlp_proto_msgTypes[86].OneofWrappers = []any{
 		(*FieldTransformation_PrimitiveTransformation)(nil),
 		(*FieldTransformation_InfoTypeTransformations)(nil),
 	}
-	file_google_privacy_dlp_v2_dlp_proto_msgTypes[91].OneofWrappers = []any{
+	file_google_privacy_dlp_v2_dlp_proto_msgTypes[94].OneofWrappers = []any{
 		(*TransformationLocation_FindingId)(nil),
 		(*TransformationLocation_RecordTransformation)(nil),
 	}
-	file_google_privacy_dlp_v2_dlp_proto_msgTypes[94].OneofWrappers = []any{
+	file_google_privacy_dlp_v2_dlp_proto_msgTypes[97].OneofWrappers = []any{
 		(*TransformationDetailsStorageConfig_Table)(nil),
 	}
-	file_google_privacy_dlp_v2_dlp_proto_msgTypes[95].OneofWrappers = []any{
+	file_google_privacy_dlp_v2_dlp_proto_msgTypes[98].OneofWrappers = []any{
 		(*Schedule_RecurrencePeriodDuration)(nil),
 	}
-	file_google_privacy_dlp_v2_dlp_proto_msgTypes[100].OneofWrappers = []any{
+	file_google_privacy_dlp_v2_dlp_proto_msgTypes[103].OneofWrappers = []any{
 		(*JobTrigger_InspectJob)(nil),
 	}
-	file_google_privacy_dlp_v2_dlp_proto_msgTypes[101].OneofWrappers = []any{
+	file_google_privacy_dlp_v2_dlp_proto_msgTypes[104].OneofWrappers = []any{
 		(*Action_SaveFindings_)(nil),
 		(*Action_PubSub)(nil),
 		(*Action_PublishSummaryToCscc_)(nil),
@@ -34096,11 +34468,11 @@ func file_google_privacy_dlp_v2_dlp_proto_init() {
 		(*Action_JobNotificationEmails_)(nil),
 		(*Action_PublishToStackdriver_)(nil),
 	}
-	file_google_privacy_dlp_v2_dlp_proto_msgTypes[119].OneofWrappers = []any{
+	file_google_privacy_dlp_v2_dlp_proto_msgTypes[122].OneofWrappers = []any{
 		(*CreateDlpJobRequest_InspectJob)(nil),
 		(*CreateDlpJobRequest_RiskJob)(nil),
 	}
-	file_google_privacy_dlp_v2_dlp_proto_msgTypes[124].OneofWrappers = []any{
+	file_google_privacy_dlp_v2_dlp_proto_msgTypes[127].OneofWrappers = []any{
 		(*DataProfileAction_ExportData)(nil),
 		(*DataProfileAction_PubSubNotification_)(nil),
 		(*DataProfileAction_PublishToChronicle_)(nil),
@@ -34108,14 +34480,14 @@ func file_google_privacy_dlp_v2_dlp_proto_init() {
 		(*DataProfileAction_TagResources_)(nil),
 		(*DataProfileAction_PublishToDataplexCatalog_)(nil),
 	}
-	file_google_privacy_dlp_v2_dlp_proto_msgTypes[126].OneofWrappers = []any{
+	file_google_privacy_dlp_v2_dlp_proto_msgTypes[129].OneofWrappers = []any{
 		(*DataProfileFindingLocation_DataProfileFindingRecordLocation)(nil),
 	}
-	file_google_privacy_dlp_v2_dlp_proto_msgTypes[133].OneofWrappers = []any{
+	file_google_privacy_dlp_v2_dlp_proto_msgTypes[136].OneofWrappers = []any{
 		(*DataProfileLocation_OrganizationId)(nil),
 		(*DataProfileLocation_FolderId)(nil),
 	}
-	file_google_privacy_dlp_v2_dlp_proto_msgTypes[135].OneofWrappers = []any{
+	file_google_privacy_dlp_v2_dlp_proto_msgTypes[138].OneofWrappers = []any{
 		(*DiscoveryTarget_BigQueryTarget)(nil),
 		(*DiscoveryTarget_CloudSqlTarget)(nil),
 		(*DiscoveryTarget_SecretsTarget)(nil),
@@ -34123,162 +34495,162 @@ func file_google_privacy_dlp_v2_dlp_proto_init() {
 		(*DiscoveryTarget_OtherCloudTarget)(nil),
 		(*DiscoveryTarget_VertexDatasetTarget)(nil),
 	}
-	file_google_privacy_dlp_v2_dlp_proto_msgTypes[136].OneofWrappers = []any{
+	file_google_privacy_dlp_v2_dlp_proto_msgTypes[139].OneofWrappers = []any{
 		(*BigQueryDiscoveryTarget_Cadence)(nil),
 		(*BigQueryDiscoveryTarget_Disabled)(nil),
 	}
-	file_google_privacy_dlp_v2_dlp_proto_msgTypes[137].OneofWrappers = []any{
+	file_google_privacy_dlp_v2_dlp_proto_msgTypes[140].OneofWrappers = []any{
 		(*DiscoveryBigQueryFilter_Tables)(nil),
 		(*DiscoveryBigQueryFilter_OtherTables)(nil),
 		(*DiscoveryBigQueryFilter_TableReference)(nil),
 	}
-	file_google_privacy_dlp_v2_dlp_proto_msgTypes[138].OneofWrappers = []any{
+	file_google_privacy_dlp_v2_dlp_proto_msgTypes[141].OneofWrappers = []any{
 		(*BigQueryTableCollection_IncludeRegexes)(nil),
 	}
-	file_google_privacy_dlp_v2_dlp_proto_msgTypes[139].OneofWrappers = []any{
+	file_google_privacy_dlp_v2_dlp_proto_msgTypes[142].OneofWrappers = []any{
 		(*DiscoveryBigQueryConditions_Types)(nil),
 		(*DiscoveryBigQueryConditions_TypeCollection)(nil),
 	}
-	file_google_privacy_dlp_v2_dlp_proto_msgTypes[144].OneofWrappers = []any{
+	file_google_privacy_dlp_v2_dlp_proto_msgTypes[147].OneofWrappers = []any{
 		(*CloudSqlDiscoveryTarget_GenerationCadence)(nil),
 		(*CloudSqlDiscoveryTarget_Disabled)(nil),
 	}
-	file_google_privacy_dlp_v2_dlp_proto_msgTypes[145].OneofWrappers = []any{
+	file_google_privacy_dlp_v2_dlp_proto_msgTypes[148].OneofWrappers = []any{
 		(*DiscoveryCloudSqlFilter_Collection)(nil),
 		(*DiscoveryCloudSqlFilter_Others)(nil),
 		(*DiscoveryCloudSqlFilter_DatabaseResourceReference)(nil),
 	}
-	file_google_privacy_dlp_v2_dlp_proto_msgTypes[146].OneofWrappers = []any{
+	file_google_privacy_dlp_v2_dlp_proto_msgTypes[149].OneofWrappers = []any{
 		(*DatabaseResourceCollection_IncludeRegexes)(nil),
 	}
-	file_google_privacy_dlp_v2_dlp_proto_msgTypes[154].OneofWrappers = []any{
+	file_google_privacy_dlp_v2_dlp_proto_msgTypes[157].OneofWrappers = []any{
 		(*CloudStorageDiscoveryTarget_GenerationCadence)(nil),
 		(*CloudStorageDiscoveryTarget_Disabled)(nil),
 	}
-	file_google_privacy_dlp_v2_dlp_proto_msgTypes[155].OneofWrappers = []any{
+	file_google_privacy_dlp_v2_dlp_proto_msgTypes[158].OneofWrappers = []any{
 		(*DiscoveryCloudStorageFilter_Collection)(nil),
 		(*DiscoveryCloudStorageFilter_CloudStorageResourceReference)(nil),
 		(*DiscoveryCloudStorageFilter_Others)(nil),
 	}
-	file_google_privacy_dlp_v2_dlp_proto_msgTypes[156].OneofWrappers = []any{
+	file_google_privacy_dlp_v2_dlp_proto_msgTypes[159].OneofWrappers = []any{
 		(*FileStoreCollection_IncludeRegexes)(nil),
 	}
-	file_google_privacy_dlp_v2_dlp_proto_msgTypes[158].OneofWrappers = []any{
+	file_google_privacy_dlp_v2_dlp_proto_msgTypes[161].OneofWrappers = []any{
 		(*FileStoreRegex_CloudStorageRegex)(nil),
 	}
-	file_google_privacy_dlp_v2_dlp_proto_msgTypes[163].OneofWrappers = []any{
+	file_google_privacy_dlp_v2_dlp_proto_msgTypes[166].OneofWrappers = []any{
 		(*DiscoveryFileStoreConditions_CloudStorageConditions)(nil),
 	}
-	file_google_privacy_dlp_v2_dlp_proto_msgTypes[164].OneofWrappers = []any{
+	file_google_privacy_dlp_v2_dlp_proto_msgTypes[167].OneofWrappers = []any{
 		(*OtherCloudDiscoveryTarget_GenerationCadence)(nil),
 		(*OtherCloudDiscoveryTarget_Disabled)(nil),
 	}
-	file_google_privacy_dlp_v2_dlp_proto_msgTypes[165].OneofWrappers = []any{
+	file_google_privacy_dlp_v2_dlp_proto_msgTypes[168].OneofWrappers = []any{
 		(*DiscoveryOtherCloudFilter_Collection)(nil),
 		(*DiscoveryOtherCloudFilter_SingleResource)(nil),
 		(*DiscoveryOtherCloudFilter_Others)(nil),
 	}
-	file_google_privacy_dlp_v2_dlp_proto_msgTypes[166].OneofWrappers = []any{
+	file_google_privacy_dlp_v2_dlp_proto_msgTypes[169].OneofWrappers = []any{
 		(*OtherCloudResourceCollection_IncludeRegexes)(nil),
 	}
-	file_google_privacy_dlp_v2_dlp_proto_msgTypes[168].OneofWrappers = []any{
+	file_google_privacy_dlp_v2_dlp_proto_msgTypes[171].OneofWrappers = []any{
 		(*OtherCloudResourceRegex_AmazonS3BucketRegex)(nil),
 	}
-	file_google_privacy_dlp_v2_dlp_proto_msgTypes[171].OneofWrappers = []any{
+	file_google_privacy_dlp_v2_dlp_proto_msgTypes[174].OneofWrappers = []any{
 		(*OtherCloudSingleResourceReference_AmazonS3Bucket)(nil),
 	}
-	file_google_privacy_dlp_v2_dlp_proto_msgTypes[174].OneofWrappers = []any{
+	file_google_privacy_dlp_v2_dlp_proto_msgTypes[177].OneofWrappers = []any{
 		(*DiscoveryOtherCloudConditions_AmazonS3BucketConditions)(nil),
 	}
-	file_google_privacy_dlp_v2_dlp_proto_msgTypes[177].OneofWrappers = []any{
+	file_google_privacy_dlp_v2_dlp_proto_msgTypes[180].OneofWrappers = []any{
 		(*DiscoveryStartingLocation_OrganizationId)(nil),
 		(*DiscoveryStartingLocation_FolderId)(nil),
 	}
-	file_google_privacy_dlp_v2_dlp_proto_msgTypes[178].OneofWrappers = []any{
+	file_google_privacy_dlp_v2_dlp_proto_msgTypes[181].OneofWrappers = []any{
 		(*OtherCloudDiscoveryStartingLocation_AwsLocation)(nil),
 	}
-	file_google_privacy_dlp_v2_dlp_proto_msgTypes[180].OneofWrappers = []any{
+	file_google_privacy_dlp_v2_dlp_proto_msgTypes[183].OneofWrappers = []any{
 		(*VertexDatasetDiscoveryTarget_GenerationCadence)(nil),
 		(*VertexDatasetDiscoveryTarget_Disabled)(nil),
 	}
-	file_google_privacy_dlp_v2_dlp_proto_msgTypes[181].OneofWrappers = []any{
+	file_google_privacy_dlp_v2_dlp_proto_msgTypes[184].OneofWrappers = []any{
 		(*DiscoveryVertexDatasetFilter_Collection)(nil),
 		(*DiscoveryVertexDatasetFilter_VertexDatasetResourceReference)(nil),
 		(*DiscoveryVertexDatasetFilter_Others)(nil),
 	}
-	file_google_privacy_dlp_v2_dlp_proto_msgTypes[182].OneofWrappers = []any{
+	file_google_privacy_dlp_v2_dlp_proto_msgTypes[185].OneofWrappers = []any{
 		(*VertexDatasetCollection_VertexDatasetRegexes)(nil),
 	}
-	file_google_privacy_dlp_v2_dlp_proto_msgTypes[188].OneofWrappers = []any{
+	file_google_privacy_dlp_v2_dlp_proto_msgTypes[191].OneofWrappers = []any{
 		(*DlpJob_RiskDetails)(nil),
 		(*DlpJob_InspectDetails)(nil),
 	}
-	file_google_privacy_dlp_v2_dlp_proto_msgTypes[201].OneofWrappers = []any{
+	file_google_privacy_dlp_v2_dlp_proto_msgTypes[204].OneofWrappers = []any{
 		(*LargeCustomDictionaryConfig_CloudStorageFileSet)(nil),
 		(*LargeCustomDictionaryConfig_BigQueryField)(nil),
 	}
-	file_google_privacy_dlp_v2_dlp_proto_msgTypes[203].OneofWrappers = []any{
+	file_google_privacy_dlp_v2_dlp_proto_msgTypes[206].OneofWrappers = []any{
 		(*StoredInfoTypeConfig_LargeCustomDictionary)(nil),
 		(*StoredInfoTypeConfig_Dictionary)(nil),
 		(*StoredInfoTypeConfig_Regex)(nil),
 	}
-	file_google_privacy_dlp_v2_dlp_proto_msgTypes[204].OneofWrappers = []any{
+	file_google_privacy_dlp_v2_dlp_proto_msgTypes[207].OneofWrappers = []any{
 		(*StoredInfoTypeStats_LargeCustomDictionary)(nil),
 	}
-	file_google_privacy_dlp_v2_dlp_proto_msgTypes[218].OneofWrappers = []any{
+	file_google_privacy_dlp_v2_dlp_proto_msgTypes[221].OneofWrappers = []any{
 		(*ImageContainmentType_Encloses)(nil),
 		(*ImageContainmentType_FullyInside)(nil),
 		(*ImageContainmentType_Overlaps)(nil),
 	}
-	file_google_privacy_dlp_v2_dlp_proto_msgTypes[239].OneofWrappers = []any{
+	file_google_privacy_dlp_v2_dlp_proto_msgTypes[242].OneofWrappers = []any{
 		(*TagFilter_NamespacedTagValue)(nil),
 		(*TagFilter_NamespacedTagKey)(nil),
 	}
-	file_google_privacy_dlp_v2_dlp_proto_msgTypes[261].OneofWrappers = []any{
+	file_google_privacy_dlp_v2_dlp_proto_msgTypes[264].OneofWrappers = []any{
 		(*Connection_CloudSql)(nil),
 	}
-	file_google_privacy_dlp_v2_dlp_proto_msgTypes[264].OneofWrappers = []any{
+	file_google_privacy_dlp_v2_dlp_proto_msgTypes[267].OneofWrappers = []any{
 		(*CloudSqlProperties_UsernamePassword)(nil),
 		(*CloudSqlProperties_CloudSqlIam)(nil),
 	}
-	file_google_privacy_dlp_v2_dlp_proto_msgTypes[267].OneofWrappers = []any{
+	file_google_privacy_dlp_v2_dlp_proto_msgTypes[270].OneofWrappers = []any{
 		(*FileClusterType_Cluster_)(nil),
 	}
-	file_google_privacy_dlp_v2_dlp_proto_msgTypes[276].OneofWrappers = []any{
+	file_google_privacy_dlp_v2_dlp_proto_msgTypes[280].OneofWrappers = []any{
 		(*RedactImageRequest_ImageRedactionConfig_InfoType)(nil),
 		(*RedactImageRequest_ImageRedactionConfig_RedactAllText)(nil),
 	}
-	file_google_privacy_dlp_v2_dlp_proto_msgTypes[287].OneofWrappers = []any{
+	file_google_privacy_dlp_v2_dlp_proto_msgTypes[291].OneofWrappers = []any{
 		(*PrivacyMetric_KMapEstimationConfig_TaggedField_InfoType)(nil),
 		(*PrivacyMetric_KMapEstimationConfig_TaggedField_CustomTag)(nil),
 		(*PrivacyMetric_KMapEstimationConfig_TaggedField_Inferred)(nil),
 	}
-	file_google_privacy_dlp_v2_dlp_proto_msgTypes[307].OneofWrappers = []any{
+	file_google_privacy_dlp_v2_dlp_proto_msgTypes[311].OneofWrappers = []any{
 		(*ImageTransformations_ImageTransformation_SelectedInfoTypes_)(nil),
 		(*ImageTransformations_ImageTransformation_AllInfoTypes_)(nil),
 		(*ImageTransformations_ImageTransformation_AllText_)(nil),
 	}
-	file_google_privacy_dlp_v2_dlp_proto_msgTypes[317].OneofWrappers = []any{
+	file_google_privacy_dlp_v2_dlp_proto_msgTypes[321].OneofWrappers = []any{
 		(*RecordCondition_Expressions_Conditions)(nil),
 	}
-	file_google_privacy_dlp_v2_dlp_proto_msgTypes[319].OneofWrappers = []any{
+	file_google_privacy_dlp_v2_dlp_proto_msgTypes[323].OneofWrappers = []any{
 		(*JobTrigger_Trigger_Schedule)(nil),
 		(*JobTrigger_Trigger_Manual)(nil),
 	}
-	file_google_privacy_dlp_v2_dlp_proto_msgTypes[325].OneofWrappers = []any{
+	file_google_privacy_dlp_v2_dlp_proto_msgTypes[329].OneofWrappers = []any{
 		(*Action_Deidentify_CloudStorageOutput)(nil),
 	}
-	file_google_privacy_dlp_v2_dlp_proto_msgTypes[334].OneofWrappers = []any{
+	file_google_privacy_dlp_v2_dlp_proto_msgTypes[338].OneofWrappers = []any{
 		(*DataProfileAction_TagResources_TagCondition_SensitivityScore)(nil),
 	}
-	file_google_privacy_dlp_v2_dlp_proto_msgTypes[335].OneofWrappers = []any{
+	file_google_privacy_dlp_v2_dlp_proto_msgTypes[339].OneofWrappers = []any{
 		(*DataProfileAction_TagResources_TagValue_NamespacedValue)(nil),
 	}
-	file_google_privacy_dlp_v2_dlp_proto_msgTypes[340].OneofWrappers = []any{
+	file_google_privacy_dlp_v2_dlp_proto_msgTypes[344].OneofWrappers = []any{
 		(*OtherCloudDiscoveryStartingLocation_AwsDiscoveryStartingLocation_AccountId)(nil),
 		(*OtherCloudDiscoveryStartingLocation_AwsDiscoveryStartingLocation_AllAssetInventoryAssets)(nil),
 	}
-	file_google_privacy_dlp_v2_dlp_proto_msgTypes[345].OneofWrappers = []any{
+	file_google_privacy_dlp_v2_dlp_proto_msgTypes[349].OneofWrappers = []any{
 		(*DataProfilePubSubCondition_PubSubCondition_MinimumRiskScore)(nil),
 		(*DataProfilePubSubCondition_PubSubCondition_MinimumSensitivityScore)(nil),
 	}
@@ -34287,8 +34659,8 @@ func file_google_privacy_dlp_v2_dlp_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_privacy_dlp_v2_dlp_proto_rawDesc), len(file_google_privacy_dlp_v2_dlp_proto_rawDesc)),
-			NumEnums:      58,
-			NumMessages:   351,
+			NumEnums:      59,
+			NumMessages:   355,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

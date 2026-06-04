@@ -16,6 +16,8 @@
 
 // [START connectgateway_v1beta1_generated_GatewayControl_GenerateCredentials_sync]
 
+//go:build examples
+
 package main
 
 import (

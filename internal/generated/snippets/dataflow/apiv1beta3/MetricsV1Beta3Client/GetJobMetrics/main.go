@@ -16,6 +16,8 @@
 
 // [START dataflow_v1beta3_generated_MetricsV1Beta3_GetJobMetrics_sync]
 
+//go:build examples
+
 package main
 
 import (

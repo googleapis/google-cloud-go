@@ -16,6 +16,8 @@
 
 // [START generativelanguage_v1beta_generated_RetrieverService_QueryDocument_sync]
 
+//go:build examples
+
 package main
 
 import (

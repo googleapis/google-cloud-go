@@ -16,6 +16,8 @@
 
 // [START vmwareengine_v1_generated_VmwareEngine_ListNodeTypes_sync]
 
+//go:build examples
+
 package main
 
 import (

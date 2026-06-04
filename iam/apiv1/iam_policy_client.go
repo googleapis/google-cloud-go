@@ -121,7 +121,7 @@ type IamPolicyClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *IamPolicyClient) Close() error {
 	return c.internalClient.Close()
@@ -285,7 +285,7 @@ func (c *iamPolicyGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *iamPolicyGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -400,7 +400,7 @@ func (c *iamPolicyRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *iamPolicyRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.

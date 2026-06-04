@@ -16,6 +16,8 @@
 
 // [START merchantapi_v1_generated_LfpSaleService_InsertLfpSale_sync]
 
+//go:build examples
+
 package main
 
 import (

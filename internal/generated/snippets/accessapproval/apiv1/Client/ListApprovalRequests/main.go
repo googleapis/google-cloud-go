@@ -16,6 +16,8 @@
 
 // [START accessapproval_v1_generated_AccessApproval_ListApprovalRequests_sync]
 
+//go:build examples
+
 package main
 
 import (

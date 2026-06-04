@@ -376,6 +376,13 @@ func (gsc *grpcSpannerClient) generateRequestIDHeaderInjector() *requestIDWrap {
 	return &requestIDWrap{md: md, nthRequest: gsc.nextNthRequest(), gsc: gsc}
 }
 
+func (gsc *grpcSpannerClient) requestIDHeaderInjector(context.Context) (*requestIDWrap, error) {
+	if gsc == nil {
+		return nil, spannerErrorf(codes.Internal, "request-id header provider is unavailable")
+	}
+	return gsc.generateRequestIDHeaderInjector(), nil
+}
+
 type requestIDCallOption struct {
 	md *metadata.MD
 }

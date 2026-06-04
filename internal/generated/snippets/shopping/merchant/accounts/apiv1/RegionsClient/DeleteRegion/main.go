@@ -16,6 +16,8 @@
 
 // [START merchantapi_v1_generated_RegionsService_DeleteRegion_sync]
 
+//go:build examples
+
 package main
 
 import (

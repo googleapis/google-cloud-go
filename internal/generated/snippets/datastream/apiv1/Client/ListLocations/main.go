@@ -16,6 +16,8 @@
 
 // [START datastream_v1_generated_Datastream_ListLocations_sync]
 
+//go:build examples
+
 package main
 
 import (

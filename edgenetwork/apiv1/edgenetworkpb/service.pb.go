@@ -2868,18 +2868,18 @@ var file_google_cloud_edgenetwork_v1_service_proto_goTypes = []any{
 	(*InitializeZoneRequest)(nil),                           // 36: google.cloud.edgenetwork.v1.InitializeZoneRequest
 	(*InitializeZoneResponse)(nil),                          // 37: google.cloud.edgenetwork.v1.InitializeZoneResponse
 	(*DiagnoseNetworkResponse_NetworkStatus)(nil),           // 38: google.cloud.edgenetwork.v1.DiagnoseNetworkResponse.NetworkStatus
-	(*Zone)(nil),                                            // 39: google.cloud.edgenetwork.v1.Zone
-	(*Network)(nil),                                         // 40: google.cloud.edgenetwork.v1.Network
-	(*Subnet)(nil),                                          // 41: google.cloud.edgenetwork.v1.Subnet
-	(*fieldmaskpb.FieldMask)(nil),                           // 42: google.protobuf.FieldMask
-	(*Interconnect)(nil),                                    // 43: google.cloud.edgenetwork.v1.Interconnect
-	(*InterconnectAttachment)(nil),                          // 44: google.cloud.edgenetwork.v1.InterconnectAttachment
-	(*Router)(nil),                                          // 45: google.cloud.edgenetwork.v1.Router
-	(*timestamppb.Timestamp)(nil),                           // 46: google.protobuf.Timestamp
-	(*InterconnectDiagnostics)(nil),                         // 47: google.cloud.edgenetwork.v1.InterconnectDiagnostics
-	(*RouterStatus)(nil),                                    // 48: google.cloud.edgenetwork.v1.RouterStatus
-	(*SubnetStatus)(nil),                                    // 49: google.cloud.edgenetwork.v1.SubnetStatus
-	(*longrunningpb.Operation)(nil),                         // 50: google.longrunning.Operation
+	(*Zone)(nil),                    // 39: google.cloud.edgenetwork.v1.Zone
+	(*Network)(nil),                 // 40: google.cloud.edgenetwork.v1.Network
+	(*Subnet)(nil),                  // 41: google.cloud.edgenetwork.v1.Subnet
+	(*fieldmaskpb.FieldMask)(nil),   // 42: google.protobuf.FieldMask
+	(*Interconnect)(nil),            // 43: google.cloud.edgenetwork.v1.Interconnect
+	(*InterconnectAttachment)(nil),  // 44: google.cloud.edgenetwork.v1.InterconnectAttachment
+	(*Router)(nil),                  // 45: google.cloud.edgenetwork.v1.Router
+	(*timestamppb.Timestamp)(nil),   // 46: google.protobuf.Timestamp
+	(*InterconnectDiagnostics)(nil), // 47: google.cloud.edgenetwork.v1.InterconnectDiagnostics
+	(*RouterStatus)(nil),            // 48: google.cloud.edgenetwork.v1.RouterStatus
+	(*SubnetStatus)(nil),            // 49: google.cloud.edgenetwork.v1.SubnetStatus
+	(*longrunningpb.Operation)(nil), // 50: google.longrunning.Operation
 }
 var file_google_cloud_edgenetwork_v1_service_proto_depIdxs = []int32{
 	39, // 0: google.cloud.edgenetwork.v1.ListZonesResponse.zones:type_name -> google.cloud.edgenetwork.v1.Zone

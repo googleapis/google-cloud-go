@@ -302,7 +302,7 @@ type DocumentsClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *DocumentsClient) Close() error {
 	return c.internalClient.Close()
@@ -631,7 +631,7 @@ func (c *documentsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *documentsGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -751,7 +751,7 @@ func (c *documentsRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *documentsRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.

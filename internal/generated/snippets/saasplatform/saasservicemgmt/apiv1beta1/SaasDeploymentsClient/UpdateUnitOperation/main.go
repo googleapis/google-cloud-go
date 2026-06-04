@@ -16,6 +16,8 @@
 
 // [START saasservicemgmt_v1beta1_generated_SaasDeployments_UpdateUnitOperation_sync]
 
+//go:build examples
+
 package main
 
 import (

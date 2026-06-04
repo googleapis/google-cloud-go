@@ -16,6 +16,8 @@
 
 // [START confidentialcomputing_v1_generated_ConfidentialComputing_GetLocation_sync]
 
+//go:build examples
+
 package main
 
 import (

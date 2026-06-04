@@ -16,6 +16,8 @@
 
 // [START securitycenter_v2_generated_SecurityCenter_GetValuedResource_sync]
 
+//go:build examples
+
 package main
 
 import (

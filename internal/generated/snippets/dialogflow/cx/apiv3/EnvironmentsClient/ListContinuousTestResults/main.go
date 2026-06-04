@@ -16,6 +16,8 @@
 
 // [START dialogflow_v3_generated_Environments_ListContinuousTestResults_sync]
 
+//go:build examples
+
 package main
 
 import (

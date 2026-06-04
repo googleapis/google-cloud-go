@@ -16,6 +16,8 @@
 
 // [START datacatalog_v1_generated_DataCatalog_GetTagTemplate_sync]
 
+//go:build examples
+
 package main
 
 import (

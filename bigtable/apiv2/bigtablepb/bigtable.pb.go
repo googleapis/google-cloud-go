@@ -1709,9 +1709,16 @@ type ExecuteQueryRequest struct {
 	// inferred from the `param_types` in the `PrepareQueryRequest`. Any non-empty
 	// `Value.type` must match the corresponding `param_types` entry, or be
 	// rejected with `INVALID_ARGUMENT`.
-	Params        map[string]*Value `protobuf:"bytes,7,rep,name=params,proto3" json:"params,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	Params map[string]*Value `protobuf:"bytes,7,rep,name=params,proto3" json:"params,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	// Optional. This map provides the runtime values returned by the
+	// VIEW_PARAMETERS() function calls, typically used for user-level scoping of
+	// data based on identity.
+	//
+	// The key is the name of the view parameter e.g. `user_id`, and
+	// the value is the parameter value e.g. `alice@example.com`.
+	ViewParameters map[string]*Value `protobuf:"bytes,12,rep,name=view_parameters,json=viewParameters,proto3" json:"view_parameters,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *ExecuteQueryRequest) Reset() {
@@ -1800,6 +1807,13 @@ func (x *ExecuteQueryRequest) GetResumeToken() []byte {
 func (x *ExecuteQueryRequest) GetParams() map[string]*Value {
 	if x != nil {
 		return x.Params
+	}
+	return nil
+}
+
+func (x *ExecuteQueryRequest) GetViewParameters() map[string]*Value {
+	if x != nil {
+		return x.ViewParameters
 	}
 	return nil
 }
@@ -3005,7 +3019,7 @@ const file_google_bigtable_v2_bigtable_proto_rawDesc = "" +
 	"\x06status\x18\x01 \x01(\v2\x12.google.rpc.StatusR\x06status\x12\\\n" +
 	"\x13continuation_tokens\x18\x02 \x03(\v2+.google.bigtable.v2.StreamContinuationTokenR\x12continuationTokens\x12J\n" +
 	"\x0enew_partitions\x18\x03 \x03(\v2#.google.bigtable.v2.StreamPartitionR\rnewPartitionsB\x0f\n" +
-	"\rstream_record\"\x81\x04\n" +
+	"\rstream_record\"\xca\x05\n" +
 	"\x13ExecuteQueryRequest\x12R\n" +
 	"\rinstance_name\x18\x01 \x01(\tB-\xe0A\x02\xfaA'\n" +
 	"%bigtableadmin.googleapis.com/InstanceR\finstanceName\x12)\n" +
@@ -3014,8 +3028,12 @@ const file_google_bigtable_v2_bigtable_proto_rawDesc = "" +
 	"\x0eprepared_query\x18\t \x01(\fR\rpreparedQuery\x12H\n" +
 	"\fproto_format\x18\x04 \x01(\v2\x1f.google.bigtable.v2.ProtoFormatB\x02\x18\x01H\x00R\vprotoFormat\x12&\n" +
 	"\fresume_token\x18\b \x01(\fB\x03\xe0A\x01R\vresumeToken\x12P\n" +
-	"\x06params\x18\a \x03(\v23.google.bigtable.v2.ExecuteQueryRequest.ParamsEntryB\x03\xe0A\x02R\x06params\x1aT\n" +
+	"\x06params\x18\a \x03(\v23.google.bigtable.v2.ExecuteQueryRequest.ParamsEntryB\x03\xe0A\x02R\x06params\x12i\n" +
+	"\x0fview_parameters\x18\f \x03(\v2;.google.bigtable.v2.ExecuteQueryRequest.ViewParametersEntryB\x03\xe0A\x01R\x0eviewParameters\x1aT\n" +
 	"\vParamsEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12/\n" +
+	"\x05value\x18\x02 \x01(\v2\x19.google.bigtable.v2.ValueR\x05value:\x028\x01\x1a\\\n" +
+	"\x13ViewParametersEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12/\n" +
 	"\x05value\x18\x02 \x01(\v2\x19.google.bigtable.v2.ValueR\x05value:\x028\x01B\r\n" +
 	"\vdata_format\"\xa9\x01\n" +
@@ -3113,7 +3131,7 @@ func file_google_bigtable_v2_bigtable_proto_rawDescGZIP() []byte {
 }
 
 var file_google_bigtable_v2_bigtable_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_google_bigtable_v2_bigtable_proto_msgTypes = make([]protoimpl.MessageInfo, 33)
+var file_google_bigtable_v2_bigtable_proto_msgTypes = make([]protoimpl.MessageInfo, 34)
 var file_google_bigtable_v2_bigtable_proto_goTypes = []any{
 	(ReadRowsRequest_RequestStatsView)(0),                    // 0: google.bigtable.v2.ReadRowsRequest.RequestStatsView
 	(ReadChangeStreamResponse_DataChange_Type)(0),            // 1: google.bigtable.v2.ReadChangeStreamResponse.DataChange.Type
@@ -3149,119 +3167,122 @@ var file_google_bigtable_v2_bigtable_proto_goTypes = []any{
 	(*ReadChangeStreamResponse_CloseStream)(nil),             // 31: google.bigtable.v2.ReadChangeStreamResponse.CloseStream
 	(*ReadChangeStreamResponse_MutationChunk_ChunkInfo)(nil), // 32: google.bigtable.v2.ReadChangeStreamResponse.MutationChunk.ChunkInfo
 	nil,                                   // 33: google.bigtable.v2.ExecuteQueryRequest.ParamsEntry
-	nil,                                   // 34: google.bigtable.v2.PrepareQueryRequest.ParamTypesEntry
-	(*RowSet)(nil),                        // 35: google.bigtable.v2.RowSet
-	(*RowFilter)(nil),                     // 36: google.bigtable.v2.RowFilter
-	(*RequestStats)(nil),                  // 37: google.bigtable.v2.RequestStats
-	(*Mutation)(nil),                      // 38: google.bigtable.v2.Mutation
-	(*Idempotency)(nil),                   // 39: google.bigtable.v2.Idempotency
-	(*durationpb.Duration)(nil),           // 40: google.protobuf.Duration
-	(*ReadModifyWriteRule)(nil),           // 41: google.bigtable.v2.ReadModifyWriteRule
-	(*Row)(nil),                           // 42: google.bigtable.v2.Row
-	(*StreamPartition)(nil),               // 43: google.bigtable.v2.StreamPartition
-	(*timestamppb.Timestamp)(nil),         // 44: google.protobuf.Timestamp
-	(*StreamContinuationTokens)(nil),      // 45: google.bigtable.v2.StreamContinuationTokens
-	(*ProtoFormat)(nil),                   // 46: google.bigtable.v2.ProtoFormat
-	(*ResultSetMetadata)(nil),             // 47: google.bigtable.v2.ResultSetMetadata
-	(*PartialResultSet)(nil),              // 48: google.bigtable.v2.PartialResultSet
-	(*wrapperspb.StringValue)(nil),        // 49: google.protobuf.StringValue
-	(*wrapperspb.BytesValue)(nil),         // 50: google.protobuf.BytesValue
-	(*status.Status)(nil),                 // 51: google.rpc.Status
-	(*StreamContinuationToken)(nil),       // 52: google.bigtable.v2.StreamContinuationToken
-	(*Value)(nil),                         // 53: google.bigtable.v2.Value
-	(*Type)(nil),                          // 54: google.bigtable.v2.Type
-	(*GetClientConfigurationRequest)(nil), // 55: google.bigtable.v2.GetClientConfigurationRequest
-	(*SessionRequest)(nil),                // 56: google.bigtable.v2.SessionRequest
-	(*ClientConfiguration)(nil),           // 57: google.bigtable.v2.ClientConfiguration
-	(*SessionResponse)(nil),               // 58: google.bigtable.v2.SessionResponse
+	nil,                                   // 34: google.bigtable.v2.ExecuteQueryRequest.ViewParametersEntry
+	nil,                                   // 35: google.bigtable.v2.PrepareQueryRequest.ParamTypesEntry
+	(*RowSet)(nil),                        // 36: google.bigtable.v2.RowSet
+	(*RowFilter)(nil),                     // 37: google.bigtable.v2.RowFilter
+	(*RequestStats)(nil),                  // 38: google.bigtable.v2.RequestStats
+	(*Mutation)(nil),                      // 39: google.bigtable.v2.Mutation
+	(*Idempotency)(nil),                   // 40: google.bigtable.v2.Idempotency
+	(*durationpb.Duration)(nil),           // 41: google.protobuf.Duration
+	(*ReadModifyWriteRule)(nil),           // 42: google.bigtable.v2.ReadModifyWriteRule
+	(*Row)(nil),                           // 43: google.bigtable.v2.Row
+	(*StreamPartition)(nil),               // 44: google.bigtable.v2.StreamPartition
+	(*timestamppb.Timestamp)(nil),         // 45: google.protobuf.Timestamp
+	(*StreamContinuationTokens)(nil),      // 46: google.bigtable.v2.StreamContinuationTokens
+	(*ProtoFormat)(nil),                   // 47: google.bigtable.v2.ProtoFormat
+	(*ResultSetMetadata)(nil),             // 48: google.bigtable.v2.ResultSetMetadata
+	(*PartialResultSet)(nil),              // 49: google.bigtable.v2.PartialResultSet
+	(*wrapperspb.StringValue)(nil),        // 50: google.protobuf.StringValue
+	(*wrapperspb.BytesValue)(nil),         // 51: google.protobuf.BytesValue
+	(*status.Status)(nil),                 // 52: google.rpc.Status
+	(*StreamContinuationToken)(nil),       // 53: google.bigtable.v2.StreamContinuationToken
+	(*Value)(nil),                         // 54: google.bigtable.v2.Value
+	(*Type)(nil),                          // 55: google.bigtable.v2.Type
+	(*GetClientConfigurationRequest)(nil), // 56: google.bigtable.v2.GetClientConfigurationRequest
+	(*SessionRequest)(nil),                // 57: google.bigtable.v2.SessionRequest
+	(*ClientConfiguration)(nil),           // 58: google.bigtable.v2.ClientConfiguration
+	(*SessionResponse)(nil),               // 59: google.bigtable.v2.SessionResponse
 }
 var file_google_bigtable_v2_bigtable_proto_depIdxs = []int32{
-	35, // 0: google.bigtable.v2.ReadRowsRequest.rows:type_name -> google.bigtable.v2.RowSet
-	36, // 1: google.bigtable.v2.ReadRowsRequest.filter:type_name -> google.bigtable.v2.RowFilter
+	36, // 0: google.bigtable.v2.ReadRowsRequest.rows:type_name -> google.bigtable.v2.RowSet
+	37, // 1: google.bigtable.v2.ReadRowsRequest.filter:type_name -> google.bigtable.v2.RowFilter
 	0,  // 2: google.bigtable.v2.ReadRowsRequest.request_stats_view:type_name -> google.bigtable.v2.ReadRowsRequest.RequestStatsView
 	25, // 3: google.bigtable.v2.ReadRowsResponse.chunks:type_name -> google.bigtable.v2.ReadRowsResponse.CellChunk
-	37, // 4: google.bigtable.v2.ReadRowsResponse.request_stats:type_name -> google.bigtable.v2.RequestStats
-	38, // 5: google.bigtable.v2.MutateRowRequest.mutations:type_name -> google.bigtable.v2.Mutation
-	39, // 6: google.bigtable.v2.MutateRowRequest.idempotency:type_name -> google.bigtable.v2.Idempotency
+	38, // 4: google.bigtable.v2.ReadRowsResponse.request_stats:type_name -> google.bigtable.v2.RequestStats
+	39, // 5: google.bigtable.v2.MutateRowRequest.mutations:type_name -> google.bigtable.v2.Mutation
+	40, // 6: google.bigtable.v2.MutateRowRequest.idempotency:type_name -> google.bigtable.v2.Idempotency
 	26, // 7: google.bigtable.v2.MutateRowsRequest.entries:type_name -> google.bigtable.v2.MutateRowsRequest.Entry
 	27, // 8: google.bigtable.v2.MutateRowsResponse.entries:type_name -> google.bigtable.v2.MutateRowsResponse.Entry
 	10, // 9: google.bigtable.v2.MutateRowsResponse.rate_limit_info:type_name -> google.bigtable.v2.RateLimitInfo
-	40, // 10: google.bigtable.v2.RateLimitInfo.period:type_name -> google.protobuf.Duration
-	36, // 11: google.bigtable.v2.CheckAndMutateRowRequest.predicate_filter:type_name -> google.bigtable.v2.RowFilter
-	38, // 12: google.bigtable.v2.CheckAndMutateRowRequest.true_mutations:type_name -> google.bigtable.v2.Mutation
-	38, // 13: google.bigtable.v2.CheckAndMutateRowRequest.false_mutations:type_name -> google.bigtable.v2.Mutation
-	41, // 14: google.bigtable.v2.ReadModifyWriteRowRequest.rules:type_name -> google.bigtable.v2.ReadModifyWriteRule
-	42, // 15: google.bigtable.v2.ReadModifyWriteRowResponse.row:type_name -> google.bigtable.v2.Row
-	43, // 16: google.bigtable.v2.GenerateInitialChangeStreamPartitionsResponse.partition:type_name -> google.bigtable.v2.StreamPartition
-	43, // 17: google.bigtable.v2.ReadChangeStreamRequest.partition:type_name -> google.bigtable.v2.StreamPartition
-	44, // 18: google.bigtable.v2.ReadChangeStreamRequest.start_time:type_name -> google.protobuf.Timestamp
-	45, // 19: google.bigtable.v2.ReadChangeStreamRequest.continuation_tokens:type_name -> google.bigtable.v2.StreamContinuationTokens
-	44, // 20: google.bigtable.v2.ReadChangeStreamRequest.end_time:type_name -> google.protobuf.Timestamp
-	40, // 21: google.bigtable.v2.ReadChangeStreamRequest.heartbeat_duration:type_name -> google.protobuf.Duration
+	41, // 10: google.bigtable.v2.RateLimitInfo.period:type_name -> google.protobuf.Duration
+	37, // 11: google.bigtable.v2.CheckAndMutateRowRequest.predicate_filter:type_name -> google.bigtable.v2.RowFilter
+	39, // 12: google.bigtable.v2.CheckAndMutateRowRequest.true_mutations:type_name -> google.bigtable.v2.Mutation
+	39, // 13: google.bigtable.v2.CheckAndMutateRowRequest.false_mutations:type_name -> google.bigtable.v2.Mutation
+	42, // 14: google.bigtable.v2.ReadModifyWriteRowRequest.rules:type_name -> google.bigtable.v2.ReadModifyWriteRule
+	43, // 15: google.bigtable.v2.ReadModifyWriteRowResponse.row:type_name -> google.bigtable.v2.Row
+	44, // 16: google.bigtable.v2.GenerateInitialChangeStreamPartitionsResponse.partition:type_name -> google.bigtable.v2.StreamPartition
+	44, // 17: google.bigtable.v2.ReadChangeStreamRequest.partition:type_name -> google.bigtable.v2.StreamPartition
+	45, // 18: google.bigtable.v2.ReadChangeStreamRequest.start_time:type_name -> google.protobuf.Timestamp
+	46, // 19: google.bigtable.v2.ReadChangeStreamRequest.continuation_tokens:type_name -> google.bigtable.v2.StreamContinuationTokens
+	45, // 20: google.bigtable.v2.ReadChangeStreamRequest.end_time:type_name -> google.protobuf.Timestamp
+	41, // 21: google.bigtable.v2.ReadChangeStreamRequest.heartbeat_duration:type_name -> google.protobuf.Duration
 	29, // 22: google.bigtable.v2.ReadChangeStreamResponse.data_change:type_name -> google.bigtable.v2.ReadChangeStreamResponse.DataChange
 	30, // 23: google.bigtable.v2.ReadChangeStreamResponse.heartbeat:type_name -> google.bigtable.v2.ReadChangeStreamResponse.Heartbeat
 	31, // 24: google.bigtable.v2.ReadChangeStreamResponse.close_stream:type_name -> google.bigtable.v2.ReadChangeStreamResponse.CloseStream
-	46, // 25: google.bigtable.v2.ExecuteQueryRequest.proto_format:type_name -> google.bigtable.v2.ProtoFormat
+	47, // 25: google.bigtable.v2.ExecuteQueryRequest.proto_format:type_name -> google.bigtable.v2.ProtoFormat
 	33, // 26: google.bigtable.v2.ExecuteQueryRequest.params:type_name -> google.bigtable.v2.ExecuteQueryRequest.ParamsEntry
-	47, // 27: google.bigtable.v2.ExecuteQueryResponse.metadata:type_name -> google.bigtable.v2.ResultSetMetadata
-	48, // 28: google.bigtable.v2.ExecuteQueryResponse.results:type_name -> google.bigtable.v2.PartialResultSet
-	46, // 29: google.bigtable.v2.PrepareQueryRequest.proto_format:type_name -> google.bigtable.v2.ProtoFormat
-	34, // 30: google.bigtable.v2.PrepareQueryRequest.param_types:type_name -> google.bigtable.v2.PrepareQueryRequest.ParamTypesEntry
-	47, // 31: google.bigtable.v2.PrepareQueryResponse.metadata:type_name -> google.bigtable.v2.ResultSetMetadata
-	44, // 32: google.bigtable.v2.PrepareQueryResponse.valid_until:type_name -> google.protobuf.Timestamp
-	49, // 33: google.bigtable.v2.ReadRowsResponse.CellChunk.family_name:type_name -> google.protobuf.StringValue
-	50, // 34: google.bigtable.v2.ReadRowsResponse.CellChunk.qualifier:type_name -> google.protobuf.BytesValue
-	38, // 35: google.bigtable.v2.MutateRowsRequest.Entry.mutations:type_name -> google.bigtable.v2.Mutation
-	39, // 36: google.bigtable.v2.MutateRowsRequest.Entry.idempotency:type_name -> google.bigtable.v2.Idempotency
-	51, // 37: google.bigtable.v2.MutateRowsResponse.Entry.status:type_name -> google.rpc.Status
-	32, // 38: google.bigtable.v2.ReadChangeStreamResponse.MutationChunk.chunk_info:type_name -> google.bigtable.v2.ReadChangeStreamResponse.MutationChunk.ChunkInfo
-	38, // 39: google.bigtable.v2.ReadChangeStreamResponse.MutationChunk.mutation:type_name -> google.bigtable.v2.Mutation
-	1,  // 40: google.bigtable.v2.ReadChangeStreamResponse.DataChange.type:type_name -> google.bigtable.v2.ReadChangeStreamResponse.DataChange.Type
-	44, // 41: google.bigtable.v2.ReadChangeStreamResponse.DataChange.commit_timestamp:type_name -> google.protobuf.Timestamp
-	28, // 42: google.bigtable.v2.ReadChangeStreamResponse.DataChange.chunks:type_name -> google.bigtable.v2.ReadChangeStreamResponse.MutationChunk
-	44, // 43: google.bigtable.v2.ReadChangeStreamResponse.DataChange.estimated_low_watermark:type_name -> google.protobuf.Timestamp
-	52, // 44: google.bigtable.v2.ReadChangeStreamResponse.Heartbeat.continuation_token:type_name -> google.bigtable.v2.StreamContinuationToken
-	44, // 45: google.bigtable.v2.ReadChangeStreamResponse.Heartbeat.estimated_low_watermark:type_name -> google.protobuf.Timestamp
-	51, // 46: google.bigtable.v2.ReadChangeStreamResponse.CloseStream.status:type_name -> google.rpc.Status
-	52, // 47: google.bigtable.v2.ReadChangeStreamResponse.CloseStream.continuation_tokens:type_name -> google.bigtable.v2.StreamContinuationToken
-	43, // 48: google.bigtable.v2.ReadChangeStreamResponse.CloseStream.new_partitions:type_name -> google.bigtable.v2.StreamPartition
-	53, // 49: google.bigtable.v2.ExecuteQueryRequest.ParamsEntry.value:type_name -> google.bigtable.v2.Value
-	54, // 50: google.bigtable.v2.PrepareQueryRequest.ParamTypesEntry.value:type_name -> google.bigtable.v2.Type
-	2,  // 51: google.bigtable.v2.Bigtable.ReadRows:input_type -> google.bigtable.v2.ReadRowsRequest
-	4,  // 52: google.bigtable.v2.Bigtable.SampleRowKeys:input_type -> google.bigtable.v2.SampleRowKeysRequest
-	6,  // 53: google.bigtable.v2.Bigtable.MutateRow:input_type -> google.bigtable.v2.MutateRowRequest
-	8,  // 54: google.bigtable.v2.Bigtable.MutateRows:input_type -> google.bigtable.v2.MutateRowsRequest
-	11, // 55: google.bigtable.v2.Bigtable.CheckAndMutateRow:input_type -> google.bigtable.v2.CheckAndMutateRowRequest
-	13, // 56: google.bigtable.v2.Bigtable.PingAndWarm:input_type -> google.bigtable.v2.PingAndWarmRequest
-	15, // 57: google.bigtable.v2.Bigtable.ReadModifyWriteRow:input_type -> google.bigtable.v2.ReadModifyWriteRowRequest
-	17, // 58: google.bigtable.v2.Bigtable.GenerateInitialChangeStreamPartitions:input_type -> google.bigtable.v2.GenerateInitialChangeStreamPartitionsRequest
-	19, // 59: google.bigtable.v2.Bigtable.ReadChangeStream:input_type -> google.bigtable.v2.ReadChangeStreamRequest
-	23, // 60: google.bigtable.v2.Bigtable.PrepareQuery:input_type -> google.bigtable.v2.PrepareQueryRequest
-	21, // 61: google.bigtable.v2.Bigtable.ExecuteQuery:input_type -> google.bigtable.v2.ExecuteQueryRequest
-	55, // 62: google.bigtable.v2.Bigtable.GetClientConfiguration:input_type -> google.bigtable.v2.GetClientConfigurationRequest
-	56, // 63: google.bigtable.v2.Bigtable.OpenTable:input_type -> google.bigtable.v2.SessionRequest
-	56, // 64: google.bigtable.v2.Bigtable.OpenAuthorizedView:input_type -> google.bigtable.v2.SessionRequest
-	56, // 65: google.bigtable.v2.Bigtable.OpenMaterializedView:input_type -> google.bigtable.v2.SessionRequest
-	3,  // 66: google.bigtable.v2.Bigtable.ReadRows:output_type -> google.bigtable.v2.ReadRowsResponse
-	5,  // 67: google.bigtable.v2.Bigtable.SampleRowKeys:output_type -> google.bigtable.v2.SampleRowKeysResponse
-	7,  // 68: google.bigtable.v2.Bigtable.MutateRow:output_type -> google.bigtable.v2.MutateRowResponse
-	9,  // 69: google.bigtable.v2.Bigtable.MutateRows:output_type -> google.bigtable.v2.MutateRowsResponse
-	12, // 70: google.bigtable.v2.Bigtable.CheckAndMutateRow:output_type -> google.bigtable.v2.CheckAndMutateRowResponse
-	14, // 71: google.bigtable.v2.Bigtable.PingAndWarm:output_type -> google.bigtable.v2.PingAndWarmResponse
-	16, // 72: google.bigtable.v2.Bigtable.ReadModifyWriteRow:output_type -> google.bigtable.v2.ReadModifyWriteRowResponse
-	18, // 73: google.bigtable.v2.Bigtable.GenerateInitialChangeStreamPartitions:output_type -> google.bigtable.v2.GenerateInitialChangeStreamPartitionsResponse
-	20, // 74: google.bigtable.v2.Bigtable.ReadChangeStream:output_type -> google.bigtable.v2.ReadChangeStreamResponse
-	24, // 75: google.bigtable.v2.Bigtable.PrepareQuery:output_type -> google.bigtable.v2.PrepareQueryResponse
-	22, // 76: google.bigtable.v2.Bigtable.ExecuteQuery:output_type -> google.bigtable.v2.ExecuteQueryResponse
-	57, // 77: google.bigtable.v2.Bigtable.GetClientConfiguration:output_type -> google.bigtable.v2.ClientConfiguration
-	58, // 78: google.bigtable.v2.Bigtable.OpenTable:output_type -> google.bigtable.v2.SessionResponse
-	58, // 79: google.bigtable.v2.Bigtable.OpenAuthorizedView:output_type -> google.bigtable.v2.SessionResponse
-	58, // 80: google.bigtable.v2.Bigtable.OpenMaterializedView:output_type -> google.bigtable.v2.SessionResponse
-	66, // [66:81] is the sub-list for method output_type
-	51, // [51:66] is the sub-list for method input_type
-	51, // [51:51] is the sub-list for extension type_name
-	51, // [51:51] is the sub-list for extension extendee
-	0,  // [0:51] is the sub-list for field type_name
+	34, // 27: google.bigtable.v2.ExecuteQueryRequest.view_parameters:type_name -> google.bigtable.v2.ExecuteQueryRequest.ViewParametersEntry
+	48, // 28: google.bigtable.v2.ExecuteQueryResponse.metadata:type_name -> google.bigtable.v2.ResultSetMetadata
+	49, // 29: google.bigtable.v2.ExecuteQueryResponse.results:type_name -> google.bigtable.v2.PartialResultSet
+	47, // 30: google.bigtable.v2.PrepareQueryRequest.proto_format:type_name -> google.bigtable.v2.ProtoFormat
+	35, // 31: google.bigtable.v2.PrepareQueryRequest.param_types:type_name -> google.bigtable.v2.PrepareQueryRequest.ParamTypesEntry
+	48, // 32: google.bigtable.v2.PrepareQueryResponse.metadata:type_name -> google.bigtable.v2.ResultSetMetadata
+	45, // 33: google.bigtable.v2.PrepareQueryResponse.valid_until:type_name -> google.protobuf.Timestamp
+	50, // 34: google.bigtable.v2.ReadRowsResponse.CellChunk.family_name:type_name -> google.protobuf.StringValue
+	51, // 35: google.bigtable.v2.ReadRowsResponse.CellChunk.qualifier:type_name -> google.protobuf.BytesValue
+	39, // 36: google.bigtable.v2.MutateRowsRequest.Entry.mutations:type_name -> google.bigtable.v2.Mutation
+	40, // 37: google.bigtable.v2.MutateRowsRequest.Entry.idempotency:type_name -> google.bigtable.v2.Idempotency
+	52, // 38: google.bigtable.v2.MutateRowsResponse.Entry.status:type_name -> google.rpc.Status
+	32, // 39: google.bigtable.v2.ReadChangeStreamResponse.MutationChunk.chunk_info:type_name -> google.bigtable.v2.ReadChangeStreamResponse.MutationChunk.ChunkInfo
+	39, // 40: google.bigtable.v2.ReadChangeStreamResponse.MutationChunk.mutation:type_name -> google.bigtable.v2.Mutation
+	1,  // 41: google.bigtable.v2.ReadChangeStreamResponse.DataChange.type:type_name -> google.bigtable.v2.ReadChangeStreamResponse.DataChange.Type
+	45, // 42: google.bigtable.v2.ReadChangeStreamResponse.DataChange.commit_timestamp:type_name -> google.protobuf.Timestamp
+	28, // 43: google.bigtable.v2.ReadChangeStreamResponse.DataChange.chunks:type_name -> google.bigtable.v2.ReadChangeStreamResponse.MutationChunk
+	45, // 44: google.bigtable.v2.ReadChangeStreamResponse.DataChange.estimated_low_watermark:type_name -> google.protobuf.Timestamp
+	53, // 45: google.bigtable.v2.ReadChangeStreamResponse.Heartbeat.continuation_token:type_name -> google.bigtable.v2.StreamContinuationToken
+	45, // 46: google.bigtable.v2.ReadChangeStreamResponse.Heartbeat.estimated_low_watermark:type_name -> google.protobuf.Timestamp
+	52, // 47: google.bigtable.v2.ReadChangeStreamResponse.CloseStream.status:type_name -> google.rpc.Status
+	53, // 48: google.bigtable.v2.ReadChangeStreamResponse.CloseStream.continuation_tokens:type_name -> google.bigtable.v2.StreamContinuationToken
+	44, // 49: google.bigtable.v2.ReadChangeStreamResponse.CloseStream.new_partitions:type_name -> google.bigtable.v2.StreamPartition
+	54, // 50: google.bigtable.v2.ExecuteQueryRequest.ParamsEntry.value:type_name -> google.bigtable.v2.Value
+	54, // 51: google.bigtable.v2.ExecuteQueryRequest.ViewParametersEntry.value:type_name -> google.bigtable.v2.Value
+	55, // 52: google.bigtable.v2.PrepareQueryRequest.ParamTypesEntry.value:type_name -> google.bigtable.v2.Type
+	2,  // 53: google.bigtable.v2.Bigtable.ReadRows:input_type -> google.bigtable.v2.ReadRowsRequest
+	4,  // 54: google.bigtable.v2.Bigtable.SampleRowKeys:input_type -> google.bigtable.v2.SampleRowKeysRequest
+	6,  // 55: google.bigtable.v2.Bigtable.MutateRow:input_type -> google.bigtable.v2.MutateRowRequest
+	8,  // 56: google.bigtable.v2.Bigtable.MutateRows:input_type -> google.bigtable.v2.MutateRowsRequest
+	11, // 57: google.bigtable.v2.Bigtable.CheckAndMutateRow:input_type -> google.bigtable.v2.CheckAndMutateRowRequest
+	13, // 58: google.bigtable.v2.Bigtable.PingAndWarm:input_type -> google.bigtable.v2.PingAndWarmRequest
+	15, // 59: google.bigtable.v2.Bigtable.ReadModifyWriteRow:input_type -> google.bigtable.v2.ReadModifyWriteRowRequest
+	17, // 60: google.bigtable.v2.Bigtable.GenerateInitialChangeStreamPartitions:input_type -> google.bigtable.v2.GenerateInitialChangeStreamPartitionsRequest
+	19, // 61: google.bigtable.v2.Bigtable.ReadChangeStream:input_type -> google.bigtable.v2.ReadChangeStreamRequest
+	23, // 62: google.bigtable.v2.Bigtable.PrepareQuery:input_type -> google.bigtable.v2.PrepareQueryRequest
+	21, // 63: google.bigtable.v2.Bigtable.ExecuteQuery:input_type -> google.bigtable.v2.ExecuteQueryRequest
+	56, // 64: google.bigtable.v2.Bigtable.GetClientConfiguration:input_type -> google.bigtable.v2.GetClientConfigurationRequest
+	57, // 65: google.bigtable.v2.Bigtable.OpenTable:input_type -> google.bigtable.v2.SessionRequest
+	57, // 66: google.bigtable.v2.Bigtable.OpenAuthorizedView:input_type -> google.bigtable.v2.SessionRequest
+	57, // 67: google.bigtable.v2.Bigtable.OpenMaterializedView:input_type -> google.bigtable.v2.SessionRequest
+	3,  // 68: google.bigtable.v2.Bigtable.ReadRows:output_type -> google.bigtable.v2.ReadRowsResponse
+	5,  // 69: google.bigtable.v2.Bigtable.SampleRowKeys:output_type -> google.bigtable.v2.SampleRowKeysResponse
+	7,  // 70: google.bigtable.v2.Bigtable.MutateRow:output_type -> google.bigtable.v2.MutateRowResponse
+	9,  // 71: google.bigtable.v2.Bigtable.MutateRows:output_type -> google.bigtable.v2.MutateRowsResponse
+	12, // 72: google.bigtable.v2.Bigtable.CheckAndMutateRow:output_type -> google.bigtable.v2.CheckAndMutateRowResponse
+	14, // 73: google.bigtable.v2.Bigtable.PingAndWarm:output_type -> google.bigtable.v2.PingAndWarmResponse
+	16, // 74: google.bigtable.v2.Bigtable.ReadModifyWriteRow:output_type -> google.bigtable.v2.ReadModifyWriteRowResponse
+	18, // 75: google.bigtable.v2.Bigtable.GenerateInitialChangeStreamPartitions:output_type -> google.bigtable.v2.GenerateInitialChangeStreamPartitionsResponse
+	20, // 76: google.bigtable.v2.Bigtable.ReadChangeStream:output_type -> google.bigtable.v2.ReadChangeStreamResponse
+	24, // 77: google.bigtable.v2.Bigtable.PrepareQuery:output_type -> google.bigtable.v2.PrepareQueryResponse
+	22, // 78: google.bigtable.v2.Bigtable.ExecuteQuery:output_type -> google.bigtable.v2.ExecuteQueryResponse
+	58, // 79: google.bigtable.v2.Bigtable.GetClientConfiguration:output_type -> google.bigtable.v2.ClientConfiguration
+	59, // 80: google.bigtable.v2.Bigtable.OpenTable:output_type -> google.bigtable.v2.SessionResponse
+	59, // 81: google.bigtable.v2.Bigtable.OpenAuthorizedView:output_type -> google.bigtable.v2.SessionResponse
+	59, // 82: google.bigtable.v2.Bigtable.OpenMaterializedView:output_type -> google.bigtable.v2.SessionResponse
+	68, // [68:83] is the sub-list for method output_type
+	53, // [53:68] is the sub-list for method input_type
+	53, // [53:53] is the sub-list for extension type_name
+	53, // [53:53] is the sub-list for extension extendee
+	0,  // [0:53] is the sub-list for field type_name
 }
 
 func init() { file_google_bigtable_v2_bigtable_proto_init() }
@@ -3303,7 +3324,7 @@ func file_google_bigtable_v2_bigtable_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_bigtable_v2_bigtable_proto_rawDesc), len(file_google_bigtable_v2_bigtable_proto_rawDesc)),
 			NumEnums:      2,
-			NumMessages:   33,
+			NumMessages:   34,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

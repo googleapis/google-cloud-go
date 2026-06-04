@@ -117,7 +117,7 @@ type ProfilerClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *ProfilerClient) Close() error {
 	return c.internalClient.Close()
@@ -286,7 +286,7 @@ func (c *profilerGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *profilerGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -385,7 +385,7 @@ func (c *profilerRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *profilerRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.

@@ -16,6 +16,8 @@
 
 // [START dialogflow_v2_generated_SipTrunks_CancelOperation_sync]
 
+//go:build examples
+
 package main
 
 import (

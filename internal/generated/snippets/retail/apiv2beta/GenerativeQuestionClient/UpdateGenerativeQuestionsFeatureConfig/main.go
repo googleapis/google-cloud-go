@@ -16,6 +16,8 @@
 
 // [START retail_v2beta_generated_GenerativeQuestionService_UpdateGenerativeQuestionsFeatureConfig_sync]
 
+//go:build examples
+
 package main
 
 import (

@@ -16,6 +16,8 @@
 
 // [START language_v2_generated_LanguageService_AnalyzeEntities_sync]
 
+//go:build examples
+
 package main
 
 import (

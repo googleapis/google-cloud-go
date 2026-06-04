@@ -16,6 +16,8 @@
 
 // [START storagetransfer_v1_generated_StorageTransferService_UpdateTransferJob_sync]
 
+//go:build examples
+
 package main
 
 import (

@@ -49,7 +49,7 @@
       "regionTag": "chronicle_v1_generated_BigQueryExportService_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -94,7 +94,7 @@
       "regionTag": "chronicle_v1_generated_BigQueryExportService_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -140,7 +140,7 @@
       "regionTag": "chronicle_v1_generated_BigQueryExportService_GetBigQueryExport_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -186,7 +186,7 @@
       "regionTag": "chronicle_v1_generated_BigQueryExportService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -232,7 +232,7 @@
       "regionTag": "chronicle_v1_generated_BigQueryExportService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -278,7 +278,7 @@
       "regionTag": "chronicle_v1_generated_BigQueryExportService_ProvisionBigQueryExport_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -324,7 +324,7 @@
       "regionTag": "chronicle_v1_generated_BigQueryExportService_UpdateBigQueryExport_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -370,7 +370,7 @@
       "regionTag": "chronicle_v1_generated_DashboardChartService_BatchGetDashboardCharts_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -415,7 +415,7 @@
       "regionTag": "chronicle_v1_generated_DashboardChartService_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -460,7 +460,7 @@
       "regionTag": "chronicle_v1_generated_DashboardChartService_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -506,7 +506,7 @@
       "regionTag": "chronicle_v1_generated_DashboardChartService_GetDashboardChart_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -552,7 +552,7 @@
       "regionTag": "chronicle_v1_generated_DashboardChartService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -598,7 +598,7 @@
       "regionTag": "chronicle_v1_generated_DashboardChartService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -643,7 +643,7 @@
       "regionTag": "chronicle_v1_generated_DashboardQueryService_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -688,7 +688,7 @@
       "regionTag": "chronicle_v1_generated_DashboardQueryService_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -734,7 +734,7 @@
       "regionTag": "chronicle_v1_generated_DashboardQueryService_ExecuteDashboardQuery_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -780,7 +780,7 @@
       "regionTag": "chronicle_v1_generated_DashboardQueryService_GetDashboardQuery_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -826,7 +826,7 @@
       "regionTag": "chronicle_v1_generated_DashboardQueryService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -872,7 +872,7 @@
       "regionTag": "chronicle_v1_generated_DashboardQueryService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -917,7 +917,7 @@
       "regionTag": "chronicle_v1_generated_DataAccessControlService_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -963,7 +963,7 @@
       "regionTag": "chronicle_v1_generated_DataAccessControlService_CreateDataAccessLabel_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1009,7 +1009,7 @@
       "regionTag": "chronicle_v1_generated_DataAccessControlService_CreateDataAccessScope_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1054,7 +1054,7 @@
       "regionTag": "chronicle_v1_generated_DataAccessControlService_DeleteDataAccessLabel_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -1099,7 +1099,7 @@
       "regionTag": "chronicle_v1_generated_DataAccessControlService_DeleteDataAccessScope_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -1144,7 +1144,7 @@
       "regionTag": "chronicle_v1_generated_DataAccessControlService_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -1190,7 +1190,7 @@
       "regionTag": "chronicle_v1_generated_DataAccessControlService_GetDataAccessLabel_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1236,7 +1236,7 @@
       "regionTag": "chronicle_v1_generated_DataAccessControlService_GetDataAccessScope_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1282,7 +1282,7 @@
       "regionTag": "chronicle_v1_generated_DataAccessControlService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1328,7 +1328,7 @@
       "regionTag": "chronicle_v1_generated_DataAccessControlService_ListDataAccessLabels_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1374,7 +1374,7 @@
       "regionTag": "chronicle_v1_generated_DataAccessControlService_ListDataAccessScopes_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1420,7 +1420,7 @@
       "regionTag": "chronicle_v1_generated_DataAccessControlService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1466,7 +1466,7 @@
       "regionTag": "chronicle_v1_generated_DataAccessControlService_UpdateDataAccessLabel_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1512,7 +1512,7 @@
       "regionTag": "chronicle_v1_generated_DataAccessControlService_UpdateDataAccessScope_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1558,7 +1558,7 @@
       "regionTag": "chronicle_v1_generated_DataTableService_BulkCreateDataTableRows_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1604,7 +1604,7 @@
       "regionTag": "chronicle_v1_generated_DataTableService_BulkGetDataTableRows_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1650,7 +1650,7 @@
       "regionTag": "chronicle_v1_generated_DataTableService_BulkReplaceDataTableRows_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1696,7 +1696,7 @@
       "regionTag": "chronicle_v1_generated_DataTableService_BulkUpdateDataTableRows_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1741,7 +1741,7 @@
       "regionTag": "chronicle_v1_generated_DataTableService_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -1787,7 +1787,7 @@
       "regionTag": "chronicle_v1_generated_DataTableService_CreateDataTable_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1833,7 +1833,7 @@
       "regionTag": "chronicle_v1_generated_DataTableService_CreateDataTableRow_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1878,7 +1878,7 @@
       "regionTag": "chronicle_v1_generated_DataTableService_DeleteDataTable_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -1923,7 +1923,7 @@
       "regionTag": "chronicle_v1_generated_DataTableService_DeleteDataTableRow_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -1968,7 +1968,7 @@
       "regionTag": "chronicle_v1_generated_DataTableService_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -2014,7 +2014,7 @@
       "regionTag": "chronicle_v1_generated_DataTableService_GetDataTable_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2060,7 +2060,7 @@
       "regionTag": "chronicle_v1_generated_DataTableService_GetDataTableOperationErrors_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2106,7 +2106,7 @@
       "regionTag": "chronicle_v1_generated_DataTableService_GetDataTableRow_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2152,7 +2152,7 @@
       "regionTag": "chronicle_v1_generated_DataTableService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2198,7 +2198,7 @@
       "regionTag": "chronicle_v1_generated_DataTableService_ListDataTableRows_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2244,7 +2244,7 @@
       "regionTag": "chronicle_v1_generated_DataTableService_ListDataTables_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2290,7 +2290,7 @@
       "regionTag": "chronicle_v1_generated_DataTableService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2336,7 +2336,7 @@
       "regionTag": "chronicle_v1_generated_DataTableService_UpdateDataTable_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2382,7 +2382,7 @@
       "regionTag": "chronicle_v1_generated_DataTableService_UpdateDataTableRow_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2427,7 +2427,7 @@
       "regionTag": "chronicle_v1_generated_EntityService_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -2473,7 +2473,7 @@
       "regionTag": "chronicle_v1_generated_EntityService_CreateWatchlist_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2518,7 +2518,7 @@
       "regionTag": "chronicle_v1_generated_EntityService_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -2563,7 +2563,7 @@
       "regionTag": "chronicle_v1_generated_EntityService_DeleteWatchlist_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -2609,7 +2609,7 @@
       "regionTag": "chronicle_v1_generated_EntityService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2655,7 +2655,7 @@
       "regionTag": "chronicle_v1_generated_EntityService_GetWatchlist_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2701,7 +2701,7 @@
       "regionTag": "chronicle_v1_generated_EntityService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2747,7 +2747,7 @@
       "regionTag": "chronicle_v1_generated_EntityService_ListWatchlists_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2793,7 +2793,7 @@
       "regionTag": "chronicle_v1_generated_EntityService_UpdateWatchlist_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2838,7 +2838,7 @@
       "regionTag": "chronicle_v1_generated_FeaturedContentNativeDashboardService_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -2883,7 +2883,7 @@
       "regionTag": "chronicle_v1_generated_FeaturedContentNativeDashboardService_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -2929,7 +2929,7 @@
       "regionTag": "chronicle_v1_generated_FeaturedContentNativeDashboardService_GetFeaturedContentNativeDashboard_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2975,7 +2975,7 @@
       "regionTag": "chronicle_v1_generated_FeaturedContentNativeDashboardService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3021,7 +3021,7 @@
       "regionTag": "chronicle_v1_generated_FeaturedContentNativeDashboardService_InstallFeaturedContentNativeDashboard_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3067,7 +3067,7 @@
       "regionTag": "chronicle_v1_generated_FeaturedContentNativeDashboardService_ListFeaturedContentNativeDashboards_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -3113,7 +3113,7 @@
       "regionTag": "chronicle_v1_generated_FeaturedContentNativeDashboardService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -3158,7 +3158,7 @@
       "regionTag": "chronicle_v1_generated_InstanceService_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -3203,7 +3203,7 @@
       "regionTag": "chronicle_v1_generated_InstanceService_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -3249,7 +3249,7 @@
       "regionTag": "chronicle_v1_generated_InstanceService_GetInstance_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3295,7 +3295,7 @@
       "regionTag": "chronicle_v1_generated_InstanceService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3341,7 +3341,7 @@
       "regionTag": "chronicle_v1_generated_InstanceService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -3387,7 +3387,7 @@
       "regionTag": "chronicle_v1_generated_NativeDashboardService_AddChart_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3432,7 +3432,7 @@
       "regionTag": "chronicle_v1_generated_NativeDashboardService_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -3478,7 +3478,7 @@
       "regionTag": "chronicle_v1_generated_NativeDashboardService_CreateNativeDashboard_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3523,7 +3523,7 @@
       "regionTag": "chronicle_v1_generated_NativeDashboardService_DeleteNativeDashboard_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -3568,7 +3568,7 @@
       "regionTag": "chronicle_v1_generated_NativeDashboardService_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -3614,7 +3614,7 @@
       "regionTag": "chronicle_v1_generated_NativeDashboardService_DuplicateChart_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3660,7 +3660,7 @@
       "regionTag": "chronicle_v1_generated_NativeDashboardService_DuplicateNativeDashboard_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3706,7 +3706,7 @@
       "regionTag": "chronicle_v1_generated_NativeDashboardService_EditChart_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3752,7 +3752,7 @@
       "regionTag": "chronicle_v1_generated_NativeDashboardService_ExportNativeDashboards_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3798,7 +3798,7 @@
       "regionTag": "chronicle_v1_generated_NativeDashboardService_GetNativeDashboard_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3844,7 +3844,7 @@
       "regionTag": "chronicle_v1_generated_NativeDashboardService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3890,7 +3890,7 @@
       "regionTag": "chronicle_v1_generated_NativeDashboardService_ImportNativeDashboards_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3936,7 +3936,7 @@
       "regionTag": "chronicle_v1_generated_NativeDashboardService_ListNativeDashboards_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -3982,7 +3982,7 @@
       "regionTag": "chronicle_v1_generated_NativeDashboardService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -4028,7 +4028,7 @@
       "regionTag": "chronicle_v1_generated_NativeDashboardService_RemoveChart_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -4074,7 +4074,7 @@
       "regionTag": "chronicle_v1_generated_NativeDashboardService_UpdateNativeDashboard_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -4119,7 +4119,7 @@
       "regionTag": "chronicle_v1_generated_ReferenceListService_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -4165,7 +4165,7 @@
       "regionTag": "chronicle_v1_generated_ReferenceListService_CreateReferenceList_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -4210,7 +4210,7 @@
       "regionTag": "chronicle_v1_generated_ReferenceListService_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -4256,7 +4256,7 @@
       "regionTag": "chronicle_v1_generated_ReferenceListService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -4302,7 +4302,7 @@
       "regionTag": "chronicle_v1_generated_ReferenceListService_GetReferenceList_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -4348,7 +4348,7 @@
       "regionTag": "chronicle_v1_generated_ReferenceListService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -4394,7 +4394,7 @@
       "regionTag": "chronicle_v1_generated_ReferenceListService_ListReferenceLists_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -4440,7 +4440,7 @@
       "regionTag": "chronicle_v1_generated_ReferenceListService_UpdateReferenceList_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -4485,7 +4485,7 @@
       "regionTag": "chronicle_v1_generated_RuleService_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -4531,7 +4531,7 @@
       "regionTag": "chronicle_v1_generated_RuleService_CreateRetrohunt_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -4577,7 +4577,7 @@
       "regionTag": "chronicle_v1_generated_RuleService_CreateRule_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -4622,7 +4622,7 @@
       "regionTag": "chronicle_v1_generated_RuleService_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -4667,7 +4667,7 @@
       "regionTag": "chronicle_v1_generated_RuleService_DeleteRule_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -4713,7 +4713,7 @@
       "regionTag": "chronicle_v1_generated_RuleService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -4759,7 +4759,7 @@
       "regionTag": "chronicle_v1_generated_RuleService_GetRetrohunt_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -4805,7 +4805,7 @@
       "regionTag": "chronicle_v1_generated_RuleService_GetRule_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -4851,7 +4851,7 @@
       "regionTag": "chronicle_v1_generated_RuleService_GetRuleDeployment_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -4897,7 +4897,7 @@
       "regionTag": "chronicle_v1_generated_RuleService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -4943,7 +4943,7 @@
       "regionTag": "chronicle_v1_generated_RuleService_ListRetrohunts_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -4989,7 +4989,7 @@
       "regionTag": "chronicle_v1_generated_RuleService_ListRuleDeployments_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -5035,7 +5035,7 @@
       "regionTag": "chronicle_v1_generated_RuleService_ListRuleRevisions_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -5081,7 +5081,7 @@
       "regionTag": "chronicle_v1_generated_RuleService_ListRules_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -5127,7 +5127,7 @@
       "regionTag": "chronicle_v1_generated_RuleService_UpdateRule_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -5173,7 +5173,7 @@
       "regionTag": "chronicle_v1_generated_RuleService_UpdateRuleDeployment_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }

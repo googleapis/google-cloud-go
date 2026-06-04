@@ -16,6 +16,8 @@
 
 // [START gkebackup_v1_generated_BackupForGKE_GetIamPolicy_sync]
 
+//go:build examples
+
 package main
 
 import (

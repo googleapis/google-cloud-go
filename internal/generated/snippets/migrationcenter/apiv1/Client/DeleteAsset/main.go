@@ -16,6 +16,8 @@
 
 // [START migrationcenter_v1_generated_MigrationCenter_DeleteAsset_sync]
 
+//go:build examples
+
 package main
 
 import (

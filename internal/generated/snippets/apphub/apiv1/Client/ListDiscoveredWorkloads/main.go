@@ -16,6 +16,8 @@
 
 // [START apphub_v1_generated_AppHub_ListDiscoveredWorkloads_sync]
 
+//go:build examples
+
 package main
 
 import (

@@ -49,7 +49,7 @@
       "regionTag": "gkemulticloud_v1_generated_AttachedClusters_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -95,7 +95,7 @@
       "regionTag": "gkemulticloud_v1_generated_AttachedClusters_CreateAttachedCluster_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -141,7 +141,7 @@
       "regionTag": "gkemulticloud_v1_generated_AttachedClusters_DeleteAttachedCluster_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -186,7 +186,7 @@
       "regionTag": "gkemulticloud_v1_generated_AttachedClusters_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -232,7 +232,7 @@
       "regionTag": "gkemulticloud_v1_generated_AttachedClusters_GenerateAttachedClusterAgentToken_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -278,7 +278,7 @@
       "regionTag": "gkemulticloud_v1_generated_AttachedClusters_GenerateAttachedClusterInstallManifest_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -324,7 +324,7 @@
       "regionTag": "gkemulticloud_v1_generated_AttachedClusters_GetAttachedCluster_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -370,7 +370,7 @@
       "regionTag": "gkemulticloud_v1_generated_AttachedClusters_GetAttachedServerConfig_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -416,7 +416,7 @@
       "regionTag": "gkemulticloud_v1_generated_AttachedClusters_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -462,7 +462,7 @@
       "regionTag": "gkemulticloud_v1_generated_AttachedClusters_ImportAttachedCluster_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -508,7 +508,7 @@
       "regionTag": "gkemulticloud_v1_generated_AttachedClusters_ListAttachedClusters_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -554,7 +554,7 @@
       "regionTag": "gkemulticloud_v1_generated_AttachedClusters_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -600,7 +600,7 @@
       "regionTag": "gkemulticloud_v1_generated_AttachedClusters_UpdateAttachedCluster_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -645,7 +645,7 @@
       "regionTag": "gkemulticloud_v1_generated_AwsClusters_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -691,7 +691,7 @@
       "regionTag": "gkemulticloud_v1_generated_AwsClusters_CreateAwsCluster_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -737,7 +737,7 @@
       "regionTag": "gkemulticloud_v1_generated_AwsClusters_CreateAwsNodePool_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -783,7 +783,7 @@
       "regionTag": "gkemulticloud_v1_generated_AwsClusters_DeleteAwsCluster_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -829,7 +829,7 @@
       "regionTag": "gkemulticloud_v1_generated_AwsClusters_DeleteAwsNodePool_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -874,7 +874,7 @@
       "regionTag": "gkemulticloud_v1_generated_AwsClusters_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -920,7 +920,7 @@
       "regionTag": "gkemulticloud_v1_generated_AwsClusters_GenerateAwsAccessToken_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -966,7 +966,7 @@
       "regionTag": "gkemulticloud_v1_generated_AwsClusters_GenerateAwsClusterAgentToken_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1012,7 +1012,7 @@
       "regionTag": "gkemulticloud_v1_generated_AwsClusters_GetAwsCluster_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1058,7 +1058,7 @@
       "regionTag": "gkemulticloud_v1_generated_AwsClusters_GetAwsJsonWebKeys_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1104,7 +1104,7 @@
       "regionTag": "gkemulticloud_v1_generated_AwsClusters_GetAwsNodePool_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1150,7 +1150,7 @@
       "regionTag": "gkemulticloud_v1_generated_AwsClusters_GetAwsOpenIdConfig_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1196,7 +1196,7 @@
       "regionTag": "gkemulticloud_v1_generated_AwsClusters_GetAwsServerConfig_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1242,7 +1242,7 @@
       "regionTag": "gkemulticloud_v1_generated_AwsClusters_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1288,7 +1288,7 @@
       "regionTag": "gkemulticloud_v1_generated_AwsClusters_ListAwsClusters_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1334,7 +1334,7 @@
       "regionTag": "gkemulticloud_v1_generated_AwsClusters_ListAwsNodePools_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1380,7 +1380,7 @@
       "regionTag": "gkemulticloud_v1_generated_AwsClusters_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1426,7 +1426,7 @@
       "regionTag": "gkemulticloud_v1_generated_AwsClusters_RollbackAwsNodePoolUpdate_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1472,7 +1472,7 @@
       "regionTag": "gkemulticloud_v1_generated_AwsClusters_UpdateAwsCluster_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1518,7 +1518,7 @@
       "regionTag": "gkemulticloud_v1_generated_AwsClusters_UpdateAwsNodePool_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1563,7 +1563,7 @@
       "regionTag": "gkemulticloud_v1_generated_AzureClusters_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -1609,7 +1609,7 @@
       "regionTag": "gkemulticloud_v1_generated_AzureClusters_CreateAzureClient_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1655,7 +1655,7 @@
       "regionTag": "gkemulticloud_v1_generated_AzureClusters_CreateAzureCluster_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1701,7 +1701,7 @@
       "regionTag": "gkemulticloud_v1_generated_AzureClusters_CreateAzureNodePool_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1747,7 +1747,7 @@
       "regionTag": "gkemulticloud_v1_generated_AzureClusters_DeleteAzureClient_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -1793,7 +1793,7 @@
       "regionTag": "gkemulticloud_v1_generated_AzureClusters_DeleteAzureCluster_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -1839,7 +1839,7 @@
       "regionTag": "gkemulticloud_v1_generated_AzureClusters_DeleteAzureNodePool_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -1884,7 +1884,7 @@
       "regionTag": "gkemulticloud_v1_generated_AzureClusters_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -1930,7 +1930,7 @@
       "regionTag": "gkemulticloud_v1_generated_AzureClusters_GenerateAzureAccessToken_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1976,7 +1976,7 @@
       "regionTag": "gkemulticloud_v1_generated_AzureClusters_GenerateAzureClusterAgentToken_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2022,7 +2022,7 @@
       "regionTag": "gkemulticloud_v1_generated_AzureClusters_GetAzureClient_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2068,7 +2068,7 @@
       "regionTag": "gkemulticloud_v1_generated_AzureClusters_GetAzureCluster_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2114,7 +2114,7 @@
       "regionTag": "gkemulticloud_v1_generated_AzureClusters_GetAzureJsonWebKeys_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2160,7 +2160,7 @@
       "regionTag": "gkemulticloud_v1_generated_AzureClusters_GetAzureNodePool_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2206,7 +2206,7 @@
       "regionTag": "gkemulticloud_v1_generated_AzureClusters_GetAzureOpenIdConfig_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2252,7 +2252,7 @@
       "regionTag": "gkemulticloud_v1_generated_AzureClusters_GetAzureServerConfig_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2298,7 +2298,7 @@
       "regionTag": "gkemulticloud_v1_generated_AzureClusters_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2344,7 +2344,7 @@
       "regionTag": "gkemulticloud_v1_generated_AzureClusters_ListAzureClients_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2390,7 +2390,7 @@
       "regionTag": "gkemulticloud_v1_generated_AzureClusters_ListAzureClusters_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2436,7 +2436,7 @@
       "regionTag": "gkemulticloud_v1_generated_AzureClusters_ListAzureNodePools_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2482,7 +2482,7 @@
       "regionTag": "gkemulticloud_v1_generated_AzureClusters_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2528,7 +2528,7 @@
       "regionTag": "gkemulticloud_v1_generated_AzureClusters_UpdateAzureCluster_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2574,7 +2574,7 @@
       "regionTag": "gkemulticloud_v1_generated_AzureClusters_UpdateAzureNodePool_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }

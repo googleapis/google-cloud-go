@@ -16,6 +16,8 @@
 
 // [START gkemulticloud_v1_generated_AzureClusters_CreateAzureClient_sync]
 
+//go:build examples
+
 package main
 
 import (

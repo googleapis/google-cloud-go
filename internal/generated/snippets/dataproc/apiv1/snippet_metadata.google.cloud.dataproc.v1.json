@@ -49,7 +49,7 @@
       "regionTag": "dataproc_v1_generated_AutoscalingPolicyService_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -95,7 +95,7 @@
       "regionTag": "dataproc_v1_generated_AutoscalingPolicyService_CreateAutoscalingPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -140,7 +140,7 @@
       "regionTag": "dataproc_v1_generated_AutoscalingPolicyService_DeleteAutoscalingPolicy_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -185,7 +185,7 @@
       "regionTag": "dataproc_v1_generated_AutoscalingPolicyService_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -231,7 +231,7 @@
       "regionTag": "dataproc_v1_generated_AutoscalingPolicyService_GetAutoscalingPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -277,7 +277,7 @@
       "regionTag": "dataproc_v1_generated_AutoscalingPolicyService_GetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -323,7 +323,7 @@
       "regionTag": "dataproc_v1_generated_AutoscalingPolicyService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -369,7 +369,7 @@
       "regionTag": "dataproc_v1_generated_AutoscalingPolicyService_ListAutoscalingPolicies_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -415,7 +415,7 @@
       "regionTag": "dataproc_v1_generated_AutoscalingPolicyService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -461,7 +461,7 @@
       "regionTag": "dataproc_v1_generated_AutoscalingPolicyService_SetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -507,7 +507,7 @@
       "regionTag": "dataproc_v1_generated_AutoscalingPolicyService_TestIamPermissions_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -553,7 +553,7 @@
       "regionTag": "dataproc_v1_generated_AutoscalingPolicyService_UpdateAutoscalingPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -598,7 +598,7 @@
       "regionTag": "dataproc_v1_generated_BatchController_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -644,7 +644,7 @@
       "regionTag": "dataproc_v1_generated_BatchController_CreateBatch_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -689,7 +689,7 @@
       "regionTag": "dataproc_v1_generated_BatchController_DeleteBatch_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -734,7 +734,7 @@
       "regionTag": "dataproc_v1_generated_BatchController_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -780,7 +780,7 @@
       "regionTag": "dataproc_v1_generated_BatchController_GetBatch_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -826,7 +826,7 @@
       "regionTag": "dataproc_v1_generated_BatchController_GetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -872,7 +872,7 @@
       "regionTag": "dataproc_v1_generated_BatchController_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -918,7 +918,7 @@
       "regionTag": "dataproc_v1_generated_BatchController_ListBatches_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -964,7 +964,7 @@
       "regionTag": "dataproc_v1_generated_BatchController_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1010,7 +1010,7 @@
       "regionTag": "dataproc_v1_generated_BatchController_SetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1056,7 +1056,7 @@
       "regionTag": "dataproc_v1_generated_BatchController_TestIamPermissions_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1101,7 +1101,7 @@
       "regionTag": "dataproc_v1_generated_ClusterController_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -1147,7 +1147,7 @@
       "regionTag": "dataproc_v1_generated_ClusterController_CreateCluster_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1193,7 +1193,7 @@
       "regionTag": "dataproc_v1_generated_ClusterController_DeleteCluster_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -1238,7 +1238,7 @@
       "regionTag": "dataproc_v1_generated_ClusterController_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -1284,7 +1284,7 @@
       "regionTag": "dataproc_v1_generated_ClusterController_DiagnoseCluster_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1330,7 +1330,7 @@
       "regionTag": "dataproc_v1_generated_ClusterController_GetCluster_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1376,7 +1376,7 @@
       "regionTag": "dataproc_v1_generated_ClusterController_GetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1422,7 +1422,7 @@
       "regionTag": "dataproc_v1_generated_ClusterController_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1468,7 +1468,7 @@
       "regionTag": "dataproc_v1_generated_ClusterController_ListClusters_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1514,7 +1514,7 @@
       "regionTag": "dataproc_v1_generated_ClusterController_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1560,7 +1560,7 @@
       "regionTag": "dataproc_v1_generated_ClusterController_SetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1606,7 +1606,7 @@
       "regionTag": "dataproc_v1_generated_ClusterController_StartCluster_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1652,7 +1652,7 @@
       "regionTag": "dataproc_v1_generated_ClusterController_StopCluster_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1698,7 +1698,7 @@
       "regionTag": "dataproc_v1_generated_ClusterController_TestIamPermissions_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1744,7 +1744,7 @@
       "regionTag": "dataproc_v1_generated_ClusterController_UpdateCluster_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1790,7 +1790,7 @@
       "regionTag": "dataproc_v1_generated_JobController_CancelJob_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1835,7 +1835,7 @@
       "regionTag": "dataproc_v1_generated_JobController_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -1880,7 +1880,7 @@
       "regionTag": "dataproc_v1_generated_JobController_DeleteJob_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -1925,7 +1925,7 @@
       "regionTag": "dataproc_v1_generated_JobController_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -1971,7 +1971,7 @@
       "regionTag": "dataproc_v1_generated_JobController_GetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2017,7 +2017,7 @@
       "regionTag": "dataproc_v1_generated_JobController_GetJob_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2063,7 +2063,7 @@
       "regionTag": "dataproc_v1_generated_JobController_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2109,7 +2109,7 @@
       "regionTag": "dataproc_v1_generated_JobController_ListJobs_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2155,7 +2155,7 @@
       "regionTag": "dataproc_v1_generated_JobController_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2201,7 +2201,7 @@
       "regionTag": "dataproc_v1_generated_JobController_SetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2247,7 +2247,7 @@
       "regionTag": "dataproc_v1_generated_JobController_SubmitJob_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2293,7 +2293,7 @@
       "regionTag": "dataproc_v1_generated_JobController_SubmitJobAsOperation_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2339,7 +2339,7 @@
       "regionTag": "dataproc_v1_generated_JobController_TestIamPermissions_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2385,7 +2385,7 @@
       "regionTag": "dataproc_v1_generated_JobController_UpdateJob_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2430,7 +2430,7 @@
       "regionTag": "dataproc_v1_generated_NodeGroupController_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -2476,7 +2476,7 @@
       "regionTag": "dataproc_v1_generated_NodeGroupController_CreateNodeGroup_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2521,7 +2521,7 @@
       "regionTag": "dataproc_v1_generated_NodeGroupController_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -2567,7 +2567,7 @@
       "regionTag": "dataproc_v1_generated_NodeGroupController_GetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2613,7 +2613,7 @@
       "regionTag": "dataproc_v1_generated_NodeGroupController_GetNodeGroup_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2659,7 +2659,7 @@
       "regionTag": "dataproc_v1_generated_NodeGroupController_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2705,7 +2705,7 @@
       "regionTag": "dataproc_v1_generated_NodeGroupController_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2751,7 +2751,7 @@
       "regionTag": "dataproc_v1_generated_NodeGroupController_ResizeNodeGroup_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2797,7 +2797,7 @@
       "regionTag": "dataproc_v1_generated_NodeGroupController_SetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2843,7 +2843,7 @@
       "regionTag": "dataproc_v1_generated_NodeGroupController_TestIamPermissions_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2888,7 +2888,7 @@
       "regionTag": "dataproc_v1_generated_SessionController_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -2934,7 +2934,7 @@
       "regionTag": "dataproc_v1_generated_SessionController_CreateSession_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2979,7 +2979,7 @@
       "regionTag": "dataproc_v1_generated_SessionController_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -3025,7 +3025,7 @@
       "regionTag": "dataproc_v1_generated_SessionController_DeleteSession_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -3071,7 +3071,7 @@
       "regionTag": "dataproc_v1_generated_SessionController_GetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3117,7 +3117,7 @@
       "regionTag": "dataproc_v1_generated_SessionController_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3163,7 +3163,7 @@
       "regionTag": "dataproc_v1_generated_SessionController_GetSession_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3209,7 +3209,7 @@
       "regionTag": "dataproc_v1_generated_SessionController_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -3255,7 +3255,7 @@
       "regionTag": "dataproc_v1_generated_SessionController_ListSessions_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -3301,7 +3301,7 @@
       "regionTag": "dataproc_v1_generated_SessionController_SetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3347,7 +3347,7 @@
       "regionTag": "dataproc_v1_generated_SessionController_TerminateSession_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -3393,7 +3393,7 @@
       "regionTag": "dataproc_v1_generated_SessionController_TestIamPermissions_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3438,7 +3438,7 @@
       "regionTag": "dataproc_v1_generated_SessionTemplateController_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -3484,7 +3484,7 @@
       "regionTag": "dataproc_v1_generated_SessionTemplateController_CreateSessionTemplate_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3529,7 +3529,7 @@
       "regionTag": "dataproc_v1_generated_SessionTemplateController_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -3574,7 +3574,7 @@
       "regionTag": "dataproc_v1_generated_SessionTemplateController_DeleteSessionTemplate_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -3620,7 +3620,7 @@
       "regionTag": "dataproc_v1_generated_SessionTemplateController_GetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3666,7 +3666,7 @@
       "regionTag": "dataproc_v1_generated_SessionTemplateController_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3712,7 +3712,7 @@
       "regionTag": "dataproc_v1_generated_SessionTemplateController_GetSessionTemplate_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3758,7 +3758,7 @@
       "regionTag": "dataproc_v1_generated_SessionTemplateController_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -3804,7 +3804,7 @@
       "regionTag": "dataproc_v1_generated_SessionTemplateController_ListSessionTemplates_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -3850,7 +3850,7 @@
       "regionTag": "dataproc_v1_generated_SessionTemplateController_SetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3896,7 +3896,7 @@
       "regionTag": "dataproc_v1_generated_SessionTemplateController_TestIamPermissions_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3942,7 +3942,7 @@
       "regionTag": "dataproc_v1_generated_SessionTemplateController_UpdateSessionTemplate_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3987,7 +3987,7 @@
       "regionTag": "dataproc_v1_generated_WorkflowTemplateService_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -4033,7 +4033,7 @@
       "regionTag": "dataproc_v1_generated_WorkflowTemplateService_CreateWorkflowTemplate_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -4078,7 +4078,7 @@
       "regionTag": "dataproc_v1_generated_WorkflowTemplateService_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -4123,7 +4123,7 @@
       "regionTag": "dataproc_v1_generated_WorkflowTemplateService_DeleteWorkflowTemplate_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -4169,7 +4169,7 @@
       "regionTag": "dataproc_v1_generated_WorkflowTemplateService_GetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -4215,7 +4215,7 @@
       "regionTag": "dataproc_v1_generated_WorkflowTemplateService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -4261,7 +4261,7 @@
       "regionTag": "dataproc_v1_generated_WorkflowTemplateService_GetWorkflowTemplate_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -4307,7 +4307,7 @@
       "regionTag": "dataproc_v1_generated_WorkflowTemplateService_InstantiateInlineWorkflowTemplate_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -4353,7 +4353,7 @@
       "regionTag": "dataproc_v1_generated_WorkflowTemplateService_InstantiateWorkflowTemplate_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -4399,7 +4399,7 @@
       "regionTag": "dataproc_v1_generated_WorkflowTemplateService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -4445,7 +4445,7 @@
       "regionTag": "dataproc_v1_generated_WorkflowTemplateService_ListWorkflowTemplates_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -4491,7 +4491,7 @@
       "regionTag": "dataproc_v1_generated_WorkflowTemplateService_SetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -4537,7 +4537,7 @@
       "regionTag": "dataproc_v1_generated_WorkflowTemplateService_TestIamPermissions_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -4583,7 +4583,7 @@
       "regionTag": "dataproc_v1_generated_WorkflowTemplateService_UpdateWorkflowTemplate_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }

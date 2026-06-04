@@ -16,6 +16,8 @@
 
 // [START notebooks_v2_generated_NotebookService_CheckInstanceUpgradability_sync]
 
+//go:build examples
+
 package main
 
 import (

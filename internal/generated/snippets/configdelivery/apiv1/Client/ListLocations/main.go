@@ -16,6 +16,8 @@
 
 // [START configdelivery_v1_generated_ConfigDelivery_ListLocations_sync]
 
+//go:build examples
+
 package main
 
 import (

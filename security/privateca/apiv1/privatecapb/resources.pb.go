@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -758,7 +758,7 @@ func (x CertificateRevocationList_State) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use CertificateRevocationList_State.Descriptor instead.
 func (CertificateRevocationList_State) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_security_privateca_v1_resources_proto_rawDescGZIP(), []int{2, 0}
+	return file_google_cloud_security_privateca_v1_resources_proto_rawDescGZIP(), []int{3, 0}
 }
 
 // Types of public keys formats that are supported. Currently, only `PEM`
@@ -820,7 +820,7 @@ func (x PublicKey_KeyFormat) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use PublicKey_KeyFormat.Descriptor instead.
 func (PublicKey_KeyFormat) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_security_privateca_v1_resources_proto_rawDescGZIP(), []int{7, 0}
+	return file_google_cloud_security_privateca_v1_resources_proto_rawDescGZIP(), []int{8, 0}
 }
 
 // Describes well-known X.509 extensions that can appear in a
@@ -920,7 +920,7 @@ func (x CertificateExtensionConstraints_KnownCertificateExtension) Number() prot
 
 // Deprecated: Use CertificateExtensionConstraints_KnownCertificateExtension.Descriptor instead.
 func (CertificateExtensionConstraints_KnownCertificateExtension) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_security_privateca_v1_resources_proto_rawDescGZIP(), []int{18, 0}
+	return file_google_cloud_security_privateca_v1_resources_proto_rawDescGZIP(), []int{19, 0}
 }
 
 // A
@@ -1230,6 +1230,12 @@ type CaPool struct {
 	// [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority]
 	// in this [CaPool][google.cloud.security.privateca.v1.CaPool].
 	PublishingOptions *CaPool_PublishingOptions `protobuf:"bytes,4,opt,name=publishing_options,json=publishingOptions,proto3" json:"publishing_options,omitempty"`
+	// Optional. When
+	// [EncryptionSpec][google.cloud.security.privateca.v1.EncryptionSpec] is
+	// provided, the [Subject][google.cloud.security.privateca.v1.Subject],
+	// [SubjectAltNames][google.cloud.security.privateca.v1.SubjectAltNames], and
+	// the PEM-encoded certificate fields will be encrypted at rest.
+	EncryptionSpec *EncryptionSpec `protobuf:"bytes,8,opt,name=encryption_spec,json=encryptionSpec,proto3" json:"encryption_spec,omitempty"`
 	// Optional. Labels with user-defined metadata.
 	Labels        map[string]string `protobuf:"bytes,5,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	unknownFields protoimpl.UnknownFields
@@ -1294,11 +1300,65 @@ func (x *CaPool) GetPublishingOptions() *CaPool_PublishingOptions {
 	return nil
 }
 
+func (x *CaPool) GetEncryptionSpec() *EncryptionSpec {
+	if x != nil {
+		return x.EncryptionSpec
+	}
+	return nil
+}
+
 func (x *CaPool) GetLabels() map[string]string {
 	if x != nil {
 		return x.Labels
 	}
 	return nil
+}
+
+// The configuration used for encrypting data at rest.
+type EncryptionSpec struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The resource name for a Cloud KMS key in the format
+	// `projects/*/locations/*/keyRings/*/cryptoKeys/*`.
+	CloudKmsKey   string `protobuf:"bytes,1,opt,name=cloud_kms_key,json=cloudKmsKey,proto3" json:"cloud_kms_key,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *EncryptionSpec) Reset() {
+	*x = EncryptionSpec{}
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *EncryptionSpec) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EncryptionSpec) ProtoMessage() {}
+
+func (x *EncryptionSpec) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use EncryptionSpec.ProtoReflect.Descriptor instead.
+func (*EncryptionSpec) Descriptor() ([]byte, []int) {
+	return file_google_cloud_security_privateca_v1_resources_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *EncryptionSpec) GetCloudKmsKey() string {
+	if x != nil {
+		return x.CloudKmsKey
+	}
+	return ""
 }
 
 // A
@@ -1347,7 +1407,7 @@ type CertificateRevocationList struct {
 
 func (x *CertificateRevocationList) Reset() {
 	*x = CertificateRevocationList{}
-	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[2]
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1359,7 +1419,7 @@ func (x *CertificateRevocationList) String() string {
 func (*CertificateRevocationList) ProtoMessage() {}
 
 func (x *CertificateRevocationList) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[2]
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1372,7 +1432,7 @@ func (x *CertificateRevocationList) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CertificateRevocationList.ProtoReflect.Descriptor instead.
 func (*CertificateRevocationList) Descriptor() ([]byte, []int) {
-	return file_google_cloud_security_privateca_v1_resources_proto_rawDescGZIP(), []int{2}
+	return file_google_cloud_security_privateca_v1_resources_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *CertificateRevocationList) GetName() string {
@@ -1503,14 +1563,29 @@ type Certificate struct {
 	// [Certificate][google.cloud.security.privateca.v1.Certificate] was updated.
 	UpdateTime *timestamppb.Timestamp `protobuf:"bytes,13,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
 	// Optional. Labels with user-defined metadata.
-	Labels        map[string]string `protobuf:"bytes,14,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	Labels map[string]string `protobuf:"bytes,14,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	// Optional. The requested
+	// [not_before_time][google.cloud.security.privateca.v1.CertificateDescription.SubjectDescription.not_before_time]
+	// of this [Certificate][google.cloud.security.privateca.v1.Certificate]. This
+	// field may only be set if the
+	// [CaPool.IssuancePolicy.allow_requester_specified_not_before_time][google.cloud.security.privateca.v1.CaPool.IssuancePolicy.allow_requester_specified_not_before_time]
+	// field is set to true for the issuing
+	// [CaPool][google.cloud.security.privateca.v1.CaPool].
+	//
+	// If this field is specified, the certificate will be issued with this
+	// 'not_before_time'. If this is not specified, the 'not_before_time' will be
+	// set to the issuance time or issuance time minus
+	// [backdate_duration][google.cloud.security.privateca.v1.CaPool.IssuancePolicy.backdate_duration]
+	// depending on the [CaPool][google.cloud.security.privateca.v1.CaPool]
+	// configuration.
+	RequestedNotBeforeTime *timestamppb.Timestamp `protobuf:"bytes,15,opt,name=requested_not_before_time,json=requestedNotBeforeTime,proto3" json:"requested_not_before_time,omitempty"`
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *Certificate) Reset() {
 	*x = Certificate{}
-	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[3]
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1522,7 +1597,7 @@ func (x *Certificate) String() string {
 func (*Certificate) ProtoMessage() {}
 
 func (x *Certificate) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[3]
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1535,7 +1610,7 @@ func (x *Certificate) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Certificate.ProtoReflect.Descriptor instead.
 func (*Certificate) Descriptor() ([]byte, []int) {
-	return file_google_cloud_security_privateca_v1_resources_proto_rawDescGZIP(), []int{3}
+	return file_google_cloud_security_privateca_v1_resources_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *Certificate) GetName() string {
@@ -1647,6 +1722,13 @@ func (x *Certificate) GetLabels() map[string]string {
 	return nil
 }
 
+func (x *Certificate) GetRequestedNotBeforeTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.RequestedNotBeforeTime
+	}
+	return nil
+}
+
 type isCertificate_CertificateConfig interface {
 	isCertificate_CertificateConfig()
 }
@@ -1744,7 +1826,7 @@ type CertificateTemplate struct {
 
 func (x *CertificateTemplate) Reset() {
 	*x = CertificateTemplate{}
-	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[4]
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1756,7 +1838,7 @@ func (x *CertificateTemplate) String() string {
 func (*CertificateTemplate) ProtoMessage() {}
 
 func (x *CertificateTemplate) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[4]
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1769,7 +1851,7 @@ func (x *CertificateTemplate) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CertificateTemplate.ProtoReflect.Descriptor instead.
 func (*CertificateTemplate) Descriptor() ([]byte, []int) {
-	return file_google_cloud_security_privateca_v1_resources_proto_rawDescGZIP(), []int{4}
+	return file_google_cloud_security_privateca_v1_resources_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *CertificateTemplate) GetName() string {
@@ -1867,7 +1949,7 @@ type X509Parameters struct {
 
 func (x *X509Parameters) Reset() {
 	*x = X509Parameters{}
-	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[5]
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1879,7 +1961,7 @@ func (x *X509Parameters) String() string {
 func (*X509Parameters) ProtoMessage() {}
 
 func (x *X509Parameters) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[5]
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1892,7 +1974,7 @@ func (x *X509Parameters) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use X509Parameters.ProtoReflect.Descriptor instead.
 func (*X509Parameters) Descriptor() ([]byte, []int) {
-	return file_google_cloud_security_privateca_v1_resources_proto_rawDescGZIP(), []int{5}
+	return file_google_cloud_security_privateca_v1_resources_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *X509Parameters) GetKeyUsage() *KeyUsage {
@@ -1954,7 +2036,7 @@ type SubordinateConfig struct {
 
 func (x *SubordinateConfig) Reset() {
 	*x = SubordinateConfig{}
-	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[6]
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1966,7 +2048,7 @@ func (x *SubordinateConfig) String() string {
 func (*SubordinateConfig) ProtoMessage() {}
 
 func (x *SubordinateConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[6]
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1979,7 +2061,7 @@ func (x *SubordinateConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SubordinateConfig.ProtoReflect.Descriptor instead.
 func (*SubordinateConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_security_privateca_v1_resources_proto_rawDescGZIP(), []int{6}
+	return file_google_cloud_security_privateca_v1_resources_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *SubordinateConfig) GetSubordinateConfig() isSubordinateConfig_SubordinateConfig {
@@ -2048,7 +2130,7 @@ type PublicKey struct {
 
 func (x *PublicKey) Reset() {
 	*x = PublicKey{}
-	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[7]
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2060,7 +2142,7 @@ func (x *PublicKey) String() string {
 func (*PublicKey) ProtoMessage() {}
 
 func (x *PublicKey) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[7]
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2073,7 +2155,7 @@ func (x *PublicKey) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PublicKey.ProtoReflect.Descriptor instead.
 func (*PublicKey) Descriptor() ([]byte, []int) {
-	return file_google_cloud_security_privateca_v1_resources_proto_rawDescGZIP(), []int{7}
+	return file_google_cloud_security_privateca_v1_resources_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *PublicKey) GetKey() []byte {
@@ -2121,7 +2203,7 @@ type CertificateConfig struct {
 
 func (x *CertificateConfig) Reset() {
 	*x = CertificateConfig{}
-	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[8]
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2133,7 +2215,7 @@ func (x *CertificateConfig) String() string {
 func (*CertificateConfig) ProtoMessage() {}
 
 func (x *CertificateConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[8]
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2146,7 +2228,7 @@ func (x *CertificateConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CertificateConfig.ProtoReflect.Descriptor instead.
 func (*CertificateConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_security_privateca_v1_resources_proto_rawDescGZIP(), []int{8}
+	return file_google_cloud_security_privateca_v1_resources_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *CertificateConfig) GetSubjectConfig() *CertificateConfig_SubjectConfig {
@@ -2216,7 +2298,7 @@ type CertificateDescription struct {
 
 func (x *CertificateDescription) Reset() {
 	*x = CertificateDescription{}
-	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[9]
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2228,7 +2310,7 @@ func (x *CertificateDescription) String() string {
 func (*CertificateDescription) ProtoMessage() {}
 
 func (x *CertificateDescription) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[9]
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2241,7 +2323,7 @@ func (x *CertificateDescription) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CertificateDescription.ProtoReflect.Descriptor instead.
 func (*CertificateDescription) Descriptor() ([]byte, []int) {
-	return file_google_cloud_security_privateca_v1_resources_proto_rawDescGZIP(), []int{9}
+	return file_google_cloud_security_privateca_v1_resources_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *CertificateDescription) GetSubjectDescription() *CertificateDescription_SubjectDescription {
@@ -2321,7 +2403,7 @@ type ObjectId struct {
 
 func (x *ObjectId) Reset() {
 	*x = ObjectId{}
-	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[10]
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2333,7 +2415,7 @@ func (x *ObjectId) String() string {
 func (*ObjectId) ProtoMessage() {}
 
 func (x *ObjectId) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[10]
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2346,7 +2428,7 @@ func (x *ObjectId) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ObjectId.ProtoReflect.Descriptor instead.
 func (*ObjectId) Descriptor() ([]byte, []int) {
-	return file_google_cloud_security_privateca_v1_resources_proto_rawDescGZIP(), []int{10}
+	return file_google_cloud_security_privateca_v1_resources_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *ObjectId) GetObjectIdPath() []int32 {
@@ -2375,7 +2457,7 @@ type X509Extension struct {
 
 func (x *X509Extension) Reset() {
 	*x = X509Extension{}
-	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[11]
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2387,7 +2469,7 @@ func (x *X509Extension) String() string {
 func (*X509Extension) ProtoMessage() {}
 
 func (x *X509Extension) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[11]
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2400,7 +2482,7 @@ func (x *X509Extension) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use X509Extension.ProtoReflect.Descriptor instead.
 func (*X509Extension) Descriptor() ([]byte, []int) {
-	return file_google_cloud_security_privateca_v1_resources_proto_rawDescGZIP(), []int{11}
+	return file_google_cloud_security_privateca_v1_resources_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *X509Extension) GetObjectId() *ObjectId {
@@ -2442,7 +2524,7 @@ type KeyUsage struct {
 
 func (x *KeyUsage) Reset() {
 	*x = KeyUsage{}
-	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[12]
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2454,7 +2536,7 @@ func (x *KeyUsage) String() string {
 func (*KeyUsage) ProtoMessage() {}
 
 func (x *KeyUsage) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[12]
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2467,7 +2549,7 @@ func (x *KeyUsage) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use KeyUsage.ProtoReflect.Descriptor instead.
 func (*KeyUsage) Descriptor() ([]byte, []int) {
-	return file_google_cloud_security_privateca_v1_resources_proto_rawDescGZIP(), []int{12}
+	return file_google_cloud_security_privateca_v1_resources_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *KeyUsage) GetBaseKeyUsage() *KeyUsage_KeyUsageOptions {
@@ -2511,7 +2593,7 @@ type AttributeTypeAndValue struct {
 
 func (x *AttributeTypeAndValue) Reset() {
 	*x = AttributeTypeAndValue{}
-	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[13]
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2523,7 +2605,7 @@ func (x *AttributeTypeAndValue) String() string {
 func (*AttributeTypeAndValue) ProtoMessage() {}
 
 func (x *AttributeTypeAndValue) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[13]
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2536,7 +2618,7 @@ func (x *AttributeTypeAndValue) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AttributeTypeAndValue.ProtoReflect.Descriptor instead.
 func (*AttributeTypeAndValue) Descriptor() ([]byte, []int) {
-	return file_google_cloud_security_privateca_v1_resources_proto_rawDescGZIP(), []int{13}
+	return file_google_cloud_security_privateca_v1_resources_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *AttributeTypeAndValue) GetAttributeType() isAttributeTypeAndValue_AttributeType {
@@ -2602,7 +2684,7 @@ type RelativeDistinguishedName struct {
 
 func (x *RelativeDistinguishedName) Reset() {
 	*x = RelativeDistinguishedName{}
-	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[14]
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2614,7 +2696,7 @@ func (x *RelativeDistinguishedName) String() string {
 func (*RelativeDistinguishedName) ProtoMessage() {}
 
 func (x *RelativeDistinguishedName) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[14]
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2627,7 +2709,7 @@ func (x *RelativeDistinguishedName) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RelativeDistinguishedName.ProtoReflect.Descriptor instead.
 func (*RelativeDistinguishedName) Descriptor() ([]byte, []int) {
-	return file_google_cloud_security_privateca_v1_resources_proto_rawDescGZIP(), []int{14}
+	return file_google_cloud_security_privateca_v1_resources_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *RelativeDistinguishedName) GetAttributes() []*AttributeTypeAndValue {
@@ -2665,7 +2747,7 @@ type Subject struct {
 
 func (x *Subject) Reset() {
 	*x = Subject{}
-	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[15]
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2677,7 +2759,7 @@ func (x *Subject) String() string {
 func (*Subject) ProtoMessage() {}
 
 func (x *Subject) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[15]
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2690,7 +2772,7 @@ func (x *Subject) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Subject.ProtoReflect.Descriptor instead.
 func (*Subject) Descriptor() ([]byte, []int) {
-	return file_google_cloud_security_privateca_v1_resources_proto_rawDescGZIP(), []int{15}
+	return file_google_cloud_security_privateca_v1_resources_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *Subject) GetCommonName() string {
@@ -2780,7 +2862,7 @@ type SubjectAltNames struct {
 
 func (x *SubjectAltNames) Reset() {
 	*x = SubjectAltNames{}
-	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[16]
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2792,7 +2874,7 @@ func (x *SubjectAltNames) String() string {
 func (*SubjectAltNames) ProtoMessage() {}
 
 func (x *SubjectAltNames) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[16]
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2805,7 +2887,7 @@ func (x *SubjectAltNames) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SubjectAltNames.ProtoReflect.Descriptor instead.
 func (*SubjectAltNames) Descriptor() ([]byte, []int) {
-	return file_google_cloud_security_privateca_v1_resources_proto_rawDescGZIP(), []int{16}
+	return file_google_cloud_security_privateca_v1_resources_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *SubjectAltNames) GetDnsNames() []string {
@@ -2873,7 +2955,7 @@ type CertificateIdentityConstraints struct {
 
 func (x *CertificateIdentityConstraints) Reset() {
 	*x = CertificateIdentityConstraints{}
-	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[17]
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2885,7 +2967,7 @@ func (x *CertificateIdentityConstraints) String() string {
 func (*CertificateIdentityConstraints) ProtoMessage() {}
 
 func (x *CertificateIdentityConstraints) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[17]
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2898,7 +2980,7 @@ func (x *CertificateIdentityConstraints) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CertificateIdentityConstraints.ProtoReflect.Descriptor instead.
 func (*CertificateIdentityConstraints) Descriptor() ([]byte, []int) {
-	return file_google_cloud_security_privateca_v1_resources_proto_rawDescGZIP(), []int{17}
+	return file_google_cloud_security_privateca_v1_resources_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *CertificateIdentityConstraints) GetCelExpression() *expr.Expr {
@@ -2941,7 +3023,7 @@ type CertificateExtensionConstraints struct {
 
 func (x *CertificateExtensionConstraints) Reset() {
 	*x = CertificateExtensionConstraints{}
-	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[18]
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2953,7 +3035,7 @@ func (x *CertificateExtensionConstraints) String() string {
 func (*CertificateExtensionConstraints) ProtoMessage() {}
 
 func (x *CertificateExtensionConstraints) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[18]
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2966,7 +3048,7 @@ func (x *CertificateExtensionConstraints) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CertificateExtensionConstraints.ProtoReflect.Descriptor instead.
 func (*CertificateExtensionConstraints) Descriptor() ([]byte, []int) {
-	return file_google_cloud_security_privateca_v1_resources_proto_rawDescGZIP(), []int{18}
+	return file_google_cloud_security_privateca_v1_resources_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *CertificateExtensionConstraints) GetKnownExtensions() []CertificateExtensionConstraints_KnownCertificateExtension {
@@ -3004,7 +3086,7 @@ type CertificateAuthority_AccessUrls struct {
 
 func (x *CertificateAuthority_AccessUrls) Reset() {
 	*x = CertificateAuthority_AccessUrls{}
-	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[19]
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3016,7 +3098,7 @@ func (x *CertificateAuthority_AccessUrls) String() string {
 func (*CertificateAuthority_AccessUrls) ProtoMessage() {}
 
 func (x *CertificateAuthority_AccessUrls) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[19]
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3062,7 +3144,7 @@ type CertificateAuthority_KeyVersionSpec struct {
 
 func (x *CertificateAuthority_KeyVersionSpec) Reset() {
 	*x = CertificateAuthority_KeyVersionSpec{}
-	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[20]
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3074,7 +3156,7 @@ func (x *CertificateAuthority_KeyVersionSpec) String() string {
 func (*CertificateAuthority_KeyVersionSpec) ProtoMessage() {}
 
 func (x *CertificateAuthority_KeyVersionSpec) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[20]
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3165,7 +3247,7 @@ type CertificateAuthority_UserDefinedAccessUrls struct {
 
 func (x *CertificateAuthority_UserDefinedAccessUrls) Reset() {
 	*x = CertificateAuthority_UserDefinedAccessUrls{}
-	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[21]
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3177,7 +3259,7 @@ func (x *CertificateAuthority_UserDefinedAccessUrls) String() string {
 func (*CertificateAuthority_UserDefinedAccessUrls) ProtoMessage() {}
 
 func (x *CertificateAuthority_UserDefinedAccessUrls) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[21]
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3245,7 +3327,7 @@ type CaPool_PublishingOptions struct {
 
 func (x *CaPool_PublishingOptions) Reset() {
 	*x = CaPool_PublishingOptions{}
-	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[23]
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3257,7 +3339,7 @@ func (x *CaPool_PublishingOptions) String() string {
 func (*CaPool_PublishingOptions) ProtoMessage() {}
 
 func (x *CaPool_PublishingOptions) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[23]
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3303,14 +3385,29 @@ type CaPool_IssuancePolicy struct {
 	// is specified, then the certificate request's public key must match one of
 	// the key types listed here. Otherwise, any key may be used.
 	AllowedKeyTypes []*CaPool_IssuancePolicy_AllowedKeyType `protobuf:"bytes,1,rep,name=allowed_key_types,json=allowedKeyTypes,proto3" json:"allowed_key_types,omitempty"`
-	// Optional. The duration to backdate all certificates issued from this
-	// [CaPool][google.cloud.security.privateca.v1.CaPool]. If not set, the
-	// certificates will be issued with a not_before_time of the issuance time
-	// (i.e. the current time). If set, the certificates will be issued with a
-	// not_before_time of the issuance time minus the backdate_duration. The
-	// not_after_time will be adjusted to preserve the requested lifetime. The
-	// backdate_duration must be less than or equal to 48 hours.
+	// Optional. If set, all certificates issued from this
+	// [CaPool][google.cloud.security.privateca.v1.CaPool] will be backdated by
+	// this duration. The 'not_before_time' will be the issuance time minus this
+	// [backdate_duration][google.cloud.security.privateca.v1.CaPool.IssuancePolicy.backdate_duration],
+	// and the 'not_after_time' will be adjusted to preserve the requested
+	// lifetime. The maximum duration that a certificate can be backdated with
+	// these options is 48 hours in the past.
+	// This option cannot be set if
+	// [allow_requester_specified_not_before_time][google.cloud.security.privateca.v1.CaPool.IssuancePolicy.allow_requester_specified_not_before_time]
+	// is set.
 	BackdateDuration *durationpb.Duration `protobuf:"bytes,7,opt,name=backdate_duration,json=backdateDuration,proto3" json:"backdate_duration,omitempty"`
+	// Optional. If set to true, allows requesters to specify the
+	// [requested_not_before_time][google.cloud.security.privateca.v1.Certificate.requested_not_before_time]
+	// field when creating a
+	// [Certificate][google.cloud.security.privateca.v1.Certificate].
+	// Certificates requested with this option enabled will have a
+	// 'not_before_time' equal to the value specified in the request. The
+	// 'not_after_time' will be adjusted to preserve the requested lifetime. The
+	// maximum time that a certificate can be backdated with these options is 48
+	// hours in the past. This option cannot be set if
+	// [backdate_duration][google.cloud.security.privateca.v1.CaPool.IssuancePolicy.backdate_duration]
+	// is set.
+	AllowRequesterSpecifiedNotBeforeTime bool `protobuf:"varint,8,opt,name=allow_requester_specified_not_before_time,json=allowRequesterSpecifiedNotBeforeTime,proto3" json:"allow_requester_specified_not_before_time,omitempty"`
 	// Optional. The maximum lifetime allowed for issued
 	// [Certificates][google.cloud.security.privateca.v1.Certificate]. Note that
 	// if the issuing
@@ -3364,7 +3461,7 @@ type CaPool_IssuancePolicy struct {
 
 func (x *CaPool_IssuancePolicy) Reset() {
 	*x = CaPool_IssuancePolicy{}
-	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[24]
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3376,7 +3473,7 @@ func (x *CaPool_IssuancePolicy) String() string {
 func (*CaPool_IssuancePolicy) ProtoMessage() {}
 
 func (x *CaPool_IssuancePolicy) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[24]
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3404,6 +3501,13 @@ func (x *CaPool_IssuancePolicy) GetBackdateDuration() *durationpb.Duration {
 		return x.BackdateDuration
 	}
 	return nil
+}
+
+func (x *CaPool_IssuancePolicy) GetAllowRequesterSpecifiedNotBeforeTime() bool {
+	if x != nil {
+		return x.AllowRequesterSpecifiedNotBeforeTime
+	}
+	return false
 }
 
 func (x *CaPool_IssuancePolicy) GetMaximumLifetime() *durationpb.Duration {
@@ -3460,7 +3564,7 @@ type CaPool_IssuancePolicy_AllowedKeyType struct {
 
 func (x *CaPool_IssuancePolicy_AllowedKeyType) Reset() {
 	*x = CaPool_IssuancePolicy_AllowedKeyType{}
-	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[26]
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3472,7 +3576,7 @@ func (x *CaPool_IssuancePolicy_AllowedKeyType) String() string {
 func (*CaPool_IssuancePolicy_AllowedKeyType) ProtoMessage() {}
 
 func (x *CaPool_IssuancePolicy_AllowedKeyType) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[26]
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3553,7 +3657,7 @@ type CaPool_IssuancePolicy_IssuanceModes struct {
 
 func (x *CaPool_IssuancePolicy_IssuanceModes) Reset() {
 	*x = CaPool_IssuancePolicy_IssuanceModes{}
-	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[27]
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3565,7 +3669,7 @@ func (x *CaPool_IssuancePolicy_IssuanceModes) String() string {
 func (*CaPool_IssuancePolicy_IssuanceModes) ProtoMessage() {}
 
 func (x *CaPool_IssuancePolicy_IssuanceModes) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[27]
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3614,7 +3718,7 @@ type CaPool_IssuancePolicy_AllowedKeyType_RsaKeyType struct {
 
 func (x *CaPool_IssuancePolicy_AllowedKeyType_RsaKeyType) Reset() {
 	*x = CaPool_IssuancePolicy_AllowedKeyType_RsaKeyType{}
-	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[28]
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[29]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3626,7 +3730,7 @@ func (x *CaPool_IssuancePolicy_AllowedKeyType_RsaKeyType) String() string {
 func (*CaPool_IssuancePolicy_AllowedKeyType_RsaKeyType) ProtoMessage() {}
 
 func (x *CaPool_IssuancePolicy_AllowedKeyType_RsaKeyType) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[28]
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[29]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3670,7 +3774,7 @@ type CaPool_IssuancePolicy_AllowedKeyType_EcKeyType struct {
 
 func (x *CaPool_IssuancePolicy_AllowedKeyType_EcKeyType) Reset() {
 	*x = CaPool_IssuancePolicy_AllowedKeyType_EcKeyType{}
-	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[29]
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[30]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3682,7 +3786,7 @@ func (x *CaPool_IssuancePolicy_AllowedKeyType_EcKeyType) String() string {
 func (*CaPool_IssuancePolicy_AllowedKeyType_EcKeyType) ProtoMessage() {}
 
 func (x *CaPool_IssuancePolicy_AllowedKeyType_EcKeyType) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[29]
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[30]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3726,7 +3830,7 @@ type CertificateRevocationList_RevokedCertificate struct {
 
 func (x *CertificateRevocationList_RevokedCertificate) Reset() {
 	*x = CertificateRevocationList_RevokedCertificate{}
-	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[30]
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[31]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3738,7 +3842,7 @@ func (x *CertificateRevocationList_RevokedCertificate) String() string {
 func (*CertificateRevocationList_RevokedCertificate) ProtoMessage() {}
 
 func (x *CertificateRevocationList_RevokedCertificate) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[30]
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[31]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3751,7 +3855,7 @@ func (x *CertificateRevocationList_RevokedCertificate) ProtoReflect() protorefle
 
 // Deprecated: Use CertificateRevocationList_RevokedCertificate.ProtoReflect.Descriptor instead.
 func (*CertificateRevocationList_RevokedCertificate) Descriptor() ([]byte, []int) {
-	return file_google_cloud_security_privateca_v1_resources_proto_rawDescGZIP(), []int{2, 0}
+	return file_google_cloud_security_privateca_v1_resources_proto_rawDescGZIP(), []int{3, 0}
 }
 
 func (x *CertificateRevocationList_RevokedCertificate) GetCertificate() string {
@@ -3793,7 +3897,7 @@ type Certificate_RevocationDetails struct {
 
 func (x *Certificate_RevocationDetails) Reset() {
 	*x = Certificate_RevocationDetails{}
-	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[32]
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[33]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3805,7 +3909,7 @@ func (x *Certificate_RevocationDetails) String() string {
 func (*Certificate_RevocationDetails) ProtoMessage() {}
 
 func (x *Certificate_RevocationDetails) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[32]
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[33]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3818,7 +3922,7 @@ func (x *Certificate_RevocationDetails) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Certificate_RevocationDetails.ProtoReflect.Descriptor instead.
 func (*Certificate_RevocationDetails) Descriptor() ([]byte, []int) {
-	return file_google_cloud_security_privateca_v1_resources_proto_rawDescGZIP(), []int{3, 0}
+	return file_google_cloud_security_privateca_v1_resources_proto_rawDescGZIP(), []int{4, 0}
 }
 
 func (x *Certificate_RevocationDetails) GetRevocationState() RevocationReason {
@@ -3855,7 +3959,7 @@ type X509Parameters_CaOptions struct {
 
 func (x *X509Parameters_CaOptions) Reset() {
 	*x = X509Parameters_CaOptions{}
-	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[35]
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[36]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3867,7 +3971,7 @@ func (x *X509Parameters_CaOptions) String() string {
 func (*X509Parameters_CaOptions) ProtoMessage() {}
 
 func (x *X509Parameters_CaOptions) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[35]
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[36]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3880,7 +3984,7 @@ func (x *X509Parameters_CaOptions) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use X509Parameters_CaOptions.ProtoReflect.Descriptor instead.
 func (*X509Parameters_CaOptions) Descriptor() ([]byte, []int) {
-	return file_google_cloud_security_privateca_v1_resources_proto_rawDescGZIP(), []int{5, 0}
+	return file_google_cloud_security_privateca_v1_resources_proto_rawDescGZIP(), []int{6, 0}
 }
 
 func (x *X509Parameters_CaOptions) GetIsCa() bool {
@@ -3949,7 +4053,7 @@ type X509Parameters_NameConstraints struct {
 
 func (x *X509Parameters_NameConstraints) Reset() {
 	*x = X509Parameters_NameConstraints{}
-	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[36]
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[37]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3961,7 +4065,7 @@ func (x *X509Parameters_NameConstraints) String() string {
 func (*X509Parameters_NameConstraints) ProtoMessage() {}
 
 func (x *X509Parameters_NameConstraints) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[36]
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[37]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3974,7 +4078,7 @@ func (x *X509Parameters_NameConstraints) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use X509Parameters_NameConstraints.ProtoReflect.Descriptor instead.
 func (*X509Parameters_NameConstraints) Descriptor() ([]byte, []int) {
-	return file_google_cloud_security_privateca_v1_resources_proto_rawDescGZIP(), []int{5, 1}
+	return file_google_cloud_security_privateca_v1_resources_proto_rawDescGZIP(), []int{6, 1}
 }
 
 func (x *X509Parameters_NameConstraints) GetCritical() bool {
@@ -4052,7 +4156,7 @@ type SubordinateConfig_SubordinateConfigChain struct {
 
 func (x *SubordinateConfig_SubordinateConfigChain) Reset() {
 	*x = SubordinateConfig_SubordinateConfigChain{}
-	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[37]
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[38]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4064,7 +4168,7 @@ func (x *SubordinateConfig_SubordinateConfigChain) String() string {
 func (*SubordinateConfig_SubordinateConfigChain) ProtoMessage() {}
 
 func (x *SubordinateConfig_SubordinateConfigChain) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[37]
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[38]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4077,7 +4181,7 @@ func (x *SubordinateConfig_SubordinateConfigChain) ProtoReflect() protoreflect.M
 
 // Deprecated: Use SubordinateConfig_SubordinateConfigChain.ProtoReflect.Descriptor instead.
 func (*SubordinateConfig_SubordinateConfigChain) Descriptor() ([]byte, []int) {
-	return file_google_cloud_security_privateca_v1_resources_proto_rawDescGZIP(), []int{6, 0}
+	return file_google_cloud_security_privateca_v1_resources_proto_rawDescGZIP(), []int{7, 0}
 }
 
 func (x *SubordinateConfig_SubordinateConfigChain) GetPemCertificates() []string {
@@ -4102,7 +4206,7 @@ type CertificateConfig_SubjectConfig struct {
 
 func (x *CertificateConfig_SubjectConfig) Reset() {
 	*x = CertificateConfig_SubjectConfig{}
-	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[38]
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[39]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4114,7 +4218,7 @@ func (x *CertificateConfig_SubjectConfig) String() string {
 func (*CertificateConfig_SubjectConfig) ProtoMessage() {}
 
 func (x *CertificateConfig_SubjectConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[38]
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[39]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4127,7 +4231,7 @@ func (x *CertificateConfig_SubjectConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CertificateConfig_SubjectConfig.ProtoReflect.Descriptor instead.
 func (*CertificateConfig_SubjectConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_security_privateca_v1_resources_proto_rawDescGZIP(), []int{8, 0}
+	return file_google_cloud_security_privateca_v1_resources_proto_rawDescGZIP(), []int{9, 0}
 }
 
 func (x *CertificateConfig_SubjectConfig) GetSubject() *Subject {
@@ -4157,7 +4261,7 @@ type CertificateConfig_KeyId struct {
 
 func (x *CertificateConfig_KeyId) Reset() {
 	*x = CertificateConfig_KeyId{}
-	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[39]
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[40]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4169,7 +4273,7 @@ func (x *CertificateConfig_KeyId) String() string {
 func (*CertificateConfig_KeyId) ProtoMessage() {}
 
 func (x *CertificateConfig_KeyId) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[39]
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[40]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4182,7 +4286,7 @@ func (x *CertificateConfig_KeyId) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CertificateConfig_KeyId.ProtoReflect.Descriptor instead.
 func (*CertificateConfig_KeyId) Descriptor() ([]byte, []int) {
-	return file_google_cloud_security_privateca_v1_resources_proto_rawDescGZIP(), []int{8, 1}
+	return file_google_cloud_security_privateca_v1_resources_proto_rawDescGZIP(), []int{9, 1}
 }
 
 func (x *CertificateConfig_KeyId) GetKeyId() string {
@@ -4218,7 +4322,7 @@ type CertificateDescription_SubjectDescription struct {
 
 func (x *CertificateDescription_SubjectDescription) Reset() {
 	*x = CertificateDescription_SubjectDescription{}
-	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[40]
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[41]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4230,7 +4334,7 @@ func (x *CertificateDescription_SubjectDescription) String() string {
 func (*CertificateDescription_SubjectDescription) ProtoMessage() {}
 
 func (x *CertificateDescription_SubjectDescription) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[40]
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[41]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4243,7 +4347,7 @@ func (x *CertificateDescription_SubjectDescription) ProtoReflect() protoreflect.
 
 // Deprecated: Use CertificateDescription_SubjectDescription.ProtoReflect.Descriptor instead.
 func (*CertificateDescription_SubjectDescription) Descriptor() ([]byte, []int) {
-	return file_google_cloud_security_privateca_v1_resources_proto_rawDescGZIP(), []int{9, 0}
+	return file_google_cloud_security_privateca_v1_resources_proto_rawDescGZIP(), []int{10, 0}
 }
 
 func (x *CertificateDescription_SubjectDescription) GetSubject() *Subject {
@@ -4301,7 +4405,7 @@ type CertificateDescription_KeyId struct {
 
 func (x *CertificateDescription_KeyId) Reset() {
 	*x = CertificateDescription_KeyId{}
-	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[41]
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[42]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4313,7 +4417,7 @@ func (x *CertificateDescription_KeyId) String() string {
 func (*CertificateDescription_KeyId) ProtoMessage() {}
 
 func (x *CertificateDescription_KeyId) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[41]
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[42]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4326,7 +4430,7 @@ func (x *CertificateDescription_KeyId) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CertificateDescription_KeyId.ProtoReflect.Descriptor instead.
 func (*CertificateDescription_KeyId) Descriptor() ([]byte, []int) {
-	return file_google_cloud_security_privateca_v1_resources_proto_rawDescGZIP(), []int{9, 1}
+	return file_google_cloud_security_privateca_v1_resources_proto_rawDescGZIP(), []int{10, 1}
 }
 
 func (x *CertificateDescription_KeyId) GetKeyId() string {
@@ -4347,7 +4451,7 @@ type CertificateDescription_CertificateFingerprint struct {
 
 func (x *CertificateDescription_CertificateFingerprint) Reset() {
 	*x = CertificateDescription_CertificateFingerprint{}
-	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[42]
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[43]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4359,7 +4463,7 @@ func (x *CertificateDescription_CertificateFingerprint) String() string {
 func (*CertificateDescription_CertificateFingerprint) ProtoMessage() {}
 
 func (x *CertificateDescription_CertificateFingerprint) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[42]
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[43]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4372,7 +4476,7 @@ func (x *CertificateDescription_CertificateFingerprint) ProtoReflect() protorefl
 
 // Deprecated: Use CertificateDescription_CertificateFingerprint.ProtoReflect.Descriptor instead.
 func (*CertificateDescription_CertificateFingerprint) Descriptor() ([]byte, []int) {
-	return file_google_cloud_security_privateca_v1_resources_proto_rawDescGZIP(), []int{9, 2}
+	return file_google_cloud_security_privateca_v1_resources_proto_rawDescGZIP(), []int{10, 2}
 }
 
 func (x *CertificateDescription_CertificateFingerprint) GetSha256Hash() string {
@@ -4412,7 +4516,7 @@ type KeyUsage_KeyUsageOptions struct {
 
 func (x *KeyUsage_KeyUsageOptions) Reset() {
 	*x = KeyUsage_KeyUsageOptions{}
-	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[43]
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[44]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4424,7 +4528,7 @@ func (x *KeyUsage_KeyUsageOptions) String() string {
 func (*KeyUsage_KeyUsageOptions) ProtoMessage() {}
 
 func (x *KeyUsage_KeyUsageOptions) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[43]
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[44]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4437,7 +4541,7 @@ func (x *KeyUsage_KeyUsageOptions) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use KeyUsage_KeyUsageOptions.ProtoReflect.Descriptor instead.
 func (*KeyUsage_KeyUsageOptions) Descriptor() ([]byte, []int) {
-	return file_google_cloud_security_privateca_v1_resources_proto_rawDescGZIP(), []int{12, 0}
+	return file_google_cloud_security_privateca_v1_resources_proto_rawDescGZIP(), []int{13, 0}
 }
 
 func (x *KeyUsage_KeyUsageOptions) GetDigitalSignature() bool {
@@ -4532,7 +4636,7 @@ type KeyUsage_ExtendedKeyUsageOptions struct {
 
 func (x *KeyUsage_ExtendedKeyUsageOptions) Reset() {
 	*x = KeyUsage_ExtendedKeyUsageOptions{}
-	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[44]
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[45]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4544,7 +4648,7 @@ func (x *KeyUsage_ExtendedKeyUsageOptions) String() string {
 func (*KeyUsage_ExtendedKeyUsageOptions) ProtoMessage() {}
 
 func (x *KeyUsage_ExtendedKeyUsageOptions) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[44]
+	mi := &file_google_cloud_security_privateca_v1_resources_proto_msgTypes[45]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4557,7 +4661,7 @@ func (x *KeyUsage_ExtendedKeyUsageOptions) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use KeyUsage_ExtendedKeyUsageOptions.ProtoReflect.Descriptor instead.
 func (*KeyUsage_ExtendedKeyUsageOptions) Descriptor() ([]byte, []int) {
-	return file_google_cloud_security_privateca_v1_resources_proto_rawDescGZIP(), []int{12, 1}
+	return file_google_cloud_security_privateca_v1_resources_proto_rawDescGZIP(), []int{13, 1}
 }
 
 func (x *KeyUsage_ExtendedKeyUsageOptions) GetServerAuth() bool {
@@ -4672,12 +4776,13 @@ const file_google_cloud_security_privateca_v1_resources_proto_rawDesc = "" +
 	"\x15RSA_PKCS1_4096_SHA256\x10\b\x12\x12\n" +
 	"\x0eEC_P256_SHA256\x10\x04\x12\x12\n" +
 	"\x0eEC_P384_SHA384\x10\x05:\x9d\x01\xeaA\x99\x01\n" +
-	"-privateca.googleapis.com/CertificateAuthority\x12hprojects/{project}/locations/{location}/caPools/{ca_pool}/certificateAuthorities/{certificate_authority}\"\xcb\x13\n" +
+	"-privateca.googleapis.com/CertificateAuthority\x12hprojects/{project}/locations/{location}/caPools/{ca_pool}/certificateAuthorities/{certificate_authority}\"\x8b\x15\n" +
 	"\x06CaPool\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12K\n" +
 	"\x04tier\x18\x02 \x01(\x0e2/.google.cloud.security.privateca.v1.CaPool.TierB\x06\xe0A\x02\xe0A\x05R\x04tier\x12g\n" +
 	"\x0fissuance_policy\x18\x03 \x01(\v29.google.cloud.security.privateca.v1.CaPool.IssuancePolicyB\x03\xe0A\x01R\x0eissuancePolicy\x12p\n" +
-	"\x12publishing_options\x18\x04 \x01(\v2<.google.cloud.security.privateca.v1.CaPool.PublishingOptionsB\x03\xe0A\x01R\x11publishingOptions\x12S\n" +
+	"\x12publishing_options\x18\x04 \x01(\v2<.google.cloud.security.privateca.v1.CaPool.PublishingOptionsB\x03\xe0A\x01R\x11publishingOptions\x12`\n" +
+	"\x0fencryption_spec\x18\b \x01(\v22.google.cloud.security.privateca.v1.EncryptionSpecB\x03\xe0A\x01R\x0eencryptionSpec\x12S\n" +
 	"\x06labels\x18\x05 \x03(\v26.google.cloud.security.privateca.v1.CaPool.LabelsEntryB\x03\xe0A\x01R\x06labels\x1a\xa6\x02\n" +
 	"\x11PublishingOptions\x12+\n" +
 	"\x0fpublish_ca_cert\x18\x01 \x01(\bB\x03\xe0A\x01R\rpublishCaCert\x12$\n" +
@@ -4687,10 +4792,11 @@ const file_google_cloud_security_privateca_v1_resources_proto_rawDesc = "" +
 	"\x0eEncodingFormat\x12\x1f\n" +
 	"\x1bENCODING_FORMAT_UNSPECIFIED\x10\x00\x12\a\n" +
 	"\x03PEM\x10\x01\x12\a\n" +
-	"\x03DER\x10\x02\x1a\xab\f\n" +
+	"\x03DER\x10\x02\x1a\x89\r\n" +
 	"\x0eIssuancePolicy\x12y\n" +
 	"\x11allowed_key_types\x18\x01 \x03(\v2H.google.cloud.security.privateca.v1.CaPool.IssuancePolicy.AllowedKeyTypeB\x03\xe0A\x01R\x0fallowedKeyTypes\x12K\n" +
-	"\x11backdate_duration\x18\a \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\x10backdateDuration\x12I\n" +
+	"\x11backdate_duration\x18\a \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\x10backdateDuration\x12\\\n" +
+	")allow_requester_specified_not_before_time\x18\b \x01(\bB\x03\xe0A\x01R$allowRequesterSpecifiedNotBeforeTime\x12I\n" +
 	"\x10maximum_lifetime\x18\x02 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\x0fmaximumLifetime\x12\x82\x01\n" +
 	"\x16allowed_issuance_modes\x18\x03 \x01(\v2G.google.cloud.security.privateca.v1.CaPool.IssuancePolicy.IssuanceModesB\x03\xe0A\x01R\x14allowedIssuanceModes\x12`\n" +
 	"\x0fbaseline_values\x18\x04 \x01(\v22.google.cloud.security.privateca.v1.X509ParametersB\x03\xe0A\x01R\x0ebaselineValues\x12z\n" +
@@ -4726,7 +4832,9 @@ const file_google_cloud_security_privateca_v1_resources_proto_rawDesc = "" +
 	"ENTERPRISE\x10\x01\x12\n" +
 	"\n" +
 	"\x06DEVOPS\x10\x02:_\xeaA\\\n" +
-	"\x1fprivateca.googleapis.com/CaPool\x129projects/{project}/locations/{location}/caPools/{ca_pool}\"\xea\t\n" +
+	"\x1fprivateca.googleapis.com/CaPool\x129projects/{project}/locations/{location}/caPools/{ca_pool}\"4\n" +
+	"\x0eEncryptionSpec\x12\"\n" +
+	"\rcloud_kms_key\x18\x01 \x01(\tR\vcloudKmsKey\"\xea\t\n" +
 	"\x19CertificateRevocationList\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12,\n" +
 	"\x0fsequence_number\x18\x02 \x01(\x03B\x03\xe0A\x03R\x0esequenceNumber\x12\x88\x01\n" +
@@ -4757,7 +4865,7 @@ const file_google_cloud_security_privateca_v1_resources_proto_rawDesc = "" +
 	"\x06ACTIVE\x10\x01\x12\x0e\n" +
 	"\n" +
 	"SUPERSEDED\x10\x02:\xdc\x01\xeaA\xd8\x01\n" +
-	"2privateca.googleapis.com/CertificateRevocationList\x12\xa1\x01projects/{project}/locations/{location}/caPools/{ca_pool}/certificateAuthorities/{certificate_authority}/certificateRevocationLists/{certificate_revocation_list}\"\xe1\v\n" +
+	"2privateca.googleapis.com/CertificateRevocationList\x12\xa1\x01projects/{project}/locations/{location}/caPools/{ca_pool}/certificateAuthorities/{certificate_authority}/certificateRevocationLists/{certificate_revocation_list}\"\xbd\f\n" +
 	"\vCertificate\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x1e\n" +
 	"\apem_csr\x18\x02 \x01(\tB\x03\xe0A\x05H\x00R\x06pemCsr\x12T\n" +
@@ -4777,7 +4885,8 @@ const file_google_cloud_security_privateca_v1_resources_proto_rawDesc = "" +
 	"createTime\x12@\n" +
 	"\vupdate_time\x18\r \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
 	"updateTime\x12X\n" +
-	"\x06labels\x18\x0e \x03(\v2;.google.cloud.security.privateca.v1.Certificate.LabelsEntryB\x03\xe0A\x01R\x06labels\x1a\xb9\x01\n" +
+	"\x06labels\x18\x0e \x03(\v2;.google.cloud.security.privateca.v1.Certificate.LabelsEntryB\x03\xe0A\x01R\x06labels\x12Z\n" +
+	"\x19requested_not_before_time\x18\x0f \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\x16requestedNotBeforeTime\x1a\xb9\x01\n" +
 	"\x11RevocationDetails\x12_\n" +
 	"\x10revocation_state\x18\x01 \x01(\x0e24.google.cloud.security.privateca.v1.RevocationReasonR\x0frevocationState\x12C\n" +
 	"\x0frevocation_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\x0erevocationTime\x1a9\n" +
@@ -4992,7 +5101,7 @@ func file_google_cloud_security_privateca_v1_resources_proto_rawDescGZIP() []byt
 }
 
 var file_google_cloud_security_privateca_v1_resources_proto_enumTypes = make([]protoimpl.EnumInfo, 12)
-var file_google_cloud_security_privateca_v1_resources_proto_msgTypes = make([]protoimpl.MessageInfo, 45)
+var file_google_cloud_security_privateca_v1_resources_proto_msgTypes = make([]protoimpl.MessageInfo, 46)
 var file_google_cloud_security_privateca_v1_resources_proto_goTypes = []any{
 	(AttributeType)(0),                           // 0: google.cloud.security.privateca.v1.AttributeType
 	(RevocationReason)(0),                        // 1: google.cloud.security.privateca.v1.RevocationReason
@@ -5008,149 +5117,152 @@ var file_google_cloud_security_privateca_v1_resources_proto_goTypes = []any{
 	(CertificateExtensionConstraints_KnownCertificateExtension)(0),           // 11: google.cloud.security.privateca.v1.CertificateExtensionConstraints.KnownCertificateExtension
 	(*CertificateAuthority)(nil),                                             // 12: google.cloud.security.privateca.v1.CertificateAuthority
 	(*CaPool)(nil),                                                           // 13: google.cloud.security.privateca.v1.CaPool
-	(*CertificateRevocationList)(nil),                                        // 14: google.cloud.security.privateca.v1.CertificateRevocationList
-	(*Certificate)(nil),                                                      // 15: google.cloud.security.privateca.v1.Certificate
-	(*CertificateTemplate)(nil),                                              // 16: google.cloud.security.privateca.v1.CertificateTemplate
-	(*X509Parameters)(nil),                                                   // 17: google.cloud.security.privateca.v1.X509Parameters
-	(*SubordinateConfig)(nil),                                                // 18: google.cloud.security.privateca.v1.SubordinateConfig
-	(*PublicKey)(nil),                                                        // 19: google.cloud.security.privateca.v1.PublicKey
-	(*CertificateConfig)(nil),                                                // 20: google.cloud.security.privateca.v1.CertificateConfig
-	(*CertificateDescription)(nil),                                           // 21: google.cloud.security.privateca.v1.CertificateDescription
-	(*ObjectId)(nil),                                                         // 22: google.cloud.security.privateca.v1.ObjectId
-	(*X509Extension)(nil),                                                    // 23: google.cloud.security.privateca.v1.X509Extension
-	(*KeyUsage)(nil),                                                         // 24: google.cloud.security.privateca.v1.KeyUsage
-	(*AttributeTypeAndValue)(nil),                                            // 25: google.cloud.security.privateca.v1.AttributeTypeAndValue
-	(*RelativeDistinguishedName)(nil),                                        // 26: google.cloud.security.privateca.v1.RelativeDistinguishedName
-	(*Subject)(nil),                                                          // 27: google.cloud.security.privateca.v1.Subject
-	(*SubjectAltNames)(nil),                                                  // 28: google.cloud.security.privateca.v1.SubjectAltNames
-	(*CertificateIdentityConstraints)(nil),                                   // 29: google.cloud.security.privateca.v1.CertificateIdentityConstraints
-	(*CertificateExtensionConstraints)(nil),                                  // 30: google.cloud.security.privateca.v1.CertificateExtensionConstraints
-	(*CertificateAuthority_AccessUrls)(nil),                                  // 31: google.cloud.security.privateca.v1.CertificateAuthority.AccessUrls
-	(*CertificateAuthority_KeyVersionSpec)(nil),                              // 32: google.cloud.security.privateca.v1.CertificateAuthority.KeyVersionSpec
-	(*CertificateAuthority_UserDefinedAccessUrls)(nil),                       // 33: google.cloud.security.privateca.v1.CertificateAuthority.UserDefinedAccessUrls
-	nil,                              // 34: google.cloud.security.privateca.v1.CertificateAuthority.LabelsEntry
-	(*CaPool_PublishingOptions)(nil), // 35: google.cloud.security.privateca.v1.CaPool.PublishingOptions
-	(*CaPool_IssuancePolicy)(nil),    // 36: google.cloud.security.privateca.v1.CaPool.IssuancePolicy
-	nil,                              // 37: google.cloud.security.privateca.v1.CaPool.LabelsEntry
-	(*CaPool_IssuancePolicy_AllowedKeyType)(nil),            // 38: google.cloud.security.privateca.v1.CaPool.IssuancePolicy.AllowedKeyType
-	(*CaPool_IssuancePolicy_IssuanceModes)(nil),             // 39: google.cloud.security.privateca.v1.CaPool.IssuancePolicy.IssuanceModes
-	(*CaPool_IssuancePolicy_AllowedKeyType_RsaKeyType)(nil), // 40: google.cloud.security.privateca.v1.CaPool.IssuancePolicy.AllowedKeyType.RsaKeyType
-	(*CaPool_IssuancePolicy_AllowedKeyType_EcKeyType)(nil),  // 41: google.cloud.security.privateca.v1.CaPool.IssuancePolicy.AllowedKeyType.EcKeyType
-	(*CertificateRevocationList_RevokedCertificate)(nil),    // 42: google.cloud.security.privateca.v1.CertificateRevocationList.RevokedCertificate
-	nil,                                    // 43: google.cloud.security.privateca.v1.CertificateRevocationList.LabelsEntry
-	(*Certificate_RevocationDetails)(nil),  // 44: google.cloud.security.privateca.v1.Certificate.RevocationDetails
-	nil,                                    // 45: google.cloud.security.privateca.v1.Certificate.LabelsEntry
-	nil,                                    // 46: google.cloud.security.privateca.v1.CertificateTemplate.LabelsEntry
-	(*X509Parameters_CaOptions)(nil),       // 47: google.cloud.security.privateca.v1.X509Parameters.CaOptions
-	(*X509Parameters_NameConstraints)(nil), // 48: google.cloud.security.privateca.v1.X509Parameters.NameConstraints
-	(*SubordinateConfig_SubordinateConfigChain)(nil),      // 49: google.cloud.security.privateca.v1.SubordinateConfig.SubordinateConfigChain
-	(*CertificateConfig_SubjectConfig)(nil),               // 50: google.cloud.security.privateca.v1.CertificateConfig.SubjectConfig
-	(*CertificateConfig_KeyId)(nil),                       // 51: google.cloud.security.privateca.v1.CertificateConfig.KeyId
-	(*CertificateDescription_SubjectDescription)(nil),     // 52: google.cloud.security.privateca.v1.CertificateDescription.SubjectDescription
-	(*CertificateDescription_KeyId)(nil),                  // 53: google.cloud.security.privateca.v1.CertificateDescription.KeyId
-	(*CertificateDescription_CertificateFingerprint)(nil), // 54: google.cloud.security.privateca.v1.CertificateDescription.CertificateFingerprint
-	(*KeyUsage_KeyUsageOptions)(nil),                      // 55: google.cloud.security.privateca.v1.KeyUsage.KeyUsageOptions
-	(*KeyUsage_ExtendedKeyUsageOptions)(nil),              // 56: google.cloud.security.privateca.v1.KeyUsage.ExtendedKeyUsageOptions
-	(*durationpb.Duration)(nil),                           // 57: google.protobuf.Duration
-	(*timestamppb.Timestamp)(nil),                         // 58: google.protobuf.Timestamp
-	(*expr.Expr)(nil),                                     // 59: google.type.Expr
+	(*EncryptionSpec)(nil),                                                   // 14: google.cloud.security.privateca.v1.EncryptionSpec
+	(*CertificateRevocationList)(nil),                                        // 15: google.cloud.security.privateca.v1.CertificateRevocationList
+	(*Certificate)(nil),                                                      // 16: google.cloud.security.privateca.v1.Certificate
+	(*CertificateTemplate)(nil),                                              // 17: google.cloud.security.privateca.v1.CertificateTemplate
+	(*X509Parameters)(nil),                                                   // 18: google.cloud.security.privateca.v1.X509Parameters
+	(*SubordinateConfig)(nil),                                                // 19: google.cloud.security.privateca.v1.SubordinateConfig
+	(*PublicKey)(nil),                                                        // 20: google.cloud.security.privateca.v1.PublicKey
+	(*CertificateConfig)(nil),                                                // 21: google.cloud.security.privateca.v1.CertificateConfig
+	(*CertificateDescription)(nil),                                           // 22: google.cloud.security.privateca.v1.CertificateDescription
+	(*ObjectId)(nil),                                                         // 23: google.cloud.security.privateca.v1.ObjectId
+	(*X509Extension)(nil),                                                    // 24: google.cloud.security.privateca.v1.X509Extension
+	(*KeyUsage)(nil),                                                         // 25: google.cloud.security.privateca.v1.KeyUsage
+	(*AttributeTypeAndValue)(nil),                                            // 26: google.cloud.security.privateca.v1.AttributeTypeAndValue
+	(*RelativeDistinguishedName)(nil),                                        // 27: google.cloud.security.privateca.v1.RelativeDistinguishedName
+	(*Subject)(nil),                                                          // 28: google.cloud.security.privateca.v1.Subject
+	(*SubjectAltNames)(nil),                                                  // 29: google.cloud.security.privateca.v1.SubjectAltNames
+	(*CertificateIdentityConstraints)(nil),                                   // 30: google.cloud.security.privateca.v1.CertificateIdentityConstraints
+	(*CertificateExtensionConstraints)(nil),                                  // 31: google.cloud.security.privateca.v1.CertificateExtensionConstraints
+	(*CertificateAuthority_AccessUrls)(nil),                                  // 32: google.cloud.security.privateca.v1.CertificateAuthority.AccessUrls
+	(*CertificateAuthority_KeyVersionSpec)(nil),                              // 33: google.cloud.security.privateca.v1.CertificateAuthority.KeyVersionSpec
+	(*CertificateAuthority_UserDefinedAccessUrls)(nil),                       // 34: google.cloud.security.privateca.v1.CertificateAuthority.UserDefinedAccessUrls
+	nil,                              // 35: google.cloud.security.privateca.v1.CertificateAuthority.LabelsEntry
+	(*CaPool_PublishingOptions)(nil), // 36: google.cloud.security.privateca.v1.CaPool.PublishingOptions
+	(*CaPool_IssuancePolicy)(nil),    // 37: google.cloud.security.privateca.v1.CaPool.IssuancePolicy
+	nil,                              // 38: google.cloud.security.privateca.v1.CaPool.LabelsEntry
+	(*CaPool_IssuancePolicy_AllowedKeyType)(nil),            // 39: google.cloud.security.privateca.v1.CaPool.IssuancePolicy.AllowedKeyType
+	(*CaPool_IssuancePolicy_IssuanceModes)(nil),             // 40: google.cloud.security.privateca.v1.CaPool.IssuancePolicy.IssuanceModes
+	(*CaPool_IssuancePolicy_AllowedKeyType_RsaKeyType)(nil), // 41: google.cloud.security.privateca.v1.CaPool.IssuancePolicy.AllowedKeyType.RsaKeyType
+	(*CaPool_IssuancePolicy_AllowedKeyType_EcKeyType)(nil),  // 42: google.cloud.security.privateca.v1.CaPool.IssuancePolicy.AllowedKeyType.EcKeyType
+	(*CertificateRevocationList_RevokedCertificate)(nil),    // 43: google.cloud.security.privateca.v1.CertificateRevocationList.RevokedCertificate
+	nil,                                    // 44: google.cloud.security.privateca.v1.CertificateRevocationList.LabelsEntry
+	(*Certificate_RevocationDetails)(nil),  // 45: google.cloud.security.privateca.v1.Certificate.RevocationDetails
+	nil,                                    // 46: google.cloud.security.privateca.v1.Certificate.LabelsEntry
+	nil,                                    // 47: google.cloud.security.privateca.v1.CertificateTemplate.LabelsEntry
+	(*X509Parameters_CaOptions)(nil),       // 48: google.cloud.security.privateca.v1.X509Parameters.CaOptions
+	(*X509Parameters_NameConstraints)(nil), // 49: google.cloud.security.privateca.v1.X509Parameters.NameConstraints
+	(*SubordinateConfig_SubordinateConfigChain)(nil),      // 50: google.cloud.security.privateca.v1.SubordinateConfig.SubordinateConfigChain
+	(*CertificateConfig_SubjectConfig)(nil),               // 51: google.cloud.security.privateca.v1.CertificateConfig.SubjectConfig
+	(*CertificateConfig_KeyId)(nil),                       // 52: google.cloud.security.privateca.v1.CertificateConfig.KeyId
+	(*CertificateDescription_SubjectDescription)(nil),     // 53: google.cloud.security.privateca.v1.CertificateDescription.SubjectDescription
+	(*CertificateDescription_KeyId)(nil),                  // 54: google.cloud.security.privateca.v1.CertificateDescription.KeyId
+	(*CertificateDescription_CertificateFingerprint)(nil), // 55: google.cloud.security.privateca.v1.CertificateDescription.CertificateFingerprint
+	(*KeyUsage_KeyUsageOptions)(nil),                      // 56: google.cloud.security.privateca.v1.KeyUsage.KeyUsageOptions
+	(*KeyUsage_ExtendedKeyUsageOptions)(nil),              // 57: google.cloud.security.privateca.v1.KeyUsage.ExtendedKeyUsageOptions
+	(*durationpb.Duration)(nil),                           // 58: google.protobuf.Duration
+	(*timestamppb.Timestamp)(nil),                         // 59: google.protobuf.Timestamp
+	(*expr.Expr)(nil),                                     // 60: google.type.Expr
 }
 var file_google_cloud_security_privateca_v1_resources_proto_depIdxs = []int32{
 	3,  // 0: google.cloud.security.privateca.v1.CertificateAuthority.type:type_name -> google.cloud.security.privateca.v1.CertificateAuthority.Type
-	20, // 1: google.cloud.security.privateca.v1.CertificateAuthority.config:type_name -> google.cloud.security.privateca.v1.CertificateConfig
-	57, // 2: google.cloud.security.privateca.v1.CertificateAuthority.lifetime:type_name -> google.protobuf.Duration
-	32, // 3: google.cloud.security.privateca.v1.CertificateAuthority.key_spec:type_name -> google.cloud.security.privateca.v1.CertificateAuthority.KeyVersionSpec
-	18, // 4: google.cloud.security.privateca.v1.CertificateAuthority.subordinate_config:type_name -> google.cloud.security.privateca.v1.SubordinateConfig
+	21, // 1: google.cloud.security.privateca.v1.CertificateAuthority.config:type_name -> google.cloud.security.privateca.v1.CertificateConfig
+	58, // 2: google.cloud.security.privateca.v1.CertificateAuthority.lifetime:type_name -> google.protobuf.Duration
+	33, // 3: google.cloud.security.privateca.v1.CertificateAuthority.key_spec:type_name -> google.cloud.security.privateca.v1.CertificateAuthority.KeyVersionSpec
+	19, // 4: google.cloud.security.privateca.v1.CertificateAuthority.subordinate_config:type_name -> google.cloud.security.privateca.v1.SubordinateConfig
 	6,  // 5: google.cloud.security.privateca.v1.CertificateAuthority.tier:type_name -> google.cloud.security.privateca.v1.CaPool.Tier
 	4,  // 6: google.cloud.security.privateca.v1.CertificateAuthority.state:type_name -> google.cloud.security.privateca.v1.CertificateAuthority.State
-	21, // 7: google.cloud.security.privateca.v1.CertificateAuthority.ca_certificate_descriptions:type_name -> google.cloud.security.privateca.v1.CertificateDescription
-	31, // 8: google.cloud.security.privateca.v1.CertificateAuthority.access_urls:type_name -> google.cloud.security.privateca.v1.CertificateAuthority.AccessUrls
-	58, // 9: google.cloud.security.privateca.v1.CertificateAuthority.create_time:type_name -> google.protobuf.Timestamp
-	58, // 10: google.cloud.security.privateca.v1.CertificateAuthority.update_time:type_name -> google.protobuf.Timestamp
-	58, // 11: google.cloud.security.privateca.v1.CertificateAuthority.delete_time:type_name -> google.protobuf.Timestamp
-	58, // 12: google.cloud.security.privateca.v1.CertificateAuthority.expire_time:type_name -> google.protobuf.Timestamp
-	34, // 13: google.cloud.security.privateca.v1.CertificateAuthority.labels:type_name -> google.cloud.security.privateca.v1.CertificateAuthority.LabelsEntry
-	33, // 14: google.cloud.security.privateca.v1.CertificateAuthority.user_defined_access_urls:type_name -> google.cloud.security.privateca.v1.CertificateAuthority.UserDefinedAccessUrls
+	22, // 7: google.cloud.security.privateca.v1.CertificateAuthority.ca_certificate_descriptions:type_name -> google.cloud.security.privateca.v1.CertificateDescription
+	32, // 8: google.cloud.security.privateca.v1.CertificateAuthority.access_urls:type_name -> google.cloud.security.privateca.v1.CertificateAuthority.AccessUrls
+	59, // 9: google.cloud.security.privateca.v1.CertificateAuthority.create_time:type_name -> google.protobuf.Timestamp
+	59, // 10: google.cloud.security.privateca.v1.CertificateAuthority.update_time:type_name -> google.protobuf.Timestamp
+	59, // 11: google.cloud.security.privateca.v1.CertificateAuthority.delete_time:type_name -> google.protobuf.Timestamp
+	59, // 12: google.cloud.security.privateca.v1.CertificateAuthority.expire_time:type_name -> google.protobuf.Timestamp
+	35, // 13: google.cloud.security.privateca.v1.CertificateAuthority.labels:type_name -> google.cloud.security.privateca.v1.CertificateAuthority.LabelsEntry
+	34, // 14: google.cloud.security.privateca.v1.CertificateAuthority.user_defined_access_urls:type_name -> google.cloud.security.privateca.v1.CertificateAuthority.UserDefinedAccessUrls
 	6,  // 15: google.cloud.security.privateca.v1.CaPool.tier:type_name -> google.cloud.security.privateca.v1.CaPool.Tier
-	36, // 16: google.cloud.security.privateca.v1.CaPool.issuance_policy:type_name -> google.cloud.security.privateca.v1.CaPool.IssuancePolicy
-	35, // 17: google.cloud.security.privateca.v1.CaPool.publishing_options:type_name -> google.cloud.security.privateca.v1.CaPool.PublishingOptions
-	37, // 18: google.cloud.security.privateca.v1.CaPool.labels:type_name -> google.cloud.security.privateca.v1.CaPool.LabelsEntry
-	42, // 19: google.cloud.security.privateca.v1.CertificateRevocationList.revoked_certificates:type_name -> google.cloud.security.privateca.v1.CertificateRevocationList.RevokedCertificate
-	9,  // 20: google.cloud.security.privateca.v1.CertificateRevocationList.state:type_name -> google.cloud.security.privateca.v1.CertificateRevocationList.State
-	58, // 21: google.cloud.security.privateca.v1.CertificateRevocationList.create_time:type_name -> google.protobuf.Timestamp
-	58, // 22: google.cloud.security.privateca.v1.CertificateRevocationList.update_time:type_name -> google.protobuf.Timestamp
-	43, // 23: google.cloud.security.privateca.v1.CertificateRevocationList.labels:type_name -> google.cloud.security.privateca.v1.CertificateRevocationList.LabelsEntry
-	20, // 24: google.cloud.security.privateca.v1.Certificate.config:type_name -> google.cloud.security.privateca.v1.CertificateConfig
-	57, // 25: google.cloud.security.privateca.v1.Certificate.lifetime:type_name -> google.protobuf.Duration
-	2,  // 26: google.cloud.security.privateca.v1.Certificate.subject_mode:type_name -> google.cloud.security.privateca.v1.SubjectRequestMode
-	44, // 27: google.cloud.security.privateca.v1.Certificate.revocation_details:type_name -> google.cloud.security.privateca.v1.Certificate.RevocationDetails
-	21, // 28: google.cloud.security.privateca.v1.Certificate.certificate_description:type_name -> google.cloud.security.privateca.v1.CertificateDescription
-	58, // 29: google.cloud.security.privateca.v1.Certificate.create_time:type_name -> google.protobuf.Timestamp
-	58, // 30: google.cloud.security.privateca.v1.Certificate.update_time:type_name -> google.protobuf.Timestamp
-	45, // 31: google.cloud.security.privateca.v1.Certificate.labels:type_name -> google.cloud.security.privateca.v1.Certificate.LabelsEntry
-	57, // 32: google.cloud.security.privateca.v1.CertificateTemplate.maximum_lifetime:type_name -> google.protobuf.Duration
-	17, // 33: google.cloud.security.privateca.v1.CertificateTemplate.predefined_values:type_name -> google.cloud.security.privateca.v1.X509Parameters
-	29, // 34: google.cloud.security.privateca.v1.CertificateTemplate.identity_constraints:type_name -> google.cloud.security.privateca.v1.CertificateIdentityConstraints
-	30, // 35: google.cloud.security.privateca.v1.CertificateTemplate.passthrough_extensions:type_name -> google.cloud.security.privateca.v1.CertificateExtensionConstraints
-	58, // 36: google.cloud.security.privateca.v1.CertificateTemplate.create_time:type_name -> google.protobuf.Timestamp
-	58, // 37: google.cloud.security.privateca.v1.CertificateTemplate.update_time:type_name -> google.protobuf.Timestamp
-	46, // 38: google.cloud.security.privateca.v1.CertificateTemplate.labels:type_name -> google.cloud.security.privateca.v1.CertificateTemplate.LabelsEntry
-	24, // 39: google.cloud.security.privateca.v1.X509Parameters.key_usage:type_name -> google.cloud.security.privateca.v1.KeyUsage
-	47, // 40: google.cloud.security.privateca.v1.X509Parameters.ca_options:type_name -> google.cloud.security.privateca.v1.X509Parameters.CaOptions
-	22, // 41: google.cloud.security.privateca.v1.X509Parameters.policy_ids:type_name -> google.cloud.security.privateca.v1.ObjectId
-	48, // 42: google.cloud.security.privateca.v1.X509Parameters.name_constraints:type_name -> google.cloud.security.privateca.v1.X509Parameters.NameConstraints
-	23, // 43: google.cloud.security.privateca.v1.X509Parameters.additional_extensions:type_name -> google.cloud.security.privateca.v1.X509Extension
-	49, // 44: google.cloud.security.privateca.v1.SubordinateConfig.pem_issuer_chain:type_name -> google.cloud.security.privateca.v1.SubordinateConfig.SubordinateConfigChain
-	10, // 45: google.cloud.security.privateca.v1.PublicKey.format:type_name -> google.cloud.security.privateca.v1.PublicKey.KeyFormat
-	50, // 46: google.cloud.security.privateca.v1.CertificateConfig.subject_config:type_name -> google.cloud.security.privateca.v1.CertificateConfig.SubjectConfig
-	17, // 47: google.cloud.security.privateca.v1.CertificateConfig.x509_config:type_name -> google.cloud.security.privateca.v1.X509Parameters
-	19, // 48: google.cloud.security.privateca.v1.CertificateConfig.public_key:type_name -> google.cloud.security.privateca.v1.PublicKey
-	51, // 49: google.cloud.security.privateca.v1.CertificateConfig.subject_key_id:type_name -> google.cloud.security.privateca.v1.CertificateConfig.KeyId
-	52, // 50: google.cloud.security.privateca.v1.CertificateDescription.subject_description:type_name -> google.cloud.security.privateca.v1.CertificateDescription.SubjectDescription
-	17, // 51: google.cloud.security.privateca.v1.CertificateDescription.x509_description:type_name -> google.cloud.security.privateca.v1.X509Parameters
-	19, // 52: google.cloud.security.privateca.v1.CertificateDescription.public_key:type_name -> google.cloud.security.privateca.v1.PublicKey
-	53, // 53: google.cloud.security.privateca.v1.CertificateDescription.subject_key_id:type_name -> google.cloud.security.privateca.v1.CertificateDescription.KeyId
-	53, // 54: google.cloud.security.privateca.v1.CertificateDescription.authority_key_id:type_name -> google.cloud.security.privateca.v1.CertificateDescription.KeyId
-	54, // 55: google.cloud.security.privateca.v1.CertificateDescription.cert_fingerprint:type_name -> google.cloud.security.privateca.v1.CertificateDescription.CertificateFingerprint
-	22, // 56: google.cloud.security.privateca.v1.X509Extension.object_id:type_name -> google.cloud.security.privateca.v1.ObjectId
-	55, // 57: google.cloud.security.privateca.v1.KeyUsage.base_key_usage:type_name -> google.cloud.security.privateca.v1.KeyUsage.KeyUsageOptions
-	56, // 58: google.cloud.security.privateca.v1.KeyUsage.extended_key_usage:type_name -> google.cloud.security.privateca.v1.KeyUsage.ExtendedKeyUsageOptions
-	22, // 59: google.cloud.security.privateca.v1.KeyUsage.unknown_extended_key_usages:type_name -> google.cloud.security.privateca.v1.ObjectId
-	0,  // 60: google.cloud.security.privateca.v1.AttributeTypeAndValue.type:type_name -> google.cloud.security.privateca.v1.AttributeType
-	22, // 61: google.cloud.security.privateca.v1.AttributeTypeAndValue.object_id:type_name -> google.cloud.security.privateca.v1.ObjectId
-	25, // 62: google.cloud.security.privateca.v1.RelativeDistinguishedName.attributes:type_name -> google.cloud.security.privateca.v1.AttributeTypeAndValue
-	26, // 63: google.cloud.security.privateca.v1.Subject.rdn_sequence:type_name -> google.cloud.security.privateca.v1.RelativeDistinguishedName
-	23, // 64: google.cloud.security.privateca.v1.SubjectAltNames.custom_sans:type_name -> google.cloud.security.privateca.v1.X509Extension
-	59, // 65: google.cloud.security.privateca.v1.CertificateIdentityConstraints.cel_expression:type_name -> google.type.Expr
-	11, // 66: google.cloud.security.privateca.v1.CertificateExtensionConstraints.known_extensions:type_name -> google.cloud.security.privateca.v1.CertificateExtensionConstraints.KnownCertificateExtension
-	22, // 67: google.cloud.security.privateca.v1.CertificateExtensionConstraints.additional_extensions:type_name -> google.cloud.security.privateca.v1.ObjectId
-	5,  // 68: google.cloud.security.privateca.v1.CertificateAuthority.KeyVersionSpec.algorithm:type_name -> google.cloud.security.privateca.v1.CertificateAuthority.SignHashAlgorithm
-	7,  // 69: google.cloud.security.privateca.v1.CaPool.PublishingOptions.encoding_format:type_name -> google.cloud.security.privateca.v1.CaPool.PublishingOptions.EncodingFormat
-	38, // 70: google.cloud.security.privateca.v1.CaPool.IssuancePolicy.allowed_key_types:type_name -> google.cloud.security.privateca.v1.CaPool.IssuancePolicy.AllowedKeyType
-	57, // 71: google.cloud.security.privateca.v1.CaPool.IssuancePolicy.backdate_duration:type_name -> google.protobuf.Duration
-	57, // 72: google.cloud.security.privateca.v1.CaPool.IssuancePolicy.maximum_lifetime:type_name -> google.protobuf.Duration
-	39, // 73: google.cloud.security.privateca.v1.CaPool.IssuancePolicy.allowed_issuance_modes:type_name -> google.cloud.security.privateca.v1.CaPool.IssuancePolicy.IssuanceModes
-	17, // 74: google.cloud.security.privateca.v1.CaPool.IssuancePolicy.baseline_values:type_name -> google.cloud.security.privateca.v1.X509Parameters
-	29, // 75: google.cloud.security.privateca.v1.CaPool.IssuancePolicy.identity_constraints:type_name -> google.cloud.security.privateca.v1.CertificateIdentityConstraints
-	30, // 76: google.cloud.security.privateca.v1.CaPool.IssuancePolicy.passthrough_extensions:type_name -> google.cloud.security.privateca.v1.CertificateExtensionConstraints
-	40, // 77: google.cloud.security.privateca.v1.CaPool.IssuancePolicy.AllowedKeyType.rsa:type_name -> google.cloud.security.privateca.v1.CaPool.IssuancePolicy.AllowedKeyType.RsaKeyType
-	41, // 78: google.cloud.security.privateca.v1.CaPool.IssuancePolicy.AllowedKeyType.elliptic_curve:type_name -> google.cloud.security.privateca.v1.CaPool.IssuancePolicy.AllowedKeyType.EcKeyType
-	8,  // 79: google.cloud.security.privateca.v1.CaPool.IssuancePolicy.AllowedKeyType.EcKeyType.signature_algorithm:type_name -> google.cloud.security.privateca.v1.CaPool.IssuancePolicy.AllowedKeyType.EcKeyType.EcSignatureAlgorithm
-	1,  // 80: google.cloud.security.privateca.v1.CertificateRevocationList.RevokedCertificate.revocation_reason:type_name -> google.cloud.security.privateca.v1.RevocationReason
-	1,  // 81: google.cloud.security.privateca.v1.Certificate.RevocationDetails.revocation_state:type_name -> google.cloud.security.privateca.v1.RevocationReason
-	58, // 82: google.cloud.security.privateca.v1.Certificate.RevocationDetails.revocation_time:type_name -> google.protobuf.Timestamp
-	27, // 83: google.cloud.security.privateca.v1.CertificateConfig.SubjectConfig.subject:type_name -> google.cloud.security.privateca.v1.Subject
-	28, // 84: google.cloud.security.privateca.v1.CertificateConfig.SubjectConfig.subject_alt_name:type_name -> google.cloud.security.privateca.v1.SubjectAltNames
-	27, // 85: google.cloud.security.privateca.v1.CertificateDescription.SubjectDescription.subject:type_name -> google.cloud.security.privateca.v1.Subject
-	28, // 86: google.cloud.security.privateca.v1.CertificateDescription.SubjectDescription.subject_alt_name:type_name -> google.cloud.security.privateca.v1.SubjectAltNames
-	57, // 87: google.cloud.security.privateca.v1.CertificateDescription.SubjectDescription.lifetime:type_name -> google.protobuf.Duration
-	58, // 88: google.cloud.security.privateca.v1.CertificateDescription.SubjectDescription.not_before_time:type_name -> google.protobuf.Timestamp
-	58, // 89: google.cloud.security.privateca.v1.CertificateDescription.SubjectDescription.not_after_time:type_name -> google.protobuf.Timestamp
-	90, // [90:90] is the sub-list for method output_type
-	90, // [90:90] is the sub-list for method input_type
-	90, // [90:90] is the sub-list for extension type_name
-	90, // [90:90] is the sub-list for extension extendee
-	0,  // [0:90] is the sub-list for field type_name
+	37, // 16: google.cloud.security.privateca.v1.CaPool.issuance_policy:type_name -> google.cloud.security.privateca.v1.CaPool.IssuancePolicy
+	36, // 17: google.cloud.security.privateca.v1.CaPool.publishing_options:type_name -> google.cloud.security.privateca.v1.CaPool.PublishingOptions
+	14, // 18: google.cloud.security.privateca.v1.CaPool.encryption_spec:type_name -> google.cloud.security.privateca.v1.EncryptionSpec
+	38, // 19: google.cloud.security.privateca.v1.CaPool.labels:type_name -> google.cloud.security.privateca.v1.CaPool.LabelsEntry
+	43, // 20: google.cloud.security.privateca.v1.CertificateRevocationList.revoked_certificates:type_name -> google.cloud.security.privateca.v1.CertificateRevocationList.RevokedCertificate
+	9,  // 21: google.cloud.security.privateca.v1.CertificateRevocationList.state:type_name -> google.cloud.security.privateca.v1.CertificateRevocationList.State
+	59, // 22: google.cloud.security.privateca.v1.CertificateRevocationList.create_time:type_name -> google.protobuf.Timestamp
+	59, // 23: google.cloud.security.privateca.v1.CertificateRevocationList.update_time:type_name -> google.protobuf.Timestamp
+	44, // 24: google.cloud.security.privateca.v1.CertificateRevocationList.labels:type_name -> google.cloud.security.privateca.v1.CertificateRevocationList.LabelsEntry
+	21, // 25: google.cloud.security.privateca.v1.Certificate.config:type_name -> google.cloud.security.privateca.v1.CertificateConfig
+	58, // 26: google.cloud.security.privateca.v1.Certificate.lifetime:type_name -> google.protobuf.Duration
+	2,  // 27: google.cloud.security.privateca.v1.Certificate.subject_mode:type_name -> google.cloud.security.privateca.v1.SubjectRequestMode
+	45, // 28: google.cloud.security.privateca.v1.Certificate.revocation_details:type_name -> google.cloud.security.privateca.v1.Certificate.RevocationDetails
+	22, // 29: google.cloud.security.privateca.v1.Certificate.certificate_description:type_name -> google.cloud.security.privateca.v1.CertificateDescription
+	59, // 30: google.cloud.security.privateca.v1.Certificate.create_time:type_name -> google.protobuf.Timestamp
+	59, // 31: google.cloud.security.privateca.v1.Certificate.update_time:type_name -> google.protobuf.Timestamp
+	46, // 32: google.cloud.security.privateca.v1.Certificate.labels:type_name -> google.cloud.security.privateca.v1.Certificate.LabelsEntry
+	59, // 33: google.cloud.security.privateca.v1.Certificate.requested_not_before_time:type_name -> google.protobuf.Timestamp
+	58, // 34: google.cloud.security.privateca.v1.CertificateTemplate.maximum_lifetime:type_name -> google.protobuf.Duration
+	18, // 35: google.cloud.security.privateca.v1.CertificateTemplate.predefined_values:type_name -> google.cloud.security.privateca.v1.X509Parameters
+	30, // 36: google.cloud.security.privateca.v1.CertificateTemplate.identity_constraints:type_name -> google.cloud.security.privateca.v1.CertificateIdentityConstraints
+	31, // 37: google.cloud.security.privateca.v1.CertificateTemplate.passthrough_extensions:type_name -> google.cloud.security.privateca.v1.CertificateExtensionConstraints
+	59, // 38: google.cloud.security.privateca.v1.CertificateTemplate.create_time:type_name -> google.protobuf.Timestamp
+	59, // 39: google.cloud.security.privateca.v1.CertificateTemplate.update_time:type_name -> google.protobuf.Timestamp
+	47, // 40: google.cloud.security.privateca.v1.CertificateTemplate.labels:type_name -> google.cloud.security.privateca.v1.CertificateTemplate.LabelsEntry
+	25, // 41: google.cloud.security.privateca.v1.X509Parameters.key_usage:type_name -> google.cloud.security.privateca.v1.KeyUsage
+	48, // 42: google.cloud.security.privateca.v1.X509Parameters.ca_options:type_name -> google.cloud.security.privateca.v1.X509Parameters.CaOptions
+	23, // 43: google.cloud.security.privateca.v1.X509Parameters.policy_ids:type_name -> google.cloud.security.privateca.v1.ObjectId
+	49, // 44: google.cloud.security.privateca.v1.X509Parameters.name_constraints:type_name -> google.cloud.security.privateca.v1.X509Parameters.NameConstraints
+	24, // 45: google.cloud.security.privateca.v1.X509Parameters.additional_extensions:type_name -> google.cloud.security.privateca.v1.X509Extension
+	50, // 46: google.cloud.security.privateca.v1.SubordinateConfig.pem_issuer_chain:type_name -> google.cloud.security.privateca.v1.SubordinateConfig.SubordinateConfigChain
+	10, // 47: google.cloud.security.privateca.v1.PublicKey.format:type_name -> google.cloud.security.privateca.v1.PublicKey.KeyFormat
+	51, // 48: google.cloud.security.privateca.v1.CertificateConfig.subject_config:type_name -> google.cloud.security.privateca.v1.CertificateConfig.SubjectConfig
+	18, // 49: google.cloud.security.privateca.v1.CertificateConfig.x509_config:type_name -> google.cloud.security.privateca.v1.X509Parameters
+	20, // 50: google.cloud.security.privateca.v1.CertificateConfig.public_key:type_name -> google.cloud.security.privateca.v1.PublicKey
+	52, // 51: google.cloud.security.privateca.v1.CertificateConfig.subject_key_id:type_name -> google.cloud.security.privateca.v1.CertificateConfig.KeyId
+	53, // 52: google.cloud.security.privateca.v1.CertificateDescription.subject_description:type_name -> google.cloud.security.privateca.v1.CertificateDescription.SubjectDescription
+	18, // 53: google.cloud.security.privateca.v1.CertificateDescription.x509_description:type_name -> google.cloud.security.privateca.v1.X509Parameters
+	20, // 54: google.cloud.security.privateca.v1.CertificateDescription.public_key:type_name -> google.cloud.security.privateca.v1.PublicKey
+	54, // 55: google.cloud.security.privateca.v1.CertificateDescription.subject_key_id:type_name -> google.cloud.security.privateca.v1.CertificateDescription.KeyId
+	54, // 56: google.cloud.security.privateca.v1.CertificateDescription.authority_key_id:type_name -> google.cloud.security.privateca.v1.CertificateDescription.KeyId
+	55, // 57: google.cloud.security.privateca.v1.CertificateDescription.cert_fingerprint:type_name -> google.cloud.security.privateca.v1.CertificateDescription.CertificateFingerprint
+	23, // 58: google.cloud.security.privateca.v1.X509Extension.object_id:type_name -> google.cloud.security.privateca.v1.ObjectId
+	56, // 59: google.cloud.security.privateca.v1.KeyUsage.base_key_usage:type_name -> google.cloud.security.privateca.v1.KeyUsage.KeyUsageOptions
+	57, // 60: google.cloud.security.privateca.v1.KeyUsage.extended_key_usage:type_name -> google.cloud.security.privateca.v1.KeyUsage.ExtendedKeyUsageOptions
+	23, // 61: google.cloud.security.privateca.v1.KeyUsage.unknown_extended_key_usages:type_name -> google.cloud.security.privateca.v1.ObjectId
+	0,  // 62: google.cloud.security.privateca.v1.AttributeTypeAndValue.type:type_name -> google.cloud.security.privateca.v1.AttributeType
+	23, // 63: google.cloud.security.privateca.v1.AttributeTypeAndValue.object_id:type_name -> google.cloud.security.privateca.v1.ObjectId
+	26, // 64: google.cloud.security.privateca.v1.RelativeDistinguishedName.attributes:type_name -> google.cloud.security.privateca.v1.AttributeTypeAndValue
+	27, // 65: google.cloud.security.privateca.v1.Subject.rdn_sequence:type_name -> google.cloud.security.privateca.v1.RelativeDistinguishedName
+	24, // 66: google.cloud.security.privateca.v1.SubjectAltNames.custom_sans:type_name -> google.cloud.security.privateca.v1.X509Extension
+	60, // 67: google.cloud.security.privateca.v1.CertificateIdentityConstraints.cel_expression:type_name -> google.type.Expr
+	11, // 68: google.cloud.security.privateca.v1.CertificateExtensionConstraints.known_extensions:type_name -> google.cloud.security.privateca.v1.CertificateExtensionConstraints.KnownCertificateExtension
+	23, // 69: google.cloud.security.privateca.v1.CertificateExtensionConstraints.additional_extensions:type_name -> google.cloud.security.privateca.v1.ObjectId
+	5,  // 70: google.cloud.security.privateca.v1.CertificateAuthority.KeyVersionSpec.algorithm:type_name -> google.cloud.security.privateca.v1.CertificateAuthority.SignHashAlgorithm
+	7,  // 71: google.cloud.security.privateca.v1.CaPool.PublishingOptions.encoding_format:type_name -> google.cloud.security.privateca.v1.CaPool.PublishingOptions.EncodingFormat
+	39, // 72: google.cloud.security.privateca.v1.CaPool.IssuancePolicy.allowed_key_types:type_name -> google.cloud.security.privateca.v1.CaPool.IssuancePolicy.AllowedKeyType
+	58, // 73: google.cloud.security.privateca.v1.CaPool.IssuancePolicy.backdate_duration:type_name -> google.protobuf.Duration
+	58, // 74: google.cloud.security.privateca.v1.CaPool.IssuancePolicy.maximum_lifetime:type_name -> google.protobuf.Duration
+	40, // 75: google.cloud.security.privateca.v1.CaPool.IssuancePolicy.allowed_issuance_modes:type_name -> google.cloud.security.privateca.v1.CaPool.IssuancePolicy.IssuanceModes
+	18, // 76: google.cloud.security.privateca.v1.CaPool.IssuancePolicy.baseline_values:type_name -> google.cloud.security.privateca.v1.X509Parameters
+	30, // 77: google.cloud.security.privateca.v1.CaPool.IssuancePolicy.identity_constraints:type_name -> google.cloud.security.privateca.v1.CertificateIdentityConstraints
+	31, // 78: google.cloud.security.privateca.v1.CaPool.IssuancePolicy.passthrough_extensions:type_name -> google.cloud.security.privateca.v1.CertificateExtensionConstraints
+	41, // 79: google.cloud.security.privateca.v1.CaPool.IssuancePolicy.AllowedKeyType.rsa:type_name -> google.cloud.security.privateca.v1.CaPool.IssuancePolicy.AllowedKeyType.RsaKeyType
+	42, // 80: google.cloud.security.privateca.v1.CaPool.IssuancePolicy.AllowedKeyType.elliptic_curve:type_name -> google.cloud.security.privateca.v1.CaPool.IssuancePolicy.AllowedKeyType.EcKeyType
+	8,  // 81: google.cloud.security.privateca.v1.CaPool.IssuancePolicy.AllowedKeyType.EcKeyType.signature_algorithm:type_name -> google.cloud.security.privateca.v1.CaPool.IssuancePolicy.AllowedKeyType.EcKeyType.EcSignatureAlgorithm
+	1,  // 82: google.cloud.security.privateca.v1.CertificateRevocationList.RevokedCertificate.revocation_reason:type_name -> google.cloud.security.privateca.v1.RevocationReason
+	1,  // 83: google.cloud.security.privateca.v1.Certificate.RevocationDetails.revocation_state:type_name -> google.cloud.security.privateca.v1.RevocationReason
+	59, // 84: google.cloud.security.privateca.v1.Certificate.RevocationDetails.revocation_time:type_name -> google.protobuf.Timestamp
+	28, // 85: google.cloud.security.privateca.v1.CertificateConfig.SubjectConfig.subject:type_name -> google.cloud.security.privateca.v1.Subject
+	29, // 86: google.cloud.security.privateca.v1.CertificateConfig.SubjectConfig.subject_alt_name:type_name -> google.cloud.security.privateca.v1.SubjectAltNames
+	28, // 87: google.cloud.security.privateca.v1.CertificateDescription.SubjectDescription.subject:type_name -> google.cloud.security.privateca.v1.Subject
+	29, // 88: google.cloud.security.privateca.v1.CertificateDescription.SubjectDescription.subject_alt_name:type_name -> google.cloud.security.privateca.v1.SubjectAltNames
+	58, // 89: google.cloud.security.privateca.v1.CertificateDescription.SubjectDescription.lifetime:type_name -> google.protobuf.Duration
+	59, // 90: google.cloud.security.privateca.v1.CertificateDescription.SubjectDescription.not_before_time:type_name -> google.protobuf.Timestamp
+	59, // 91: google.cloud.security.privateca.v1.CertificateDescription.SubjectDescription.not_after_time:type_name -> google.protobuf.Timestamp
+	92, // [92:92] is the sub-list for method output_type
+	92, // [92:92] is the sub-list for method input_type
+	92, // [92:92] is the sub-list for extension type_name
+	92, // [92:92] is the sub-list for extension extendee
+	0,  // [0:92] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_security_privateca_v1_resources_proto_init() }
@@ -5158,35 +5270,35 @@ func file_google_cloud_security_privateca_v1_resources_proto_init() {
 	if File_google_cloud_security_privateca_v1_resources_proto != nil {
 		return
 	}
-	file_google_cloud_security_privateca_v1_resources_proto_msgTypes[3].OneofWrappers = []any{
+	file_google_cloud_security_privateca_v1_resources_proto_msgTypes[4].OneofWrappers = []any{
 		(*Certificate_PemCsr)(nil),
 		(*Certificate_Config)(nil),
 	}
-	file_google_cloud_security_privateca_v1_resources_proto_msgTypes[6].OneofWrappers = []any{
+	file_google_cloud_security_privateca_v1_resources_proto_msgTypes[7].OneofWrappers = []any{
 		(*SubordinateConfig_CertificateAuthority)(nil),
 		(*SubordinateConfig_PemIssuerChain)(nil),
 	}
-	file_google_cloud_security_privateca_v1_resources_proto_msgTypes[13].OneofWrappers = []any{
+	file_google_cloud_security_privateca_v1_resources_proto_msgTypes[14].OneofWrappers = []any{
 		(*AttributeTypeAndValue_Type)(nil),
 		(*AttributeTypeAndValue_ObjectId)(nil),
 	}
-	file_google_cloud_security_privateca_v1_resources_proto_msgTypes[17].OneofWrappers = []any{}
-	file_google_cloud_security_privateca_v1_resources_proto_msgTypes[20].OneofWrappers = []any{
+	file_google_cloud_security_privateca_v1_resources_proto_msgTypes[18].OneofWrappers = []any{}
+	file_google_cloud_security_privateca_v1_resources_proto_msgTypes[21].OneofWrappers = []any{
 		(*CertificateAuthority_KeyVersionSpec_CloudKmsKeyVersion)(nil),
 		(*CertificateAuthority_KeyVersionSpec_Algorithm)(nil),
 	}
-	file_google_cloud_security_privateca_v1_resources_proto_msgTypes[26].OneofWrappers = []any{
+	file_google_cloud_security_privateca_v1_resources_proto_msgTypes[27].OneofWrappers = []any{
 		(*CaPool_IssuancePolicy_AllowedKeyType_Rsa)(nil),
 		(*CaPool_IssuancePolicy_AllowedKeyType_EllipticCurve)(nil),
 	}
-	file_google_cloud_security_privateca_v1_resources_proto_msgTypes[35].OneofWrappers = []any{}
+	file_google_cloud_security_privateca_v1_resources_proto_msgTypes[36].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_security_privateca_v1_resources_proto_rawDesc), len(file_google_cloud_security_privateca_v1_resources_proto_rawDesc)),
 			NumEnums:      12,
-			NumMessages:   45,
+			NumMessages:   46,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

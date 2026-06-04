@@ -16,6 +16,8 @@
 
 // [START cloudoptimization_v1_generated_FleetRouting_BatchOptimizeTours_sync]
 
+//go:build examples
+
 package main
 
 import (

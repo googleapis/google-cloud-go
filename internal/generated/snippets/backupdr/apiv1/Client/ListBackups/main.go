@@ -16,6 +16,8 @@
 
 // [START backupdr_v1_generated_BackupDR_ListBackups_sync]
 
+//go:build examples
+
 package main
 
 import (

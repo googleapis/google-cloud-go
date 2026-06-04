@@ -293,7 +293,7 @@ type DataObjectClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *DataObjectClient) Close() error {
 	return c.internalClient.Close()
@@ -508,7 +508,7 @@ func (c *dataObjectGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *dataObjectGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -613,7 +613,7 @@ func (c *dataObjectRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *dataObjectRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.

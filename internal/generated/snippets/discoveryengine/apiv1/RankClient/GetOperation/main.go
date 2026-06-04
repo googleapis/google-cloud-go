@@ -16,6 +16,8 @@
 
 // [START discoveryengine_v1_generated_RankService_GetOperation_sync]
 
+//go:build examples
+
 package main
 
 import (

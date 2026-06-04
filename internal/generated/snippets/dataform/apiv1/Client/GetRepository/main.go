@@ -16,6 +16,8 @@
 
 // [START dataform_v1_generated_Dataform_GetRepository_sync]
 
+//go:build examples
+
 package main
 
 import (

@@ -16,6 +16,8 @@
 
 // [START securitycenter_v1_generated_SecurityCenter_GetEffectiveEventThreatDetectionCustomModule_sync]
 
+//go:build examples
+
 package main
 
 import (

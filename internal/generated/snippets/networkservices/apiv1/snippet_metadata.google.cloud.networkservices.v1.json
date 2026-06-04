@@ -49,7 +49,7 @@
       "regionTag": "networkservices_v1_generated_DepService_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -95,7 +95,7 @@
       "regionTag": "networkservices_v1_generated_DepService_CreateAuthzExtension_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -141,7 +141,7 @@
       "regionTag": "networkservices_v1_generated_DepService_CreateLbEdgeExtension_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -187,7 +187,7 @@
       "regionTag": "networkservices_v1_generated_DepService_CreateLbRouteExtension_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -233,7 +233,7 @@
       "regionTag": "networkservices_v1_generated_DepService_CreateLbTrafficExtension_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -279,7 +279,7 @@
       "regionTag": "networkservices_v1_generated_DepService_DeleteAuthzExtension_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -325,7 +325,7 @@
       "regionTag": "networkservices_v1_generated_DepService_DeleteLbEdgeExtension_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -371,7 +371,7 @@
       "regionTag": "networkservices_v1_generated_DepService_DeleteLbRouteExtension_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -417,7 +417,7 @@
       "regionTag": "networkservices_v1_generated_DepService_DeleteLbTrafficExtension_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -462,7 +462,7 @@
       "regionTag": "networkservices_v1_generated_DepService_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -508,7 +508,7 @@
       "regionTag": "networkservices_v1_generated_DepService_GetAuthzExtension_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -554,7 +554,7 @@
       "regionTag": "networkservices_v1_generated_DepService_GetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -600,7 +600,7 @@
       "regionTag": "networkservices_v1_generated_DepService_GetLbEdgeExtension_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -646,7 +646,7 @@
       "regionTag": "networkservices_v1_generated_DepService_GetLbRouteExtension_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -692,7 +692,7 @@
       "regionTag": "networkservices_v1_generated_DepService_GetLbTrafficExtension_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -738,7 +738,7 @@
       "regionTag": "networkservices_v1_generated_DepService_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -784,7 +784,7 @@
       "regionTag": "networkservices_v1_generated_DepService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -830,7 +830,7 @@
       "regionTag": "networkservices_v1_generated_DepService_ListAuthzExtensions_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -876,7 +876,7 @@
       "regionTag": "networkservices_v1_generated_DepService_ListLbEdgeExtensions_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -922,7 +922,7 @@
       "regionTag": "networkservices_v1_generated_DepService_ListLbRouteExtensions_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -968,7 +968,7 @@
       "regionTag": "networkservices_v1_generated_DepService_ListLbTrafficExtensions_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1014,7 +1014,7 @@
       "regionTag": "networkservices_v1_generated_DepService_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1060,7 +1060,7 @@
       "regionTag": "networkservices_v1_generated_DepService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1106,7 +1106,7 @@
       "regionTag": "networkservices_v1_generated_DepService_SetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1152,7 +1152,7 @@
       "regionTag": "networkservices_v1_generated_DepService_TestIamPermissions_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1198,7 +1198,7 @@
       "regionTag": "networkservices_v1_generated_DepService_UpdateAuthzExtension_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1244,7 +1244,7 @@
       "regionTag": "networkservices_v1_generated_DepService_UpdateLbEdgeExtension_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1290,7 +1290,7 @@
       "regionTag": "networkservices_v1_generated_DepService_UpdateLbRouteExtension_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1336,7 +1336,7 @@
       "regionTag": "networkservices_v1_generated_DepService_UpdateLbTrafficExtension_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1381,7 +1381,7 @@
       "regionTag": "networkservices_v1_generated_NetworkServices_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -1427,7 +1427,7 @@
       "regionTag": "networkservices_v1_generated_NetworkServices_CreateEndpointPolicy_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1473,7 +1473,7 @@
       "regionTag": "networkservices_v1_generated_NetworkServices_CreateGateway_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1519,7 +1519,7 @@
       "regionTag": "networkservices_v1_generated_NetworkServices_CreateGrpcRoute_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1565,7 +1565,7 @@
       "regionTag": "networkservices_v1_generated_NetworkServices_CreateHttpRoute_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1611,7 +1611,7 @@
       "regionTag": "networkservices_v1_generated_NetworkServices_CreateMesh_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1657,7 +1657,7 @@
       "regionTag": "networkservices_v1_generated_NetworkServices_CreateServiceBinding_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1703,7 +1703,7 @@
       "regionTag": "networkservices_v1_generated_NetworkServices_CreateServiceLbPolicy_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1749,7 +1749,7 @@
       "regionTag": "networkservices_v1_generated_NetworkServices_CreateTcpRoute_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1795,7 +1795,7 @@
       "regionTag": "networkservices_v1_generated_NetworkServices_CreateTlsRoute_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1841,7 +1841,7 @@
       "regionTag": "networkservices_v1_generated_NetworkServices_CreateWasmPlugin_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1887,7 +1887,7 @@
       "regionTag": "networkservices_v1_generated_NetworkServices_CreateWasmPluginVersion_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1933,7 +1933,7 @@
       "regionTag": "networkservices_v1_generated_NetworkServices_DeleteEndpointPolicy_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -1979,7 +1979,7 @@
       "regionTag": "networkservices_v1_generated_NetworkServices_DeleteGateway_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -2025,7 +2025,7 @@
       "regionTag": "networkservices_v1_generated_NetworkServices_DeleteGrpcRoute_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -2071,7 +2071,7 @@
       "regionTag": "networkservices_v1_generated_NetworkServices_DeleteHttpRoute_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -2117,7 +2117,7 @@
       "regionTag": "networkservices_v1_generated_NetworkServices_DeleteMesh_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -2162,7 +2162,7 @@
       "regionTag": "networkservices_v1_generated_NetworkServices_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -2208,7 +2208,7 @@
       "regionTag": "networkservices_v1_generated_NetworkServices_DeleteServiceBinding_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -2254,7 +2254,7 @@
       "regionTag": "networkservices_v1_generated_NetworkServices_DeleteServiceLbPolicy_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -2300,7 +2300,7 @@
       "regionTag": "networkservices_v1_generated_NetworkServices_DeleteTcpRoute_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -2346,7 +2346,7 @@
       "regionTag": "networkservices_v1_generated_NetworkServices_DeleteTlsRoute_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -2392,7 +2392,7 @@
       "regionTag": "networkservices_v1_generated_NetworkServices_DeleteWasmPlugin_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -2438,7 +2438,7 @@
       "regionTag": "networkservices_v1_generated_NetworkServices_DeleteWasmPluginVersion_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -2484,7 +2484,7 @@
       "regionTag": "networkservices_v1_generated_NetworkServices_GetEndpointPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2530,7 +2530,7 @@
       "regionTag": "networkservices_v1_generated_NetworkServices_GetGateway_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2576,7 +2576,7 @@
       "regionTag": "networkservices_v1_generated_NetworkServices_GetGatewayRouteView_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2622,7 +2622,7 @@
       "regionTag": "networkservices_v1_generated_NetworkServices_GetGrpcRoute_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2668,7 +2668,7 @@
       "regionTag": "networkservices_v1_generated_NetworkServices_GetHttpRoute_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2714,7 +2714,7 @@
       "regionTag": "networkservices_v1_generated_NetworkServices_GetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2760,7 +2760,7 @@
       "regionTag": "networkservices_v1_generated_NetworkServices_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2806,7 +2806,7 @@
       "regionTag": "networkservices_v1_generated_NetworkServices_GetMesh_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2852,7 +2852,7 @@
       "regionTag": "networkservices_v1_generated_NetworkServices_GetMeshRouteView_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2898,7 +2898,7 @@
       "regionTag": "networkservices_v1_generated_NetworkServices_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2944,7 +2944,7 @@
       "regionTag": "networkservices_v1_generated_NetworkServices_GetServiceBinding_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2990,7 +2990,7 @@
       "regionTag": "networkservices_v1_generated_NetworkServices_GetServiceLbPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3036,7 +3036,7 @@
       "regionTag": "networkservices_v1_generated_NetworkServices_GetTcpRoute_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3082,7 +3082,7 @@
       "regionTag": "networkservices_v1_generated_NetworkServices_GetTlsRoute_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3128,7 +3128,7 @@
       "regionTag": "networkservices_v1_generated_NetworkServices_GetWasmPlugin_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3174,7 +3174,7 @@
       "regionTag": "networkservices_v1_generated_NetworkServices_GetWasmPluginVersion_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3220,7 +3220,7 @@
       "regionTag": "networkservices_v1_generated_NetworkServices_ListEndpointPolicies_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -3266,7 +3266,7 @@
       "regionTag": "networkservices_v1_generated_NetworkServices_ListGatewayRouteViews_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -3312,7 +3312,7 @@
       "regionTag": "networkservices_v1_generated_NetworkServices_ListGateways_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -3358,7 +3358,7 @@
       "regionTag": "networkservices_v1_generated_NetworkServices_ListGrpcRoutes_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -3404,7 +3404,7 @@
       "regionTag": "networkservices_v1_generated_NetworkServices_ListHttpRoutes_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -3450,7 +3450,7 @@
       "regionTag": "networkservices_v1_generated_NetworkServices_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -3496,7 +3496,7 @@
       "regionTag": "networkservices_v1_generated_NetworkServices_ListMeshRouteViews_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -3542,7 +3542,7 @@
       "regionTag": "networkservices_v1_generated_NetworkServices_ListMeshes_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -3588,7 +3588,7 @@
       "regionTag": "networkservices_v1_generated_NetworkServices_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -3634,7 +3634,7 @@
       "regionTag": "networkservices_v1_generated_NetworkServices_ListServiceBindings_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -3680,7 +3680,7 @@
       "regionTag": "networkservices_v1_generated_NetworkServices_ListServiceLbPolicies_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -3726,7 +3726,7 @@
       "regionTag": "networkservices_v1_generated_NetworkServices_ListTcpRoutes_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -3772,7 +3772,7 @@
       "regionTag": "networkservices_v1_generated_NetworkServices_ListTlsRoutes_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -3818,7 +3818,7 @@
       "regionTag": "networkservices_v1_generated_NetworkServices_ListWasmPluginVersions_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -3864,7 +3864,7 @@
       "regionTag": "networkservices_v1_generated_NetworkServices_ListWasmPlugins_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -3910,7 +3910,7 @@
       "regionTag": "networkservices_v1_generated_NetworkServices_SetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3956,7 +3956,7 @@
       "regionTag": "networkservices_v1_generated_NetworkServices_TestIamPermissions_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -4002,7 +4002,7 @@
       "regionTag": "networkservices_v1_generated_NetworkServices_UpdateEndpointPolicy_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -4048,7 +4048,7 @@
       "regionTag": "networkservices_v1_generated_NetworkServices_UpdateGateway_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -4094,7 +4094,7 @@
       "regionTag": "networkservices_v1_generated_NetworkServices_UpdateGrpcRoute_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -4140,7 +4140,7 @@
       "regionTag": "networkservices_v1_generated_NetworkServices_UpdateHttpRoute_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -4186,7 +4186,7 @@
       "regionTag": "networkservices_v1_generated_NetworkServices_UpdateMesh_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -4232,7 +4232,7 @@
       "regionTag": "networkservices_v1_generated_NetworkServices_UpdateServiceBinding_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -4278,7 +4278,7 @@
       "regionTag": "networkservices_v1_generated_NetworkServices_UpdateServiceLbPolicy_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -4324,7 +4324,7 @@
       "regionTag": "networkservices_v1_generated_NetworkServices_UpdateTcpRoute_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -4370,7 +4370,7 @@
       "regionTag": "networkservices_v1_generated_NetworkServices_UpdateTlsRoute_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -4416,7 +4416,7 @@
       "regionTag": "networkservices_v1_generated_NetworkServices_UpdateWasmPlugin_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }

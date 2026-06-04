@@ -47,25 +47,26 @@ var newDataProductClientHook clientHook
 
 // DataProductCallOptions contains the retry settings for each method of DataProductClient.
 type DataProductCallOptions struct {
-	CreateDataProduct  []gax.CallOption
-	DeleteDataProduct  []gax.CallOption
-	GetDataProduct     []gax.CallOption
-	ListDataProducts   []gax.CallOption
-	UpdateDataProduct  []gax.CallOption
-	CreateDataAsset    []gax.CallOption
-	UpdateDataAsset    []gax.CallOption
-	DeleteDataAsset    []gax.CallOption
-	GetDataAsset       []gax.CallOption
-	ListDataAssets     []gax.CallOption
-	GetLocation        []gax.CallOption
-	ListLocations      []gax.CallOption
-	GetIamPolicy       []gax.CallOption
-	SetIamPolicy       []gax.CallOption
-	TestIamPermissions []gax.CallOption
-	CancelOperation    []gax.CallOption
-	DeleteOperation    []gax.CallOption
-	GetOperation       []gax.CallOption
-	ListOperations     []gax.CallOption
+	CreateDataProduct        []gax.CallOption
+	DeleteDataProduct        []gax.CallOption
+	GetDataProduct           []gax.CallOption
+	ListDataProducts         []gax.CallOption
+	UpdateDataProduct        []gax.CallOption
+	RequestDataProductAccess []gax.CallOption
+	CreateDataAsset          []gax.CallOption
+	UpdateDataAsset          []gax.CallOption
+	DeleteDataAsset          []gax.CallOption
+	GetDataAsset             []gax.CallOption
+	ListDataAssets           []gax.CallOption
+	GetLocation              []gax.CallOption
+	ListLocations            []gax.CallOption
+	GetIamPolicy             []gax.CallOption
+	SetIamPolicy             []gax.CallOption
+	TestIamPermissions       []gax.CallOption
+	CancelOperation          []gax.CallOption
+	DeleteOperation          []gax.CallOption
+	GetOperation             []gax.CallOption
+	ListOperations           []gax.CallOption
 }
 
 func defaultDataProductGRPCClientOptions() []option.ClientOption {
@@ -85,49 +86,51 @@ func defaultDataProductGRPCClientOptions() []option.ClientOption {
 
 func defaultDataProductCallOptions() *DataProductCallOptions {
 	return &DataProductCallOptions{
-		CreateDataProduct:  []gax.CallOption{},
-		DeleteDataProduct:  []gax.CallOption{},
-		GetDataProduct:     []gax.CallOption{},
-		ListDataProducts:   []gax.CallOption{},
-		UpdateDataProduct:  []gax.CallOption{},
-		CreateDataAsset:    []gax.CallOption{},
-		UpdateDataAsset:    []gax.CallOption{},
-		DeleteDataAsset:    []gax.CallOption{},
-		GetDataAsset:       []gax.CallOption{},
-		ListDataAssets:     []gax.CallOption{},
-		GetLocation:        []gax.CallOption{},
-		ListLocations:      []gax.CallOption{},
-		GetIamPolicy:       []gax.CallOption{},
-		SetIamPolicy:       []gax.CallOption{},
-		TestIamPermissions: []gax.CallOption{},
-		CancelOperation:    []gax.CallOption{},
-		DeleteOperation:    []gax.CallOption{},
-		GetOperation:       []gax.CallOption{},
-		ListOperations:     []gax.CallOption{},
+		CreateDataProduct:        []gax.CallOption{},
+		DeleteDataProduct:        []gax.CallOption{},
+		GetDataProduct:           []gax.CallOption{},
+		ListDataProducts:         []gax.CallOption{},
+		UpdateDataProduct:        []gax.CallOption{},
+		RequestDataProductAccess: []gax.CallOption{},
+		CreateDataAsset:          []gax.CallOption{},
+		UpdateDataAsset:          []gax.CallOption{},
+		DeleteDataAsset:          []gax.CallOption{},
+		GetDataAsset:             []gax.CallOption{},
+		ListDataAssets:           []gax.CallOption{},
+		GetLocation:              []gax.CallOption{},
+		ListLocations:            []gax.CallOption{},
+		GetIamPolicy:             []gax.CallOption{},
+		SetIamPolicy:             []gax.CallOption{},
+		TestIamPermissions:       []gax.CallOption{},
+		CancelOperation:          []gax.CallOption{},
+		DeleteOperation:          []gax.CallOption{},
+		GetOperation:             []gax.CallOption{},
+		ListOperations:           []gax.CallOption{},
 	}
 }
 
 func defaultDataProductRESTCallOptions() *DataProductCallOptions {
 	return &DataProductCallOptions{
-		CreateDataProduct:  []gax.CallOption{},
-		DeleteDataProduct:  []gax.CallOption{},
-		GetDataProduct:     []gax.CallOption{},
-		ListDataProducts:   []gax.CallOption{},
-		UpdateDataProduct:  []gax.CallOption{},
-		CreateDataAsset:    []gax.CallOption{},
-		UpdateDataAsset:    []gax.CallOption{},
-		DeleteDataAsset:    []gax.CallOption{},
-		GetDataAsset:       []gax.CallOption{},
-		ListDataAssets:     []gax.CallOption{},
-		GetLocation:        []gax.CallOption{},
-		ListLocations:      []gax.CallOption{},
-		GetIamPolicy:       []gax.CallOption{},
-		SetIamPolicy:       []gax.CallOption{},
-		TestIamPermissions: []gax.CallOption{},
-		CancelOperation:    []gax.CallOption{},
-		DeleteOperation:    []gax.CallOption{},
-		GetOperation:       []gax.CallOption{},
-		ListOperations:     []gax.CallOption{},
+		CreateDataProduct:        []gax.CallOption{},
+		DeleteDataProduct:        []gax.CallOption{},
+		GetDataProduct:           []gax.CallOption{},
+		ListDataProducts:         []gax.CallOption{},
+		UpdateDataProduct:        []gax.CallOption{},
+		RequestDataProductAccess: []gax.CallOption{},
+		CreateDataAsset:          []gax.CallOption{},
+		UpdateDataAsset:          []gax.CallOption{},
+		DeleteDataAsset:          []gax.CallOption{},
+		GetDataAsset:             []gax.CallOption{},
+		ListDataAssets:           []gax.CallOption{},
+		GetLocation:              []gax.CallOption{},
+		ListLocations:            []gax.CallOption{},
+		GetIamPolicy:             []gax.CallOption{},
+		SetIamPolicy:             []gax.CallOption{},
+		TestIamPermissions:       []gax.CallOption{},
+		CancelOperation:          []gax.CallOption{},
+		DeleteOperation:          []gax.CallOption{},
+		GetOperation:             []gax.CallOption{},
+		ListOperations:           []gax.CallOption{},
 	}
 }
 
@@ -144,6 +147,7 @@ type internalDataProductClient interface {
 	ListDataProducts(context.Context, *dataplexpb.ListDataProductsRequest, ...gax.CallOption) *DataProductIterator
 	UpdateDataProduct(context.Context, *dataplexpb.UpdateDataProductRequest, ...gax.CallOption) (*UpdateDataProductOperation, error)
 	UpdateDataProductOperation(name string) *UpdateDataProductOperation
+	RequestDataProductAccess(context.Context, *dataplexpb.RequestDataProductAccessRequest, ...gax.CallOption) (*dataplexpb.RequestDataProductAccessResponse, error)
 	CreateDataAsset(context.Context, *dataplexpb.CreateDataAssetRequest, ...gax.CallOption) (*CreateDataAssetOperation, error)
 	CreateDataAssetOperation(name string) *CreateDataAssetOperation
 	UpdateDataAsset(context.Context, *dataplexpb.UpdateDataAssetRequest, ...gax.CallOption) (*UpdateDataAssetOperation, error)
@@ -183,7 +187,7 @@ type DataProductClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *DataProductClient) Close() error {
 	return c.internalClient.Close()
@@ -248,6 +252,13 @@ func (c *DataProductClient) UpdateDataProductOperation(name string) *UpdateDataP
 	return c.internalClient.UpdateDataProductOperation(name)
 }
 
+// RequestDataProductAccess requests access to a data product. This will trigger an access approval
+// workflow, and the requester will need to wait for the approval to be
+// granted before they will be able to access the data product assets.
+func (c *DataProductClient) RequestDataProductAccess(ctx context.Context, req *dataplexpb.RequestDataProductAccessRequest, opts ...gax.CallOption) (*dataplexpb.RequestDataProductAccessResponse, error) {
+	return c.internalClient.RequestDataProductAccess(ctx, req, opts...)
+}
+
 // CreateDataAsset creates a data asset.
 func (c *DataProductClient) CreateDataAsset(ctx context.Context, req *dataplexpb.CreateDataAssetRequest, opts ...gax.CallOption) (*CreateDataAssetOperation, error) {
 	return c.internalClient.CreateDataAsset(ctx, req, opts...)
@@ -297,14 +308,21 @@ func (c *DataProductClient) GetLocation(ctx context.Context, req *locationpb.Get
 }
 
 // ListLocations lists information about the supported locations for this service.
-// This method can be called in two ways:
 //
-//	List all public locations: Use the path GET /v1/locations.
+// This method lists locations based on the resource scope provided in
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)][google.cloud.location.ListLocationsRequest.name (at http://google.cloud.location.ListLocationsRequest.name)] field: *
+// Global locations: If name is empty, the method lists the
+// public locations available to all projects. * Project-specific
+// locations: If name follows the format
+// projects/{project}, the method lists locations visible to that
+// specific project. This includes public, private, or other
+// project-specific locations enabled for the project.
 //
-//	List project-visible locations: Use the path
-//	GET /v1/projects/{project_id}/locations. This may include public
-//	locations as well as private or other locations specifically visible
-//	to the project.
+// For gRPC and client library implementations, the resource name is
+// passed as the name field. For direct service calls, the resource
+// name is
+// incorporated into the request path based on the specific service
+// implementation and version.
 func (c *DataProductClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	return c.internalClient.ListLocations(ctx, req, opts...)
 }
@@ -443,6 +461,7 @@ func NewDataProductClient(ctx context.Context, opts ...option.ClientOption) (*Da
 		client.CallOptions.GetDataProduct = append(client.CallOptions.GetDataProduct, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListDataProducts = append(client.CallOptions.ListDataProducts, gax.WithClientMetrics(metrics))
 		client.CallOptions.UpdateDataProduct = append(client.CallOptions.UpdateDataProduct, gax.WithClientMetrics(metrics))
+		client.CallOptions.RequestDataProductAccess = append(client.CallOptions.RequestDataProductAccess, gax.WithClientMetrics(metrics))
 		client.CallOptions.CreateDataAsset = append(client.CallOptions.CreateDataAsset, gax.WithClientMetrics(metrics))
 		client.CallOptions.UpdateDataAsset = append(client.CallOptions.UpdateDataAsset, gax.WithClientMetrics(metrics))
 		client.CallOptions.DeleteDataAsset = append(client.CallOptions.DeleteDataAsset, gax.WithClientMetrics(metrics))
@@ -494,7 +513,7 @@ func (c *dataProductGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *dataProductGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -569,6 +588,7 @@ func NewDataProductRESTClient(ctx context.Context, opts ...option.ClientOption) 
 		callOpts.GetDataProduct = append(callOpts.GetDataProduct, gax.WithClientMetrics(metrics))
 		callOpts.ListDataProducts = append(callOpts.ListDataProducts, gax.WithClientMetrics(metrics))
 		callOpts.UpdateDataProduct = append(callOpts.UpdateDataProduct, gax.WithClientMetrics(metrics))
+		callOpts.RequestDataProductAccess = append(callOpts.RequestDataProductAccess, gax.WithClientMetrics(metrics))
 		callOpts.CreateDataAsset = append(callOpts.CreateDataAsset, gax.WithClientMetrics(metrics))
 		callOpts.UpdateDataAsset = append(callOpts.UpdateDataAsset, gax.WithClientMetrics(metrics))
 		callOpts.DeleteDataAsset = append(callOpts.DeleteDataAsset, gax.WithClientMetrics(metrics))
@@ -621,7 +641,7 @@ func (c *dataProductRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *dataProductRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -784,6 +804,30 @@ func (c *dataProductGRPCClient) UpdateDataProduct(ctx context.Context, req *data
 	return &UpdateDataProductOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
+}
+
+func (c *dataProductGRPCClient) RequestDataProductAccess(ctx context.Context, req *dataplexpb.RequestDataProductAccessRequest, opts ...gax.CallOption) (*dataplexpb.RequestDataProductAccessResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataplex.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataplex.v1.DataProductService/RequestDataProductAccess")
+	}
+	opts = append((*c.CallOptions).RequestDataProductAccess[0:len((*c.CallOptions).RequestDataProductAccess):len((*c.CallOptions).RequestDataProductAccess)], opts...)
+	var resp *dataplexpb.RequestDataProductAccessResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.dataProductClient.RequestDataProductAccess, req, settings.GRPC, c.logger, "RequestDataProductAccess")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (c *dataProductGRPCClient) CreateDataAsset(ctx context.Context, req *dataplexpb.CreateDataAssetRequest, opts ...gax.CallOption) (*CreateDataAssetOperation, error) {
@@ -1538,6 +1582,71 @@ func (c *dataProductRESTClient) UpdateDataProduct(ctx context.Context, req *data
 	}, nil
 }
 
+// RequestDataProductAccess requests access to a data product. This will trigger an access approval
+// workflow, and the requester will need to wait for the approval to be
+// granted before they will be able to access the data product assets.
+func (c *dataProductRESTClient) RequestDataProductAccess(ctx context.Context, req *dataplexpb.RequestDataProductAccessRequest, opts ...gax.CallOption) (*dataplexpb.RequestDataProductAccessResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:requestAccess", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataplex.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataplex.v1.DataProductService/RequestDataProductAccess")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/dataProducts/*}:requestAccess")
+	}
+	opts = append((*c.CallOptions).RequestDataProductAccess[0:len((*c.CallOptions).RequestDataProductAccess):len((*c.CallOptions).RequestDataProductAccess)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &dataplexpb.RequestDataProductAccessResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "RequestDataProductAccess")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
 // CreateDataAsset creates a data asset.
 func (c *dataProductRESTClient) CreateDataAsset(ctx context.Context, req *dataplexpb.CreateDataAssetRequest, opts ...gax.CallOption) (*CreateDataAssetOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
@@ -1947,14 +2056,21 @@ func (c *dataProductRESTClient) GetLocation(ctx context.Context, req *locationpb
 }
 
 // ListLocations lists information about the supported locations for this service.
-// This method can be called in two ways:
 //
-//	List all public locations: Use the path GET /v1/locations.
+// This method lists locations based on the resource scope provided in
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)][google.cloud.location.ListLocationsRequest.name (at http://google.cloud.location.ListLocationsRequest.name)] field: *
+// Global locations: If name is empty, the method lists the
+// public locations available to all projects. * Project-specific
+// locations: If name follows the format
+// projects/{project}, the method lists locations visible to that
+// specific project. This includes public, private, or other
+// project-specific locations enabled for the project.
 //
-//	List project-visible locations: Use the path
-//	GET /v1/projects/{project_id}/locations. This may include public
-//	locations as well as private or other locations specifically visible
-//	to the project.
+// For gRPC and client library implementations, the resource name is
+// passed as the name field. For direct service calls, the resource
+// name is
+// incorporated into the request path based on the specific service
+// implementation and version.
 func (c *dataProductRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
 	req = proto.CloneOf(req)

@@ -16,6 +16,8 @@
 
 // [START dialogflow_v3_generated_Changelogs_ListChangelogs_sync]
 
+//go:build examples
+
 package main
 
 import (

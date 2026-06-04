@@ -16,6 +16,8 @@
 
 // [START vectorsearch_v1_generated_DataObjectService_GetLocation_sync]
 
+//go:build examples
+
 package main
 
 import (

@@ -449,6 +449,11 @@
                 "LookupEntryLinks"
               ]
             },
+            "ModifyEntry": {
+              "methods": [
+                "ModifyEntry"
+              ]
+            },
             "SearchEntries": {
               "methods": [
                 "SearchEntries"
@@ -682,6 +687,11 @@
             "LookupEntryLinks": {
               "methods": [
                 "LookupEntryLinks"
+              ]
+            },
+            "ModifyEntry": {
+              "methods": [
+                "ModifyEntry"
               ]
             },
             "SearchEntries": {
@@ -938,6 +948,56 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "ContentClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            }
+          }
         }
       }
     },
@@ -1019,6 +1079,11 @@
             "ListOperations": {
               "methods": [
                 "ListOperations"
+              ]
+            },
+            "RequestDataProductAccess": {
+              "methods": [
+                "RequestDataProductAccess"
               ]
             },
             "SetIamPolicy": {
@@ -1121,6 +1186,11 @@
                 "ListOperations"
               ]
             },
+            "RequestDataProductAccess": {
+              "methods": [
+                "RequestDataProductAccess"
+              ]
+            },
             "SetIamPolicy": {
               "methods": [
                 "SetIamPolicy"
@@ -1150,6 +1220,11 @@
         "grpc": {
           "libraryClient": "DataScanClient",
           "rpcs": {
+            "CancelDataScanJob": {
+              "methods": [
+                "CancelDataScanJob"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
@@ -1245,6 +1320,11 @@
         "rest": {
           "libraryClient": "DataScanClient",
           "rpcs": {
+            "CancelDataScanJob": {
+              "methods": [
+                "CancelDataScanJob"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"

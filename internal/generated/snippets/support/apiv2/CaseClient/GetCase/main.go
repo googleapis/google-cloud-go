@@ -16,6 +16,8 @@
 
 // [START cloudsupport_v2_generated_CaseService_GetCase_sync]
 
+//go:build examples
+
 package main
 
 import (

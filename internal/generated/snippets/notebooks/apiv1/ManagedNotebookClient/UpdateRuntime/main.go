@@ -16,6 +16,8 @@
 
 // [START notebooks_v1_generated_ManagedNotebookService_UpdateRuntime_sync]
 
+//go:build examples
+
 package main
 
 import (

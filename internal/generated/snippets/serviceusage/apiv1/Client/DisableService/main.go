@@ -16,6 +16,8 @@
 
 // [START serviceusage_v1_generated_ServiceUsage_DisableService_sync]
 
+//go:build examples
+
 package main
 
 import (

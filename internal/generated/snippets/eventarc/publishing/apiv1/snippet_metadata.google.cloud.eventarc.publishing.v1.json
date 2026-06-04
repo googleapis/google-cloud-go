@@ -50,7 +50,7 @@
       "regionTag": "eventarcpublishing_v1_generated_Publisher_Publish_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -96,7 +96,7 @@
       "regionTag": "eventarcpublishing_v1_generated_Publisher_PublishChannelConnectionEvents_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -142,7 +142,7 @@
       "regionTag": "eventarcpublishing_v1_generated_Publisher_PublishEvents_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }

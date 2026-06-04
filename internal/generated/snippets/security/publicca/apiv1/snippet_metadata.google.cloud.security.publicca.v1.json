@@ -8,7 +8,7 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/security/publicca/apiv1",
-    "version": "1.24.0"
+    "version": "1.25.0"
   },
   "snippets": [
     {
@@ -50,7 +50,7 @@
       "regionTag": "publicca_v1_generated_PublicCertificateAuthorityService_CreateExternalAccountKey_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }

@@ -16,6 +16,8 @@
 
 // [START containeranalysis_v1beta1_generated_GrafeasV1Beta1_DeleteNote_sync]
 
+//go:build examples
+
 package main
 
 import (

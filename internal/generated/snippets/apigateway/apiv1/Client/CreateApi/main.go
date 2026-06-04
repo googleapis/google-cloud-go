@@ -16,6 +16,8 @@
 
 // [START apigateway_v1_generated_ApiGatewayService_CreateApi_sync]
 
+//go:build examples
+
 package main
 
 import (

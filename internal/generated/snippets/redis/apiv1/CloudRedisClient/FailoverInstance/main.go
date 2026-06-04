@@ -16,6 +16,8 @@
 
 // [START redis_v1_generated_CloudRedis_FailoverInstance_sync]
 
+//go:build examples
+
 package main
 
 import (

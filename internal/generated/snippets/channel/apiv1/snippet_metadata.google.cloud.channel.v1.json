@@ -49,7 +49,7 @@
       "regionTag": "cloudchannel_v1_generated_CloudChannelReportsService_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -94,7 +94,7 @@
       "regionTag": "cloudchannel_v1_generated_CloudChannelReportsService_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -140,7 +140,7 @@
       "regionTag": "cloudchannel_v1_generated_CloudChannelReportsService_FetchReportResults_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -186,7 +186,7 @@
       "regionTag": "cloudchannel_v1_generated_CloudChannelReportsService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -232,7 +232,7 @@
       "regionTag": "cloudchannel_v1_generated_CloudChannelReportsService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -278,7 +278,7 @@
       "regionTag": "cloudchannel_v1_generated_CloudChannelReportsService_ListReports_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -324,7 +324,7 @@
       "regionTag": "cloudchannel_v1_generated_CloudChannelReportsService_RunReportJob_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -370,7 +370,7 @@
       "regionTag": "cloudchannel_v1_generated_CloudChannelService_ActivateEntitlement_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -416,7 +416,7 @@
       "regionTag": "cloudchannel_v1_generated_CloudChannelService_CancelEntitlement_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -461,7 +461,7 @@
       "regionTag": "cloudchannel_v1_generated_CloudChannelService_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -507,7 +507,7 @@
       "regionTag": "cloudchannel_v1_generated_CloudChannelService_ChangeOffer_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -553,7 +553,7 @@
       "regionTag": "cloudchannel_v1_generated_CloudChannelService_ChangeParameters_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -599,7 +599,7 @@
       "regionTag": "cloudchannel_v1_generated_CloudChannelService_ChangeRenewalSettings_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -645,7 +645,7 @@
       "regionTag": "cloudchannel_v1_generated_CloudChannelService_CheckCloudIdentityAccountsExist_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -691,7 +691,7 @@
       "regionTag": "cloudchannel_v1_generated_CloudChannelService_CreateChannelPartnerLink_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -737,7 +737,7 @@
       "regionTag": "cloudchannel_v1_generated_CloudChannelService_CreateChannelPartnerRepricingConfig_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -783,7 +783,7 @@
       "regionTag": "cloudchannel_v1_generated_CloudChannelService_CreateCustomer_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -829,7 +829,7 @@
       "regionTag": "cloudchannel_v1_generated_CloudChannelService_CreateCustomerRepricingConfig_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -875,7 +875,7 @@
       "regionTag": "cloudchannel_v1_generated_CloudChannelService_CreateEntitlement_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -920,7 +920,7 @@
       "regionTag": "cloudchannel_v1_generated_CloudChannelService_DeleteChannelPartnerRepricingConfig_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -965,7 +965,7 @@
       "regionTag": "cloudchannel_v1_generated_CloudChannelService_DeleteCustomer_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -1010,7 +1010,7 @@
       "regionTag": "cloudchannel_v1_generated_CloudChannelService_DeleteCustomerRepricingConfig_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -1055,7 +1055,7 @@
       "regionTag": "cloudchannel_v1_generated_CloudChannelService_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -1101,7 +1101,7 @@
       "regionTag": "cloudchannel_v1_generated_CloudChannelService_GetChannelPartnerLink_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1147,7 +1147,7 @@
       "regionTag": "cloudchannel_v1_generated_CloudChannelService_GetChannelPartnerRepricingConfig_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1193,7 +1193,7 @@
       "regionTag": "cloudchannel_v1_generated_CloudChannelService_GetCustomer_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1239,7 +1239,7 @@
       "regionTag": "cloudchannel_v1_generated_CloudChannelService_GetCustomerRepricingConfig_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1285,7 +1285,7 @@
       "regionTag": "cloudchannel_v1_generated_CloudChannelService_GetEntitlement_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1331,7 +1331,7 @@
       "regionTag": "cloudchannel_v1_generated_CloudChannelService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1377,7 +1377,7 @@
       "regionTag": "cloudchannel_v1_generated_CloudChannelService_ImportCustomer_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1423,7 +1423,7 @@
       "regionTag": "cloudchannel_v1_generated_CloudChannelService_ListChannelPartnerLinks_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1469,7 +1469,7 @@
       "regionTag": "cloudchannel_v1_generated_CloudChannelService_ListChannelPartnerRepricingConfigs_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1515,7 +1515,7 @@
       "regionTag": "cloudchannel_v1_generated_CloudChannelService_ListCustomerRepricingConfigs_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1561,7 +1561,7 @@
       "regionTag": "cloudchannel_v1_generated_CloudChannelService_ListCustomers_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1607,7 +1607,7 @@
       "regionTag": "cloudchannel_v1_generated_CloudChannelService_ListEntitlementChanges_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1653,7 +1653,7 @@
       "regionTag": "cloudchannel_v1_generated_CloudChannelService_ListEntitlements_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1699,7 +1699,7 @@
       "regionTag": "cloudchannel_v1_generated_CloudChannelService_ListOffers_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1745,7 +1745,7 @@
       "regionTag": "cloudchannel_v1_generated_CloudChannelService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1791,7 +1791,7 @@
       "regionTag": "cloudchannel_v1_generated_CloudChannelService_ListProducts_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1837,7 +1837,7 @@
       "regionTag": "cloudchannel_v1_generated_CloudChannelService_ListPurchasableOffers_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1883,7 +1883,7 @@
       "regionTag": "cloudchannel_v1_generated_CloudChannelService_ListPurchasableSkus_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1929,7 +1929,7 @@
       "regionTag": "cloudchannel_v1_generated_CloudChannelService_ListSkuGroupBillableSkus_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1975,7 +1975,7 @@
       "regionTag": "cloudchannel_v1_generated_CloudChannelService_ListSkuGroups_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2021,7 +2021,7 @@
       "regionTag": "cloudchannel_v1_generated_CloudChannelService_ListSkus_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2067,7 +2067,7 @@
       "regionTag": "cloudchannel_v1_generated_CloudChannelService_ListSubscribers_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2113,7 +2113,7 @@
       "regionTag": "cloudchannel_v1_generated_CloudChannelService_ListTransferableOffers_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2159,7 +2159,7 @@
       "regionTag": "cloudchannel_v1_generated_CloudChannelService_ListTransferableSkus_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2205,7 +2205,7 @@
       "regionTag": "cloudchannel_v1_generated_CloudChannelService_LookupOffer_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2251,7 +2251,7 @@
       "regionTag": "cloudchannel_v1_generated_CloudChannelService_ProvisionCloudIdentity_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2297,7 +2297,7 @@
       "regionTag": "cloudchannel_v1_generated_CloudChannelService_QueryEligibleBillingAccounts_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2343,7 +2343,7 @@
       "regionTag": "cloudchannel_v1_generated_CloudChannelService_RegisterSubscriber_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2389,7 +2389,7 @@
       "regionTag": "cloudchannel_v1_generated_CloudChannelService_StartPaidService_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2435,7 +2435,7 @@
       "regionTag": "cloudchannel_v1_generated_CloudChannelService_SuspendEntitlement_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2481,7 +2481,7 @@
       "regionTag": "cloudchannel_v1_generated_CloudChannelService_TransferEntitlements_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2527,7 +2527,7 @@
       "regionTag": "cloudchannel_v1_generated_CloudChannelService_TransferEntitlementsToGoogle_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -2573,7 +2573,7 @@
       "regionTag": "cloudchannel_v1_generated_CloudChannelService_UnregisterSubscriber_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2619,7 +2619,7 @@
       "regionTag": "cloudchannel_v1_generated_CloudChannelService_UpdateChannelPartnerLink_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2665,7 +2665,7 @@
       "regionTag": "cloudchannel_v1_generated_CloudChannelService_UpdateChannelPartnerRepricingConfig_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2711,7 +2711,7 @@
       "regionTag": "cloudchannel_v1_generated_CloudChannelService_UpdateCustomer_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2757,7 +2757,7 @@
       "regionTag": "cloudchannel_v1_generated_CloudChannelService_UpdateCustomerRepricingConfig_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }

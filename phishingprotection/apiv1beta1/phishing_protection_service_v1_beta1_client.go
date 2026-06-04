@@ -97,7 +97,7 @@ type PhishingProtectionServiceV1Beta1Client struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *PhishingProtectionServiceV1Beta1Client) Close() error {
 	return c.internalClient.Close()
@@ -224,7 +224,7 @@ func (c *phishingProtectionServiceV1Beta1GRPCClient) setGoogleClientInfo(keyval 
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *phishingProtectionServiceV1Beta1GRPCClient) Close() error {
 	return c.connPool.Close()
@@ -317,7 +317,7 @@ func (c *phishingProtectionServiceV1Beta1RESTClient) setGoogleClientInfo(keyval 
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *phishingProtectionServiceV1Beta1RESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.

@@ -298,7 +298,7 @@ type IntentsClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *IntentsClient) Close() error {
 	return c.internalClient.Close()
@@ -575,7 +575,7 @@ func (c *intentsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *intentsGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -694,7 +694,7 @@ func (c *intentsRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *intentsRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.

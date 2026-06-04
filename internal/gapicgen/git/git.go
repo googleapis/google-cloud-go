@@ -15,9 +15,11 @@
 package git
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"os"
+	"os/exec"
 	"strings"
 
 	"cloud.google.com/go/internal/gapicgen/execv"
@@ -212,4 +214,19 @@ func GetFileContentAtCommit(gitDir, hash, filePath string) ([]byte, error) {
 		return nil, err
 	}
 	return b, nil
+}
+
+// HeadHash returns the HEAD commit hash for the given gitDir.
+func HeadHash(gitDir string) (string, error) {
+	c := execv.Command("git", "rev-parse", "HEAD")
+	c.Dir = gitDir
+	b, err := c.Output()
+	if err != nil {
+		var exitErr *exec.ExitError
+		if errors.As(err, &exitErr) {
+			return "", fmt.Errorf("git rev-parse HEAD failed: %w (stderr: %s)", err, string(exitErr.Stderr))
+		}
+		return "", err
+	}
+	return strings.TrimSpace(string(b)), nil
 }
