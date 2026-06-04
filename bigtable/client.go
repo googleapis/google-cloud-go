@@ -173,6 +173,8 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 		}
 	}
 	if !enableBigtableConnPool {
+		// Use the regular ConnPool
+		// For regular ConnPool the Direct Access is off by default so we need to check the env var again.
 		if enabled, _ := strconv.ParseBool(os.Getenv(directpathEnvVar)); enabled {
 			o = append(o, directPathOptions...)
 		}
