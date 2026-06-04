@@ -544,7 +544,7 @@ libraries:
     apis:
       - path: google/cloud/contactcenterinsights/v1
   - name: container
-    version: 1.52.0
+    version: 1.53.0
     apis:
       - path: google/container/v1
   - name: containeranalysis
@@ -593,7 +593,7 @@ libraries:
     apis:
       - path: google/cloud/datalabeling/v1beta1
   - name: datamanager
-    version: 1.1.0
+    version: 1.2.0
     apis:
       - path: google/ads/datamanager/v1
         go:
@@ -603,7 +603,7 @@ libraries:
     apis:
       - path: google/cloud/dataplex/v1
   - name: dataproc
-    version: 2.22.0
+    version: 2.23.0
     apis:
       - path: google/cloud/dataproc/v1
         go:
@@ -664,7 +664,7 @@ libraries:
       - path: google/cloud/discoveryengine/v1beta
       - path: google/cloud/discoveryengine/v1alpha
   - name: dlp
-    version: 1.34.0
+    version: 1.35.0
     apis:
       - path: google/privacy/dlp/v2
         go:
@@ -1146,7 +1146,7 @@ libraries:
     apis:
       - path: google/cloud/recommendationengine/v1beta1
   - name: recommender
-    version: 1.18.0
+    version: 1.19.0
     apis:
       - path: google/cloud/recommender/v1
         go:
@@ -1201,7 +1201,7 @@ libraries:
     keep:
       - apiv2/locations_client.go
   - name: saasplatform
-    version: 0.8.0
+    version: 0.9.0
     apis:
       - path: google/cloud/saasplatform/saasservicemgmt/v1beta1
   - name: scheduler

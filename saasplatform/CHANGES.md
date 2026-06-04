@@ -1,5 +1,11 @@
 # Changes
 
+## [0.9.0](https://github.com/googleapis/google-cloud-go/releases/tag/saasplatform%2Fv0.9.0) (2026-06-04)
+
+### Features
+
+* update API sources and regenerate (#14701) ([a9b7921](https://github.com/googleapis/google-cloud-go/commit/a9b7921551e9c1535496731da53e880e9e364efa))
+
 ## [0.8.0](https://github.com/googleapis/google-cloud-go/releases/tag/saasplatform%2Fv0.8.0) (2026-05-28)
 
 ### Features

@@ -893,7 +893,7 @@ libraries:
       - internal/generated/snippets/contactcenterinsights/
     tag_format: '{id}/v{version}'
   - id: container
-    version: 1.52.0
+    version: 1.53.0
     last_generated_commit: ""
     apis:
       - path: google/container/v1
@@ -999,7 +999,7 @@ libraries:
       - internal/generated/snippets/datalabeling/
     tag_format: '{id}/v{version}'
   - id: datamanager
-    version: 1.1.0
+    version: 1.2.0
     last_generated_commit: ""
     apis:
       - path: google/ads/datamanager/v1
@@ -1027,7 +1027,7 @@ libraries:
       - internal/generated/snippets/dataplex/
     tag_format: '{id}/v{version}'
   - id: dataproc
-    version: 2.22.0
+    version: 2.23.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/dataproc/v1
@@ -1168,7 +1168,7 @@ libraries:
       - internal/generated/snippets/discoveryengine/
     tag_format: '{id}/v{version}'
   - id: dlp
-    version: 1.34.0
+    version: 1.35.0
     last_generated_commit: ""
     apis:
       - path: google/privacy/dlp/v2
@@ -2241,7 +2241,7 @@ libraries:
       - internal/generated/snippets/recommendationengine/
     tag_format: '{id}/v{version}'
   - id: recommender
-    version: 1.18.0
+    version: 1.19.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/recommender/v1
@@ -2354,7 +2354,7 @@ libraries:
       - internal/generated/snippets/run/
     tag_format: '{id}/v{version}'
   - id: saasplatform
-    version: 0.8.0
+    version: 0.9.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/saasplatform/saasservicemgmt/v1beta1
