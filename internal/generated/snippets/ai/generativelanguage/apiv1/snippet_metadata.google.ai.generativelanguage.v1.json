@@ -50,7 +50,7 @@
       "regionTag": "generativelanguage_v1_generated_GenerativeService_BatchEmbedContents_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -95,7 +95,7 @@
       "regionTag": "generativelanguage_v1_generated_GenerativeService_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -141,7 +141,7 @@
       "regionTag": "generativelanguage_v1_generated_GenerativeService_CountTokens_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -186,7 +186,7 @@
       "regionTag": "generativelanguage_v1_generated_GenerativeService_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -232,7 +232,7 @@
       "regionTag": "generativelanguage_v1_generated_GenerativeService_EmbedContent_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -278,7 +278,7 @@
       "regionTag": "generativelanguage_v1_generated_GenerativeService_GenerateContent_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -324,7 +324,7 @@
       "regionTag": "generativelanguage_v1_generated_GenerativeService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -370,7 +370,7 @@
       "regionTag": "generativelanguage_v1_generated_GenerativeService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -415,7 +415,7 @@
       "regionTag": "generativelanguage_v1_generated_ModelService_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -460,7 +460,7 @@
       "regionTag": "generativelanguage_v1_generated_ModelService_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -506,7 +506,7 @@
       "regionTag": "generativelanguage_v1_generated_ModelService_GetModel_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -552,7 +552,7 @@
       "regionTag": "generativelanguage_v1_generated_ModelService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -598,7 +598,7 @@
       "regionTag": "generativelanguage_v1_generated_ModelService_ListModels_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -644,7 +644,7 @@
       "regionTag": "generativelanguage_v1_generated_ModelService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }

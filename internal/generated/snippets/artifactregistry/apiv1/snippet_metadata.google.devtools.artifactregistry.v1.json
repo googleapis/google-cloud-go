@@ -50,7 +50,7 @@
       "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_BatchDeleteVersions_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -96,7 +96,7 @@
       "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_CreateAttachment_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -142,7 +142,7 @@
       "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_CreateRepository_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -188,7 +188,7 @@
       "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_CreateRule_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -234,7 +234,7 @@
       "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_CreateTag_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -280,7 +280,7 @@
       "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_DeleteAttachment_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -326,7 +326,7 @@
       "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_DeleteFile_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -372,7 +372,7 @@
       "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_DeletePackage_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -418,7 +418,7 @@
       "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_DeleteRepository_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -463,7 +463,7 @@
       "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_DeleteRule_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -508,7 +508,7 @@
       "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_DeleteTag_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -554,7 +554,7 @@
       "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_DeleteVersion_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -600,7 +600,7 @@
       "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_ExportArtifact_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -646,7 +646,7 @@
       "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_GetAttachment_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -692,7 +692,7 @@
       "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_GetDockerImage_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -738,7 +738,7 @@
       "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_GetFile_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -784,7 +784,7 @@
       "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_GetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -830,7 +830,7 @@
       "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -876,7 +876,7 @@
       "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_GetMavenArtifact_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -922,7 +922,7 @@
       "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_GetNpmPackage_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -968,7 +968,7 @@
       "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1014,7 +1014,7 @@
       "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_GetPackage_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1060,7 +1060,7 @@
       "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_GetProjectSettings_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1106,7 +1106,7 @@
       "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_GetPythonPackage_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1152,7 +1152,7 @@
       "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_GetRepository_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1198,7 +1198,7 @@
       "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_GetRule_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1244,7 +1244,7 @@
       "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_GetTag_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1290,7 +1290,7 @@
       "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_GetVPCSCConfig_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1336,7 +1336,7 @@
       "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_GetVersion_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1382,7 +1382,7 @@
       "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_ImportAptArtifacts_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1428,7 +1428,7 @@
       "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_ImportYumArtifacts_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1474,7 +1474,7 @@
       "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_ListAttachments_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1520,7 +1520,7 @@
       "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_ListDockerImages_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1566,7 +1566,7 @@
       "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_ListFiles_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1612,7 +1612,7 @@
       "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1658,7 +1658,7 @@
       "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_ListMavenArtifacts_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1704,7 +1704,7 @@
       "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_ListNpmPackages_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1750,7 +1750,7 @@
       "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_ListPackages_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1796,7 +1796,7 @@
       "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_ListPythonPackages_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1842,7 +1842,7 @@
       "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_ListRepositories_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1888,7 +1888,7 @@
       "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_ListRules_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1934,7 +1934,7 @@
       "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_ListTags_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1980,7 +1980,7 @@
       "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_ListVersions_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2026,7 +2026,7 @@
       "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_SetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2072,7 +2072,7 @@
       "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_TestIamPermissions_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2118,7 +2118,7 @@
       "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_UpdateFile_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2164,7 +2164,7 @@
       "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_UpdatePackage_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2210,7 +2210,7 @@
       "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_UpdateProjectSettings_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2256,7 +2256,7 @@
       "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_UpdateRepository_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2302,7 +2302,7 @@
       "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_UpdateRule_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2348,7 +2348,7 @@
       "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_UpdateTag_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2394,7 +2394,7 @@
       "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_UpdateVPCSCConfig_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2440,7 +2440,7 @@
       "regionTag": "artifactregistry_v1_generated_ArtifactRegistry_UpdateVersion_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }

@@ -50,7 +50,7 @@
       "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_BatchCreatePullRequestComments_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -95,7 +95,7 @@
       "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -141,7 +141,7 @@
       "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_CloseIssue_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -187,7 +187,7 @@
       "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_ClosePullRequest_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -233,7 +233,7 @@
       "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_CreateBranchRule_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -279,7 +279,7 @@
       "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_CreateHook_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -325,7 +325,7 @@
       "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_CreateInstance_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -371,7 +371,7 @@
       "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_CreateIssue_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -417,7 +417,7 @@
       "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_CreateIssueComment_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -463,7 +463,7 @@
       "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_CreatePullRequest_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -509,7 +509,7 @@
       "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_CreatePullRequestComment_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -555,7 +555,7 @@
       "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_CreateRepository_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -601,7 +601,7 @@
       "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_DeleteBranchRule_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -647,7 +647,7 @@
       "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_DeleteHook_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -693,7 +693,7 @@
       "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_DeleteInstance_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -739,7 +739,7 @@
       "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_DeleteIssue_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -785,7 +785,7 @@
       "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_DeleteIssueComment_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -830,7 +830,7 @@
       "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -876,7 +876,7 @@
       "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_DeletePullRequestComment_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -922,7 +922,7 @@
       "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_DeleteRepository_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -968,7 +968,7 @@
       "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_FetchBlob_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1014,7 +1014,7 @@
       "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_FetchTree_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1060,7 +1060,7 @@
       "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_GetBranchRule_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1106,7 +1106,7 @@
       "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_GetHook_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1152,7 +1152,7 @@
       "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_GetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1198,7 +1198,7 @@
       "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_GetIamPolicyRepo_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1244,7 +1244,7 @@
       "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_GetInstance_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1290,7 +1290,7 @@
       "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_GetIssue_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1336,7 +1336,7 @@
       "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_GetIssueComment_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1382,7 +1382,7 @@
       "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1428,7 +1428,7 @@
       "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1474,7 +1474,7 @@
       "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_GetPullRequest_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1520,7 +1520,7 @@
       "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_GetPullRequestComment_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1566,7 +1566,7 @@
       "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_GetRepository_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1612,7 +1612,7 @@
       "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_ListBranchRules_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1658,7 +1658,7 @@
       "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_ListHooks_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1704,7 +1704,7 @@
       "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_ListInstances_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1750,7 +1750,7 @@
       "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_ListIssueComments_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1796,7 +1796,7 @@
       "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_ListIssues_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1842,7 +1842,7 @@
       "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1888,7 +1888,7 @@
       "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1934,7 +1934,7 @@
       "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_ListPullRequestComments_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1980,7 +1980,7 @@
       "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_ListPullRequestFileDiffs_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2026,7 +2026,7 @@
       "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_ListPullRequests_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2072,7 +2072,7 @@
       "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_ListRepositories_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2118,7 +2118,7 @@
       "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_MergePullRequest_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2164,7 +2164,7 @@
       "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_OpenIssue_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2210,7 +2210,7 @@
       "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_OpenPullRequest_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2256,7 +2256,7 @@
       "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_ResolvePullRequestComments_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2302,7 +2302,7 @@
       "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_SetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2348,7 +2348,7 @@
       "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_SetIamPolicyRepo_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2394,7 +2394,7 @@
       "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_TestIamPermissions_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2440,7 +2440,7 @@
       "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_TestIamPermissionsRepo_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2486,7 +2486,7 @@
       "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_UnresolvePullRequestComments_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2532,7 +2532,7 @@
       "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_UpdateBranchRule_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2578,7 +2578,7 @@
       "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_UpdateHook_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2624,7 +2624,7 @@
       "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_UpdateIssue_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2670,7 +2670,7 @@
       "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_UpdateIssueComment_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2716,7 +2716,7 @@
       "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_UpdatePullRequest_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2762,7 +2762,7 @@
       "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_UpdatePullRequestComment_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2808,7 +2808,7 @@
       "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_UpdateRepository_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }

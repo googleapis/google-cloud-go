@@ -49,7 +49,7 @@
       "regionTag": "storageinsights_v1_generated_StorageInsights_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -95,7 +95,7 @@
       "regionTag": "storageinsights_v1_generated_StorageInsights_CreateDatasetConfig_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -141,7 +141,7 @@
       "regionTag": "storageinsights_v1_generated_StorageInsights_CreateReportConfig_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -187,7 +187,7 @@
       "regionTag": "storageinsights_v1_generated_StorageInsights_DeleteDatasetConfig_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -232,7 +232,7 @@
       "regionTag": "storageinsights_v1_generated_StorageInsights_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -277,7 +277,7 @@
       "regionTag": "storageinsights_v1_generated_StorageInsights_DeleteReportConfig_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -323,7 +323,7 @@
       "regionTag": "storageinsights_v1_generated_StorageInsights_GetDatasetConfig_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -369,7 +369,7 @@
       "regionTag": "storageinsights_v1_generated_StorageInsights_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -415,7 +415,7 @@
       "regionTag": "storageinsights_v1_generated_StorageInsights_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -461,7 +461,7 @@
       "regionTag": "storageinsights_v1_generated_StorageInsights_GetReportConfig_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -507,7 +507,7 @@
       "regionTag": "storageinsights_v1_generated_StorageInsights_GetReportDetail_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -553,7 +553,7 @@
       "regionTag": "storageinsights_v1_generated_StorageInsights_LinkDataset_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -599,7 +599,7 @@
       "regionTag": "storageinsights_v1_generated_StorageInsights_ListDatasetConfigs_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -645,7 +645,7 @@
       "regionTag": "storageinsights_v1_generated_StorageInsights_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -691,7 +691,7 @@
       "regionTag": "storageinsights_v1_generated_StorageInsights_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -737,7 +737,7 @@
       "regionTag": "storageinsights_v1_generated_StorageInsights_ListReportConfigs_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -783,7 +783,7 @@
       "regionTag": "storageinsights_v1_generated_StorageInsights_ListReportDetails_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -829,7 +829,7 @@
       "regionTag": "storageinsights_v1_generated_StorageInsights_UnlinkDataset_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -875,7 +875,7 @@
       "regionTag": "storageinsights_v1_generated_StorageInsights_UpdateDatasetConfig_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -921,7 +921,7 @@
       "regionTag": "storageinsights_v1_generated_StorageInsights_UpdateReportConfig_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }

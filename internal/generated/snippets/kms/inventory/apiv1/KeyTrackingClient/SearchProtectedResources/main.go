@@ -16,6 +16,8 @@
 
 // [START kmsinventory_v1_generated_KeyTrackingService_SearchProtectedResources_sync]
 
+//go:build examples
+
 package main
 
 import (

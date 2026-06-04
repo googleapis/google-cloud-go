@@ -16,6 +16,8 @@
 
 // [START storageinsights_v1_generated_StorageInsights_CancelOperation_sync]
 
+//go:build examples
+
 package main
 
 import (

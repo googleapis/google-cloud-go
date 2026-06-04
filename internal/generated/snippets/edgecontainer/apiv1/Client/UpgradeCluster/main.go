@@ -16,6 +16,8 @@
 
 // [START edgecontainer_v1_generated_EdgeContainer_UpgradeCluster_sync]
 
+//go:build examples
+
 package main
 
 import (

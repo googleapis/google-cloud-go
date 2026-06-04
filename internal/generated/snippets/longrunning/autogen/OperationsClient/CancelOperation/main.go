@@ -16,6 +16,8 @@
 
 // [START longrunning_longrunning_generated_Operations_CancelOperation_sync]
 
+//go:build examples
+
 package main
 
 import (

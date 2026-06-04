@@ -49,7 +49,7 @@
       "regionTag": "developerconnect_v1_generated_DeveloperConnect_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -95,7 +95,7 @@
       "regionTag": "developerconnect_v1_generated_DeveloperConnect_CreateAccountConnector_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -141,7 +141,7 @@
       "regionTag": "developerconnect_v1_generated_DeveloperConnect_CreateConnection_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -187,7 +187,7 @@
       "regionTag": "developerconnect_v1_generated_DeveloperConnect_CreateGitRepositoryLink_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -233,7 +233,7 @@
       "regionTag": "developerconnect_v1_generated_DeveloperConnect_DeleteAccountConnector_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -279,7 +279,7 @@
       "regionTag": "developerconnect_v1_generated_DeveloperConnect_DeleteConnection_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -325,7 +325,7 @@
       "regionTag": "developerconnect_v1_generated_DeveloperConnect_DeleteGitRepositoryLink_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -370,7 +370,7 @@
       "regionTag": "developerconnect_v1_generated_DeveloperConnect_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -416,7 +416,7 @@
       "regionTag": "developerconnect_v1_generated_DeveloperConnect_DeleteSelf_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -462,7 +462,7 @@
       "regionTag": "developerconnect_v1_generated_DeveloperConnect_DeleteUser_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -508,7 +508,7 @@
       "regionTag": "developerconnect_v1_generated_DeveloperConnect_FetchAccessToken_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -554,7 +554,7 @@
       "regionTag": "developerconnect_v1_generated_DeveloperConnect_FetchGitHubInstallations_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -600,7 +600,7 @@
       "regionTag": "developerconnect_v1_generated_DeveloperConnect_FetchGitRefs_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -646,7 +646,7 @@
       "regionTag": "developerconnect_v1_generated_DeveloperConnect_FetchLinkableGitRepositories_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -692,7 +692,7 @@
       "regionTag": "developerconnect_v1_generated_DeveloperConnect_FetchReadToken_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -738,7 +738,7 @@
       "regionTag": "developerconnect_v1_generated_DeveloperConnect_FetchReadWriteToken_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -784,7 +784,7 @@
       "regionTag": "developerconnect_v1_generated_DeveloperConnect_FetchSelf_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -830,7 +830,7 @@
       "regionTag": "developerconnect_v1_generated_DeveloperConnect_FinishOAuth_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -876,7 +876,7 @@
       "regionTag": "developerconnect_v1_generated_DeveloperConnect_GetAccountConnector_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -922,7 +922,7 @@
       "regionTag": "developerconnect_v1_generated_DeveloperConnect_GetConnection_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -968,7 +968,7 @@
       "regionTag": "developerconnect_v1_generated_DeveloperConnect_GetGitRepositoryLink_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1014,7 +1014,7 @@
       "regionTag": "developerconnect_v1_generated_DeveloperConnect_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1060,7 +1060,7 @@
       "regionTag": "developerconnect_v1_generated_DeveloperConnect_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1106,7 +1106,7 @@
       "regionTag": "developerconnect_v1_generated_DeveloperConnect_ListAccountConnectors_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1152,7 +1152,7 @@
       "regionTag": "developerconnect_v1_generated_DeveloperConnect_ListConnections_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1198,7 +1198,7 @@
       "regionTag": "developerconnect_v1_generated_DeveloperConnect_ListGitRepositoryLinks_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1244,7 +1244,7 @@
       "regionTag": "developerconnect_v1_generated_DeveloperConnect_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1290,7 +1290,7 @@
       "regionTag": "developerconnect_v1_generated_DeveloperConnect_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1336,7 +1336,7 @@
       "regionTag": "developerconnect_v1_generated_DeveloperConnect_ListUsers_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1382,7 +1382,7 @@
       "regionTag": "developerconnect_v1_generated_DeveloperConnect_StartOAuth_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1428,7 +1428,7 @@
       "regionTag": "developerconnect_v1_generated_DeveloperConnect_UpdateAccountConnector_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1474,7 +1474,7 @@
       "regionTag": "developerconnect_v1_generated_DeveloperConnect_UpdateConnection_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1519,7 +1519,7 @@
       "regionTag": "developerconnect_v1_generated_InsightsConfigService_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -1565,7 +1565,7 @@
       "regionTag": "developerconnect_v1_generated_InsightsConfigService_CreateInsightsConfig_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1611,7 +1611,7 @@
       "regionTag": "developerconnect_v1_generated_InsightsConfigService_DeleteInsightsConfig_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -1656,7 +1656,7 @@
       "regionTag": "developerconnect_v1_generated_InsightsConfigService_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -1702,7 +1702,7 @@
       "regionTag": "developerconnect_v1_generated_InsightsConfigService_GetDeploymentEvent_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1748,7 +1748,7 @@
       "regionTag": "developerconnect_v1_generated_InsightsConfigService_GetInsightsConfig_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1794,7 +1794,7 @@
       "regionTag": "developerconnect_v1_generated_InsightsConfigService_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1840,7 +1840,7 @@
       "regionTag": "developerconnect_v1_generated_InsightsConfigService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1886,7 +1886,7 @@
       "regionTag": "developerconnect_v1_generated_InsightsConfigService_ListDeploymentEvents_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1932,7 +1932,7 @@
       "regionTag": "developerconnect_v1_generated_InsightsConfigService_ListInsightsConfigs_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1978,7 +1978,7 @@
       "regionTag": "developerconnect_v1_generated_InsightsConfigService_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2024,7 +2024,7 @@
       "regionTag": "developerconnect_v1_generated_InsightsConfigService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2070,7 +2070,7 @@
       "regionTag": "developerconnect_v1_generated_InsightsConfigService_UpdateInsightsConfig_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }

@@ -16,6 +16,8 @@
 
 // [START gkehub_v1beta1_generated_GkeHubMembershipService_GetOperation_sync]
 
+//go:build examples
+
 package main
 
 import (

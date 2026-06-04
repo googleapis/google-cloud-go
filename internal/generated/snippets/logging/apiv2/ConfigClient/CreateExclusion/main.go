@@ -16,6 +16,8 @@
 
 // [START logging_v2_generated_ConfigServiceV2_CreateExclusion_sync]
 
+//go:build examples
+
 package main
 
 import (

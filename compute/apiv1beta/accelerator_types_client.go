@@ -114,7 +114,7 @@ type AcceleratorTypesClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *AcceleratorTypesClient) Close() error {
 	return c.internalClient.Close()
@@ -245,7 +245,7 @@ func (c *acceleratorTypesRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *acceleratorTypesRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.

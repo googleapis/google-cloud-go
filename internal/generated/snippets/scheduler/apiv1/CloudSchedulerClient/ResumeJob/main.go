@@ -16,6 +16,8 @@
 
 // [START cloudscheduler_v1_generated_CloudScheduler_ResumeJob_sync]
 
+//go:build examples
+
 package main
 
 import (

@@ -16,6 +16,8 @@
 
 // [START videostitcher_v1_generated_VideoStitcherService_GetVodSession_sync]
 
+//go:build examples
+
 package main
 
 import (

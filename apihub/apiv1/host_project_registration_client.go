@@ -121,7 +121,7 @@ type HostProjectRegistrationClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *HostProjectRegistrationClient) Close() error {
 	return c.internalClient.Close()
@@ -286,7 +286,7 @@ func (c *hostProjectRegistrationRESTClient) setGoogleClientInfo(keyval ...string
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *hostProjectRegistrationRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.

@@ -16,6 +16,8 @@
 
 // [START apigeeconnect_v1_generated_ConnectionService_ListConnections_sync]
 
+//go:build examples
+
 package main
 
 import (

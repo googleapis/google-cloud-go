@@ -16,6 +16,8 @@
 
 // [START datamigration_v1_generated_DataMigrationService_GetOperation_sync]
 
+//go:build examples
+
 package main
 
 import (

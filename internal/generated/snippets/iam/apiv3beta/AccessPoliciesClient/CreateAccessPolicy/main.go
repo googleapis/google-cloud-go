@@ -16,6 +16,8 @@
 
 // [START iam_v3beta_generated_AccessPolicies_CreateAccessPolicy_sync]
 
+//go:build examples
+
 package main
 
 import (

@@ -16,6 +16,8 @@
 
 // [START cloudscheduler_v1_generated_CloudScheduler_ListLocations_sync]
 
+//go:build examples
+
 package main
 
 import (

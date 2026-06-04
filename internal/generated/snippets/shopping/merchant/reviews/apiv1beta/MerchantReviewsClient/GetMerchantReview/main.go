@@ -16,6 +16,8 @@
 
 // [START merchantapi_v1beta_generated_MerchantReviewsService_GetMerchantReview_sync]
 
+//go:build examples
+
 package main
 
 import (

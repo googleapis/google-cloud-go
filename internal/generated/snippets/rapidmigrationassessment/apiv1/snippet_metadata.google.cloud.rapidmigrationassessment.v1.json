@@ -49,7 +49,7 @@
       "regionTag": "rapidmigrationassessment_v1_generated_RapidMigrationAssessment_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -95,7 +95,7 @@
       "regionTag": "rapidmigrationassessment_v1_generated_RapidMigrationAssessment_CreateAnnotation_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -141,7 +141,7 @@
       "regionTag": "rapidmigrationassessment_v1_generated_RapidMigrationAssessment_CreateCollector_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -187,7 +187,7 @@
       "regionTag": "rapidmigrationassessment_v1_generated_RapidMigrationAssessment_DeleteCollector_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -232,7 +232,7 @@
       "regionTag": "rapidmigrationassessment_v1_generated_RapidMigrationAssessment_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -278,7 +278,7 @@
       "regionTag": "rapidmigrationassessment_v1_generated_RapidMigrationAssessment_GetAnnotation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -324,7 +324,7 @@
       "regionTag": "rapidmigrationassessment_v1_generated_RapidMigrationAssessment_GetCollector_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -370,7 +370,7 @@
       "regionTag": "rapidmigrationassessment_v1_generated_RapidMigrationAssessment_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -416,7 +416,7 @@
       "regionTag": "rapidmigrationassessment_v1_generated_RapidMigrationAssessment_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -462,7 +462,7 @@
       "regionTag": "rapidmigrationassessment_v1_generated_RapidMigrationAssessment_ListCollectors_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -508,7 +508,7 @@
       "regionTag": "rapidmigrationassessment_v1_generated_RapidMigrationAssessment_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -554,7 +554,7 @@
       "regionTag": "rapidmigrationassessment_v1_generated_RapidMigrationAssessment_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -600,7 +600,7 @@
       "regionTag": "rapidmigrationassessment_v1_generated_RapidMigrationAssessment_PauseCollector_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -646,7 +646,7 @@
       "regionTag": "rapidmigrationassessment_v1_generated_RapidMigrationAssessment_RegisterCollector_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -692,7 +692,7 @@
       "regionTag": "rapidmigrationassessment_v1_generated_RapidMigrationAssessment_ResumeCollector_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -738,7 +738,7 @@
       "regionTag": "rapidmigrationassessment_v1_generated_RapidMigrationAssessment_UpdateCollector_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }

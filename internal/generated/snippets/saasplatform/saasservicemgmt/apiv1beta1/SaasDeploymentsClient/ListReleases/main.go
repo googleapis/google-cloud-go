@@ -16,6 +16,8 @@
 
 // [START saasservicemgmt_v1beta1_generated_SaasDeployments_ListReleases_sync]
 
+//go:build examples
+
 package main
 
 import (

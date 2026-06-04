@@ -50,7 +50,7 @@
       "regionTag": "vectorsearch_v1_generated_DataObjectSearchService_AggregateDataObjects_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -96,7 +96,7 @@
       "regionTag": "vectorsearch_v1_generated_DataObjectSearchService_BatchSearchDataObjects_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -141,7 +141,7 @@
       "regionTag": "vectorsearch_v1_generated_DataObjectSearchService_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -186,7 +186,7 @@
       "regionTag": "vectorsearch_v1_generated_DataObjectSearchService_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -232,7 +232,7 @@
       "regionTag": "vectorsearch_v1_generated_DataObjectSearchService_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -278,7 +278,7 @@
       "regionTag": "vectorsearch_v1_generated_DataObjectSearchService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -324,7 +324,7 @@
       "regionTag": "vectorsearch_v1_generated_DataObjectSearchService_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -370,7 +370,7 @@
       "regionTag": "vectorsearch_v1_generated_DataObjectSearchService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -416,7 +416,7 @@
       "regionTag": "vectorsearch_v1_generated_DataObjectSearchService_QueryDataObjects_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -462,7 +462,7 @@
       "regionTag": "vectorsearch_v1_generated_DataObjectSearchService_SearchDataObjects_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -508,7 +508,7 @@
       "regionTag": "vectorsearch_v1_generated_DataObjectService_BatchCreateDataObjects_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -553,7 +553,7 @@
       "regionTag": "vectorsearch_v1_generated_DataObjectService_BatchDeleteDataObjects_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -599,7 +599,7 @@
       "regionTag": "vectorsearch_v1_generated_DataObjectService_BatchUpdateDataObjects_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -644,7 +644,7 @@
       "regionTag": "vectorsearch_v1_generated_DataObjectService_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -690,7 +690,7 @@
       "regionTag": "vectorsearch_v1_generated_DataObjectService_CreateDataObject_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -735,7 +735,7 @@
       "regionTag": "vectorsearch_v1_generated_DataObjectService_DeleteDataObject_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -780,7 +780,7 @@
       "regionTag": "vectorsearch_v1_generated_DataObjectService_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -826,7 +826,7 @@
       "regionTag": "vectorsearch_v1_generated_DataObjectService_GetDataObject_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -872,7 +872,7 @@
       "regionTag": "vectorsearch_v1_generated_DataObjectService_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -918,7 +918,7 @@
       "regionTag": "vectorsearch_v1_generated_DataObjectService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -964,7 +964,7 @@
       "regionTag": "vectorsearch_v1_generated_DataObjectService_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1010,7 +1010,7 @@
       "regionTag": "vectorsearch_v1_generated_DataObjectService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1056,7 +1056,7 @@
       "regionTag": "vectorsearch_v1_generated_DataObjectService_UpdateDataObject_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1101,7 +1101,7 @@
       "regionTag": "vectorsearch_v1_generated_VectorSearchService_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -1147,7 +1147,7 @@
       "regionTag": "vectorsearch_v1_generated_VectorSearchService_CreateCollection_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1193,7 +1193,7 @@
       "regionTag": "vectorsearch_v1_generated_VectorSearchService_CreateIndex_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1239,7 +1239,7 @@
       "regionTag": "vectorsearch_v1_generated_VectorSearchService_DeleteCollection_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -1285,7 +1285,7 @@
       "regionTag": "vectorsearch_v1_generated_VectorSearchService_DeleteIndex_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -1330,7 +1330,7 @@
       "regionTag": "vectorsearch_v1_generated_VectorSearchService_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -1376,7 +1376,7 @@
       "regionTag": "vectorsearch_v1_generated_VectorSearchService_ExportDataObjects_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1422,7 +1422,7 @@
       "regionTag": "vectorsearch_v1_generated_VectorSearchService_GetCollection_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1468,7 +1468,7 @@
       "regionTag": "vectorsearch_v1_generated_VectorSearchService_GetIndex_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1514,7 +1514,7 @@
       "regionTag": "vectorsearch_v1_generated_VectorSearchService_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1560,7 +1560,7 @@
       "regionTag": "vectorsearch_v1_generated_VectorSearchService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1606,7 +1606,7 @@
       "regionTag": "vectorsearch_v1_generated_VectorSearchService_ImportDataObjects_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1652,7 +1652,7 @@
       "regionTag": "vectorsearch_v1_generated_VectorSearchService_ListCollections_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1698,7 +1698,7 @@
       "regionTag": "vectorsearch_v1_generated_VectorSearchService_ListIndexes_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1744,7 +1744,7 @@
       "regionTag": "vectorsearch_v1_generated_VectorSearchService_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1790,7 +1790,7 @@
       "regionTag": "vectorsearch_v1_generated_VectorSearchService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1836,7 +1836,7 @@
       "regionTag": "vectorsearch_v1_generated_VectorSearchService_UpdateCollection_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1882,7 +1882,7 @@
       "regionTag": "vectorsearch_v1_generated_VectorSearchService_UpdateIndex_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }

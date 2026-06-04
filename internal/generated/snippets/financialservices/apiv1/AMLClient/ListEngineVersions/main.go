@@ -16,6 +16,8 @@
 
 // [START financialservices_v1_generated_AML_ListEngineVersions_sync]
 
+//go:build examples
+
 package main
 
 import (

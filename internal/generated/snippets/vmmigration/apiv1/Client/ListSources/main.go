@@ -16,6 +16,8 @@
 
 // [START vmmigration_v1_generated_VmMigration_ListSources_sync]
 
+//go:build examples
+
 package main
 
 import (

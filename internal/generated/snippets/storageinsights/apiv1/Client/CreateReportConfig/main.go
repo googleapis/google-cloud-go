@@ -16,6 +16,8 @@
 
 // [START storageinsights_v1_generated_StorageInsights_CreateReportConfig_sync]
 
+//go:build examples
+
 package main
 
 import (

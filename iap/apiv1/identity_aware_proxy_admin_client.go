@@ -180,7 +180,7 @@ type IdentityAwareProxyAdminClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *IdentityAwareProxyAdminClient) Close() error {
 	return c.internalClient.Close()
@@ -373,7 +373,7 @@ func (c *identityAwareProxyAdminGRPCClient) setGoogleClientInfo(keyval ...string
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *identityAwareProxyAdminGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -476,7 +476,7 @@ func (c *identityAwareProxyAdminRESTClient) setGoogleClientInfo(keyval ...string
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *identityAwareProxyAdminRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.

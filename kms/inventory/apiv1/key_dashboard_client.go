@@ -100,7 +100,7 @@ type KeyDashboardClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *KeyDashboardClient) Close() error {
 	return c.internalClient.Close()
@@ -223,7 +223,7 @@ func (c *keyDashboardGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *keyDashboardGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -316,7 +316,7 @@ func (c *keyDashboardRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *keyDashboardRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.

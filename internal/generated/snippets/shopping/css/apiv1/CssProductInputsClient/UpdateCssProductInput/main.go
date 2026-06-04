@@ -16,6 +16,8 @@
 
 // [START css_v1_generated_CssProductInputsService_UpdateCssProductInput_sync]
 
+//go:build examples
+
 package main
 
 import (

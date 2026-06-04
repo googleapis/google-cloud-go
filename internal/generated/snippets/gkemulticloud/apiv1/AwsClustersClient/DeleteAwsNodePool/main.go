@@ -16,6 +16,8 @@
 
 // [START gkemulticloud_v1_generated_AwsClusters_DeleteAwsNodePool_sync]
 
+//go:build examples
+
 package main
 
 import (

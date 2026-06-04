@@ -16,6 +16,8 @@
 
 // [START accesscontextmanager_v1_generated_AccessContextManager_CreateAccessLevel_sync]
 
+//go:build examples
+
 package main
 
 import (

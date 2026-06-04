@@ -16,6 +16,8 @@
 
 // [START run_v2_generated_Builds_SubmitBuild_sync]
 
+//go:build examples
+
 package main
 
 import (

@@ -49,7 +49,7 @@
       "regionTag": "dataform_v1_generated_Dataform_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -95,7 +95,7 @@
       "regionTag": "dataform_v1_generated_Dataform_CancelWorkflowInvocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -141,7 +141,7 @@
       "regionTag": "dataform_v1_generated_Dataform_CommitRepositoryChanges_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -187,7 +187,7 @@
       "regionTag": "dataform_v1_generated_Dataform_CommitWorkspaceChanges_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -233,7 +233,7 @@
       "regionTag": "dataform_v1_generated_Dataform_ComputeRepositoryAccessTokenStatus_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -279,7 +279,7 @@
       "regionTag": "dataform_v1_generated_Dataform_CreateCompilationResult_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -325,7 +325,7 @@
       "regionTag": "dataform_v1_generated_Dataform_CreateFolder_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -371,7 +371,7 @@
       "regionTag": "dataform_v1_generated_Dataform_CreateReleaseConfig_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -417,7 +417,7 @@
       "regionTag": "dataform_v1_generated_Dataform_CreateRepository_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -463,7 +463,7 @@
       "regionTag": "dataform_v1_generated_Dataform_CreateTeamFolder_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -509,7 +509,7 @@
       "regionTag": "dataform_v1_generated_Dataform_CreateWorkflowConfig_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -555,7 +555,7 @@
       "regionTag": "dataform_v1_generated_Dataform_CreateWorkflowInvocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -601,7 +601,7 @@
       "regionTag": "dataform_v1_generated_Dataform_CreateWorkspace_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -646,7 +646,7 @@
       "regionTag": "dataform_v1_generated_Dataform_DeleteFolder_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -692,7 +692,7 @@
       "regionTag": "dataform_v1_generated_Dataform_DeleteFolderTree_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -737,7 +737,7 @@
       "regionTag": "dataform_v1_generated_Dataform_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -782,7 +782,7 @@
       "regionTag": "dataform_v1_generated_Dataform_DeleteReleaseConfig_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -827,7 +827,7 @@
       "regionTag": "dataform_v1_generated_Dataform_DeleteRepository_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -872,7 +872,7 @@
       "regionTag": "dataform_v1_generated_Dataform_DeleteTeamFolder_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -918,7 +918,7 @@
       "regionTag": "dataform_v1_generated_Dataform_DeleteTeamFolderTree_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -963,7 +963,7 @@
       "regionTag": "dataform_v1_generated_Dataform_DeleteWorkflowConfig_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -1008,7 +1008,7 @@
       "regionTag": "dataform_v1_generated_Dataform_DeleteWorkflowInvocation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -1053,7 +1053,7 @@
       "regionTag": "dataform_v1_generated_Dataform_DeleteWorkspace_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -1099,7 +1099,7 @@
       "regionTag": "dataform_v1_generated_Dataform_FetchFileDiff_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1145,7 +1145,7 @@
       "regionTag": "dataform_v1_generated_Dataform_FetchFileGitStatuses_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1191,7 +1191,7 @@
       "regionTag": "dataform_v1_generated_Dataform_FetchGitAheadBehind_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1237,7 +1237,7 @@
       "regionTag": "dataform_v1_generated_Dataform_FetchRemoteBranches_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1283,7 +1283,7 @@
       "regionTag": "dataform_v1_generated_Dataform_FetchRepositoryHistory_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1329,7 +1329,7 @@
       "regionTag": "dataform_v1_generated_Dataform_GetCompilationResult_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1375,7 +1375,7 @@
       "regionTag": "dataform_v1_generated_Dataform_GetConfig_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1421,7 +1421,7 @@
       "regionTag": "dataform_v1_generated_Dataform_GetFolder_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1467,7 +1467,7 @@
       "regionTag": "dataform_v1_generated_Dataform_GetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1513,7 +1513,7 @@
       "regionTag": "dataform_v1_generated_Dataform_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1559,7 +1559,7 @@
       "regionTag": "dataform_v1_generated_Dataform_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1605,7 +1605,7 @@
       "regionTag": "dataform_v1_generated_Dataform_GetReleaseConfig_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1651,7 +1651,7 @@
       "regionTag": "dataform_v1_generated_Dataform_GetRepository_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1697,7 +1697,7 @@
       "regionTag": "dataform_v1_generated_Dataform_GetTeamFolder_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1743,7 +1743,7 @@
       "regionTag": "dataform_v1_generated_Dataform_GetWorkflowConfig_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1789,7 +1789,7 @@
       "regionTag": "dataform_v1_generated_Dataform_GetWorkflowInvocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1835,7 +1835,7 @@
       "regionTag": "dataform_v1_generated_Dataform_GetWorkspace_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1881,7 +1881,7 @@
       "regionTag": "dataform_v1_generated_Dataform_InstallNpmPackages_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1927,7 +1927,7 @@
       "regionTag": "dataform_v1_generated_Dataform_ListCompilationResults_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1973,7 +1973,7 @@
       "regionTag": "dataform_v1_generated_Dataform_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2019,7 +2019,7 @@
       "regionTag": "dataform_v1_generated_Dataform_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2065,7 +2065,7 @@
       "regionTag": "dataform_v1_generated_Dataform_ListReleaseConfigs_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2111,7 +2111,7 @@
       "regionTag": "dataform_v1_generated_Dataform_ListRepositories_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2157,7 +2157,7 @@
       "regionTag": "dataform_v1_generated_Dataform_ListWorkflowConfigs_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2203,7 +2203,7 @@
       "regionTag": "dataform_v1_generated_Dataform_ListWorkflowInvocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2249,7 +2249,7 @@
       "regionTag": "dataform_v1_generated_Dataform_ListWorkspaces_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2295,7 +2295,7 @@
       "regionTag": "dataform_v1_generated_Dataform_MakeDirectory_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2341,7 +2341,7 @@
       "regionTag": "dataform_v1_generated_Dataform_MoveDirectory_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2387,7 +2387,7 @@
       "regionTag": "dataform_v1_generated_Dataform_MoveFile_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2433,7 +2433,7 @@
       "regionTag": "dataform_v1_generated_Dataform_MoveFolder_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -2479,7 +2479,7 @@
       "regionTag": "dataform_v1_generated_Dataform_MoveRepository_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -2525,7 +2525,7 @@
       "regionTag": "dataform_v1_generated_Dataform_PullGitCommits_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2571,7 +2571,7 @@
       "regionTag": "dataform_v1_generated_Dataform_PushGitCommits_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2617,7 +2617,7 @@
       "regionTag": "dataform_v1_generated_Dataform_QueryCompilationResultActions_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2663,7 +2663,7 @@
       "regionTag": "dataform_v1_generated_Dataform_QueryDirectoryContents_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2709,7 +2709,7 @@
       "regionTag": "dataform_v1_generated_Dataform_QueryFolderContents_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2755,7 +2755,7 @@
       "regionTag": "dataform_v1_generated_Dataform_QueryRepositoryDirectoryContents_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2801,7 +2801,7 @@
       "regionTag": "dataform_v1_generated_Dataform_QueryTeamFolderContents_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2847,7 +2847,7 @@
       "regionTag": "dataform_v1_generated_Dataform_QueryUserRootContents_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2893,7 +2893,7 @@
       "regionTag": "dataform_v1_generated_Dataform_QueryWorkflowInvocationActions_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2939,7 +2939,7 @@
       "regionTag": "dataform_v1_generated_Dataform_ReadFile_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2985,7 +2985,7 @@
       "regionTag": "dataform_v1_generated_Dataform_ReadRepositoryFile_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3031,7 +3031,7 @@
       "regionTag": "dataform_v1_generated_Dataform_RemoveDirectory_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3077,7 +3077,7 @@
       "regionTag": "dataform_v1_generated_Dataform_RemoveFile_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3123,7 +3123,7 @@
       "regionTag": "dataform_v1_generated_Dataform_ResetWorkspaceChanges_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3169,7 +3169,7 @@
       "regionTag": "dataform_v1_generated_Dataform_SearchFiles_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -3215,7 +3215,7 @@
       "regionTag": "dataform_v1_generated_Dataform_SearchTeamFolders_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -3261,7 +3261,7 @@
       "regionTag": "dataform_v1_generated_Dataform_SetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3307,7 +3307,7 @@
       "regionTag": "dataform_v1_generated_Dataform_TestIamPermissions_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3353,7 +3353,7 @@
       "regionTag": "dataform_v1_generated_Dataform_UpdateConfig_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3399,7 +3399,7 @@
       "regionTag": "dataform_v1_generated_Dataform_UpdateFolder_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3445,7 +3445,7 @@
       "regionTag": "dataform_v1_generated_Dataform_UpdateReleaseConfig_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3491,7 +3491,7 @@
       "regionTag": "dataform_v1_generated_Dataform_UpdateRepository_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3537,7 +3537,7 @@
       "regionTag": "dataform_v1_generated_Dataform_UpdateTeamFolder_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3583,7 +3583,7 @@
       "regionTag": "dataform_v1_generated_Dataform_UpdateWorkflowConfig_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3629,7 +3629,7 @@
       "regionTag": "dataform_v1_generated_Dataform_WriteFile_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }

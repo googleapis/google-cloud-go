@@ -16,6 +16,8 @@
 
 // [START monitoring_v3_generated_SnoozeService_ListSnoozes_sync]
 
+//go:build examples
+
 package main
 
 import (

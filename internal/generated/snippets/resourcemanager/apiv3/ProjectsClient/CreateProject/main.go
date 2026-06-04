@@ -16,6 +16,8 @@
 
 // [START cloudresourcemanager_v3_generated_Projects_CreateProject_sync]
 
+//go:build examples
+
 package main
 
 import (

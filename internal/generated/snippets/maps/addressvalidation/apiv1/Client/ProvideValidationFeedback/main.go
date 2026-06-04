@@ -16,6 +16,8 @@
 
 // [START addressvalidation_v1_generated_AddressValidation_ProvideValidationFeedback_sync]
 
+//go:build examples
+
 package main
 
 import (

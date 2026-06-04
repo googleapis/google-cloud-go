@@ -16,6 +16,8 @@
 
 // [START speech_v1_generated_Speech_StreamingRecognize_sync]
 
+//go:build examples
+
 package main
 
 import (

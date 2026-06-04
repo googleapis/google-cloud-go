@@ -50,7 +50,7 @@
       "regionTag": "retail_v2beta_generated_AnalyticsService_ExportAnalyticsMetrics_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -96,7 +96,7 @@
       "regionTag": "retail_v2beta_generated_AnalyticsService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -142,7 +142,7 @@
       "regionTag": "retail_v2beta_generated_AnalyticsService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -188,7 +188,7 @@
       "regionTag": "retail_v2beta_generated_CatalogService_AddCatalogAttribute_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -234,7 +234,7 @@
       "regionTag": "retail_v2beta_generated_CatalogService_BatchRemoveCatalogAttributes_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -280,7 +280,7 @@
       "regionTag": "retail_v2beta_generated_CatalogService_GetAttributesConfig_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -326,7 +326,7 @@
       "regionTag": "retail_v2beta_generated_CatalogService_GetCompletionConfig_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -372,7 +372,7 @@
       "regionTag": "retail_v2beta_generated_CatalogService_GetDefaultBranch_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -418,7 +418,7 @@
       "regionTag": "retail_v2beta_generated_CatalogService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -464,7 +464,7 @@
       "regionTag": "retail_v2beta_generated_CatalogService_ListCatalogs_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -510,7 +510,7 @@
       "regionTag": "retail_v2beta_generated_CatalogService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -556,7 +556,7 @@
       "regionTag": "retail_v2beta_generated_CatalogService_RemoveCatalogAttribute_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -602,7 +602,7 @@
       "regionTag": "retail_v2beta_generated_CatalogService_ReplaceCatalogAttribute_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -647,7 +647,7 @@
       "regionTag": "retail_v2beta_generated_CatalogService_SetDefaultBranch_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -693,7 +693,7 @@
       "regionTag": "retail_v2beta_generated_CatalogService_UpdateAttributesConfig_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -739,7 +739,7 @@
       "regionTag": "retail_v2beta_generated_CatalogService_UpdateCatalog_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -785,7 +785,7 @@
       "regionTag": "retail_v2beta_generated_CatalogService_UpdateCompletionConfig_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -831,7 +831,7 @@
       "regionTag": "retail_v2beta_generated_CompletionService_CompleteQuery_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -877,7 +877,7 @@
       "regionTag": "retail_v2beta_generated_CompletionService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -923,7 +923,7 @@
       "regionTag": "retail_v2beta_generated_CompletionService_ImportCompletionData_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -969,7 +969,7 @@
       "regionTag": "retail_v2beta_generated_CompletionService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1015,7 +1015,7 @@
       "regionTag": "retail_v2beta_generated_ControlService_CreateControl_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1060,7 +1060,7 @@
       "regionTag": "retail_v2beta_generated_ControlService_DeleteControl_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -1106,7 +1106,7 @@
       "regionTag": "retail_v2beta_generated_ControlService_GetControl_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1152,7 +1152,7 @@
       "regionTag": "retail_v2beta_generated_ControlService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1198,7 +1198,7 @@
       "regionTag": "retail_v2beta_generated_ControlService_ListControls_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1244,7 +1244,7 @@
       "regionTag": "retail_v2beta_generated_ControlService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1290,7 +1290,7 @@
       "regionTag": "retail_v2beta_generated_ControlService_UpdateControl_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1336,7 +1336,7 @@
       "regionTag": "retail_v2beta_generated_ConversationalSearchService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1382,7 +1382,7 @@
       "regionTag": "retail_v2beta_generated_ConversationalSearchService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1428,7 +1428,7 @@
       "regionTag": "retail_v2beta_generated_GenerativeQuestionService_BatchUpdateGenerativeQuestionConfigs_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1474,7 +1474,7 @@
       "regionTag": "retail_v2beta_generated_GenerativeQuestionService_GetGenerativeQuestionsFeatureConfig_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1520,7 +1520,7 @@
       "regionTag": "retail_v2beta_generated_GenerativeQuestionService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1566,7 +1566,7 @@
       "regionTag": "retail_v2beta_generated_GenerativeQuestionService_ListGenerativeQuestionConfigs_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1612,7 +1612,7 @@
       "regionTag": "retail_v2beta_generated_GenerativeQuestionService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1658,7 +1658,7 @@
       "regionTag": "retail_v2beta_generated_GenerativeQuestionService_UpdateGenerativeQuestionConfig_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1704,7 +1704,7 @@
       "regionTag": "retail_v2beta_generated_GenerativeQuestionService_UpdateGenerativeQuestionsFeatureConfig_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1750,7 +1750,7 @@
       "regionTag": "retail_v2beta_generated_ModelService_CreateModel_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1795,7 +1795,7 @@
       "regionTag": "retail_v2beta_generated_ModelService_DeleteModel_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -1841,7 +1841,7 @@
       "regionTag": "retail_v2beta_generated_ModelService_GetModel_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1887,7 +1887,7 @@
       "regionTag": "retail_v2beta_generated_ModelService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1933,7 +1933,7 @@
       "regionTag": "retail_v2beta_generated_ModelService_ListModels_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1979,7 +1979,7 @@
       "regionTag": "retail_v2beta_generated_ModelService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2025,7 +2025,7 @@
       "regionTag": "retail_v2beta_generated_ModelService_PauseModel_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2071,7 +2071,7 @@
       "regionTag": "retail_v2beta_generated_ModelService_ResumeModel_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2117,7 +2117,7 @@
       "regionTag": "retail_v2beta_generated_ModelService_TuneModel_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2163,7 +2163,7 @@
       "regionTag": "retail_v2beta_generated_ModelService_UpdateModel_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2209,7 +2209,7 @@
       "regionTag": "retail_v2beta_generated_PredictionService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2255,7 +2255,7 @@
       "regionTag": "retail_v2beta_generated_PredictionService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2301,7 +2301,7 @@
       "regionTag": "retail_v2beta_generated_PredictionService_Predict_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2347,7 +2347,7 @@
       "regionTag": "retail_v2beta_generated_ProductService_AddFulfillmentPlaces_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2393,7 +2393,7 @@
       "regionTag": "retail_v2beta_generated_ProductService_AddLocalInventories_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2439,7 +2439,7 @@
       "regionTag": "retail_v2beta_generated_ProductService_CreateProduct_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2484,7 +2484,7 @@
       "regionTag": "retail_v2beta_generated_ProductService_DeleteProduct_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -2530,7 +2530,7 @@
       "regionTag": "retail_v2beta_generated_ProductService_ExportProducts_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2576,7 +2576,7 @@
       "regionTag": "retail_v2beta_generated_ProductService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2622,7 +2622,7 @@
       "regionTag": "retail_v2beta_generated_ProductService_GetProduct_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2668,7 +2668,7 @@
       "regionTag": "retail_v2beta_generated_ProductService_ImportProducts_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2714,7 +2714,7 @@
       "regionTag": "retail_v2beta_generated_ProductService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2760,7 +2760,7 @@
       "regionTag": "retail_v2beta_generated_ProductService_ListProducts_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2806,7 +2806,7 @@
       "regionTag": "retail_v2beta_generated_ProductService_PurgeProducts_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2852,7 +2852,7 @@
       "regionTag": "retail_v2beta_generated_ProductService_RemoveFulfillmentPlaces_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2898,7 +2898,7 @@
       "regionTag": "retail_v2beta_generated_ProductService_RemoveLocalInventories_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2944,7 +2944,7 @@
       "regionTag": "retail_v2beta_generated_ProductService_SetInventory_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2990,7 +2990,7 @@
       "regionTag": "retail_v2beta_generated_ProductService_UpdateProduct_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3036,7 +3036,7 @@
       "regionTag": "retail_v2beta_generated_ProjectService_GetAlertConfig_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3082,7 +3082,7 @@
       "regionTag": "retail_v2beta_generated_ProjectService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3128,7 +3128,7 @@
       "regionTag": "retail_v2beta_generated_ProjectService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -3174,7 +3174,7 @@
       "regionTag": "retail_v2beta_generated_ProjectService_UpdateAlertConfig_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3220,7 +3220,7 @@
       "regionTag": "retail_v2beta_generated_SearchService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3266,7 +3266,7 @@
       "regionTag": "retail_v2beta_generated_SearchService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -3312,7 +3312,7 @@
       "regionTag": "retail_v2beta_generated_SearchService_Search_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -3358,7 +3358,7 @@
       "regionTag": "retail_v2beta_generated_ServingConfigService_AddControl_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3404,7 +3404,7 @@
       "regionTag": "retail_v2beta_generated_ServingConfigService_CreateServingConfig_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3449,7 +3449,7 @@
       "regionTag": "retail_v2beta_generated_ServingConfigService_DeleteServingConfig_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -3495,7 +3495,7 @@
       "regionTag": "retail_v2beta_generated_ServingConfigService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3541,7 +3541,7 @@
       "regionTag": "retail_v2beta_generated_ServingConfigService_GetServingConfig_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3587,7 +3587,7 @@
       "regionTag": "retail_v2beta_generated_ServingConfigService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -3633,7 +3633,7 @@
       "regionTag": "retail_v2beta_generated_ServingConfigService_ListServingConfigs_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -3679,7 +3679,7 @@
       "regionTag": "retail_v2beta_generated_ServingConfigService_RemoveControl_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3725,7 +3725,7 @@
       "regionTag": "retail_v2beta_generated_ServingConfigService_UpdateServingConfig_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3771,7 +3771,7 @@
       "regionTag": "retail_v2beta_generated_UserEventService_CollectUserEvent_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3817,7 +3817,7 @@
       "regionTag": "retail_v2beta_generated_UserEventService_ExportUserEvents_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -3863,7 +3863,7 @@
       "regionTag": "retail_v2beta_generated_UserEventService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3909,7 +3909,7 @@
       "regionTag": "retail_v2beta_generated_UserEventService_ImportUserEvents_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -3955,7 +3955,7 @@
       "regionTag": "retail_v2beta_generated_UserEventService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -4001,7 +4001,7 @@
       "regionTag": "retail_v2beta_generated_UserEventService_PurgeUserEvents_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -4047,7 +4047,7 @@
       "regionTag": "retail_v2beta_generated_UserEventService_RejoinUserEvents_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -4093,7 +4093,7 @@
       "regionTag": "retail_v2beta_generated_UserEventService_WriteUserEvent_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }

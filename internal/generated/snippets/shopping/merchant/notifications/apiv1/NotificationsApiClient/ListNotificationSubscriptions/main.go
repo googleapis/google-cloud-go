@@ -16,6 +16,8 @@
 
 // [START merchantapi_v1_generated_NotificationsApiService_ListNotificationSubscriptions_sync]
 
+//go:build examples
+
 package main
 
 import (

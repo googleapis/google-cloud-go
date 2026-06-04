@@ -16,6 +16,8 @@
 
 // [START oracledatabase_v1_generated_OracleDatabase_ListPluggableDatabases_sync]
 
+//go:build examples
+
 package main
 
 import (

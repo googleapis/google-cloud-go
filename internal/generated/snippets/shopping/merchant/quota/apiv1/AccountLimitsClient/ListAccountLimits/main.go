@@ -16,6 +16,8 @@
 
 // [START merchantapi_v1_generated_AccountLimitsService_ListAccountLimits_sync]
 
+//go:build examples
+
 package main
 
 import (

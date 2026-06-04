@@ -16,6 +16,8 @@
 
 // [START warehouse-visionai_v1_generated_Warehouse_CreateSearchHypernym_sync]
 
+//go:build examples
+
 package main
 
 import (

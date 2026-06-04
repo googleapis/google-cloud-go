@@ -16,6 +16,8 @@
 
 // [START alloydb_v1beta_generated_AlloyDBAdmin_ListOperations_sync]
 
+//go:build examples
+
 package main
 
 import (

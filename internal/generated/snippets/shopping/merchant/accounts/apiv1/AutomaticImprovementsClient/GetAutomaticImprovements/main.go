@@ -16,6 +16,8 @@
 
 // [START merchantapi_v1_generated_AutomaticImprovementsService_GetAutomaticImprovements_sync]
 
+//go:build examples
+
 package main
 
 import (

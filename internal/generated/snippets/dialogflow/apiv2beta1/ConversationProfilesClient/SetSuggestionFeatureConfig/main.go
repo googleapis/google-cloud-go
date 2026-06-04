@@ -16,6 +16,8 @@
 
 // [START dialogflow_v2beta1_generated_ConversationProfiles_SetSuggestionFeatureConfig_sync]
 
+//go:build examples
+
 package main
 
 import (

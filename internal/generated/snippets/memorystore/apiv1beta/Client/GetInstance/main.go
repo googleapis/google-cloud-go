@@ -16,6 +16,8 @@
 
 // [START memorystore_v1beta_generated_Memorystore_GetInstance_sync]
 
+//go:build examples
+
 package main
 
 import (

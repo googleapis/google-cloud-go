@@ -16,6 +16,8 @@
 
 // [START securitycentermanagement_v1_generated_SecurityCenterManagement_GetSecurityCenterService_sync]
 
+//go:build examples
+
 package main
 
 import (

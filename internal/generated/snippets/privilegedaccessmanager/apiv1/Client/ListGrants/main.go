@@ -16,6 +16,8 @@
 
 // [START privilegedaccessmanager_v1_generated_PrivilegedAccessManager_ListGrants_sync]
 
+//go:build examples
+
 package main
 
 import (

@@ -16,6 +16,8 @@
 
 // [START devicestreaming_v1_generated_DirectAccessService_AdbConnect_sync]
 
+//go:build examples
+
 package main
 
 import (

@@ -16,6 +16,8 @@
 
 // [START retail_v2_generated_CatalogService_AddCatalogAttribute_sync]
 
+//go:build examples
+
 package main
 
 import (

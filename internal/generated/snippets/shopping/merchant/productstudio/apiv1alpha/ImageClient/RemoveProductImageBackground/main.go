@@ -16,6 +16,8 @@
 
 // [START merchantapi_v1alpha_generated_ImageService_RemoveProductImageBackground_sync]
 
+//go:build examples
+
 package main
 
 import (

@@ -16,6 +16,8 @@
 
 // [START cloudiot_v1_generated_DeviceManager_UpdateDeviceRegistry_sync]
 
+//go:build examples
+
 package main
 
 import (

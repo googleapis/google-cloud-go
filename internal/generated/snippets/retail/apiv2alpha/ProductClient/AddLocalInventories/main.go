@@ -16,6 +16,8 @@
 
 // [START retail_v2alpha_generated_ProductService_AddLocalInventories_sync]
 
+//go:build examples
+
 package main
 
 import (

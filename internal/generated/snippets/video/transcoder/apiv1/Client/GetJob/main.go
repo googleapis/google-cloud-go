@@ -16,6 +16,8 @@
 
 // [START transcoder_v1_generated_TranscoderService_GetJob_sync]
 
+//go:build examples
+
 package main
 
 import (

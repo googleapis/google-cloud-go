@@ -16,6 +16,8 @@
 
 // [START ces_v1_generated_AgentService_CreateDeployment_sync]
 
+//go:build examples
+
 package main
 
 import (

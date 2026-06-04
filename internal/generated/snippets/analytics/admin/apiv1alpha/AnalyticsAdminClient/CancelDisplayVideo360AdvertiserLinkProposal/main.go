@@ -16,6 +16,8 @@
 
 // [START analyticsadmin_v1alpha_generated_AnalyticsAdminService_CancelDisplayVideo360AdvertiserLinkProposal_sync]
 
+//go:build examples
+
 package main
 
 import (

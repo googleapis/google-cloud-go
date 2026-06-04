@@ -16,6 +16,8 @@
 
 // [START capacityplanner_v1beta_generated_UsageService_ExportUsageHistories_sync]
 
+//go:build examples
+
 package main
 
 import (

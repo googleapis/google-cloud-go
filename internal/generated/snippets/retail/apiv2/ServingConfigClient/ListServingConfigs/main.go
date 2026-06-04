@@ -16,6 +16,8 @@
 
 // [START retail_v2_generated_ServingConfigService_ListServingConfigs_sync]
 
+//go:build examples
+
 package main
 
 import (

@@ -16,6 +16,8 @@
 
 // [START backupdr_v1_generated_BackupDrProtectionSummary_GetOperation_sync]
 
+//go:build examples
+
 package main
 
 import (

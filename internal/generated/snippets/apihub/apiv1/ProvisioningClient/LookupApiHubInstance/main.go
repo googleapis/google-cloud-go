@@ -16,6 +16,8 @@
 
 // [START apihub_v1_generated_Provisioning_LookupApiHubInstance_sync]
 
+//go:build examples
+
 package main
 
 import (

@@ -16,6 +16,8 @@
 
 // [START cloudsecuritycompliance_v1_generated_Deployment_GetCloudControlDeployment_sync]
 
+//go:build examples
+
 package main
 
 import (

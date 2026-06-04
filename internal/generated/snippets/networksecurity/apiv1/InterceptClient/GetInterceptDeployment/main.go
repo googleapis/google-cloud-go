@@ -16,6 +16,8 @@
 
 // [START networksecurity_v1_generated_Intercept_GetInterceptDeployment_sync]
 
+//go:build examples
+
 package main
 
 import (

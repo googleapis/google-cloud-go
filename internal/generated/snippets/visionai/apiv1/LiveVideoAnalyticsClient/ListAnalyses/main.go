@@ -16,6 +16,8 @@
 
 // [START visionai_v1_generated_LiveVideoAnalytics_ListAnalyses_sync]
 
+//go:build examples
+
 package main
 
 import (

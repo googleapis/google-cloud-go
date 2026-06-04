@@ -16,6 +16,8 @@
 
 // [START recaptchaenterprise_v1_generated_RecaptchaEnterpriseService_GetMetrics_sync]
 
+//go:build examples
+
 package main
 
 import (

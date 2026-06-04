@@ -16,6 +16,8 @@
 
 // [START compute_v1_generated_InterconnectLocations_Get_sync]
 
+//go:build examples
+
 package main
 
 import (

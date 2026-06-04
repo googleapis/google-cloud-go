@@ -16,6 +16,8 @@
 
 // [START essentialcontacts_v1_generated_EssentialContactsService_GetContact_sync]
 
+//go:build examples
+
 package main
 
 import (

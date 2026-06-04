@@ -50,7 +50,7 @@
       "regionTag": "iam_v3beta_generated_AccessPolicies_CreateAccessPolicy_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -96,7 +96,7 @@
       "regionTag": "iam_v3beta_generated_AccessPolicies_DeleteAccessPolicy_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -142,7 +142,7 @@
       "regionTag": "iam_v3beta_generated_AccessPolicies_GetAccessPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -188,7 +188,7 @@
       "regionTag": "iam_v3beta_generated_AccessPolicies_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -234,7 +234,7 @@
       "regionTag": "iam_v3beta_generated_AccessPolicies_ListAccessPolicies_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -280,7 +280,7 @@
       "regionTag": "iam_v3beta_generated_AccessPolicies_SearchAccessPolicyBindings_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -326,7 +326,7 @@
       "regionTag": "iam_v3beta_generated_AccessPolicies_UpdateAccessPolicy_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -372,7 +372,7 @@
       "regionTag": "iam_v3beta_generated_PolicyBindings_CreatePolicyBinding_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -418,7 +418,7 @@
       "regionTag": "iam_v3beta_generated_PolicyBindings_DeletePolicyBinding_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -464,7 +464,7 @@
       "regionTag": "iam_v3beta_generated_PolicyBindings_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -510,7 +510,7 @@
       "regionTag": "iam_v3beta_generated_PolicyBindings_GetPolicyBinding_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -556,7 +556,7 @@
       "regionTag": "iam_v3beta_generated_PolicyBindings_ListPolicyBindings_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -602,7 +602,7 @@
       "regionTag": "iam_v3beta_generated_PolicyBindings_SearchTargetPolicyBindings_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -648,7 +648,7 @@
       "regionTag": "iam_v3beta_generated_PolicyBindings_UpdatePolicyBinding_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -694,7 +694,7 @@
       "regionTag": "iam_v3beta_generated_PrincipalAccessBoundaryPolicies_CreatePrincipalAccessBoundaryPolicy_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -740,7 +740,7 @@
       "regionTag": "iam_v3beta_generated_PrincipalAccessBoundaryPolicies_DeletePrincipalAccessBoundaryPolicy_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -786,7 +786,7 @@
       "regionTag": "iam_v3beta_generated_PrincipalAccessBoundaryPolicies_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -832,7 +832,7 @@
       "regionTag": "iam_v3beta_generated_PrincipalAccessBoundaryPolicies_GetPrincipalAccessBoundaryPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -878,7 +878,7 @@
       "regionTag": "iam_v3beta_generated_PrincipalAccessBoundaryPolicies_ListPrincipalAccessBoundaryPolicies_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -924,7 +924,7 @@
       "regionTag": "iam_v3beta_generated_PrincipalAccessBoundaryPolicies_SearchPrincipalAccessBoundaryPolicyBindings_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -970,7 +970,7 @@
       "regionTag": "iam_v3beta_generated_PrincipalAccessBoundaryPolicies_UpdatePrincipalAccessBoundaryPolicy_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }

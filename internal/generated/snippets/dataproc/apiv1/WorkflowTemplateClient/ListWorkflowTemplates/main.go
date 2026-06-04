@@ -16,6 +16,8 @@
 
 // [START dataproc_v1_generated_WorkflowTemplateService_ListWorkflowTemplates_sync]
 
+//go:build examples
+
 package main
 
 import (

@@ -16,6 +16,8 @@
 
 // [START routeoptimization_v1_generated_RouteOptimization_GetOperation_sync]
 
+//go:build examples
+
 package main
 
 import (

@@ -16,6 +16,8 @@
 
 // [START datacatalog_v1beta1_generated_DataCatalog_CreateTagTemplateField_sync]
 
+//go:build examples
+
 package main
 
 import (

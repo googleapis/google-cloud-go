@@ -16,6 +16,8 @@
 
 // [START cloudbuild_v1_generated_CloudBuild_GetDefaultServiceAccount_sync]
 
+//go:build examples
+
 package main
 
 import (

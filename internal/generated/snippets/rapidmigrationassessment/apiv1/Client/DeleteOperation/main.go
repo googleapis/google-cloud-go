@@ -16,6 +16,8 @@
 
 // [START rapidmigrationassessment_v1_generated_RapidMigrationAssessment_DeleteOperation_sync]
 
+//go:build examples
+
 package main
 
 import (

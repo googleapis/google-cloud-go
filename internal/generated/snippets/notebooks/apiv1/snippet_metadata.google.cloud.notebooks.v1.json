@@ -49,7 +49,7 @@
       "regionTag": "notebooks_v1_generated_ManagedNotebookService_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -95,7 +95,7 @@
       "regionTag": "notebooks_v1_generated_ManagedNotebookService_CreateRuntime_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -140,7 +140,7 @@
       "regionTag": "notebooks_v1_generated_ManagedNotebookService_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -186,7 +186,7 @@
       "regionTag": "notebooks_v1_generated_ManagedNotebookService_DeleteRuntime_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -232,7 +232,7 @@
       "regionTag": "notebooks_v1_generated_ManagedNotebookService_DiagnoseRuntime_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -278,7 +278,7 @@
       "regionTag": "notebooks_v1_generated_ManagedNotebookService_GetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -324,7 +324,7 @@
       "regionTag": "notebooks_v1_generated_ManagedNotebookService_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -370,7 +370,7 @@
       "regionTag": "notebooks_v1_generated_ManagedNotebookService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -416,7 +416,7 @@
       "regionTag": "notebooks_v1_generated_ManagedNotebookService_GetRuntime_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -462,7 +462,7 @@
       "regionTag": "notebooks_v1_generated_ManagedNotebookService_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -508,7 +508,7 @@
       "regionTag": "notebooks_v1_generated_ManagedNotebookService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -554,7 +554,7 @@
       "regionTag": "notebooks_v1_generated_ManagedNotebookService_ListRuntimes_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -600,7 +600,7 @@
       "regionTag": "notebooks_v1_generated_ManagedNotebookService_RefreshRuntimeTokenInternal_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -646,7 +646,7 @@
       "regionTag": "notebooks_v1_generated_ManagedNotebookService_ReportRuntimeEvent_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -692,7 +692,7 @@
       "regionTag": "notebooks_v1_generated_ManagedNotebookService_ResetRuntime_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -738,7 +738,7 @@
       "regionTag": "notebooks_v1_generated_ManagedNotebookService_SetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -784,7 +784,7 @@
       "regionTag": "notebooks_v1_generated_ManagedNotebookService_StartRuntime_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -830,7 +830,7 @@
       "regionTag": "notebooks_v1_generated_ManagedNotebookService_StopRuntime_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -876,7 +876,7 @@
       "regionTag": "notebooks_v1_generated_ManagedNotebookService_SwitchRuntime_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -922,7 +922,7 @@
       "regionTag": "notebooks_v1_generated_ManagedNotebookService_TestIamPermissions_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -968,7 +968,7 @@
       "regionTag": "notebooks_v1_generated_ManagedNotebookService_UpdateRuntime_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1014,7 +1014,7 @@
       "regionTag": "notebooks_v1_generated_ManagedNotebookService_UpgradeRuntime_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1059,7 +1059,7 @@
       "regionTag": "notebooks_v1_generated_NotebookService_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -1105,7 +1105,7 @@
       "regionTag": "notebooks_v1_generated_NotebookService_CreateEnvironment_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1151,7 +1151,7 @@
       "regionTag": "notebooks_v1_generated_NotebookService_CreateExecution_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1197,7 +1197,7 @@
       "regionTag": "notebooks_v1_generated_NotebookService_CreateInstance_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1243,7 +1243,7 @@
       "regionTag": "notebooks_v1_generated_NotebookService_CreateSchedule_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1289,7 +1289,7 @@
       "regionTag": "notebooks_v1_generated_NotebookService_DeleteEnvironment_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -1335,7 +1335,7 @@
       "regionTag": "notebooks_v1_generated_NotebookService_DeleteExecution_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -1381,7 +1381,7 @@
       "regionTag": "notebooks_v1_generated_NotebookService_DeleteInstance_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -1426,7 +1426,7 @@
       "regionTag": "notebooks_v1_generated_NotebookService_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -1472,7 +1472,7 @@
       "regionTag": "notebooks_v1_generated_NotebookService_DeleteSchedule_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -1518,7 +1518,7 @@
       "regionTag": "notebooks_v1_generated_NotebookService_DiagnoseInstance_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1564,7 +1564,7 @@
       "regionTag": "notebooks_v1_generated_NotebookService_GetEnvironment_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1610,7 +1610,7 @@
       "regionTag": "notebooks_v1_generated_NotebookService_GetExecution_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1656,7 +1656,7 @@
       "regionTag": "notebooks_v1_generated_NotebookService_GetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1702,7 +1702,7 @@
       "regionTag": "notebooks_v1_generated_NotebookService_GetInstance_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1748,7 +1748,7 @@
       "regionTag": "notebooks_v1_generated_NotebookService_GetInstanceHealth_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1794,7 +1794,7 @@
       "regionTag": "notebooks_v1_generated_NotebookService_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1840,7 +1840,7 @@
       "regionTag": "notebooks_v1_generated_NotebookService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1886,7 +1886,7 @@
       "regionTag": "notebooks_v1_generated_NotebookService_GetSchedule_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1932,7 +1932,7 @@
       "regionTag": "notebooks_v1_generated_NotebookService_IsInstanceUpgradeable_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1978,7 +1978,7 @@
       "regionTag": "notebooks_v1_generated_NotebookService_ListEnvironments_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2024,7 +2024,7 @@
       "regionTag": "notebooks_v1_generated_NotebookService_ListExecutions_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2070,7 +2070,7 @@
       "regionTag": "notebooks_v1_generated_NotebookService_ListInstances_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2116,7 +2116,7 @@
       "regionTag": "notebooks_v1_generated_NotebookService_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2162,7 +2162,7 @@
       "regionTag": "notebooks_v1_generated_NotebookService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2208,7 +2208,7 @@
       "regionTag": "notebooks_v1_generated_NotebookService_ListSchedules_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2254,7 +2254,7 @@
       "regionTag": "notebooks_v1_generated_NotebookService_RegisterInstance_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2300,7 +2300,7 @@
       "regionTag": "notebooks_v1_generated_NotebookService_ReportInstanceInfo_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2346,7 +2346,7 @@
       "regionTag": "notebooks_v1_generated_NotebookService_ResetInstance_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2392,7 +2392,7 @@
       "regionTag": "notebooks_v1_generated_NotebookService_RollbackInstance_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2438,7 +2438,7 @@
       "regionTag": "notebooks_v1_generated_NotebookService_SetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2484,7 +2484,7 @@
       "regionTag": "notebooks_v1_generated_NotebookService_SetInstanceAccelerator_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2530,7 +2530,7 @@
       "regionTag": "notebooks_v1_generated_NotebookService_SetInstanceLabels_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2576,7 +2576,7 @@
       "regionTag": "notebooks_v1_generated_NotebookService_SetInstanceMachineType_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2622,7 +2622,7 @@
       "regionTag": "notebooks_v1_generated_NotebookService_StartInstance_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2668,7 +2668,7 @@
       "regionTag": "notebooks_v1_generated_NotebookService_StopInstance_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2714,7 +2714,7 @@
       "regionTag": "notebooks_v1_generated_NotebookService_TestIamPermissions_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2760,7 +2760,7 @@
       "regionTag": "notebooks_v1_generated_NotebookService_TriggerSchedule_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2806,7 +2806,7 @@
       "regionTag": "notebooks_v1_generated_NotebookService_UpdateInstanceConfig_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2852,7 +2852,7 @@
       "regionTag": "notebooks_v1_generated_NotebookService_UpdateInstanceMetadataItems_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2898,7 +2898,7 @@
       "regionTag": "notebooks_v1_generated_NotebookService_UpdateShieldedInstanceConfig_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2944,7 +2944,7 @@
       "regionTag": "notebooks_v1_generated_NotebookService_UpgradeInstance_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2990,7 +2990,7 @@
       "regionTag": "notebooks_v1_generated_NotebookService_UpgradeInstanceInternal_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }

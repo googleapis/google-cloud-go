@@ -50,7 +50,7 @@
       "regionTag": "visionai_v1_generated_AppPlatform_AddApplicationStreamInput_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -95,7 +95,7 @@
       "regionTag": "visionai_v1_generated_AppPlatform_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -141,7 +141,7 @@
       "regionTag": "visionai_v1_generated_AppPlatform_CreateApplication_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -187,7 +187,7 @@
       "regionTag": "visionai_v1_generated_AppPlatform_CreateApplicationInstances_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -233,7 +233,7 @@
       "regionTag": "visionai_v1_generated_AppPlatform_CreateDraft_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -279,7 +279,7 @@
       "regionTag": "visionai_v1_generated_AppPlatform_CreateProcessor_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -325,7 +325,7 @@
       "regionTag": "visionai_v1_generated_AppPlatform_DeleteApplication_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -371,7 +371,7 @@
       "regionTag": "visionai_v1_generated_AppPlatform_DeleteApplicationInstances_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -417,7 +417,7 @@
       "regionTag": "visionai_v1_generated_AppPlatform_DeleteDraft_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -462,7 +462,7 @@
       "regionTag": "visionai_v1_generated_AppPlatform_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -508,7 +508,7 @@
       "regionTag": "visionai_v1_generated_AppPlatform_DeleteProcessor_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -554,7 +554,7 @@
       "regionTag": "visionai_v1_generated_AppPlatform_DeployApplication_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -600,7 +600,7 @@
       "regionTag": "visionai_v1_generated_AppPlatform_GetApplication_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -646,7 +646,7 @@
       "regionTag": "visionai_v1_generated_AppPlatform_GetDraft_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -692,7 +692,7 @@
       "regionTag": "visionai_v1_generated_AppPlatform_GetInstance_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -738,7 +738,7 @@
       "regionTag": "visionai_v1_generated_AppPlatform_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -784,7 +784,7 @@
       "regionTag": "visionai_v1_generated_AppPlatform_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -830,7 +830,7 @@
       "regionTag": "visionai_v1_generated_AppPlatform_GetProcessor_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -876,7 +876,7 @@
       "regionTag": "visionai_v1_generated_AppPlatform_ListApplications_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -922,7 +922,7 @@
       "regionTag": "visionai_v1_generated_AppPlatform_ListDrafts_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -968,7 +968,7 @@
       "regionTag": "visionai_v1_generated_AppPlatform_ListInstances_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1014,7 +1014,7 @@
       "regionTag": "visionai_v1_generated_AppPlatform_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1060,7 +1060,7 @@
       "regionTag": "visionai_v1_generated_AppPlatform_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1106,7 +1106,7 @@
       "regionTag": "visionai_v1_generated_AppPlatform_ListPrebuiltProcessors_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1152,7 +1152,7 @@
       "regionTag": "visionai_v1_generated_AppPlatform_ListProcessors_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1198,7 +1198,7 @@
       "regionTag": "visionai_v1_generated_AppPlatform_RemoveApplicationStreamInput_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1244,7 +1244,7 @@
       "regionTag": "visionai_v1_generated_AppPlatform_UndeployApplication_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1290,7 +1290,7 @@
       "regionTag": "visionai_v1_generated_AppPlatform_UpdateApplication_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1336,7 +1336,7 @@
       "regionTag": "visionai_v1_generated_AppPlatform_UpdateApplicationInstances_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1382,7 +1382,7 @@
       "regionTag": "visionai_v1_generated_AppPlatform_UpdateApplicationStreamInput_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1428,7 +1428,7 @@
       "regionTag": "visionai_v1_generated_AppPlatform_UpdateDraft_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1474,7 +1474,7 @@
       "regionTag": "visionai_v1_generated_AppPlatform_UpdateProcessor_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1519,7 +1519,7 @@
       "regionTag": "visionai_v1_generated_HealthCheckService_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -1564,7 +1564,7 @@
       "regionTag": "visionai_v1_generated_HealthCheckService_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -1610,7 +1610,7 @@
       "regionTag": "visionai_v1_generated_HealthCheckService_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1656,7 +1656,7 @@
       "regionTag": "visionai_v1_generated_HealthCheckService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1702,7 +1702,7 @@
       "regionTag": "visionai_v1_generated_HealthCheckService_HealthCheck_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1748,7 +1748,7 @@
       "regionTag": "visionai_v1_generated_HealthCheckService_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1794,7 +1794,7 @@
       "regionTag": "visionai_v1_generated_HealthCheckService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1840,7 +1840,7 @@
       "regionTag": "visionai_v1_generated_LiveVideoAnalytics_BatchRunProcess_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1885,7 +1885,7 @@
       "regionTag": "visionai_v1_generated_LiveVideoAnalytics_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -1931,7 +1931,7 @@
       "regionTag": "visionai_v1_generated_LiveVideoAnalytics_CreateAnalysis_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1977,7 +1977,7 @@
       "regionTag": "visionai_v1_generated_LiveVideoAnalytics_CreateOperator_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2023,7 +2023,7 @@
       "regionTag": "visionai_v1_generated_LiveVideoAnalytics_CreateProcess_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2069,7 +2069,7 @@
       "regionTag": "visionai_v1_generated_LiveVideoAnalytics_DeleteAnalysis_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -2114,7 +2114,7 @@
       "regionTag": "visionai_v1_generated_LiveVideoAnalytics_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -2160,7 +2160,7 @@
       "regionTag": "visionai_v1_generated_LiveVideoAnalytics_DeleteOperator_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -2206,7 +2206,7 @@
       "regionTag": "visionai_v1_generated_LiveVideoAnalytics_DeleteProcess_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -2252,7 +2252,7 @@
       "regionTag": "visionai_v1_generated_LiveVideoAnalytics_GetAnalysis_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2298,7 +2298,7 @@
       "regionTag": "visionai_v1_generated_LiveVideoAnalytics_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2344,7 +2344,7 @@
       "regionTag": "visionai_v1_generated_LiveVideoAnalytics_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2390,7 +2390,7 @@
       "regionTag": "visionai_v1_generated_LiveVideoAnalytics_GetOperator_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2436,7 +2436,7 @@
       "regionTag": "visionai_v1_generated_LiveVideoAnalytics_GetProcess_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2482,7 +2482,7 @@
       "regionTag": "visionai_v1_generated_LiveVideoAnalytics_ListAnalyses_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2528,7 +2528,7 @@
       "regionTag": "visionai_v1_generated_LiveVideoAnalytics_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2574,7 +2574,7 @@
       "regionTag": "visionai_v1_generated_LiveVideoAnalytics_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2620,7 +2620,7 @@
       "regionTag": "visionai_v1_generated_LiveVideoAnalytics_ListOperators_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2666,7 +2666,7 @@
       "regionTag": "visionai_v1_generated_LiveVideoAnalytics_ListProcesses_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2712,7 +2712,7 @@
       "regionTag": "visionai_v1_generated_LiveVideoAnalytics_ListPublicOperators_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2758,7 +2758,7 @@
       "regionTag": "visionai_v1_generated_LiveVideoAnalytics_ResolveOperatorInfo_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2804,7 +2804,7 @@
       "regionTag": "visionai_v1_generated_LiveVideoAnalytics_UpdateAnalysis_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2850,7 +2850,7 @@
       "regionTag": "visionai_v1_generated_LiveVideoAnalytics_UpdateOperator_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2896,7 +2896,7 @@
       "regionTag": "visionai_v1_generated_LiveVideoAnalytics_UpdateProcess_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2942,7 +2942,7 @@
       "regionTag": "visionai_v1_generated_StreamingService_AcquireLease_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2987,7 +2987,7 @@
       "regionTag": "visionai_v1_generated_StreamingService_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -3032,7 +3032,7 @@
       "regionTag": "visionai_v1_generated_StreamingService_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -3078,7 +3078,7 @@
       "regionTag": "visionai_v1_generated_StreamingService_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3124,7 +3124,7 @@
       "regionTag": "visionai_v1_generated_StreamingService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3170,7 +3170,7 @@
       "regionTag": "visionai_v1_generated_StreamingService_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -3216,7 +3216,7 @@
       "regionTag": "visionai_v1_generated_StreamingService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -3258,7 +3258,7 @@
       "regionTag": "visionai_v1_generated_StreamingService_ReceiveEvents_sync",
       "segments": [
         {
-          "end": 69,
+          "end": 71,
           "start": 18,
           "type": "FULL"
         }
@@ -3300,7 +3300,7 @@
       "regionTag": "visionai_v1_generated_StreamingService_ReceivePackets_sync",
       "segments": [
         {
-          "end": 69,
+          "end": 71,
           "start": 18,
           "type": "FULL"
         }
@@ -3346,7 +3346,7 @@
       "regionTag": "visionai_v1_generated_StreamingService_ReleaseLease_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3392,7 +3392,7 @@
       "regionTag": "visionai_v1_generated_StreamingService_RenewLease_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3434,7 +3434,7 @@
       "regionTag": "visionai_v1_generated_StreamingService_SendPackets_sync",
       "segments": [
         {
-          "end": 69,
+          "end": 71,
           "start": 18,
           "type": "FULL"
         }
@@ -3479,7 +3479,7 @@
       "regionTag": "visionai_v1_generated_StreamsService_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -3525,7 +3525,7 @@
       "regionTag": "visionai_v1_generated_StreamsService_CreateCluster_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -3571,7 +3571,7 @@
       "regionTag": "visionai_v1_generated_StreamsService_CreateEvent_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -3617,7 +3617,7 @@
       "regionTag": "visionai_v1_generated_StreamsService_CreateSeries_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -3663,7 +3663,7 @@
       "regionTag": "visionai_v1_generated_StreamsService_CreateStream_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -3709,7 +3709,7 @@
       "regionTag": "visionai_v1_generated_StreamsService_DeleteCluster_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -3755,7 +3755,7 @@
       "regionTag": "visionai_v1_generated_StreamsService_DeleteEvent_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -3800,7 +3800,7 @@
       "regionTag": "visionai_v1_generated_StreamsService_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -3846,7 +3846,7 @@
       "regionTag": "visionai_v1_generated_StreamsService_DeleteSeries_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -3892,7 +3892,7 @@
       "regionTag": "visionai_v1_generated_StreamsService_DeleteStream_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -3938,7 +3938,7 @@
       "regionTag": "visionai_v1_generated_StreamsService_GenerateStreamHlsToken_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3984,7 +3984,7 @@
       "regionTag": "visionai_v1_generated_StreamsService_GetCluster_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -4030,7 +4030,7 @@
       "regionTag": "visionai_v1_generated_StreamsService_GetEvent_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -4076,7 +4076,7 @@
       "regionTag": "visionai_v1_generated_StreamsService_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -4122,7 +4122,7 @@
       "regionTag": "visionai_v1_generated_StreamsService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -4168,7 +4168,7 @@
       "regionTag": "visionai_v1_generated_StreamsService_GetSeries_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -4214,7 +4214,7 @@
       "regionTag": "visionai_v1_generated_StreamsService_GetStream_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -4260,7 +4260,7 @@
       "regionTag": "visionai_v1_generated_StreamsService_GetStreamThumbnail_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -4306,7 +4306,7 @@
       "regionTag": "visionai_v1_generated_StreamsService_ListClusters_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -4352,7 +4352,7 @@
       "regionTag": "visionai_v1_generated_StreamsService_ListEvents_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -4398,7 +4398,7 @@
       "regionTag": "visionai_v1_generated_StreamsService_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -4444,7 +4444,7 @@
       "regionTag": "visionai_v1_generated_StreamsService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -4490,7 +4490,7 @@
       "regionTag": "visionai_v1_generated_StreamsService_ListSeries_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -4536,7 +4536,7 @@
       "regionTag": "visionai_v1_generated_StreamsService_ListStreams_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -4582,7 +4582,7 @@
       "regionTag": "visionai_v1_generated_StreamsService_MaterializeChannel_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -4628,7 +4628,7 @@
       "regionTag": "visionai_v1_generated_StreamsService_UpdateCluster_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -4674,7 +4674,7 @@
       "regionTag": "visionai_v1_generated_StreamsService_UpdateEvent_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -4720,7 +4720,7 @@
       "regionTag": "visionai_v1_generated_StreamsService_UpdateSeries_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -4766,7 +4766,7 @@
       "regionTag": "visionai_v1_generated_StreamsService_UpdateStream_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -4812,7 +4812,7 @@
       "regionTag": "warehouse-visionai_v1_generated_Warehouse_AddCollectionItem_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -4858,7 +4858,7 @@
       "regionTag": "warehouse-visionai_v1_generated_Warehouse_AnalyzeAsset_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -4904,7 +4904,7 @@
       "regionTag": "warehouse-visionai_v1_generated_Warehouse_AnalyzeCorpus_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -4949,7 +4949,7 @@
       "regionTag": "warehouse-visionai_v1_generated_Warehouse_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -4995,7 +4995,7 @@
       "regionTag": "warehouse-visionai_v1_generated_Warehouse_ClipAsset_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -5041,7 +5041,7 @@
       "regionTag": "warehouse-visionai_v1_generated_Warehouse_CreateAnnotation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -5087,7 +5087,7 @@
       "regionTag": "warehouse-visionai_v1_generated_Warehouse_CreateAsset_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -5133,7 +5133,7 @@
       "regionTag": "warehouse-visionai_v1_generated_Warehouse_CreateCollection_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -5179,7 +5179,7 @@
       "regionTag": "warehouse-visionai_v1_generated_Warehouse_CreateCorpus_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -5225,7 +5225,7 @@
       "regionTag": "warehouse-visionai_v1_generated_Warehouse_CreateDataSchema_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -5271,7 +5271,7 @@
       "regionTag": "warehouse-visionai_v1_generated_Warehouse_CreateIndex_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -5317,7 +5317,7 @@
       "regionTag": "warehouse-visionai_v1_generated_Warehouse_CreateIndexEndpoint_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -5363,7 +5363,7 @@
       "regionTag": "warehouse-visionai_v1_generated_Warehouse_CreateSearchConfig_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -5409,7 +5409,7 @@
       "regionTag": "warehouse-visionai_v1_generated_Warehouse_CreateSearchHypernym_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -5454,7 +5454,7 @@
       "regionTag": "warehouse-visionai_v1_generated_Warehouse_DeleteAnnotation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -5500,7 +5500,7 @@
       "regionTag": "warehouse-visionai_v1_generated_Warehouse_DeleteAsset_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -5546,7 +5546,7 @@
       "regionTag": "warehouse-visionai_v1_generated_Warehouse_DeleteCollection_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -5591,7 +5591,7 @@
       "regionTag": "warehouse-visionai_v1_generated_Warehouse_DeleteCorpus_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -5636,7 +5636,7 @@
       "regionTag": "warehouse-visionai_v1_generated_Warehouse_DeleteDataSchema_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -5682,7 +5682,7 @@
       "regionTag": "warehouse-visionai_v1_generated_Warehouse_DeleteIndex_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -5728,7 +5728,7 @@
       "regionTag": "warehouse-visionai_v1_generated_Warehouse_DeleteIndexEndpoint_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -5773,7 +5773,7 @@
       "regionTag": "warehouse-visionai_v1_generated_Warehouse_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -5818,7 +5818,7 @@
       "regionTag": "warehouse-visionai_v1_generated_Warehouse_DeleteSearchConfig_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -5863,7 +5863,7 @@
       "regionTag": "warehouse-visionai_v1_generated_Warehouse_DeleteSearchHypernym_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -5909,7 +5909,7 @@
       "regionTag": "warehouse-visionai_v1_generated_Warehouse_DeployIndex_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -5955,7 +5955,7 @@
       "regionTag": "warehouse-visionai_v1_generated_Warehouse_GenerateHlsUri_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -6001,7 +6001,7 @@
       "regionTag": "warehouse-visionai_v1_generated_Warehouse_GenerateRetrievalUrl_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -6047,7 +6047,7 @@
       "regionTag": "warehouse-visionai_v1_generated_Warehouse_GetAnnotation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -6093,7 +6093,7 @@
       "regionTag": "warehouse-visionai_v1_generated_Warehouse_GetAsset_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -6139,7 +6139,7 @@
       "regionTag": "warehouse-visionai_v1_generated_Warehouse_GetCollection_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -6185,7 +6185,7 @@
       "regionTag": "warehouse-visionai_v1_generated_Warehouse_GetCorpus_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -6231,7 +6231,7 @@
       "regionTag": "warehouse-visionai_v1_generated_Warehouse_GetDataSchema_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -6277,7 +6277,7 @@
       "regionTag": "warehouse-visionai_v1_generated_Warehouse_GetIndex_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -6323,7 +6323,7 @@
       "regionTag": "warehouse-visionai_v1_generated_Warehouse_GetIndexEndpoint_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -6369,7 +6369,7 @@
       "regionTag": "warehouse-visionai_v1_generated_Warehouse_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -6415,7 +6415,7 @@
       "regionTag": "warehouse-visionai_v1_generated_Warehouse_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -6461,7 +6461,7 @@
       "regionTag": "warehouse-visionai_v1_generated_Warehouse_GetSearchConfig_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -6507,7 +6507,7 @@
       "regionTag": "warehouse-visionai_v1_generated_Warehouse_GetSearchHypernym_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -6553,7 +6553,7 @@
       "regionTag": "warehouse-visionai_v1_generated_Warehouse_ImportAssets_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -6599,7 +6599,7 @@
       "regionTag": "warehouse-visionai_v1_generated_Warehouse_IndexAsset_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -6641,7 +6641,7 @@
       "regionTag": "warehouse-visionai_v1_generated_Warehouse_IngestAsset_sync",
       "segments": [
         {
-          "end": 69,
+          "end": 71,
           "start": 18,
           "type": "FULL"
         }
@@ -6687,7 +6687,7 @@
       "regionTag": "warehouse-visionai_v1_generated_Warehouse_ListAnnotations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -6733,7 +6733,7 @@
       "regionTag": "warehouse-visionai_v1_generated_Warehouse_ListAssets_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -6779,7 +6779,7 @@
       "regionTag": "warehouse-visionai_v1_generated_Warehouse_ListCollections_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -6825,7 +6825,7 @@
       "regionTag": "warehouse-visionai_v1_generated_Warehouse_ListCorpora_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -6871,7 +6871,7 @@
       "regionTag": "warehouse-visionai_v1_generated_Warehouse_ListDataSchemas_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -6917,7 +6917,7 @@
       "regionTag": "warehouse-visionai_v1_generated_Warehouse_ListIndexEndpoints_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -6963,7 +6963,7 @@
       "regionTag": "warehouse-visionai_v1_generated_Warehouse_ListIndexes_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -7009,7 +7009,7 @@
       "regionTag": "warehouse-visionai_v1_generated_Warehouse_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -7055,7 +7055,7 @@
       "regionTag": "warehouse-visionai_v1_generated_Warehouse_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -7101,7 +7101,7 @@
       "regionTag": "warehouse-visionai_v1_generated_Warehouse_ListSearchConfigs_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -7147,7 +7147,7 @@
       "regionTag": "warehouse-visionai_v1_generated_Warehouse_ListSearchHypernyms_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -7193,7 +7193,7 @@
       "regionTag": "warehouse-visionai_v1_generated_Warehouse_RemoveCollectionItem_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -7239,7 +7239,7 @@
       "regionTag": "warehouse-visionai_v1_generated_Warehouse_RemoveIndexAsset_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -7285,7 +7285,7 @@
       "regionTag": "warehouse-visionai_v1_generated_Warehouse_SearchAssets_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -7331,7 +7331,7 @@
       "regionTag": "warehouse-visionai_v1_generated_Warehouse_SearchIndexEndpoint_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -7377,7 +7377,7 @@
       "regionTag": "warehouse-visionai_v1_generated_Warehouse_UndeployIndex_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -7423,7 +7423,7 @@
       "regionTag": "warehouse-visionai_v1_generated_Warehouse_UpdateAnnotation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -7469,7 +7469,7 @@
       "regionTag": "warehouse-visionai_v1_generated_Warehouse_UpdateAsset_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -7515,7 +7515,7 @@
       "regionTag": "warehouse-visionai_v1_generated_Warehouse_UpdateCollection_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -7561,7 +7561,7 @@
       "regionTag": "warehouse-visionai_v1_generated_Warehouse_UpdateCorpus_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -7607,7 +7607,7 @@
       "regionTag": "warehouse-visionai_v1_generated_Warehouse_UpdateDataSchema_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -7653,7 +7653,7 @@
       "regionTag": "warehouse-visionai_v1_generated_Warehouse_UpdateIndex_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -7699,7 +7699,7 @@
       "regionTag": "warehouse-visionai_v1_generated_Warehouse_UpdateIndexEndpoint_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -7745,7 +7745,7 @@
       "regionTag": "warehouse-visionai_v1_generated_Warehouse_UpdateSearchConfig_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -7791,7 +7791,7 @@
       "regionTag": "warehouse-visionai_v1_generated_Warehouse_UpdateSearchHypernym_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -7837,7 +7837,7 @@
       "regionTag": "warehouse-visionai_v1_generated_Warehouse_UploadAsset_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -7883,7 +7883,7 @@
       "regionTag": "warehouse-visionai_v1_generated_Warehouse_ViewCollectionItems_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -7929,7 +7929,7 @@
       "regionTag": "warehouse-visionai_v1_generated_Warehouse_ViewIndexedAssets_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }

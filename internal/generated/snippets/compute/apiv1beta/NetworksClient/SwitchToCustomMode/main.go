@@ -16,6 +16,8 @@
 
 // [START compute_v1beta_generated_Networks_SwitchToCustomMode_sync]
 
+//go:build examples
+
 package main
 
 import (

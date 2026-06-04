@@ -16,6 +16,8 @@
 
 // [START discoveryengine_v1_generated_IdentityMappingStoreService_DeleteIdentityMappingStore_sync]
 
+//go:build examples
+
 package main
 
 import (

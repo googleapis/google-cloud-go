@@ -16,6 +16,8 @@
 
 // [START merchantapi_v1_generated_AccountsService_DeleteAccount_sync]
 
+//go:build examples
+
 package main
 
 import (

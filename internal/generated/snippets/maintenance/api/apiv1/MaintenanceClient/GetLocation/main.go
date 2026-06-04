@@ -16,6 +16,8 @@
 
 // [START maintenance_v1_generated_Maintenance_GetLocation_sync]
 
+//go:build examples
+
 package main
 
 import (

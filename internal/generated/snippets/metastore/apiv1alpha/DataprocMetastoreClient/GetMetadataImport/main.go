@@ -16,6 +16,8 @@
 
 // [START metastore_v1alpha_generated_DataprocMetastore_GetMetadataImport_sync]
 
+//go:build examples
+
 package main
 
 import (

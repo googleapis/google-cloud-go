@@ -16,6 +16,8 @@
 
 // [START dataplex_v1_generated_DataTaxonomyService_DeleteDataAttributeBinding_sync]
 
+//go:build examples
+
 package main
 
 import (

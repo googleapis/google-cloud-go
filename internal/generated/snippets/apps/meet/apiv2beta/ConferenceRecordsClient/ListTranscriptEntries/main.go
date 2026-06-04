@@ -16,6 +16,8 @@
 
 // [START meet_v2beta_generated_ConferenceRecordsService_ListTranscriptEntries_sync]
 
+//go:build examples
+
 package main
 
 import (

@@ -86,7 +86,7 @@ type RegionSnapshotSettingsClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *RegionSnapshotSettingsClient) Close() error {
 	return c.internalClient.Close()
@@ -218,7 +218,7 @@ func (c *regionSnapshotSettingsRESTClient) setGoogleClientInfo(keyval ...string)
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *regionSnapshotSettingsRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.

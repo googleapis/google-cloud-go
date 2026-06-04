@@ -16,6 +16,8 @@
 
 // [START retail_v2alpha_generated_ControlService_GetOperation_sync]
 
+//go:build examples
+
 package main
 
 import (

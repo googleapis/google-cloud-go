@@ -16,6 +16,8 @@
 
 // [START geocoding-backend_v4_generated_DestinationService_SearchDestinations_sync]
 
+//go:build examples
+
 package main
 
 import (

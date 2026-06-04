@@ -16,6 +16,8 @@
 
 // [START iap_v1_generated_IdentityAwareProxyOAuthService_DeleteIdentityAwareProxyClient_sync]
 
+//go:build examples
+
 package main
 
 import (

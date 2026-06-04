@@ -144,7 +144,7 @@ type GenerativeQuestionClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *GenerativeQuestionClient) Close() error {
 	return c.internalClient.Close()
@@ -306,7 +306,7 @@ func (c *generativeQuestionGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *generativeQuestionGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -405,7 +405,7 @@ func (c *generativeQuestionRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *generativeQuestionRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.

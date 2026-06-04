@@ -16,6 +16,8 @@
 
 // [START policysimulator_v1_generated_OrgPolicyViolationsPreviewService_ListOrgPolicyViolationsPreviews_sync]
 
+//go:build examples
+
 package main
 
 import (

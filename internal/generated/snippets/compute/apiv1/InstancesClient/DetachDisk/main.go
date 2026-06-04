@@ -16,6 +16,8 @@
 
 // [START compute_v1_generated_Instances_DetachDisk_sync]
 
+//go:build examples
+
 package main
 
 import (

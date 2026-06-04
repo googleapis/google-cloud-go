@@ -16,6 +16,8 @@
 
 // [START privateca_v1_generated_CertificateAuthorityService_ListCertificateAuthorities_sync]
 
+//go:build examples
+
 package main
 
 import (

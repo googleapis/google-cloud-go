@@ -16,6 +16,8 @@
 
 // [START apphub_v1_generated_AppHub_ListApplications_sync]
 
+//go:build examples
+
 package main
 
 import (

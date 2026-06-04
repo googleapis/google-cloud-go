@@ -16,6 +16,8 @@
 
 // [START chronicle_v1_generated_NativeDashboardService_ListNativeDashboards_sync]
 
+//go:build examples
+
 package main
 
 import (

@@ -16,6 +16,8 @@
 
 // [START networkconnectivity_v1_generated_CrossNetworkAutomationService_GetServiceConnectionMap_sync]
 
+//go:build examples
+
 package main
 
 import (

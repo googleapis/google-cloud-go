@@ -16,6 +16,8 @@
 
 // [START licensemanager_v1_generated_LicenseManager_ListInstances_sync]
 
+//go:build examples
+
 package main
 
 import (

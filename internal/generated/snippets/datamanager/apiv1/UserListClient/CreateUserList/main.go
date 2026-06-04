@@ -16,6 +16,8 @@
 
 // [START datamanager_v1_generated_UserListService_CreateUserList_sync]
 
+//go:build examples
+
 package main
 
 import (

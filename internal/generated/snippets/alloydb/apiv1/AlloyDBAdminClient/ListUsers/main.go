@@ -16,6 +16,8 @@
 
 // [START alloydb_v1_generated_AlloyDBAdmin_ListUsers_sync]
 
+//go:build examples
+
 package main
 
 import (

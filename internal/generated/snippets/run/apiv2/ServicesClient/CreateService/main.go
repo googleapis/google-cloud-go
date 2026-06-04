@@ -16,6 +16,8 @@
 
 // [START run_v2_generated_Services_CreateService_sync]
 
+//go:build examples
+
 package main
 
 import (

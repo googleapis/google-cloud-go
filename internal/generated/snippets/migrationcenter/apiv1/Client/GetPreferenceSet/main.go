@@ -16,6 +16,8 @@
 
 // [START migrationcenter_v1_generated_MigrationCenter_GetPreferenceSet_sync]
 
+//go:build examples
+
 package main
 
 import (

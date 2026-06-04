@@ -16,6 +16,8 @@
 
 // [START logging_v2_generated_LoggingServiceV2_WriteLogEntries_sync]
 
+//go:build examples
+
 package main
 
 import (

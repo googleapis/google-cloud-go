@@ -16,6 +16,8 @@
 
 // [START dialogflow_v2_generated_AnswerRecords_ListLocations_sync]
 
+//go:build examples
+
 package main
 
 import (

@@ -16,6 +16,8 @@
 
 // [START managedkafka_v1_generated_ManagedKafka_DeleteConsumerGroup_sync]
 
+//go:build examples
+
 package main
 
 import (

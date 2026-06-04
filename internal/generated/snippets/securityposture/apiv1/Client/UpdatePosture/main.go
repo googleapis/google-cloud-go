@@ -16,6 +16,8 @@
 
 // [START securityposture_v1_generated_SecurityPosture_UpdatePosture_sync]
 
+//go:build examples
+
 package main
 
 import (

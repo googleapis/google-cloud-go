@@ -50,7 +50,7 @@
       "regionTag": "merchantapi_v1_generated_ReportService_Search_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }

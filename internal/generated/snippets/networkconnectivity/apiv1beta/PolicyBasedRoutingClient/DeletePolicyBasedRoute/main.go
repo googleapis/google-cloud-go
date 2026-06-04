@@ -16,6 +16,8 @@
 
 // [START networkconnectivity_v1beta_generated_PolicyBasedRoutingService_DeletePolicyBasedRoute_sync]
 
+//go:build examples
+
 package main
 
 import (

@@ -16,6 +16,8 @@
 
 // [START dialogflow_v3beta1_generated_TestCases_UpdateTestCase_sync]
 
+//go:build examples
+
 package main
 
 import (

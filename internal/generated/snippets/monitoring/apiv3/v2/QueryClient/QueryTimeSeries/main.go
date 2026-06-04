@@ -16,6 +16,8 @@
 
 // [START monitoring_v3_generated_QueryService_QueryTimeSeries_sync]
 
+//go:build examples
+
 package main
 
 import (

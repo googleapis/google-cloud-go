@@ -16,6 +16,8 @@
 
 // [START dlp_v2_generated_DlpService_GetJobTrigger_sync]
 
+//go:build examples
+
 package main
 
 import (

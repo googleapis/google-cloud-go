@@ -16,6 +16,8 @@
 
 // [START iam_v3_generated_PolicyBindings_SearchTargetPolicyBindings_sync]
 
+//go:build examples
+
 package main
 
 import (

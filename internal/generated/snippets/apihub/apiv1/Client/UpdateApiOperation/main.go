@@ -16,6 +16,8 @@
 
 // [START apihub_v1_generated_ApiHub_UpdateApiOperation_sync]
 
+//go:build examples
+
 package main
 
 import (

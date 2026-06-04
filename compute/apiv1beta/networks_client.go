@@ -176,7 +176,7 @@ type NetworksClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *NetworksClient) Close() error {
 	return c.internalClient.Close()
@@ -387,7 +387,7 @@ func (c *networksRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *networksRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.

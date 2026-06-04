@@ -16,6 +16,8 @@
 
 // [START cloudapiregistry_v1beta_generated_CloudApiRegistry_GetMcpTool_sync]
 
+//go:build examples
+
 package main
 
 import (

@@ -16,6 +16,8 @@
 
 // [START identitytoolkit_v2_generated_AccountManagementService_StartMfaEnrollment_sync]
 
+//go:build examples
+
 package main
 
 import (

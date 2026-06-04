@@ -16,6 +16,8 @@
 
 // [START config_v1_generated_Config_DeleteStatefile_sync]
 
+//go:build examples
+
 package main
 
 import (

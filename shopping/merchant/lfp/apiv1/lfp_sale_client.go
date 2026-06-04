@@ -117,7 +117,7 @@ type LfpSaleClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *LfpSaleClient) Close() error {
 	return c.internalClient.Close()
@@ -240,7 +240,7 @@ func (c *lfpSaleGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *lfpSaleGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -335,7 +335,7 @@ func (c *lfpSaleRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *lfpSaleRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.

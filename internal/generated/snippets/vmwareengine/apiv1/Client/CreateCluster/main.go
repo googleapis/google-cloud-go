@@ -16,6 +16,8 @@
 
 // [START vmwareengine_v1_generated_VmwareEngine_CreateCluster_sync]
 
+//go:build examples
+
 package main
 
 import (

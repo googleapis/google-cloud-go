@@ -130,7 +130,7 @@ type WorkflowsServiceV2BetaClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *WorkflowsServiceV2BetaClient) Close() error {
 	return c.internalClient.Close()
@@ -346,7 +346,7 @@ func (c *workflowsServiceV2BetaGRPCClient) setGoogleClientInfo(keyval ...string)
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *workflowsServiceV2BetaGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -460,7 +460,7 @@ func (c *workflowsServiceV2BetaRESTClient) setGoogleClientInfo(keyval ...string)
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *workflowsServiceV2BetaRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.

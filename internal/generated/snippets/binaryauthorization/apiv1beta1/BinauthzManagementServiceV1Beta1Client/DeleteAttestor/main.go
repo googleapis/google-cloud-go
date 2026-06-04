@@ -16,6 +16,8 @@
 
 // [START binaryauthorization_v1beta1_generated_BinauthzManagementServiceV1Beta1_DeleteAttestor_sync]
 
+//go:build examples
+
 package main
 
 import (

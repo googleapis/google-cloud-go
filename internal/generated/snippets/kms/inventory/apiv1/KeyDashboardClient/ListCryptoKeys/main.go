@@ -16,6 +16,8 @@
 
 // [START kmsinventory_v1_generated_KeyDashboardService_ListCryptoKeys_sync]
 
+//go:build examples
+
 package main
 
 import (

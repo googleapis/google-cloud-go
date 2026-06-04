@@ -16,6 +16,8 @@
 
 // [START oslogin_v1_generated_OsLoginService_ImportSshPublicKey_sync]
 
+//go:build examples
+
 package main
 
 import (

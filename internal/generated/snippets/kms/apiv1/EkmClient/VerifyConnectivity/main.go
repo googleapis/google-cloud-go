@@ -16,6 +16,8 @@
 
 // [START cloudkms_v1_generated_EkmService_VerifyConnectivity_sync]
 
+//go:build examples
+
 package main
 
 import (

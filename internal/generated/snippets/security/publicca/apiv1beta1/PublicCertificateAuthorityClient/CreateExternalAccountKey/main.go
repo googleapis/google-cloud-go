@@ -16,6 +16,8 @@
 
 // [START publicca_v1beta1_generated_PublicCertificateAuthorityService_CreateExternalAccountKey_sync]
 
+//go:build examples
+
 package main
 
 import (

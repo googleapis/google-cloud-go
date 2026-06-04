@@ -16,6 +16,8 @@
 
 // [START networkmanagement_v1_generated_ReachabilityService_ListLocations_sync]
 
+//go:build examples
+
 package main
 
 import (

@@ -16,6 +16,8 @@
 
 // [START artifactregistry_v1_generated_ArtifactRegistry_ListRules_sync]
 
+//go:build examples
+
 package main
 
 import (

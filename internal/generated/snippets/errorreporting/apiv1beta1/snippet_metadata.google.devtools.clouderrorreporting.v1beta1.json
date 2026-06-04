@@ -50,7 +50,7 @@
       "regionTag": "clouderrorreporting_v1beta1_generated_ErrorGroupService_GetGroup_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -96,7 +96,7 @@
       "regionTag": "clouderrorreporting_v1beta1_generated_ErrorGroupService_UpdateGroup_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -142,7 +142,7 @@
       "regionTag": "clouderrorreporting_v1beta1_generated_ErrorStatsService_DeleteEvents_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -188,7 +188,7 @@
       "regionTag": "clouderrorreporting_v1beta1_generated_ErrorStatsService_ListEvents_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -234,7 +234,7 @@
       "regionTag": "clouderrorreporting_v1beta1_generated_ErrorStatsService_ListGroupStats_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -280,7 +280,7 @@
       "regionTag": "clouderrorreporting_v1beta1_generated_ReportErrorsService_ReportErrorEvent_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }

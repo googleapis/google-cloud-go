@@ -16,6 +16,8 @@
 
 // [START networkmanagement_v1_generated_ReachabilityService_CreateConnectivityTest_sync]
 
+//go:build examples
+
 package main
 
 import (

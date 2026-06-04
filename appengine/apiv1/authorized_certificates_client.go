@@ -132,7 +132,7 @@ type AuthorizedCertificatesClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *AuthorizedCertificatesClient) Close() error {
 	return c.internalClient.Close()
@@ -282,7 +282,7 @@ func (c *authorizedCertificatesGRPCClient) setGoogleClientInfo(keyval ...string)
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *authorizedCertificatesGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -380,7 +380,7 @@ func (c *authorizedCertificatesRESTClient) setGoogleClientInfo(keyval ...string)
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *authorizedCertificatesRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.

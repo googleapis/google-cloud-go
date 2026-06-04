@@ -16,6 +16,8 @@
 
 // [START cloudprofiler_v2_generated_ExportService_ListProfiles_sync]
 
+//go:build examples
+
 package main
 
 import (

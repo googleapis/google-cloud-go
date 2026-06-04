@@ -16,6 +16,8 @@
 
 // [START livestream_v1_generated_LivestreamService_ListClips_sync]
 
+//go:build examples
+
 package main
 
 import (

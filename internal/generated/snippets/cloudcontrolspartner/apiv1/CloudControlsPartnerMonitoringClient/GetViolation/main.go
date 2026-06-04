@@ -16,6 +16,8 @@
 
 // [START cloudcontrolspartner_v1_generated_CloudControlsPartnerMonitoring_GetViolation_sync]
 
+//go:build examples
+
 package main
 
 import (

@@ -49,7 +49,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedSchemaRegistry_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -95,7 +95,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedSchemaRegistry_CheckCompatibility_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -141,7 +141,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedSchemaRegistry_CreateSchemaRegistry_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -187,7 +187,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedSchemaRegistry_CreateVersion_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -232,7 +232,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedSchemaRegistry_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -278,7 +278,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedSchemaRegistry_DeleteSchemaConfig_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -324,7 +324,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedSchemaRegistry_DeleteSchemaMode_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -369,7 +369,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedSchemaRegistry_DeleteSchemaRegistry_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -415,7 +415,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedSchemaRegistry_DeleteSubject_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -461,7 +461,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedSchemaRegistry_DeleteVersion_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -507,7 +507,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedSchemaRegistry_GetContext_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -553,7 +553,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedSchemaRegistry_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -599,7 +599,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedSchemaRegistry_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -645,7 +645,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedSchemaRegistry_GetRawSchema_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -691,7 +691,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedSchemaRegistry_GetRawSchemaVersion_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -737,7 +737,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedSchemaRegistry_GetSchema_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -783,7 +783,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedSchemaRegistry_GetSchemaConfig_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -829,7 +829,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedSchemaRegistry_GetSchemaMode_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -875,7 +875,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedSchemaRegistry_GetSchemaRegistry_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -921,7 +921,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedSchemaRegistry_GetVersion_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -967,7 +967,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedSchemaRegistry_ListContexts_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1013,7 +1013,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedSchemaRegistry_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1059,7 +1059,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedSchemaRegistry_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1105,7 +1105,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedSchemaRegistry_ListReferencedSchemas_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1151,7 +1151,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedSchemaRegistry_ListSchemaRegistries_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1197,7 +1197,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedSchemaRegistry_ListSchemaTypes_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1243,7 +1243,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedSchemaRegistry_ListSchemaVersions_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1289,7 +1289,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedSchemaRegistry_ListSubjects_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1335,7 +1335,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedSchemaRegistry_ListSubjectsBySchemaId_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1381,7 +1381,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedSchemaRegistry_ListVersions_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1427,7 +1427,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedSchemaRegistry_LookupVersion_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1473,7 +1473,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedSchemaRegistry_UpdateSchemaConfig_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1519,7 +1519,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedSchemaRegistry_UpdateSchemaMode_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }

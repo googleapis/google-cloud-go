@@ -16,6 +16,8 @@
 
 // [START vmwareengine_v1_generated_VmwareEngine_DeleteLoggingServer_sync]
 
+//go:build examples
+
 package main
 
 import (

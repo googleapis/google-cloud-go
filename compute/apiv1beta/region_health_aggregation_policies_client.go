@@ -133,7 +133,7 @@ type RegionHealthAggregationPoliciesClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *RegionHealthAggregationPoliciesClient) Close() error {
 	return c.internalClient.Close()
@@ -303,7 +303,7 @@ func (c *regionHealthAggregationPoliciesRESTClient) setGoogleClientInfo(keyval .
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *regionHealthAggregationPoliciesRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.

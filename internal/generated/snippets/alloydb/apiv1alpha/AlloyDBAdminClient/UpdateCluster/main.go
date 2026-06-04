@@ -16,6 +16,8 @@
 
 // [START alloydb_v1alpha_generated_AlloyDBAdmin_UpdateCluster_sync]
 
+//go:build examples
+
 package main
 
 import (

@@ -16,6 +16,8 @@
 
 // [START cloudtasks_v2beta3_generated_CloudTasks_PurgeQueue_sync]
 
+//go:build examples
+
 package main
 
 import (

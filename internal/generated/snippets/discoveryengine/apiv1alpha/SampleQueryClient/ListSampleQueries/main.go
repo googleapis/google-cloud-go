@@ -16,6 +16,8 @@
 
 // [START discoveryengine_v1alpha_generated_SampleQueryService_ListSampleQueries_sync]
 
+//go:build examples
+
 package main
 
 import (

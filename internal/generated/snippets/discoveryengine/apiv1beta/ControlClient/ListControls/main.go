@@ -16,6 +16,8 @@
 
 // [START discoveryengine_v1beta_generated_ControlService_ListControls_sync]
 
+//go:build examples
+
 package main
 
 import (

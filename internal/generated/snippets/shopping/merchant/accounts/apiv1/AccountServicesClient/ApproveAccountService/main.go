@@ -16,6 +16,8 @@
 
 // [START merchantapi_v1_generated_AccountServicesService_ApproveAccountService_sync]
 
+//go:build examples
+
 package main
 
 import (

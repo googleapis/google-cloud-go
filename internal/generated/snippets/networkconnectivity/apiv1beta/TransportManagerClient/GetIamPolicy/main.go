@@ -16,6 +16,8 @@
 
 // [START networkconnectivity_v1beta_generated_TransportManager_GetIamPolicy_sync]
 
+//go:build examples
+
 package main
 
 import (

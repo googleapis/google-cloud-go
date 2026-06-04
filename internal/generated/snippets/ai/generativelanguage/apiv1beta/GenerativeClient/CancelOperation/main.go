@@ -16,6 +16,8 @@
 
 // [START generativelanguage_v1beta_generated_GenerativeService_CancelOperation_sync]
 
+//go:build examples
+
 package main
 
 import (

@@ -16,6 +16,8 @@
 
 // [START cloudresourcemanager_v3_generated_TagValues_GetNamespacedTagValue_sync]
 
+//go:build examples
+
 package main
 
 import (

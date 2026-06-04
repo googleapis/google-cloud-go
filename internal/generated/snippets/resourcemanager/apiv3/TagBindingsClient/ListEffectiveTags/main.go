@@ -16,6 +16,8 @@
 
 // [START cloudresourcemanager_v3_generated_TagBindings_ListEffectiveTags_sync]
 
+//go:build examples
+
 package main
 
 import (
