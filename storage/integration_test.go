@@ -2972,20 +2972,26 @@ func TestIntegration_ObjectCompose_DeleteSourceObjects(t *testing.T) {
 		for _, tc := range testCases {
 			t.Run(tc.desc, func(t *testing.T) {
 				src1 := b.Object("delSrc1" + uidSpaceObjects.New())
-				src2 := b.Object("delSrc2" + uidSpaceObjects.New())
-
 				c1 := randomContents()
-				c2 := randomContents()
 				if err := writeObject(ctx, src1, "text/plain", c1); err != nil {
 					t.Fatalf("Write for %v failed with %v", src1, err)
 				}
+				defer func() {
+					cleanupCtx, cancel := context.WithTimeout(context.WithoutCancel(ctx), 10*time.Second)
+					defer cancel()
+					src1.Delete(cleanupCtx)
+				}()
+
+				src2 := b.Object("delSrc2" + uidSpaceObjects.New())
+				c2 := randomContents()
 				if err := writeObject(ctx, src2, "text/plain", c2); err != nil {
 					t.Fatalf("Write for %v failed with %v", src2, err)
 				}
-				if !tc.wantSourcesDeleted {
-					defer src1.Delete(ctx)
-					defer src2.Delete(ctx)
-				}
+				defer func() {
+					cleanupCtx, cancel := context.WithTimeout(context.WithoutCancel(ctx), 10*time.Second)
+					defer cancel()
+					src2.Delete(cleanupCtx)
+				}()
 
 				compDst := b.Object("composedDel" + uidSpaceObjects.New())
 				c := compDst.ComposerFrom(src1, src2)
@@ -3005,7 +3011,6 @@ func TestIntegration_ObjectCompose_DeleteSourceObjects(t *testing.T) {
 				if tc.wantSourcesDeleted {
 					if err1 == nil {
 						t.Errorf("src1 still exists, expected it to be deleted")
-						src1.Delete(ctx)
 					}
 				} else {
 					if err1 != nil {
@@ -3017,7 +3022,6 @@ func TestIntegration_ObjectCompose_DeleteSourceObjects(t *testing.T) {
 				if tc.wantSourcesDeleted {
 					if err2 == nil {
 						t.Errorf("src2 still exists, expected it to be deleted")
-						src2.Delete(ctx)
 					}
 				} else {
 					if err2 != nil {
