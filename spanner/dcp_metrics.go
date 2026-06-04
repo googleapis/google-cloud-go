@@ -106,7 +106,7 @@ func newDCPMetrics(p *dynamicChannelPool, mp metric.MeterProvider) *dcpMetrics {
 	)
 	if err != nil {
 		logf(p.sc.logger, "spanner_dcp: failed to register OpenTelemetry metric callback: %v", err)
-		return m
+		return nil
 	}
 	m.registration = reg
 	return m
