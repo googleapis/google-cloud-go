@@ -1,0 +1,521 @@
+{
+  "clientLibrary": {
+    "apis": [
+      {
+        "id": "google.cloud.policysimulator.v1",
+        "version": "v1"
+      }
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/policysimulator/apiv1",
+    "version": "1.0.0"
+  },
+  "snippets": [
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.policysimulator.v1.OrgPolicyViolationsPreviewClient",
+          "shortName": "OrgPolicyViolationsPreviewClient"
+        },
+        "fullName": "google.cloud.policysimulator.v1.OrgPolicyViolationsPreviewClient.CreateOrgPolicyViolationsPreview",
+        "method": {
+          "fullName": "google.cloud.policysimulator.v1.OrgPolicyViolationsPreviewService.CreateOrgPolicyViolationsPreview",
+          "service": {
+            "fullName": "google.cloud.policysimulator.v1.OrgPolicyViolationsPreviewService",
+            "shortName": "OrgPolicyViolationsPreviewService"
+          },
+          "shortName": "CreateOrgPolicyViolationsPreview"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "policysimulatorpb.CreateOrgPolicyViolationsPreviewRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "CreateOrgPolicyViolationsPreviewOperation",
+        "shortName": "CreateOrgPolicyViolationsPreview"
+      },
+      "description": "CreateOrgPolicyViolationsPreview createOrgPolicyViolationsPreview creates an\n[OrgPolicyViolationsPreview][google.cloud.policysimulator.v1.OrgPolicyViolationsPreview]\nfor the proposed changes in the provided\n[OrgPolicyViolationsPreview.OrgPolicyOverlay][]. The changes to OrgPolicy\nare specified by this `OrgPolicyOverlay`. The resources to scan are\ninferred from these specified changes.",
+      "file": "OrgPolicyViolationsPreviewClient/CreateOrgPolicyViolationsPreview/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "policysimulator_v1_generated_OrgPolicyViolationsPreviewService_CreateOrgPolicyViolationsPreview_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "policysimulator CreateOrgPolicyViolationsPreview Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.policysimulator.v1.OrgPolicyViolationsPreviewClient",
+          "shortName": "OrgPolicyViolationsPreviewClient"
+        },
+        "fullName": "google.cloud.policysimulator.v1.OrgPolicyViolationsPreviewClient.GetOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "GetOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.GetOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "shortName": "GetOperation"
+      },
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "OrgPolicyViolationsPreviewClient/GetOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "policysimulator_v1_generated_OrgPolicyViolationsPreviewService_GetOperation_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "policysimulator GetOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.policysimulator.v1.OrgPolicyViolationsPreviewClient",
+          "shortName": "OrgPolicyViolationsPreviewClient"
+        },
+        "fullName": "google.cloud.policysimulator.v1.OrgPolicyViolationsPreviewClient.GetOrgPolicyViolationsPreview",
+        "method": {
+          "fullName": "google.cloud.policysimulator.v1.OrgPolicyViolationsPreviewService.GetOrgPolicyViolationsPreview",
+          "service": {
+            "fullName": "google.cloud.policysimulator.v1.OrgPolicyViolationsPreviewService",
+            "shortName": "OrgPolicyViolationsPreviewService"
+          },
+          "shortName": "GetOrgPolicyViolationsPreview"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "policysimulatorpb.GetOrgPolicyViolationsPreviewRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*policysimulatorpb.OrgPolicyViolationsPreview",
+        "shortName": "GetOrgPolicyViolationsPreview"
+      },
+      "description": "GetOrgPolicyViolationsPreview getOrgPolicyViolationsPreview gets the specified\n[OrgPolicyViolationsPreview][google.cloud.policysimulator.v1.OrgPolicyViolationsPreview].\nEach\n[OrgPolicyViolationsPreview][google.cloud.policysimulator.v1.OrgPolicyViolationsPreview]\nis available for at least 7 days.",
+      "file": "OrgPolicyViolationsPreviewClient/GetOrgPolicyViolationsPreview/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "policysimulator_v1_generated_OrgPolicyViolationsPreviewService_GetOrgPolicyViolationsPreview_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "policysimulator GetOrgPolicyViolationsPreview Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.policysimulator.v1.OrgPolicyViolationsPreviewClient",
+          "shortName": "OrgPolicyViolationsPreviewClient"
+        },
+        "fullName": "google.cloud.policysimulator.v1.OrgPolicyViolationsPreviewClient.ListOperations",
+        "method": {
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "ListOperations"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.ListOperationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "shortName": "ListOperations"
+      },
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "OrgPolicyViolationsPreviewClient/ListOperations/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "policysimulator_v1_generated_OrgPolicyViolationsPreviewService_ListOperations_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "policysimulator ListOperations Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.policysimulator.v1.OrgPolicyViolationsPreviewClient",
+          "shortName": "OrgPolicyViolationsPreviewClient"
+        },
+        "fullName": "google.cloud.policysimulator.v1.OrgPolicyViolationsPreviewClient.ListOrgPolicyViolations",
+        "method": {
+          "fullName": "google.cloud.policysimulator.v1.OrgPolicyViolationsPreviewService.ListOrgPolicyViolations",
+          "service": {
+            "fullName": "google.cloud.policysimulator.v1.OrgPolicyViolationsPreviewService",
+            "shortName": "OrgPolicyViolationsPreviewService"
+          },
+          "shortName": "ListOrgPolicyViolations"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "policysimulatorpb.ListOrgPolicyViolationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "OrgPolicyViolationIterator",
+        "shortName": "ListOrgPolicyViolations"
+      },
+      "description": "ListOrgPolicyViolations listOrgPolicyViolations lists the [OrgPolicyViolations][] that are present\nin an\n[OrgPolicyViolationsPreview][google.cloud.policysimulator.v1.OrgPolicyViolationsPreview].",
+      "file": "OrgPolicyViolationsPreviewClient/ListOrgPolicyViolations/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "policysimulator_v1_generated_OrgPolicyViolationsPreviewService_ListOrgPolicyViolations_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "policysimulator ListOrgPolicyViolations Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.policysimulator.v1.OrgPolicyViolationsPreviewClient",
+          "shortName": "OrgPolicyViolationsPreviewClient"
+        },
+        "fullName": "google.cloud.policysimulator.v1.OrgPolicyViolationsPreviewClient.ListOrgPolicyViolationsPreviews",
+        "method": {
+          "fullName": "google.cloud.policysimulator.v1.OrgPolicyViolationsPreviewService.ListOrgPolicyViolationsPreviews",
+          "service": {
+            "fullName": "google.cloud.policysimulator.v1.OrgPolicyViolationsPreviewService",
+            "shortName": "OrgPolicyViolationsPreviewService"
+          },
+          "shortName": "ListOrgPolicyViolationsPreviews"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "policysimulatorpb.ListOrgPolicyViolationsPreviewsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "OrgPolicyViolationsPreviewIterator",
+        "shortName": "ListOrgPolicyViolationsPreviews"
+      },
+      "description": "ListOrgPolicyViolationsPreviews listOrgPolicyViolationsPreviews lists each\n[OrgPolicyViolationsPreview][google.cloud.policysimulator.v1.OrgPolicyViolationsPreview]\nin an organization. Each\n[OrgPolicyViolationsPreview][google.cloud.policysimulator.v1.OrgPolicyViolationsPreview]\nis available for at least 7 days.",
+      "file": "OrgPolicyViolationsPreviewClient/ListOrgPolicyViolationsPreviews/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "policysimulator_v1_generated_OrgPolicyViolationsPreviewService_ListOrgPolicyViolationsPreviews_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "policysimulator ListOrgPolicyViolationsPreviews Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.policysimulator.v1.SimulatorClient",
+          "shortName": "SimulatorClient"
+        },
+        "fullName": "google.cloud.policysimulator.v1.SimulatorClient.CreateReplay",
+        "method": {
+          "fullName": "google.cloud.policysimulator.v1.Simulator.CreateReplay",
+          "service": {
+            "fullName": "google.cloud.policysimulator.v1.Simulator",
+            "shortName": "Simulator"
+          },
+          "shortName": "CreateReplay"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "policysimulatorpb.CreateReplayRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "CreateReplayOperation",
+        "shortName": "CreateReplay"
+      },
+      "description": "CreateReplay creates and starts a [Replay][google.cloud.policysimulator.v1.Replay] using\nthe given [ReplayConfig][google.cloud.policysimulator.v1.ReplayConfig].",
+      "file": "SimulatorClient/CreateReplay/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "policysimulator_v1_generated_Simulator_CreateReplay_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "policysimulator CreateReplay Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.policysimulator.v1.SimulatorClient",
+          "shortName": "SimulatorClient"
+        },
+        "fullName": "google.cloud.policysimulator.v1.SimulatorClient.GetOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "GetOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.GetOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "shortName": "GetOperation"
+      },
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "SimulatorClient/GetOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "policysimulator_v1_generated_Simulator_GetOperation_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "policysimulator GetOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.policysimulator.v1.SimulatorClient",
+          "shortName": "SimulatorClient"
+        },
+        "fullName": "google.cloud.policysimulator.v1.SimulatorClient.GetReplay",
+        "method": {
+          "fullName": "google.cloud.policysimulator.v1.Simulator.GetReplay",
+          "service": {
+            "fullName": "google.cloud.policysimulator.v1.Simulator",
+            "shortName": "Simulator"
+          },
+          "shortName": "GetReplay"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "policysimulatorpb.GetReplayRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*policysimulatorpb.Replay",
+        "shortName": "GetReplay"
+      },
+      "description": "GetReplay gets the specified [Replay][google.cloud.policysimulator.v1.Replay]. Each\n`Replay` is available for at least 7 days.",
+      "file": "SimulatorClient/GetReplay/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "policysimulator_v1_generated_Simulator_GetReplay_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "policysimulator GetReplay Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.policysimulator.v1.SimulatorClient",
+          "shortName": "SimulatorClient"
+        },
+        "fullName": "google.cloud.policysimulator.v1.SimulatorClient.ListOperations",
+        "method": {
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "ListOperations"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.ListOperationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "shortName": "ListOperations"
+      },
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "SimulatorClient/ListOperations/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "policysimulator_v1_generated_Simulator_ListOperations_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "policysimulator ListOperations Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.policysimulator.v1.SimulatorClient",
+          "shortName": "SimulatorClient"
+        },
+        "fullName": "google.cloud.policysimulator.v1.SimulatorClient.ListReplayResults",
+        "method": {
+          "fullName": "google.cloud.policysimulator.v1.Simulator.ListReplayResults",
+          "service": {
+            "fullName": "google.cloud.policysimulator.v1.Simulator",
+            "shortName": "Simulator"
+          },
+          "shortName": "ListReplayResults"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "policysimulatorpb.ListReplayResultsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "ReplayResultIterator",
+        "shortName": "ListReplayResults"
+      },
+      "description": "ListReplayResults lists the results of running a\n[Replay][google.cloud.policysimulator.v1.Replay].",
+      "file": "SimulatorClient/ListReplayResults/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "policysimulator_v1_generated_Simulator_ListReplayResults_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "policysimulator ListReplayResults Sample"
+    }
+  ]
+}

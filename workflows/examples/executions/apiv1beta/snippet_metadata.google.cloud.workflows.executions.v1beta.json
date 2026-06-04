@@ -1,0 +1,199 @@
+{
+  "clientLibrary": {
+    "apis": [
+      {
+        "id": "google.cloud.workflows.executions.v1beta",
+        "version": "v1beta"
+      }
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/workflows/executions/apiv1beta",
+    "version": "1.19.0"
+  },
+  "snippets": [
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.workflows.executions.v1beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.workflows.executions.v1beta.Client.CancelExecution",
+        "method": {
+          "fullName": "google.cloud.workflows.executions.v1beta.Executions.CancelExecution",
+          "service": {
+            "fullName": "google.cloud.workflows.executions.v1beta.Executions",
+            "shortName": "Executions"
+          },
+          "shortName": "CancelExecution"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "executionspb.CancelExecutionRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*executionspb.Execution",
+        "shortName": "CancelExecution"
+      },
+      "description": "CancelExecution cancels an execution of the given name.",
+      "file": "Client/CancelExecution/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "workflowexecutions_v1beta_generated_Executions_CancelExecution_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "workflowexecutions CancelExecution Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.workflows.executions.v1beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.workflows.executions.v1beta.Client.CreateExecution",
+        "method": {
+          "fullName": "google.cloud.workflows.executions.v1beta.Executions.CreateExecution",
+          "service": {
+            "fullName": "google.cloud.workflows.executions.v1beta.Executions",
+            "shortName": "Executions"
+          },
+          "shortName": "CreateExecution"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "executionspb.CreateExecutionRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*executionspb.Execution",
+        "shortName": "CreateExecution"
+      },
+      "description": "CreateExecution creates a new execution using the latest revision of the given workflow.",
+      "file": "Client/CreateExecution/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "workflowexecutions_v1beta_generated_Executions_CreateExecution_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "workflowexecutions CreateExecution Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.workflows.executions.v1beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.workflows.executions.v1beta.Client.GetExecution",
+        "method": {
+          "fullName": "google.cloud.workflows.executions.v1beta.Executions.GetExecution",
+          "service": {
+            "fullName": "google.cloud.workflows.executions.v1beta.Executions",
+            "shortName": "Executions"
+          },
+          "shortName": "GetExecution"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "executionspb.GetExecutionRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*executionspb.Execution",
+        "shortName": "GetExecution"
+      },
+      "description": "GetExecution returns an execution of the given name.",
+      "file": "Client/GetExecution/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "workflowexecutions_v1beta_generated_Executions_GetExecution_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "workflowexecutions GetExecution Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.workflows.executions.v1beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.workflows.executions.v1beta.Client.ListExecutions",
+        "method": {
+          "fullName": "google.cloud.workflows.executions.v1beta.Executions.ListExecutions",
+          "service": {
+            "fullName": "google.cloud.workflows.executions.v1beta.Executions",
+            "shortName": "Executions"
+          },
+          "shortName": "ListExecutions"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "executionspb.ListExecutionsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "ExecutionIterator",
+        "shortName": "ListExecutions"
+      },
+      "description": "ListExecutions returns a list of executions which belong to the workflow with\nthe given name. The method returns executions of all workflow\nrevisions. Returned executions are ordered by their start time (newest\nfirst).",
+      "file": "Client/ListExecutions/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "workflowexecutions_v1beta_generated_Executions_ListExecutions_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "workflowexecutions ListExecutions Sample"
+    }
+  ]
+}

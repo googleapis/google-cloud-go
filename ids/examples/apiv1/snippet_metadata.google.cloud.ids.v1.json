@@ -1,0 +1,199 @@
+{
+  "clientLibrary": {
+    "apis": [
+      {
+        "id": "google.cloud.ids.v1",
+        "version": "v1"
+      }
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/ids/apiv1",
+    "version": "1.10.0"
+  },
+  "snippets": [
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.ids.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.ids.v1.Client.CreateEndpoint",
+        "method": {
+          "fullName": "google.cloud.ids.v1.IDS.CreateEndpoint",
+          "service": {
+            "fullName": "google.cloud.ids.v1.IDS",
+            "shortName": "IDS"
+          },
+          "shortName": "CreateEndpoint"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "idspb.CreateEndpointRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "CreateEndpointOperation",
+        "shortName": "CreateEndpoint"
+      },
+      "description": "CreateEndpoint creates a new Endpoint in a given project and location.",
+      "file": "Client/CreateEndpoint/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "ids_v1_generated_IDS_CreateEndpoint_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "ids CreateEndpoint Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.ids.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.ids.v1.Client.DeleteEndpoint",
+        "method": {
+          "fullName": "google.cloud.ids.v1.IDS.DeleteEndpoint",
+          "service": {
+            "fullName": "google.cloud.ids.v1.IDS",
+            "shortName": "IDS"
+          },
+          "shortName": "DeleteEndpoint"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "idspb.DeleteEndpointRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "DeleteEndpointOperation",
+        "shortName": "DeleteEndpoint"
+      },
+      "description": "DeleteEndpoint deletes a single Endpoint.",
+      "file": "Client/DeleteEndpoint/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "ids_v1_generated_IDS_DeleteEndpoint_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "ids DeleteEndpoint Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.ids.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.ids.v1.Client.GetEndpoint",
+        "method": {
+          "fullName": "google.cloud.ids.v1.IDS.GetEndpoint",
+          "service": {
+            "fullName": "google.cloud.ids.v1.IDS",
+            "shortName": "IDS"
+          },
+          "shortName": "GetEndpoint"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "idspb.GetEndpointRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*idspb.Endpoint",
+        "shortName": "GetEndpoint"
+      },
+      "description": "GetEndpoint gets details of a single Endpoint.",
+      "file": "Client/GetEndpoint/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "ids_v1_generated_IDS_GetEndpoint_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "ids GetEndpoint Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.ids.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.ids.v1.Client.ListEndpoints",
+        "method": {
+          "fullName": "google.cloud.ids.v1.IDS.ListEndpoints",
+          "service": {
+            "fullName": "google.cloud.ids.v1.IDS",
+            "shortName": "IDS"
+          },
+          "shortName": "ListEndpoints"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "idspb.ListEndpointsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "EndpointIterator",
+        "shortName": "ListEndpoints"
+      },
+      "description": "ListEndpoints lists Endpoints in a given project and location.",
+      "file": "Client/ListEndpoints/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "ids_v1_generated_IDS_ListEndpoints_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "ids ListEndpoints Sample"
+    }
+  ]
+}

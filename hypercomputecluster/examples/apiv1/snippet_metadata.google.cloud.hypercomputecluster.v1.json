@@ -1,0 +1,519 @@
+{
+  "clientLibrary": {
+    "apis": [
+      {
+        "id": "google.cloud.hypercomputecluster.v1",
+        "version": "v1"
+      }
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/hypercomputecluster/apiv1",
+    "version": "1.0.0"
+  },
+  "snippets": [
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.hypercomputecluster.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.hypercomputecluster.v1.Client.CancelOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "CancelOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.CancelOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "CancelOperation"
+      },
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/CancelOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "hypercomputecluster_v1_generated_HypercomputeCluster_CancelOperation_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "hypercomputecluster CancelOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.hypercomputecluster.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.hypercomputecluster.v1.Client.CreateCluster",
+        "method": {
+          "fullName": "google.cloud.hypercomputecluster.v1.HypercomputeCluster.CreateCluster",
+          "service": {
+            "fullName": "google.cloud.hypercomputecluster.v1.HypercomputeCluster",
+            "shortName": "HypercomputeCluster"
+          },
+          "shortName": "CreateCluster"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "hypercomputeclusterpb.CreateClusterRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "CreateClusterOperation",
+        "shortName": "CreateCluster"
+      },
+      "description": "CreateCluster creates a new Cluster in a given project and location.",
+      "file": "Client/CreateCluster/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "hypercomputecluster_v1_generated_HypercomputeCluster_CreateCluster_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "hypercomputecluster CreateCluster Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.hypercomputecluster.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.hypercomputecluster.v1.Client.DeleteCluster",
+        "method": {
+          "fullName": "google.cloud.hypercomputecluster.v1.HypercomputeCluster.DeleteCluster",
+          "service": {
+            "fullName": "google.cloud.hypercomputecluster.v1.HypercomputeCluster",
+            "shortName": "HypercomputeCluster"
+          },
+          "shortName": "DeleteCluster"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "hypercomputeclusterpb.DeleteClusterRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "DeleteClusterOperation",
+        "shortName": "DeleteCluster"
+      },
+      "description": "DeleteCluster deletes a single Cluster.",
+      "file": "Client/DeleteCluster/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "hypercomputecluster_v1_generated_HypercomputeCluster_DeleteCluster_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "hypercomputecluster DeleteCluster Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.hypercomputecluster.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.hypercomputecluster.v1.Client.DeleteOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "DeleteOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.DeleteOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteOperation"
+      },
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/DeleteOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "hypercomputecluster_v1_generated_HypercomputeCluster_DeleteOperation_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "hypercomputecluster DeleteOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.hypercomputecluster.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.hypercomputecluster.v1.Client.GetCluster",
+        "method": {
+          "fullName": "google.cloud.hypercomputecluster.v1.HypercomputeCluster.GetCluster",
+          "service": {
+            "fullName": "google.cloud.hypercomputecluster.v1.HypercomputeCluster",
+            "shortName": "HypercomputeCluster"
+          },
+          "shortName": "GetCluster"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "hypercomputeclusterpb.GetClusterRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*hypercomputeclusterpb.Cluster",
+        "shortName": "GetCluster"
+      },
+      "description": "GetCluster gets details of a single Cluster.",
+      "file": "Client/GetCluster/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "hypercomputecluster_v1_generated_HypercomputeCluster_GetCluster_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "hypercomputecluster GetCluster Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.hypercomputecluster.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.hypercomputecluster.v1.Client.GetLocation",
+        "method": {
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "GetLocation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "locationpb.GetLocationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "shortName": "GetLocation"
+      },
+      "description": "GetLocation gets information about a location.",
+      "file": "Client/GetLocation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "hypercomputecluster_v1_generated_HypercomputeCluster_GetLocation_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "hypercomputecluster GetLocation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.hypercomputecluster.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.hypercomputecluster.v1.Client.GetOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "GetOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.GetOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "shortName": "GetOperation"
+      },
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/GetOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "hypercomputecluster_v1_generated_HypercomputeCluster_GetOperation_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "hypercomputecluster GetOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.hypercomputecluster.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.hypercomputecluster.v1.Client.ListClusters",
+        "method": {
+          "fullName": "google.cloud.hypercomputecluster.v1.HypercomputeCluster.ListClusters",
+          "service": {
+            "fullName": "google.cloud.hypercomputecluster.v1.HypercomputeCluster",
+            "shortName": "HypercomputeCluster"
+          },
+          "shortName": "ListClusters"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "hypercomputeclusterpb.ListClustersRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "ClusterIterator",
+        "shortName": "ListClusters"
+      },
+      "description": "ListClusters lists Clusters in a given project and location.",
+      "file": "Client/ListClusters/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "hypercomputecluster_v1_generated_HypercomputeCluster_ListClusters_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "hypercomputecluster ListClusters Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.hypercomputecluster.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.hypercomputecluster.v1.Client.ListLocations",
+        "method": {
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "ListLocations"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "locationpb.ListLocationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "shortName": "ListLocations"
+      },
+      "description": "ListLocations lists information about the supported locations for this service.\nThis method can be called in two ways: \n\n*   **List all public locations: ** Use the path `GET /v1/locations`.\n*   **List project-visible locations: ** Use the path\n`GET /v1/projects/{project_id}/locations`. This may include public\nlocations as well as private or other locations specifically visible\nto the project.",
+      "file": "Client/ListLocations/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "hypercomputecluster_v1_generated_HypercomputeCluster_ListLocations_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "hypercomputecluster ListLocations Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.hypercomputecluster.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.hypercomputecluster.v1.Client.ListOperations",
+        "method": {
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "ListOperations"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.ListOperationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "shortName": "ListOperations"
+      },
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "Client/ListOperations/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "hypercomputecluster_v1_generated_HypercomputeCluster_ListOperations_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "hypercomputecluster ListOperations Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.hypercomputecluster.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.hypercomputecluster.v1.Client.UpdateCluster",
+        "method": {
+          "fullName": "google.cloud.hypercomputecluster.v1.HypercomputeCluster.UpdateCluster",
+          "service": {
+            "fullName": "google.cloud.hypercomputecluster.v1.HypercomputeCluster",
+            "shortName": "HypercomputeCluster"
+          },
+          "shortName": "UpdateCluster"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "hypercomputeclusterpb.UpdateClusterRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "UpdateClusterOperation",
+        "shortName": "UpdateCluster"
+      },
+      "description": "UpdateCluster updates the parameters of a single Cluster.",
+      "file": "Client/UpdateCluster/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "hypercomputecluster_v1_generated_HypercomputeCluster_UpdateCluster_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "hypercomputecluster UpdateCluster Sample"
+    }
+  ]
+}

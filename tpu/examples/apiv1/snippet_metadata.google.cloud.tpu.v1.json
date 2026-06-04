@@ -1,0 +1,795 @@
+{
+  "clientLibrary": {
+    "apis": [
+      {
+        "id": "google.cloud.tpu.v1",
+        "version": "v1"
+      }
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/tpu/apiv1",
+    "version": "1.13.0"
+  },
+  "snippets": [
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.tpu.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.tpu.v1.Client.CancelOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "CancelOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.CancelOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "CancelOperation"
+      },
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/CancelOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "tpu_v1_generated_Tpu_CancelOperation_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "tpu CancelOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.tpu.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.tpu.v1.Client.CreateNode",
+        "method": {
+          "fullName": "google.cloud.tpu.v1.Tpu.CreateNode",
+          "service": {
+            "fullName": "google.cloud.tpu.v1.Tpu",
+            "shortName": "Tpu"
+          },
+          "shortName": "CreateNode"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "tpupb.CreateNodeRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "CreateNodeOperation",
+        "shortName": "CreateNode"
+      },
+      "description": "CreateNode creates a node.",
+      "file": "Client/CreateNode/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "tpu_v1_generated_Tpu_CreateNode_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "tpu CreateNode Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.tpu.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.tpu.v1.Client.DeleteNode",
+        "method": {
+          "fullName": "google.cloud.tpu.v1.Tpu.DeleteNode",
+          "service": {
+            "fullName": "google.cloud.tpu.v1.Tpu",
+            "shortName": "Tpu"
+          },
+          "shortName": "DeleteNode"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "tpupb.DeleteNodeRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "DeleteNodeOperation",
+        "shortName": "DeleteNode"
+      },
+      "description": "DeleteNode deletes a node.",
+      "file": "Client/DeleteNode/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "tpu_v1_generated_Tpu_DeleteNode_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "tpu DeleteNode Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.tpu.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.tpu.v1.Client.DeleteOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "DeleteOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.DeleteOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteOperation"
+      },
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/DeleteOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "tpu_v1_generated_Tpu_DeleteOperation_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "tpu DeleteOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.tpu.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.tpu.v1.Client.GetAcceleratorType",
+        "method": {
+          "fullName": "google.cloud.tpu.v1.Tpu.GetAcceleratorType",
+          "service": {
+            "fullName": "google.cloud.tpu.v1.Tpu",
+            "shortName": "Tpu"
+          },
+          "shortName": "GetAcceleratorType"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "tpupb.GetAcceleratorTypeRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*tpupb.AcceleratorType",
+        "shortName": "GetAcceleratorType"
+      },
+      "description": "GetAcceleratorType gets AcceleratorType.",
+      "file": "Client/GetAcceleratorType/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "tpu_v1_generated_Tpu_GetAcceleratorType_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "tpu GetAcceleratorType Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.tpu.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.tpu.v1.Client.GetLocation",
+        "method": {
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "GetLocation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "locationpb.GetLocationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "shortName": "GetLocation"
+      },
+      "description": "GetLocation gets information about a location.",
+      "file": "Client/GetLocation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "tpu_v1_generated_Tpu_GetLocation_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "tpu GetLocation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.tpu.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.tpu.v1.Client.GetNode",
+        "method": {
+          "fullName": "google.cloud.tpu.v1.Tpu.GetNode",
+          "service": {
+            "fullName": "google.cloud.tpu.v1.Tpu",
+            "shortName": "Tpu"
+          },
+          "shortName": "GetNode"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "tpupb.GetNodeRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*tpupb.Node",
+        "shortName": "GetNode"
+      },
+      "description": "GetNode gets the details of a node.",
+      "file": "Client/GetNode/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "tpu_v1_generated_Tpu_GetNode_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "tpu GetNode Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.tpu.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.tpu.v1.Client.GetOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "GetOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.GetOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "shortName": "GetOperation"
+      },
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/GetOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "tpu_v1_generated_Tpu_GetOperation_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "tpu GetOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.tpu.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.tpu.v1.Client.GetTensorFlowVersion",
+        "method": {
+          "fullName": "google.cloud.tpu.v1.Tpu.GetTensorFlowVersion",
+          "service": {
+            "fullName": "google.cloud.tpu.v1.Tpu",
+            "shortName": "Tpu"
+          },
+          "shortName": "GetTensorFlowVersion"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "tpupb.GetTensorFlowVersionRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*tpupb.TensorFlowVersion",
+        "shortName": "GetTensorFlowVersion"
+      },
+      "description": "GetTensorFlowVersion gets TensorFlow Version.",
+      "file": "Client/GetTensorFlowVersion/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "tpu_v1_generated_Tpu_GetTensorFlowVersion_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "tpu GetTensorFlowVersion Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.tpu.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.tpu.v1.Client.ListAcceleratorTypes",
+        "method": {
+          "fullName": "google.cloud.tpu.v1.Tpu.ListAcceleratorTypes",
+          "service": {
+            "fullName": "google.cloud.tpu.v1.Tpu",
+            "shortName": "Tpu"
+          },
+          "shortName": "ListAcceleratorTypes"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "tpupb.ListAcceleratorTypesRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "AcceleratorTypeIterator",
+        "shortName": "ListAcceleratorTypes"
+      },
+      "description": "ListAcceleratorTypes lists accelerator types supported by this API.",
+      "file": "Client/ListAcceleratorTypes/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "tpu_v1_generated_Tpu_ListAcceleratorTypes_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "tpu ListAcceleratorTypes Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.tpu.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.tpu.v1.Client.ListLocations",
+        "method": {
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "ListLocations"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "locationpb.ListLocationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "shortName": "ListLocations"
+      },
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "Client/ListLocations/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "tpu_v1_generated_Tpu_ListLocations_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "tpu ListLocations Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.tpu.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.tpu.v1.Client.ListNodes",
+        "method": {
+          "fullName": "google.cloud.tpu.v1.Tpu.ListNodes",
+          "service": {
+            "fullName": "google.cloud.tpu.v1.Tpu",
+            "shortName": "Tpu"
+          },
+          "shortName": "ListNodes"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "tpupb.ListNodesRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "NodeIterator",
+        "shortName": "ListNodes"
+      },
+      "description": "ListNodes lists nodes.",
+      "file": "Client/ListNodes/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "tpu_v1_generated_Tpu_ListNodes_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "tpu ListNodes Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.tpu.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.tpu.v1.Client.ListOperations",
+        "method": {
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "ListOperations"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.ListOperationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "shortName": "ListOperations"
+      },
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "Client/ListOperations/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "tpu_v1_generated_Tpu_ListOperations_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "tpu ListOperations Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.tpu.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.tpu.v1.Client.ListTensorFlowVersions",
+        "method": {
+          "fullName": "google.cloud.tpu.v1.Tpu.ListTensorFlowVersions",
+          "service": {
+            "fullName": "google.cloud.tpu.v1.Tpu",
+            "shortName": "Tpu"
+          },
+          "shortName": "ListTensorFlowVersions"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "tpupb.ListTensorFlowVersionsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "TensorFlowVersionIterator",
+        "shortName": "ListTensorFlowVersions"
+      },
+      "description": "ListTensorFlowVersions list TensorFlow versions supported by this API.",
+      "file": "Client/ListTensorFlowVersions/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "tpu_v1_generated_Tpu_ListTensorFlowVersions_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "tpu ListTensorFlowVersions Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.tpu.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.tpu.v1.Client.ReimageNode",
+        "method": {
+          "fullName": "google.cloud.tpu.v1.Tpu.ReimageNode",
+          "service": {
+            "fullName": "google.cloud.tpu.v1.Tpu",
+            "shortName": "Tpu"
+          },
+          "shortName": "ReimageNode"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "tpupb.ReimageNodeRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "ReimageNodeOperation",
+        "shortName": "ReimageNode"
+      },
+      "description": "ReimageNode reimages a node's OS.",
+      "file": "Client/ReimageNode/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "tpu_v1_generated_Tpu_ReimageNode_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "tpu ReimageNode Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.tpu.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.tpu.v1.Client.StartNode",
+        "method": {
+          "fullName": "google.cloud.tpu.v1.Tpu.StartNode",
+          "service": {
+            "fullName": "google.cloud.tpu.v1.Tpu",
+            "shortName": "Tpu"
+          },
+          "shortName": "StartNode"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "tpupb.StartNodeRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "StartNodeOperation",
+        "shortName": "StartNode"
+      },
+      "description": "StartNode starts a node.",
+      "file": "Client/StartNode/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "tpu_v1_generated_Tpu_StartNode_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "tpu StartNode Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.tpu.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.tpu.v1.Client.StopNode",
+        "method": {
+          "fullName": "google.cloud.tpu.v1.Tpu.StopNode",
+          "service": {
+            "fullName": "google.cloud.tpu.v1.Tpu",
+            "shortName": "Tpu"
+          },
+          "shortName": "StopNode"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "tpupb.StopNodeRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "StopNodeOperation",
+        "shortName": "StopNode"
+      },
+      "description": "StopNode stops a node, this operation is only available with single TPU nodes.",
+      "file": "Client/StopNode/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "tpu_v1_generated_Tpu_StopNode_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "tpu StopNode Sample"
+    }
+  ]
+}

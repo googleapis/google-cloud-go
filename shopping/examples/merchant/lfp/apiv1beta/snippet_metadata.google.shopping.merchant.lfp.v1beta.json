@@ -1,0 +1,336 @@
+{
+  "clientLibrary": {
+    "apis": [
+      {
+        "id": "google.shopping.merchant.lfp.v1beta",
+        "version": "v1beta"
+      }
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/shopping/merchant/lfp/apiv1beta",
+    "version": "1.11.0"
+  },
+  "snippets": [
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.shopping.merchant.lfp.v1beta.LfpInventoryClient",
+          "shortName": "LfpInventoryClient"
+        },
+        "fullName": "google.shopping.merchant.lfp.v1beta.LfpInventoryClient.InsertLfpInventory",
+        "method": {
+          "fullName": "google.shopping.merchant.lfp.v1beta.LfpInventoryService.InsertLfpInventory",
+          "service": {
+            "fullName": "google.shopping.merchant.lfp.v1beta.LfpInventoryService",
+            "shortName": "LfpInventoryService"
+          },
+          "shortName": "InsertLfpInventory"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "lfppb.InsertLfpInventoryRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*lfppb.LfpInventory",
+        "shortName": "InsertLfpInventory"
+      },
+      "description": "InsertLfpInventory inserts a `LfpInventory` resource for the given target merchant account. If\nthe resource already exists, it will be replaced. The inventory\nautomatically expires after 30 days.",
+      "file": "LfpInventoryClient/InsertLfpInventory/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "merchantapi_v1beta_generated_LfpInventoryService_InsertLfpInventory_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "merchantapi InsertLfpInventory Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.shopping.merchant.lfp.v1beta.LfpMerchantStateClient",
+          "shortName": "LfpMerchantStateClient"
+        },
+        "fullName": "google.shopping.merchant.lfp.v1beta.LfpMerchantStateClient.GetLfpMerchantState",
+        "method": {
+          "fullName": "google.shopping.merchant.lfp.v1beta.LfpMerchantStateService.GetLfpMerchantState",
+          "service": {
+            "fullName": "google.shopping.merchant.lfp.v1beta.LfpMerchantStateService",
+            "shortName": "LfpMerchantStateService"
+          },
+          "shortName": "GetLfpMerchantState"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "lfppb.GetLfpMerchantStateRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*lfppb.LfpMerchantState",
+        "shortName": "GetLfpMerchantState"
+      },
+      "description": "GetLfpMerchantState gets the LFP state of a merchant",
+      "file": "LfpMerchantStateClient/GetLfpMerchantState/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "merchantapi_v1beta_generated_LfpMerchantStateService_GetLfpMerchantState_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "merchantapi GetLfpMerchantState Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.shopping.merchant.lfp.v1beta.LfpSaleClient",
+          "shortName": "LfpSaleClient"
+        },
+        "fullName": "google.shopping.merchant.lfp.v1beta.LfpSaleClient.InsertLfpSale",
+        "method": {
+          "fullName": "google.shopping.merchant.lfp.v1beta.LfpSaleService.InsertLfpSale",
+          "service": {
+            "fullName": "google.shopping.merchant.lfp.v1beta.LfpSaleService",
+            "shortName": "LfpSaleService"
+          },
+          "shortName": "InsertLfpSale"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "lfppb.InsertLfpSaleRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*lfppb.LfpSale",
+        "shortName": "InsertLfpSale"
+      },
+      "description": "InsertLfpSale inserts a `LfpSale` for the given merchant.",
+      "file": "LfpSaleClient/InsertLfpSale/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "merchantapi_v1beta_generated_LfpSaleService_InsertLfpSale_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "merchantapi InsertLfpSale Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.shopping.merchant.lfp.v1beta.LfpStoreClient",
+          "shortName": "LfpStoreClient"
+        },
+        "fullName": "google.shopping.merchant.lfp.v1beta.LfpStoreClient.DeleteLfpStore",
+        "method": {
+          "fullName": "google.shopping.merchant.lfp.v1beta.LfpStoreService.DeleteLfpStore",
+          "service": {
+            "fullName": "google.shopping.merchant.lfp.v1beta.LfpStoreService",
+            "shortName": "LfpStoreService"
+          },
+          "shortName": "DeleteLfpStore"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "lfppb.DeleteLfpStoreRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteLfpStore"
+      },
+      "description": "DeleteLfpStore deletes a store for a target merchant.",
+      "file": "LfpStoreClient/DeleteLfpStore/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "merchantapi_v1beta_generated_LfpStoreService_DeleteLfpStore_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "merchantapi DeleteLfpStore Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.shopping.merchant.lfp.v1beta.LfpStoreClient",
+          "shortName": "LfpStoreClient"
+        },
+        "fullName": "google.shopping.merchant.lfp.v1beta.LfpStoreClient.GetLfpStore",
+        "method": {
+          "fullName": "google.shopping.merchant.lfp.v1beta.LfpStoreService.GetLfpStore",
+          "service": {
+            "fullName": "google.shopping.merchant.lfp.v1beta.LfpStoreService",
+            "shortName": "LfpStoreService"
+          },
+          "shortName": "GetLfpStore"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "lfppb.GetLfpStoreRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*lfppb.LfpStore",
+        "shortName": "GetLfpStore"
+      },
+      "description": "GetLfpStore retrieves information about a store.",
+      "file": "LfpStoreClient/GetLfpStore/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "merchantapi_v1beta_generated_LfpStoreService_GetLfpStore_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "merchantapi GetLfpStore Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.shopping.merchant.lfp.v1beta.LfpStoreClient",
+          "shortName": "LfpStoreClient"
+        },
+        "fullName": "google.shopping.merchant.lfp.v1beta.LfpStoreClient.InsertLfpStore",
+        "method": {
+          "fullName": "google.shopping.merchant.lfp.v1beta.LfpStoreService.InsertLfpStore",
+          "service": {
+            "fullName": "google.shopping.merchant.lfp.v1beta.LfpStoreService",
+            "shortName": "LfpStoreService"
+          },
+          "shortName": "InsertLfpStore"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "lfppb.InsertLfpStoreRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*lfppb.LfpStore",
+        "shortName": "InsertLfpStore"
+      },
+      "description": "InsertLfpStore inserts a store for the target merchant. If the store with the same store\ncode already exists, it will be replaced.",
+      "file": "LfpStoreClient/InsertLfpStore/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "merchantapi_v1beta_generated_LfpStoreService_InsertLfpStore_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "merchantapi InsertLfpStore Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.shopping.merchant.lfp.v1beta.LfpStoreClient",
+          "shortName": "LfpStoreClient"
+        },
+        "fullName": "google.shopping.merchant.lfp.v1beta.LfpStoreClient.ListLfpStores",
+        "method": {
+          "fullName": "google.shopping.merchant.lfp.v1beta.LfpStoreService.ListLfpStores",
+          "service": {
+            "fullName": "google.shopping.merchant.lfp.v1beta.LfpStoreService",
+            "shortName": "LfpStoreService"
+          },
+          "shortName": "ListLfpStores"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "lfppb.ListLfpStoresRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "LfpStoreIterator",
+        "shortName": "ListLfpStores"
+      },
+      "description": "ListLfpStores lists the stores of the target merchant, specified by the filter in\n`ListLfpStoresRequest`.",
+      "file": "LfpStoreClient/ListLfpStores/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "merchantapi_v1beta_generated_LfpStoreService_ListLfpStores_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "merchantapi ListLfpStores Sample"
+    }
+  ]
+}
