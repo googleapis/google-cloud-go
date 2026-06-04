@@ -21,7 +21,7 @@ sources:
 tools:
   go:
     - name: github.com/googleapis/gapic-generator-go/cmd/protoc-gen-go_gapic
-      version: v0.59.0
+      version: v0.61.0
     - name: golang.org/x/tools/cmd/goimports
       version: v0.44.0
     - name: google.golang.org/grpc/cmd/protoc-gen-go-grpc
@@ -390,9 +390,10 @@ libraries:
           proto_only: true
       - path: google/bigtable/admin/v2
         go:
-          no_metadata: true
+          enabled_generator_features:
+            - F_selective_gapic_generation
+          import_path: bigtable/admin/apiv2
           no_snippets: true
-          proto_only: true
     keep:
       - README.md
     skip_release: true
