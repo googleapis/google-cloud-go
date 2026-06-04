@@ -16,6 +16,8 @@
 
 // [START networksecurity_v1beta1_generated_NetworkSecurity_GetClientTlsPolicy_sync]
 
+//go:build examples
+
 package main
 
 import (

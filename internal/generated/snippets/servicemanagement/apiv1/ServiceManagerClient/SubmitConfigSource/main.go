@@ -16,6 +16,8 @@
 
 // [START servicemanagement_v1_generated_ServiceManager_SubmitConfigSource_sync]
 
+//go:build examples
+
 package main
 
 import (

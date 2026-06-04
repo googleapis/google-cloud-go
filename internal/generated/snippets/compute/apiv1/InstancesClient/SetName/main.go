@@ -16,6 +16,8 @@
 
 // [START compute_v1_generated_Instances_SetName_sync]
 
+//go:build examples
+
 package main
 
 import (

@@ -128,7 +128,7 @@ type RegionTargetHttpsProxiesClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *RegionTargetHttpsProxiesClient) Close() error {
 	return c.internalClient.Close()
@@ -301,7 +301,7 @@ func (c *regionTargetHttpsProxiesRESTClient) setGoogleClientInfo(keyval ...strin
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *regionTargetHttpsProxiesRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.

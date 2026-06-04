@@ -16,6 +16,8 @@
 
 // [START datastore_v1_generated_DatastoreAdmin_CancelOperation_sync]
 
+//go:build examples
+
 package main
 
 import (

@@ -16,6 +16,8 @@
 
 // [START discoveryengine_v1_generated_SchemaService_DeleteSchema_sync]
 
+//go:build examples
+
 package main
 
 import (

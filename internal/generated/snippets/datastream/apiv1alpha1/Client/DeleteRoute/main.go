@@ -16,6 +16,8 @@
 
 // [START datastream_v1alpha1_generated_Datastream_DeleteRoute_sync]
 
+//go:build examples
+
 package main
 
 import (

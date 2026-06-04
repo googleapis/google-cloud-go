@@ -16,6 +16,8 @@
 
 // [START memcache_v1_generated_CloudMemcache_ListInstances_sync]
 
+//go:build examples
+
 package main
 
 import (

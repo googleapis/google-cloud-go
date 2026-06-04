@@ -16,6 +16,8 @@
 
 // [START chat_v1_generated_ChatService_GetSpaceNotificationSetting_sync]
 
+//go:build examples
+
 package main
 
 import (

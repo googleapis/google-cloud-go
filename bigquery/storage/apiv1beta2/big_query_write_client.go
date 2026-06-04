@@ -262,7 +262,7 @@ type BigQueryWriteClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *BigQueryWriteClient) Close() error {
 	return c.internalClient.Close()
@@ -468,7 +468,7 @@ func (c *bigQueryWriteGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *bigQueryWriteGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -574,7 +574,7 @@ func (c *bigQueryWriteRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *bigQueryWriteRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.

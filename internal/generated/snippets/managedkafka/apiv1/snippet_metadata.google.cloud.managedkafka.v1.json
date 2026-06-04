@@ -50,7 +50,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedKafka_AddAclEntry_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -95,7 +95,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedKafka_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -141,7 +141,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedKafka_CreateAcl_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -187,7 +187,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedKafka_CreateCluster_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -233,7 +233,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedKafka_CreateTopic_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -278,7 +278,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedKafka_DeleteAcl_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -324,7 +324,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedKafka_DeleteCluster_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -369,7 +369,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedKafka_DeleteConsumerGroup_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -414,7 +414,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedKafka_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -459,7 +459,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedKafka_DeleteTopic_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -505,7 +505,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedKafka_GetAcl_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -551,7 +551,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedKafka_GetCluster_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -597,7 +597,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedKafka_GetConsumerGroup_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -643,7 +643,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedKafka_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -689,7 +689,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedKafka_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -735,7 +735,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedKafka_GetTopic_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -781,7 +781,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedKafka_ListAcls_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -827,7 +827,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedKafka_ListClusters_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -873,7 +873,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedKafka_ListConsumerGroups_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -919,7 +919,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedKafka_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -965,7 +965,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedKafka_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1011,7 +1011,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedKafka_ListTopics_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1057,7 +1057,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedKafka_RemoveAclEntry_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1103,7 +1103,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedKafka_UpdateAcl_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1149,7 +1149,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedKafka_UpdateCluster_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1195,7 +1195,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedKafka_UpdateConsumerGroup_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1241,7 +1241,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedKafka_UpdateTopic_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1286,7 +1286,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedKafkaConnect_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -1332,7 +1332,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedKafkaConnect_CreateConnectCluster_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1378,7 +1378,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedKafkaConnect_CreateConnector_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1424,7 +1424,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedKafkaConnect_DeleteConnectCluster_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -1469,7 +1469,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedKafkaConnect_DeleteConnector_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -1514,7 +1514,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedKafkaConnect_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -1560,7 +1560,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedKafkaConnect_GetConnectCluster_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1606,7 +1606,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedKafkaConnect_GetConnector_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1652,7 +1652,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedKafkaConnect_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1698,7 +1698,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedKafkaConnect_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1744,7 +1744,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedKafkaConnect_ListConnectClusters_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1790,7 +1790,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedKafkaConnect_ListConnectors_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1836,7 +1836,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedKafkaConnect_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1882,7 +1882,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedKafkaConnect_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1928,7 +1928,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedKafkaConnect_PauseConnector_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1974,7 +1974,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedKafkaConnect_RestartConnector_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2020,7 +2020,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedKafkaConnect_ResumeConnector_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2066,7 +2066,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedKafkaConnect_StopConnector_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2112,7 +2112,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedKafkaConnect_UpdateConnectCluster_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2158,7 +2158,7 @@
       "regionTag": "managedkafka_v1_generated_ManagedKafkaConnect_UpdateConnector_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }

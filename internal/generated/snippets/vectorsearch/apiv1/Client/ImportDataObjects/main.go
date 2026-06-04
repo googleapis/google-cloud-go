@@ -16,6 +16,8 @@
 
 // [START vectorsearch_v1_generated_VectorSearchService_ImportDataObjects_sync]
 
+//go:build examples
+
 package main
 
 import (

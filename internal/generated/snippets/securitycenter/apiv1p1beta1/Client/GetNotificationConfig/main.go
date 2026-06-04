@@ -16,6 +16,8 @@
 
 // [START securitycenter_v1p1beta1_generated_SecurityCenter_GetNotificationConfig_sync]
 
+//go:build examples
+
 package main
 
 import (

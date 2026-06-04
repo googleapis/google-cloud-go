@@ -16,6 +16,8 @@
 
 // [START accesscontextmanager_v1_generated_AccessContextManager_UpdateGcpUserAccessBinding_sync]
 
+//go:build examples
+
 package main
 
 import (

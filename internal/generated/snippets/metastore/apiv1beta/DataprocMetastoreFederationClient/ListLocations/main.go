@@ -16,6 +16,8 @@
 
 // [START metastore_v1beta_generated_DataprocMetastoreFederation_ListLocations_sync]
 
+//go:build examples
+
 package main
 
 import (

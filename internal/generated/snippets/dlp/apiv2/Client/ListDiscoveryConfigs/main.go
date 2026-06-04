@@ -16,6 +16,8 @@
 
 // [START dlp_v2_generated_DlpService_ListDiscoveryConfigs_sync]
 
+//go:build examples
+
 package main
 
 import (

@@ -16,6 +16,8 @@
 
 // [START merchantapi_v1beta_generated_OnlineReturnPolicyService_UpdateOnlineReturnPolicy_sync]
 
+//go:build examples
+
 package main
 
 import (

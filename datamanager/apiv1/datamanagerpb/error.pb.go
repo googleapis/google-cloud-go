@@ -150,10 +150,14 @@ const (
 	ErrorReason_INVALID_REQUEST_ID ErrorReason = 48
 	// An event had 2 or more Google Analytics destinations.
 	ErrorReason_MULTIPLE_DESTINATIONS_FOR_GOOGLE_ANALYTICS_EVENT ErrorReason = 49
-	// The field value is too long.
+	// Length of the field value is too long.
 	ErrorReason_FIELD_VALUE_TOO_LONG ErrorReason = 50
+	// Length of the field value is too short.
+	ErrorReason_FIELD_VALUE_TOO_SHORT ErrorReason = 106
 	// Too many elements in a list in the request.
 	ErrorReason_TOO_MANY_ELEMENTS ErrorReason = 51
+	// Too few elements in a list in the request.
+	ErrorReason_TOO_FEW_ELEMENTS ErrorReason = 105
 	// The resource already exists.
 	ErrorReason_ALREADY_EXISTS ErrorReason = 52
 	// Attempted to set an immutable field for an update request.
@@ -297,6 +301,13 @@ const (
 	// The destination does not have a custom variable with a name that matches
 	// the specified `variable`.
 	ErrorReason_CUSTOM_VARIABLE_NOT_FOUND ErrorReason = 120
+	// The
+	// [location_auto_detection_enabled][google.ads.datamanager.v1.Baseline.location_auto_detection_enabled]
+	// field of the request was set to `true`, but auto detection of baseline
+	// location failed.
+	ErrorReason_BASELINE_LOCATION_AUTO_DETECTION_FAILED ErrorReason = 122
+	// Insights missing for this dimension.
+	ErrorReason_INSIGHTS_MISSING_FOR_DIMENSION ErrorReason = 123
 )
 
 // Enum value maps for ErrorReason.
@@ -353,7 +364,9 @@ var (
 		48:  "INVALID_REQUEST_ID",
 		49:  "MULTIPLE_DESTINATIONS_FOR_GOOGLE_ANALYTICS_EVENT",
 		50:  "FIELD_VALUE_TOO_LONG",
+		106: "FIELD_VALUE_TOO_SHORT",
 		51:  "TOO_MANY_ELEMENTS",
+		105: "TOO_FEW_ELEMENTS",
 		52:  "ALREADY_EXISTS",
 		53:  "IMMUTABLE_FIELD_FOR_UPDATE",
 		54:  "INVALID_RESOURCE_NAME",
@@ -421,6 +434,8 @@ var (
 		118: "CUSTOM_VARIABLE_NOT_ENABLED",
 		119: "INVALID_CUSTOM_VARIABLE_VALUE",
 		120: "CUSTOM_VARIABLE_NOT_FOUND",
+		122: "BASELINE_LOCATION_AUTO_DETECTION_FAILED",
+		123: "INSIGHTS_MISSING_FOR_DIMENSION",
 	}
 	ErrorReason_value = map[string]int32{
 		"ERROR_REASON_UNSPECIFIED":                              0,
@@ -474,7 +489,9 @@ var (
 		"INVALID_REQUEST_ID":                                             48,
 		"MULTIPLE_DESTINATIONS_FOR_GOOGLE_ANALYTICS_EVENT":               49,
 		"FIELD_VALUE_TOO_LONG":                                           50,
+		"FIELD_VALUE_TOO_SHORT":                                          106,
 		"TOO_MANY_ELEMENTS":                                              51,
+		"TOO_FEW_ELEMENTS":                                               105,
 		"ALREADY_EXISTS":                                                 52,
 		"IMMUTABLE_FIELD_FOR_UPDATE":                                     53,
 		"INVALID_RESOURCE_NAME":                                          54,
@@ -542,6 +559,8 @@ var (
 		"CUSTOM_VARIABLE_NOT_ENABLED":                                    118,
 		"INVALID_CUSTOM_VARIABLE_VALUE":                                  119,
 		"CUSTOM_VARIABLE_NOT_FOUND":                                      120,
+		"BASELINE_LOCATION_AUTO_DETECTION_FAILED":                        122,
+		"INSIGHTS_MISSING_FOR_DIMENSION":                                 123,
 	}
 )
 
@@ -576,7 +595,7 @@ var File_google_ads_datamanager_v1_error_proto protoreflect.FileDescriptor
 
 const file_google_ads_datamanager_v1_error_proto_rawDesc = "" +
 	"\n" +
-	"%google/ads/datamanager/v1/error.proto\x12\x19google.ads.datamanager.v1*\xf9 \n" +
+	"%google/ads/datamanager/v1/error.proto\x12\x19google.ads.datamanager.v1*\xfb!\n" +
 	"\vErrorReason\x12\x1c\n" +
 	"\x18ERROR_REASON_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0eINTERNAL_ERROR\x10\x01\x12\x15\n" +
@@ -629,8 +648,10 @@ const file_google_ads_datamanager_v1_error_proto_rawDesc = "" +
 	"\x0fNOT_ALLOWLISTED\x10/\x12\x16\n" +
 	"\x12INVALID_REQUEST_ID\x100\x124\n" +
 	"0MULTIPLE_DESTINATIONS_FOR_GOOGLE_ANALYTICS_EVENT\x101\x12\x18\n" +
-	"\x14FIELD_VALUE_TOO_LONG\x102\x12\x15\n" +
-	"\x11TOO_MANY_ELEMENTS\x103\x12\x12\n" +
+	"\x14FIELD_VALUE_TOO_LONG\x102\x12\x19\n" +
+	"\x15FIELD_VALUE_TOO_SHORT\x10j\x12\x15\n" +
+	"\x11TOO_MANY_ELEMENTS\x103\x12\x14\n" +
+	"\x10TOO_FEW_ELEMENTS\x10i\x12\x12\n" +
 	"\x0eALREADY_EXISTS\x104\x12\x1e\n" +
 	"\x1aIMMUTABLE_FIELD_FOR_UPDATE\x105\x12\x19\n" +
 	"\x15INVALID_RESOURCE_NAME\x106\x12\x12\n" +
@@ -697,7 +718,9 @@ const file_google_ads_datamanager_v1_error_proto_rawDesc = "" +
 	"\"CUSTOM_VARIABLE_VALUE_CONTAINS_PII\x10u\x12\x1f\n" +
 	"\x1bCUSTOM_VARIABLE_NOT_ENABLED\x10v\x12!\n" +
 	"\x1dINVALID_CUSTOM_VARIABLE_VALUE\x10w\x12\x1d\n" +
-	"\x19CUSTOM_VARIABLE_NOT_FOUND\x10xB\xc7\x01\n" +
+	"\x19CUSTOM_VARIABLE_NOT_FOUND\x10x\x12+\n" +
+	"'BASELINE_LOCATION_AUTO_DETECTION_FAILED\x10z\x12\"\n" +
+	"\x1eINSIGHTS_MISSING_FOR_DIMENSION\x10{B\xc7\x01\n" +
 	"\x1dcom.google.ads.datamanager.v1B\n" +
 	"ErrorProtoP\x01ZAcloud.google.com/go/datamanager/apiv1/datamanagerpb;datamanagerpb\xaa\x02\x19Google.Ads.DataManager.V1\xca\x02\x19Google\\Ads\\DataManager\\V1\xea\x02\x1cGoogle::Ads::DataManager::V1b\x06proto3"
 

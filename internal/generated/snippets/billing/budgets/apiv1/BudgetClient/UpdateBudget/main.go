@@ -16,6 +16,8 @@
 
 // [START billingbudgets_v1_generated_BudgetService_UpdateBudget_sync]
 
+//go:build examples
+
 package main
 
 import (

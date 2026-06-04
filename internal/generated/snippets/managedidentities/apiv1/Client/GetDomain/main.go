@@ -16,6 +16,8 @@
 
 // [START managedidentities_v1_generated_ManagedIdentitiesService_GetDomain_sync]
 
+//go:build examples
+
 package main
 
 import (

@@ -137,6 +137,9 @@ type Event struct {
 	// Optional. The conversion value associated with the event, for value-based
 	// conversions.
 	ConversionValue *float64 `protobuf:"fixed64,9,opt,name=conversion_value,json=conversionValue,proto3,oneof" json:"conversion_value,omitempty"`
+	// Optional. The conversion quantity associated with the event, for
+	// counting-based conversions.
+	ConversionCount *float64 `protobuf:"fixed64,23,opt,name=conversion_count,json=conversionCount,proto3,oneof" json:"conversion_count,omitempty"`
 	// Optional. Signal for where the event happened (web, app, in-store, etc.).
 	EventSource EventSource `protobuf:"varint,10,opt,name=event_source,json=eventSource,proto3,enum=google.ads.datamanager.v1.EventSource" json:"event_source,omitempty"`
 	// Optional. Information gathered about the device being used (if any) when
@@ -273,6 +276,13 @@ func (x *Event) GetConversionValue() float64 {
 	return 0
 }
 
+func (x *Event) GetConversionCount() float64 {
+	if x != nil && x.ConversionCount != nil {
+		return *x.ConversionCount
+	}
+	return 0
+}
+
 func (x *Event) GetEventSource() EventSource {
 	if x != nil {
 		return x.EventSource
@@ -384,8 +394,16 @@ type AdIdentifiers struct {
 	// Optional. The mobile identifier for advertisers. This would be IDFA on iOS,
 	// AdID on Android, or other platforms’ identifiers for advertisers.
 	MobileDeviceId string `protobuf:"bytes,6,opt,name=mobile_device_id,json=mobileDeviceId,proto3" json:"mobile_device_id,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	// Optional. The display click ID associated with this event.
+	Dclid string `protobuf:"bytes,7,opt,name=dclid,proto3" json:"dclid,omitempty"`
+	// Optional. The impression ID associated with this event.
+	ImpressionId string `protobuf:"bytes,8,opt,name=impression_id,json=impressionId,proto3" json:"impression_id,omitempty"`
+	// Optional. The match ID field used to join this event with a previous event.
+	MatchId string `protobuf:"bytes,9,opt,name=match_id,json=matchId,proto3" json:"match_id,omitempty"`
+	// Optional. Any number of encrypted user IDs.
+	EncryptedUserIds []*EncryptedUserId `protobuf:"bytes,10,rep,name=encrypted_user_ids,json=encryptedUserIds,proto3" json:"encrypted_user_ids,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
 }
 
 func (x *AdIdentifiers) Reset() {
@@ -458,6 +476,34 @@ func (x *AdIdentifiers) GetMobileDeviceId() string {
 		return x.MobileDeviceId
 	}
 	return ""
+}
+
+func (x *AdIdentifiers) GetDclid() string {
+	if x != nil {
+		return x.Dclid
+	}
+	return ""
+}
+
+func (x *AdIdentifiers) GetImpressionId() string {
+	if x != nil {
+		return x.ImpressionId
+	}
+	return ""
+}
+
+func (x *AdIdentifiers) GetMatchId() string {
+	if x != nil {
+		return x.MatchId
+	}
+	return ""
+}
+
+func (x *AdIdentifiers) GetEncryptedUserIds() []*EncryptedUserId {
+	if x != nil {
+		return x.EncryptedUserIds
+	}
+	return nil
 }
 
 // Custom variable for ads conversions.
@@ -680,7 +726,7 @@ var File_google_ads_datamanager_v1_event_proto protoreflect.FileDescriptor
 
 const file_google_ads_datamanager_v1_event_proto_rawDesc = "" +
 	"\n" +
-	"%google/ads/datamanager/v1/event.proto\x12\x19google.ads.datamanager.v1\x1a)google/ads/datamanager/v1/cart_data.proto\x1a'google/ads/datamanager/v1/consent.proto\x1a+google/ads/datamanager/v1/device_info.proto\x1a2google/ads/datamanager/v1/experimental_field.proto\x1a)google/ads/datamanager/v1/user_data.proto\x1a/google/ads/datamanager/v1/user_properties.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x96\f\n" +
+	"%google/ads/datamanager/v1/event.proto\x12\x19google.ads.datamanager.v1\x1a)google/ads/datamanager/v1/cart_data.proto\x1a'google/ads/datamanager/v1/consent.proto\x1a+google/ads/datamanager/v1/device_info.proto\x1a1google/ads/datamanager/v1/encrypted_user_id.proto\x1a2google/ads/datamanager/v1/experimental_field.proto\x1a)google/ads/datamanager/v1/user_data.proto\x1a/google/ads/datamanager/v1/user_properties.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe0\f\n" +
 	"\x05Event\x12:\n" +
 	"\x16destination_references\x18\x01 \x03(\tB\x03\xe0A\x01R\x15destinationReferences\x12*\n" +
 	"\x0etransaction_id\x18\x02 \x01(\tB\x03\xe0A\x01R\rtransactionId\x12H\n" +
@@ -690,7 +736,8 @@ const file_google_ads_datamanager_v1_event_proto_rawDesc = "" +
 	"\aconsent\x18\x06 \x01(\v2\".google.ads.datamanager.v1.ConsentB\x03\xe0A\x01R\aconsent\x12T\n" +
 	"\x0ead_identifiers\x18\a \x01(\v2(.google.ads.datamanager.v1.AdIdentifiersB\x03\xe0A\x01R\radIdentifiers\x12\x1f\n" +
 	"\bcurrency\x18\b \x01(\tB\x03\xe0A\x01R\bcurrency\x123\n" +
-	"\x10conversion_value\x18\t \x01(\x01B\x03\xe0A\x01H\x00R\x0fconversionValue\x88\x01\x01\x12N\n" +
+	"\x10conversion_value\x18\t \x01(\x01B\x03\xe0A\x01H\x00R\x0fconversionValue\x88\x01\x01\x123\n" +
+	"\x10conversion_count\x18\x17 \x01(\x01B\x03\xe0A\x01H\x01R\x0fconversionCount\x88\x01\x01\x12N\n" +
 	"\fevent_source\x18\n" +
 	" \x01(\x0e2&.google.ads.datamanager.v1.EventSourceB\x03\xe0A\x01R\veventSource\x12V\n" +
 	"\x11event_device_info\x18\v \x01(\v2%.google.ads.datamanager.v1.DeviceInfoB\x03\xe0A\x01R\x0feventDeviceInfo\x12E\n" +
@@ -706,14 +753,20 @@ const file_google_ads_datamanager_v1_event_proto_rawDesc = "" +
 	"\x15third_party_user_data\x18\x14 \x01(\v2#.google.ads.datamanager.v1.UserDataB\x03\xe0A\x01R\x12thirdPartyUserData\x12T\n" +
 	"\x0eevent_location\x18\x15 \x01(\v2(.google.ads.datamanager.v1.EventLocationB\x03\xe0A\x01R\reventLocation\x12+\n" +
 	"\x0fapp_instance_id\x18\x16 \x01(\tB\x03\xe0A\x01R\rappInstanceIdB\x13\n" +
-	"\x11_conversion_value\"\xac\x02\n" +
+	"\x11_conversion_valueB\x13\n" +
+	"\x11_conversion_count\"\xf0\x03\n" +
 	"\rAdIdentifiers\x122\n" +
 	"\x12session_attributes\x18\x01 \x01(\tB\x03\xe0A\x01R\x11sessionAttributes\x12\x19\n" +
 	"\x05gclid\x18\x02 \x01(\tB\x03\xe0A\x01R\x05gclid\x12\x1b\n" +
 	"\x06gbraid\x18\x03 \x01(\tB\x03\xe0A\x01R\x06gbraid\x12\x1b\n" +
 	"\x06wbraid\x18\x04 \x01(\tB\x03\xe0A\x01R\x06wbraid\x12c\n" +
 	"\x18landing_page_device_info\x18\x05 \x01(\v2%.google.ads.datamanager.v1.DeviceInfoB\x03\xe0A\x01R\x15landingPageDeviceInfo\x12-\n" +
-	"\x10mobile_device_id\x18\x06 \x01(\tB\x03\xe0A\x01R\x0emobileDeviceId\"\x88\x01\n" +
+	"\x10mobile_device_id\x18\x06 \x01(\tB\x03\xe0A\x01R\x0emobileDeviceId\x12\x19\n" +
+	"\x05dclid\x18\a \x01(\tB\x03\xe0A\x01R\x05dclid\x12(\n" +
+	"\rimpression_id\x18\b \x01(\tB\x03\xe0A\x01R\fimpressionId\x12\x1e\n" +
+	"\bmatch_id\x18\t \x01(\tB\x03\xe0A\x01R\amatchId\x12]\n" +
+	"\x12encrypted_user_ids\x18\n" +
+	" \x03(\v2*.google.ads.datamanager.v1.EncryptedUserIdB\x03\xe0A\x01R\x10encryptedUserIds\"\x88\x01\n" +
 	"\x0eCustomVariable\x12\x1f\n" +
 	"\bvariable\x18\x01 \x01(\tB\x03\xe0A\x01R\bvariable\x12\x19\n" +
 	"\x05value\x18\x02 \x01(\tB\x03\xe0A\x01R\x05value\x12:\n" +
@@ -768,6 +821,7 @@ var file_google_ads_datamanager_v1_event_proto_goTypes = []any{
 	(*CartData)(nil),              // 10: google.ads.datamanager.v1.CartData
 	(*ExperimentalField)(nil),     // 11: google.ads.datamanager.v1.ExperimentalField
 	(*UserProperties)(nil),        // 12: google.ads.datamanager.v1.UserProperties
+	(*EncryptedUserId)(nil),       // 13: google.ads.datamanager.v1.EncryptedUserId
 }
 var file_google_ads_datamanager_v1_event_proto_depIdxs = []int32{
 	6,  // 0: google.ads.datamanager.v1.Event.event_timestamp:type_name -> google.protobuf.Timestamp
@@ -785,11 +839,12 @@ var file_google_ads_datamanager_v1_event_proto_depIdxs = []int32{
 	7,  // 12: google.ads.datamanager.v1.Event.third_party_user_data:type_name -> google.ads.datamanager.v1.UserData
 	5,  // 13: google.ads.datamanager.v1.Event.event_location:type_name -> google.ads.datamanager.v1.EventLocation
 	9,  // 14: google.ads.datamanager.v1.AdIdentifiers.landing_page_device_info:type_name -> google.ads.datamanager.v1.DeviceInfo
-	15, // [15:15] is the sub-list for method output_type
-	15, // [15:15] is the sub-list for method input_type
-	15, // [15:15] is the sub-list for extension type_name
-	15, // [15:15] is the sub-list for extension extendee
-	0,  // [0:15] is the sub-list for field type_name
+	13, // 15: google.ads.datamanager.v1.AdIdentifiers.encrypted_user_ids:type_name -> google.ads.datamanager.v1.EncryptedUserId
+	16, // [16:16] is the sub-list for method output_type
+	16, // [16:16] is the sub-list for method input_type
+	16, // [16:16] is the sub-list for extension type_name
+	16, // [16:16] is the sub-list for extension extendee
+	0,  // [0:16] is the sub-list for field type_name
 }
 
 func init() { file_google_ads_datamanager_v1_event_proto_init() }
@@ -800,6 +855,7 @@ func file_google_ads_datamanager_v1_event_proto_init() {
 	file_google_ads_datamanager_v1_cart_data_proto_init()
 	file_google_ads_datamanager_v1_consent_proto_init()
 	file_google_ads_datamanager_v1_device_info_proto_init()
+	file_google_ads_datamanager_v1_encrypted_user_id_proto_init()
 	file_google_ads_datamanager_v1_experimental_field_proto_init()
 	file_google_ads_datamanager_v1_user_data_proto_init()
 	file_google_ads_datamanager_v1_user_properties_proto_init()

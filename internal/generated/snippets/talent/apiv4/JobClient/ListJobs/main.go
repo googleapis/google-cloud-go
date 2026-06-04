@@ -16,6 +16,8 @@
 
 // [START jobs_v4_generated_JobService_ListJobs_sync]
 
+//go:build examples
+
 package main
 
 import (

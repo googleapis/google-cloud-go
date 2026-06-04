@@ -16,6 +16,8 @@
 
 // [START dataqna_v1alpha_generated_AutoSuggestionService_SuggestQueries_sync]
 
+//go:build examples
+
 package main
 
 import (

@@ -240,7 +240,7 @@ type TransitionRouteGroupsClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *TransitionRouteGroupsClient) Close() error {
 	return c.internalClient.Close()
@@ -455,7 +455,7 @@ func (c *transitionRouteGroupsGRPCClient) setGoogleClientInfo(keyval ...string) 
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *transitionRouteGroupsGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -558,7 +558,7 @@ func (c *transitionRouteGroupsRESTClient) setGoogleClientInfo(keyval ...string) 
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *transitionRouteGroupsRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.

@@ -16,6 +16,8 @@
 
 // [START configdelivery_v1beta_generated_ConfigDelivery_AbortRollout_sync]
 
+//go:build examples
+
 package main
 
 import (

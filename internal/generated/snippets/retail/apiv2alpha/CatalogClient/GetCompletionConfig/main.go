@@ -16,6 +16,8 @@
 
 // [START retail_v2alpha_generated_CatalogService_GetCompletionConfig_sync]
 
+//go:build examples
+
 package main
 
 import (

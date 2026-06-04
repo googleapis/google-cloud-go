@@ -16,6 +16,8 @@
 
 // [START beyondcorp_v1_generated_AppConnectorsService_GetIamPolicy_sync]
 
+//go:build examples
+
 package main
 
 import (

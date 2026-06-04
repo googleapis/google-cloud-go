@@ -16,6 +16,8 @@
 
 // [START streetviewpublish_v1_generated_StreetViewPublishService_GetPhoto_sync]
 
+//go:build examples
+
 package main
 
 import (

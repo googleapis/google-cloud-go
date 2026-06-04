@@ -16,6 +16,8 @@
 
 // [START file_v1_generated_CloudFilestoreManager_PromoteReplica_sync]
 
+//go:build examples
+
 package main
 
 import (

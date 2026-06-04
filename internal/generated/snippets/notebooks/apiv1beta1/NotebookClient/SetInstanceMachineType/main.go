@@ -16,6 +16,8 @@
 
 // [START notebooks_v1beta1_generated_NotebookService_SetInstanceMachineType_sync]
 
+//go:build examples
+
 package main
 
 import (

@@ -164,7 +164,7 @@ type FeaturedContentNativeDashboardClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *FeaturedContentNativeDashboardClient) Close() error {
 	return c.internalClient.Close()
@@ -325,7 +325,7 @@ func (c *featuredContentNativeDashboardGRPCClient) setGoogleClientInfo(keyval ..
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *featuredContentNativeDashboardGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -425,7 +425,7 @@ func (c *featuredContentNativeDashboardRESTClient) setGoogleClientInfo(keyval ..
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *featuredContentNativeDashboardRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.

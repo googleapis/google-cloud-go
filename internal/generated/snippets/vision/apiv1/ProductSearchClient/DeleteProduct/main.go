@@ -16,6 +16,8 @@
 
 // [START vision_v1_generated_ProductSearch_DeleteProduct_sync]
 
+//go:build examples
+
 package main
 
 import (

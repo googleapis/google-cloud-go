@@ -16,6 +16,8 @@
 
 // [START dialogflow_v2_generated_EntityTypes_CreateEntityType_sync]
 
+//go:build examples
+
 package main
 
 import (

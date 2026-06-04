@@ -16,6 +16,8 @@
 
 // [START videointelligence_v1_generated_VideoIntelligenceService_AnnotateVideo_sync]
 
+//go:build examples
+
 package main
 
 import (

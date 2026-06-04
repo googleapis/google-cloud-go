@@ -16,6 +16,8 @@
 
 // [START assuredworkloads_v1_generated_AssuredWorkloadsService_CreateWorkload_sync]
 
+//go:build examples
+
 package main
 
 import (

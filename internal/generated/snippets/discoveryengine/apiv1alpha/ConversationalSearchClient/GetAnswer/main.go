@@ -16,6 +16,8 @@
 
 // [START discoveryengine_v1alpha_generated_ConversationalSearchService_GetAnswer_sync]
 
+//go:build examples
+
 package main
 
 import (

@@ -50,7 +50,7 @@
       "regionTag": "merchantapi_v1_generated_LfpInventoryService_InsertLfpInventory_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -96,7 +96,7 @@
       "regionTag": "merchantapi_v1_generated_LfpMerchantStateService_GetLfpMerchantState_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -142,7 +142,7 @@
       "regionTag": "merchantapi_v1_generated_LfpSaleService_InsertLfpSale_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -187,7 +187,7 @@
       "regionTag": "merchantapi_v1_generated_LfpStoreService_DeleteLfpStore_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -233,7 +233,7 @@
       "regionTag": "merchantapi_v1_generated_LfpStoreService_GetLfpStore_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -279,7 +279,7 @@
       "regionTag": "merchantapi_v1_generated_LfpStoreService_InsertLfpStore_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -325,7 +325,7 @@
       "regionTag": "merchantapi_v1_generated_LfpStoreService_ListLfpStores_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }

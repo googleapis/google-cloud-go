@@ -16,6 +16,8 @@
 
 // [START transcoder_v1_generated_TranscoderService_DeleteJobTemplate_sync]
 
+//go:build examples
+
 package main
 
 import (

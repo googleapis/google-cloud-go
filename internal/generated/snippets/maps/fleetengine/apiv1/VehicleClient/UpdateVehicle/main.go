@@ -16,6 +16,8 @@
 
 // [START fleetengine_v1_generated_VehicleService_UpdateVehicle_sync]
 
+//go:build examples
+
 package main
 
 import (

@@ -16,6 +16,8 @@
 
 // [START dataproc_v1_generated_SessionController_GetIamPolicy_sync]
 
+//go:build examples
+
 package main
 
 import (

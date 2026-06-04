@@ -16,6 +16,8 @@
 
 // [START workflowexecutions_v1_generated_Executions_GetExecution_sync]
 
+//go:build examples
+
 package main
 
 import (

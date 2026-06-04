@@ -16,6 +16,8 @@
 
 // [START redis_v1beta1_generated_CloudRedis_ExportInstance_sync]
 
+//go:build examples
+
 package main
 
 import (

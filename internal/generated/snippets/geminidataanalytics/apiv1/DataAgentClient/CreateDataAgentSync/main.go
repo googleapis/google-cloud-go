@@ -16,6 +16,8 @@
 
 // [START geminidataanalytics_v1_generated_DataAgentService_CreateDataAgentSync_sync]
 
+//go:build examples
+
 package main
 
 import (

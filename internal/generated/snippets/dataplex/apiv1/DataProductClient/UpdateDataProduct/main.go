@@ -16,6 +16,8 @@
 
 // [START dataplex_v1_generated_DataProductService_UpdateDataProduct_sync]
 
+//go:build examples
+
 package main
 
 import (

@@ -16,6 +16,8 @@
 
 // [START developerconnect_v1_generated_DeveloperConnect_ListUsers_sync]
 
+//go:build examples
+
 package main
 
 import (

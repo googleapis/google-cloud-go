@@ -16,6 +16,8 @@
 
 // [START networkmanagement_v1_generated_VpcFlowLogsService_GetOperation_sync]
 
+//go:build examples
+
 package main
 
 import (

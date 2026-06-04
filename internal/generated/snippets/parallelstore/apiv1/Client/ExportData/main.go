@@ -16,6 +16,8 @@
 
 // [START parallelstore_v1_generated_Parallelstore_ExportData_sync]
 
+//go:build examples
+
 package main
 
 import (

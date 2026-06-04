@@ -16,6 +16,8 @@
 
 // [START networkconnectivity_v1alpha1_generated_HubService_DeleteSpoke_sync]
 
+//go:build examples
+
 package main
 
 import (

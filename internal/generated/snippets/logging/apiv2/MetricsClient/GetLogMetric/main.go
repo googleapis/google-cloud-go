@@ -16,6 +16,8 @@
 
 // [START logging_v2_generated_MetricsServiceV2_GetLogMetric_sync]
 
+//go:build examples
+
 package main
 
 import (

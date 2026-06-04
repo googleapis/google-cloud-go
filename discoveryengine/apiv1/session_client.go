@@ -293,7 +293,7 @@ type SessionClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *SessionClient) Close() error {
 	return c.internalClient.Close()
@@ -470,7 +470,7 @@ func (c *sessionGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *sessionGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -570,7 +570,7 @@ func (c *sessionRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *sessionRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.

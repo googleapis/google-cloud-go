@@ -16,6 +16,8 @@
 
 // [START managedkafka_v1_generated_ManagedKafkaConnect_ListLocations_sync]
 
+//go:build examples
+
 package main
 
 import (

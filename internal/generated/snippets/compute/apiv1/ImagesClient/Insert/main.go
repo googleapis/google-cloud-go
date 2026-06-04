@@ -16,6 +16,8 @@
 
 // [START compute_v1_generated_Images_Insert_sync]
 
+//go:build examples
+
 package main
 
 import (

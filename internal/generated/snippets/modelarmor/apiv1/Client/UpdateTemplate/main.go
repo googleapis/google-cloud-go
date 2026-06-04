@@ -16,6 +16,8 @@
 
 // [START modelarmor_v1_generated_ModelArmor_UpdateTemplate_sync]
 
+//go:build examples
+
 package main
 
 import (

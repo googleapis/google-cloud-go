@@ -16,6 +16,8 @@
 
 // [START dialogflow_v3beta1_generated_Environments_UpdateEnvironment_sync]
 
+//go:build examples
+
 package main
 
 import (

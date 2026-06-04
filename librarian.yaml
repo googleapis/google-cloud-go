@@ -12,16 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 language: go
-version: v0.15.0
+version: v0.16.1-0.20260603141118-7278ace00162
 repo: googleapis/google-cloud-go
 sources:
   googleapis:
-    commit: 8490ca4edad1b34f62b174292264c07607681100
-    sha256: 6994d873c0a240bfcde8fda75fc0bf3d2ee44c0602d2a2544a07fce53b2a6faa
+    commit: b10e55c86f8f5117cb041cc9af8a5d2f34be302c
+    sha256: 4ba84558b1e0cb0a9bc0bf500185c0766d1446fa0367a41c3bfc41b6b6ae6abe
 tools:
   go:
     - name: github.com/googleapis/gapic-generator-go/cmd/protoc-gen-go_gapic
-      version: v0.59.0
+      version: v0.61.0
     - name: golang.org/x/tools/cmd/goimports
       version: v0.44.0
     - name: google.golang.org/grpc/cmd/protoc-gen-go-grpc

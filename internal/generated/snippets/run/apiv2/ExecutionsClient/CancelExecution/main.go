@@ -16,6 +16,8 @@
 
 // [START run_v2_generated_Executions_CancelExecution_sync]
 
+//go:build examples
+
 package main
 
 import (

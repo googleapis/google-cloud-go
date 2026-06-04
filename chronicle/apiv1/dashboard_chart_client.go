@@ -159,7 +159,7 @@ type DashboardChartClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *DashboardChartClient) Close() error {
 	return c.internalClient.Close()
@@ -313,7 +313,7 @@ func (c *dashboardChartGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *dashboardChartGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -411,7 +411,7 @@ func (c *dashboardChartRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *dashboardChartRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.

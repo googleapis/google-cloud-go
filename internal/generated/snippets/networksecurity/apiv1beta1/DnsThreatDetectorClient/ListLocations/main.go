@@ -16,6 +16,8 @@
 
 // [START networksecurity_v1beta1_generated_DnsThreatDetectorService_ListLocations_sync]
 
+//go:build examples
+
 package main
 
 import (

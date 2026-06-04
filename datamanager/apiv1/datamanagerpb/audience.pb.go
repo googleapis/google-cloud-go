@@ -28,6 +28,7 @@ import (
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const (
@@ -53,6 +54,7 @@ type AudienceMember struct {
 	//	*AudienceMember_MobileData
 	//	*AudienceMember_UserIdData
 	//	*AudienceMember_PpidData
+	//	*AudienceMember_CompositeData
 	Data isAudienceMember_Data `protobuf_oneof:"data"`
 	// Optional. The consent setting for the user.
 	Consent       *Consent `protobuf:"bytes,3,opt,name=consent,proto3" json:"consent,omitempty"`
@@ -149,6 +151,15 @@ func (x *AudienceMember) GetPpidData() *PpidData {
 	return nil
 }
 
+func (x *AudienceMember) GetCompositeData() *CompositeData {
+	if x != nil {
+		if x, ok := x.Data.(*AudienceMember_CompositeData); ok {
+			return x.CompositeData
+		}
+	}
+	return nil
+}
+
 func (x *AudienceMember) GetConsent() *Consent {
 	if x != nil {
 		return x.Consent
@@ -191,6 +202,11 @@ type AudienceMember_PpidData struct {
 	PpidData *PpidData `protobuf:"bytes,7,opt,name=ppid_data,json=ppidData,proto3,oneof"`
 }
 
+type AudienceMember_CompositeData struct {
+	// Group of multiple identifier types.
+	CompositeData *CompositeData `protobuf:"bytes,8,opt,name=composite_data,json=compositeData,proto3,oneof"`
+}
+
 func (*AudienceMember_UserData) isAudienceMember_Data() {}
 
 func (*AudienceMember_PairData) isAudienceMember_Data() {}
@@ -200,6 +216,8 @@ func (*AudienceMember_MobileData) isAudienceMember_Data() {}
 func (*AudienceMember_UserIdData) isAudienceMember_Data() {}
 
 func (*AudienceMember_PpidData) isAudienceMember_Data() {}
+
+func (*AudienceMember_CompositeData) isAudienceMember_Data() {}
 
 // [PAIR](//support.google.com/admanager/answer/15067908) IDs for the audience.
 // At least one PAIR ID is required.
@@ -398,11 +416,136 @@ func (x *PpidData) GetPpids() []string {
 	return nil
 }
 
+// Composite data holding identifiers and associated data for a user.
+// At least one of `user_data` or `ip_data` is required.
+type CompositeData struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. User-provided data that identifies the user.
+	UserData *UserData `protobuf:"bytes,1,opt,name=user_data,json=userData,proto3" json:"user_data,omitempty"`
+	// Optional. IP address data representing customer interaction used to build
+	// the audience.
+	IpData        []*IpData `protobuf:"bytes,2,rep,name=ip_data,json=ipData,proto3" json:"ip_data,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CompositeData) Reset() {
+	*x = CompositeData{}
+	mi := &file_google_ads_datamanager_v1_audience_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CompositeData) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CompositeData) ProtoMessage() {}
+
+func (x *CompositeData) ProtoReflect() protoreflect.Message {
+	mi := &file_google_ads_datamanager_v1_audience_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CompositeData.ProtoReflect.Descriptor instead.
+func (*CompositeData) Descriptor() ([]byte, []int) {
+	return file_google_ads_datamanager_v1_audience_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *CompositeData) GetUserData() *UserData {
+	if x != nil {
+		return x.UserData
+	}
+	return nil
+}
+
+func (x *CompositeData) GetIpData() []*IpData {
+	if x != nil {
+		return x.IpData
+	}
+	return nil
+}
+
+// IP address information for a user.
+// We recommend including observe_start_time and observe_end_time to help
+// improve Customer Match match rates.
+type IpData struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. IP address captured at the time of customer interaction.
+	// Accepts standard string formats for both IPv4 and IPv6.
+	IpAddress string `protobuf:"bytes,1,opt,name=ip_address,json=ipAddress,proto3" json:"ip_address,omitempty"`
+	// Optional. First recorded interaction time from this IP address in a
+	// session.
+	ObserveStartTime *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=observe_start_time,json=observeStartTime,proto3" json:"observe_start_time,omitempty"`
+	// Optional. Last recorded interaction time from this IP address in a session.
+	ObserveEndTime *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=observe_end_time,json=observeEndTime,proto3" json:"observe_end_time,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *IpData) Reset() {
+	*x = IpData{}
+	mi := &file_google_ads_datamanager_v1_audience_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *IpData) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*IpData) ProtoMessage() {}
+
+func (x *IpData) ProtoReflect() protoreflect.Message {
+	mi := &file_google_ads_datamanager_v1_audience_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use IpData.ProtoReflect.Descriptor instead.
+func (*IpData) Descriptor() ([]byte, []int) {
+	return file_google_ads_datamanager_v1_audience_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *IpData) GetIpAddress() string {
+	if x != nil {
+		return x.IpAddress
+	}
+	return ""
+}
+
+func (x *IpData) GetObserveStartTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.ObserveStartTime
+	}
+	return nil
+}
+
+func (x *IpData) GetObserveEndTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.ObserveEndTime
+	}
+	return nil
+}
+
 var File_google_ads_datamanager_v1_audience_proto protoreflect.FileDescriptor
 
 const file_google_ads_datamanager_v1_audience_proto_rawDesc = "" +
 	"\n" +
-	"(google/ads/datamanager/v1/audience.proto\x12\x19google.ads.datamanager.v1\x1a'google/ads/datamanager/v1/consent.proto\x1a)google/ads/datamanager/v1/user_data.proto\x1a\x1fgoogle/api/field_behavior.proto\"\xf8\x03\n" +
+	"(google/ads/datamanager/v1/audience.proto\x12\x19google.ads.datamanager.v1\x1a'google/ads/datamanager/v1/consent.proto\x1a)google/ads/datamanager/v1/user_data.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xcb\x04\n" +
 	"\x0eAudienceMember\x12:\n" +
 	"\x16destination_references\x18\x01 \x03(\tB\x03\xe0A\x01R\x15destinationReferences\x12B\n" +
 	"\tuser_data\x18\x02 \x01(\v2#.google.ads.datamanager.v1.UserDataH\x00R\buserData\x12B\n" +
@@ -411,7 +554,8 @@ const file_google_ads_datamanager_v1_audience_proto_rawDesc = "" +
 	"mobileData\x12I\n" +
 	"\fuser_id_data\x18\x06 \x01(\v2%.google.ads.datamanager.v1.UserIdDataH\x00R\n" +
 	"userIdData\x12B\n" +
-	"\tppid_data\x18\a \x01(\v2#.google.ads.datamanager.v1.PpidDataH\x00R\bppidData\x12A\n" +
+	"\tppid_data\x18\a \x01(\v2#.google.ads.datamanager.v1.PpidDataH\x00R\bppidData\x12Q\n" +
+	"\x0ecomposite_data\x18\b \x01(\v2(.google.ads.datamanager.v1.CompositeDataH\x00R\rcompositeData\x12A\n" +
 	"\aconsent\x18\x03 \x01(\v2\".google.ads.datamanager.v1.ConsentB\x03\xe0A\x01R\aconsentB\x06\n" +
 	"\x04data\"*\n" +
 	"\bPairData\x12\x1e\n" +
@@ -424,7 +568,15 @@ const file_google_ads_datamanager_v1_audience_proto_rawDesc = "" +
 	"UserIdData\x12\x1c\n" +
 	"\auser_id\x18\x01 \x01(\tB\x03\xe0A\x02R\x06userId\"%\n" +
 	"\bPpidData\x12\x19\n" +
-	"\x05ppids\x18\x01 \x03(\tB\x03\xe0A\x02R\x05ppidsB\xca\x01\n" +
+	"\x05ppids\x18\x01 \x03(\tB\x03\xe0A\x02R\x05ppids\"\x97\x01\n" +
+	"\rCompositeData\x12E\n" +
+	"\tuser_data\x18\x01 \x01(\v2#.google.ads.datamanager.v1.UserDataB\x03\xe0A\x01R\buserData\x12?\n" +
+	"\aip_data\x18\x02 \x03(\v2!.google.ads.datamanager.v1.IpDataB\x03\xe0A\x01R\x06ipData\"\xce\x01\n" +
+	"\x06IpData\x12*\n" +
+	"\n" +
+	"ip_address\x18\x01 \x01(\tB\v\xe0A\x02\xe2\x8c\xcf\xd7\b\x02\b\x04R\tipAddress\x12M\n" +
+	"\x12observe_start_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\x10observeStartTime\x12I\n" +
+	"\x10observe_end_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\x0eobserveEndTimeB\xca\x01\n" +
 	"\x1dcom.google.ads.datamanager.v1B\rAudienceProtoP\x01ZAcloud.google.com/go/datamanager/apiv1/datamanagerpb;datamanagerpb\xaa\x02\x19Google.Ads.DataManager.V1\xca\x02\x19Google\\Ads\\DataManager\\V1\xea\x02\x1cGoogle::Ads::DataManager::V1b\x06proto3"
 
 var (
@@ -439,28 +591,36 @@ func file_google_ads_datamanager_v1_audience_proto_rawDescGZIP() []byte {
 	return file_google_ads_datamanager_v1_audience_proto_rawDescData
 }
 
-var file_google_ads_datamanager_v1_audience_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
+var file_google_ads_datamanager_v1_audience_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
 var file_google_ads_datamanager_v1_audience_proto_goTypes = []any{
-	(*AudienceMember)(nil), // 0: google.ads.datamanager.v1.AudienceMember
-	(*PairData)(nil),       // 1: google.ads.datamanager.v1.PairData
-	(*MobileData)(nil),     // 2: google.ads.datamanager.v1.MobileData
-	(*UserIdData)(nil),     // 3: google.ads.datamanager.v1.UserIdData
-	(*PpidData)(nil),       // 4: google.ads.datamanager.v1.PpidData
-	(*UserData)(nil),       // 5: google.ads.datamanager.v1.UserData
-	(*Consent)(nil),        // 6: google.ads.datamanager.v1.Consent
+	(*AudienceMember)(nil),        // 0: google.ads.datamanager.v1.AudienceMember
+	(*PairData)(nil),              // 1: google.ads.datamanager.v1.PairData
+	(*MobileData)(nil),            // 2: google.ads.datamanager.v1.MobileData
+	(*UserIdData)(nil),            // 3: google.ads.datamanager.v1.UserIdData
+	(*PpidData)(nil),              // 4: google.ads.datamanager.v1.PpidData
+	(*CompositeData)(nil),         // 5: google.ads.datamanager.v1.CompositeData
+	(*IpData)(nil),                // 6: google.ads.datamanager.v1.IpData
+	(*UserData)(nil),              // 7: google.ads.datamanager.v1.UserData
+	(*Consent)(nil),               // 8: google.ads.datamanager.v1.Consent
+	(*timestamppb.Timestamp)(nil), // 9: google.protobuf.Timestamp
 }
 var file_google_ads_datamanager_v1_audience_proto_depIdxs = []int32{
-	5, // 0: google.ads.datamanager.v1.AudienceMember.user_data:type_name -> google.ads.datamanager.v1.UserData
-	1, // 1: google.ads.datamanager.v1.AudienceMember.pair_data:type_name -> google.ads.datamanager.v1.PairData
-	2, // 2: google.ads.datamanager.v1.AudienceMember.mobile_data:type_name -> google.ads.datamanager.v1.MobileData
-	3, // 3: google.ads.datamanager.v1.AudienceMember.user_id_data:type_name -> google.ads.datamanager.v1.UserIdData
-	4, // 4: google.ads.datamanager.v1.AudienceMember.ppid_data:type_name -> google.ads.datamanager.v1.PpidData
-	6, // 5: google.ads.datamanager.v1.AudienceMember.consent:type_name -> google.ads.datamanager.v1.Consent
-	6, // [6:6] is the sub-list for method output_type
-	6, // [6:6] is the sub-list for method input_type
-	6, // [6:6] is the sub-list for extension type_name
-	6, // [6:6] is the sub-list for extension extendee
-	0, // [0:6] is the sub-list for field type_name
+	7,  // 0: google.ads.datamanager.v1.AudienceMember.user_data:type_name -> google.ads.datamanager.v1.UserData
+	1,  // 1: google.ads.datamanager.v1.AudienceMember.pair_data:type_name -> google.ads.datamanager.v1.PairData
+	2,  // 2: google.ads.datamanager.v1.AudienceMember.mobile_data:type_name -> google.ads.datamanager.v1.MobileData
+	3,  // 3: google.ads.datamanager.v1.AudienceMember.user_id_data:type_name -> google.ads.datamanager.v1.UserIdData
+	4,  // 4: google.ads.datamanager.v1.AudienceMember.ppid_data:type_name -> google.ads.datamanager.v1.PpidData
+	5,  // 5: google.ads.datamanager.v1.AudienceMember.composite_data:type_name -> google.ads.datamanager.v1.CompositeData
+	8,  // 6: google.ads.datamanager.v1.AudienceMember.consent:type_name -> google.ads.datamanager.v1.Consent
+	7,  // 7: google.ads.datamanager.v1.CompositeData.user_data:type_name -> google.ads.datamanager.v1.UserData
+	6,  // 8: google.ads.datamanager.v1.CompositeData.ip_data:type_name -> google.ads.datamanager.v1.IpData
+	9,  // 9: google.ads.datamanager.v1.IpData.observe_start_time:type_name -> google.protobuf.Timestamp
+	9,  // 10: google.ads.datamanager.v1.IpData.observe_end_time:type_name -> google.protobuf.Timestamp
+	11, // [11:11] is the sub-list for method output_type
+	11, // [11:11] is the sub-list for method input_type
+	11, // [11:11] is the sub-list for extension type_name
+	11, // [11:11] is the sub-list for extension extendee
+	0,  // [0:11] is the sub-list for field type_name
 }
 
 func init() { file_google_ads_datamanager_v1_audience_proto_init() }
@@ -476,6 +636,7 @@ func file_google_ads_datamanager_v1_audience_proto_init() {
 		(*AudienceMember_MobileData)(nil),
 		(*AudienceMember_UserIdData)(nil),
 		(*AudienceMember_PpidData)(nil),
+		(*AudienceMember_CompositeData)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -483,7 +644,7 @@ func file_google_ads_datamanager_v1_audience_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_ads_datamanager_v1_audience_proto_rawDesc), len(file_google_ads_datamanager_v1_audience_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   5,
+			NumMessages:   7,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

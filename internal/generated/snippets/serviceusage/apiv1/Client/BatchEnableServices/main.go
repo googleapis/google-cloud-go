@@ -16,6 +16,8 @@
 
 // [START serviceusage_v1_generated_ServiceUsage_BatchEnableServices_sync]
 
+//go:build examples
+
 package main
 
 import (

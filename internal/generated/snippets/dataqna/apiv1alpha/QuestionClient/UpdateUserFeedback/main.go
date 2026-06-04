@@ -16,6 +16,8 @@
 
 // [START dataqna_v1alpha_generated_QuestionService_UpdateUserFeedback_sync]
 
+//go:build examples
+
 package main
 
 import (

@@ -16,6 +16,8 @@
 
 // [START websecurityscanner_v1_generated_WebSecurityScanner_ListFindingTypeStats_sync]
 
+//go:build examples
+
 package main
 
 import (

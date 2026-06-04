@@ -16,6 +16,8 @@
 
 // [START binaryauthorization_v1_generated_SystemPolicyV1_GetSystemPolicy_sync]
 
+//go:build examples
+
 package main
 
 import (

@@ -16,6 +16,8 @@
 
 // [START cloudkms_v1_generated_Autokey_GetOperation_sync]
 
+//go:build examples
+
 package main
 
 import (

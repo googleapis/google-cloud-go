@@ -16,6 +16,8 @@
 
 // [START compute_v1_generated_Subnetworks_SetPrivateIpGoogleAccess_sync]
 
+//go:build examples
+
 package main
 
 import (

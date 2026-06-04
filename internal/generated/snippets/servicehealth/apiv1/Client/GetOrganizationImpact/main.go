@@ -16,6 +16,8 @@
 
 // [START servicehealth_v1_generated_ServiceHealth_GetOrganizationImpact_sync]
 
+//go:build examples
+
 package main
 
 import (

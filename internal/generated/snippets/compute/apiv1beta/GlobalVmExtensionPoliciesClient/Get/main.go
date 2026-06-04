@@ -16,6 +16,8 @@
 
 // [START compute_v1beta_generated_GlobalVmExtensionPolicies_Get_sync]
 
+//go:build examples
+
 package main
 
 import (

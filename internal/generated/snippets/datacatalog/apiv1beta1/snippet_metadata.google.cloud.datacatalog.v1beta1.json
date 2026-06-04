@@ -50,7 +50,7 @@
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_CreateEntry_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -96,7 +96,7 @@
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_CreateEntryGroup_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -142,7 +142,7 @@
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_CreateTag_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -188,7 +188,7 @@
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_CreateTagTemplate_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -234,7 +234,7 @@
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_CreateTagTemplateField_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -279,7 +279,7 @@
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_DeleteEntry_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -324,7 +324,7 @@
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_DeleteEntryGroup_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -369,7 +369,7 @@
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_DeleteTag_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -414,7 +414,7 @@
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_DeleteTagTemplate_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -459,7 +459,7 @@
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_DeleteTagTemplateField_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -505,7 +505,7 @@
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_GetEntry_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -551,7 +551,7 @@
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_GetEntryGroup_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -597,7 +597,7 @@
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_GetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -643,7 +643,7 @@
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_GetTagTemplate_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -689,7 +689,7 @@
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_ListEntries_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -735,7 +735,7 @@
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_ListEntryGroups_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -781,7 +781,7 @@
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_ListTags_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -827,7 +827,7 @@
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_LookupEntry_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -873,7 +873,7 @@
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_RenameTagTemplateField_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -919,7 +919,7 @@
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_RenameTagTemplateFieldEnumValue_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -965,7 +965,7 @@
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_SearchCatalog_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1011,7 +1011,7 @@
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_SetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1057,7 +1057,7 @@
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_TestIamPermissions_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1103,7 +1103,7 @@
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_UpdateEntry_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1149,7 +1149,7 @@
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_UpdateEntryGroup_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1195,7 +1195,7 @@
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_UpdateTag_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1241,7 +1241,7 @@
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_UpdateTagTemplate_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1287,7 +1287,7 @@
       "regionTag": "datacatalog_v1beta1_generated_DataCatalog_UpdateTagTemplateField_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1333,7 +1333,7 @@
       "regionTag": "datacatalog_v1beta1_generated_PolicyTagManager_CreatePolicyTag_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1379,7 +1379,7 @@
       "regionTag": "datacatalog_v1beta1_generated_PolicyTagManager_CreateTaxonomy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1424,7 +1424,7 @@
       "regionTag": "datacatalog_v1beta1_generated_PolicyTagManager_DeletePolicyTag_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -1469,7 +1469,7 @@
       "regionTag": "datacatalog_v1beta1_generated_PolicyTagManager_DeleteTaxonomy_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -1515,7 +1515,7 @@
       "regionTag": "datacatalog_v1beta1_generated_PolicyTagManager_GetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1561,7 +1561,7 @@
       "regionTag": "datacatalog_v1beta1_generated_PolicyTagManager_GetPolicyTag_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1607,7 +1607,7 @@
       "regionTag": "datacatalog_v1beta1_generated_PolicyTagManager_GetTaxonomy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1653,7 +1653,7 @@
       "regionTag": "datacatalog_v1beta1_generated_PolicyTagManager_ListPolicyTags_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1699,7 +1699,7 @@
       "regionTag": "datacatalog_v1beta1_generated_PolicyTagManager_ListTaxonomies_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1745,7 +1745,7 @@
       "regionTag": "datacatalog_v1beta1_generated_PolicyTagManager_SetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1791,7 +1791,7 @@
       "regionTag": "datacatalog_v1beta1_generated_PolicyTagManager_TestIamPermissions_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1837,7 +1837,7 @@
       "regionTag": "datacatalog_v1beta1_generated_PolicyTagManager_UpdatePolicyTag_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1883,7 +1883,7 @@
       "regionTag": "datacatalog_v1beta1_generated_PolicyTagManager_UpdateTaxonomy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1929,7 +1929,7 @@
       "regionTag": "datacatalog_v1beta1_generated_PolicyTagManagerSerialization_ExportTaxonomies_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1975,7 +1975,7 @@
       "regionTag": "datacatalog_v1beta1_generated_PolicyTagManagerSerialization_ImportTaxonomies_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }

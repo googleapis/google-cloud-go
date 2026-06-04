@@ -16,6 +16,8 @@
 
 // [START dataform_v1beta1_generated_Dataform_DeleteWorkspace_sync]
 
+//go:build examples
+
 package main
 
 import (

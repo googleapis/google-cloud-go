@@ -16,6 +16,8 @@
 
 // [START cloudiot_v1_generated_DeviceManager_ListDeviceStates_sync]
 
+//go:build examples
+
 package main
 
 import (

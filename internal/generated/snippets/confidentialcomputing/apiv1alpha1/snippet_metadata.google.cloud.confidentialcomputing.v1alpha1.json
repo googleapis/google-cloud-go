@@ -50,7 +50,7 @@
       "regionTag": "confidentialcomputing_v1alpha1_generated_ConfidentialComputing_CreateChallenge_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -96,7 +96,7 @@
       "regionTag": "confidentialcomputing_v1alpha1_generated_ConfidentialComputing_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -142,7 +142,7 @@
       "regionTag": "confidentialcomputing_v1alpha1_generated_ConfidentialComputing_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -188,7 +188,7 @@
       "regionTag": "confidentialcomputing_v1alpha1_generated_ConfidentialComputing_VerifyAttestation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }

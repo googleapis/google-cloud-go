@@ -16,6 +16,8 @@
 
 // [START dialogflow_v3_generated_EntityTypes_DeleteEntityType_sync]
 
+//go:build examples
+
 package main
 
 import (

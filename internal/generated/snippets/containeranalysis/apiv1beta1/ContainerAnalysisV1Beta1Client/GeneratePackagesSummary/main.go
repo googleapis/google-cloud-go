@@ -16,6 +16,8 @@
 
 // [START containeranalysis_v1beta1_generated_ContainerAnalysisV1Beta1_GeneratePackagesSummary_sync]
 
+//go:build examples
+
 package main
 
 import (

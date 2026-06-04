@@ -16,6 +16,8 @@
 
 // [START apihub_v1_generated_LintingService_DeleteOperation_sync]
 
+//go:build examples
+
 package main
 
 import (

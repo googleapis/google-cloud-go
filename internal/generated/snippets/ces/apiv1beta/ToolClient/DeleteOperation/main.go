@@ -16,6 +16,8 @@
 
 // [START ces_v1beta_generated_ToolService_DeleteOperation_sync]
 
+//go:build examples
+
 package main
 
 import (

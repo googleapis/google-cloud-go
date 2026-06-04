@@ -16,6 +16,8 @@
 
 // [START gkebackup_v1_generated_BackupForGKE_ListBackupPlanBindings_sync]
 
+//go:build examples
+
 package main
 
 import (

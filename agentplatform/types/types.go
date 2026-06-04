@@ -280,7 +280,7 @@ type ReasoningEngineSpecDeploymentSpecAgentGatewayConfig struct {
 
 // Specifies the HTTP GET configuration for the probe.
 type KeepAliveProbeHTTPGet struct {
-	// Required. Specifies the path of the HTTP GET request (e.g., "/is_busy").
+	// Required. Specifies the path of the HTTP GET request (e.g., `"/is_busy"`).
 	Path string `json:"path,omitempty"`
 	// Optional. Specifies the port number on the container to which the request is sent.
 	Port *int32 `json:"port,omitempty"`
@@ -340,7 +340,7 @@ type ReasoningEngineSpecPackageSpec struct {
 	DependencyFilesGCSURI string `json:"dependencyFilesGcsUri,omitempty"`
 	// Optional. The Cloud Storage URI of the pickled python object.
 	PickleObjectGCSURI string `json:"pickleObjectGcsUri,omitempty"`
-	// Optional. The Python version. Supported values are 3.9, 3.10, 3.11, 3.12, 3.13, 3.14.
+	// Optional. The Python version. Supported values are 3.10, 3.11, 3.12, 3.13, 3.14.
 	// If not specified, the default value is 3.10.
 	PythonVersion string `json:"pythonVersion,omitempty"`
 	// Optional. The Cloud Storage URI of the `requirements.txt` file
@@ -413,8 +413,8 @@ type ReasoningEngineSpecSourceCodeSpecPythonSpec struct {
 	// Optional. The path to the requirements file, relative to the source root. If not
 	// specified, defaults to "requirements.txt".
 	RequirementsFile string `json:"requirementsFile,omitempty"`
-	// Optional. The version of Python to use. Support version includes 3.9, 3.10, 3.11,
-	// 3.12, 3.13, 3.14. If not specified, default value is 3.10.
+	// Optional. The version of Python to use. Supported versions include 3.10, 3.11, 3.12,
+	// 3.13, 3.14. If not specified, default value is 3.10.
 	Version string `json:"version,omitempty"`
 }
 
@@ -578,13 +578,13 @@ type MemoryBankCustomizationConfig struct {
 
 // Represents the active rule that determines when to flush the buffer.
 type MemoryGenerationTriggerConfigGenerationTriggerRule struct {
-	// Specifies to trigger generation if the stream is inactive for the specified duration
-	// after the most recent event. The duration must have a minute-level granularity.
+	// Optional. Specifies to trigger generation if the stream is inactive for the specified
+	// duration after the most recent event. The duration must have a minute-level granularity.
 	IdleDuration time.Duration `json:"idleDuration,omitempty"`
-	// Specifies to trigger generation at a fixed interval. The duration must have a minute-level
-	// granularity.
+	// Optional. Specifies to trigger generation at a fixed interval. The duration must
+	// have a minute-level granularity.
 	FixedInterval time.Duration `json:"fixedInterval,omitempty"`
-	// Specifies to trigger generation when the event count reaches this limit.
+	// Optional. Specifies to trigger generation when the event count reaches this limit.
 	EventCount *int32 `json:"eventCount,omitempty"`
 }
 
@@ -2400,8 +2400,6 @@ type SandboxEnvironmentConnectionInfo struct {
 	LoadBalancerIp string `json:"loadBalancerIp,omitempty"`
 	// Output only. The internal IP address of the SandboxEnvironment.
 	SandboxInternalIp string `json:"sandboxInternalIp,omitempty"`
-	// Output only. The hostname of the SandboxEnvironment.
-	SandboxHostname string `json:"sandboxHostname,omitempty"`
 	// Output only. The routing token for the SandboxEnvironment.
 	RoutingToken string `json:"routingToken,omitempty"`
 }
@@ -3337,4 +3335,11 @@ type SchemaPromptSpecAppBuilderData struct {
 	Framework Framework `json:"framework,omitempty"`
 	// Linked resources attached to the application by the user.
 	LinkedResources []*SchemaPromptSpecAppBuilderDataLinkedResource `json:"linkedResources,omitempty"`
+}
+
+// Defines data for an interaction prompt.
+type SchemaPromptSpecInteractionData struct {
+	// Optional. Lists interaction IDs associated with the prompt. This maps 1:1 to PromptMessage.contents.
+	// If InteractionData is present, every prompt message has an interaction ID.
+	InteractionIDs []string `json:"interactionIds,omitempty"`
 }

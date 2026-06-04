@@ -50,7 +50,7 @@
       "regionTag": "ces_v1_generated_AgentService_BatchDeleteConversations_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -95,7 +95,7 @@
       "regionTag": "ces_v1_generated_AgentService_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -141,7 +141,7 @@
       "regionTag": "ces_v1_generated_AgentService_CreateAgent_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -187,7 +187,7 @@
       "regionTag": "ces_v1_generated_AgentService_CreateApp_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -233,7 +233,7 @@
       "regionTag": "ces_v1_generated_AgentService_CreateAppVersion_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -279,7 +279,7 @@
       "regionTag": "ces_v1_generated_AgentService_CreateDeployment_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -325,7 +325,7 @@
       "regionTag": "ces_v1_generated_AgentService_CreateExample_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -371,7 +371,7 @@
       "regionTag": "ces_v1_generated_AgentService_CreateGuardrail_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -417,7 +417,7 @@
       "regionTag": "ces_v1_generated_AgentService_CreateTool_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -463,7 +463,7 @@
       "regionTag": "ces_v1_generated_AgentService_CreateToolset_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -508,7 +508,7 @@
       "regionTag": "ces_v1_generated_AgentService_DeleteAgent_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -554,7 +554,7 @@
       "regionTag": "ces_v1_generated_AgentService_DeleteApp_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -599,7 +599,7 @@
       "regionTag": "ces_v1_generated_AgentService_DeleteAppVersion_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -644,7 +644,7 @@
       "regionTag": "ces_v1_generated_AgentService_DeleteConversation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -689,7 +689,7 @@
       "regionTag": "ces_v1_generated_AgentService_DeleteDeployment_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -734,7 +734,7 @@
       "regionTag": "ces_v1_generated_AgentService_DeleteExample_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -779,7 +779,7 @@
       "regionTag": "ces_v1_generated_AgentService_DeleteGuardrail_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -824,7 +824,7 @@
       "regionTag": "ces_v1_generated_AgentService_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -869,7 +869,7 @@
       "regionTag": "ces_v1_generated_AgentService_DeleteTool_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -914,7 +914,7 @@
       "regionTag": "ces_v1_generated_AgentService_DeleteToolset_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -960,7 +960,7 @@
       "regionTag": "ces_v1_generated_AgentService_ExportApp_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1006,7 +1006,7 @@
       "regionTag": "ces_v1_generated_AgentService_GetAgent_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1052,7 +1052,7 @@
       "regionTag": "ces_v1_generated_AgentService_GetApp_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1098,7 +1098,7 @@
       "regionTag": "ces_v1_generated_AgentService_GetAppVersion_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1144,7 +1144,7 @@
       "regionTag": "ces_v1_generated_AgentService_GetChangelog_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1190,7 +1190,7 @@
       "regionTag": "ces_v1_generated_AgentService_GetConversation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1236,7 +1236,7 @@
       "regionTag": "ces_v1_generated_AgentService_GetDeployment_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1282,7 +1282,7 @@
       "regionTag": "ces_v1_generated_AgentService_GetExample_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1328,7 +1328,7 @@
       "regionTag": "ces_v1_generated_AgentService_GetGuardrail_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1374,7 +1374,7 @@
       "regionTag": "ces_v1_generated_AgentService_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1420,7 +1420,7 @@
       "regionTag": "ces_v1_generated_AgentService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1466,7 +1466,7 @@
       "regionTag": "ces_v1_generated_AgentService_GetTool_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1512,7 +1512,7 @@
       "regionTag": "ces_v1_generated_AgentService_GetToolset_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1558,7 +1558,7 @@
       "regionTag": "ces_v1_generated_AgentService_ImportApp_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1604,7 +1604,7 @@
       "regionTag": "ces_v1_generated_AgentService_ListAgents_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1650,7 +1650,7 @@
       "regionTag": "ces_v1_generated_AgentService_ListAppVersions_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1696,7 +1696,7 @@
       "regionTag": "ces_v1_generated_AgentService_ListApps_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1742,7 +1742,7 @@
       "regionTag": "ces_v1_generated_AgentService_ListChangelogs_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1788,7 +1788,7 @@
       "regionTag": "ces_v1_generated_AgentService_ListConversations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1834,7 +1834,7 @@
       "regionTag": "ces_v1_generated_AgentService_ListDeployments_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1880,7 +1880,7 @@
       "regionTag": "ces_v1_generated_AgentService_ListExamples_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1926,7 +1926,7 @@
       "regionTag": "ces_v1_generated_AgentService_ListGuardrails_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1972,7 +1972,7 @@
       "regionTag": "ces_v1_generated_AgentService_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2018,7 +2018,7 @@
       "regionTag": "ces_v1_generated_AgentService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2064,7 +2064,7 @@
       "regionTag": "ces_v1_generated_AgentService_ListTools_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2110,7 +2110,7 @@
       "regionTag": "ces_v1_generated_AgentService_ListToolsets_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2156,7 +2156,7 @@
       "regionTag": "ces_v1_generated_AgentService_RestoreAppVersion_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2202,7 +2202,7 @@
       "regionTag": "ces_v1_generated_AgentService_UpdateAgent_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2248,7 +2248,7 @@
       "regionTag": "ces_v1_generated_AgentService_UpdateApp_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2294,7 +2294,7 @@
       "regionTag": "ces_v1_generated_AgentService_UpdateDeployment_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2340,7 +2340,7 @@
       "regionTag": "ces_v1_generated_AgentService_UpdateExample_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2386,7 +2386,7 @@
       "regionTag": "ces_v1_generated_AgentService_UpdateGuardrail_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2432,7 +2432,7 @@
       "regionTag": "ces_v1_generated_AgentService_UpdateTool_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2478,7 +2478,7 @@
       "regionTag": "ces_v1_generated_AgentService_UpdateToolset_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2520,7 +2520,7 @@
       "regionTag": "ces_v1_generated_SessionService_BidiRunSession_sync",
       "segments": [
         {
-          "end": 69,
+          "end": 71,
           "start": 18,
           "type": "FULL"
         }
@@ -2565,7 +2565,7 @@
       "regionTag": "ces_v1_generated_SessionService_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -2610,7 +2610,7 @@
       "regionTag": "ces_v1_generated_SessionService_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -2656,7 +2656,7 @@
       "regionTag": "ces_v1_generated_SessionService_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2702,7 +2702,7 @@
       "regionTag": "ces_v1_generated_SessionService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2748,7 +2748,7 @@
       "regionTag": "ces_v1_generated_SessionService_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2794,7 +2794,7 @@
       "regionTag": "ces_v1_generated_SessionService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2840,7 +2840,7 @@
       "regionTag": "ces_v1_generated_SessionService_RunSession_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2885,7 +2885,7 @@
       "regionTag": "ces_v1_generated_ToolService_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -2930,7 +2930,7 @@
       "regionTag": "ces_v1_generated_ToolService_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -2976,7 +2976,7 @@
       "regionTag": "ces_v1_generated_ToolService_ExecuteTool_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3022,7 +3022,7 @@
       "regionTag": "ces_v1_generated_ToolService_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3068,7 +3068,7 @@
       "regionTag": "ces_v1_generated_ToolService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3114,7 +3114,7 @@
       "regionTag": "ces_v1_generated_ToolService_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -3160,7 +3160,7 @@
       "regionTag": "ces_v1_generated_ToolService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -3206,7 +3206,7 @@
       "regionTag": "ces_v1_generated_ToolService_RetrieveToolSchema_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3252,7 +3252,7 @@
       "regionTag": "ces_v1_generated_ToolService_RetrieveTools_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3297,7 +3297,7 @@
       "regionTag": "ces_v1_generated_WidgetService_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -3342,7 +3342,7 @@
       "regionTag": "ces_v1_generated_WidgetService_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -3388,7 +3388,7 @@
       "regionTag": "ces_v1_generated_WidgetService_GenerateChatToken_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3434,7 +3434,7 @@
       "regionTag": "ces_v1_generated_WidgetService_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3480,7 +3480,7 @@
       "regionTag": "ces_v1_generated_WidgetService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3526,7 +3526,7 @@
       "regionTag": "ces_v1_generated_WidgetService_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -3572,7 +3572,7 @@
       "regionTag": "ces_v1_generated_WidgetService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }

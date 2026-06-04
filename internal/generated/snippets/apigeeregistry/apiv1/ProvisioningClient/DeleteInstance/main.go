@@ -16,6 +16,8 @@
 
 // [START apigeeregistry_v1_generated_Provisioning_DeleteInstance_sync]
 
+//go:build examples
+
 package main
 
 import (

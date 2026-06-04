@@ -33,7 +33,25 @@ func (it *AnywhereCacheIterator) All() iter.Seq2[*controlpb.AnywhereCache, error
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *FindingSummaryIterator) All() iter.Seq2[*controlpb.FindingSummary, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *FolderIterator) All() iter.Seq2[*controlpb.Folder, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *IntelligenceFindingIterator) All() iter.Seq2[*controlpb.IntelligenceFinding, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *IntelligenceFindingRevisionIterator) All() iter.Seq2[*controlpb.IntelligenceFindingRevision, error] {
 	return iterator.RangeAdapter(it.Next)
 }
 

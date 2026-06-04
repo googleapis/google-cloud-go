@@ -16,6 +16,8 @@
 
 // [START eventarc_v1_generated_Eventarc_ListMessageBuses_sync]
 
+//go:build examples
+
 package main
 
 import (

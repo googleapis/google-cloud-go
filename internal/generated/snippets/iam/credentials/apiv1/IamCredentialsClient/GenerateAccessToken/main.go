@@ -16,6 +16,8 @@
 
 // [START iamcredentials_v1_generated_IAMCredentials_GenerateAccessToken_sync]
 
+//go:build examples
+
 package main
 
 import (

@@ -16,6 +16,8 @@
 
 // [START merchantapi_v1beta_generated_FileUploadsService_GetFileUpload_sync]
 
+//go:build examples
+
 package main
 
 import (

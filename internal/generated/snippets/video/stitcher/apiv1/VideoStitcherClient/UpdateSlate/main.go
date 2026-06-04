@@ -16,6 +16,8 @@
 
 // [START videostitcher_v1_generated_VideoStitcherService_UpdateSlate_sync]
 
+//go:build examples
+
 package main
 
 import (

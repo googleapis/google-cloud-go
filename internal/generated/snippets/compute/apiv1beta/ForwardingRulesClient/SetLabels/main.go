@@ -16,6 +16,8 @@
 
 // [START compute_v1beta_generated_ForwardingRules_SetLabels_sync]
 
+//go:build examples
+
 package main
 
 import (

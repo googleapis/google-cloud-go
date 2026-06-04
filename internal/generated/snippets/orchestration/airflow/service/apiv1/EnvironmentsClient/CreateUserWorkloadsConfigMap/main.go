@@ -16,6 +16,8 @@
 
 // [START composer_v1_generated_Environments_CreateUserWorkloadsConfigMap_sync]
 
+//go:build examples
+
 package main
 
 import (

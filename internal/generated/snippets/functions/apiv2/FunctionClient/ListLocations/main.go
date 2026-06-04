@@ -16,6 +16,8 @@
 
 // [START cloudfunctions_v2_generated_FunctionService_ListLocations_sync]
 
+//go:build examples
+
 package main
 
 import (

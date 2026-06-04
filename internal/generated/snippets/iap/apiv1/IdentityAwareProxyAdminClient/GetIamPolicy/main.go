@@ -16,6 +16,8 @@
 
 // [START iap_v1_generated_IdentityAwareProxyAdminService_GetIamPolicy_sync]
 
+//go:build examples
+
 package main
 
 import (

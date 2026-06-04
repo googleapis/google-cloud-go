@@ -16,6 +16,8 @@
 
 // [START beyondcorp_v1_generated_AppConnectorsService_ReportStatus_sync]
 
+//go:build examples
+
 package main
 
 import (

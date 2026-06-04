@@ -16,6 +16,8 @@
 
 // [START discoveryengine_v1alpha_generated_EvaluationService_ListEvaluationResults_sync]
 
+//go:build examples
+
 package main
 
 import (

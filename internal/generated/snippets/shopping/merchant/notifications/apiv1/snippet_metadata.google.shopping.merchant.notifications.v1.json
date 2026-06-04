@@ -50,7 +50,7 @@
       "regionTag": "merchantapi_v1_generated_NotificationsApiService_CreateNotificationSubscription_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -95,7 +95,7 @@
       "regionTag": "merchantapi_v1_generated_NotificationsApiService_DeleteNotificationSubscription_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -141,7 +141,7 @@
       "regionTag": "merchantapi_v1_generated_NotificationsApiService_GetNotificationSubscription_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -187,7 +187,7 @@
       "regionTag": "merchantapi_v1_generated_NotificationsApiService_GetNotificationSubscriptionHealthMetrics_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -233,7 +233,7 @@
       "regionTag": "merchantapi_v1_generated_NotificationsApiService_ListNotificationSubscriptions_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -279,7 +279,7 @@
       "regionTag": "merchantapi_v1_generated_NotificationsApiService_UpdateNotificationSubscription_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }

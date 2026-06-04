@@ -16,6 +16,8 @@
 
 // [START places_v1_generated_Places_GetPlace_sync]
 
+//go:build examples
+
 package main
 
 import (

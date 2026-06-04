@@ -16,6 +16,8 @@
 
 // [START composer_v1_generated_Environments_ListWorkloads_sync]
 
+//go:build examples
+
 package main
 
 import (

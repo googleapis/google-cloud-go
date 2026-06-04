@@ -16,6 +16,8 @@
 
 // [START iam_v2_generated_Policies_CreatePolicy_sync]
 
+//go:build examples
+
 package main
 
 import (

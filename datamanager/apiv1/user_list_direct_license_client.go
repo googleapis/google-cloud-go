@@ -110,7 +110,7 @@ type UserListDirectLicenseClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *UserListDirectLicenseClient) Close() error {
 	return c.internalClient.Close()
@@ -261,7 +261,7 @@ func (c *userListDirectLicenseGRPCClient) setGoogleClientInfo(keyval ...string) 
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *userListDirectLicenseGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -361,7 +361,7 @@ func (c *userListDirectLicenseRESTClient) setGoogleClientInfo(keyval ...string) 
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *userListDirectLicenseRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.

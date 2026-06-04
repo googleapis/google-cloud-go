@@ -16,6 +16,8 @@
 
 // [START notebooks_v1_generated_NotebookService_ReportInstanceInfo_sync]
 
+//go:build examples
+
 package main
 
 import (

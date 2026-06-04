@@ -16,6 +16,8 @@
 
 // [START clouddeploy_v1_generated_CloudDeploy_GetOperation_sync]
 
+//go:build examples
+
 package main
 
 import (

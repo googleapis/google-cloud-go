@@ -16,6 +16,8 @@
 
 // [START workspaceevents_v1beta_generated_SubscriptionsService_DeleteSubscription_sync]
 
+//go:build examples
+
 package main
 
 import (

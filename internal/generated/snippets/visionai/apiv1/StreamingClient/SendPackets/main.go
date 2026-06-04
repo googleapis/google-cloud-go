@@ -16,6 +16,8 @@
 
 // [START visionai_v1_generated_StreamingService_SendPackets_sync]
 
+//go:build examples
+
 package main
 
 import (

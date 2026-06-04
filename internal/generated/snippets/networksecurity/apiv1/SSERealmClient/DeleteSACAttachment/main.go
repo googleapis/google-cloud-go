@@ -16,6 +16,8 @@
 
 // [START networksecurity_v1_generated_SSERealmService_DeleteSACAttachment_sync]
 
+//go:build examples
+
 package main
 
 import (

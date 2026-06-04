@@ -16,6 +16,8 @@
 
 // [START contactcenterinsights_v1_generated_ContactCenterInsights_ListPhraseMatchers_sync]
 
+//go:build examples
+
 package main
 
 import (

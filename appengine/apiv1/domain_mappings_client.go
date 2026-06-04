@@ -142,7 +142,7 @@ type DomainMappingsClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *DomainMappingsClient) Close() error {
 	return c.internalClient.Close()
@@ -328,7 +328,7 @@ func (c *domainMappingsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *domainMappingsGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -440,7 +440,7 @@ func (c *domainMappingsRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *domainMappingsRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.

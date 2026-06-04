@@ -16,6 +16,8 @@
 
 // [START servicecontrol_v1_generated_ServiceController_Report_sync]
 
+//go:build examples
+
 package main
 
 import (

@@ -16,6 +16,8 @@
 
 // [START storagebatchoperations_v1_generated_StorageBatchOperations_CreateJob_sync]
 
+//go:build examples
+
 package main
 
 import (

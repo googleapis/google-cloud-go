@@ -16,6 +16,8 @@
 
 // [START cloudkms_v1_generated_KeyManagementService_RawEncrypt_sync]
 
+//go:build examples
+
 package main
 
 import (

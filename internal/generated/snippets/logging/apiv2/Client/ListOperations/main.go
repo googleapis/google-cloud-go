@@ -16,6 +16,8 @@
 
 // [START logging_v2_generated_LoggingServiceV2_ListOperations_sync]
 
+//go:build examples
+
 package main
 
 import (

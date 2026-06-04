@@ -16,6 +16,8 @@
 
 // [START compute_v1_generated_InstanceGroupManagers_SetTargetPools_sync]
 
+//go:build examples
+
 package main
 
 import (

@@ -16,6 +16,8 @@
 
 // [START batch_v1_generated_BatchService_GetLocation_sync]
 
+//go:build examples
+
 package main
 
 import (

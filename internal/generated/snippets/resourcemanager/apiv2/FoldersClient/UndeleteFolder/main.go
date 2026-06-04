@@ -16,6 +16,8 @@
 
 // [START cloudresourcemanager_v2_generated_Folders_UndeleteFolder_sync]
 
+//go:build examples
+
 package main
 
 import (

@@ -50,7 +50,7 @@
       "regionTag": "datastream_v1alpha1_generated_Datastream_CreateConnectionProfile_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -96,7 +96,7 @@
       "regionTag": "datastream_v1alpha1_generated_Datastream_CreatePrivateConnection_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -142,7 +142,7 @@
       "regionTag": "datastream_v1alpha1_generated_Datastream_CreateRoute_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -188,7 +188,7 @@
       "regionTag": "datastream_v1alpha1_generated_Datastream_CreateStream_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -234,7 +234,7 @@
       "regionTag": "datastream_v1alpha1_generated_Datastream_DeleteConnectionProfile_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -280,7 +280,7 @@
       "regionTag": "datastream_v1alpha1_generated_Datastream_DeletePrivateConnection_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -326,7 +326,7 @@
       "regionTag": "datastream_v1alpha1_generated_Datastream_DeleteRoute_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -372,7 +372,7 @@
       "regionTag": "datastream_v1alpha1_generated_Datastream_DeleteStream_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -418,7 +418,7 @@
       "regionTag": "datastream_v1alpha1_generated_Datastream_DiscoverConnectionProfile_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -464,7 +464,7 @@
       "regionTag": "datastream_v1alpha1_generated_Datastream_FetchErrors_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -510,7 +510,7 @@
       "regionTag": "datastream_v1alpha1_generated_Datastream_FetchStaticIps_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -556,7 +556,7 @@
       "regionTag": "datastream_v1alpha1_generated_Datastream_GetConnectionProfile_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -602,7 +602,7 @@
       "regionTag": "datastream_v1alpha1_generated_Datastream_GetPrivateConnection_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -648,7 +648,7 @@
       "regionTag": "datastream_v1alpha1_generated_Datastream_GetRoute_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -694,7 +694,7 @@
       "regionTag": "datastream_v1alpha1_generated_Datastream_GetStream_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -740,7 +740,7 @@
       "regionTag": "datastream_v1alpha1_generated_Datastream_ListConnectionProfiles_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -786,7 +786,7 @@
       "regionTag": "datastream_v1alpha1_generated_Datastream_ListPrivateConnections_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -832,7 +832,7 @@
       "regionTag": "datastream_v1alpha1_generated_Datastream_ListRoutes_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -878,7 +878,7 @@
       "regionTag": "datastream_v1alpha1_generated_Datastream_ListStreams_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -924,7 +924,7 @@
       "regionTag": "datastream_v1alpha1_generated_Datastream_UpdateConnectionProfile_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -970,7 +970,7 @@
       "regionTag": "datastream_v1alpha1_generated_Datastream_UpdateStream_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }

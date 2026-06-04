@@ -16,6 +16,8 @@
 
 // [START discoveryengine_v1_generated_IdentityMappingStoreService_CancelOperation_sync]
 
+//go:build examples
+
 package main
 
 import (

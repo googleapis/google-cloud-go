@@ -16,6 +16,8 @@
 
 // [START speech_v1p1beta1_generated_Adaptation_UpdateCustomClass_sync]
 
+//go:build examples
+
 package main
 
 import (

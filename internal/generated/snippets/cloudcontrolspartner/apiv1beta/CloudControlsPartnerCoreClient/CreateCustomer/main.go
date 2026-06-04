@@ -16,6 +16,8 @@
 
 // [START cloudcontrolspartner_v1beta_generated_CloudControlsPartnerCore_CreateCustomer_sync]
 
+//go:build examples
+
 package main
 
 import (

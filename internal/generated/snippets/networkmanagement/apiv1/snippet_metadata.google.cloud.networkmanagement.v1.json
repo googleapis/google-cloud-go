@@ -49,7 +49,7 @@
       "regionTag": "networkmanagement_v1_generated_OrganizationVpcFlowLogsService_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -95,7 +95,7 @@
       "regionTag": "networkmanagement_v1_generated_OrganizationVpcFlowLogsService_CreateVpcFlowLogsConfig_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -140,7 +140,7 @@
       "regionTag": "networkmanagement_v1_generated_OrganizationVpcFlowLogsService_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -186,7 +186,7 @@
       "regionTag": "networkmanagement_v1_generated_OrganizationVpcFlowLogsService_DeleteVpcFlowLogsConfig_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -232,7 +232,7 @@
       "regionTag": "networkmanagement_v1_generated_OrganizationVpcFlowLogsService_GetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -278,7 +278,7 @@
       "regionTag": "networkmanagement_v1_generated_OrganizationVpcFlowLogsService_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -324,7 +324,7 @@
       "regionTag": "networkmanagement_v1_generated_OrganizationVpcFlowLogsService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -370,7 +370,7 @@
       "regionTag": "networkmanagement_v1_generated_OrganizationVpcFlowLogsService_GetVpcFlowLogsConfig_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -416,7 +416,7 @@
       "regionTag": "networkmanagement_v1_generated_OrganizationVpcFlowLogsService_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -462,7 +462,7 @@
       "regionTag": "networkmanagement_v1_generated_OrganizationVpcFlowLogsService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -508,7 +508,7 @@
       "regionTag": "networkmanagement_v1_generated_OrganizationVpcFlowLogsService_ListVpcFlowLogsConfigs_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -554,7 +554,7 @@
       "regionTag": "networkmanagement_v1_generated_OrganizationVpcFlowLogsService_SetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -600,7 +600,7 @@
       "regionTag": "networkmanagement_v1_generated_OrganizationVpcFlowLogsService_TestIamPermissions_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -646,7 +646,7 @@
       "regionTag": "networkmanagement_v1_generated_OrganizationVpcFlowLogsService_UpdateVpcFlowLogsConfig_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -691,7 +691,7 @@
       "regionTag": "networkmanagement_v1_generated_ReachabilityService_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -737,7 +737,7 @@
       "regionTag": "networkmanagement_v1_generated_ReachabilityService_CreateConnectivityTest_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -783,7 +783,7 @@
       "regionTag": "networkmanagement_v1_generated_ReachabilityService_DeleteConnectivityTest_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -828,7 +828,7 @@
       "regionTag": "networkmanagement_v1_generated_ReachabilityService_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -874,7 +874,7 @@
       "regionTag": "networkmanagement_v1_generated_ReachabilityService_GetConnectivityTest_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -920,7 +920,7 @@
       "regionTag": "networkmanagement_v1_generated_ReachabilityService_GetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -966,7 +966,7 @@
       "regionTag": "networkmanagement_v1_generated_ReachabilityService_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1012,7 +1012,7 @@
       "regionTag": "networkmanagement_v1_generated_ReachabilityService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1058,7 +1058,7 @@
       "regionTag": "networkmanagement_v1_generated_ReachabilityService_ListConnectivityTests_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1104,7 +1104,7 @@
       "regionTag": "networkmanagement_v1_generated_ReachabilityService_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1150,7 +1150,7 @@
       "regionTag": "networkmanagement_v1_generated_ReachabilityService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1196,7 +1196,7 @@
       "regionTag": "networkmanagement_v1_generated_ReachabilityService_RerunConnectivityTest_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1242,7 +1242,7 @@
       "regionTag": "networkmanagement_v1_generated_ReachabilityService_SetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1288,7 +1288,7 @@
       "regionTag": "networkmanagement_v1_generated_ReachabilityService_TestIamPermissions_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1334,7 +1334,7 @@
       "regionTag": "networkmanagement_v1_generated_ReachabilityService_UpdateConnectivityTest_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1379,7 +1379,7 @@
       "regionTag": "networkmanagement_v1_generated_VpcFlowLogsService_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -1425,7 +1425,7 @@
       "regionTag": "networkmanagement_v1_generated_VpcFlowLogsService_CreateVpcFlowLogsConfig_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1470,7 +1470,7 @@
       "regionTag": "networkmanagement_v1_generated_VpcFlowLogsService_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -1516,7 +1516,7 @@
       "regionTag": "networkmanagement_v1_generated_VpcFlowLogsService_DeleteVpcFlowLogsConfig_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -1562,7 +1562,7 @@
       "regionTag": "networkmanagement_v1_generated_VpcFlowLogsService_GetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1608,7 +1608,7 @@
       "regionTag": "networkmanagement_v1_generated_VpcFlowLogsService_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1654,7 +1654,7 @@
       "regionTag": "networkmanagement_v1_generated_VpcFlowLogsService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1700,7 +1700,7 @@
       "regionTag": "networkmanagement_v1_generated_VpcFlowLogsService_GetVpcFlowLogsConfig_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1746,7 +1746,7 @@
       "regionTag": "networkmanagement_v1_generated_VpcFlowLogsService_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1792,7 +1792,7 @@
       "regionTag": "networkmanagement_v1_generated_VpcFlowLogsService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1838,7 +1838,7 @@
       "regionTag": "networkmanagement_v1_generated_VpcFlowLogsService_ListVpcFlowLogsConfigs_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1884,7 +1884,7 @@
       "regionTag": "networkmanagement_v1_generated_VpcFlowLogsService_QueryOrgVpcFlowLogsConfigs_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1930,7 +1930,7 @@
       "regionTag": "networkmanagement_v1_generated_VpcFlowLogsService_SetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1976,7 +1976,7 @@
       "regionTag": "networkmanagement_v1_generated_VpcFlowLogsService_ShowEffectiveFlowLogsConfigs_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2022,7 +2022,7 @@
       "regionTag": "networkmanagement_v1_generated_VpcFlowLogsService_TestIamPermissions_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2068,7 +2068,7 @@
       "regionTag": "networkmanagement_v1_generated_VpcFlowLogsService_UpdateVpcFlowLogsConfig_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }

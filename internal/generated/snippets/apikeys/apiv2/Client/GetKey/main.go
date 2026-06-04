@@ -16,6 +16,8 @@
 
 // [START apikeys_v2_generated_ApiKeys_GetKey_sync]
 
+//go:build examples
+
 package main
 
 import (

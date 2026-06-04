@@ -16,6 +16,8 @@
 
 // [START cloudsupport_v2_generated_CaseAttachmentService_GetAttachment_sync]
 
+//go:build examples
+
 package main
 
 import (

@@ -16,6 +16,8 @@
 
 // [START recommendationengine_v1beta1_generated_PredictionService_Predict_sync]
 
+//go:build examples
+
 package main
 
 import (

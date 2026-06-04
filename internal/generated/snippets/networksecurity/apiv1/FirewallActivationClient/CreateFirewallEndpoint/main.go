@@ -16,6 +16,8 @@
 
 // [START networksecurity_v1_generated_FirewallActivation_CreateFirewallEndpoint_sync]
 
+//go:build examples
+
 package main
 
 import (

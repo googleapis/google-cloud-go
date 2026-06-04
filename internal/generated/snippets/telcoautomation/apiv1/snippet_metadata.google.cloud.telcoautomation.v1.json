@@ -50,7 +50,7 @@
       "regionTag": "telcoautomation_v1_generated_TelcoAutomation_ApplyDeployment_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -96,7 +96,7 @@
       "regionTag": "telcoautomation_v1_generated_TelcoAutomation_ApplyHydratedDeployment_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -142,7 +142,7 @@
       "regionTag": "telcoautomation_v1_generated_TelcoAutomation_ApproveBlueprint_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -187,7 +187,7 @@
       "regionTag": "telcoautomation_v1_generated_TelcoAutomation_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -233,7 +233,7 @@
       "regionTag": "telcoautomation_v1_generated_TelcoAutomation_ComputeDeploymentStatus_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -279,7 +279,7 @@
       "regionTag": "telcoautomation_v1_generated_TelcoAutomation_CreateBlueprint_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -325,7 +325,7 @@
       "regionTag": "telcoautomation_v1_generated_TelcoAutomation_CreateDeployment_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -371,7 +371,7 @@
       "regionTag": "telcoautomation_v1_generated_TelcoAutomation_CreateEdgeSlm_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -417,7 +417,7 @@
       "regionTag": "telcoautomation_v1_generated_TelcoAutomation_CreateOrchestrationCluster_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -462,7 +462,7 @@
       "regionTag": "telcoautomation_v1_generated_TelcoAutomation_DeleteBlueprint_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -508,7 +508,7 @@
       "regionTag": "telcoautomation_v1_generated_TelcoAutomation_DeleteEdgeSlm_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -553,7 +553,7 @@
       "regionTag": "telcoautomation_v1_generated_TelcoAutomation_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -599,7 +599,7 @@
       "regionTag": "telcoautomation_v1_generated_TelcoAutomation_DeleteOrchestrationCluster_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -645,7 +645,7 @@
       "regionTag": "telcoautomation_v1_generated_TelcoAutomation_DiscardBlueprintChanges_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -691,7 +691,7 @@
       "regionTag": "telcoautomation_v1_generated_TelcoAutomation_DiscardDeploymentChanges_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -737,7 +737,7 @@
       "regionTag": "telcoautomation_v1_generated_TelcoAutomation_GetBlueprint_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -783,7 +783,7 @@
       "regionTag": "telcoautomation_v1_generated_TelcoAutomation_GetDeployment_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -829,7 +829,7 @@
       "regionTag": "telcoautomation_v1_generated_TelcoAutomation_GetEdgeSlm_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -875,7 +875,7 @@
       "regionTag": "telcoautomation_v1_generated_TelcoAutomation_GetHydratedDeployment_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -921,7 +921,7 @@
       "regionTag": "telcoautomation_v1_generated_TelcoAutomation_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -967,7 +967,7 @@
       "regionTag": "telcoautomation_v1_generated_TelcoAutomation_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1013,7 +1013,7 @@
       "regionTag": "telcoautomation_v1_generated_TelcoAutomation_GetOrchestrationCluster_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1059,7 +1059,7 @@
       "regionTag": "telcoautomation_v1_generated_TelcoAutomation_GetPublicBlueprint_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1105,7 +1105,7 @@
       "regionTag": "telcoautomation_v1_generated_TelcoAutomation_ListBlueprintRevisions_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1151,7 +1151,7 @@
       "regionTag": "telcoautomation_v1_generated_TelcoAutomation_ListBlueprints_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1197,7 +1197,7 @@
       "regionTag": "telcoautomation_v1_generated_TelcoAutomation_ListDeploymentRevisions_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1243,7 +1243,7 @@
       "regionTag": "telcoautomation_v1_generated_TelcoAutomation_ListDeployments_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1289,7 +1289,7 @@
       "regionTag": "telcoautomation_v1_generated_TelcoAutomation_ListEdgeSlms_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1335,7 +1335,7 @@
       "regionTag": "telcoautomation_v1_generated_TelcoAutomation_ListHydratedDeployments_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1381,7 +1381,7 @@
       "regionTag": "telcoautomation_v1_generated_TelcoAutomation_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1427,7 +1427,7 @@
       "regionTag": "telcoautomation_v1_generated_TelcoAutomation_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1473,7 +1473,7 @@
       "regionTag": "telcoautomation_v1_generated_TelcoAutomation_ListOrchestrationClusters_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1519,7 +1519,7 @@
       "regionTag": "telcoautomation_v1_generated_TelcoAutomation_ListPublicBlueprints_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1565,7 +1565,7 @@
       "regionTag": "telcoautomation_v1_generated_TelcoAutomation_ProposeBlueprint_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1611,7 +1611,7 @@
       "regionTag": "telcoautomation_v1_generated_TelcoAutomation_RejectBlueprint_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1656,7 +1656,7 @@
       "regionTag": "telcoautomation_v1_generated_TelcoAutomation_RemoveDeployment_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -1702,7 +1702,7 @@
       "regionTag": "telcoautomation_v1_generated_TelcoAutomation_RollbackDeployment_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1748,7 +1748,7 @@
       "regionTag": "telcoautomation_v1_generated_TelcoAutomation_SearchBlueprintRevisions_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1794,7 +1794,7 @@
       "regionTag": "telcoautomation_v1_generated_TelcoAutomation_SearchDeploymentRevisions_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1840,7 +1840,7 @@
       "regionTag": "telcoautomation_v1_generated_TelcoAutomation_UpdateBlueprint_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1886,7 +1886,7 @@
       "regionTag": "telcoautomation_v1_generated_TelcoAutomation_UpdateDeployment_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1932,7 +1932,7 @@
       "regionTag": "telcoautomation_v1_generated_TelcoAutomation_UpdateHydratedDeployment_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }

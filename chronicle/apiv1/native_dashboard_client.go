@@ -256,7 +256,7 @@ type NativeDashboardClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *NativeDashboardClient) Close() error {
 	return c.internalClient.Close()
@@ -470,7 +470,7 @@ func (c *nativeDashboardGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *nativeDashboardGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -578,7 +578,7 @@ func (c *nativeDashboardRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *nativeDashboardRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.

@@ -16,6 +16,8 @@
 
 // [START monitoring_v3_generated_GroupService_GetGroup_sync]
 
+//go:build examples
+
 package main
 
 import (

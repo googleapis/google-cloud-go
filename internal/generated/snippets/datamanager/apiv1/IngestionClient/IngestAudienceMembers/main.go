@@ -16,6 +16,8 @@
 
 // [START datamanager_v1_generated_IngestionService_IngestAudienceMembers_sync]
 
+//go:build examples
+
 package main
 
 import (

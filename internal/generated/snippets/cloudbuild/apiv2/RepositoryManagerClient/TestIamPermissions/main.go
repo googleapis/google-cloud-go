@@ -16,6 +16,8 @@
 
 // [START cloudbuild_v2_generated_RepositoryManager_TestIamPermissions_sync]
 
+//go:build examples
+
 package main
 
 import (

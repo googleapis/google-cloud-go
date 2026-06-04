@@ -16,6 +16,8 @@
 
 // [START cloudapiregistry_v1_generated_CloudApiRegistry_GetLocation_sync]
 
+//go:build examples
+
 package main
 
 import (

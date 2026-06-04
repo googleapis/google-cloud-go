@@ -16,6 +16,8 @@
 
 // [START geminidataanalytics_v1_generated_DataAgentService_DeleteDataAgent_sync]
 
+//go:build examples
+
 package main
 
 import (

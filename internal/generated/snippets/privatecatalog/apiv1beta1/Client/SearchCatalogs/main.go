@@ -16,6 +16,8 @@
 
 // [START cloudprivatecatalog_v1beta1_generated_PrivateCatalog_SearchCatalogs_sync]
 
+//go:build examples
+
 package main
 
 import (

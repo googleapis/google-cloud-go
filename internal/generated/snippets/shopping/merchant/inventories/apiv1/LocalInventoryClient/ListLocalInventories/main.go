@@ -16,6 +16,8 @@
 
 // [START merchantapi_v1_generated_LocalInventoryService_ListLocalInventories_sync]
 
+//go:build examples
+
 package main
 
 import (

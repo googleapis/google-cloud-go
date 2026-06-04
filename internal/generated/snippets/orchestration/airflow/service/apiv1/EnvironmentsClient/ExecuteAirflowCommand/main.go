@@ -16,6 +16,8 @@
 
 // [START composer_v1_generated_Environments_ExecuteAirflowCommand_sync]
 
+//go:build examples
+
 package main
 
 import (

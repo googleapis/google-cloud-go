@@ -16,6 +16,8 @@
 
 // [START edgenetwork_v1_generated_EdgeNetwork_CreateNetwork_sync]
 
+//go:build examples
+
 package main
 
 import (

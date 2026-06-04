@@ -16,6 +16,8 @@
 
 // [START css_v1_generated_AccountsService_UpdateLabels_sync]
 
+//go:build examples
+
 package main
 
 import (

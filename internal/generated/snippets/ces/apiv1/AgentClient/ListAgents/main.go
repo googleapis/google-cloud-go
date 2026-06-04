@@ -16,6 +16,8 @@
 
 // [START ces_v1_generated_AgentService_ListAgents_sync]
 
+//go:build examples
+
 package main
 
 import (

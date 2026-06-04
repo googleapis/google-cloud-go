@@ -194,7 +194,7 @@ type TenantClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *TenantClient) Close() error {
 	return c.internalClient.Close()
@@ -348,7 +348,7 @@ func (c *tenantGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *tenantGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -446,7 +446,7 @@ func (c *tenantRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *tenantRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.

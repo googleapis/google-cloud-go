@@ -16,6 +16,8 @@
 
 // [START speech_v2_generated_Speech_DeleteRecognizer_sync]
 
+//go:build examples
+
 package main
 
 import (

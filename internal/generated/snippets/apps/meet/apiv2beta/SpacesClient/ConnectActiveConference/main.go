@@ -16,6 +16,8 @@
 
 // [START meet_v2beta_generated_SpacesService_ConnectActiveConference_sync]
 
+//go:build examples
+
 package main
 
 import (

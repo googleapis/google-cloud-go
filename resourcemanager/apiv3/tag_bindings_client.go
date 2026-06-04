@@ -153,7 +153,7 @@ type TagBindingsClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *TagBindingsClient) Close() error {
 	return c.internalClient.Close()
@@ -335,7 +335,7 @@ func (c *tagBindingsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *tagBindingsGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -448,7 +448,7 @@ func (c *tagBindingsRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *tagBindingsRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.

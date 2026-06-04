@@ -16,6 +16,8 @@
 
 // [START compute_v1_generated_MachineImages_TestIamPermissions_sync]
 
+//go:build examples
+
 package main
 
 import (

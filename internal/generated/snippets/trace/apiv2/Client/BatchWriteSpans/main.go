@@ -16,6 +16,8 @@
 
 // [START cloudtrace_v2_generated_TraceService_BatchWriteSpans_sync]
 
+//go:build examples
+
 package main
 
 import (

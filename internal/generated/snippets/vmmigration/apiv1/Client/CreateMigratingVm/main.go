@@ -16,6 +16,8 @@
 
 // [START vmmigration_v1_generated_VmMigration_CreateMigratingVm_sync]
 
+//go:build examples
+
 package main
 
 import (

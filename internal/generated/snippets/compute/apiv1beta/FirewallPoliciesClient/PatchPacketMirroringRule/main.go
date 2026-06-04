@@ -16,6 +16,8 @@
 
 // [START compute_v1beta_generated_FirewallPolicies_PatchPacketMirroringRule_sync]
 
+//go:build examples
+
 package main
 
 import (

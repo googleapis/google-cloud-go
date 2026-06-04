@@ -16,6 +16,8 @@
 
 // [START iam_v3beta_generated_PrincipalAccessBoundaryPolicies_CreatePrincipalAccessBoundaryPolicy_sync]
 
+//go:build examples
+
 package main
 
 import (

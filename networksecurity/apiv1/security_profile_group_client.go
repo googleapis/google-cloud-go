@@ -183,7 +183,7 @@ type SecurityProfileGroupClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *SecurityProfileGroupClient) Close() error {
 	return c.internalClient.Close()
@@ -500,7 +500,7 @@ func (c *securityProfileGroupGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *securityProfileGroupGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -627,7 +627,7 @@ func (c *securityProfileGroupRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *securityProfileGroupRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.

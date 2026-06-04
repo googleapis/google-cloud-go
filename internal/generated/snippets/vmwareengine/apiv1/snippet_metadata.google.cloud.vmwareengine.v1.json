@@ -50,7 +50,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_CreateCluster_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -96,7 +96,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_CreateExternalAccessRule_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -142,7 +142,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_CreateExternalAddress_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -188,7 +188,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_CreateHcxActivationKey_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -234,7 +234,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_CreateLoggingServer_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -280,7 +280,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_CreateManagementDnsZoneBinding_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -326,7 +326,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_CreateNetworkPeering_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -372,7 +372,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_CreateNetworkPolicy_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -418,7 +418,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_CreatePrivateCloud_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -464,7 +464,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_CreatePrivateConnection_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -510,7 +510,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_CreateVmwareEngineNetwork_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -556,7 +556,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_DeleteCluster_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -602,7 +602,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_DeleteExternalAccessRule_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -648,7 +648,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_DeleteExternalAddress_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -694,7 +694,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_DeleteLoggingServer_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -740,7 +740,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_DeleteManagementDnsZoneBinding_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -786,7 +786,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_DeleteNetworkPeering_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -832,7 +832,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_DeleteNetworkPolicy_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -877,7 +877,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -923,7 +923,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_DeletePrivateCloud_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -969,7 +969,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_DeletePrivateConnection_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -1015,7 +1015,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_DeleteVmwareEngineNetwork_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -1061,7 +1061,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_FetchNetworkPolicyExternalAddresses_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1107,7 +1107,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_GetCluster_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1153,7 +1153,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_GetDnsBindPermission_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1199,7 +1199,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_GetDnsForwarding_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1245,7 +1245,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_GetExternalAccessRule_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1291,7 +1291,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_GetExternalAddress_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1337,7 +1337,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_GetHcxActivationKey_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1383,7 +1383,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_GetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1429,7 +1429,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1475,7 +1475,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_GetLoggingServer_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1521,7 +1521,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_GetManagementDnsZoneBinding_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1567,7 +1567,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_GetNetworkPeering_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1613,7 +1613,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_GetNetworkPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1659,7 +1659,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_GetNode_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1705,7 +1705,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_GetNodeType_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1751,7 +1751,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1797,7 +1797,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_GetPrivateCloud_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1843,7 +1843,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_GetPrivateConnection_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1889,7 +1889,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_GetSubnet_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1935,7 +1935,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_GetVmwareEngineNetwork_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1981,7 +1981,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_GrantDnsBindPermission_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2027,7 +2027,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_ListClusters_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2073,7 +2073,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_ListExternalAccessRules_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2119,7 +2119,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_ListExternalAddresses_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2165,7 +2165,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_ListHcxActivationKeys_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2211,7 +2211,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2257,7 +2257,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_ListLoggingServers_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2303,7 +2303,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_ListManagementDnsZoneBindings_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2349,7 +2349,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_ListNetworkPeerings_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2395,7 +2395,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_ListNetworkPolicies_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2441,7 +2441,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_ListNodeTypes_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2487,7 +2487,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_ListNodes_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2533,7 +2533,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2579,7 +2579,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_ListPeeringRoutes_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2625,7 +2625,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_ListPrivateClouds_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2671,7 +2671,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_ListPrivateConnectionPeeringRoutes_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2717,7 +2717,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_ListPrivateConnections_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2763,7 +2763,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_ListSubnets_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2809,7 +2809,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_ListVmwareEngineNetworks_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2855,7 +2855,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_RepairManagementDnsZoneBinding_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2901,7 +2901,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_ResetNsxCredentials_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2947,7 +2947,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_ResetVcenterCredentials_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2993,7 +2993,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_RevokeDnsBindPermission_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -3039,7 +3039,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_SetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3085,7 +3085,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_ShowNsxCredentials_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3131,7 +3131,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_ShowVcenterCredentials_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3177,7 +3177,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_TestIamPermissions_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3223,7 +3223,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_UndeletePrivateCloud_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -3269,7 +3269,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_UpdateCluster_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -3315,7 +3315,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_UpdateDnsForwarding_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -3361,7 +3361,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_UpdateExternalAccessRule_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -3407,7 +3407,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_UpdateExternalAddress_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -3453,7 +3453,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_UpdateLoggingServer_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -3499,7 +3499,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_UpdateManagementDnsZoneBinding_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -3545,7 +3545,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_UpdateNetworkPeering_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -3591,7 +3591,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_UpdateNetworkPolicy_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -3637,7 +3637,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_UpdatePrivateCloud_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -3683,7 +3683,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_UpdatePrivateConnection_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -3729,7 +3729,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_UpdateSubnet_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -3775,7 +3775,7 @@
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_UpdateVmwareEngineNetwork_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }

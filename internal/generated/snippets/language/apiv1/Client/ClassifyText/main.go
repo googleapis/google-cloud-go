@@ -16,6 +16,8 @@
 
 // [START language_v1_generated_LanguageService_ClassifyText_sync]
 
+//go:build examples
+
 package main
 
 import (

@@ -16,6 +16,8 @@
 
 // [START networkservices_v1_generated_DepService_UpdateLbTrafficExtension_sync]
 
+//go:build examples
+
 package main
 
 import (

@@ -266,7 +266,7 @@ type RowAccessPolicyClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *RowAccessPolicyClient) Close() error {
 	return c.internalClient.Close()
@@ -417,7 +417,7 @@ func (c *rowAccessPolicyGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *rowAccessPolicyGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -515,7 +515,7 @@ func (c *rowAccessPolicyRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *rowAccessPolicyRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.

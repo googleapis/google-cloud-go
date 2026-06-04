@@ -16,6 +16,8 @@
 
 // [START datacatalog_v1beta1_generated_DataCatalog_DeleteTagTemplate_sync]
 
+//go:build examples
+
 package main
 
 import (

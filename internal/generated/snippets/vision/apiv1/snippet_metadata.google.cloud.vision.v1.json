@@ -50,7 +50,7 @@
       "regionTag": "vision_v1_generated_ImageAnnotator_AsyncBatchAnnotateFiles_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -96,7 +96,7 @@
       "regionTag": "vision_v1_generated_ImageAnnotator_AsyncBatchAnnotateImages_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -142,7 +142,7 @@
       "regionTag": "vision_v1_generated_ImageAnnotator_BatchAnnotateFiles_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -188,7 +188,7 @@
       "regionTag": "vision_v1_generated_ImageAnnotator_BatchAnnotateImages_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -234,7 +234,7 @@
       "regionTag": "vision_v1_generated_ImageAnnotator_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -279,7 +279,7 @@
       "regionTag": "vision_v1_generated_ProductSearch_AddProductToProductSet_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -325,7 +325,7 @@
       "regionTag": "vision_v1_generated_ProductSearch_CreateProduct_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -371,7 +371,7 @@
       "regionTag": "vision_v1_generated_ProductSearch_CreateProductSet_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -417,7 +417,7 @@
       "regionTag": "vision_v1_generated_ProductSearch_CreateReferenceImage_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -462,7 +462,7 @@
       "regionTag": "vision_v1_generated_ProductSearch_DeleteProduct_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -507,7 +507,7 @@
       "regionTag": "vision_v1_generated_ProductSearch_DeleteProductSet_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -552,7 +552,7 @@
       "regionTag": "vision_v1_generated_ProductSearch_DeleteReferenceImage_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -598,7 +598,7 @@
       "regionTag": "vision_v1_generated_ProductSearch_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -644,7 +644,7 @@
       "regionTag": "vision_v1_generated_ProductSearch_GetProduct_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -690,7 +690,7 @@
       "regionTag": "vision_v1_generated_ProductSearch_GetProductSet_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -736,7 +736,7 @@
       "regionTag": "vision_v1_generated_ProductSearch_GetReferenceImage_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -782,7 +782,7 @@
       "regionTag": "vision_v1_generated_ProductSearch_ImportProductSets_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -828,7 +828,7 @@
       "regionTag": "vision_v1_generated_ProductSearch_ListProductSets_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -874,7 +874,7 @@
       "regionTag": "vision_v1_generated_ProductSearch_ListProducts_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -920,7 +920,7 @@
       "regionTag": "vision_v1_generated_ProductSearch_ListProductsInProductSet_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -966,7 +966,7 @@
       "regionTag": "vision_v1_generated_ProductSearch_ListReferenceImages_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1012,7 +1012,7 @@
       "regionTag": "vision_v1_generated_ProductSearch_PurgeProducts_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -1057,7 +1057,7 @@
       "regionTag": "vision_v1_generated_ProductSearch_RemoveProductFromProductSet_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -1103,7 +1103,7 @@
       "regionTag": "vision_v1_generated_ProductSearch_UpdateProduct_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1149,7 +1149,7 @@
       "regionTag": "vision_v1_generated_ProductSearch_UpdateProductSet_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }

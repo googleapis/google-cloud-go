@@ -16,6 +16,8 @@
 
 // [START dataform_v1beta1_generated_Dataform_PullGitCommits_sync]
 
+//go:build examples
+
 package main
 
 import (

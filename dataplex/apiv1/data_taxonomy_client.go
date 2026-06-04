@@ -208,7 +208,7 @@ type DataTaxonomyClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *DataTaxonomyClient) Close() error {
 	return c.internalClient.Close()
@@ -608,7 +608,7 @@ func (c *dataTaxonomyGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *dataTaxonomyGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -742,7 +742,7 @@ func (c *dataTaxonomyRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *dataTaxonomyRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.

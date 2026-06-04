@@ -16,6 +16,8 @@
 
 // [START documentai_v1beta3_generated_DocumentService_UpdateDatasetSchema_sync]
 
+//go:build examples
+
 package main
 
 import (

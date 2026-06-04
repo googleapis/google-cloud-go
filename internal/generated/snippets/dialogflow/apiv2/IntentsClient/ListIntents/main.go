@@ -16,6 +16,8 @@
 
 // [START dialogflow_v2_generated_Intents_ListIntents_sync]
 
+//go:build examples
+
 package main
 
 import (

@@ -16,6 +16,8 @@
 
 // [START merchantapi_v1_generated_ProgramsService_DisableProgram_sync]
 
+//go:build examples
+
 package main
 
 import (
