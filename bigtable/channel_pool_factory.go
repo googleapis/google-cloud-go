@@ -24,8 +24,8 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	"google.golang.org/grpc/metadata"
 
-	btransport "cloud.google.com/go/bigtable/internal/transport"
 	btopt "cloud.google.com/go/bigtable/internal/option"
+	btransport "cloud.google.com/go/bigtable/internal/transport"
 )
 
 // managedChannelPool encapsulates a connection pool along with its lifecycle monitors.
@@ -105,7 +105,6 @@ func createBigtableChannelPool(
 	directAccessMD metadata.MD,
 	clientCreationTimestamp time.Time,
 ) (*btransport.BigtableChannelPool, error) {
-	fmt.Printf(">>> createBigtableChannelPool called for project=%s, instance=%s <<<\n", project, instance)
 	uResolver, err := internaloption.NewUnsafeResolver(o...)
 	var connPoolSize int
 	if err != nil {
@@ -119,20 +118,33 @@ func createBigtableChannelPool(
 
 	fullInstanceName := fmt.Sprintf("projects/%s/instances/%s", project, instance)
 
-	directAccessDialerOptions := make([]option.ClientOption, len(o))
-	copy(directAccessDialerOptions, o)
-	directAccessDialerOptions = append(directAccessDialerOptions, directPathOptions...)
-	directAccessDialerOptions = append(directAccessDialerOptions, internaloption.AllowHardBoundTokens("ALTS"))
-
-	directAccessDialer := func() (*btransport.BigtableConn, error) {
-		grpcConn, err := gtransport.Dial(ctx, directAccessDialerOptions...)
-		if err != nil {
-			return nil, err
-		}
-		return btransport.NewBigtableConn(grpcConn), nil
+	poolOpts := []btransport.BigtableChannelPoolOption{
+		btransport.WithInstanceName(fullInstanceName),
+		btransport.WithAppProfile(config.AppProfile),
+		btransport.WithFeatureFlagsMetadata(directAccessMD),
+		btransport.WithMetricsReporterConfig(btopt.DefaultMetricsReporterConfig()),
+		btransport.WithMeterProvider(metricsTracerFactory.otelMeterProvider),
+		btransport.WithDirectAccessFeatureFlagsMetadata(directAccessMD),
 	}
 
-	return btransport.NewBigtableChannelPool(ctx,
+	if isDirectAccessEnabled(config) {
+		directAccessDialerOptions := make([]option.ClientOption, len(o))
+		copy(directAccessDialerOptions, o)
+		directAccessDialerOptions = append(directAccessDialerOptions, directPathOptions...)
+		directAccessDialerOptions = append(directAccessDialerOptions, internaloption.AllowHardBoundTokens("ALTS"))
+
+		directAccessDialer := func() (*btransport.BigtableConn, error) {
+			grpcConn, err := gtransport.Dial(ctx, directAccessDialerOptions...)
+			if err != nil {
+				return nil, err
+			}
+			return btransport.NewBigtableConn(grpcConn), nil
+		}
+		poolOpts = append(poolOpts, btransport.WithDirectAccessDialer(directAccessDialer))
+	}
+
+
+return btransport.NewBigtableChannelPool(ctx,
 		connPoolSize,
 		btopt.BigtableLoadBalancingStrategy(),
 		func() (*btransport.BigtableConn, error) {
@@ -143,12 +155,6 @@ func createBigtableChannelPool(
 			return btransport.NewBigtableConn(grpcConn), nil
 		},
 		clientCreationTimestamp,
-		btransport.WithInstanceName(fullInstanceName),
-		btransport.WithAppProfile(config.AppProfile),
-		btransport.WithFeatureFlagsMetadata(directAccessMD),
-		btransport.WithMetricsReporterConfig(btopt.DefaultMetricsReporterConfig()),
-		btransport.WithMeterProvider(metricsTracerFactory.otelMeterProvider),
-		btransport.WithDirectAccessFeatureFlagsMetadata(directAccessMD),
-		btransport.WithDirectAccessDialer(directAccessDialer),
+		poolOpts...,
 	)
 }
