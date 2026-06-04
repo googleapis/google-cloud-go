@@ -17,7 +17,6 @@ package spanner
 import (
 	"context"
 	"log"
-	"math"
 
 	"cloud.google.com/go/spanner/internal"
 	"go.opentelemetry.io/otel"
@@ -32,13 +31,13 @@ var attributeKeyDCPDirection = attribute.Key("direction")
 type dcpMetrics struct {
 	attrs []attribute.KeyValue
 
-	numChannels          metric.Int64ObservableGauge
-	drainingChannelCount metric.Int64ObservableGauge
-	maxAllowedChannels   metric.Int64ObservableGauge
-	activeRPCCount       metric.Int64ObservableGauge
-	maxRPCPerChannel     metric.Int64ObservableGauge
-	channelPoolScaling   metric.Int64Counter
-	registration         metric.Registration
+	numChannels            metric.Int64ObservableGauge
+	drainingChannelCount   metric.Int64ObservableGauge
+	maxAllowedChannels     metric.Int64ObservableGauge
+	activeRPCCount         metric.Int64ObservableGauge
+	maxActiveRPCPerChannel metric.Int64ObservableGauge
+	channelPoolScaling     metric.Int64Counter
+	registration           metric.Registration
 }
 
 func newDCPMetrics(p *dynamicChannelPool, mp metric.MeterProvider) *dcpMetrics {
@@ -74,7 +73,7 @@ func newDCPMetrics(p *dynamicChannelPool, mp metric.MeterProvider) *dcpMetrics {
 	if m.activeRPCCount, err = dcpInt64ObservableGauge(meter, p.sc.logger, "active_rpc_count", "Number of RPCs currently active on the dynamic channel pool.", "{rpc}"); err != nil {
 		return nil
 	}
-	if m.maxRPCPerChannel, err = dcpInt64ObservableGauge(meter, p.sc.logger, "max_rpc_per_channel", "Maximum number of active RPCs allowed per channel before dynamic channel pool scale-up.", "{rpc}"); err != nil {
+	if m.maxActiveRPCPerChannel, err = dcpInt64ObservableGauge(meter, p.sc.logger, "max_active_rpc_per_channel", "Maximum number of RPCs currently active on any channel in the dynamic channel pool.", "{rpc}"); err != nil {
 		return nil
 	}
 
@@ -95,14 +94,14 @@ func newDCPMetrics(p *dynamicChannelPool, mp metric.MeterProvider) *dcpMetrics {
 			o.ObserveInt64(m.drainingChannelCount, p.drainingCount.Load(), attrs)
 			o.ObserveInt64(m.maxAllowedChannels, int64(p.cfg.DCPMaxChannels), attrs)
 			o.ObserveInt64(m.activeRPCCount, int64(p.totalRPCLoad.Load()), attrs)
-			o.ObserveInt64(m.maxRPCPerChannel, int64(math.Ceil(p.cfg.DCPMaxRPCPerChannel)), attrs)
+			o.ObserveInt64(m.maxActiveRPCPerChannel, p.maxActiveRPCPerChannel(), attrs)
 			return nil
 		},
 		m.numChannels,
 		m.drainingChannelCount,
 		m.maxAllowedChannels,
 		m.activeRPCCount,
-		m.maxRPCPerChannel,
+		m.maxActiveRPCPerChannel,
 	)
 	if err != nil {
 		logf(p.sc.logger, "spanner_dcp: failed to register OpenTelemetry metric callback: %v", err)
@@ -110,6 +109,16 @@ func newDCPMetrics(p *dynamicChannelPool, mp metric.MeterProvider) *dcpMetrics {
 	}
 	m.registration = reg
 	return m
+}
+
+func (p *dynamicChannelPool) maxActiveRPCPerChannel() int64 {
+	var max int32
+	for _, e := range p.getEntries() {
+		if load := e.rpcLoad(); load > max {
+			max = load
+		}
+	}
+	return int64(max)
 }
 
 func dcpInt64ObservableGauge(meter metric.Meter, logger *log.Logger, name, desc, unit string) (metric.Int64ObservableGauge, error) {

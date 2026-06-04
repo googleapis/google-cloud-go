@@ -368,6 +368,9 @@ func TestDynamicChannelPoolOTMetricsObserveGaugesWithCommonAttributes(t *testing
 	cfg.DCPScaleDownCheckInterval = time.Hour
 	_, client, teardown := setupDCPMockedTestServerWithMeterProvider(t, cfg, mp)
 	defer teardown()
+	entries := client.sc.dynamicPool.getEntries()
+	entries[0].unaryLoad.Store(3)
+	entries[1].streamLoad.Store(4)
 	client.sc.dynamicPool.totalRPCLoad.Store(7)
 
 	rm := collectDCPMetrics(t, reader)
@@ -376,7 +379,10 @@ func TestDynamicChannelPoolOTMetricsObserveGaugesWithCommonAttributes(t *testing
 	requireDCPGaugeValue(t, rm, "spanner/dynamic_channel_pool/draining_channel_count", 0, attrs)
 	requireDCPGaugeValue(t, rm, "spanner/dynamic_channel_pool/max_allowed_channels", 4, attrs)
 	requireDCPGaugeValue(t, rm, "spanner/dynamic_channel_pool/active_rpc_count", 7, attrs)
-	requireDCPGaugeValue(t, rm, "spanner/dynamic_channel_pool/max_rpc_per_channel", 1, attrs)
+	requireDCPGaugeValue(t, rm, "spanner/dynamic_channel_pool/max_active_rpc_per_channel", 4, attrs)
+	if _, ok := findDCPMetric(rm, "spanner/dynamic_channel_pool/max_rpc_per_channel"); ok {
+		t.Fatal("exported stale max_rpc_per_channel metric, want max_active_rpc_per_channel")
+	}
 }
 
 func TestDynamicChannelPoolOTMetricsScalingCounterUsesChannelDeltaAndDirection(t *testing.T) {
