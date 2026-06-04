@@ -62,20 +62,30 @@ func newDCPMetrics(p *dynamicChannelPool, mp metric.MeterProvider) *dcpMetrics {
 		},
 	}
 	meter := mp.Meter(OtInstrumentationScope, metric.WithInstrumentationVersion(internal.Version))
-	m.numChannels, _ = dcpInt64ObservableGauge(meter, p.sc.logger, "num_channels", "Number of active channels currently in the dynamic channel pool.", "{channel}")
-	m.drainingChannelCount, _ = dcpInt64ObservableGauge(meter, p.sc.logger, "draining_channel_count", "Number of channels currently draining in the dynamic channel pool.", "{channel}")
-	m.maxAllowedChannels, _ = dcpInt64ObservableGauge(meter, p.sc.logger, "max_allowed_channels", "Maximum number of channels allowed in the dynamic channel pool.", "{channel}")
-	m.activeRPCCount, _ = dcpInt64ObservableGauge(meter, p.sc.logger, "active_rpc_count", "Number of RPCs currently active on the dynamic channel pool.", "{rpc}")
-	m.maxRPCPerChannel, _ = dcpInt64ObservableGauge(meter, p.sc.logger, "max_rpc_per_channel", "Maximum number of active RPCs allowed per channel before dynamic channel pool scale-up.", "{rpc}")
+	if m.numChannels, err = dcpInt64ObservableGauge(meter, p.sc.logger, "num_channels", "Number of active channels currently in the dynamic channel pool.", "{channel}"); err != nil {
+		return nil
+	}
+	if m.drainingChannelCount, err = dcpInt64ObservableGauge(meter, p.sc.logger, "draining_channel_count", "Number of channels currently draining in the dynamic channel pool.", "{channel}"); err != nil {
+		return nil
+	}
+	if m.maxAllowedChannels, err = dcpInt64ObservableGauge(meter, p.sc.logger, "max_allowed_channels", "Maximum number of channels allowed in the dynamic channel pool.", "{channel}"); err != nil {
+		return nil
+	}
+	if m.activeRPCCount, err = dcpInt64ObservableGauge(meter, p.sc.logger, "active_rpc_count", "Number of RPCs currently active on the dynamic channel pool.", "{rpc}"); err != nil {
+		return nil
+	}
+	if m.maxRPCPerChannel, err = dcpInt64ObservableGauge(meter, p.sc.logger, "max_rpc_per_channel", "Maximum number of active RPCs allowed per channel before dynamic channel pool scale-up.", "{rpc}"); err != nil {
+		return nil
+	}
 
-	var errCounter error
-	m.channelPoolScaling, errCounter = meter.Int64Counter(
+	m.channelPoolScaling, err = meter.Int64Counter(
 		dcpMetricsPrefix+"channel_pool_scaling",
 		metric.WithDescription("Number of channels added or removed by dynamic channel pool scaling."),
 		metric.WithUnit("{channel}"),
 	)
-	if errCounter != nil {
-		logf(p.sc.logger, "Error during registering instrument for metric %s, error: %v", dcpMetricsPrefix+"channel_pool_scaling", errCounter)
+	if err != nil {
+		logf(p.sc.logger, "Error during registering instrument for metric %s, error: %v", dcpMetricsPrefix+"channel_pool_scaling", err)
+		return nil
 	}
 
 	reg, err := meter.RegisterCallback(
@@ -120,7 +130,7 @@ func (m *dcpMetrics) recordScaleDown(ctx context.Context, channels int64) {
 }
 
 func (m *dcpMetrics) recordScaling(ctx context.Context, channels int64, direction string) {
-	if m == nil || channels <= 0 {
+	if m == nil || m.channelPoolScaling == nil || channels <= 0 {
 		return
 	}
 	attrs := append([]attribute.KeyValue{}, m.attrs...)

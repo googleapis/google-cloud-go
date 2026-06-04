@@ -16,8 +16,10 @@ package spanner
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"sync"
+	"sync/atomic"
 	"testing"
 	"time"
 
@@ -26,6 +28,7 @@ import (
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
+	"go.opentelemetry.io/otel/metric/noop"
 	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
 	"go.opentelemetry.io/otel/sdk/metric/metricdata"
 	"go.opentelemetry.io/otel/sdk/metric/metricdata/metricdatatest"
@@ -436,6 +439,121 @@ func TestDynamicChannelPoolOTMetricsCloseUnregistersCallback(t *testing.T) {
 	if _, ok := findDCPMetric(rm, "spanner/dynamic_channel_pool/num_channels"); ok {
 		t.Fatal("DCP metric still exported after dynamicChannelPool.Close")
 	}
+}
+
+func TestDynamicChannelPoolOTMetricsInstrumentErrorsDisableMetrics(t *testing.T) {
+	enableOpenTelemetryMetricsForTest(t)
+	_, client, teardown := setupDCPMockedTestServer(t, testDCPConfig(1, 1, 2))
+	defer teardown()
+	p := client.sc.dynamicPool
+
+	gaugeFailure := &failingDCPMeterProvider{meter: &failingDCPMeter{failGaugeName: dcpMetricsPrefix + "num_channels"}}
+	if got := newDCPMetrics(p, gaugeFailure); got != nil {
+		t.Fatalf("newDCPMetrics with gauge registration failure = %+v, want nil", got)
+	}
+
+	counterFailure := &failingDCPMeterProvider{meter: &failingDCPMeter{failCounterName: dcpMetricsPrefix + "channel_pool_scaling"}}
+	if got := newDCPMetrics(p, counterFailure); got != nil {
+		t.Fatalf("newDCPMetrics with counter registration failure = %+v, want nil", got)
+	}
+}
+
+func TestDynamicChannelPoolOTMetricsRecordScalingNoopsWithoutCounter(t *testing.T) {
+	defer func() {
+		if r := recover(); r != nil {
+			t.Fatalf("recordScaling with nil counter panicked: %v", r)
+		}
+	}()
+	(&dcpMetrics{}).recordScaling(context.Background(), 1, "up")
+}
+
+func TestDynamicChannelPoolCloseUnregistersMetricsOnce(t *testing.T) {
+	enableOpenTelemetryMetricsForTest(t)
+	cfg := testDCPConfig(1, 1, 2)
+	cfg.DCPScaleDownCheckInterval = time.Hour
+	_, client, teardown := setupDCPMockedTestServer(t, cfg)
+	defer teardown()
+	reg := newBlockingMetricRegistration()
+	client.sc.dynamicPool.metrics = &dcpMetrics{registration: reg}
+
+	var wg sync.WaitGroup
+	for i := 0; i < 2; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			_ = client.sc.dynamicPool.Close()
+		}()
+	}
+
+	select {
+	case <-reg.entered:
+	case <-time.After(time.Second):
+		t.Fatal("timed out waiting for metric unregistration")
+	}
+	calledTwice := false
+	select {
+	case <-reg.entered:
+		calledTwice = true
+	case <-time.After(20 * time.Millisecond):
+	}
+	close(reg.release)
+	wg.Wait()
+	if calledTwice {
+		t.Fatal("metric unregistration called more than once")
+	}
+	if got := reg.count.Load(); got != 1 {
+		t.Fatalf("metric unregistration count = %d, want 1", got)
+	}
+}
+
+type failingDCPMeterProvider struct {
+	noop.MeterProvider
+	meter metric.Meter
+}
+
+func (p *failingDCPMeterProvider) Meter(string, ...metric.MeterOption) metric.Meter {
+	return p.meter
+}
+
+type failingDCPMeter struct {
+	noop.Meter
+	failGaugeName   string
+	failCounterName string
+}
+
+func (m *failingDCPMeter) Int64ObservableGauge(name string, opts ...metric.Int64ObservableGaugeOption) (metric.Int64ObservableGauge, error) {
+	if name == m.failGaugeName {
+		return nil, errors.New("test gauge registration failure")
+	}
+	return m.Meter.Int64ObservableGauge(name, opts...)
+}
+
+func (m *failingDCPMeter) Int64Counter(name string, opts ...metric.Int64CounterOption) (metric.Int64Counter, error) {
+	if name == m.failCounterName {
+		return nil, errors.New("test counter registration failure")
+	}
+	return m.Meter.Int64Counter(name, opts...)
+}
+
+type blockingMetricRegistration struct {
+	noop.Registration
+	entered chan struct{}
+	release chan struct{}
+	count   atomic.Int64
+}
+
+func newBlockingMetricRegistration() *blockingMetricRegistration {
+	return &blockingMetricRegistration{
+		entered: make(chan struct{}, 2),
+		release: make(chan struct{}),
+	}
+}
+
+func (r *blockingMetricRegistration) Unregister() error {
+	r.count.Add(1)
+	r.entered <- struct{}{}
+	<-r.release
+	return nil
 }
 
 type fakeDCPConnPool struct {

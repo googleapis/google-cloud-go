@@ -299,8 +299,11 @@ func (p *dynamicChannelPool) NewStream(ctx context.Context, desc *grpc.StreamDes
 }
 
 func (p *dynamicChannelPool) Close() error {
-	p.metrics.close(p.sc.logger)
-	p.stopOnce.Do(func() { p.cancel(); close(p.done) })
+	p.stopOnce.Do(func() {
+		p.metrics.close(p.sc.logger)
+		p.cancel()
+		close(p.done)
+	})
 	p.dialMu.Lock()
 	defer p.dialMu.Unlock()
 	entries := p.getEntries()
