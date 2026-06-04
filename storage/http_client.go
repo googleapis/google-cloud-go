@@ -767,7 +767,9 @@ func (c *httpStorageClient) UpdateObjectACL(ctx context.Context, bucket, object 
 
 func (c *httpStorageClient) ComposeObject(ctx context.Context, req *composeObjectRequest, opts ...storageOption) (*ObjectAttrs, error) {
 	s := callSettings(c.settings, opts...)
-	rawReq := &raw.ComposeRequest{}
+	rawReq := &raw.ComposeRequest{
+		DeleteSourceObjects: req.deleteSourceObjects,
+	}
 	// Compose requires a non-empty Destination, so we always set it,
 	// even if the caller-provided ObjectAttrs is the zero value.
 	rawReq.Destination = req.dstObject.attrs.toRawObject(req.dstBucket)

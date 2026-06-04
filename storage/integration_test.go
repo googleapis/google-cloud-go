@@ -2948,6 +2948,102 @@ func TestIntegration_ObjectCompose(t *testing.T) {
 	})
 }
 
+func TestIntegration_ObjectCompose_DeleteSourceObjects(t *testing.T) {
+	multiTransportTest(skipZonalBucket(context.Background(), "ZB does not support compose"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		b := client.Bucket(bucket)
+
+		testCases := []struct {
+			desc                string
+			deleteSourceObjects bool
+			wantSourcesDeleted  bool
+		}{
+			{
+				desc:                "delete source objects after compose",
+				deleteSourceObjects: true,
+				wantSourcesDeleted:  true,
+			},
+			{
+				desc:                "do not delete source objects after compose",
+				deleteSourceObjects: false,
+				wantSourcesDeleted:  false,
+			},
+		}
+
+		for _, tc := range testCases {
+			t.Run(tc.desc, func(t *testing.T) {
+				src1 := b.Object("delSrc1" + uidSpaceObjects.New())
+				src2 := b.Object("delSrc2" + uidSpaceObjects.New())
+
+				c1 := randomContents()
+				c2 := randomContents()
+				if err := writeObject(ctx, src1, "text/plain", c1); err != nil {
+					t.Fatalf("Write for %v failed with %v", src1, err)
+				}
+				if err := writeObject(ctx, src2, "text/plain", c2); err != nil {
+					t.Fatalf("Write for %v failed with %v", src2, err)
+				}
+				if !tc.wantSourcesDeleted {
+					defer src1.Delete(ctx)
+					defer src2.Delete(ctx)
+				}
+
+				compDst := b.Object("composedDel" + uidSpaceObjects.New())
+				c := compDst.ComposerFrom(src1, src2)
+				c.DeleteSourceObjects = tc.deleteSourceObjects
+				attrs, err := c.Run(ctx)
+				if err != nil {
+					t.Fatalf("ComposeFrom error: %v", err)
+				}
+				defer compDst.Delete(ctx)
+
+				if attrs.ComponentCount != 2 {
+					t.Errorf("ComponentCount = %v, want 2", attrs.ComponentCount)
+				}
+
+				// Verify source objects existence
+				_, err1 := src1.Attrs(ctx)
+				if tc.wantSourcesDeleted {
+					if err1 == nil {
+						t.Errorf("src1 still exists, expected it to be deleted")
+						src1.Delete(ctx)
+					}
+				} else {
+					if err1 != nil {
+						t.Errorf("src1 does not exist, expected it to exist: %v", err1)
+					}
+				}
+
+				_, err2 := src2.Attrs(ctx)
+				if tc.wantSourcesDeleted {
+					if err2 == nil {
+						t.Errorf("src2 still exists, expected it to be deleted")
+						src2.Delete(ctx)
+					}
+				} else {
+					if err2 != nil {
+						t.Errorf("src2 does not exist, expected it to exist: %v", err2)
+					}
+				}
+
+				// Verify contents of destination object.
+				r, err := compDst.NewReader(ctx)
+				if err != nil {
+					t.Fatalf("new reader on composed target: %v", err)
+				}
+				defer r.Close()
+				slurp, err := io.ReadAll(r)
+				if err != nil {
+					t.Fatalf("reading composed target: %v", err)
+				}
+				wantContents := append(c1, c2...)
+				if !bytes.Equal(slurp, wantContents) {
+					t.Errorf("Composed object contents mismatch:\ngot  %q\nwant %q", slurp, wantContents)
+				}
+			})
+		}
+	})
+}
+
 func TestIntegration_Copy(t *testing.T) {
 	ctx := skipExtraReadAPIs(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, prefix string, client *Client) {
