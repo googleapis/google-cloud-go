@@ -16,6 +16,8 @@
 
 // [START compute_v1_generated_InstantSnapshots_SetIamPolicy_sync]
 
+//go:build examples
+
 package main
 
 import (

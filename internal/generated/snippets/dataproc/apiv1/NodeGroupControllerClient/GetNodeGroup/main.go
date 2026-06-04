@@ -16,6 +16,8 @@
 
 // [START dataproc_v1_generated_NodeGroupController_GetNodeGroup_sync]
 
+//go:build examples
+
 package main
 
 import (

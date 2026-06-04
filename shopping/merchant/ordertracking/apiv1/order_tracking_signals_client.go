@@ -115,7 +115,7 @@ type OrderTrackingSignalsClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *OrderTrackingSignalsClient) Close() error {
 	return c.internalClient.Close()
@@ -236,7 +236,7 @@ func (c *orderTrackingSignalsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *orderTrackingSignalsGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -329,7 +329,7 @@ func (c *orderTrackingSignalsRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *orderTrackingSignalsRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.

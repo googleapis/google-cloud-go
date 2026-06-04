@@ -16,6 +16,8 @@
 
 // [START automl_v1_generated_AutoMl_UpdateModel_sync]
 
+//go:build examples
+
 package main
 
 import (

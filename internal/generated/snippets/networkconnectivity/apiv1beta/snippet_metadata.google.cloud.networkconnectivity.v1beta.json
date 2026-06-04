@@ -49,7 +49,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_DataTransferService_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -95,7 +95,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_DataTransferService_CreateDestination_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -141,7 +141,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_DataTransferService_CreateMulticloudDataTransferConfig_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -187,7 +187,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_DataTransferService_DeleteDestination_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -233,7 +233,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_DataTransferService_DeleteMulticloudDataTransferConfig_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -278,7 +278,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_DataTransferService_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -324,7 +324,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_DataTransferService_GetDestination_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -370,7 +370,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_DataTransferService_GetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -416,7 +416,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_DataTransferService_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -462,7 +462,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_DataTransferService_GetMulticloudDataTransferConfig_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -508,7 +508,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_DataTransferService_GetMulticloudDataTransferSupportedService_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -554,7 +554,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_DataTransferService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -600,7 +600,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_DataTransferService_ListDestinations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -646,7 +646,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_DataTransferService_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -692,7 +692,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_DataTransferService_ListMulticloudDataTransferConfigs_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -738,7 +738,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_DataTransferService_ListMulticloudDataTransferSupportedServices_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -784,7 +784,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_DataTransferService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -830,7 +830,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_DataTransferService_SetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -876,7 +876,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_DataTransferService_TestIamPermissions_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -922,7 +922,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_DataTransferService_UpdateDestination_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -968,7 +968,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_DataTransferService_UpdateMulticloudDataTransferConfig_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1014,7 +1014,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_HubService_AcceptHubSpoke_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1060,7 +1060,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_HubService_AcceptSpokeUpdate_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1105,7 +1105,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_HubService_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -1151,7 +1151,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_HubService_CreateGatewayAdvertisedRoute_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1197,7 +1197,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_HubService_CreateHub_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1243,7 +1243,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_HubService_CreateSpoke_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1289,7 +1289,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_HubService_DeleteGatewayAdvertisedRoute_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -1335,7 +1335,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_HubService_DeleteHub_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -1380,7 +1380,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_HubService_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -1426,7 +1426,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_HubService_DeleteSpoke_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -1472,7 +1472,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_HubService_GetGatewayAdvertisedRoute_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1518,7 +1518,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_HubService_GetGroup_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1564,7 +1564,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_HubService_GetHub_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1610,7 +1610,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_HubService_GetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1656,7 +1656,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_HubService_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1702,7 +1702,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_HubService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1748,7 +1748,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_HubService_GetRoute_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1794,7 +1794,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_HubService_GetRouteTable_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1840,7 +1840,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_HubService_GetSpoke_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1886,7 +1886,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_HubService_ListGatewayAdvertisedRoutes_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1932,7 +1932,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_HubService_ListGroups_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1978,7 +1978,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_HubService_ListHubSpokes_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2024,7 +2024,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_HubService_ListHubs_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2070,7 +2070,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_HubService_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2116,7 +2116,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_HubService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2162,7 +2162,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_HubService_ListRouteTables_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2208,7 +2208,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_HubService_ListRoutes_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2254,7 +2254,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_HubService_ListSpokes_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2300,7 +2300,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_HubService_QueryHubStatus_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2346,7 +2346,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_HubService_RejectHubSpoke_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2392,7 +2392,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_HubService_RejectSpokeUpdate_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2438,7 +2438,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_HubService_SetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2484,7 +2484,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_HubService_TestIamPermissions_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2530,7 +2530,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_HubService_UpdateGatewayAdvertisedRoute_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2576,7 +2576,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_HubService_UpdateGroup_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2622,7 +2622,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_HubService_UpdateHub_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2668,7 +2668,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_HubService_UpdateSpoke_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2713,7 +2713,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_PolicyBasedRoutingService_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -2759,7 +2759,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_PolicyBasedRoutingService_CreatePolicyBasedRoute_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2804,7 +2804,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_PolicyBasedRoutingService_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -2850,7 +2850,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_PolicyBasedRoutingService_DeletePolicyBasedRoute_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -2896,7 +2896,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_PolicyBasedRoutingService_GetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2942,7 +2942,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_PolicyBasedRoutingService_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2988,7 +2988,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_PolicyBasedRoutingService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3034,7 +3034,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_PolicyBasedRoutingService_GetPolicyBasedRoute_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3080,7 +3080,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_PolicyBasedRoutingService_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -3126,7 +3126,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_PolicyBasedRoutingService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -3172,7 +3172,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_PolicyBasedRoutingService_ListPolicyBasedRoutes_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -3218,7 +3218,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_PolicyBasedRoutingService_SetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3264,7 +3264,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_PolicyBasedRoutingService_TestIamPermissions_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3309,7 +3309,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_TransportManager_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -3355,7 +3355,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_TransportManager_CreateTransport_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -3400,7 +3400,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_TransportManager_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -3446,7 +3446,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_TransportManager_DeleteTransport_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -3492,7 +3492,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_TransportManager_GetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3538,7 +3538,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_TransportManager_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3584,7 +3584,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_TransportManager_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3630,7 +3630,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_TransportManager_GetRemoteTransportProfile_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3676,7 +3676,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_TransportManager_GetStatus_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3722,7 +3722,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_TransportManager_GetTransport_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3768,7 +3768,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_TransportManager_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -3814,7 +3814,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_TransportManager_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -3860,7 +3860,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_TransportManager_ListRemoteTransportProfiles_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -3906,7 +3906,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_TransportManager_ListTransports_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -3952,7 +3952,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_TransportManager_SetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3998,7 +3998,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_TransportManager_TestIamPermissions_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -4044,7 +4044,7 @@
       "regionTag": "networkconnectivity_v1beta_generated_TransportManager_UpdateTransport_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }

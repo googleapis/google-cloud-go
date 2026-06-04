@@ -16,6 +16,8 @@
 
 // [START modelarmor_v1_generated_ModelArmor_UpdateFloorSetting_sync]
 
+//go:build examples
+
 package main
 
 import (

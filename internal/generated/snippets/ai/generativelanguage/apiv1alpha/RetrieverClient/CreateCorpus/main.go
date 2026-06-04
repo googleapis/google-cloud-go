@@ -16,6 +16,8 @@
 
 // [START generativelanguage_v1alpha_generated_RetrieverService_CreateCorpus_sync]
 
+//go:build examples
+
 package main
 
 import (

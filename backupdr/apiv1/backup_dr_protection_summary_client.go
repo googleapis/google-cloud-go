@@ -156,7 +156,7 @@ type BackupDrProtectionSummaryClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *BackupDrProtectionSummaryClient) Close() error {
 	return c.internalClient.Close()
@@ -351,7 +351,7 @@ func (c *backupDrProtectionSummaryGRPCClient) setGoogleClientInfo(keyval ...stri
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *backupDrProtectionSummaryGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -453,7 +453,7 @@ func (c *backupDrProtectionSummaryRESTClient) setGoogleClientInfo(keyval ...stri
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *backupDrProtectionSummaryRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.

@@ -16,6 +16,8 @@
 
 // [START ces_v1beta_generated_WidgetService_DeleteOperation_sync]
 
+//go:build examples
+
 package main
 
 import (

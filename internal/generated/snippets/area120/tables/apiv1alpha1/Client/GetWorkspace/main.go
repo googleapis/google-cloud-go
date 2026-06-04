@@ -16,6 +16,8 @@
 
 // [START area120tables_v1alpha1_generated_TablesService_GetWorkspace_sync]
 
+//go:build examples
+
 package main
 
 import (

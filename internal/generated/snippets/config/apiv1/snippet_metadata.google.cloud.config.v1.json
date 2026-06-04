@@ -49,7 +49,7 @@
       "regionTag": "config_v1_generated_Config_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -95,7 +95,7 @@
       "regionTag": "config_v1_generated_Config_CreateDeployment_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -141,7 +141,7 @@
       "regionTag": "config_v1_generated_Config_CreateDeploymentGroup_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -187,7 +187,7 @@
       "regionTag": "config_v1_generated_Config_CreatePreview_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -233,7 +233,7 @@
       "regionTag": "config_v1_generated_Config_DeleteDeployment_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -279,7 +279,7 @@
       "regionTag": "config_v1_generated_Config_DeleteDeploymentGroup_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -324,7 +324,7 @@
       "regionTag": "config_v1_generated_Config_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -370,7 +370,7 @@
       "regionTag": "config_v1_generated_Config_DeletePreview_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -415,7 +415,7 @@
       "regionTag": "config_v1_generated_Config_DeleteStatefile_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -461,7 +461,7 @@
       "regionTag": "config_v1_generated_Config_DeprovisionDeploymentGroup_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -507,7 +507,7 @@
       "regionTag": "config_v1_generated_Config_ExportDeploymentStatefile_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -553,7 +553,7 @@
       "regionTag": "config_v1_generated_Config_ExportLockInfo_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -599,7 +599,7 @@
       "regionTag": "config_v1_generated_Config_ExportPreviewResult_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -645,7 +645,7 @@
       "regionTag": "config_v1_generated_Config_ExportRevisionStatefile_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -691,7 +691,7 @@
       "regionTag": "config_v1_generated_Config_GetAutoMigrationConfig_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -737,7 +737,7 @@
       "regionTag": "config_v1_generated_Config_GetDeployment_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -783,7 +783,7 @@
       "regionTag": "config_v1_generated_Config_GetDeploymentGroup_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -829,7 +829,7 @@
       "regionTag": "config_v1_generated_Config_GetDeploymentGroupRevision_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -875,7 +875,7 @@
       "regionTag": "config_v1_generated_Config_GetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -921,7 +921,7 @@
       "regionTag": "config_v1_generated_Config_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -967,7 +967,7 @@
       "regionTag": "config_v1_generated_Config_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1013,7 +1013,7 @@
       "regionTag": "config_v1_generated_Config_GetPreview_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1059,7 +1059,7 @@
       "regionTag": "config_v1_generated_Config_GetResource_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1105,7 +1105,7 @@
       "regionTag": "config_v1_generated_Config_GetResourceChange_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1151,7 +1151,7 @@
       "regionTag": "config_v1_generated_Config_GetResourceDrift_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1197,7 +1197,7 @@
       "regionTag": "config_v1_generated_Config_GetRevision_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1243,7 +1243,7 @@
       "regionTag": "config_v1_generated_Config_GetTerraformVersion_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1289,7 +1289,7 @@
       "regionTag": "config_v1_generated_Config_ImportStatefile_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1335,7 +1335,7 @@
       "regionTag": "config_v1_generated_Config_ListDeploymentGroupRevisions_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1381,7 +1381,7 @@
       "regionTag": "config_v1_generated_Config_ListDeploymentGroups_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1427,7 +1427,7 @@
       "regionTag": "config_v1_generated_Config_ListDeployments_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1473,7 +1473,7 @@
       "regionTag": "config_v1_generated_Config_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1519,7 +1519,7 @@
       "regionTag": "config_v1_generated_Config_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1565,7 +1565,7 @@
       "regionTag": "config_v1_generated_Config_ListPreviews_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1611,7 +1611,7 @@
       "regionTag": "config_v1_generated_Config_ListResourceChanges_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1657,7 +1657,7 @@
       "regionTag": "config_v1_generated_Config_ListResourceDrifts_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1703,7 +1703,7 @@
       "regionTag": "config_v1_generated_Config_ListResources_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1749,7 +1749,7 @@
       "regionTag": "config_v1_generated_Config_ListRevisions_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1795,7 +1795,7 @@
       "regionTag": "config_v1_generated_Config_ListTerraformVersions_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1841,7 +1841,7 @@
       "regionTag": "config_v1_generated_Config_LockDeployment_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1887,7 +1887,7 @@
       "regionTag": "config_v1_generated_Config_ProvisionDeploymentGroup_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1933,7 +1933,7 @@
       "regionTag": "config_v1_generated_Config_SetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1979,7 +1979,7 @@
       "regionTag": "config_v1_generated_Config_TestIamPermissions_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2025,7 +2025,7 @@
       "regionTag": "config_v1_generated_Config_UnlockDeployment_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2071,7 +2071,7 @@
       "regionTag": "config_v1_generated_Config_UpdateAutoMigrationConfig_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2117,7 +2117,7 @@
       "regionTag": "config_v1_generated_Config_UpdateDeployment_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2163,7 +2163,7 @@
       "regionTag": "config_v1_generated_Config_UpdateDeploymentGroup_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }

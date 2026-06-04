@@ -141,7 +141,7 @@ type CloudControlsPartnerMonitoringClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *CloudControlsPartnerMonitoringClient) Close() error {
 	return c.internalClient.Close()
@@ -274,7 +274,7 @@ func (c *cloudControlsPartnerMonitoringGRPCClient) setGoogleClientInfo(keyval ..
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *cloudControlsPartnerMonitoringGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -368,7 +368,7 @@ func (c *cloudControlsPartnerMonitoringRESTClient) setGoogleClientInfo(keyval ..
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *cloudControlsPartnerMonitoringRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.

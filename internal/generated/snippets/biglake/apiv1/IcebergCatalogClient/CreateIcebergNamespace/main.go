@@ -16,6 +16,8 @@
 
 // [START biglake_v1_generated_IcebergCatalogService_CreateIcebergNamespace_sync]
 
+//go:build examples
+
 package main
 
 import (

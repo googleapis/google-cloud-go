@@ -16,6 +16,8 @@
 
 // [START compute_v1_generated_RegionBackendServices_List_sync]
 
+//go:build examples
+
 package main
 
 import (

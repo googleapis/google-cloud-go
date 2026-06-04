@@ -16,6 +16,8 @@
 
 // [START cloudchannel_v1_generated_CloudChannelService_ListCustomerRepricingConfigs_sync]
 
+//go:build examples
+
 package main
 
 import (

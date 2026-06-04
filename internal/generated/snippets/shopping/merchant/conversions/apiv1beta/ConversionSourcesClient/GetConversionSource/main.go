@@ -16,6 +16,8 @@
 
 // [START merchantapi_v1beta_generated_ConversionSourcesService_GetConversionSource_sync]
 
+//go:build examples
+
 package main
 
 import (

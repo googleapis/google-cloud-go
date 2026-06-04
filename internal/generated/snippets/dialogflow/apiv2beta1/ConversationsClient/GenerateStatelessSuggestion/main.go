@@ -16,6 +16,8 @@
 
 // [START dialogflow_v2beta1_generated_Conversations_GenerateStatelessSuggestion_sync]
 
+//go:build examples
+
 package main
 
 import (

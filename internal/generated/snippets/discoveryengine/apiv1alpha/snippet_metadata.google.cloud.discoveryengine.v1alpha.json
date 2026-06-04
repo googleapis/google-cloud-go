@@ -49,7 +49,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_AclConfigService_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -95,7 +95,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_AclConfigService_GetAclConfig_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -141,7 +141,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_AclConfigService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -187,7 +187,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_AclConfigService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -233,7 +233,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_AclConfigService_UpdateAclConfig_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -278,7 +278,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_ChunkService_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -324,7 +324,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_ChunkService_GetChunk_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -370,7 +370,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_ChunkService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -416,7 +416,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_ChunkService_ListChunks_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -462,7 +462,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_ChunkService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -507,7 +507,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_CompletionService_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -553,7 +553,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_CompletionService_CompleteQuery_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -599,7 +599,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_CompletionService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -645,7 +645,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_CompletionService_ImportCompletionSuggestions_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -691,7 +691,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_CompletionService_ImportSuggestionDenyListEntries_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -737,7 +737,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_CompletionService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -783,7 +783,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_CompletionService_PurgeCompletionSuggestions_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -829,7 +829,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_CompletionService_PurgeSuggestionDenyListEntries_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -874,7 +874,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_ControlService_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -920,7 +920,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_ControlService_CreateControl_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -965,7 +965,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_ControlService_DeleteControl_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -1011,7 +1011,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_ControlService_GetControl_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1057,7 +1057,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_ControlService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1103,7 +1103,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_ControlService_ListControls_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1149,7 +1149,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_ControlService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1195,7 +1195,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_ControlService_UpdateControl_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1241,7 +1241,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_ConversationalSearchService_AnswerQuery_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1286,7 +1286,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_ConversationalSearchService_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -1332,7 +1332,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_ConversationalSearchService_ConverseConversation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1378,7 +1378,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_ConversationalSearchService_CreateConversation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1424,7 +1424,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_ConversationalSearchService_CreateSession_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1469,7 +1469,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_ConversationalSearchService_DeleteConversation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -1514,7 +1514,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_ConversationalSearchService_DeleteSession_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -1560,7 +1560,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_ConversationalSearchService_GetAnswer_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1606,7 +1606,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_ConversationalSearchService_GetConversation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1652,7 +1652,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_ConversationalSearchService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1698,7 +1698,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_ConversationalSearchService_GetSession_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1744,7 +1744,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_ConversationalSearchService_ListConversations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1790,7 +1790,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_ConversationalSearchService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1836,7 +1836,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_ConversationalSearchService_ListSessions_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1882,7 +1882,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_ConversationalSearchService_UpdateConversation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1928,7 +1928,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_ConversationalSearchService_UpdateSession_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1973,7 +1973,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_DataStoreService_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -2019,7 +2019,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_DataStoreService_CreateDataStore_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2065,7 +2065,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_DataStoreService_DeleteDataStore_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -2111,7 +2111,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_DataStoreService_GetDataStore_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2157,7 +2157,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_DataStoreService_GetDocumentProcessingConfig_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2203,7 +2203,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_DataStoreService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2249,7 +2249,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_DataStoreService_ListDataStores_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2295,7 +2295,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_DataStoreService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2341,7 +2341,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_DataStoreService_UpdateDataStore_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2387,7 +2387,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_DataStoreService_UpdateDocumentProcessingConfig_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2433,7 +2433,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_DocumentService_BatchGetDocumentsMetadata_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2478,7 +2478,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_DocumentService_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -2524,7 +2524,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_DocumentService_CreateDocument_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2569,7 +2569,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_DocumentService_DeleteDocument_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -2615,7 +2615,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_DocumentService_GetDocument_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2661,7 +2661,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_DocumentService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2707,7 +2707,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_DocumentService_GetProcessedDocument_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2753,7 +2753,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_DocumentService_ImportDocuments_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2799,7 +2799,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_DocumentService_ListDocuments_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2845,7 +2845,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_DocumentService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2891,7 +2891,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_DocumentService_PurgeDocuments_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2937,7 +2937,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_DocumentService_UpdateDocument_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2982,7 +2982,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_EngineService_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -3028,7 +3028,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_EngineService_CreateEngine_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -3074,7 +3074,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_EngineService_DeleteEngine_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -3120,7 +3120,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_EngineService_GetEngine_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3166,7 +3166,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_EngineService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3212,7 +3212,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_EngineService_ListEngines_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -3258,7 +3258,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_EngineService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -3304,7 +3304,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_EngineService_PauseEngine_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3350,7 +3350,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_EngineService_ResumeEngine_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3396,7 +3396,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_EngineService_TuneEngine_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -3442,7 +3442,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_EngineService_UpdateEngine_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3487,7 +3487,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_EstimateBillingService_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -3533,7 +3533,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_EstimateBillingService_EstimateDataSize_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -3579,7 +3579,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_EstimateBillingService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3625,7 +3625,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_EstimateBillingService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -3670,7 +3670,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_EvaluationService_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -3716,7 +3716,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_EvaluationService_CreateEvaluation_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -3762,7 +3762,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_EvaluationService_GetEvaluation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3808,7 +3808,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_EvaluationService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3854,7 +3854,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_EvaluationService_ListEvaluationResults_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -3900,7 +3900,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_EvaluationService_ListEvaluations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -3946,7 +3946,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_EvaluationService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -3991,7 +3991,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_GroundedGenerationService_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -4037,7 +4037,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_GroundedGenerationService_CheckGrounding_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -4083,7 +4083,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_GroundedGenerationService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -4129,7 +4129,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_GroundedGenerationService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -4174,7 +4174,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_ProjectService_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -4220,7 +4220,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_ProjectService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -4266,7 +4266,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_ProjectService_GetProject_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -4312,7 +4312,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_ProjectService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -4358,7 +4358,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_ProjectService_ProvisionProject_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -4404,7 +4404,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_ProjectService_ReportConsentChange_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -4449,7 +4449,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_RankService_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -4495,7 +4495,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_RankService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -4541,7 +4541,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_RankService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -4587,7 +4587,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_RankService_Rank_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -4632,7 +4632,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_RecommendationService_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -4678,7 +4678,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_RecommendationService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -4724,7 +4724,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_RecommendationService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -4770,7 +4770,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_RecommendationService_Recommend_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -4815,7 +4815,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_SampleQueryService_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -4861,7 +4861,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_SampleQueryService_CreateSampleQuery_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -4906,7 +4906,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_SampleQueryService_DeleteSampleQuery_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -4952,7 +4952,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_SampleQueryService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -4998,7 +4998,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_SampleQueryService_GetSampleQuery_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -5044,7 +5044,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_SampleQueryService_ImportSampleQueries_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -5090,7 +5090,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_SampleQueryService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -5136,7 +5136,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_SampleQueryService_ListSampleQueries_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -5182,7 +5182,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_SampleQueryService_UpdateSampleQuery_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -5227,7 +5227,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_SampleQuerySetService_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -5273,7 +5273,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_SampleQuerySetService_CreateSampleQuerySet_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -5318,7 +5318,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_SampleQuerySetService_DeleteSampleQuerySet_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -5364,7 +5364,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_SampleQuerySetService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -5410,7 +5410,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_SampleQuerySetService_GetSampleQuerySet_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -5456,7 +5456,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_SampleQuerySetService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -5502,7 +5502,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_SampleQuerySetService_ListSampleQuerySets_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -5548,7 +5548,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_SampleQuerySetService_UpdateSampleQuerySet_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -5593,7 +5593,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_SchemaService_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -5639,7 +5639,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_SchemaService_CreateSchema_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -5685,7 +5685,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_SchemaService_DeleteSchema_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -5731,7 +5731,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_SchemaService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -5777,7 +5777,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_SchemaService_GetSchema_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -5823,7 +5823,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_SchemaService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -5869,7 +5869,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_SchemaService_ListSchemas_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -5915,7 +5915,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_SchemaService_UpdateSchema_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -5960,7 +5960,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_SearchService_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -6006,7 +6006,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_SearchService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -6052,7 +6052,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_SearchService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -6098,7 +6098,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_SearchService_Search_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -6143,7 +6143,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_SearchTuningService_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -6189,7 +6189,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_SearchTuningService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -6235,7 +6235,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_SearchTuningService_ListCustomModels_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -6281,7 +6281,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_SearchTuningService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -6327,7 +6327,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_SearchTuningService_TrainCustomModel_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -6372,7 +6372,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_ServingConfigService_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -6418,7 +6418,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_ServingConfigService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -6464,7 +6464,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_ServingConfigService_GetServingConfig_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -6510,7 +6510,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_ServingConfigService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -6556,7 +6556,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_ServingConfigService_ListServingConfigs_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -6602,7 +6602,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_ServingConfigService_UpdateServingConfig_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -6647,7 +6647,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_SessionService_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -6693,7 +6693,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_SessionService_CreateSession_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -6738,7 +6738,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_SessionService_DeleteSession_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -6784,7 +6784,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_SessionService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -6830,7 +6830,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_SessionService_GetSession_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -6876,7 +6876,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_SessionService_ListFiles_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -6922,7 +6922,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_SessionService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -6968,7 +6968,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_SessionService_ListSessions_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -7014,7 +7014,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_SessionService_UpdateSession_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -7060,7 +7060,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_SiteSearchEngineService_BatchCreateTargetSites_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -7106,7 +7106,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_SiteSearchEngineService_BatchVerifyTargetSites_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -7151,7 +7151,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_SiteSearchEngineService_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -7197,7 +7197,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_SiteSearchEngineService_CreateTargetSite_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -7243,7 +7243,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_SiteSearchEngineService_DeleteTargetSite_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -7289,7 +7289,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_SiteSearchEngineService_DisableAdvancedSiteSearch_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -7335,7 +7335,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_SiteSearchEngineService_EnableAdvancedSiteSearch_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -7381,7 +7381,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_SiteSearchEngineService_FetchDomainVerificationStatus_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -7427,7 +7427,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_SiteSearchEngineService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -7473,7 +7473,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_SiteSearchEngineService_GetSiteSearchEngine_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -7519,7 +7519,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_SiteSearchEngineService_GetTargetSite_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -7565,7 +7565,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_SiteSearchEngineService_GetUriPatternDocumentData_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -7611,7 +7611,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_SiteSearchEngineService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -7657,7 +7657,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_SiteSearchEngineService_ListTargetSites_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -7703,7 +7703,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_SiteSearchEngineService_RecrawlUris_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -7749,7 +7749,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_SiteSearchEngineService_SetUriPatternDocumentData_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -7795,7 +7795,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_SiteSearchEngineService_UpdateTargetSite_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -7840,7 +7840,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_UserEventService_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -7886,7 +7886,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_UserEventService_CollectUserEvent_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -7932,7 +7932,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_UserEventService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -7978,7 +7978,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_UserEventService_ImportUserEvents_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -8024,7 +8024,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_UserEventService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -8070,7 +8070,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_UserEventService_PurgeUserEvents_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -8116,7 +8116,7 @@
       "regionTag": "discoveryengine_v1alpha_generated_UserEventService_WriteUserEvent_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }

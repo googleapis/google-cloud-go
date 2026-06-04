@@ -16,6 +16,8 @@
 
 // [START gsuiteaddons_v1_generated_GSuiteAddOns_DeleteDeployment_sync]
 
+//go:build examples
+
 package main
 
 import (

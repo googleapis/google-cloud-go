@@ -49,7 +49,7 @@
       "regionTag": "apihub_v1_generated_ApiHub_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -95,7 +95,7 @@
       "regionTag": "apihub_v1_generated_ApiHub_CreateApi_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -141,7 +141,7 @@
       "regionTag": "apihub_v1_generated_ApiHub_CreateApiOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -187,7 +187,7 @@
       "regionTag": "apihub_v1_generated_ApiHub_CreateAttribute_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -233,7 +233,7 @@
       "regionTag": "apihub_v1_generated_ApiHub_CreateDeployment_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -279,7 +279,7 @@
       "regionTag": "apihub_v1_generated_ApiHub_CreateExternalApi_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -325,7 +325,7 @@
       "regionTag": "apihub_v1_generated_ApiHub_CreateSpec_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -371,7 +371,7 @@
       "regionTag": "apihub_v1_generated_ApiHub_CreateVersion_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -416,7 +416,7 @@
       "regionTag": "apihub_v1_generated_ApiHub_DeleteApi_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -461,7 +461,7 @@
       "regionTag": "apihub_v1_generated_ApiHub_DeleteApiOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -506,7 +506,7 @@
       "regionTag": "apihub_v1_generated_ApiHub_DeleteAttribute_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -551,7 +551,7 @@
       "regionTag": "apihub_v1_generated_ApiHub_DeleteDeployment_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -596,7 +596,7 @@
       "regionTag": "apihub_v1_generated_ApiHub_DeleteExternalApi_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -641,7 +641,7 @@
       "regionTag": "apihub_v1_generated_ApiHub_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -686,7 +686,7 @@
       "regionTag": "apihub_v1_generated_ApiHub_DeleteSpec_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -731,7 +731,7 @@
       "regionTag": "apihub_v1_generated_ApiHub_DeleteVersion_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -777,7 +777,7 @@
       "regionTag": "apihub_v1_generated_ApiHub_GetApi_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -823,7 +823,7 @@
       "regionTag": "apihub_v1_generated_ApiHub_GetApiOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -869,7 +869,7 @@
       "regionTag": "apihub_v1_generated_ApiHub_GetAttribute_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -915,7 +915,7 @@
       "regionTag": "apihub_v1_generated_ApiHub_GetDefinition_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -961,7 +961,7 @@
       "regionTag": "apihub_v1_generated_ApiHub_GetDeployment_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1007,7 +1007,7 @@
       "regionTag": "apihub_v1_generated_ApiHub_GetExternalApi_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1053,7 +1053,7 @@
       "regionTag": "apihub_v1_generated_ApiHub_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1099,7 +1099,7 @@
       "regionTag": "apihub_v1_generated_ApiHub_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1145,7 +1145,7 @@
       "regionTag": "apihub_v1_generated_ApiHub_GetSpec_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1191,7 +1191,7 @@
       "regionTag": "apihub_v1_generated_ApiHub_GetSpecContents_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1237,7 +1237,7 @@
       "regionTag": "apihub_v1_generated_ApiHub_GetVersion_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1283,7 +1283,7 @@
       "regionTag": "apihub_v1_generated_ApiHub_ListApiOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1329,7 +1329,7 @@
       "regionTag": "apihub_v1_generated_ApiHub_ListApis_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1375,7 +1375,7 @@
       "regionTag": "apihub_v1_generated_ApiHub_ListAttributes_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1421,7 +1421,7 @@
       "regionTag": "apihub_v1_generated_ApiHub_ListDeployments_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1467,7 +1467,7 @@
       "regionTag": "apihub_v1_generated_ApiHub_ListExternalApis_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1513,7 +1513,7 @@
       "regionTag": "apihub_v1_generated_ApiHub_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1559,7 +1559,7 @@
       "regionTag": "apihub_v1_generated_ApiHub_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1605,7 +1605,7 @@
       "regionTag": "apihub_v1_generated_ApiHub_ListSpecs_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1651,7 +1651,7 @@
       "regionTag": "apihub_v1_generated_ApiHub_ListVersions_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1697,7 +1697,7 @@
       "regionTag": "apihub_v1_generated_ApiHub_SearchResources_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1743,7 +1743,7 @@
       "regionTag": "apihub_v1_generated_ApiHub_UpdateApi_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1789,7 +1789,7 @@
       "regionTag": "apihub_v1_generated_ApiHub_UpdateApiOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1835,7 +1835,7 @@
       "regionTag": "apihub_v1_generated_ApiHub_UpdateAttribute_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1881,7 +1881,7 @@
       "regionTag": "apihub_v1_generated_ApiHub_UpdateDeployment_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1927,7 +1927,7 @@
       "regionTag": "apihub_v1_generated_ApiHub_UpdateExternalApi_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1973,7 +1973,7 @@
       "regionTag": "apihub_v1_generated_ApiHub_UpdateSpec_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2019,7 +2019,7 @@
       "regionTag": "apihub_v1_generated_ApiHub_UpdateVersion_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2064,7 +2064,7 @@
       "regionTag": "apihub_v1_generated_ApiHubCollect_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -2110,7 +2110,7 @@
       "regionTag": "apihub_v1_generated_ApiHubCollect_CollectApiData_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2155,7 +2155,7 @@
       "regionTag": "apihub_v1_generated_ApiHubCollect_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -2201,7 +2201,7 @@
       "regionTag": "apihub_v1_generated_ApiHubCollect_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2247,7 +2247,7 @@
       "regionTag": "apihub_v1_generated_ApiHubCollect_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2293,7 +2293,7 @@
       "regionTag": "apihub_v1_generated_ApiHubCollect_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2339,7 +2339,7 @@
       "regionTag": "apihub_v1_generated_ApiHubCollect_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2384,7 +2384,7 @@
       "regionTag": "apihub_v1_generated_ApiHubCurate_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -2430,7 +2430,7 @@
       "regionTag": "apihub_v1_generated_ApiHubCurate_CreateCuration_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2475,7 +2475,7 @@
       "regionTag": "apihub_v1_generated_ApiHubCurate_DeleteCuration_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -2520,7 +2520,7 @@
       "regionTag": "apihub_v1_generated_ApiHubCurate_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -2566,7 +2566,7 @@
       "regionTag": "apihub_v1_generated_ApiHubCurate_GetCuration_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2612,7 +2612,7 @@
       "regionTag": "apihub_v1_generated_ApiHubCurate_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2658,7 +2658,7 @@
       "regionTag": "apihub_v1_generated_ApiHubCurate_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2704,7 +2704,7 @@
       "regionTag": "apihub_v1_generated_ApiHubCurate_ListCurations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2750,7 +2750,7 @@
       "regionTag": "apihub_v1_generated_ApiHubCurate_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2796,7 +2796,7 @@
       "regionTag": "apihub_v1_generated_ApiHubCurate_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2842,7 +2842,7 @@
       "regionTag": "apihub_v1_generated_ApiHubCurate_UpdateCuration_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2887,7 +2887,7 @@
       "regionTag": "apihub_v1_generated_ApiHubDependencies_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -2933,7 +2933,7 @@
       "regionTag": "apihub_v1_generated_ApiHubDependencies_CreateDependency_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2978,7 +2978,7 @@
       "regionTag": "apihub_v1_generated_ApiHubDependencies_DeleteDependency_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -3023,7 +3023,7 @@
       "regionTag": "apihub_v1_generated_ApiHubDependencies_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -3069,7 +3069,7 @@
       "regionTag": "apihub_v1_generated_ApiHubDependencies_GetDependency_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3115,7 +3115,7 @@
       "regionTag": "apihub_v1_generated_ApiHubDependencies_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3161,7 +3161,7 @@
       "regionTag": "apihub_v1_generated_ApiHubDependencies_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3207,7 +3207,7 @@
       "regionTag": "apihub_v1_generated_ApiHubDependencies_ListDependencies_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -3253,7 +3253,7 @@
       "regionTag": "apihub_v1_generated_ApiHubDependencies_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -3299,7 +3299,7 @@
       "regionTag": "apihub_v1_generated_ApiHubDependencies_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -3345,7 +3345,7 @@
       "regionTag": "apihub_v1_generated_ApiHubDependencies_UpdateDependency_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3390,7 +3390,7 @@
       "regionTag": "apihub_v1_generated_ApiHubDiscovery_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -3435,7 +3435,7 @@
       "regionTag": "apihub_v1_generated_ApiHubDiscovery_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -3481,7 +3481,7 @@
       "regionTag": "apihub_v1_generated_ApiHubDiscovery_GetDiscoveredApiObservation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3527,7 +3527,7 @@
       "regionTag": "apihub_v1_generated_ApiHubDiscovery_GetDiscoveredApiOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3573,7 +3573,7 @@
       "regionTag": "apihub_v1_generated_ApiHubDiscovery_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3619,7 +3619,7 @@
       "regionTag": "apihub_v1_generated_ApiHubDiscovery_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3665,7 +3665,7 @@
       "regionTag": "apihub_v1_generated_ApiHubDiscovery_ListDiscoveredApiObservations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -3711,7 +3711,7 @@
       "regionTag": "apihub_v1_generated_ApiHubDiscovery_ListDiscoveredApiOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -3757,7 +3757,7 @@
       "regionTag": "apihub_v1_generated_ApiHubDiscovery_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -3803,7 +3803,7 @@
       "regionTag": "apihub_v1_generated_ApiHubDiscovery_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -3848,7 +3848,7 @@
       "regionTag": "apihub_v1_generated_ApiHubPlugin_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -3894,7 +3894,7 @@
       "regionTag": "apihub_v1_generated_ApiHubPlugin_CreatePlugin_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3940,7 +3940,7 @@
       "regionTag": "apihub_v1_generated_ApiHubPlugin_CreatePluginInstance_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -3985,7 +3985,7 @@
       "regionTag": "apihub_v1_generated_ApiHubPlugin_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -4031,7 +4031,7 @@
       "regionTag": "apihub_v1_generated_ApiHubPlugin_DeletePlugin_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -4077,7 +4077,7 @@
       "regionTag": "apihub_v1_generated_ApiHubPlugin_DeletePluginInstance_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -4123,7 +4123,7 @@
       "regionTag": "apihub_v1_generated_ApiHubPlugin_DisablePlugin_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -4169,7 +4169,7 @@
       "regionTag": "apihub_v1_generated_ApiHubPlugin_DisablePluginInstanceAction_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -4215,7 +4215,7 @@
       "regionTag": "apihub_v1_generated_ApiHubPlugin_EnablePlugin_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -4261,7 +4261,7 @@
       "regionTag": "apihub_v1_generated_ApiHubPlugin_EnablePluginInstanceAction_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -4307,7 +4307,7 @@
       "regionTag": "apihub_v1_generated_ApiHubPlugin_ExecutePluginInstanceAction_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -4353,7 +4353,7 @@
       "regionTag": "apihub_v1_generated_ApiHubPlugin_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -4399,7 +4399,7 @@
       "regionTag": "apihub_v1_generated_ApiHubPlugin_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -4445,7 +4445,7 @@
       "regionTag": "apihub_v1_generated_ApiHubPlugin_GetPlugin_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -4491,7 +4491,7 @@
       "regionTag": "apihub_v1_generated_ApiHubPlugin_GetPluginInstance_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -4537,7 +4537,7 @@
       "regionTag": "apihub_v1_generated_ApiHubPlugin_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -4583,7 +4583,7 @@
       "regionTag": "apihub_v1_generated_ApiHubPlugin_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -4629,7 +4629,7 @@
       "regionTag": "apihub_v1_generated_ApiHubPlugin_ListPluginInstances_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -4675,7 +4675,7 @@
       "regionTag": "apihub_v1_generated_ApiHubPlugin_ListPlugins_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -4721,7 +4721,7 @@
       "regionTag": "apihub_v1_generated_ApiHubPlugin_UpdatePluginInstance_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -4766,7 +4766,7 @@
       "regionTag": "apihub_v1_generated_HostProjectRegistrationService_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -4812,7 +4812,7 @@
       "regionTag": "apihub_v1_generated_HostProjectRegistrationService_CreateHostProjectRegistration_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -4857,7 +4857,7 @@
       "regionTag": "apihub_v1_generated_HostProjectRegistrationService_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -4903,7 +4903,7 @@
       "regionTag": "apihub_v1_generated_HostProjectRegistrationService_GetHostProjectRegistration_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -4949,7 +4949,7 @@
       "regionTag": "apihub_v1_generated_HostProjectRegistrationService_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -4995,7 +4995,7 @@
       "regionTag": "apihub_v1_generated_HostProjectRegistrationService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -5041,7 +5041,7 @@
       "regionTag": "apihub_v1_generated_HostProjectRegistrationService_ListHostProjectRegistrations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -5087,7 +5087,7 @@
       "regionTag": "apihub_v1_generated_HostProjectRegistrationService_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -5133,7 +5133,7 @@
       "regionTag": "apihub_v1_generated_HostProjectRegistrationService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -5178,7 +5178,7 @@
       "regionTag": "apihub_v1_generated_LintingService_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -5223,7 +5223,7 @@
       "regionTag": "apihub_v1_generated_LintingService_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -5269,7 +5269,7 @@
       "regionTag": "apihub_v1_generated_LintingService_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -5315,7 +5315,7 @@
       "regionTag": "apihub_v1_generated_LintingService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -5361,7 +5361,7 @@
       "regionTag": "apihub_v1_generated_LintingService_GetStyleGuide_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -5407,7 +5407,7 @@
       "regionTag": "apihub_v1_generated_LintingService_GetStyleGuideContents_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -5452,7 +5452,7 @@
       "regionTag": "apihub_v1_generated_LintingService_LintSpec_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -5498,7 +5498,7 @@
       "regionTag": "apihub_v1_generated_LintingService_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -5544,7 +5544,7 @@
       "regionTag": "apihub_v1_generated_LintingService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -5590,7 +5590,7 @@
       "regionTag": "apihub_v1_generated_LintingService_UpdateStyleGuide_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -5635,7 +5635,7 @@
       "regionTag": "apihub_v1_generated_Provisioning_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -5681,7 +5681,7 @@
       "regionTag": "apihub_v1_generated_Provisioning_CreateApiHubInstance_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -5727,7 +5727,7 @@
       "regionTag": "apihub_v1_generated_Provisioning_DeleteApiHubInstance_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -5772,7 +5772,7 @@
       "regionTag": "apihub_v1_generated_Provisioning_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -5818,7 +5818,7 @@
       "regionTag": "apihub_v1_generated_Provisioning_GetApiHubInstance_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -5864,7 +5864,7 @@
       "regionTag": "apihub_v1_generated_Provisioning_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -5910,7 +5910,7 @@
       "regionTag": "apihub_v1_generated_Provisioning_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -5956,7 +5956,7 @@
       "regionTag": "apihub_v1_generated_Provisioning_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -6002,7 +6002,7 @@
       "regionTag": "apihub_v1_generated_Provisioning_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -6048,7 +6048,7 @@
       "regionTag": "apihub_v1_generated_Provisioning_LookupApiHubInstance_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -6093,7 +6093,7 @@
       "regionTag": "apihub_v1_generated_RuntimeProjectAttachmentService_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -6139,7 +6139,7 @@
       "regionTag": "apihub_v1_generated_RuntimeProjectAttachmentService_CreateRuntimeProjectAttachment_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -6184,7 +6184,7 @@
       "regionTag": "apihub_v1_generated_RuntimeProjectAttachmentService_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -6229,7 +6229,7 @@
       "regionTag": "apihub_v1_generated_RuntimeProjectAttachmentService_DeleteRuntimeProjectAttachment_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -6275,7 +6275,7 @@
       "regionTag": "apihub_v1_generated_RuntimeProjectAttachmentService_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -6321,7 +6321,7 @@
       "regionTag": "apihub_v1_generated_RuntimeProjectAttachmentService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -6367,7 +6367,7 @@
       "regionTag": "apihub_v1_generated_RuntimeProjectAttachmentService_GetRuntimeProjectAttachment_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -6413,7 +6413,7 @@
       "regionTag": "apihub_v1_generated_RuntimeProjectAttachmentService_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -6459,7 +6459,7 @@
       "regionTag": "apihub_v1_generated_RuntimeProjectAttachmentService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -6505,7 +6505,7 @@
       "regionTag": "apihub_v1_generated_RuntimeProjectAttachmentService_ListRuntimeProjectAttachments_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -6551,7 +6551,7 @@
       "regionTag": "apihub_v1_generated_RuntimeProjectAttachmentService_LookupRuntimeProjectAttachment_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }

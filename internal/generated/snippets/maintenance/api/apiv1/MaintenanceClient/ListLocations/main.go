@@ -16,6 +16,8 @@
 
 // [START maintenance_v1_generated_Maintenance_ListLocations_sync]
 
+//go:build examples
+
 package main
 
 import (

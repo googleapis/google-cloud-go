@@ -46,7 +46,7 @@
       "regionTag": "devicestreaming_v1_generated_DirectAccessService_AdbConnect_sync",
       "segments": [
         {
-          "end": 69,
+          "end": 71,
           "start": 18,
           "type": "FULL"
         }
@@ -91,7 +91,7 @@
       "regionTag": "devicestreaming_v1_generated_DirectAccessService_CancelDeviceSession_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -137,7 +137,7 @@
       "regionTag": "devicestreaming_v1_generated_DirectAccessService_CreateDeviceSession_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -183,7 +183,7 @@
       "regionTag": "devicestreaming_v1_generated_DirectAccessService_GetDeviceSession_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -229,7 +229,7 @@
       "regionTag": "devicestreaming_v1_generated_DirectAccessService_ListDeviceSessions_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -275,7 +275,7 @@
       "regionTag": "devicestreaming_v1_generated_DirectAccessService_UpdateDeviceSession_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }

@@ -16,6 +16,8 @@
 
 // [START cloudcommerceconsumerprocurement_v1_generated_ConsumerProcurementService_GetOrder_sync]
 
+//go:build examples
+
 package main
 
 import (

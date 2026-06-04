@@ -16,6 +16,8 @@
 
 // [START artifactregistry_v1beta2_generated_ArtifactRegistry_ListPackages_sync]
 
+//go:build examples
+
 package main
 
 import (

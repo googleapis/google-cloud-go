@@ -16,6 +16,8 @@
 
 // [START merchantapi_v1_generated_UserService_DeleteUser_sync]
 
+//go:build examples
+
 package main
 
 import (

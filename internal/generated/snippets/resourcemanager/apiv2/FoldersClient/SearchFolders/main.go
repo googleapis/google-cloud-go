@@ -16,6 +16,8 @@
 
 // [START cloudresourcemanager_v2_generated_Folders_SearchFolders_sync]
 
+//go:build examples
+
 package main
 
 import (

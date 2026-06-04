@@ -16,6 +16,8 @@
 
 // [START osconfig_v1_generated_AgentEndpointService_ReportInventory_sync]
 
+//go:build examples
+
 package main
 
 import (

@@ -50,7 +50,7 @@
       "regionTag": "merchantapi_v1beta_generated_PromotionsService_GetPromotion_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -96,7 +96,7 @@
       "regionTag": "merchantapi_v1beta_generated_PromotionsService_InsertPromotion_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -142,7 +142,7 @@
       "regionTag": "merchantapi_v1beta_generated_PromotionsService_ListPromotions_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }

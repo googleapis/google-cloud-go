@@ -16,6 +16,8 @@
 
 // [START dialogflow_v2_generated_EncryptionSpecService_InitializeEncryptionSpec_sync]
 
+//go:build examples
+
 package main
 
 import (

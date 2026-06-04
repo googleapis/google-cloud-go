@@ -50,7 +50,7 @@
       "regionTag": "language_v1beta2_generated_LanguageService_AnalyzeEntities_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -96,7 +96,7 @@
       "regionTag": "language_v1beta2_generated_LanguageService_AnalyzeEntitySentiment_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -142,7 +142,7 @@
       "regionTag": "language_v1beta2_generated_LanguageService_AnalyzeSentiment_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -188,7 +188,7 @@
       "regionTag": "language_v1beta2_generated_LanguageService_AnalyzeSyntax_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -234,7 +234,7 @@
       "regionTag": "language_v1beta2_generated_LanguageService_AnnotateText_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -280,7 +280,7 @@
       "regionTag": "language_v1beta2_generated_LanguageService_ClassifyText_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -326,7 +326,7 @@
       "regionTag": "language_v1beta2_generated_LanguageService_ModerateText_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }

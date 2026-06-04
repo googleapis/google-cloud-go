@@ -16,6 +16,8 @@
 
 // [START servicecontrol_v1_generated_QuotaController_AllocateQuota_sync]
 
+//go:build examples
+
 package main
 
 import (

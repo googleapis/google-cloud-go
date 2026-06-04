@@ -16,6 +16,8 @@
 
 // [START networkservices_v1_generated_DepService_ListLocations_sync]
 
+//go:build examples
+
 package main
 
 import (

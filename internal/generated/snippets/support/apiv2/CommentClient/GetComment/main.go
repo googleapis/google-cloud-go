@@ -16,6 +16,8 @@
 
 // [START cloudsupport_v2_generated_CommentService_GetComment_sync]
 
+//go:build examples
+
 package main
 
 import (

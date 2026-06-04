@@ -16,6 +16,8 @@
 
 // [START visionai_v1_generated_HealthCheckService_ListOperations_sync]
 
+//go:build examples
+
 package main
 
 import (

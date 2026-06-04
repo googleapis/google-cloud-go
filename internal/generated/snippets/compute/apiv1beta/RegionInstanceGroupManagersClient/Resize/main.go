@@ -16,6 +16,8 @@
 
 // [START compute_v1beta_generated_RegionInstanceGroupManagers_Resize_sync]
 
+//go:build examples
+
 package main
 
 import (

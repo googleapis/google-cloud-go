@@ -16,6 +16,8 @@
 
 // [START notebooks_v1_generated_NotebookService_ListSchedules_sync]
 
+//go:build examples
+
 package main
 
 import (

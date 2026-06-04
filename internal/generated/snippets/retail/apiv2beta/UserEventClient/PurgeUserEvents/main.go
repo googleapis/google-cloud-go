@@ -16,6 +16,8 @@
 
 // [START retail_v2beta_generated_UserEventService_PurgeUserEvents_sync]
 
+//go:build examples
+
 package main
 
 import (

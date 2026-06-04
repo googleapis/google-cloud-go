@@ -16,6 +16,8 @@
 
 // [START discoveryengine_v1beta_generated_UserEventService_CollectUserEvent_sync]
 
+//go:build examples
+
 package main
 
 import (

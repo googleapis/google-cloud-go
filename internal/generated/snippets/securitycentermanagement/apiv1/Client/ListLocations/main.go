@@ -16,6 +16,8 @@
 
 // [START securitycentermanagement_v1_generated_SecurityCenterManagement_ListLocations_sync]
 
+//go:build examples
+
 package main
 
 import (

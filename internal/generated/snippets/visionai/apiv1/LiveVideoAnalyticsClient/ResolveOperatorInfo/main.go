@@ -16,6 +16,8 @@
 
 // [START visionai_v1_generated_LiveVideoAnalytics_ResolveOperatorInfo_sync]
 
+//go:build examples
+
 package main
 
 import (

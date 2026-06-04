@@ -16,6 +16,8 @@
 
 // [START netapp_v1_generated_NetApp_GetQuotaRule_sync]
 
+//go:build examples
+
 package main
 
 import (

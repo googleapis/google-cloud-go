@@ -16,6 +16,8 @@
 
 // [START jobs_v4beta1_generated_JobService_UpdateJob_sync]
 
+//go:build examples
+
 package main
 
 import (

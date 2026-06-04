@@ -16,6 +16,8 @@
 
 // [START vectorsearch_v1beta_generated_VectorSearchService_CancelOperation_sync]
 
+//go:build examples
+
 package main
 
 import (

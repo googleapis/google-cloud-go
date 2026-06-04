@@ -16,6 +16,8 @@
 
 // [START css_v1_generated_AccountLabelsService_DeleteAccountLabel_sync]
 
+//go:build examples
+
 package main
 
 import (

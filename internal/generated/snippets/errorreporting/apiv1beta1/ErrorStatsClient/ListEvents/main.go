@@ -16,6 +16,8 @@
 
 // [START clouderrorreporting_v1beta1_generated_ErrorStatsService_ListEvents_sync]
 
+//go:build examples
+
 package main
 
 import (

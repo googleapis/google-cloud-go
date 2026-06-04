@@ -16,6 +16,8 @@
 
 // [START privilegedaccessmanager_v1_generated_PrivilegedAccessManager_DeleteEntitlement_sync]
 
+//go:build examples
+
 package main
 
 import (

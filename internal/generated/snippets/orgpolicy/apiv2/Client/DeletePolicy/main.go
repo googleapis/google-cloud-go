@@ -16,6 +16,8 @@
 
 // [START orgpolicy_v2_generated_OrgPolicy_DeletePolicy_sync]
 
+//go:build examples
+
 package main
 
 import (

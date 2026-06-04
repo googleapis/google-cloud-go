@@ -16,6 +16,8 @@
 
 // [START datalineage_v1_generated_ConfigManagementService_CancelOperation_sync]
 
+//go:build examples
+
 package main
 
 import (

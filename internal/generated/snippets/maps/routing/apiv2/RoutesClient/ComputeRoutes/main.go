@@ -16,6 +16,8 @@
 
 // [START routes_v2_generated_Routes_ComputeRoutes_sync]
 
+//go:build examples
+
 package main
 
 import (

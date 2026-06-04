@@ -16,6 +16,8 @@
 
 // [START run_v2_generated_Jobs_GetJob_sync]
 
+//go:build examples
+
 package main
 
 import (

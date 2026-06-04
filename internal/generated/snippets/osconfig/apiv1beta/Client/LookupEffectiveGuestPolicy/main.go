@@ -16,6 +16,8 @@
 
 // [START osconfig_v1beta_generated_OsConfigService_LookupEffectiveGuestPolicy_sync]
 
+//go:build examples
+
 package main
 
 import (

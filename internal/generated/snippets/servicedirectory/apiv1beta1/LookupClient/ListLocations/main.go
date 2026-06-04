@@ -16,6 +16,8 @@
 
 // [START servicedirectory_v1beta1_generated_LookupService_ListLocations_sync]
 
+//go:build examples
+
 package main
 
 import (

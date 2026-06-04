@@ -16,6 +16,8 @@
 
 // [START saasservicemgmt_v1beta1_generated_SaasRollouts_UpdateRolloutKind_sync]
 
+//go:build examples
+
 package main
 
 import (

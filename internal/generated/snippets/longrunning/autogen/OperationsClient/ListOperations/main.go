@@ -16,6 +16,8 @@
 
 // [START longrunning_longrunning_generated_Operations_ListOperations_sync]
 
+//go:build examples
+
 package main
 
 import (

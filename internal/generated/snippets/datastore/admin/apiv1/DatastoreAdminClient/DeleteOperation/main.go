@@ -16,6 +16,8 @@
 
 // [START datastore_v1_generated_DatastoreAdmin_DeleteOperation_sync]
 
+//go:build examples
+
 package main
 
 import (

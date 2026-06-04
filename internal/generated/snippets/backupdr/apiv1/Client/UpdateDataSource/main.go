@@ -16,6 +16,8 @@
 
 // [START backupdr_v1_generated_BackupDR_UpdateDataSource_sync]
 
+//go:build examples
+
 package main
 
 import (

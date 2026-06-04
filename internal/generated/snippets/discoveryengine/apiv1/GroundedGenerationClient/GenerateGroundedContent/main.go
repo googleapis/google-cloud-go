@@ -16,6 +16,8 @@
 
 // [START discoveryengine_v1_generated_GroundedGenerationService_GenerateGroundedContent_sync]
 
+//go:build examples
+
 package main
 
 import (

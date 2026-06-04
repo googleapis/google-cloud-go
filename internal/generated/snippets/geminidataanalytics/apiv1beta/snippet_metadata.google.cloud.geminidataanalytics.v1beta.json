@@ -49,7 +49,7 @@
       "regionTag": "geminidataanalytics_v1beta_generated_DataAgentService_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -95,7 +95,7 @@
       "regionTag": "geminidataanalytics_v1beta_generated_DataAgentService_CreateDataAgent_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -141,7 +141,7 @@
       "regionTag": "geminidataanalytics_v1beta_generated_DataAgentService_CreateDataAgentSync_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -187,7 +187,7 @@
       "regionTag": "geminidataanalytics_v1beta_generated_DataAgentService_DeleteDataAgent_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -232,7 +232,7 @@
       "regionTag": "geminidataanalytics_v1beta_generated_DataAgentService_DeleteDataAgentSync_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -277,7 +277,7 @@
       "regionTag": "geminidataanalytics_v1beta_generated_DataAgentService_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -323,7 +323,7 @@
       "regionTag": "geminidataanalytics_v1beta_generated_DataAgentService_GetDataAgent_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -369,7 +369,7 @@
       "regionTag": "geminidataanalytics_v1beta_generated_DataAgentService_GetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -415,7 +415,7 @@
       "regionTag": "geminidataanalytics_v1beta_generated_DataAgentService_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -461,7 +461,7 @@
       "regionTag": "geminidataanalytics_v1beta_generated_DataAgentService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -507,7 +507,7 @@
       "regionTag": "geminidataanalytics_v1beta_generated_DataAgentService_ListAccessibleDataAgents_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -553,7 +553,7 @@
       "regionTag": "geminidataanalytics_v1beta_generated_DataAgentService_ListDataAgents_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -599,7 +599,7 @@
       "regionTag": "geminidataanalytics_v1beta_generated_DataAgentService_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -645,7 +645,7 @@
       "regionTag": "geminidataanalytics_v1beta_generated_DataAgentService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -691,7 +691,7 @@
       "regionTag": "geminidataanalytics_v1beta_generated_DataAgentService_SetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -737,7 +737,7 @@
       "regionTag": "geminidataanalytics_v1beta_generated_DataAgentService_UpdateDataAgent_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -783,7 +783,7 @@
       "regionTag": "geminidataanalytics_v1beta_generated_DataAgentService_UpdateDataAgentSync_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -828,7 +828,7 @@
       "regionTag": "geminidataanalytics_v1beta_generated_DataChatService_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -874,7 +874,7 @@
       "regionTag": "geminidataanalytics_v1beta_generated_DataChatService_CreateConversation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -919,7 +919,7 @@
       "regionTag": "geminidataanalytics_v1beta_generated_DataChatService_DeleteConversation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -964,7 +964,7 @@
       "regionTag": "geminidataanalytics_v1beta_generated_DataChatService_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -1010,7 +1010,7 @@
       "regionTag": "geminidataanalytics_v1beta_generated_DataChatService_GetConversation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1056,7 +1056,7 @@
       "regionTag": "geminidataanalytics_v1beta_generated_DataChatService_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1102,7 +1102,7 @@
       "regionTag": "geminidataanalytics_v1beta_generated_DataChatService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1148,7 +1148,7 @@
       "regionTag": "geminidataanalytics_v1beta_generated_DataChatService_ListConversations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1194,7 +1194,7 @@
       "regionTag": "geminidataanalytics_v1beta_generated_DataChatService_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1240,7 +1240,7 @@
       "regionTag": "geminidataanalytics_v1beta_generated_DataChatService_ListMessages_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1286,7 +1286,7 @@
       "regionTag": "geminidataanalytics_v1beta_generated_DataChatService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1332,7 +1332,7 @@
       "regionTag": "geminidataanalytics_v1beta_generated_DataChatService_QueryData_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }

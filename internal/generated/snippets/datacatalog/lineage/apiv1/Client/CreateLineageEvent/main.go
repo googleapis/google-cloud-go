@@ -16,6 +16,8 @@
 
 // [START datalineage_v1_generated_Lineage_CreateLineageEvent_sync]
 
+//go:build examples
+
 package main
 
 import (

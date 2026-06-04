@@ -16,6 +16,8 @@
 
 // [START apikeys_v2_generated_ApiKeys_LookupKey_sync]
 
+//go:build examples
+
 package main
 
 import (

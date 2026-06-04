@@ -16,6 +16,8 @@
 
 // [START monitoring_v1_generated_DashboardsService_UpdateDashboard_sync]
 
+//go:build examples
+
 package main
 
 import (

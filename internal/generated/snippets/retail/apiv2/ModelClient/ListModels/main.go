@@ -16,6 +16,8 @@
 
 // [START retail_v2_generated_ModelService_ListModels_sync]
 
+//go:build examples
+
 package main
 
 import (

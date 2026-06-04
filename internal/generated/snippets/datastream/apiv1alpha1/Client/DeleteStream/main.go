@@ -16,6 +16,8 @@
 
 // [START datastream_v1alpha1_generated_Datastream_DeleteStream_sync]
 
+//go:build examples
+
 package main
 
 import (

@@ -16,6 +16,8 @@
 
 // [START servicedirectory_v1_generated_RegistrationService_DeleteService_sync]
 
+//go:build examples
+
 package main
 
 import (

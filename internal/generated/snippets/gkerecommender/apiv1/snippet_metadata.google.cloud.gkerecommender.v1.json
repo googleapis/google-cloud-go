@@ -50,7 +50,7 @@
       "regionTag": "gkerecommender_v1_generated_GkeInferenceQuickstart_FetchBenchmarkingData_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -96,7 +96,7 @@
       "regionTag": "gkerecommender_v1_generated_GkeInferenceQuickstart_FetchModelServerVersions_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -142,7 +142,7 @@
       "regionTag": "gkerecommender_v1_generated_GkeInferenceQuickstart_FetchModelServers_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -188,7 +188,7 @@
       "regionTag": "gkerecommender_v1_generated_GkeInferenceQuickstart_FetchModels_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -234,7 +234,7 @@
       "regionTag": "gkerecommender_v1_generated_GkeInferenceQuickstart_FetchProfiles_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -280,7 +280,7 @@
       "regionTag": "gkerecommender_v1_generated_GkeInferenceQuickstart_GenerateOptimizedManifest_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }

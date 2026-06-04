@@ -16,6 +16,8 @@
 
 // [START financialservices_v1_generated_AML_ListDatasets_sync]
 
+//go:build examples
+
 package main
 
 import (

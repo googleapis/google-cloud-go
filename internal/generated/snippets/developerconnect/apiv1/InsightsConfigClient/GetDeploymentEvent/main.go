@@ -16,6 +16,8 @@
 
 // [START developerconnect_v1_generated_InsightsConfigService_GetDeploymentEvent_sync]
 
+//go:build examples
+
 package main
 
 import (

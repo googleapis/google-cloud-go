@@ -16,6 +16,8 @@
 
 // [START logging_v2_generated_ConfigServiceV2_CreateLink_sync]
 
+//go:build examples
+
 package main
 
 import (

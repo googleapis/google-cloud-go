@@ -16,6 +16,8 @@
 
 // [START advisorynotifications_v1_generated_AdvisoryNotificationsService_GetSettings_sync]
 
+//go:build examples
+
 package main
 
 import (

@@ -16,6 +16,8 @@
 
 // [START chronicle_v1_generated_ReferenceListService_CreateReferenceList_sync]
 
+//go:build examples
+
 package main
 
 import (

@@ -137,7 +137,7 @@ type ReservationSubBlocksClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *ReservationSubBlocksClient) Close() error {
 	return c.internalClient.Close()
@@ -307,7 +307,7 @@ func (c *reservationSubBlocksRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *reservationSubBlocksRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.

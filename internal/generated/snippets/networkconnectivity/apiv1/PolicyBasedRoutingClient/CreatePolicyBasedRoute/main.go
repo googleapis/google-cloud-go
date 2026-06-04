@@ -16,6 +16,8 @@
 
 // [START networkconnectivity_v1_generated_PolicyBasedRoutingService_CreatePolicyBasedRoute_sync]
 
+//go:build examples
+
 package main
 
 import (

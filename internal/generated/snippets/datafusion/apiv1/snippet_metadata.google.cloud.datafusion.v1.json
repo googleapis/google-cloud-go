@@ -50,7 +50,7 @@
       "regionTag": "datafusion_v1_generated_DataFusion_CreateInstance_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -96,7 +96,7 @@
       "regionTag": "datafusion_v1_generated_DataFusion_DeleteInstance_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -142,7 +142,7 @@
       "regionTag": "datafusion_v1_generated_DataFusion_GetInstance_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -188,7 +188,7 @@
       "regionTag": "datafusion_v1_generated_DataFusion_ListAvailableVersions_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -234,7 +234,7 @@
       "regionTag": "datafusion_v1_generated_DataFusion_ListInstances_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -280,7 +280,7 @@
       "regionTag": "datafusion_v1_generated_DataFusion_RestartInstance_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -326,7 +326,7 @@
       "regionTag": "datafusion_v1_generated_DataFusion_UpdateInstance_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }

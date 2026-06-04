@@ -16,6 +16,8 @@
 
 // [START vmwareengine_v1_generated_VmwareEngine_DeletePrivateConnection_sync]
 
+//go:build examples
+
 package main
 
 import (

@@ -214,7 +214,7 @@ type ImageAnnotatorClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *ImageAnnotatorClient) Close() error {
 	return c.internalClient.Close()
@@ -411,7 +411,7 @@ func (c *imageAnnotatorGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *imageAnnotatorGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -525,7 +525,7 @@ func (c *imageAnnotatorRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *imageAnnotatorRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.

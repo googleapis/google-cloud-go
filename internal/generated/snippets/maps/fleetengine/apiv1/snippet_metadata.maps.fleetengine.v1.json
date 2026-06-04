@@ -50,7 +50,7 @@
       "regionTag": "fleetengine_v1_generated_TripService_CreateTrip_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -95,7 +95,7 @@
       "regionTag": "fleetengine_v1_generated_TripService_DeleteTrip_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -141,7 +141,7 @@
       "regionTag": "fleetengine_v1_generated_TripService_GetTrip_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -186,7 +186,7 @@
       "regionTag": "fleetengine_v1_generated_TripService_ReportBillableTrip_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -232,7 +232,7 @@
       "regionTag": "fleetengine_v1_generated_TripService_SearchTrips_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -278,7 +278,7 @@
       "regionTag": "fleetengine_v1_generated_TripService_UpdateTrip_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -324,7 +324,7 @@
       "regionTag": "fleetengine_v1_generated_VehicleService_CreateVehicle_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -369,7 +369,7 @@
       "regionTag": "fleetengine_v1_generated_VehicleService_DeleteVehicle_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -415,7 +415,7 @@
       "regionTag": "fleetengine_v1_generated_VehicleService_GetVehicle_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -461,7 +461,7 @@
       "regionTag": "fleetengine_v1_generated_VehicleService_ListVehicles_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -507,7 +507,7 @@
       "regionTag": "fleetengine_v1_generated_VehicleService_SearchVehicles_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -553,7 +553,7 @@
       "regionTag": "fleetengine_v1_generated_VehicleService_UpdateVehicle_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -599,7 +599,7 @@
       "regionTag": "fleetengine_v1_generated_VehicleService_UpdateVehicleAttributes_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }

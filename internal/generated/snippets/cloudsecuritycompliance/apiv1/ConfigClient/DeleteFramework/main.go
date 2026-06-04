@@ -16,6 +16,8 @@
 
 // [START cloudsecuritycompliance_v1_generated_Config_DeleteFramework_sync]
 
+//go:build examples
+
 package main
 
 import (

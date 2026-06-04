@@ -16,6 +16,8 @@
 
 // [START financialservices_v1_generated_AML_CreateModel_sync]
 
+//go:build examples
+
 package main
 
 import (

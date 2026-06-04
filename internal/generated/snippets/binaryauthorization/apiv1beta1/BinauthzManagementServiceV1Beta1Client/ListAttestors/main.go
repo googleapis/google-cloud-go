@@ -16,6 +16,8 @@
 
 // [START binaryauthorization_v1beta1_generated_BinauthzManagementServiceV1Beta1_ListAttestors_sync]
 
+//go:build examples
+
 package main
 
 import (

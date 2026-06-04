@@ -16,6 +16,8 @@
 
 // [START cloudcontrolspartner_v1_generated_CloudControlsPartnerCore_ListCustomers_sync]
 
+//go:build examples
+
 package main
 
 import (

@@ -16,6 +16,8 @@
 
 // [START cloudtrace_v1_generated_TraceService_GetTrace_sync]
 
+//go:build examples
+
 package main
 
 import (

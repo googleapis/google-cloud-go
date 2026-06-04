@@ -16,6 +16,8 @@
 
 // [START datacatalog_v1_generated_DataCatalog_GetIamPolicy_sync]
 
+//go:build examples
+
 package main
 
 import (

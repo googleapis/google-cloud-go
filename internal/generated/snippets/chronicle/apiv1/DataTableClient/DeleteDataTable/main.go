@@ -16,6 +16,8 @@
 
 // [START chronicle_v1_generated_DataTableService_DeleteDataTable_sync]
 
+//go:build examples
+
 package main
 
 import (

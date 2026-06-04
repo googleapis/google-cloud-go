@@ -16,6 +16,8 @@
 
 // [START cloudfunctions_v2beta_generated_FunctionService_GetOperation_sync]
 
+//go:build examples
+
 package main
 
 import (

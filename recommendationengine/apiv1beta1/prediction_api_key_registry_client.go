@@ -177,7 +177,7 @@ type PredictionApiKeyRegistryClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *PredictionApiKeyRegistryClient) Close() error {
 	return c.internalClient.Close()
@@ -314,7 +314,7 @@ func (c *predictionApiKeyRegistryGRPCClient) setGoogleClientInfo(keyval ...strin
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *predictionApiKeyRegistryGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -413,7 +413,7 @@ func (c *predictionApiKeyRegistryRESTClient) setGoogleClientInfo(keyval ...strin
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *predictionApiKeyRegistryRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.

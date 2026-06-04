@@ -50,7 +50,7 @@
       "regionTag": "accesscontextmanager_v1_generated_AccessContextManager_CommitServicePerimeters_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -96,7 +96,7 @@
       "regionTag": "accesscontextmanager_v1_generated_AccessContextManager_CreateAccessLevel_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -142,7 +142,7 @@
       "regionTag": "accesscontextmanager_v1_generated_AccessContextManager_CreateAccessPolicy_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -188,7 +188,7 @@
       "regionTag": "accesscontextmanager_v1_generated_AccessContextManager_CreateGcpUserAccessBinding_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -234,7 +234,7 @@
       "regionTag": "accesscontextmanager_v1_generated_AccessContextManager_CreateServicePerimeter_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -280,7 +280,7 @@
       "regionTag": "accesscontextmanager_v1_generated_AccessContextManager_DeleteAccessLevel_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -326,7 +326,7 @@
       "regionTag": "accesscontextmanager_v1_generated_AccessContextManager_DeleteAccessPolicy_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -372,7 +372,7 @@
       "regionTag": "accesscontextmanager_v1_generated_AccessContextManager_DeleteGcpUserAccessBinding_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -418,7 +418,7 @@
       "regionTag": "accesscontextmanager_v1_generated_AccessContextManager_DeleteServicePerimeter_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -464,7 +464,7 @@
       "regionTag": "accesscontextmanager_v1_generated_AccessContextManager_GetAccessLevel_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -510,7 +510,7 @@
       "regionTag": "accesscontextmanager_v1_generated_AccessContextManager_GetAccessPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -556,7 +556,7 @@
       "regionTag": "accesscontextmanager_v1_generated_AccessContextManager_GetGcpUserAccessBinding_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -602,7 +602,7 @@
       "regionTag": "accesscontextmanager_v1_generated_AccessContextManager_GetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -648,7 +648,7 @@
       "regionTag": "accesscontextmanager_v1_generated_AccessContextManager_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -694,7 +694,7 @@
       "regionTag": "accesscontextmanager_v1_generated_AccessContextManager_GetServicePerimeter_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -740,7 +740,7 @@
       "regionTag": "accesscontextmanager_v1_generated_AccessContextManager_ListAccessLevels_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -786,7 +786,7 @@
       "regionTag": "accesscontextmanager_v1_generated_AccessContextManager_ListAccessPolicies_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -832,7 +832,7 @@
       "regionTag": "accesscontextmanager_v1_generated_AccessContextManager_ListGcpUserAccessBindings_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -878,7 +878,7 @@
       "regionTag": "accesscontextmanager_v1_generated_AccessContextManager_ListServicePerimeters_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -924,7 +924,7 @@
       "regionTag": "accesscontextmanager_v1_generated_AccessContextManager_ReplaceAccessLevels_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -970,7 +970,7 @@
       "regionTag": "accesscontextmanager_v1_generated_AccessContextManager_ReplaceServicePerimeters_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1016,7 +1016,7 @@
       "regionTag": "accesscontextmanager_v1_generated_AccessContextManager_SetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1062,7 +1062,7 @@
       "regionTag": "accesscontextmanager_v1_generated_AccessContextManager_TestIamPermissions_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1108,7 +1108,7 @@
       "regionTag": "accesscontextmanager_v1_generated_AccessContextManager_UpdateAccessLevel_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1154,7 +1154,7 @@
       "regionTag": "accesscontextmanager_v1_generated_AccessContextManager_UpdateAccessPolicy_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1200,7 +1200,7 @@
       "regionTag": "accesscontextmanager_v1_generated_AccessContextManager_UpdateGcpUserAccessBinding_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1246,7 +1246,7 @@
       "regionTag": "accesscontextmanager_v1_generated_AccessContextManager_UpdateServicePerimeter_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }

@@ -50,7 +50,7 @@
       "regionTag": "merchantapi_v1beta_generated_AccountIssueService_ListAccountIssues_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -96,7 +96,7 @@
       "regionTag": "merchantapi_v1beta_generated_AccountTaxService_GetAccountTax_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -142,7 +142,7 @@
       "regionTag": "merchantapi_v1beta_generated_AccountTaxService_ListAccountTax_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -188,7 +188,7 @@
       "regionTag": "merchantapi_v1beta_generated_AccountTaxService_UpdateAccountTax_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -234,7 +234,7 @@
       "regionTag": "merchantapi_v1beta_generated_AccountsService_CreateAndConfigureAccount_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -279,7 +279,7 @@
       "regionTag": "merchantapi_v1beta_generated_AccountsService_DeleteAccount_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -325,7 +325,7 @@
       "regionTag": "merchantapi_v1beta_generated_AccountsService_GetAccount_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -371,7 +371,7 @@
       "regionTag": "merchantapi_v1beta_generated_AccountsService_ListAccounts_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -417,7 +417,7 @@
       "regionTag": "merchantapi_v1beta_generated_AccountsService_ListSubAccounts_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -463,7 +463,7 @@
       "regionTag": "merchantapi_v1beta_generated_AccountsService_UpdateAccount_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -509,7 +509,7 @@
       "regionTag": "merchantapi_v1beta_generated_AutofeedSettingsService_GetAutofeedSettings_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -555,7 +555,7 @@
       "regionTag": "merchantapi_v1beta_generated_AutofeedSettingsService_UpdateAutofeedSettings_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -601,7 +601,7 @@
       "regionTag": "merchantapi_v1beta_generated_AutomaticImprovementsService_GetAutomaticImprovements_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -647,7 +647,7 @@
       "regionTag": "merchantapi_v1beta_generated_AutomaticImprovementsService_UpdateAutomaticImprovements_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -693,7 +693,7 @@
       "regionTag": "merchantapi_v1beta_generated_BusinessIdentityService_GetBusinessIdentity_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -739,7 +739,7 @@
       "regionTag": "merchantapi_v1beta_generated_BusinessIdentityService_UpdateBusinessIdentity_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -785,7 +785,7 @@
       "regionTag": "merchantapi_v1beta_generated_BusinessInfoService_GetBusinessInfo_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -831,7 +831,7 @@
       "regionTag": "merchantapi_v1beta_generated_BusinessInfoService_UpdateBusinessInfo_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -877,7 +877,7 @@
       "regionTag": "merchantapi_v1beta_generated_CheckoutSettingsService_CreateCheckoutSettings_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -922,7 +922,7 @@
       "regionTag": "merchantapi_v1beta_generated_CheckoutSettingsService_DeleteCheckoutSettings_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -968,7 +968,7 @@
       "regionTag": "merchantapi_v1beta_generated_CheckoutSettingsService_GetCheckoutSettings_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1014,7 +1014,7 @@
       "regionTag": "merchantapi_v1beta_generated_CheckoutSettingsService_UpdateCheckoutSettings_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1060,7 +1060,7 @@
       "regionTag": "merchantapi_v1beta_generated_EmailPreferencesService_GetEmailPreferences_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1106,7 +1106,7 @@
       "regionTag": "merchantapi_v1beta_generated_EmailPreferencesService_UpdateEmailPreferences_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1152,7 +1152,7 @@
       "regionTag": "merchantapi_v1beta_generated_GbpAccountsService_LinkGbpAccount_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1198,7 +1198,7 @@
       "regionTag": "merchantapi_v1beta_generated_GbpAccountsService_ListGbpAccounts_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1244,7 +1244,7 @@
       "regionTag": "merchantapi_v1beta_generated_HomepageService_ClaimHomepage_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1290,7 +1290,7 @@
       "regionTag": "merchantapi_v1beta_generated_HomepageService_GetHomepage_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1336,7 +1336,7 @@
       "regionTag": "merchantapi_v1beta_generated_HomepageService_UnclaimHomepage_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1382,7 +1382,7 @@
       "regionTag": "merchantapi_v1beta_generated_HomepageService_UpdateHomepage_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1428,7 +1428,7 @@
       "regionTag": "merchantapi_v1beta_generated_LfpProvidersService_FindLfpProviders_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1474,7 +1474,7 @@
       "regionTag": "merchantapi_v1beta_generated_LfpProvidersService_LinkLfpProvider_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1520,7 +1520,7 @@
       "regionTag": "merchantapi_v1beta_generated_OmnichannelSettingsService_CreateOmnichannelSetting_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1566,7 +1566,7 @@
       "regionTag": "merchantapi_v1beta_generated_OmnichannelSettingsService_GetOmnichannelSetting_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1612,7 +1612,7 @@
       "regionTag": "merchantapi_v1beta_generated_OmnichannelSettingsService_ListOmnichannelSettings_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1658,7 +1658,7 @@
       "regionTag": "merchantapi_v1beta_generated_OmnichannelSettingsService_RequestInventoryVerification_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1704,7 +1704,7 @@
       "regionTag": "merchantapi_v1beta_generated_OmnichannelSettingsService_UpdateOmnichannelSetting_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1750,7 +1750,7 @@
       "regionTag": "merchantapi_v1beta_generated_OnlineReturnPolicyService_CreateOnlineReturnPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1795,7 +1795,7 @@
       "regionTag": "merchantapi_v1beta_generated_OnlineReturnPolicyService_DeleteOnlineReturnPolicy_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -1841,7 +1841,7 @@
       "regionTag": "merchantapi_v1beta_generated_OnlineReturnPolicyService_GetOnlineReturnPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1887,7 +1887,7 @@
       "regionTag": "merchantapi_v1beta_generated_OnlineReturnPolicyService_ListOnlineReturnPolicies_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1933,7 +1933,7 @@
       "regionTag": "merchantapi_v1beta_generated_OnlineReturnPolicyService_UpdateOnlineReturnPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1979,7 +1979,7 @@
       "regionTag": "merchantapi_v1beta_generated_ProgramsService_DisableProgram_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2025,7 +2025,7 @@
       "regionTag": "merchantapi_v1beta_generated_ProgramsService_EnableProgram_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2071,7 +2071,7 @@
       "regionTag": "merchantapi_v1beta_generated_ProgramsService_GetProgram_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2117,7 +2117,7 @@
       "regionTag": "merchantapi_v1beta_generated_ProgramsService_ListPrograms_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2163,7 +2163,7 @@
       "regionTag": "merchantapi_v1beta_generated_RegionsService_CreateRegion_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2208,7 +2208,7 @@
       "regionTag": "merchantapi_v1beta_generated_RegionsService_DeleteRegion_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -2254,7 +2254,7 @@
       "regionTag": "merchantapi_v1beta_generated_RegionsService_GetRegion_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2300,7 +2300,7 @@
       "regionTag": "merchantapi_v1beta_generated_RegionsService_ListRegions_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2346,7 +2346,7 @@
       "regionTag": "merchantapi_v1beta_generated_RegionsService_UpdateRegion_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2392,7 +2392,7 @@
       "regionTag": "merchantapi_v1beta_generated_ShippingSettingsService_GetShippingSettings_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2438,7 +2438,7 @@
       "regionTag": "merchantapi_v1beta_generated_ShippingSettingsService_InsertShippingSettings_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2484,7 +2484,7 @@
       "regionTag": "merchantapi_v1beta_generated_TermsOfServiceAgreementStateService_GetTermsOfServiceAgreementState_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2530,7 +2530,7 @@
       "regionTag": "merchantapi_v1beta_generated_TermsOfServiceAgreementStateService_RetrieveForApplicationTermsOfServiceAgreementState_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2575,7 +2575,7 @@
       "regionTag": "merchantapi_v1beta_generated_TermsOfServiceService_AcceptTermsOfService_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -2621,7 +2621,7 @@
       "regionTag": "merchantapi_v1beta_generated_TermsOfServiceService_GetTermsOfService_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2667,7 +2667,7 @@
       "regionTag": "merchantapi_v1beta_generated_TermsOfServiceService_RetrieveLatestTermsOfService_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2713,7 +2713,7 @@
       "regionTag": "merchantapi_v1beta_generated_UserService_CreateUser_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2758,7 +2758,7 @@
       "regionTag": "merchantapi_v1beta_generated_UserService_DeleteUser_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -2804,7 +2804,7 @@
       "regionTag": "merchantapi_v1beta_generated_UserService_GetUser_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2850,7 +2850,7 @@
       "regionTag": "merchantapi_v1beta_generated_UserService_ListUsers_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2896,7 +2896,7 @@
       "regionTag": "merchantapi_v1beta_generated_UserService_UpdateUser_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }

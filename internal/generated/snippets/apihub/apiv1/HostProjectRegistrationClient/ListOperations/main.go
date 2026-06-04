@@ -16,6 +16,8 @@
 
 // [START apihub_v1_generated_HostProjectRegistrationService_ListOperations_sync]
 
+//go:build examples
+
 package main
 
 import (

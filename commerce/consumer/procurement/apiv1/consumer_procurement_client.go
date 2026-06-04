@@ -180,7 +180,7 @@ type ConsumerProcurementClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *ConsumerProcurementClient) Close() error {
 	return c.internalClient.Close()
@@ -390,7 +390,7 @@ func (c *consumerProcurementGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *consumerProcurementGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -510,7 +510,7 @@ func (c *consumerProcurementRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *consumerProcurementRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.

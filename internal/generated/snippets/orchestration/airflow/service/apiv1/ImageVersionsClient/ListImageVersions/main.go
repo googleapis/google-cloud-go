@@ -16,6 +16,8 @@
 
 // [START composer_v1_generated_ImageVersions_ListImageVersions_sync]
 
+//go:build examples
+
 package main
 
 import (

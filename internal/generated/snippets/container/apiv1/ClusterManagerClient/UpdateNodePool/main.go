@@ -16,6 +16,8 @@
 
 // [START container_v1_generated_ClusterManager_UpdateNodePool_sync]
 
+//go:build examples
+
 package main
 
 import (

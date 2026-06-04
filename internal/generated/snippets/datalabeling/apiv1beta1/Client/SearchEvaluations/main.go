@@ -16,6 +16,8 @@
 
 // [START datalabeling_v1beta1_generated_DataLabelingService_SearchEvaluations_sync]
 
+//go:build examples
+
 package main
 
 import (

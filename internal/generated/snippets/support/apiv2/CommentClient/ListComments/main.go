@@ -16,6 +16,8 @@
 
 // [START cloudsupport_v2_generated_CommentService_ListComments_sync]
 
+//go:build examples
+
 package main
 
 import (

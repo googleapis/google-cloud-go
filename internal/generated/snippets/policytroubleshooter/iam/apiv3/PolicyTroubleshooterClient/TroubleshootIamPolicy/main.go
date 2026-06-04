@@ -16,6 +16,8 @@
 
 // [START policytroubleshooter_v3_generated_PolicyTroubleshooter_TroubleshootIamPolicy_sync]
 
+//go:build examples
+
 package main
 
 import (

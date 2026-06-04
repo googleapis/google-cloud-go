@@ -116,7 +116,7 @@ type TextSuggestionsClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *TextSuggestionsClient) Close() error {
 	return c.internalClient.Close()
@@ -241,7 +241,7 @@ func (c *textSuggestionsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *textSuggestionsGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -335,7 +335,7 @@ func (c *textSuggestionsRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *textSuggestionsRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.

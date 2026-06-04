@@ -16,6 +16,8 @@
 
 // [START warehouse-visionai_v1_generated_Warehouse_UploadAsset_sync]
 
+//go:build examples
+
 package main
 
 import (

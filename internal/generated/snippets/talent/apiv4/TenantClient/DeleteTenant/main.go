@@ -16,6 +16,8 @@
 
 // [START jobs_v4_generated_TenantService_DeleteTenant_sync]
 
+//go:build examples
+
 package main
 
 import (

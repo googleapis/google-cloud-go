@@ -172,7 +172,7 @@ type EncryptionSpecClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *EncryptionSpecClient) Close() error {
 	return c.internalClient.Close()
@@ -377,7 +377,7 @@ func (c *encryptionSpecGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *encryptionSpecGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -491,7 +491,7 @@ func (c *encryptionSpecRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *encryptionSpecRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.

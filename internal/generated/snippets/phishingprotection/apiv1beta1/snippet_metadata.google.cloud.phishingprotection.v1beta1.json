@@ -50,7 +50,7 @@
       "regionTag": "phishingprotection_v1beta1_generated_PhishingProtectionServiceV1Beta1_ReportPhishing_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }

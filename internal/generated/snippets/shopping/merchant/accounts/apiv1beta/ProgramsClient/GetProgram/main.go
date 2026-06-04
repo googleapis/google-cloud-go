@@ -16,6 +16,8 @@
 
 // [START merchantapi_v1beta_generated_ProgramsService_GetProgram_sync]
 
+//go:build examples
+
 package main
 
 import (

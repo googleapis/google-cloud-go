@@ -16,6 +16,8 @@
 
 // [START compute_v1beta_generated_TargetInstances_SetSecurityPolicy_sync]
 
+//go:build examples
+
 package main
 
 import (

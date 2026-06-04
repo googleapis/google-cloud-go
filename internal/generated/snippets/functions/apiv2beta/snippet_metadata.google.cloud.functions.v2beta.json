@@ -50,7 +50,7 @@
       "regionTag": "cloudfunctions_v2beta_generated_FunctionService_CreateFunction_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -96,7 +96,7 @@
       "regionTag": "cloudfunctions_v2beta_generated_FunctionService_DeleteFunction_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -142,7 +142,7 @@
       "regionTag": "cloudfunctions_v2beta_generated_FunctionService_GenerateDownloadUrl_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -188,7 +188,7 @@
       "regionTag": "cloudfunctions_v2beta_generated_FunctionService_GenerateUploadUrl_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -234,7 +234,7 @@
       "regionTag": "cloudfunctions_v2beta_generated_FunctionService_GetFunction_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -280,7 +280,7 @@
       "regionTag": "cloudfunctions_v2beta_generated_FunctionService_GetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -326,7 +326,7 @@
       "regionTag": "cloudfunctions_v2beta_generated_FunctionService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -372,7 +372,7 @@
       "regionTag": "cloudfunctions_v2beta_generated_FunctionService_ListFunctions_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -418,7 +418,7 @@
       "regionTag": "cloudfunctions_v2beta_generated_FunctionService_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -464,7 +464,7 @@
       "regionTag": "cloudfunctions_v2beta_generated_FunctionService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -510,7 +510,7 @@
       "regionTag": "cloudfunctions_v2beta_generated_FunctionService_ListRuntimes_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -556,7 +556,7 @@
       "regionTag": "cloudfunctions_v2beta_generated_FunctionService_SetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -602,7 +602,7 @@
       "regionTag": "cloudfunctions_v2beta_generated_FunctionService_TestIamPermissions_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -648,7 +648,7 @@
       "regionTag": "cloudfunctions_v2beta_generated_FunctionService_UpdateFunction_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }

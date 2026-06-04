@@ -50,7 +50,7 @@
       "regionTag": "cloudbilling_v1_generated_CloudBilling_CreateBillingAccount_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -96,7 +96,7 @@
       "regionTag": "cloudbilling_v1_generated_CloudBilling_GetBillingAccount_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -142,7 +142,7 @@
       "regionTag": "cloudbilling_v1_generated_CloudBilling_GetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -188,7 +188,7 @@
       "regionTag": "cloudbilling_v1_generated_CloudBilling_GetProjectBillingInfo_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -234,7 +234,7 @@
       "regionTag": "cloudbilling_v1_generated_CloudBilling_ListBillingAccounts_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -280,7 +280,7 @@
       "regionTag": "cloudbilling_v1_generated_CloudBilling_ListProjectBillingInfo_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -326,7 +326,7 @@
       "regionTag": "cloudbilling_v1_generated_CloudBilling_MoveBillingAccount_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -372,7 +372,7 @@
       "regionTag": "cloudbilling_v1_generated_CloudBilling_SetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -418,7 +418,7 @@
       "regionTag": "cloudbilling_v1_generated_CloudBilling_TestIamPermissions_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -464,7 +464,7 @@
       "regionTag": "cloudbilling_v1_generated_CloudBilling_UpdateBillingAccount_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -510,7 +510,7 @@
       "regionTag": "cloudbilling_v1_generated_CloudBilling_UpdateProjectBillingInfo_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -556,7 +556,7 @@
       "regionTag": "cloudbilling_v1_generated_CloudCatalog_ListServices_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -602,7 +602,7 @@
       "regionTag": "cloudbilling_v1_generated_CloudCatalog_ListSkus_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }

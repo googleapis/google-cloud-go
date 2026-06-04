@@ -16,6 +16,8 @@
 
 // [START generativelanguage_v1alpha_generated_CacheService_CreateCachedContent_sync]
 
+//go:build examples
+
 package main
 
 import (

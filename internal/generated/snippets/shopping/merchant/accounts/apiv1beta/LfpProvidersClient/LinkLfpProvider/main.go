@@ -16,6 +16,8 @@
 
 // [START merchantapi_v1beta_generated_LfpProvidersService_LinkLfpProvider_sync]
 
+//go:build examples
+
 package main
 
 import (

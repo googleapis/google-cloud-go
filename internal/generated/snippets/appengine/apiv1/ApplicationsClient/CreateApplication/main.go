@@ -16,6 +16,8 @@
 
 // [START appengine_v1_generated_Applications_CreateApplication_sync]
 
+//go:build examples
+
 package main
 
 import (

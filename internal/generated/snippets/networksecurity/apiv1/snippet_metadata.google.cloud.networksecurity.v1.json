@@ -50,7 +50,7 @@
       "regionTag": "networksecurity_v1_generated_AddressGroupService_AddAddressGroupItems_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -95,7 +95,7 @@
       "regionTag": "networksecurity_v1_generated_AddressGroupService_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -141,7 +141,7 @@
       "regionTag": "networksecurity_v1_generated_AddressGroupService_CloneAddressGroupItems_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -187,7 +187,7 @@
       "regionTag": "networksecurity_v1_generated_AddressGroupService_CreateAddressGroup_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -233,7 +233,7 @@
       "regionTag": "networksecurity_v1_generated_AddressGroupService_DeleteAddressGroup_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -278,7 +278,7 @@
       "regionTag": "networksecurity_v1_generated_AddressGroupService_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -324,7 +324,7 @@
       "regionTag": "networksecurity_v1_generated_AddressGroupService_GetAddressGroup_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -370,7 +370,7 @@
       "regionTag": "networksecurity_v1_generated_AddressGroupService_GetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -416,7 +416,7 @@
       "regionTag": "networksecurity_v1_generated_AddressGroupService_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -462,7 +462,7 @@
       "regionTag": "networksecurity_v1_generated_AddressGroupService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -508,7 +508,7 @@
       "regionTag": "networksecurity_v1_generated_AddressGroupService_ListAddressGroupReferences_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -554,7 +554,7 @@
       "regionTag": "networksecurity_v1_generated_AddressGroupService_ListAddressGroups_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -600,7 +600,7 @@
       "regionTag": "networksecurity_v1_generated_AddressGroupService_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -646,7 +646,7 @@
       "regionTag": "networksecurity_v1_generated_AddressGroupService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -692,7 +692,7 @@
       "regionTag": "networksecurity_v1_generated_AddressGroupService_RemoveAddressGroupItems_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -738,7 +738,7 @@
       "regionTag": "networksecurity_v1_generated_AddressGroupService_SetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -784,7 +784,7 @@
       "regionTag": "networksecurity_v1_generated_AddressGroupService_TestIamPermissions_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -830,7 +830,7 @@
       "regionTag": "networksecurity_v1_generated_AddressGroupService_UpdateAddressGroup_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -875,7 +875,7 @@
       "regionTag": "networksecurity_v1_generated_DnsThreatDetectorService_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -921,7 +921,7 @@
       "regionTag": "networksecurity_v1_generated_DnsThreatDetectorService_CreateDnsThreatDetector_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -966,7 +966,7 @@
       "regionTag": "networksecurity_v1_generated_DnsThreatDetectorService_DeleteDnsThreatDetector_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -1011,7 +1011,7 @@
       "regionTag": "networksecurity_v1_generated_DnsThreatDetectorService_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -1057,7 +1057,7 @@
       "regionTag": "networksecurity_v1_generated_DnsThreatDetectorService_GetDnsThreatDetector_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1103,7 +1103,7 @@
       "regionTag": "networksecurity_v1_generated_DnsThreatDetectorService_GetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1149,7 +1149,7 @@
       "regionTag": "networksecurity_v1_generated_DnsThreatDetectorService_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1195,7 +1195,7 @@
       "regionTag": "networksecurity_v1_generated_DnsThreatDetectorService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1241,7 +1241,7 @@
       "regionTag": "networksecurity_v1_generated_DnsThreatDetectorService_ListDnsThreatDetectors_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1287,7 +1287,7 @@
       "regionTag": "networksecurity_v1_generated_DnsThreatDetectorService_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1333,7 +1333,7 @@
       "regionTag": "networksecurity_v1_generated_DnsThreatDetectorService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1379,7 +1379,7 @@
       "regionTag": "networksecurity_v1_generated_DnsThreatDetectorService_SetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1425,7 +1425,7 @@
       "regionTag": "networksecurity_v1_generated_DnsThreatDetectorService_TestIamPermissions_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1471,7 +1471,7 @@
       "regionTag": "networksecurity_v1_generated_DnsThreatDetectorService_UpdateDnsThreatDetector_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1516,7 +1516,7 @@
       "regionTag": "networksecurity_v1_generated_FirewallActivation_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -1562,7 +1562,7 @@
       "regionTag": "networksecurity_v1_generated_FirewallActivation_CreateFirewallEndpoint_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1608,7 +1608,7 @@
       "regionTag": "networksecurity_v1_generated_FirewallActivation_CreateFirewallEndpointAssociation_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1654,7 +1654,7 @@
       "regionTag": "networksecurity_v1_generated_FirewallActivation_CreateProjectFirewallEndpoint_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1700,7 +1700,7 @@
       "regionTag": "networksecurity_v1_generated_FirewallActivation_DeleteFirewallEndpoint_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -1746,7 +1746,7 @@
       "regionTag": "networksecurity_v1_generated_FirewallActivation_DeleteFirewallEndpointAssociation_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -1791,7 +1791,7 @@
       "regionTag": "networksecurity_v1_generated_FirewallActivation_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -1837,7 +1837,7 @@
       "regionTag": "networksecurity_v1_generated_FirewallActivation_DeleteProjectFirewallEndpoint_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -1883,7 +1883,7 @@
       "regionTag": "networksecurity_v1_generated_FirewallActivation_GetFirewallEndpoint_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1929,7 +1929,7 @@
       "regionTag": "networksecurity_v1_generated_FirewallActivation_GetFirewallEndpointAssociation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1975,7 +1975,7 @@
       "regionTag": "networksecurity_v1_generated_FirewallActivation_GetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2021,7 +2021,7 @@
       "regionTag": "networksecurity_v1_generated_FirewallActivation_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2067,7 +2067,7 @@
       "regionTag": "networksecurity_v1_generated_FirewallActivation_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2113,7 +2113,7 @@
       "regionTag": "networksecurity_v1_generated_FirewallActivation_GetProjectFirewallEndpoint_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2159,7 +2159,7 @@
       "regionTag": "networksecurity_v1_generated_FirewallActivation_ListFirewallEndpointAssociations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2205,7 +2205,7 @@
       "regionTag": "networksecurity_v1_generated_FirewallActivation_ListFirewallEndpoints_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2251,7 +2251,7 @@
       "regionTag": "networksecurity_v1_generated_FirewallActivation_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2297,7 +2297,7 @@
       "regionTag": "networksecurity_v1_generated_FirewallActivation_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2343,7 +2343,7 @@
       "regionTag": "networksecurity_v1_generated_FirewallActivation_ListProjectFirewallEndpoints_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -2389,7 +2389,7 @@
       "regionTag": "networksecurity_v1_generated_FirewallActivation_SetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2435,7 +2435,7 @@
       "regionTag": "networksecurity_v1_generated_FirewallActivation_TestIamPermissions_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2481,7 +2481,7 @@
       "regionTag": "networksecurity_v1_generated_FirewallActivation_UpdateFirewallEndpoint_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2527,7 +2527,7 @@
       "regionTag": "networksecurity_v1_generated_FirewallActivation_UpdateFirewallEndpointAssociation_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2573,7 +2573,7 @@
       "regionTag": "networksecurity_v1_generated_FirewallActivation_UpdateProjectFirewallEndpoint_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2618,7 +2618,7 @@
       "regionTag": "networksecurity_v1_generated_Intercept_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -2664,7 +2664,7 @@
       "regionTag": "networksecurity_v1_generated_Intercept_CreateInterceptDeployment_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2710,7 +2710,7 @@
       "regionTag": "networksecurity_v1_generated_Intercept_CreateInterceptDeploymentGroup_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2756,7 +2756,7 @@
       "regionTag": "networksecurity_v1_generated_Intercept_CreateInterceptEndpointGroup_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2802,7 +2802,7 @@
       "regionTag": "networksecurity_v1_generated_Intercept_CreateInterceptEndpointGroupAssociation_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2848,7 +2848,7 @@
       "regionTag": "networksecurity_v1_generated_Intercept_DeleteInterceptDeployment_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -2894,7 +2894,7 @@
       "regionTag": "networksecurity_v1_generated_Intercept_DeleteInterceptDeploymentGroup_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -2940,7 +2940,7 @@
       "regionTag": "networksecurity_v1_generated_Intercept_DeleteInterceptEndpointGroup_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -2986,7 +2986,7 @@
       "regionTag": "networksecurity_v1_generated_Intercept_DeleteInterceptEndpointGroupAssociation_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -3031,7 +3031,7 @@
       "regionTag": "networksecurity_v1_generated_Intercept_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -3077,7 +3077,7 @@
       "regionTag": "networksecurity_v1_generated_Intercept_GetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3123,7 +3123,7 @@
       "regionTag": "networksecurity_v1_generated_Intercept_GetInterceptDeployment_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3169,7 +3169,7 @@
       "regionTag": "networksecurity_v1_generated_Intercept_GetInterceptDeploymentGroup_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3215,7 +3215,7 @@
       "regionTag": "networksecurity_v1_generated_Intercept_GetInterceptEndpointGroup_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3261,7 +3261,7 @@
       "regionTag": "networksecurity_v1_generated_Intercept_GetInterceptEndpointGroupAssociation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3307,7 +3307,7 @@
       "regionTag": "networksecurity_v1_generated_Intercept_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3353,7 +3353,7 @@
       "regionTag": "networksecurity_v1_generated_Intercept_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3399,7 +3399,7 @@
       "regionTag": "networksecurity_v1_generated_Intercept_ListInterceptDeploymentGroups_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -3445,7 +3445,7 @@
       "regionTag": "networksecurity_v1_generated_Intercept_ListInterceptDeployments_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -3491,7 +3491,7 @@
       "regionTag": "networksecurity_v1_generated_Intercept_ListInterceptEndpointGroupAssociations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -3537,7 +3537,7 @@
       "regionTag": "networksecurity_v1_generated_Intercept_ListInterceptEndpointGroups_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -3583,7 +3583,7 @@
       "regionTag": "networksecurity_v1_generated_Intercept_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -3629,7 +3629,7 @@
       "regionTag": "networksecurity_v1_generated_Intercept_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -3675,7 +3675,7 @@
       "regionTag": "networksecurity_v1_generated_Intercept_SetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3721,7 +3721,7 @@
       "regionTag": "networksecurity_v1_generated_Intercept_TestIamPermissions_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -3767,7 +3767,7 @@
       "regionTag": "networksecurity_v1_generated_Intercept_UpdateInterceptDeployment_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -3813,7 +3813,7 @@
       "regionTag": "networksecurity_v1_generated_Intercept_UpdateInterceptDeploymentGroup_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -3859,7 +3859,7 @@
       "regionTag": "networksecurity_v1_generated_Intercept_UpdateInterceptEndpointGroup_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -3905,7 +3905,7 @@
       "regionTag": "networksecurity_v1_generated_Intercept_UpdateInterceptEndpointGroupAssociation_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -3950,7 +3950,7 @@
       "regionTag": "networksecurity_v1_generated_Mirroring_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -3996,7 +3996,7 @@
       "regionTag": "networksecurity_v1_generated_Mirroring_CreateMirroringDeployment_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -4042,7 +4042,7 @@
       "regionTag": "networksecurity_v1_generated_Mirroring_CreateMirroringDeploymentGroup_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -4088,7 +4088,7 @@
       "regionTag": "networksecurity_v1_generated_Mirroring_CreateMirroringEndpointGroup_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -4134,7 +4134,7 @@
       "regionTag": "networksecurity_v1_generated_Mirroring_CreateMirroringEndpointGroupAssociation_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -4180,7 +4180,7 @@
       "regionTag": "networksecurity_v1_generated_Mirroring_DeleteMirroringDeployment_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -4226,7 +4226,7 @@
       "regionTag": "networksecurity_v1_generated_Mirroring_DeleteMirroringDeploymentGroup_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -4272,7 +4272,7 @@
       "regionTag": "networksecurity_v1_generated_Mirroring_DeleteMirroringEndpointGroup_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -4318,7 +4318,7 @@
       "regionTag": "networksecurity_v1_generated_Mirroring_DeleteMirroringEndpointGroupAssociation_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -4363,7 +4363,7 @@
       "regionTag": "networksecurity_v1_generated_Mirroring_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -4409,7 +4409,7 @@
       "regionTag": "networksecurity_v1_generated_Mirroring_GetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -4455,7 +4455,7 @@
       "regionTag": "networksecurity_v1_generated_Mirroring_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -4501,7 +4501,7 @@
       "regionTag": "networksecurity_v1_generated_Mirroring_GetMirroringDeployment_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -4547,7 +4547,7 @@
       "regionTag": "networksecurity_v1_generated_Mirroring_GetMirroringDeploymentGroup_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -4593,7 +4593,7 @@
       "regionTag": "networksecurity_v1_generated_Mirroring_GetMirroringEndpointGroup_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -4639,7 +4639,7 @@
       "regionTag": "networksecurity_v1_generated_Mirroring_GetMirroringEndpointGroupAssociation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -4685,7 +4685,7 @@
       "regionTag": "networksecurity_v1_generated_Mirroring_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -4731,7 +4731,7 @@
       "regionTag": "networksecurity_v1_generated_Mirroring_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -4777,7 +4777,7 @@
       "regionTag": "networksecurity_v1_generated_Mirroring_ListMirroringDeploymentGroups_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -4823,7 +4823,7 @@
       "regionTag": "networksecurity_v1_generated_Mirroring_ListMirroringDeployments_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -4869,7 +4869,7 @@
       "regionTag": "networksecurity_v1_generated_Mirroring_ListMirroringEndpointGroupAssociations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -4915,7 +4915,7 @@
       "regionTag": "networksecurity_v1_generated_Mirroring_ListMirroringEndpointGroups_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -4961,7 +4961,7 @@
       "regionTag": "networksecurity_v1_generated_Mirroring_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -5007,7 +5007,7 @@
       "regionTag": "networksecurity_v1_generated_Mirroring_SetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -5053,7 +5053,7 @@
       "regionTag": "networksecurity_v1_generated_Mirroring_TestIamPermissions_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -5099,7 +5099,7 @@
       "regionTag": "networksecurity_v1_generated_Mirroring_UpdateMirroringDeployment_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -5145,7 +5145,7 @@
       "regionTag": "networksecurity_v1_generated_Mirroring_UpdateMirroringDeploymentGroup_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -5191,7 +5191,7 @@
       "regionTag": "networksecurity_v1_generated_Mirroring_UpdateMirroringEndpointGroup_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -5237,7 +5237,7 @@
       "regionTag": "networksecurity_v1_generated_Mirroring_UpdateMirroringEndpointGroupAssociation_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -5282,7 +5282,7 @@
       "regionTag": "networksecurity_v1_generated_NetworkSecurity_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -5328,7 +5328,7 @@
       "regionTag": "networksecurity_v1_generated_NetworkSecurity_CreateAuthorizationPolicy_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -5374,7 +5374,7 @@
       "regionTag": "networksecurity_v1_generated_NetworkSecurity_CreateAuthzPolicy_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -5420,7 +5420,7 @@
       "regionTag": "networksecurity_v1_generated_NetworkSecurity_CreateBackendAuthenticationConfig_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -5466,7 +5466,7 @@
       "regionTag": "networksecurity_v1_generated_NetworkSecurity_CreateClientTlsPolicy_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -5512,7 +5512,7 @@
       "regionTag": "networksecurity_v1_generated_NetworkSecurity_CreateGatewaySecurityPolicy_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -5558,7 +5558,7 @@
       "regionTag": "networksecurity_v1_generated_NetworkSecurity_CreateGatewaySecurityPolicyRule_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -5604,7 +5604,7 @@
       "regionTag": "networksecurity_v1_generated_NetworkSecurity_CreateServerTlsPolicy_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -5650,7 +5650,7 @@
       "regionTag": "networksecurity_v1_generated_NetworkSecurity_CreateTlsInspectionPolicy_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -5696,7 +5696,7 @@
       "regionTag": "networksecurity_v1_generated_NetworkSecurity_CreateUrlList_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -5742,7 +5742,7 @@
       "regionTag": "networksecurity_v1_generated_NetworkSecurity_DeleteAuthorizationPolicy_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -5788,7 +5788,7 @@
       "regionTag": "networksecurity_v1_generated_NetworkSecurity_DeleteAuthzPolicy_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -5834,7 +5834,7 @@
       "regionTag": "networksecurity_v1_generated_NetworkSecurity_DeleteBackendAuthenticationConfig_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -5880,7 +5880,7 @@
       "regionTag": "networksecurity_v1_generated_NetworkSecurity_DeleteClientTlsPolicy_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -5926,7 +5926,7 @@
       "regionTag": "networksecurity_v1_generated_NetworkSecurity_DeleteGatewaySecurityPolicy_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -5972,7 +5972,7 @@
       "regionTag": "networksecurity_v1_generated_NetworkSecurity_DeleteGatewaySecurityPolicyRule_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -6017,7 +6017,7 @@
       "regionTag": "networksecurity_v1_generated_NetworkSecurity_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -6063,7 +6063,7 @@
       "regionTag": "networksecurity_v1_generated_NetworkSecurity_DeleteServerTlsPolicy_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -6109,7 +6109,7 @@
       "regionTag": "networksecurity_v1_generated_NetworkSecurity_DeleteTlsInspectionPolicy_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -6155,7 +6155,7 @@
       "regionTag": "networksecurity_v1_generated_NetworkSecurity_DeleteUrlList_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -6201,7 +6201,7 @@
       "regionTag": "networksecurity_v1_generated_NetworkSecurity_GetAuthorizationPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -6247,7 +6247,7 @@
       "regionTag": "networksecurity_v1_generated_NetworkSecurity_GetAuthzPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -6293,7 +6293,7 @@
       "regionTag": "networksecurity_v1_generated_NetworkSecurity_GetBackendAuthenticationConfig_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -6339,7 +6339,7 @@
       "regionTag": "networksecurity_v1_generated_NetworkSecurity_GetClientTlsPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -6385,7 +6385,7 @@
       "regionTag": "networksecurity_v1_generated_NetworkSecurity_GetGatewaySecurityPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -6431,7 +6431,7 @@
       "regionTag": "networksecurity_v1_generated_NetworkSecurity_GetGatewaySecurityPolicyRule_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -6477,7 +6477,7 @@
       "regionTag": "networksecurity_v1_generated_NetworkSecurity_GetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -6523,7 +6523,7 @@
       "regionTag": "networksecurity_v1_generated_NetworkSecurity_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -6569,7 +6569,7 @@
       "regionTag": "networksecurity_v1_generated_NetworkSecurity_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -6615,7 +6615,7 @@
       "regionTag": "networksecurity_v1_generated_NetworkSecurity_GetServerTlsPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -6661,7 +6661,7 @@
       "regionTag": "networksecurity_v1_generated_NetworkSecurity_GetTlsInspectionPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -6707,7 +6707,7 @@
       "regionTag": "networksecurity_v1_generated_NetworkSecurity_GetUrlList_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -6753,7 +6753,7 @@
       "regionTag": "networksecurity_v1_generated_NetworkSecurity_ListAuthorizationPolicies_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -6799,7 +6799,7 @@
       "regionTag": "networksecurity_v1_generated_NetworkSecurity_ListAuthzPolicies_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -6845,7 +6845,7 @@
       "regionTag": "networksecurity_v1_generated_NetworkSecurity_ListBackendAuthenticationConfigs_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -6891,7 +6891,7 @@
       "regionTag": "networksecurity_v1_generated_NetworkSecurity_ListClientTlsPolicies_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -6937,7 +6937,7 @@
       "regionTag": "networksecurity_v1_generated_NetworkSecurity_ListGatewaySecurityPolicies_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -6983,7 +6983,7 @@
       "regionTag": "networksecurity_v1_generated_NetworkSecurity_ListGatewaySecurityPolicyRules_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -7029,7 +7029,7 @@
       "regionTag": "networksecurity_v1_generated_NetworkSecurity_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -7075,7 +7075,7 @@
       "regionTag": "networksecurity_v1_generated_NetworkSecurity_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -7121,7 +7121,7 @@
       "regionTag": "networksecurity_v1_generated_NetworkSecurity_ListServerTlsPolicies_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -7167,7 +7167,7 @@
       "regionTag": "networksecurity_v1_generated_NetworkSecurity_ListTlsInspectionPolicies_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -7213,7 +7213,7 @@
       "regionTag": "networksecurity_v1_generated_NetworkSecurity_ListUrlLists_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -7259,7 +7259,7 @@
       "regionTag": "networksecurity_v1_generated_NetworkSecurity_SetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -7305,7 +7305,7 @@
       "regionTag": "networksecurity_v1_generated_NetworkSecurity_TestIamPermissions_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -7351,7 +7351,7 @@
       "regionTag": "networksecurity_v1_generated_NetworkSecurity_UpdateAuthorizationPolicy_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -7397,7 +7397,7 @@
       "regionTag": "networksecurity_v1_generated_NetworkSecurity_UpdateAuthzPolicy_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -7443,7 +7443,7 @@
       "regionTag": "networksecurity_v1_generated_NetworkSecurity_UpdateBackendAuthenticationConfig_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -7489,7 +7489,7 @@
       "regionTag": "networksecurity_v1_generated_NetworkSecurity_UpdateClientTlsPolicy_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -7535,7 +7535,7 @@
       "regionTag": "networksecurity_v1_generated_NetworkSecurity_UpdateGatewaySecurityPolicy_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -7581,7 +7581,7 @@
       "regionTag": "networksecurity_v1_generated_NetworkSecurity_UpdateGatewaySecurityPolicyRule_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -7627,7 +7627,7 @@
       "regionTag": "networksecurity_v1_generated_NetworkSecurity_UpdateServerTlsPolicy_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -7673,7 +7673,7 @@
       "regionTag": "networksecurity_v1_generated_NetworkSecurity_UpdateTlsInspectionPolicy_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -7719,7 +7719,7 @@
       "regionTag": "networksecurity_v1_generated_NetworkSecurity_UpdateUrlList_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -7765,7 +7765,7 @@
       "regionTag": "networksecurity_v1_generated_OrganizationAddressGroupService_AddAddressGroupItems_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -7810,7 +7810,7 @@
       "regionTag": "networksecurity_v1_generated_OrganizationAddressGroupService_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -7856,7 +7856,7 @@
       "regionTag": "networksecurity_v1_generated_OrganizationAddressGroupService_CloneAddressGroupItems_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -7902,7 +7902,7 @@
       "regionTag": "networksecurity_v1_generated_OrganizationAddressGroupService_CreateAddressGroup_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -7948,7 +7948,7 @@
       "regionTag": "networksecurity_v1_generated_OrganizationAddressGroupService_DeleteAddressGroup_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -7993,7 +7993,7 @@
       "regionTag": "networksecurity_v1_generated_OrganizationAddressGroupService_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -8039,7 +8039,7 @@
       "regionTag": "networksecurity_v1_generated_OrganizationAddressGroupService_GetAddressGroup_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -8085,7 +8085,7 @@
       "regionTag": "networksecurity_v1_generated_OrganizationAddressGroupService_GetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -8131,7 +8131,7 @@
       "regionTag": "networksecurity_v1_generated_OrganizationAddressGroupService_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -8177,7 +8177,7 @@
       "regionTag": "networksecurity_v1_generated_OrganizationAddressGroupService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -8223,7 +8223,7 @@
       "regionTag": "networksecurity_v1_generated_OrganizationAddressGroupService_ListAddressGroupReferences_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -8269,7 +8269,7 @@
       "regionTag": "networksecurity_v1_generated_OrganizationAddressGroupService_ListAddressGroups_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -8315,7 +8315,7 @@
       "regionTag": "networksecurity_v1_generated_OrganizationAddressGroupService_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -8361,7 +8361,7 @@
       "regionTag": "networksecurity_v1_generated_OrganizationAddressGroupService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -8407,7 +8407,7 @@
       "regionTag": "networksecurity_v1_generated_OrganizationAddressGroupService_RemoveAddressGroupItems_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -8453,7 +8453,7 @@
       "regionTag": "networksecurity_v1_generated_OrganizationAddressGroupService_SetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -8499,7 +8499,7 @@
       "regionTag": "networksecurity_v1_generated_OrganizationAddressGroupService_TestIamPermissions_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -8545,7 +8545,7 @@
       "regionTag": "networksecurity_v1_generated_OrganizationAddressGroupService_UpdateAddressGroup_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -8590,7 +8590,7 @@
       "regionTag": "networksecurity_v1_generated_OrganizationSecurityProfileGroupService_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -8636,7 +8636,7 @@
       "regionTag": "networksecurity_v1_generated_OrganizationSecurityProfileGroupService_CreateSecurityProfile_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -8682,7 +8682,7 @@
       "regionTag": "networksecurity_v1_generated_OrganizationSecurityProfileGroupService_CreateSecurityProfileGroup_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -8727,7 +8727,7 @@
       "regionTag": "networksecurity_v1_generated_OrganizationSecurityProfileGroupService_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -8773,7 +8773,7 @@
       "regionTag": "networksecurity_v1_generated_OrganizationSecurityProfileGroupService_DeleteSecurityProfile_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -8819,7 +8819,7 @@
       "regionTag": "networksecurity_v1_generated_OrganizationSecurityProfileGroupService_DeleteSecurityProfileGroup_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -8865,7 +8865,7 @@
       "regionTag": "networksecurity_v1_generated_OrganizationSecurityProfileGroupService_GetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -8911,7 +8911,7 @@
       "regionTag": "networksecurity_v1_generated_OrganizationSecurityProfileGroupService_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -8957,7 +8957,7 @@
       "regionTag": "networksecurity_v1_generated_OrganizationSecurityProfileGroupService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -9003,7 +9003,7 @@
       "regionTag": "networksecurity_v1_generated_OrganizationSecurityProfileGroupService_GetSecurityProfile_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -9049,7 +9049,7 @@
       "regionTag": "networksecurity_v1_generated_OrganizationSecurityProfileGroupService_GetSecurityProfileGroup_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -9095,7 +9095,7 @@
       "regionTag": "networksecurity_v1_generated_OrganizationSecurityProfileGroupService_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -9141,7 +9141,7 @@
       "regionTag": "networksecurity_v1_generated_OrganizationSecurityProfileGroupService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -9187,7 +9187,7 @@
       "regionTag": "networksecurity_v1_generated_OrganizationSecurityProfileGroupService_ListSecurityProfileGroups_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -9233,7 +9233,7 @@
       "regionTag": "networksecurity_v1_generated_OrganizationSecurityProfileGroupService_ListSecurityProfiles_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -9279,7 +9279,7 @@
       "regionTag": "networksecurity_v1_generated_OrganizationSecurityProfileGroupService_SetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -9325,7 +9325,7 @@
       "regionTag": "networksecurity_v1_generated_OrganizationSecurityProfileGroupService_TestIamPermissions_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -9371,7 +9371,7 @@
       "regionTag": "networksecurity_v1_generated_OrganizationSecurityProfileGroupService_UpdateSecurityProfile_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -9417,7 +9417,7 @@
       "regionTag": "networksecurity_v1_generated_OrganizationSecurityProfileGroupService_UpdateSecurityProfileGroup_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -9462,7 +9462,7 @@
       "regionTag": "networksecurity_v1_generated_SSERealmService_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -9508,7 +9508,7 @@
       "regionTag": "networksecurity_v1_generated_SSERealmService_CreateSACAttachment_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -9554,7 +9554,7 @@
       "regionTag": "networksecurity_v1_generated_SSERealmService_CreateSACRealm_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -9599,7 +9599,7 @@
       "regionTag": "networksecurity_v1_generated_SSERealmService_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -9645,7 +9645,7 @@
       "regionTag": "networksecurity_v1_generated_SSERealmService_DeleteSACAttachment_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -9691,7 +9691,7 @@
       "regionTag": "networksecurity_v1_generated_SSERealmService_DeleteSACRealm_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -9737,7 +9737,7 @@
       "regionTag": "networksecurity_v1_generated_SSERealmService_GetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -9783,7 +9783,7 @@
       "regionTag": "networksecurity_v1_generated_SSERealmService_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -9829,7 +9829,7 @@
       "regionTag": "networksecurity_v1_generated_SSERealmService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -9875,7 +9875,7 @@
       "regionTag": "networksecurity_v1_generated_SSERealmService_GetSACAttachment_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -9921,7 +9921,7 @@
       "regionTag": "networksecurity_v1_generated_SSERealmService_GetSACRealm_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -9967,7 +9967,7 @@
       "regionTag": "networksecurity_v1_generated_SSERealmService_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -10013,7 +10013,7 @@
       "regionTag": "networksecurity_v1_generated_SSERealmService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -10059,7 +10059,7 @@
       "regionTag": "networksecurity_v1_generated_SSERealmService_ListSACAttachments_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -10105,7 +10105,7 @@
       "regionTag": "networksecurity_v1_generated_SSERealmService_ListSACRealms_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -10151,7 +10151,7 @@
       "regionTag": "networksecurity_v1_generated_SSERealmService_SetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -10197,7 +10197,7 @@
       "regionTag": "networksecurity_v1_generated_SSERealmService_TestIamPermissions_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -10242,7 +10242,7 @@
       "regionTag": "networksecurity_v1_generated_SecurityProfileGroupService_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -10288,7 +10288,7 @@
       "regionTag": "networksecurity_v1_generated_SecurityProfileGroupService_CreateSecurityProfile_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -10334,7 +10334,7 @@
       "regionTag": "networksecurity_v1_generated_SecurityProfileGroupService_CreateSecurityProfileGroup_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -10379,7 +10379,7 @@
       "regionTag": "networksecurity_v1_generated_SecurityProfileGroupService_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -10425,7 +10425,7 @@
       "regionTag": "networksecurity_v1_generated_SecurityProfileGroupService_DeleteSecurityProfile_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -10471,7 +10471,7 @@
       "regionTag": "networksecurity_v1_generated_SecurityProfileGroupService_DeleteSecurityProfileGroup_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -10517,7 +10517,7 @@
       "regionTag": "networksecurity_v1_generated_SecurityProfileGroupService_GetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -10563,7 +10563,7 @@
       "regionTag": "networksecurity_v1_generated_SecurityProfileGroupService_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -10609,7 +10609,7 @@
       "regionTag": "networksecurity_v1_generated_SecurityProfileGroupService_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -10655,7 +10655,7 @@
       "regionTag": "networksecurity_v1_generated_SecurityProfileGroupService_GetSecurityProfile_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -10701,7 +10701,7 @@
       "regionTag": "networksecurity_v1_generated_SecurityProfileGroupService_GetSecurityProfileGroup_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -10747,7 +10747,7 @@
       "regionTag": "networksecurity_v1_generated_SecurityProfileGroupService_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -10793,7 +10793,7 @@
       "regionTag": "networksecurity_v1_generated_SecurityProfileGroupService_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -10839,7 +10839,7 @@
       "regionTag": "networksecurity_v1_generated_SecurityProfileGroupService_ListSecurityProfileGroups_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -10885,7 +10885,7 @@
       "regionTag": "networksecurity_v1_generated_SecurityProfileGroupService_ListSecurityProfiles_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -10931,7 +10931,7 @@
       "regionTag": "networksecurity_v1_generated_SecurityProfileGroupService_SetIamPolicy_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -10977,7 +10977,7 @@
       "regionTag": "networksecurity_v1_generated_SecurityProfileGroupService_TestIamPermissions_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -11023,7 +11023,7 @@
       "regionTag": "networksecurity_v1_generated_SecurityProfileGroupService_UpdateSecurityProfile_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -11069,7 +11069,7 @@
       "regionTag": "networksecurity_v1_generated_SecurityProfileGroupService_UpdateSecurityProfileGroup_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }

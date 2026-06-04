@@ -16,6 +16,8 @@
 
 // [START datafusion_v1_generated_DataFusion_UpdateInstance_sync]
 
+//go:build examples
+
 package main
 
 import (

@@ -16,6 +16,8 @@
 
 // [START eventarcpublishing_v1_generated_Publisher_PublishEvents_sync]
 
+//go:build examples
+
 package main
 
 import (

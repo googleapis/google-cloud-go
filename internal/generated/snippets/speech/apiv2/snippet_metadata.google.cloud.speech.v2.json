@@ -50,7 +50,7 @@
       "regionTag": "speech_v2_generated_Speech_BatchRecognize_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -95,7 +95,7 @@
       "regionTag": "speech_v2_generated_Speech_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -141,7 +141,7 @@
       "regionTag": "speech_v2_generated_Speech_CreateCustomClass_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -187,7 +187,7 @@
       "regionTag": "speech_v2_generated_Speech_CreatePhraseSet_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -233,7 +233,7 @@
       "regionTag": "speech_v2_generated_Speech_CreateRecognizer_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -279,7 +279,7 @@
       "regionTag": "speech_v2_generated_Speech_DeleteCustomClass_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -324,7 +324,7 @@
       "regionTag": "speech_v2_generated_Speech_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -370,7 +370,7 @@
       "regionTag": "speech_v2_generated_Speech_DeletePhraseSet_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -416,7 +416,7 @@
       "regionTag": "speech_v2_generated_Speech_DeleteRecognizer_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -462,7 +462,7 @@
       "regionTag": "speech_v2_generated_Speech_GetConfig_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -508,7 +508,7 @@
       "regionTag": "speech_v2_generated_Speech_GetCustomClass_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -554,7 +554,7 @@
       "regionTag": "speech_v2_generated_Speech_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -600,7 +600,7 @@
       "regionTag": "speech_v2_generated_Speech_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -646,7 +646,7 @@
       "regionTag": "speech_v2_generated_Speech_GetPhraseSet_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -692,7 +692,7 @@
       "regionTag": "speech_v2_generated_Speech_GetRecognizer_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -738,7 +738,7 @@
       "regionTag": "speech_v2_generated_Speech_ListCustomClasses_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -784,7 +784,7 @@
       "regionTag": "speech_v2_generated_Speech_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -830,7 +830,7 @@
       "regionTag": "speech_v2_generated_Speech_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -876,7 +876,7 @@
       "regionTag": "speech_v2_generated_Speech_ListPhraseSets_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -922,7 +922,7 @@
       "regionTag": "speech_v2_generated_Speech_ListRecognizers_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -968,7 +968,7 @@
       "regionTag": "speech_v2_generated_Speech_Recognize_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1010,7 +1010,7 @@
       "regionTag": "speech_v2_generated_Speech_StreamingRecognize_sync",
       "segments": [
         {
-          "end": 69,
+          "end": 71,
           "start": 18,
           "type": "FULL"
         }
@@ -1056,7 +1056,7 @@
       "regionTag": "speech_v2_generated_Speech_UndeleteCustomClass_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1102,7 +1102,7 @@
       "regionTag": "speech_v2_generated_Speech_UndeletePhraseSet_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1148,7 +1148,7 @@
       "regionTag": "speech_v2_generated_Speech_UndeleteRecognizer_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1194,7 +1194,7 @@
       "regionTag": "speech_v2_generated_Speech_UpdateConfig_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1240,7 +1240,7 @@
       "regionTag": "speech_v2_generated_Speech_UpdateCustomClass_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1286,7 +1286,7 @@
       "regionTag": "speech_v2_generated_Speech_UpdatePhraseSet_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1332,7 +1332,7 @@
       "regionTag": "speech_v2_generated_Speech_UpdateRecognizer_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }

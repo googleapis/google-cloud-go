@@ -16,6 +16,8 @@
 
 // [START chat_v1_generated_ChatService_CompleteImportSpace_sync]
 
+//go:build examples
+
 package main
 
 import (

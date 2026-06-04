@@ -16,6 +16,8 @@
 
 // [START ids_v1_generated_IDS_GetEndpoint_sync]
 
+//go:build examples
+
 package main
 
 import (

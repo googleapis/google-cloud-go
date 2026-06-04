@@ -16,6 +16,8 @@
 
 // [START documentai_v1_generated_DocumentProcessorService_UndeployProcessorVersion_sync]
 
+//go:build examples
+
 package main
 
 import (

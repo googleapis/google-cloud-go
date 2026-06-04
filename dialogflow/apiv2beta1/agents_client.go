@@ -350,7 +350,7 @@ type AgentsClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *AgentsClient) Close() error {
 	return c.internalClient.Close()
@@ -697,7 +697,7 @@ func (c *agentsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *agentsGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -818,7 +818,7 @@ func (c *agentsRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *agentsRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.

@@ -50,7 +50,7 @@
       "regionTag": "redis_v1_generated_CloudRedisCluster_BackupCluster_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -95,7 +95,7 @@
       "regionTag": "redis_v1_generated_CloudRedisCluster_CancelOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -141,7 +141,7 @@
       "regionTag": "redis_v1_generated_CloudRedisCluster_CreateCluster_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -187,7 +187,7 @@
       "regionTag": "redis_v1_generated_CloudRedisCluster_DeleteBackup_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -233,7 +233,7 @@
       "regionTag": "redis_v1_generated_CloudRedisCluster_DeleteCluster_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -278,7 +278,7 @@
       "regionTag": "redis_v1_generated_CloudRedisCluster_DeleteOperation_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -324,7 +324,7 @@
       "regionTag": "redis_v1_generated_CloudRedisCluster_ExportBackup_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -370,7 +370,7 @@
       "regionTag": "redis_v1_generated_CloudRedisCluster_GetBackup_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -416,7 +416,7 @@
       "regionTag": "redis_v1_generated_CloudRedisCluster_GetBackupCollection_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -462,7 +462,7 @@
       "regionTag": "redis_v1_generated_CloudRedisCluster_GetCluster_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -508,7 +508,7 @@
       "regionTag": "redis_v1_generated_CloudRedisCluster_GetClusterCertificateAuthority_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -554,7 +554,7 @@
       "regionTag": "redis_v1_generated_CloudRedisCluster_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -600,7 +600,7 @@
       "regionTag": "redis_v1_generated_CloudRedisCluster_GetOperation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -646,7 +646,7 @@
       "regionTag": "redis_v1_generated_CloudRedisCluster_GetSharedRegionalCertificateAuthority_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -692,7 +692,7 @@
       "regionTag": "redis_v1_generated_CloudRedisCluster_ListBackupCollections_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -738,7 +738,7 @@
       "regionTag": "redis_v1_generated_CloudRedisCluster_ListBackups_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -784,7 +784,7 @@
       "regionTag": "redis_v1_generated_CloudRedisCluster_ListClusters_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -830,7 +830,7 @@
       "regionTag": "redis_v1_generated_CloudRedisCluster_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -876,7 +876,7 @@
       "regionTag": "redis_v1_generated_CloudRedisCluster_ListOperations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -922,7 +922,7 @@
       "regionTag": "redis_v1_generated_CloudRedisCluster_RescheduleClusterMaintenance_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -968,7 +968,7 @@
       "regionTag": "redis_v1_generated_CloudRedisCluster_UpdateCluster_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }

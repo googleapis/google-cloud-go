@@ -221,7 +221,7 @@ type CloudMemcacheClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *CloudMemcacheClient) Close() error {
 	return c.internalClient.Close()
@@ -512,7 +512,7 @@ func (c *cloudMemcacheGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *cloudMemcacheGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -652,7 +652,7 @@ func (c *cloudMemcacheRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *cloudMemcacheRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.

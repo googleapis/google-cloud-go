@@ -16,6 +16,8 @@
 
 // [START config_v1_generated_Config_UnlockDeployment_sync]
 
+//go:build examples
+
 package main
 
 import (

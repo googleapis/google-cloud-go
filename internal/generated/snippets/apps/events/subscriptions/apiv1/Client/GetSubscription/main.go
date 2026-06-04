@@ -16,6 +16,8 @@
 
 // [START workspaceevents_v1_generated_SubscriptionsService_GetSubscription_sync]
 
+//go:build examples
+
 package main
 
 import (

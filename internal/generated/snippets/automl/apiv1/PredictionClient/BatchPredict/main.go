@@ -16,6 +16,8 @@
 
 // [START automl_v1_generated_PredictionService_BatchPredict_sync]
 
+//go:build examples
+
 package main
 
 import (

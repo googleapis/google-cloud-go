@@ -16,6 +16,8 @@
 
 // [START securitycenter_v1_generated_SecurityCenter_ListDescendantSecurityHealthAnalyticsCustomModules_sync]
 
+//go:build examples
+
 package main
 
 import (

@@ -16,6 +16,8 @@
 
 // [START geminidataanalytics_v1beta_generated_DataChatService_GetConversation_sync]
 
+//go:build examples
+
 package main
 
 import (

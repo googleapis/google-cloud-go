@@ -16,6 +16,8 @@
 
 // [START recommender_v1_generated_Recommender_ListInsights_sync]
 
+//go:build examples
+
 package main
 
 import (

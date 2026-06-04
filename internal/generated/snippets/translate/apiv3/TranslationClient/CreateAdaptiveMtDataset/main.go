@@ -16,6 +16,8 @@
 
 // [START translate_v3_generated_TranslationService_CreateAdaptiveMtDataset_sync]
 
+//go:build examples
+
 package main
 
 import (

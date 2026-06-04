@@ -16,6 +16,8 @@
 
 // [START visionai_v1_generated_AppPlatform_AddApplicationStreamInput_sync]
 
+//go:build examples
+
 package main
 
 import (

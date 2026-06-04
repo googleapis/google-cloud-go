@@ -49,7 +49,7 @@
       "regionTag": "merchantapi_v1beta_generated_MerchantReviewsService_DeleteMerchantReview_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -95,7 +95,7 @@
       "regionTag": "merchantapi_v1beta_generated_MerchantReviewsService_GetMerchantReview_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -141,7 +141,7 @@
       "regionTag": "merchantapi_v1beta_generated_MerchantReviewsService_InsertMerchantReview_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -187,7 +187,7 @@
       "regionTag": "merchantapi_v1beta_generated_MerchantReviewsService_ListMerchantReviews_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -232,7 +232,7 @@
       "regionTag": "merchantapi_v1beta_generated_ProductReviewsService_DeleteProductReview_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -278,7 +278,7 @@
       "regionTag": "merchantapi_v1beta_generated_ProductReviewsService_GetProductReview_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -324,7 +324,7 @@
       "regionTag": "merchantapi_v1beta_generated_ProductReviewsService_InsertProductReview_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -370,7 +370,7 @@
       "regionTag": "merchantapi_v1beta_generated_ProductReviewsService_ListProductReviews_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }

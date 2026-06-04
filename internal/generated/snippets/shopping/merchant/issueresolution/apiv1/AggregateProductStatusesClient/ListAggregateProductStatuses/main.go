@@ -16,6 +16,8 @@
 
 // [START merchantapi_v1_generated_AggregateProductStatusesService_ListAggregateProductStatuses_sync]
 
+//go:build examples
+
 package main
 
 import (

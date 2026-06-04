@@ -16,6 +16,8 @@
 
 // [START language_v1_generated_LanguageService_AnalyzeSentiment_sync]
 
+//go:build examples
+
 package main
 
 import (

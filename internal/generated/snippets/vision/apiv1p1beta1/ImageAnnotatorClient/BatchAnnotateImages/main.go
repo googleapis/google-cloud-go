@@ -16,6 +16,8 @@
 
 // [START vision_v1p1beta1_generated_ImageAnnotator_BatchAnnotateImages_sync]
 
+//go:build examples
+
 package main
 
 import (

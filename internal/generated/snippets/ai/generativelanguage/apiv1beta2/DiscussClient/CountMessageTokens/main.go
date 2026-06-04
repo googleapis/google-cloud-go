@@ -16,6 +16,8 @@
 
 // [START generativelanguage_v1beta2_generated_DiscussService_CountMessageTokens_sync]
 
+//go:build examples
+
 package main
 
 import (

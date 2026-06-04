@@ -50,7 +50,7 @@
       "regionTag": "biglake_v1beta_generated_HiveMetastoreService_BatchCreatePartitions_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -95,7 +95,7 @@
       "regionTag": "biglake_v1beta_generated_HiveMetastoreService_BatchDeletePartitions_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -141,7 +141,7 @@
       "regionTag": "biglake_v1beta_generated_HiveMetastoreService_BatchUpdatePartitions_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -187,7 +187,7 @@
       "regionTag": "biglake_v1beta_generated_HiveMetastoreService_CreateHiveCatalog_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -233,7 +233,7 @@
       "regionTag": "biglake_v1beta_generated_HiveMetastoreService_CreateHiveDatabase_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -279,7 +279,7 @@
       "regionTag": "biglake_v1beta_generated_HiveMetastoreService_CreateHiveTable_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -324,7 +324,7 @@
       "regionTag": "biglake_v1beta_generated_HiveMetastoreService_DeleteHiveCatalog_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -369,7 +369,7 @@
       "regionTag": "biglake_v1beta_generated_HiveMetastoreService_DeleteHiveDatabase_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -414,7 +414,7 @@
       "regionTag": "biglake_v1beta_generated_HiveMetastoreService_DeleteHiveTable_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -460,7 +460,7 @@
       "regionTag": "biglake_v1beta_generated_HiveMetastoreService_GetHiveCatalog_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -506,7 +506,7 @@
       "regionTag": "biglake_v1beta_generated_HiveMetastoreService_GetHiveDatabase_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -552,7 +552,7 @@
       "regionTag": "biglake_v1beta_generated_HiveMetastoreService_GetHiveTable_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -598,7 +598,7 @@
       "regionTag": "biglake_v1beta_generated_HiveMetastoreService_ListHiveCatalogs_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -644,7 +644,7 @@
       "regionTag": "biglake_v1beta_generated_HiveMetastoreService_ListHiveDatabases_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -690,7 +690,7 @@
       "regionTag": "biglake_v1beta_generated_HiveMetastoreService_ListHiveTables_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -736,7 +736,7 @@
       "regionTag": "biglake_v1beta_generated_HiveMetastoreService_UpdateHiveCatalog_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -782,7 +782,7 @@
       "regionTag": "biglake_v1beta_generated_HiveMetastoreService_UpdateHiveDatabase_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -828,7 +828,7 @@
       "regionTag": "biglake_v1beta_generated_HiveMetastoreService_UpdateHiveTable_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }

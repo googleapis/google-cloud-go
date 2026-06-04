@@ -16,6 +16,8 @@
 
 // [START recommendationengine_v1beta1_generated_UserEventService_ListUserEvents_sync]
 
+//go:build examples
+
 package main
 
 import (

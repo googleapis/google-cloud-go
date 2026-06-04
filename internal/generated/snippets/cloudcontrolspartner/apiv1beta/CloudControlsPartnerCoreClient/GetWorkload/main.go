@@ -16,6 +16,8 @@
 
 // [START cloudcontrolspartner_v1beta_generated_CloudControlsPartnerCore_GetWorkload_sync]
 
+//go:build examples
+
 package main
 
 import (

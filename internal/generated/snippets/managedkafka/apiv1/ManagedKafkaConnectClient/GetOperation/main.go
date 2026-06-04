@@ -16,6 +16,8 @@
 
 // [START managedkafka_v1_generated_ManagedKafkaConnect_GetOperation_sync]
 
+//go:build examples
+
 package main
 
 import (

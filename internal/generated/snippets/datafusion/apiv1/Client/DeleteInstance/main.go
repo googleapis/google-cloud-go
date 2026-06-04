@@ -16,6 +16,8 @@
 
 // [START datafusion_v1_generated_DataFusion_DeleteInstance_sync]
 
+//go:build examples
+
 package main
 
 import (

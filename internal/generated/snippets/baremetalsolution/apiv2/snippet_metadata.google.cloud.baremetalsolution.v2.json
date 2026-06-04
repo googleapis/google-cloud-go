@@ -50,7 +50,7 @@
       "regionTag": "baremetalsolution_v2_generated_BareMetalSolution_CreateNfsShare_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -96,7 +96,7 @@
       "regionTag": "baremetalsolution_v2_generated_BareMetalSolution_CreateProvisioningConfig_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -142,7 +142,7 @@
       "regionTag": "baremetalsolution_v2_generated_BareMetalSolution_CreateSSHKey_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -188,7 +188,7 @@
       "regionTag": "baremetalsolution_v2_generated_BareMetalSolution_CreateVolumeSnapshot_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -234,7 +234,7 @@
       "regionTag": "baremetalsolution_v2_generated_BareMetalSolution_DeleteNfsShare_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -279,7 +279,7 @@
       "regionTag": "baremetalsolution_v2_generated_BareMetalSolution_DeleteSSHKey_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -324,7 +324,7 @@
       "regionTag": "baremetalsolution_v2_generated_BareMetalSolution_DeleteVolumeSnapshot_sync",
       "segments": [
         {
-          "end": 51,
+          "end": 53,
           "start": 18,
           "type": "FULL"
         }
@@ -370,7 +370,7 @@
       "regionTag": "baremetalsolution_v2_generated_BareMetalSolution_DetachLun_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -416,7 +416,7 @@
       "regionTag": "baremetalsolution_v2_generated_BareMetalSolution_DisableInteractiveSerialConsole_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -462,7 +462,7 @@
       "regionTag": "baremetalsolution_v2_generated_BareMetalSolution_EnableInteractiveSerialConsole_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -508,7 +508,7 @@
       "regionTag": "baremetalsolution_v2_generated_BareMetalSolution_EvictLun_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -554,7 +554,7 @@
       "regionTag": "baremetalsolution_v2_generated_BareMetalSolution_EvictVolume_sync",
       "segments": [
         {
-          "end": 56,
+          "end": 58,
           "start": 18,
           "type": "FULL"
         }
@@ -600,7 +600,7 @@
       "regionTag": "baremetalsolution_v2_generated_BareMetalSolution_GetInstance_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -646,7 +646,7 @@
       "regionTag": "baremetalsolution_v2_generated_BareMetalSolution_GetLocation_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -692,7 +692,7 @@
       "regionTag": "baremetalsolution_v2_generated_BareMetalSolution_GetLun_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -738,7 +738,7 @@
       "regionTag": "baremetalsolution_v2_generated_BareMetalSolution_GetNetwork_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -784,7 +784,7 @@
       "regionTag": "baremetalsolution_v2_generated_BareMetalSolution_GetNfsShare_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -830,7 +830,7 @@
       "regionTag": "baremetalsolution_v2_generated_BareMetalSolution_GetProvisioningConfig_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -876,7 +876,7 @@
       "regionTag": "baremetalsolution_v2_generated_BareMetalSolution_GetVolume_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -922,7 +922,7 @@
       "regionTag": "baremetalsolution_v2_generated_BareMetalSolution_GetVolumeSnapshot_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -968,7 +968,7 @@
       "regionTag": "baremetalsolution_v2_generated_BareMetalSolution_ListInstances_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1014,7 +1014,7 @@
       "regionTag": "baremetalsolution_v2_generated_BareMetalSolution_ListLocations_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1060,7 +1060,7 @@
       "regionTag": "baremetalsolution_v2_generated_BareMetalSolution_ListLuns_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1106,7 +1106,7 @@
       "regionTag": "baremetalsolution_v2_generated_BareMetalSolution_ListNetworkUsage_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1152,7 +1152,7 @@
       "regionTag": "baremetalsolution_v2_generated_BareMetalSolution_ListNetworks_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1198,7 +1198,7 @@
       "regionTag": "baremetalsolution_v2_generated_BareMetalSolution_ListNfsShares_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1244,7 +1244,7 @@
       "regionTag": "baremetalsolution_v2_generated_BareMetalSolution_ListOSImages_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1290,7 +1290,7 @@
       "regionTag": "baremetalsolution_v2_generated_BareMetalSolution_ListProvisioningQuotas_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1336,7 +1336,7 @@
       "regionTag": "baremetalsolution_v2_generated_BareMetalSolution_ListSSHKeys_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1382,7 +1382,7 @@
       "regionTag": "baremetalsolution_v2_generated_BareMetalSolution_ListVolumeSnapshots_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1428,7 +1428,7 @@
       "regionTag": "baremetalsolution_v2_generated_BareMetalSolution_ListVolumes_sync",
       "segments": [
         {
-          "end": 66,
+          "end": 68,
           "start": 18,
           "type": "FULL"
         }
@@ -1474,7 +1474,7 @@
       "regionTag": "baremetalsolution_v2_generated_BareMetalSolution_RenameInstance_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1520,7 +1520,7 @@
       "regionTag": "baremetalsolution_v2_generated_BareMetalSolution_RenameNetwork_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1566,7 +1566,7 @@
       "regionTag": "baremetalsolution_v2_generated_BareMetalSolution_RenameNfsShare_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1612,7 +1612,7 @@
       "regionTag": "baremetalsolution_v2_generated_BareMetalSolution_RenameVolume_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1658,7 +1658,7 @@
       "regionTag": "baremetalsolution_v2_generated_BareMetalSolution_ResetInstance_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1704,7 +1704,7 @@
       "regionTag": "baremetalsolution_v2_generated_BareMetalSolution_ResizeVolume_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1750,7 +1750,7 @@
       "regionTag": "baremetalsolution_v2_generated_BareMetalSolution_RestoreVolumeSnapshot_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1796,7 +1796,7 @@
       "regionTag": "baremetalsolution_v2_generated_BareMetalSolution_StartInstance_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1842,7 +1842,7 @@
       "regionTag": "baremetalsolution_v2_generated_BareMetalSolution_StopInstance_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1888,7 +1888,7 @@
       "regionTag": "baremetalsolution_v2_generated_BareMetalSolution_SubmitProvisioningConfig_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -1934,7 +1934,7 @@
       "regionTag": "baremetalsolution_v2_generated_BareMetalSolution_UpdateInstance_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -1980,7 +1980,7 @@
       "regionTag": "baremetalsolution_v2_generated_BareMetalSolution_UpdateNetwork_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2026,7 +2026,7 @@
       "regionTag": "baremetalsolution_v2_generated_BareMetalSolution_UpdateNfsShare_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
@@ -2072,7 +2072,7 @@
       "regionTag": "baremetalsolution_v2_generated_BareMetalSolution_UpdateProvisioningConfig_sync",
       "segments": [
         {
-          "end": 53,
+          "end": 55,
           "start": 18,
           "type": "FULL"
         }
@@ -2118,7 +2118,7 @@
       "regionTag": "baremetalsolution_v2_generated_BareMetalSolution_UpdateVolume_sync",
       "segments": [
         {
-          "end": 58,
+          "end": 60,
           "start": 18,
           "type": "FULL"
         }
