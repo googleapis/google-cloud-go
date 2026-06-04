@@ -392,7 +392,6 @@ libraries:
         go:
           enabled_generator_features:
             - F_selective_gapic_generation
-          import_path: bigtable/admin/apiv2
           no_snippets: true
     keep:
       - README.md
