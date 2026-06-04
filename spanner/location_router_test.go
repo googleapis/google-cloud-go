@@ -376,6 +376,7 @@ func TestNewClient_EnablesLocationRouterForTypeOmni(t *testing.T) {
 	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
 		DisableNativeMetrics: true,
 		Type:                 OMNI,
+		UsePlainText:         true,
 	})
 	defer teardown()
 

@@ -47,7 +47,6 @@ import (
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	"cloud.google.com/go/spanner/internal"
 	stestutil "cloud.google.com/go/spanner/internal/testutil"
-	"cloud.google.com/go/spanner/omni"
 	pb "cloud.google.com/go/spanner/testdata/protos"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/uuid"
@@ -428,12 +427,13 @@ type spannerOmniTestConfig struct {
 	clientKeyFile         string
 }
 
-func omniConnectionConfig() *omni.SpannerOmniConfig {
+func omniConnectionConfig() ClientConfig {
 	usePlainText := omniConfig.usePlainText
 	if !usePlainText && omniConfig.caCertificateFile == "" && omniConfig.clientCertificateFile == "" && omniConfig.clientKeyFile == "" {
 		usePlainText = true
 	}
-	return &omni.SpannerOmniConfig{
+	return ClientConfig{
+		Type:                  OMNI,
 		UsePlainText:          usePlainText,
 		CaCertificateFile:     omniConfig.caCertificateFile,
 		ClientCertificateFile: omniConfig.clientCertificateFile,
@@ -527,13 +527,8 @@ func initIntegrationTests() (cleanup func()) {
 	var err error
 
 	if omniConfig.endpoint != "" {
-		omniOpts, err := omni.ConnectionOptions(omniConnectionConfig())
-		if err != nil {
-			log.Fatalf("failed to get omni connection options: %v", err)
-		}
 		opts = append(opts, option.WithEndpoint(omniConfig.endpoint))
-		opts = append(opts, omniOpts...)
-		databaseAdmin, err = database.NewDatabaseAdminClient(ctx, opts...)
+		databaseAdmin, err = database.NewDatabaseAdminClientWithConfig(ctx, omniConnectionConfig(), opts...)
 	} else {
 		// Create InstanceAdmin and DatabaseAdmin clients.
 		instanceAdmin, err = instance.NewInstanceAdminClient(ctx, opts...)
@@ -6400,13 +6395,13 @@ func createClient(ctx context.Context, dbPath string, config ClientConfig) (clie
 		opts = append(opts, option.WithGRPCDialOption(grpc.WithDefaultCallOptions(grpc.Peer(peerInfo))))
 	}
 	if omniConfig.endpoint != "" {
-		omniOpts, err := omni.ConnectionOptions(omniConnectionConfig())
-		if err != nil {
-			return nil, fmt.Errorf("failed to get omni connection options: %v", err)
-		}
 		opts = append(opts, option.WithEndpoint(omniConfig.endpoint))
-		opts = append(opts, omniOpts...)
+		omniConf := omniConnectionConfig()
 		config.Type = OMNI
+		config.UsePlainText = omniConf.UsePlainText
+		config.CaCertificateFile = omniConf.CaCertificateFile
+		config.ClientCertificateFile = omniConf.ClientCertificateFile
+		config.ClientKeyFile = omniConf.ClientKeyFile
 	}
 	client, err = makeClientWithConfig(ctx, dbPath, config, serverAddress, opts...)
 	if err != nil {
@@ -6427,13 +6422,13 @@ func createClientWithRole(ctx context.Context, dbPath string, spc SessionPoolCon
 	}
 	config := ClientConfig{SessionPoolConfig: spc, DatabaseRole: role}
 	if omniConfig.endpoint != "" {
-		omniOpts, err := omni.ConnectionOptions(omniConnectionConfig())
-		if err != nil {
-			return nil, fmt.Errorf("failed to get omni connection options: %v", err)
-		}
 		opts = append(opts, option.WithEndpoint(omniConfig.endpoint))
-		opts = append(opts, omniOpts...)
+		omniConf := omniConnectionConfig()
 		config.Type = OMNI
+		config.UsePlainText = omniConf.UsePlainText
+		config.CaCertificateFile = omniConf.CaCertificateFile
+		config.ClientCertificateFile = omniConf.ClientCertificateFile
+		config.ClientKeyFile = omniConf.ClientKeyFile
 	}
 	client, err = makeClientWithConfig(ctx, dbPath, config, serverAddress, opts...)
 	if err != nil {
@@ -6453,13 +6448,13 @@ func createClientForProtoColumns(ctx context.Context, dbPath string, spc Session
 	}
 	config := ClientConfig{SessionPoolConfig: spc}
 	if omniConfig.endpoint != "" {
-		omniOpts, err := omni.ConnectionOptions(omniConnectionConfig())
-		if err != nil {
-			return nil, fmt.Errorf("failed to get omni connection options: %v", err)
-		}
 		opts = append(opts, option.WithEndpoint(omniConfig.endpoint))
-		opts = append(opts, omniOpts...)
+		omniConf := omniConnectionConfig()
 		config.Type = OMNI
+		config.UsePlainText = omniConf.UsePlainText
+		config.CaCertificateFile = omniConf.CaCertificateFile
+		config.ClientCertificateFile = omniConf.ClientCertificateFile
+		config.ClientKeyFile = omniConf.ClientKeyFile
 	}
 	client, err = NewClientWithConfig(ctx, dbPath, config, opts...)
 	if err != nil {

@@ -117,10 +117,7 @@ func generateCerts(t *testing.T) (caFile, certFile, keyFile string) {
 
 func TestConnectionOptions(t *testing.T) {
 	t.Run("plaintext connection options", func(t *testing.T) {
-		config := &SpannerOmniConfig{
-			UsePlainText: true,
-		}
-		opts, err := ConnectionOptions(config)
+		opts, err := ConnectionOptions(true, "", "", "")
 		if err != nil {
 			t.Fatalf("ConnectionOptions() unexpected error: %v", err)
 		}
@@ -130,10 +127,7 @@ func TestConnectionOptions(t *testing.T) {
 	})
 
 	t.Run("TLS connection options with no CA", func(t *testing.T) {
-		config := &SpannerOmniConfig{
-			UsePlainText: false,
-		}
-		_, err := ConnectionOptions(config)
+		_, err := ConnectionOptions(false, "", "", "")
 		if err == nil {
 			t.Fatal("expected error when TLS enabled but no CA cert provided")
 		}
@@ -141,11 +135,7 @@ func TestConnectionOptions(t *testing.T) {
 
 	t.Run("valid TLS connection options (One-way TLS)", func(t *testing.T) {
 		caFile, _, _ := generateCerts(t)
-		config := &SpannerOmniConfig{
-			UsePlainText:      false,
-			CaCertificateFile: caFile,
-		}
-		opts, err := ConnectionOptions(config)
+		opts, err := ConnectionOptions(false, caFile, "", "")
 		if err != nil {
 			t.Fatalf("ConnectionOptions() unexpected error: %v", err)
 		}
@@ -156,13 +146,7 @@ func TestConnectionOptions(t *testing.T) {
 
 	t.Run("valid mTLS connection options", func(t *testing.T) {
 		caFile, certFile, keyFile := generateCerts(t)
-		config := &SpannerOmniConfig{
-			UsePlainText:          false,
-			CaCertificateFile:     caFile,
-			ClientCertificateFile: certFile,
-			ClientKeyFile:         keyFile,
-		}
-		opts, err := ConnectionOptions(config)
+		opts, err := ConnectionOptions(false, caFile, certFile, keyFile)
 		if err != nil {
 			t.Fatalf("ConnectionOptions() unexpected error: %v", err)
 		}
@@ -172,11 +156,7 @@ func TestConnectionOptions(t *testing.T) {
 	})
 
 	t.Run("missing CA cert file returns error", func(t *testing.T) {
-		config := &SpannerOmniConfig{
-			UsePlainText:      false,
-			CaCertificateFile: "nonexistent-ca-file.pem",
-		}
-		_, err := ConnectionOptions(config)
+		_, err := ConnectionOptions(false, "nonexistent-ca-file.pem", "", "")
 		if err == nil {
 			t.Fatal("expected error for nonexistent CA cert file")
 		}
@@ -184,13 +164,7 @@ func TestConnectionOptions(t *testing.T) {
 
 	t.Run("missing client cert file returns error", func(t *testing.T) {
 		caFile, _, keyFile := generateCerts(t)
-		config := &SpannerOmniConfig{
-			UsePlainText:          false,
-			CaCertificateFile:     caFile,
-			ClientCertificateFile: "nonexistent-client-file.pem",
-			ClientKeyFile:         keyFile,
-		}
-		_, err := ConnectionOptions(config)
+		_, err := ConnectionOptions(false, caFile, "nonexistent-client-file.pem", keyFile)
 		if err == nil {
 			t.Fatal("expected error for nonexistent client cert file")
 		}
@@ -198,34 +172,15 @@ func TestConnectionOptions(t *testing.T) {
 
 	t.Run("missing client key file returns error", func(t *testing.T) {
 		caFile, certFile, _ := generateCerts(t)
-		config := &SpannerOmniConfig{
-			UsePlainText:          false,
-			CaCertificateFile:     caFile,
-			ClientCertificateFile: certFile,
-			ClientKeyFile:         "nonexistent-key-file.key",
-		}
-		_, err := ConnectionOptions(config)
+		_, err := ConnectionOptions(false, caFile, certFile, "nonexistent-key-file.key")
 		if err == nil {
 			t.Fatal("expected error for nonexistent client key file")
 		}
 	})
 
-	t.Run("nil config returns error", func(t *testing.T) {
-		_, err := ConnectionOptions(nil)
-		if err == nil {
-			t.Fatal("expected error when config is nil")
-		}
-	})
-
 	t.Run("only client certificate provided returns error", func(t *testing.T) {
 		caFile, certFile, _ := generateCerts(t)
-		config := &SpannerOmniConfig{
-			UsePlainText:          false,
-			CaCertificateFile:     caFile,
-			ClientCertificateFile: certFile,
-			ClientKeyFile:         "",
-		}
-		_, err := ConnectionOptions(config)
+		_, err := ConnectionOptions(false, caFile, certFile, "")
 		if err == nil {
 			t.Fatal("expected error when client key is missing for mTLS")
 		}
@@ -233,13 +188,7 @@ func TestConnectionOptions(t *testing.T) {
 
 	t.Run("only client key provided returns error", func(t *testing.T) {
 		caFile, _, keyFile := generateCerts(t)
-		config := &SpannerOmniConfig{
-			UsePlainText:          false,
-			CaCertificateFile:     caFile,
-			ClientCertificateFile: "",
-			ClientKeyFile:         keyFile,
-		}
-		_, err := ConnectionOptions(config)
+		_, err := ConnectionOptions(false, caFile, "", keyFile)
 		if err == nil {
 			t.Fatal("expected error when client certificate is missing for mTLS")
 		}

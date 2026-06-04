@@ -16,7 +16,6 @@ limitations under the License.
 
 package omni
 
-
 import (
 	"crypto/tls"
 	"crypto/x509"
@@ -80,28 +79,14 @@ func clientCertificate(clientCertificatePath string, clientKeyPath string) ([]tl
 	return []tls.Certificate{cert}, nil
 }
 
-type SpannerOmniConfig struct {
-	// UsePlainText specifies whether to use plain text for the connection.
-	UsePlainText bool
-	// CaCertificateFile is the path to the CA certificate file.
-	CaCertificateFile string
-	// ClientCertificateFile is the path to the client certificate file.
-	ClientCertificateFile string
-	// ClientKeyFile is the path to the client key file.
-	ClientKeyFile string
-}
-
-func ConnectionOptions(config *SpannerOmniConfig) ([]option.ClientOption, error) {
-	if config == nil {
-		return nil, fmt.Errorf("config cannot be nil")
-	}
-	if config.UsePlainText {
+func ConnectionOptions(usePlainText bool, caCertFile, clientCertFile, clientKeyFile string) ([]option.ClientOption, error) {
+	if usePlainText {
 		return []option.ClientOption{
 			option.WithoutAuthentication(),
 			option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
 		}, nil
 	}
-	tlsOpts, err := tlsOptions(config.CaCertificateFile, config.ClientCertificateFile, config.ClientKeyFile)
+	tlsOpts, err := tlsOptions(caCertFile, clientCertFile, clientKeyFile)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create TLS options: %w", err)
 	}

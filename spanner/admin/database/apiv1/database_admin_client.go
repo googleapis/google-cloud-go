@@ -40,8 +40,11 @@ import (
 	httptransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
+
+	"cloud.google.com/go/spanner/omni"
 )
 
 var newDatabaseAdminClientHook clientHook
@@ -1212,6 +1215,34 @@ func NewDatabaseAdminClient(ctx context.Context, opts ...option.ClientOption) (*
 	}
 	c.LROClient = &client.LROClient
 	return &client, nil
+}
+
+// ClientConfig defines the interface for configuring connection options,
+// particularly for Spanner Omni.
+type ClientConfig interface {
+	GetInstanceType() string
+	GetUsePlainText() bool
+	GetCaCertificateFile() string
+	GetClientCertificateFile() string
+	GetClientKeyFile() string
+}
+
+// NewDatabaseAdminClientWithConfig creates a new database admin client based on gRPC, with ClientConfig.
+// The config can be used to set connection options for Spanner Omni.
+func NewDatabaseAdminClientWithConfig(ctx context.Context, config ClientConfig, opts ...option.ClientOption) (*DatabaseAdminClient, error) {
+	if config.GetInstanceType() != "OMNI" && (config.GetUsePlainText() || config.GetCaCertificateFile() != "" || config.GetClientCertificateFile() != "" || config.GetClientKeyFile() != "") {
+		return nil, status.Errorf(codes.InvalidArgument, "UsePlainText, CaCertificateFile, ClientCertificateFile, and ClientKeyFile can only be set when Type is OMNI")
+	}
+
+	if config.GetInstanceType() == "OMNI" {
+		omniOpts, err := omni.ConnectionOptions(config.GetUsePlainText(), config.GetCaCertificateFile(), config.GetClientCertificateFile(), config.GetClientKeyFile())
+		if err != nil {
+			return nil, err
+		}
+		opts = append(opts, omniOpts...)
+	}
+
+	return NewDatabaseAdminClient(ctx, opts...)
 }
 
 // Connection returns a connection to the API service.
