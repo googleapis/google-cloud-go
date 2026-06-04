@@ -1,0 +1,61 @@
+{
+  "clientLibrary": {
+    "apis": [
+      {
+        "id": "google.shopping.merchant.ordertracking.v1",
+        "version": "v1"
+      }
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/shopping/merchant/ordertracking/apiv1",
+    "version": "1.11.0"
+  },
+  "snippets": [
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.shopping.merchant.ordertracking.v1.OrderTrackingSignalsClient",
+          "shortName": "OrderTrackingSignalsClient"
+        },
+        "fullName": "google.shopping.merchant.ordertracking.v1.OrderTrackingSignalsClient.CreateOrderTrackingSignal",
+        "method": {
+          "fullName": "google.shopping.merchant.ordertracking.v1.OrderTrackingSignalsService.CreateOrderTrackingSignal",
+          "service": {
+            "fullName": "google.shopping.merchant.ordertracking.v1.OrderTrackingSignalsService",
+            "shortName": "OrderTrackingSignalsService"
+          },
+          "shortName": "CreateOrderTrackingSignal"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "ordertrackingpb.CreateOrderTrackingSignalRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*ordertrackingpb.OrderTrackingSignal",
+        "shortName": "CreateOrderTrackingSignal"
+      },
+      "description": "CreateOrderTrackingSignal creates new order tracking signal.",
+      "file": "OrderTrackingSignalsClient/CreateOrderTrackingSignal/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "merchantapi_v1_generated_OrderTrackingSignalsService_CreateOrderTrackingSignal_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "merchantapi CreateOrderTrackingSignal Sample"
+    }
+  ]
+}

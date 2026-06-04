@@ -1,0 +1,887 @@
+{
+  "clientLibrary": {
+    "apis": [
+      {
+        "id": "google.cloud.iap.v1",
+        "version": "v1"
+      }
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/iap/apiv1",
+    "version": "1.17.0"
+  },
+  "snippets": [
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.iap.v1.IdentityAwareProxyAdminClient",
+          "shortName": "IdentityAwareProxyAdminClient"
+        },
+        "fullName": "google.cloud.iap.v1.IdentityAwareProxyAdminClient.CreateTunnelDestGroup",
+        "method": {
+          "fullName": "google.cloud.iap.v1.IdentityAwareProxyAdminService.CreateTunnelDestGroup",
+          "service": {
+            "fullName": "google.cloud.iap.v1.IdentityAwareProxyAdminService",
+            "shortName": "IdentityAwareProxyAdminService"
+          },
+          "shortName": "CreateTunnelDestGroup"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iappb.CreateTunnelDestGroupRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iappb.TunnelDestGroup",
+        "shortName": "CreateTunnelDestGroup"
+      },
+      "description": "CreateTunnelDestGroup creates a new TunnelDestGroup.",
+      "file": "IdentityAwareProxyAdminClient/CreateTunnelDestGroup/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "iap_v1_generated_IdentityAwareProxyAdminService_CreateTunnelDestGroup_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "iap CreateTunnelDestGroup Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.iap.v1.IdentityAwareProxyAdminClient",
+          "shortName": "IdentityAwareProxyAdminClient"
+        },
+        "fullName": "google.cloud.iap.v1.IdentityAwareProxyAdminClient.DeleteTunnelDestGroup",
+        "method": {
+          "fullName": "google.cloud.iap.v1.IdentityAwareProxyAdminService.DeleteTunnelDestGroup",
+          "service": {
+            "fullName": "google.cloud.iap.v1.IdentityAwareProxyAdminService",
+            "shortName": "IdentityAwareProxyAdminService"
+          },
+          "shortName": "DeleteTunnelDestGroup"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iappb.DeleteTunnelDestGroupRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteTunnelDestGroup"
+      },
+      "description": "DeleteTunnelDestGroup deletes a TunnelDestGroup.",
+      "file": "IdentityAwareProxyAdminClient/DeleteTunnelDestGroup/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "iap_v1_generated_IdentityAwareProxyAdminService_DeleteTunnelDestGroup_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "iap DeleteTunnelDestGroup Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.iap.v1.IdentityAwareProxyAdminClient",
+          "shortName": "IdentityAwareProxyAdminClient"
+        },
+        "fullName": "google.cloud.iap.v1.IdentityAwareProxyAdminClient.GetIamPolicy",
+        "method": {
+          "fullName": "google.cloud.iap.v1.IdentityAwareProxyAdminService.GetIamPolicy",
+          "service": {
+            "fullName": "google.cloud.iap.v1.IdentityAwareProxyAdminService",
+            "shortName": "IdentityAwareProxyAdminService"
+          },
+          "shortName": "GetIamPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iampb.GetIamPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "shortName": "GetIamPolicy"
+      },
+      "description": "GetIamPolicy gets the access control policy for an Identity-Aware Proxy protected\nresource.\nMore information about managing access via IAP can be found at: \nhttps: //cloud.google.com/iap/docs/managing-access#managing_access_via_the_api",
+      "file": "IdentityAwareProxyAdminClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "iap_v1_generated_IdentityAwareProxyAdminService_GetIamPolicy_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "iap GetIamPolicy Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.iap.v1.IdentityAwareProxyAdminClient",
+          "shortName": "IdentityAwareProxyAdminClient"
+        },
+        "fullName": "google.cloud.iap.v1.IdentityAwareProxyAdminClient.GetIapSettings",
+        "method": {
+          "fullName": "google.cloud.iap.v1.IdentityAwareProxyAdminService.GetIapSettings",
+          "service": {
+            "fullName": "google.cloud.iap.v1.IdentityAwareProxyAdminService",
+            "shortName": "IdentityAwareProxyAdminService"
+          },
+          "shortName": "GetIapSettings"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iappb.GetIapSettingsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iappb.IapSettings",
+        "shortName": "GetIapSettings"
+      },
+      "description": "GetIapSettings gets the IAP settings on a particular IAP protected resource.",
+      "file": "IdentityAwareProxyAdminClient/GetIapSettings/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "iap_v1_generated_IdentityAwareProxyAdminService_GetIapSettings_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "iap GetIapSettings Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.iap.v1.IdentityAwareProxyAdminClient",
+          "shortName": "IdentityAwareProxyAdminClient"
+        },
+        "fullName": "google.cloud.iap.v1.IdentityAwareProxyAdminClient.GetTunnelDestGroup",
+        "method": {
+          "fullName": "google.cloud.iap.v1.IdentityAwareProxyAdminService.GetTunnelDestGroup",
+          "service": {
+            "fullName": "google.cloud.iap.v1.IdentityAwareProxyAdminService",
+            "shortName": "IdentityAwareProxyAdminService"
+          },
+          "shortName": "GetTunnelDestGroup"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iappb.GetTunnelDestGroupRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iappb.TunnelDestGroup",
+        "shortName": "GetTunnelDestGroup"
+      },
+      "description": "GetTunnelDestGroup retrieves an existing TunnelDestGroup.",
+      "file": "IdentityAwareProxyAdminClient/GetTunnelDestGroup/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "iap_v1_generated_IdentityAwareProxyAdminService_GetTunnelDestGroup_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "iap GetTunnelDestGroup Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.iap.v1.IdentityAwareProxyAdminClient",
+          "shortName": "IdentityAwareProxyAdminClient"
+        },
+        "fullName": "google.cloud.iap.v1.IdentityAwareProxyAdminClient.ListTunnelDestGroups",
+        "method": {
+          "fullName": "google.cloud.iap.v1.IdentityAwareProxyAdminService.ListTunnelDestGroups",
+          "service": {
+            "fullName": "google.cloud.iap.v1.IdentityAwareProxyAdminService",
+            "shortName": "IdentityAwareProxyAdminService"
+          },
+          "shortName": "ListTunnelDestGroups"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iappb.ListTunnelDestGroupsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "TunnelDestGroupIterator",
+        "shortName": "ListTunnelDestGroups"
+      },
+      "description": "ListTunnelDestGroups lists the existing TunnelDestGroups. To group across all locations, use a\n`-` as the location ID. For example: \n`/v1/projects/123/iap_tunnel/locations/-/destGroups`",
+      "file": "IdentityAwareProxyAdminClient/ListTunnelDestGroups/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "iap_v1_generated_IdentityAwareProxyAdminService_ListTunnelDestGroups_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "iap ListTunnelDestGroups Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.iap.v1.IdentityAwareProxyAdminClient",
+          "shortName": "IdentityAwareProxyAdminClient"
+        },
+        "fullName": "google.cloud.iap.v1.IdentityAwareProxyAdminClient.SetIamPolicy",
+        "method": {
+          "fullName": "google.cloud.iap.v1.IdentityAwareProxyAdminService.SetIamPolicy",
+          "service": {
+            "fullName": "google.cloud.iap.v1.IdentityAwareProxyAdminService",
+            "shortName": "IdentityAwareProxyAdminService"
+          },
+          "shortName": "SetIamPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iampb.SetIamPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "shortName": "SetIamPolicy"
+      },
+      "description": "SetIamPolicy sets the access control policy for an Identity-Aware Proxy protected\nresource. Replaces any existing policy.\nMore information about managing access via IAP can be found at: \nhttps: //cloud.google.com/iap/docs/managing-access#managing_access_via_the_api",
+      "file": "IdentityAwareProxyAdminClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "iap_v1_generated_IdentityAwareProxyAdminService_SetIamPolicy_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "iap SetIamPolicy Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.iap.v1.IdentityAwareProxyAdminClient",
+          "shortName": "IdentityAwareProxyAdminClient"
+        },
+        "fullName": "google.cloud.iap.v1.IdentityAwareProxyAdminClient.TestIamPermissions",
+        "method": {
+          "fullName": "google.cloud.iap.v1.IdentityAwareProxyAdminService.TestIamPermissions",
+          "service": {
+            "fullName": "google.cloud.iap.v1.IdentityAwareProxyAdminService",
+            "shortName": "IdentityAwareProxyAdminService"
+          },
+          "shortName": "TestIamPermissions"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iampb.TestIamPermissionsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iampb.TestIamPermissionsResponse",
+        "shortName": "TestIamPermissions"
+      },
+      "description": "TestIamPermissions returns permissions that a caller has on the Identity-Aware Proxy protected\nresource.\nMore information about managing access via IAP can be found at: \nhttps: //cloud.google.com/iap/docs/managing-access#managing_access_via_the_api",
+      "file": "IdentityAwareProxyAdminClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "iap_v1_generated_IdentityAwareProxyAdminService_TestIamPermissions_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "iap TestIamPermissions Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.iap.v1.IdentityAwareProxyAdminClient",
+          "shortName": "IdentityAwareProxyAdminClient"
+        },
+        "fullName": "google.cloud.iap.v1.IdentityAwareProxyAdminClient.UpdateIapSettings",
+        "method": {
+          "fullName": "google.cloud.iap.v1.IdentityAwareProxyAdminService.UpdateIapSettings",
+          "service": {
+            "fullName": "google.cloud.iap.v1.IdentityAwareProxyAdminService",
+            "shortName": "IdentityAwareProxyAdminService"
+          },
+          "shortName": "UpdateIapSettings"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iappb.UpdateIapSettingsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iappb.IapSettings",
+        "shortName": "UpdateIapSettings"
+      },
+      "description": "UpdateIapSettings updates the IAP settings on a particular IAP protected resource. It\nreplaces all fields unless the `update_mask` is set.",
+      "file": "IdentityAwareProxyAdminClient/UpdateIapSettings/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "iap_v1_generated_IdentityAwareProxyAdminService_UpdateIapSettings_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "iap UpdateIapSettings Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.iap.v1.IdentityAwareProxyAdminClient",
+          "shortName": "IdentityAwareProxyAdminClient"
+        },
+        "fullName": "google.cloud.iap.v1.IdentityAwareProxyAdminClient.UpdateTunnelDestGroup",
+        "method": {
+          "fullName": "google.cloud.iap.v1.IdentityAwareProxyAdminService.UpdateTunnelDestGroup",
+          "service": {
+            "fullName": "google.cloud.iap.v1.IdentityAwareProxyAdminService",
+            "shortName": "IdentityAwareProxyAdminService"
+          },
+          "shortName": "UpdateTunnelDestGroup"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iappb.UpdateTunnelDestGroupRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iappb.TunnelDestGroup",
+        "shortName": "UpdateTunnelDestGroup"
+      },
+      "description": "UpdateTunnelDestGroup updates a TunnelDestGroup.",
+      "file": "IdentityAwareProxyAdminClient/UpdateTunnelDestGroup/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "iap_v1_generated_IdentityAwareProxyAdminService_UpdateTunnelDestGroup_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "iap UpdateTunnelDestGroup Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.iap.v1.IdentityAwareProxyAdminClient",
+          "shortName": "IdentityAwareProxyAdminClient"
+        },
+        "fullName": "google.cloud.iap.v1.IdentityAwareProxyAdminClient.ValidateIapAttributeExpression",
+        "method": {
+          "fullName": "google.cloud.iap.v1.IdentityAwareProxyAdminService.ValidateIapAttributeExpression",
+          "service": {
+            "fullName": "google.cloud.iap.v1.IdentityAwareProxyAdminService",
+            "shortName": "IdentityAwareProxyAdminService"
+          },
+          "shortName": "ValidateIapAttributeExpression"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iappb.ValidateIapAttributeExpressionRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iappb.ValidateIapAttributeExpressionResponse",
+        "shortName": "ValidateIapAttributeExpression"
+      },
+      "description": "ValidateIapAttributeExpression validates that a given CEL expression conforms to IAP restrictions.",
+      "file": "IdentityAwareProxyAdminClient/ValidateIapAttributeExpression/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "iap_v1_generated_IdentityAwareProxyAdminService_ValidateIapAttributeExpression_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "iap ValidateIapAttributeExpression Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.iap.v1.IdentityAwareProxyOAuthClient",
+          "shortName": "IdentityAwareProxyOAuthClient"
+        },
+        "fullName": "google.cloud.iap.v1.IdentityAwareProxyOAuthClient.CreateBrand",
+        "method": {
+          "fullName": "google.cloud.iap.v1.IdentityAwareProxyOAuthService.CreateBrand",
+          "service": {
+            "fullName": "google.cloud.iap.v1.IdentityAwareProxyOAuthService",
+            "shortName": "IdentityAwareProxyOAuthService"
+          },
+          "shortName": "CreateBrand"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iappb.CreateBrandRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iappb.Brand",
+        "shortName": "CreateBrand"
+      },
+      "description": "CreateBrand constructs a new OAuth brand for the project if one does not exist.\nThe created brand is \"internal only\", meaning that OAuth clients created\nunder it only accept requests from users who belong to the same Google\nWorkspace organization as the project. The brand is created in an\nun-reviewed status. NOTE: The \"internal only\" status can be manually\nchanged in the Google Cloud Console. Requires that a brand does not already\nexist for the project, and that the specified support email is owned by the\ncaller.",
+      "file": "IdentityAwareProxyOAuthClient/CreateBrand/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "iap_v1_generated_IdentityAwareProxyOAuthService_CreateBrand_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "iap CreateBrand Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.iap.v1.IdentityAwareProxyOAuthClient",
+          "shortName": "IdentityAwareProxyOAuthClient"
+        },
+        "fullName": "google.cloud.iap.v1.IdentityAwareProxyOAuthClient.CreateIdentityAwareProxyClient",
+        "method": {
+          "fullName": "google.cloud.iap.v1.IdentityAwareProxyOAuthService.CreateIdentityAwareProxyClient",
+          "service": {
+            "fullName": "google.cloud.iap.v1.IdentityAwareProxyOAuthService",
+            "shortName": "IdentityAwareProxyOAuthService"
+          },
+          "shortName": "CreateIdentityAwareProxyClient"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iappb.CreateIdentityAwareProxyClientRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iappb.IdentityAwareProxyClient",
+        "shortName": "CreateIdentityAwareProxyClient"
+      },
+      "description": "CreateIdentityAwareProxyClient creates an Identity Aware Proxy (IAP) OAuth client. The client is owned\nby IAP. Requires that the brand for the project exists and that it is\nset for internal-only use.",
+      "file": "IdentityAwareProxyOAuthClient/CreateIdentityAwareProxyClient/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "iap_v1_generated_IdentityAwareProxyOAuthService_CreateIdentityAwareProxyClient_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "iap CreateIdentityAwareProxyClient Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.iap.v1.IdentityAwareProxyOAuthClient",
+          "shortName": "IdentityAwareProxyOAuthClient"
+        },
+        "fullName": "google.cloud.iap.v1.IdentityAwareProxyOAuthClient.DeleteIdentityAwareProxyClient",
+        "method": {
+          "fullName": "google.cloud.iap.v1.IdentityAwareProxyOAuthService.DeleteIdentityAwareProxyClient",
+          "service": {
+            "fullName": "google.cloud.iap.v1.IdentityAwareProxyOAuthService",
+            "shortName": "IdentityAwareProxyOAuthService"
+          },
+          "shortName": "DeleteIdentityAwareProxyClient"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iappb.DeleteIdentityAwareProxyClientRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteIdentityAwareProxyClient"
+      },
+      "description": "DeleteIdentityAwareProxyClient deletes an Identity Aware Proxy (IAP) OAuth client. Useful for removing\nobsolete clients, managing the number of clients in a given project, and\ncleaning up after tests. Requires that the client is owned by IAP.",
+      "file": "IdentityAwareProxyOAuthClient/DeleteIdentityAwareProxyClient/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "iap_v1_generated_IdentityAwareProxyOAuthService_DeleteIdentityAwareProxyClient_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "iap DeleteIdentityAwareProxyClient Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.iap.v1.IdentityAwareProxyOAuthClient",
+          "shortName": "IdentityAwareProxyOAuthClient"
+        },
+        "fullName": "google.cloud.iap.v1.IdentityAwareProxyOAuthClient.GetBrand",
+        "method": {
+          "fullName": "google.cloud.iap.v1.IdentityAwareProxyOAuthService.GetBrand",
+          "service": {
+            "fullName": "google.cloud.iap.v1.IdentityAwareProxyOAuthService",
+            "shortName": "IdentityAwareProxyOAuthService"
+          },
+          "shortName": "GetBrand"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iappb.GetBrandRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iappb.Brand",
+        "shortName": "GetBrand"
+      },
+      "description": "GetBrand retrieves the OAuth brand of the project.",
+      "file": "IdentityAwareProxyOAuthClient/GetBrand/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "iap_v1_generated_IdentityAwareProxyOAuthService_GetBrand_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "iap GetBrand Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.iap.v1.IdentityAwareProxyOAuthClient",
+          "shortName": "IdentityAwareProxyOAuthClient"
+        },
+        "fullName": "google.cloud.iap.v1.IdentityAwareProxyOAuthClient.GetIdentityAwareProxyClient",
+        "method": {
+          "fullName": "google.cloud.iap.v1.IdentityAwareProxyOAuthService.GetIdentityAwareProxyClient",
+          "service": {
+            "fullName": "google.cloud.iap.v1.IdentityAwareProxyOAuthService",
+            "shortName": "IdentityAwareProxyOAuthService"
+          },
+          "shortName": "GetIdentityAwareProxyClient"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iappb.GetIdentityAwareProxyClientRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iappb.IdentityAwareProxyClient",
+        "shortName": "GetIdentityAwareProxyClient"
+      },
+      "description": "GetIdentityAwareProxyClient retrieves an Identity Aware Proxy (IAP) OAuth client.\nRequires that the client is owned by IAP.",
+      "file": "IdentityAwareProxyOAuthClient/GetIdentityAwareProxyClient/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "iap_v1_generated_IdentityAwareProxyOAuthService_GetIdentityAwareProxyClient_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "iap GetIdentityAwareProxyClient Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.iap.v1.IdentityAwareProxyOAuthClient",
+          "shortName": "IdentityAwareProxyOAuthClient"
+        },
+        "fullName": "google.cloud.iap.v1.IdentityAwareProxyOAuthClient.ListBrands",
+        "method": {
+          "fullName": "google.cloud.iap.v1.IdentityAwareProxyOAuthService.ListBrands",
+          "service": {
+            "fullName": "google.cloud.iap.v1.IdentityAwareProxyOAuthService",
+            "shortName": "IdentityAwareProxyOAuthService"
+          },
+          "shortName": "ListBrands"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iappb.ListBrandsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iappb.ListBrandsResponse",
+        "shortName": "ListBrands"
+      },
+      "description": "ListBrands lists the existing brands for the project.",
+      "file": "IdentityAwareProxyOAuthClient/ListBrands/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "iap_v1_generated_IdentityAwareProxyOAuthService_ListBrands_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "iap ListBrands Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.iap.v1.IdentityAwareProxyOAuthClient",
+          "shortName": "IdentityAwareProxyOAuthClient"
+        },
+        "fullName": "google.cloud.iap.v1.IdentityAwareProxyOAuthClient.ListIdentityAwareProxyClients",
+        "method": {
+          "fullName": "google.cloud.iap.v1.IdentityAwareProxyOAuthService.ListIdentityAwareProxyClients",
+          "service": {
+            "fullName": "google.cloud.iap.v1.IdentityAwareProxyOAuthService",
+            "shortName": "IdentityAwareProxyOAuthService"
+          },
+          "shortName": "ListIdentityAwareProxyClients"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iappb.ListIdentityAwareProxyClientsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "IdentityAwareProxyClientIterator",
+        "shortName": "ListIdentityAwareProxyClients"
+      },
+      "description": "ListIdentityAwareProxyClients lists the existing clients for the brand.",
+      "file": "IdentityAwareProxyOAuthClient/ListIdentityAwareProxyClients/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "iap_v1_generated_IdentityAwareProxyOAuthService_ListIdentityAwareProxyClients_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "iap ListIdentityAwareProxyClients Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.iap.v1.IdentityAwareProxyOAuthClient",
+          "shortName": "IdentityAwareProxyOAuthClient"
+        },
+        "fullName": "google.cloud.iap.v1.IdentityAwareProxyOAuthClient.ResetIdentityAwareProxyClientSecret",
+        "method": {
+          "fullName": "google.cloud.iap.v1.IdentityAwareProxyOAuthService.ResetIdentityAwareProxyClientSecret",
+          "service": {
+            "fullName": "google.cloud.iap.v1.IdentityAwareProxyOAuthService",
+            "shortName": "IdentityAwareProxyOAuthService"
+          },
+          "shortName": "ResetIdentityAwareProxyClientSecret"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iappb.ResetIdentityAwareProxyClientSecretRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iappb.IdentityAwareProxyClient",
+        "shortName": "ResetIdentityAwareProxyClientSecret"
+      },
+      "description": "ResetIdentityAwareProxyClientSecret resets an Identity Aware Proxy (IAP) OAuth client secret. Useful if the\nsecret was compromised. Requires that the client is owned by IAP.",
+      "file": "IdentityAwareProxyOAuthClient/ResetIdentityAwareProxyClientSecret/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "iap_v1_generated_IdentityAwareProxyOAuthService_ResetIdentityAwareProxyClientSecret_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "iap ResetIdentityAwareProxyClientSecret Sample"
+    }
+  ]
+}
