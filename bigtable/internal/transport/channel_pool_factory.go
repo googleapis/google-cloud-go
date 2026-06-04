@@ -12,99 +12,114 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package bigtable
+package internal
 
 import (
 	"context"
 	"fmt"
+	"os"
+	"strconv"
 	"time"
 
+	"go.opentelemetry.io/otel/metric"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	"google.golang.org/grpc/metadata"
 
 	btopt "cloud.google.com/go/bigtable/internal/option"
-	btransport "cloud.google.com/go/bigtable/internal/transport"
 )
 
-// managedChannelPool encapsulates a connection pool along with its lifecycle monitors.
-type managedChannelPool struct {
-	pool         gtransport.ConnPool
-	dsm          *btransport.DynamicScaleMonitor
-	connRecycler *btransport.ConnectionRecycler
+const (
+	directpathEnvVar            = "CBT_ENABLE_DIRECTPATH"
+	defaultBigtableConnPoolSize = 10
+)
+
+// ChannelPoolConfig has configurations for the channel pool.
+type ChannelPoolConfig struct {
+	AppProfile                string
+	DisableDynamicChannelPool bool
+	DisableConnectionRecycler bool
+	DisableDirectAccess       bool
+}
+
+// ManagedChannelPool encapsulates a connection pool along with its lifecycle monitors.
+type ManagedChannelPool struct {
+	Pool         gtransport.ConnPool
+	Dsm          *DynamicScaleMonitor
+	ConnRecycler *ConnectionRecycler
 }
 
 // Close stops all associated monitors/recyclers and closes the underlying pool.
-func (m managedChannelPool) Close() error {
-	if m.dsm != nil {
-		m.dsm.Stop()
+func (m ManagedChannelPool) Close() error {
+	if m.Dsm != nil {
+		m.Dsm.Stop()
 	}
-	if m.connRecycler != nil {
-		m.connRecycler.Stop()
+	if m.ConnRecycler != nil {
+		m.ConnRecycler.Stop()
 	}
-	if m.pool != nil {
-		return m.pool.Close()
+	if m.Pool != nil {
+		return m.Pool.Close()
 	}
 	return nil
 }
 
-// createAndStartManagedChannelPool initializes and starts the lifecycle monitors for a classic or session connection pool.
-func createAndStartManagedChannelPool(
+// CreateAndStartManagedChannelPool initializes and starts the lifecycle monitors for a classic or session connection pool.
+func CreateAndStartManagedChannelPool(
 	ctx context.Context,
 	project, instance string,
-	config ClientConfig,
-	metricsTracerFactory *builtinMetricsTracerFactory,
+	config ChannelPoolConfig,
+	otelMeterProvider metric.MeterProvider,
 	o []option.ClientOption,
 	directPathOptions []option.ClientOption,
 	directAccessMD metadata.MD,
 	clientCreationTimestamp time.Time,
 	enableBigtableConnPool bool,
-) (managedChannelPool, error) {
-	var m managedChannelPool
+) (ManagedChannelPool, error) {
+	var m ManagedChannelPool
 	if !enableBigtableConnPool {
 		var err error
-		m.pool, err = gtransport.DialPool(ctx, o...)
+		m.Pool, err = gtransport.DialPool(ctx, o...)
 		return m, err
 	}
 
-	pool, err := createBigtableChannelPool(ctx, project, instance, config, metricsTracerFactory, o, directPathOptions, directAccessMD, clientCreationTimestamp)
+	pool, err := CreateBigtableChannelPool(ctx, project, instance, config, otelMeterProvider, o, directPathOptions, directAccessMD, clientCreationTimestamp)
 	if err != nil {
 		return m, err
 	}
-	m.pool = pool
+	m.Pool = pool
 
 	// Validate dynamic config early if enabled
 	if !config.DisableDynamicChannelPool {
-		if err := btransport.ValidateDynamicConfig(btopt.DefaultDynamicChannelPoolConfig(), defaultBigtableConnPoolSize); err != nil {
+		if err := ValidateDynamicConfig(btopt.DefaultDynamicChannelPoolConfig(), defaultBigtableConnPoolSize); err != nil {
 			pool.Close()
 			return m, fmt.Errorf("invalid DynamicChannelPoolConfig: %w", err)
 		}
 
-		m.dsm = btransport.NewDynamicScaleMonitor(btopt.DefaultDynamicChannelPoolConfig(), pool)
-		m.dsm.Start(ctx)
+		m.Dsm = NewDynamicScaleMonitor(btopt.DefaultDynamicChannelPoolConfig(), pool)
+		m.Dsm.Start(ctx)
 	}
 
 	// connection recycler
 	if !config.DisableConnectionRecycler {
-		m.connRecycler = btransport.NewConnectionRecycler(btopt.DefaultConnectionRecycleConfig(), pool)
-		m.connRecycler.Start(ctx)
+		m.ConnRecycler = NewConnectionRecycler(btopt.DefaultConnectionRecycleConfig(), pool)
+		m.ConnRecycler.Start(ctx)
 	}
 
 	return m, nil
 }
 
-// createBigtableChannelPool is a helper function to initialize a separate BigtableChannelPool instance.
-func createBigtableChannelPool(
+// CreateBigtableChannelPool is a helper function to initialize a separate BigtableChannelPool instance.
+func CreateBigtableChannelPool(
 	ctx context.Context,
 	project, instance string,
-	config ClientConfig,
-	metricsTracerFactory *builtinMetricsTracerFactory,
+	config ChannelPoolConfig,
+	otelMeterProvider metric.MeterProvider,
 	o []option.ClientOption,
 	directPathOptions []option.ClientOption,
 	directAccessMD metadata.MD,
 	clientCreationTimestamp time.Time,
-) (*btransport.BigtableChannelPool, error) {
+) (*BigtableChannelPool, error) {
 	uResolver, err := internaloption.NewUnsafeResolver(o...)
 	var connPoolSize int
 	if err != nil {
@@ -118,13 +133,13 @@ func createBigtableChannelPool(
 
 	fullInstanceName := fmt.Sprintf("projects/%s/instances/%s", project, instance)
 
-	poolOpts := []btransport.BigtableChannelPoolOption{
-		btransport.WithInstanceName(fullInstanceName),
-		btransport.WithAppProfile(config.AppProfile),
-		btransport.WithFeatureFlagsMetadata(directAccessMD),
-		btransport.WithMetricsReporterConfig(btopt.DefaultMetricsReporterConfig()),
-		btransport.WithMeterProvider(metricsTracerFactory.otelMeterProvider),
-		btransport.WithDirectAccessFeatureFlagsMetadata(directAccessMD),
+	poolOpts := []BigtableChannelPoolOption{
+		WithInstanceName(fullInstanceName),
+		WithAppProfile(config.AppProfile),
+		WithFeatureFlagsMetadata(directAccessMD),
+		WithMetricsReporterConfig(btopt.DefaultMetricsReporterConfig()),
+		WithMeterProvider(otelMeterProvider),
+		WithDirectAccessFeatureFlagsMetadata(directAccessMD),
 	}
 
 	if isDirectAccessEnabled(config) {
@@ -133,28 +148,35 @@ func createBigtableChannelPool(
 		directAccessDialerOptions = append(directAccessDialerOptions, directPathOptions...)
 		directAccessDialerOptions = append(directAccessDialerOptions, internaloption.AllowHardBoundTokens("ALTS"))
 
-		directAccessDialer := func() (*btransport.BigtableConn, error) {
+		directAccessDialer := func() (*BigtableConn, error) {
 			grpcConn, err := gtransport.Dial(ctx, directAccessDialerOptions...)
 			if err != nil {
 				return nil, err
 			}
-			return btransport.NewBigtableConn(grpcConn), nil
+			return NewBigtableConn(grpcConn), nil
 		}
-		poolOpts = append(poolOpts, btransport.WithDirectAccessDialer(directAccessDialer))
+		poolOpts = append(poolOpts, WithDirectAccessDialer(directAccessDialer))
 	}
 
-
-return btransport.NewBigtableChannelPool(ctx,
+	return NewBigtableChannelPool(ctx,
 		connPoolSize,
 		btopt.BigtableLoadBalancingStrategy(),
-		func() (*btransport.BigtableConn, error) {
+		func() (*BigtableConn, error) {
 			grpcConn, err := gtransport.Dial(ctx, o...)
 			if err != nil {
 				return nil, err
 			}
-			return btransport.NewBigtableConn(grpcConn), nil
+			return NewBigtableConn(grpcConn), nil
 		},
 		clientCreationTimestamp,
 		poolOpts...,
 	)
+}
+
+func isDirectAccessEnabled(config ChannelPoolConfig) bool {
+	if os.Getenv(directpathEnvVar) == "" {
+		return !config.DisableDirectAccess
+	}
+	res, _ := strconv.ParseBool(os.Getenv(directpathEnvVar))
+	return res
 }

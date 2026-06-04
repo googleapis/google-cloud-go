@@ -25,6 +25,7 @@ import (
 
 	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	btopt "cloud.google.com/go/bigtable/internal/option"
+	btransport "cloud.google.com/go/bigtable/internal/transport"
 	"cloud.google.com/go/internal/trace"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
@@ -49,7 +50,7 @@ type Client struct {
 	retryOption             gax.CallOption
 	executeQueryRetryOption gax.CallOption
 	featureFlagsMD          metadata.MD // Pre-computed feature flags metadata to be sent with each request.
-	mPool                   managedChannelPool
+	mPool                   btransport.ManagedChannelPool
 }
 
 // ClientConfig has configurations for the client.
@@ -163,7 +164,7 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 	allowDirectAccess := isDirectAccessEnabled(config)
 	directAccessMD := createFeatureFlagsMD(metricsTracerFactory.enabled, disableRetryInfo, allowDirectAccess)
 
-	var mPool managedChannelPool
+	var mPool btransport.ManagedChannelPool
 	enableBigtableConnPool := btopt.EnableBigtableConnectionPool()
 	grpcConnOptType := reflect.TypeOf(option.WithGRPCConn(nil))
 	for _, opt := range opts {
@@ -180,12 +181,19 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 		}
 	}
 
-	mPool, err = createAndStartManagedChannelPool(
+	poolConfig := btransport.ChannelPoolConfig{
+		AppProfile:                config.AppProfile,
+		DisableDynamicChannelPool: config.DisableDynamicChannelPool,
+		DisableConnectionRecycler: config.DisableConnectionRecycler,
+		DisableDirectAccess:       config.DisableDirectAccess,
+	}
+
+	mPool, err = btransport.CreateAndStartManagedChannelPool(
 		ctx,
 		project,
 		instance,
-		config,
-		metricsTracerFactory,
+		poolConfig,
+		metricsTracerFactory.otelMeterProvider,
 		o,
 		directPathOptions,
 		directAccessMD,
@@ -197,8 +205,8 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 	}
 
 	return &Client{
-		connPool:                mPool.pool,
-		client:                  btpb.NewBigtableClient(mPool.pool),
+		connPool:                mPool.Pool,
+		client:                  btpb.NewBigtableClient(mPool.Pool),
 		project:                 project,
 		instance:                instance,
 		appProfile:              config.AppProfile,

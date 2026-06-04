@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package bigtable
+package internal
 
 import (
 	"context"
@@ -56,17 +56,15 @@ func TestCreateAndStartManagedChannelPool_Classic(t *testing.T) {
 		option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
 	}
 
-	metricsTracerFactory := &builtinMetricsTracerFactory{}
-
-	mPool, err := createAndStartManagedChannelPool(
+	mPool, err := CreateAndStartManagedChannelPool(
 		ctx,
 		"my-project",
 		"my-instance",
-		ClientConfig{
+		ChannelPoolConfig{
 			DisableDynamicChannelPool: true,
 			DisableConnectionRecycler: true,
 		},
-		metricsTracerFactory,
+		nil,
 		o,
 		nil,
 		metadata.MD{},
@@ -74,17 +72,17 @@ func TestCreateAndStartManagedChannelPool_Classic(t *testing.T) {
 		false, // enableBigtableConnPool
 	)
 	if err != nil {
-		t.Fatalf("createAndStartManagedChannelPool failed: %v", err)
+		t.Fatalf("CreateAndStartManagedChannelPool failed: %v", err)
 	}
 	defer mPool.Close()
 
-	if mPool.pool == nil {
+	if mPool.Pool == nil {
 		t.Error("Expected pool to be non-nil")
 	}
-	if mPool.dsm != nil {
+	if mPool.Dsm != nil {
 		t.Error("Expected DSM to be nil for classic pool")
 	}
-	if mPool.connRecycler != nil {
+	if mPool.ConnRecycler != nil {
 		t.Error("Expected connection recycler to be nil for classic pool")
 	}
 }
@@ -110,17 +108,15 @@ func TestCreateAndStartManagedChannelPool_BigtableConnPool(t *testing.T) {
 		option.WithGRPCConnectionPool(2),
 	}
 
-	metricsTracerFactory := &builtinMetricsTracerFactory{}
-
-	mPool, err := createAndStartManagedChannelPool(
+	mPool, err := CreateAndStartManagedChannelPool(
 		ctx,
 		"my-project",
 		"my-instance",
-		ClientConfig{
+		ChannelPoolConfig{
 			DisableDynamicChannelPool: false,
 			DisableConnectionRecycler: false,
 		},
-		metricsTracerFactory,
+		nil,
 		o,
 		nil,
 		metadata.MD{},
@@ -128,17 +124,17 @@ func TestCreateAndStartManagedChannelPool_BigtableConnPool(t *testing.T) {
 		true, // enableBigtableConnPool
 	)
 	if err != nil {
-		t.Fatalf("createAndStartManagedChannelPool failed: %v", err)
+		t.Fatalf("CreateAndStartManagedChannelPool failed: %v", err)
 	}
 	defer mPool.Close()
 
-	if mPool.pool == nil {
+	if mPool.Pool == nil {
 		t.Error("Expected pool to be non-nil")
 	}
-	if mPool.dsm == nil {
+	if mPool.Dsm == nil {
 		t.Error("Expected DSM to be started for Bigtable pool")
 	}
-	if mPool.connRecycler == nil {
+	if mPool.ConnRecycler == nil {
 		t.Error("Expected connection recycler to be started for Bigtable pool")
 	}
 }
@@ -164,17 +160,15 @@ func TestManagedChannelPool_Close(t *testing.T) {
 		option.WithGRPCConnectionPool(2),
 	}
 
-	metricsTracerFactory := &builtinMetricsTracerFactory{}
-
-	mPool, err := createAndStartManagedChannelPool(
+	mPool, err := CreateAndStartManagedChannelPool(
 		ctx,
 		"my-project",
 		"my-instance",
-		ClientConfig{
+		ChannelPoolConfig{
 			DisableDynamicChannelPool: false,
 			DisableConnectionRecycler: false,
 		},
-		metricsTracerFactory,
+		nil,
 		o,
 		nil,
 		metadata.MD{},
@@ -182,7 +176,7 @@ func TestManagedChannelPool_Close(t *testing.T) {
 		true, // enableBigtableConnPool
 	)
 	if err != nil {
-		t.Fatalf("createAndStartManagedChannelPool failed: %v", err)
+		t.Fatalf("CreateAndStartManagedChannelPool failed: %v", err)
 	}
 
 	// Close it and verify no panic
