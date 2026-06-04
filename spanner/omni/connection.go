@@ -79,6 +79,7 @@ func clientCertificate(clientCertificatePath string, clientKeyPath string) ([]tl
 	return []tls.Certificate{cert}, nil
 }
 
+// ConnectionOptions generates standard ClientOption credentials configurations for Spanner Omni.
 func ConnectionOptions(usePlainText bool, caCertFile, clientCertFile, clientKeyFile string) ([]option.ClientOption, error) {
 	if usePlainText {
 		return []option.ClientOption{
