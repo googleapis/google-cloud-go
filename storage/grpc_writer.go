@@ -1461,12 +1461,12 @@ func (w *gRPCWriter) newGRPCAppendTakeoverWriteBufferSender() *gRPCAppendTakeove
 					w.fullObjectChecksum = c.resource.GetChecksums().GetCrc32C()
 					w.hasInitialChecksum = true
 				} else if c.flushOffset == 0 {
-						w.fullObjectChecksum = 0
-						w.hasInitialChecksum = true
-					} else {
-						w.hasInitialChecksum = false
-					}
+					w.fullObjectChecksum = 0
+					w.hasInitialChecksum = true
+				} else {
+					w.hasInitialChecksum = false
 				}
+			}
 			w.setTakeoverOffset(c.flushOffset)
 		},
 	}

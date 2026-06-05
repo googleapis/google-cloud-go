@@ -499,4 +499,3 @@ func TestGRPCWriter_TakeoverChecksum(t *testing.T) {
 		})
 	}
 }
-
