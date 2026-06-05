@@ -4046,6 +4046,8 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 		h := testHelper{t}
 		bkt := client.Bucket(bucket)
 
+		randomBytes9MiBMD5 := md5.Sum(randomBytes9MiB)
+
 		testCases := []struct {
 			name                 string
 			content              []byte
@@ -4053,6 +4055,7 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 			takeoverFlushOffset  int64
 			opts                 *AppendableWriterOpts
 			checkProgressOffsets []int64
+			sendCRC32C           bool
 		}{
 			{
 				name:           "first message takeover w/large flush",
@@ -4095,6 +4098,28 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 				opts: &AppendableWriterOpts{
 					ChunkSize:       4 * MiB,
 					FinalizeOnClose: true,
+				},
+			},
+			{
+				name:           "finalize object with CRC checksum",
+				content:        randomBytes9MiB,
+				takeoverOffset: MiB,
+				opts: &AppendableWriterOpts{
+					ChunkSize:           4 * MiB,
+					FinalizeOnClose:     true,
+					SendCRC32C:          true,
+					CRC32C:              uint32(crc32c(randomBytes9MiB)),
+					DisableAutoChecksum: true,
+				},
+			},
+			{
+				name:           "finalize object with checksum",
+				content:        randomBytes9MiB,
+				takeoverOffset: MiB,
+				opts: &AppendableWriterOpts{
+					ChunkSize:       4 * MiB,
+					FinalizeOnClose: true,
+					MD5:             randomBytes9MiBMD5[:],
 				},
 			},
 			{
