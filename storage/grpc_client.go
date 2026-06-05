@@ -1444,6 +1444,8 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 		handle:      &handle,
 		remain:      remain,
 		unfinalized: !finalized,
+		bucket:      params.bucket,
+		object:      params.object,
 	}
 
 	// For a zero-length request, explicitly close the stream and set remaining

@@ -19,9 +19,11 @@ import (
 	"fmt"
 	"hash/crc32"
 	"io"
+	"log"
 	"net/http"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 )
 
@@ -350,21 +352,33 @@ var emptyBody = io.NopCloser(strings.NewReader(""))
 // the stored CRC, returning an error from Read if there is a mismatch. This integrity check
 // is skipped if transcoding occurs. See https://cloud.google.com/storage/docs/transcoding.
 type Reader struct {
+	// remain must be the first field in the struct to guarantee 64-bit
+	// alignment on 32-bit architectures for atomic operations.
+	remain int64
+
 	Attrs          ReaderObjectAttrs
 	objectMetadata *map[string]string
 
-	seen, remain, size int64
-	checkCRC           bool // Did we check the CRC? This is now only used by tests.
+	seen, size int64
+	checkCRC   bool // Did we check the CRC? This is now only used by tests.
 
 	reader      io.ReadCloser
 	ctx         context.Context
 	mu          sync.Mutex
 	handle      *ReadHandle
 	unfinalized bool
+
+	bucket string
+	object string
 }
 
 // Close closes the Reader. It must be called when done reading.
 func (r *Reader) Close() error {
+	if !r.unfinalized && !r.Attrs.Decompressed {
+		if rem := atomic.LoadInt64(&r.remain); rem < 0 {
+			log.Printf("storage: received %d more bytes than requested from GCS for bucket %q, object %q", -rem, r.bucket, r.object)
+		}
+	}
 	err := r.reader.Close()
 	endSpan(r.ctx, err)
 	return err
@@ -372,8 +386,8 @@ func (r *Reader) Close() error {
 
 func (r *Reader) Read(p []byte) (int, error) {
 	n, err := r.reader.Read(p)
-	if r.remain != -1 {
-		r.remain -= int64(n)
+	if !r.unfinalized && !r.Attrs.Decompressed {
+		atomic.AddInt64(&r.remain, -int64(n))
 	}
 	return n, err
 }
@@ -384,8 +398,8 @@ func (r *Reader) WriteTo(w io.Writer) (int64, error) {
 	// This implicitly calls r.reader.WriteTo for gRPC only. JSON and XML don't have an
 	// implementation of WriteTo.
 	n, err := io.Copy(w, r.reader)
-	if r.remain != -1 {
-		r.remain -= int64(n)
+	if !r.unfinalized && !r.Attrs.Decompressed {
+		atomic.AddInt64(&r.remain, -int64(n))
 	}
 	return n, err
 }
@@ -403,10 +417,14 @@ func (r *Reader) Size() int64 {
 // Remain returns the number of bytes left to read, or -1 if unknown.
 // Unfinalized objects will return -1.
 func (r *Reader) Remain() int64 {
-	if r.unfinalized {
+	if r.unfinalized || r.Attrs.Decompressed {
 		return -1
 	}
-	return r.remain
+	rem := atomic.LoadInt64(&r.remain)
+	if rem < 0 {
+		return 0
+	}
+	return rem
 }
 
 // ContentType returns the content type of the object.
