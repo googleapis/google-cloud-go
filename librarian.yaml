@@ -196,6 +196,14 @@ libraries:
     apis:
       - path: google/cloud/automl/v1
       - path: google/cloud/automl/v1beta1
+  - name: backstory
+    version: 0.0.0
+    apis:
+      - path: backstory
+        go:
+          import_path: backstory/backstorypb
+          proto_only: true
+    copyright_year: "2026"
   - name: backupdr
     version: 1.14.0
     apis:

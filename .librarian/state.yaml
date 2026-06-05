@@ -399,6 +399,19 @@ libraries:
     release_exclude_paths:
       - internal/generated/snippets/automl/
     tag_format: '{id}/v{version}'
+  - id: backstory
+    version: 0.0.0
+    last_generated_commit: ""
+    apis:
+      - path: backstory
+    source_roots:
+      - backstory
+      - internal/generated/snippets/backstory
+    preserve_regex: []
+    remove_regex: []
+    release_exclude_paths:
+      - internal/generated/snippets/backstory/
+    tag_format: '{id}/v{version}'
   - id: backupdr
     version: 1.14.0
     last_generated_commit: ""
