@@ -280,7 +280,7 @@ ensure it clearly describes the change.
 After pushing,
 [click the
 button](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/requesting-a-pull-request-review#requesting-reviews-from-collaborators-and-organization-members)
-to ask a reviewer to re-request your review.
+to re-request a review.
 
 ## Expectations for the team
 
