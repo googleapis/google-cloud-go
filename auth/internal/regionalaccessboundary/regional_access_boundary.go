@@ -27,6 +27,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -34,6 +35,7 @@ import (
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/internal"
 	"cloud.google.com/go/auth/internal/retry"
+	"cloud.google.com/go/auth/internal/transport/cert"
 	"github.com/googleapis/gax-go/v2/internallog"
 )
 
@@ -43,6 +45,8 @@ const ProviderKey = "regionalaccessboundary.ProviderKey"
 const (
 	// serviceAccountAllowedLocationsEndpoint is the URL for fetching allowed locations for a given service account email.
 	serviceAccountAllowedLocationsEndpoint = "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/%s/allowedLocations"
+	// serviceAccountAllowedLocationsMTLSEndpoint is the mTLS URL for fetching allowed locations for a given service account email.
+	serviceAccountAllowedLocationsMTLSEndpoint = "https://iamcredentials.mtls.googleapis.com/v1/projects/-/serviceAccounts/%s/allowedLocations"
 
 	// cacheTTL is the duration cached RAB data remains valid before hard expiry.
 	cacheTTL = 6 * time.Hour
@@ -378,6 +382,37 @@ func (p *DataProvider) handleFetchFailure(ctx context.Context) {
 	p.cooldownDuration = nextCooldown
 }
 
+func resolveLocalMTLSEndpoint(base, mtls string) (string, error) {
+	mode := strings.ToLower(os.Getenv("GOOGLE_API_USE_MTLS_ENDPOINT"))
+	if mode == "" {
+		mode = strings.ToLower(os.Getenv("GOOGLE_API_USE_MTLS")) // Deprecated.
+	}
+	if mode == "always" {
+		return mtls, nil
+	}
+	if mode == "never" {
+		return base, nil
+	}
+
+	// Honor explicit client certificate suppression matching transport.isClientCertificateEnabled
+	if val, ok := os.LookupEnv("GOOGLE_API_USE_CLIENT_CERTIFICATE"); ok {
+		if b, err := strconv.ParseBool(val); err == nil && !b {
+			return base, nil
+		}
+	}
+
+	// Check if a client certificate is available. If an error occurs (e.g., malformed
+	// certificate configuration file), propagate the error up to trigger cooldown.
+	provider, err := cert.DefaultProvider()
+	if err != nil {
+		return "", err
+	}
+	if provider != nil {
+		return mtls, nil
+	}
+	return base, nil
+}
+
 // serviceAccountConfig holds configuration for SA Regional Access Boundary lookups.
 // It implements the ConfigProvider interface.
 type serviceAccountConfig struct {
@@ -399,7 +434,9 @@ func (sac *serviceAccountConfig) GetRegionalAccessBoundaryEndpoint(ctx context.C
 	if sac.ServiceAccountEmail == "" {
 		return "", errors.New("regionalaccessboundary: service account email cannot be empty for config")
 	}
-	return fmt.Sprintf(serviceAccountAllowedLocationsEndpoint, sac.ServiceAccountEmail), nil
+	base := fmt.Sprintf(serviceAccountAllowedLocationsEndpoint, sac.ServiceAccountEmail)
+	mtls := fmt.Sprintf(serviceAccountAllowedLocationsMTLSEndpoint, sac.ServiceAccountEmail)
+	return resolveLocalMTLSEndpoint(base, mtls)
 }
 
 // GetUniverseDomain returns the configured universe domain, defaulting to
@@ -473,7 +510,9 @@ func (g *GCEConfigProvider) GetRegionalAccessBoundaryEndpoint(ctx context.Contex
 	if g.saEmail != "" {
 		email := g.saEmail
 		g.saMu.Unlock()
-		return fmt.Sprintf(serviceAccountAllowedLocationsEndpoint, email), nil
+		base := fmt.Sprintf(serviceAccountAllowedLocationsEndpoint, email)
+		mtls := fmt.Sprintf(serviceAccountAllowedLocationsMTLSEndpoint, email)
+		return resolveLocalMTLSEndpoint(base, mtls)
 	}
 	g.saMu.Unlock()
 
@@ -489,7 +528,9 @@ func (g *GCEConfigProvider) GetRegionalAccessBoundaryEndpoint(ctx context.Contex
 	g.saEmail = email
 	g.saMu.Unlock()
 
-	return fmt.Sprintf(serviceAccountAllowedLocationsEndpoint, email), nil
+	base := fmt.Sprintf(serviceAccountAllowedLocationsEndpoint, email)
+	mtls := fmt.Sprintf(serviceAccountAllowedLocationsMTLSEndpoint, email)
+	return resolveLocalMTLSEndpoint(base, mtls)
 }
 
 // GetUniverseDomain retrieves the universe domain from the GCE metadata server.
