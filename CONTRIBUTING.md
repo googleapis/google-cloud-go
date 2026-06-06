@@ -196,7 +196,7 @@ parentheses before the colon. (For example, storage or pubsub).
 ### description
 
 A short one-line summary of the change, which should be written to
-complete the sentence "This change modifies the crate to ..." That means it
+complete the sentence "This change modifies the package to ..." That means it
 does not start with a capital letter, is not a complete sentence, and actually
 summarizes the result of the change. Note that the verb after the colon is
 lowercase, and there is no trailing period.  The first line should be kept as
