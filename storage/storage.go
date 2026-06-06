@@ -206,6 +206,12 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	if err != nil {
 		return nil, fmt.Errorf("dialing: %w", err)
 	}
+
+	hc, ep, opts, err = ensureSchemeAndRedial(ctx, hc, ep, opts)
+	if err != nil {
+		return nil, err
+	}
+
 	// RawService should be created with the chosen endpoint to take account of user override.
 	// Preserve other user-supplied options as well.
 	opts = append(opts, option.WithEndpoint(ep), option.WithHTTPClient(hc))
@@ -232,6 +238,32 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		creds:   creds,
 		tc:      tc,
 	}, nil
+}
+
+// ensureSchemeAndRedial checks if the resolved endpoint has a scheme. If not, it
+// prepends https://, appends the storage path if missing, closes any idle connections
+// on the existing HTTP client, and redials with the corrected endpoint.
+func ensureSchemeAndRedial(ctx context.Context, hc *http.Client, ep string, opts []option.ClientOption) (*http.Client, string, []option.ClientOption, error) {
+	if !strings.Contains(ep, "://") {
+		ep = "https://" + ep
+		if !strings.Contains(ep, "/storage/v1") {
+			if !strings.HasSuffix(ep, "/") {
+				ep += "/"
+			}
+			ep += "storage/v1/"
+		}
+		// Clean up idle connections on the previous HTTP client before overwriting.
+		hc.CloseIdleConnections()
+		// Redial with the fixed endpoint so that the HTTP transport is
+		// correctly configured for HTTPS (including ALPN for HTTP/2).
+		opts = append(opts, option.WithEndpoint(ep))
+		var err error
+		hc, ep, err = htransport.NewClient(ctx, opts...)
+		if err != nil {
+			return nil, "", nil, fmt.Errorf("dialing with fixed endpoint: %w", err)
+		}
+	}
+	return hc, ep, opts, nil
 }
 
 // NewGRPCClient creates a new Storage client using the gRPC transport and API.

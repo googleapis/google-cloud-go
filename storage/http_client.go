@@ -119,6 +119,12 @@ func newHTTPStorageClient(ctx context.Context, opts ...storageOption) (storageCl
 	if err != nil {
 		return nil, fmt.Errorf("dialing: %w", err)
 	}
+
+	hc, ep, s.clientOption, err = ensureSchemeAndRedial(ctx, hc, ep, s.clientOption)
+	if err != nil {
+		return nil, err
+	}
+
 	// RawService should be created with the chosen endpoint to take account of user override.
 	rawService, err := raw.NewService(ctx, option.WithEndpoint(ep), option.WithHTTPClient(hc))
 	if err != nil {
