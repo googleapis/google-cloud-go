@@ -73,29 +73,6 @@ var (
 	emailRegexp = regexp.MustCompile(`^[^@]+@[^@]+\.[^@]+$`)
 )
 
-// isEnabled wraps isRegionalAccessBoundaryEnabled with sync.OnceValues to ensure it's
-// called only once.
-var isEnabled = sync.OnceValues(isRegionalAccessBoundaryEnabled)
-
-// IsEnabled returns if the Regional Access Boundary feature is enabled and an error if
-// the configuration is invalid. The underlying check is performed only once.
-func IsEnabled() (bool, error) {
-	return isEnabled()
-}
-
-// isRegionalAccessBoundaryEnabled checks if the Regional Access Boundary feature
-// is enabled via the GOOGLE_AUTH_TRUST_BOUNDARY_ENABLED environment variable.
-//
-// If the environment variable is not set or empty, it is considered false.
-//
-// The environment variable is interpreted as a boolean with the following
-// (case-insensitive) rules:
-//   - "true", "1" are considered true.
-//   - All other values (including "false", "0", or invalid strings) are considered false.
-func isRegionalAccessBoundaryEnabled() (bool, error) {
-	val := strings.ToLower(os.Getenv("GOOGLE_AUTH_TRUST_BOUNDARY_ENABLED"))
-	return val == "true" || val == "1", nil
-}
 
 // ConfigProvider provides specific configuration for Regional Access Boundary lookups.
 type ConfigProvider interface {

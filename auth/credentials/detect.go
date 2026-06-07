@@ -146,10 +146,6 @@ func DetectDefault(opts *DetectOptions) (*auth.Credentials, error) {
 	if err := opts.validate(); err != nil {
 		return nil, err
 	}
-	regionalAccessBoundaryEnabled, err := regionalaccessboundary.IsEnabled()
-	if err != nil {
-		return nil, err
-	}
 	if len(opts.CredentialsJSON) > 0 {
 		return readCredentialsFileJSON(opts.CredentialsJSON, opts)
 	}
@@ -179,14 +175,12 @@ func DetectDefault(opts *DetectOptions) (*auth.Credentials, error) {
 		}
 
 		tp := computeTokenProvider(opts, metadataClient)
-		if regionalAccessBoundaryEnabled {
-			gceConfigProvider := regionalaccessboundary.NewGCEConfigProvider(gceUniverseDomainProvider, opts.logger())
-			var err error
-			tp, err = regionalaccessboundary.NewProvider(opts.client(), gceConfigProvider, opts.logger(), tp)
-			if err != nil {
-				return nil, fmt.Errorf("credentials: failed to initialize GCE Regional Access Boundary provider: %w", err)
-			}
-
+		gceConfigProvider := regionalaccessboundary.NewGCEConfigProvider(gceUniverseDomainProvider, opts.logger())
+		wrappedTP, err := regionalaccessboundary.NewProvider(opts.client(), gceConfigProvider, opts.logger(), tp)
+		if err != nil {
+			opts.logger().Warn("Regional Access Boundary lookup failed to initialize. Allowed locations lookup will be bypassed.", "error", err)
+		} else {
+			tp = wrappedTP
 		}
 		return auth.NewCredentials(&auth.CredentialsOptions{
 			TokenProvider: tp,

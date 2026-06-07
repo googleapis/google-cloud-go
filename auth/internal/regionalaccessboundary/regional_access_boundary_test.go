@@ -229,64 +229,6 @@ func TestFetchRegionalAccessBoundaryData(t *testing.T) {
 	}
 }
 
-func TestIsRegionalAccessBoundaryEnabled(t *testing.T) {
-	envVar := "GOOGLE_AUTH_TRUST_BOUNDARY_ENABLED"
-
-	tests := []struct {
-		name   string
-		envVal string
-		want   bool
-	}{
-		{
-			name:   "env empty/unset",
-			envVal: "",
-			want:   false,
-		},
-		{
-			name:   "env true",
-			envVal: "true",
-			want:   true,
-		},
-		{
-			name:   "env 1",
-			envVal: "1",
-			want:   true,
-		},
-		{
-			name:   "env false",
-			envVal: "false",
-			want:   false,
-		},
-		{
-			name:   "env 0",
-			envVal: "0",
-			want:   false,
-		},
-		{
-			name:   "env invalid",
-			envVal: "invalid",
-			want:   false,
-		},
-		{
-			name:   "env uppercase TRUE",
-			envVal: "TRUE",
-			want:   true,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			t.Setenv(envVar, tt.envVal)
-
-			got, err := isRegionalAccessBoundaryEnabled()
-			if err != nil {
-				t.Fatalf("isRegionalAccessBoundaryEnabled() unexpected error: %v", err)
-			}
-			if got != tt.want {
-				t.Errorf("isRegionalAccessBoundaryEnabled() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
 
 func TestServiceAccountConfig(t *testing.T) {
 	t.Setenv("GOOGLE_API_USE_CLIENT_CERTIFICATE", "false")
