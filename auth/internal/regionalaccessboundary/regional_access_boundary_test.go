@@ -32,6 +32,7 @@ import (
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/internal"
 	"cloud.google.com/go/auth/internal/retry"
+	"cloud.google.com/go/auth/internal/transport/cert"
 	"cloud.google.com/go/compute/metadata"
 )
 
@@ -966,4 +967,131 @@ func TestDataProvider_GetHeaderValue_BypassesNonGSA(t *testing.T) {
 		t.Errorf("expected zero MDS metadata calls during bypass, got %d", mdsRequestCount)
 	}
 }
+
+func TestResolveLocalMTLSEndpoint(t *testing.T) {
+	base := "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/foo/allowedLocations"
+	mtls := "https://iamcredentials.mtls.googleapis.com/v1/projects/-/serviceAccounts/foo/allowedLocations"
+
+	defaultProvider, _ := cert.DefaultProvider()
+	hasClientCert := defaultProvider != nil
+
+	tests := []struct {
+		name               string
+		envUseMTLSEndpoint string
+		envUseMTLS         string
+		envUseClientCert   string
+		want               string
+	}{
+		{
+			name:               "always env var forces mtls",
+			envUseMTLSEndpoint: "always",
+			want:               mtls,
+		},
+		{
+			name:               "never env var forces base",
+			envUseMTLSEndpoint: "never",
+			want:               base,
+		},
+		{
+			name:       "always legacy env var forces mtls",
+			envUseMTLS: "always",
+			want:       mtls,
+		},
+		{
+			name:             "client cert disabled env var forces base",
+			envUseClientCert: "false",
+			want:             base,
+		},
+		{
+			name:             "client cert enabled env var checks client cert availability",
+			envUseClientCert: "true",
+			want: func() string {
+				if hasClientCert {
+					return mtls
+				}
+				return base
+			}(),
+		},
+		{
+			name:             "client cert invalid env var forces base",
+			envUseClientCert: "invalid",
+			want:             base,
+		},
+		{
+			name:               "auto env var checks client cert availability",
+			envUseMTLSEndpoint: "auto",
+			want: func() string {
+				if hasClientCert {
+					return mtls
+				}
+				return base
+			}(),
+		},
+		{
+			name:               "MTLSEndpoint env var takes precedence over legacy MTLS env var",
+			envUseMTLSEndpoint: "never",
+			envUseMTLS:         "always",
+			want:               base,
+		},
+		{
+			name: "default when no env vars checks client cert availability",
+			want: func() string {
+				if hasClientCert {
+					return mtls
+				}
+				return base
+			}(),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if tt.envUseMTLSEndpoint != "" {
+				t.Setenv("GOOGLE_API_USE_MTLS_ENDPOINT", tt.envUseMTLSEndpoint)
+			}
+			if tt.envUseMTLS != "" {
+				t.Setenv("GOOGLE_API_USE_MTLS", tt.envUseMTLS)
+			}
+			if tt.envUseClientCert != "" {
+				t.Setenv("GOOGLE_API_USE_CLIENT_CERTIFICATE", tt.envUseClientCert)
+			}
+
+			got, err := resolveLocalMTLSEndpoint(base, mtls)
+			if err != nil {
+				t.Fatalf("resolveLocalMTLSEndpoint() unexpected error: %v", err)
+			}
+			if got != tt.want {
+				t.Errorf("resolveLocalMTLSEndpoint() = %q, want %q", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestDataProvider_GetHeaderValue_BypassesNonDefaultUniverse(t *testing.T) {
+	ctx := context.Background()
+	mockConfig := &mockConfigProvider{
+		universeToReturn: "custom-universe.com",
+		endpointCallCh:   make(chan struct{}, 1),
+	}
+	token := &auth.Token{Value: "base-token"}
+	provider, err := NewProvider(http.DefaultClient, mockConfig, nil, &mockTokenProvider{TokenToReturn: token})
+	if err != nil {
+		t.Fatalf("NewProvider() failed: %v", err)
+	}
+
+	val := provider.GetHeaderValue(ctx, "https://example.com/v1", token)
+	if val != "" {
+		t.Errorf("expected empty header for non-default universe, got %q", val)
+	}
+
+	// Verify that the endpoint builder was never called to trigger background fetch
+	select {
+	case <-mockConfig.endpointCallCh:
+		t.Error("GetHeaderValue triggered Allowed Locations fetch on non-default universe domain, want skip")
+	case <-time.After(50 * time.Millisecond):
+		// Success: no fetch was initiated
+	}
+}
+
+
 

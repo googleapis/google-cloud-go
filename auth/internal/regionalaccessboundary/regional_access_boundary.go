@@ -392,9 +392,11 @@ func resolveLocalMTLSEndpoint(base, mtls string) (string, error) {
 		return base, nil
 	}
 
-	// Honor explicit client certificate suppression matching transport.isClientCertificateEnabled
+	// Honor explicit client certificate suppression matching transport.isClientCertificateEnabled.
+	// We ignore parsing errors to default to false, matching the behavior in cba.go.
 	if val, ok := os.LookupEnv("GOOGLE_API_USE_CLIENT_CERTIFICATE"); ok {
-		if b, err := strconv.ParseBool(val); err == nil && !b {
+		b, _ := strconv.ParseBool(val)
+		if !b {
 			return base, nil
 		}
 	}
