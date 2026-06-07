@@ -136,6 +136,7 @@ func TestNewExternalAccountConfigProvider(t *testing.T) {
 }
 
 func TestWorkloadIdentityPoolConfigProvider(t *testing.T) {
+	t.Setenv("GOOGLE_API_USE_CLIENT_CERTIFICATE", "false")
 	ctx := context.Background()
 	p := &workloadIdentityPoolConfigProvider{
 		projectNumber:  "12345",
@@ -166,6 +167,7 @@ func TestWorkloadIdentityPoolConfigProvider(t *testing.T) {
 }
 
 func TestWorkforcePoolConfigProvider(t *testing.T) {
+	t.Setenv("GOOGLE_API_USE_CLIENT_CERTIFICATE", "false")
 	ctx := context.Background()
 	p := &workforcePoolConfigProvider{
 		poolID:         "my-pool",

@@ -180,7 +180,7 @@ func DetectDefault(opts *DetectOptions) (*auth.Credentials, error) {
 
 		tp := computeTokenProvider(opts, metadataClient)
 		if regionalAccessBoundaryEnabled {
-			gceConfigProvider := regionalaccessboundary.NewGCEConfigProvider(gceUniverseDomainProvider)
+			gceConfigProvider := regionalaccessboundary.NewGCEConfigProvider(gceUniverseDomainProvider, opts.logger())
 			var err error
 			tp, err = regionalaccessboundary.NewProvider(opts.client(), gceConfigProvider, opts.logger(), tp)
 			if err != nil {

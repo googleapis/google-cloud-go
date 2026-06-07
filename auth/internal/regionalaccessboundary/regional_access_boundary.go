@@ -37,6 +37,7 @@ import (
 	"cloud.google.com/go/auth/internal/retry"
 	"cloud.google.com/go/auth/internal/transport/cert"
 	"github.com/googleapis/gax-go/v2/internallog"
+	"regexp"
 )
 
 // ProviderKey is the key to fetch the DataProvider from Token Metadata.
@@ -64,6 +65,12 @@ var (
 		Multiplier:  2.0,
 		MaxAttempts: 6,
 	}
+
+	// SkipRegionalAccessBoundary indicates that the Regional Access Boundary lookup
+	// should be permanently skipped for this instance or credential.
+	SkipRegionalAccessBoundary = errors.New("regionalaccessboundary: skip lookup")
+
+	emailRegexp = regexp.MustCompile(`^[^@]+@[^@]+\.[^@]+$`)
 )
 
 // isEnabled wraps isRegionalAccessBoundaryEnabled with sync.OnceValues to ensure it's
@@ -212,6 +219,7 @@ type DataProvider struct {
 	isFetching       bool
 	cooldownExpiry   time.Time
 	cooldownDuration time.Duration // tracks the current cooldown duration for exponential backoff
+	skipLookup       bool          // permanently skips RAB lookup if the identity is unsupported
 }
 
 // NewProvider wraps the provided base [auth.TokenProvider] and returns a new
@@ -291,9 +299,14 @@ func (p *DataProvider) GetHeaderValue(ctx context.Context, reqURL string, access
 
 	// Return the cached data if present and not expired.
 	p.mu.RLock()
+	skip := p.skipLookup
 	data := p.data
 	dataExpiry := p.dataExpiry
 	p.mu.RUnlock()
+
+	if skip {
+		return ""
+	}
 
 	now := time.Now()
 	if data != nil && now.Before(dataExpiry) {
@@ -338,6 +351,14 @@ func (p *DataProvider) fetchAsync(ctx context.Context, accessToken *auth.Token) 
 	}()
 
 	url, err := p.configProvider.GetRegionalAccessBoundaryEndpoint(ctx)
+	if errors.Is(err, SkipRegionalAccessBoundary) {
+		// If the compute environment or identity does not support Regional Access Boundary
+		// lookups, permanently disable subsequent attempts to avoid redundant retries.
+		p.mu.Lock()
+		p.skipLookup = true
+		p.mu.Unlock()
+		return
+	}
 	if err != nil {
 		p.logger.WarnContext(ctx, "regionalaccessboundary: error getting the lookup endpoint", "error", err)
 		p.handleFetchFailure(ctx)
@@ -453,10 +474,12 @@ func (sac *serviceAccountConfig) GetUniverseDomain(ctx context.Context) (string,
 type GCEConfigProvider struct {
 	// universeDomainProvider provides the universe domain and underlying metadata client.
 	universeDomainProvider *internal.ComputeUniverseDomainProvider
+	logger                 *slog.Logger
 
 	// Caching for service account email
-	saMu    sync.Mutex
-	saEmail string
+	saMu       sync.Mutex
+	saEmail    string
+	skipLookup bool
 
 	// Caching for universe domain
 	udOnce sync.Once
@@ -466,11 +489,15 @@ type GCEConfigProvider struct {
 
 // NewGCEConfigProvider creates a new GCEConfigProvider
 // which uses the provided gceUDP to interact with the GCE metadata server.
-func NewGCEConfigProvider(gceUDP *internal.ComputeUniverseDomainProvider) *GCEConfigProvider {
+func NewGCEConfigProvider(gceUDP *internal.ComputeUniverseDomainProvider, logger *slog.Logger) *GCEConfigProvider {
+	if logger == nil {
+		logger = slog.New(slog.NewTextHandler(io.Discard, nil))
+	}
 	// The validity of gceUDP and its internal MetadataClient will be checked
 	// within the GetRegionalAccessBoundaryEndpoint and GetUniverseDomain methods.
 	return &GCEConfigProvider{
 		universeDomainProvider: gceUDP,
+		logger:                 internallog.New(logger),
 	}
 }
 
@@ -507,6 +534,10 @@ func (g *GCEConfigProvider) fetchUD(ctx context.Context) {
 func (g *GCEConfigProvider) GetRegionalAccessBoundaryEndpoint(ctx context.Context) (string, error) {
 	// Check if we already have a cached service account email.
 	g.saMu.Lock()
+	if g.skipLookup {
+		g.saMu.Unlock()
+		return "", SkipRegionalAccessBoundary
+	}
 	if g.saEmail != "" {
 		email := g.saEmail
 		g.saMu.Unlock()
@@ -521,6 +552,19 @@ func (g *GCEConfigProvider) GetRegionalAccessBoundaryEndpoint(ctx context.Contex
 	email, err := g.fetchSA(ctx)
 	if err != nil {
 		return "", err
+	}
+
+	if !emailRegexp.MatchString(email) {
+		// If the metadata server response does not look like a standard email (e.g.,
+		// a GKE Workload Identity pool ID or principal), permanently skip RAB lookups.
+		g.saMu.Lock()
+		alreadySkipped := g.skipLookup
+		g.skipLookup = true
+		g.saMu.Unlock()
+		if !alreadySkipped {
+			g.logger.InfoContext(ctx, "regionalaccessboundary: RAB lookup is skipped for this instance", "response", email)
+		}
+		return "", SkipRegionalAccessBoundary
 	}
 
 	// Cache the successful result.

@@ -15,9 +15,11 @@
 package regionalaccessboundary
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -287,6 +289,7 @@ func TestIsRegionalAccessBoundaryEnabled(t *testing.T) {
 }
 
 func TestServiceAccountConfig(t *testing.T) {
+	t.Setenv("GOOGLE_API_USE_CLIENT_CERTIFICATE", "false")
 	saEmail := "test-sa@example.iam.gserviceaccount.com"
 	ud := "example.com"
 
@@ -373,6 +376,7 @@ func TestServiceAccountConfig(t *testing.T) {
 }
 
 func TestGCEConfigProvider(t *testing.T) {
+	t.Setenv("GOOGLE_API_USE_CLIENT_CERTIFICATE", "false")
 	defaultTestEmail := "test-sa@example.iam.gserviceaccount.com"
 	defaultTestUD := "example.com"
 	defaultExpectedEndpoint := fmt.Sprintf(serviceAccountAllowedLocationsEndpoint, defaultTestEmail)
@@ -511,10 +515,10 @@ func TestGCEConfigProvider(t *testing.T) {
 				udp := &internal.ComputeUniverseDomainProvider{
 					MetadataClient: mdClient,
 				}
-				provider = NewGCEConfigProvider(udp)
+				provider = NewGCEConfigProvider(udp, nil)
 			} else {
 				t.Setenv("GCE_METADATA_HOST", "")
-				provider = NewGCEConfigProvider(tt.gceUDP)
+				provider = NewGCEConfigProvider(tt.gceUDP, nil)
 			}
 
 			endpoint, err := provider.GetRegionalAccessBoundaryEndpoint(ctx)
@@ -566,7 +570,7 @@ func TestGCEConfigProvider_CachesResults(t *testing.T) {
 	t.Setenv("GCE_METADATA_HOST", parsedURL.Host)
 	mdClient := metadata.NewClient(server.Client())
 	udp := &internal.ComputeUniverseDomainProvider{MetadataClient: mdClient}
-	provider := NewGCEConfigProvider(udp)
+	provider := NewGCEConfigProvider(udp, nil)
 
 	for i := 0; i < 5; i++ {
 		t.Run(fmt.Sprintf("call-%d", i+1), func(t *testing.T) {
@@ -581,6 +585,7 @@ func TestGCEConfigProvider_CachesResults(t *testing.T) {
 }
 
 func TestGCEConfigProvider_TransientFailure(t *testing.T) {
+	t.Setenv("GOOGLE_API_USE_CLIENT_CERTIFICATE", "false")
 	var failMDS bool = true
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if failMDS {
@@ -600,7 +605,7 @@ func TestGCEConfigProvider_TransientFailure(t *testing.T) {
 	t.Setenv("GCE_METADATA_HOST", parsedURL.Host)
 	mdClient := metadata.NewClient(server.Client())
 	udp := &internal.ComputeUniverseDomainProvider{MetadataClient: mdClient}
-	provider := NewGCEConfigProvider(udp)
+	provider := NewGCEConfigProvider(udp, nil)
 
 	ctx := context.Background()
 
@@ -890,3 +895,133 @@ func TestDataProvider_GetHeaderValue(t *testing.T) {
 		}
 	})
 }
+
+func TestGCEConfigProvider_NonGSAIdentity_BypassesLookup(t *testing.T) {
+	ctx := context.Background()
+	nonGSAEmail := "project.svc.id.goog"
+
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.URL.Path {
+		case "/computeMetadata/v1/instance/service-accounts/default/email":
+			w.Write([]byte(nonGSAEmail))
+		case "/computeMetadata/v1/universe/universe-domain":
+			w.Write([]byte("googleapis.com"))
+		default:
+			http.NotFound(w, r)
+		}
+	}))
+	defer server.Close()
+
+	parsedURL, _ := url.Parse(server.URL)
+	t.Setenv("GCE_METADATA_HOST", parsedURL.Host)
+	mdClient := metadata.NewClient(server.Client())
+	udp := &internal.ComputeUniverseDomainProvider{MetadataClient: mdClient}
+
+	var logBuf bytes.Buffer
+	logger := slog.New(slog.NewJSONHandler(&logBuf, &slog.HandlerOptions{
+		Level: slog.LevelInfo,
+	}))
+
+	gceConfig := NewGCEConfigProvider(udp, logger)
+
+	// Fetch endpoint first time - should log and return error
+	endpoint, err := gceConfig.GetRegionalAccessBoundaryEndpoint(ctx)
+	if !errors.Is(err, SkipRegionalAccessBoundary) {
+		t.Fatalf("expected SkipRegionalAccessBoundary, got %v", err)
+	}
+	if endpoint != "" {
+		t.Errorf("expected empty endpoint, got %q", endpoint)
+	}
+
+	// Verify that the INFO log message was logged
+	logStr := logBuf.String()
+	if !strings.Contains(logStr, "RAB lookup is skipped for this instance") {
+		t.Errorf("expected log buffer to contain 'RAB lookup is skipped for this instance', got:\n%s", logStr)
+	}
+
+	// Reset log buffer to check one-time logging
+	logBuf.Reset()
+
+	// Fetch endpoint second time - should silently return SkipRegionalAccessBoundary without logging again
+	endpoint2, err2 := gceConfig.GetRegionalAccessBoundaryEndpoint(ctx)
+	if !errors.Is(err2, SkipRegionalAccessBoundary) {
+		t.Fatalf("second call: expected SkipRegionalAccessBoundary, got %v", err2)
+	}
+	if endpoint2 != "" {
+		t.Errorf("second call: expected empty endpoint, got %q", endpoint2)
+	}
+	if logBuf.Len() > 0 {
+		t.Errorf("expected no log output on second call, got:\n%s", logBuf.String())
+	}
+}
+
+func TestDataProvider_GetHeaderValue_BypassesNonGSA(t *testing.T) {
+	ctx := context.Background()
+	nonGSAEmail := "project.svc.id.goog[ns/sa]"
+
+	var mdsRequestCount int
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		mdsRequestCount++
+		switch r.URL.Path {
+		case "/computeMetadata/v1/instance/service-accounts/default/email":
+			w.Write([]byte(nonGSAEmail))
+		case "/computeMetadata/v1/universe/universe-domain":
+			w.Write([]byte("googleapis.com"))
+		default:
+			http.NotFound(w, r)
+		}
+	}))
+	defer server.Close()
+
+	parsedURL, _ := url.Parse(server.URL)
+	t.Setenv("GCE_METADATA_HOST", parsedURL.Host)
+	mdClient := metadata.NewClient(server.Client())
+	udp := &internal.ComputeUniverseDomainProvider{MetadataClient: mdClient}
+
+	gceConfig := NewGCEConfigProvider(udp, nil)
+	token := &auth.Token{Value: "base-token"}
+	provider, err := NewProvider(server.Client(), gceConfig, nil, &mockTokenProvider{TokenToReturn: token})
+	if err != nil {
+		t.Fatalf("NewProvider() failed: %v", err)
+	}
+
+	// First call triggers background fetchAsync which fetches metadata email and detects invalid format.
+	val := provider.GetHeaderValue(ctx, "https://example.com/v1", token)
+	if val != "" {
+		t.Errorf("First call expected empty header, got %q", val)
+	}
+
+	// Wait for the async fetch to run, identify the invalid identity, and update provider.skipLookup to true.
+	deadline := time.Now().Add(1 * time.Second)
+	skipLookupSet := false
+	for time.Now().Before(deadline) {
+		provider.mu.RLock()
+		if provider.skipLookup {
+			skipLookupSet = true
+			provider.mu.RUnlock()
+			break
+		}
+		provider.mu.RUnlock()
+		time.Sleep(10 * time.Millisecond)
+	}
+
+	if !skipLookupSet {
+		t.Fatal("skipLookup was not set on DataProvider after detecting invalid identity")
+	}
+
+	// Reset request count to check that no more calls are made to MDS.
+	mdsRequestCount = 0
+
+	// Second and subsequent calls should immediately return empty string, bypassing all fetches.
+	for i := 0; i < 5; i++ {
+		val2 := provider.GetHeaderValue(ctx, "https://example.com/v1", token)
+		if val2 != "" {
+			t.Errorf("Call %d: expected empty header, got %q", i+2, val2)
+		}
+	}
+
+	if mdsRequestCount > 0 {
+		t.Errorf("expected zero MDS metadata calls during bypass, got %d", mdsRequestCount)
+	}
+}
+
