@@ -131,30 +131,32 @@ func resolveUniverseDomain(optsUniverseDomain, fileUniverseDomain string) string
 
 func handleServiceAccount(f *credsfile.ServiceAccountFile, opts *DetectOptions) (auth.TokenProvider, error) {
 	ud := resolveUniverseDomain(opts.UniverseDomain, f.UniverseDomain)
-	if opts.UseSelfSignedJWT {
-		return configureSelfSignedJWT(f, opts)
-	} else if ud != "" && ud != internalauth.DefaultUniverseDomain {
-		// For non-GDU universe domains, token exchange is impossible and services
-		// must support self-signed JWTs.
-		opts.UseSelfSignedJWT = true
-		return configureSelfSignedJWT(f, opts)
-	}
-	opts2LO := &auth.Options2LO{
-		Email:          f.ClientEmail,
-		PrivateKey:     []byte(f.PrivateKey),
-		PrivateKeyID:   f.PrivateKeyID,
-		Scopes:         opts.scopes(),
-		TokenURL:       f.TokenURL,
-		Subject:        opts.Subject,
-		Client:         opts.client(),
-		Logger:         opts.logger(),
-		UniverseDomain: ud,
-	}
-	if opts2LO.TokenURL == "" {
-		opts2LO.TokenURL = jwtTokenURL
-	}
+	// Determine if we should use self-signed JWT.
+	// For non-GDU universe domains, token exchange is impossible, so we must use self-signed JWT.
+	useSelfSigned := opts.UseSelfSignedJWT || (ud != "" && ud != internalauth.DefaultUniverseDomain)
 
-	tp, err := auth.New2LOTokenProvider(opts2LO)
+	var tp auth.TokenProvider
+	var err error
+	if useSelfSigned {
+		opts.UseSelfSignedJWT = true
+		tp, err = configureSelfSignedJWT(f, opts)
+	} else {
+		opts2LO := &auth.Options2LO{
+			Email:          f.ClientEmail,
+			PrivateKey:     []byte(f.PrivateKey),
+			PrivateKeyID:   f.PrivateKeyID,
+			Scopes:         opts.scopes(),
+			TokenURL:       f.TokenURL,
+			Subject:        opts.Subject,
+			Client:         opts.client(),
+			Logger:         opts.logger(),
+			UniverseDomain: ud,
+		}
+		if opts2LO.TokenURL == "" {
+			opts2LO.TokenURL = jwtTokenURL
+		}
+		tp, err = auth.New2LOTokenProvider(opts2LO)
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -166,7 +168,7 @@ func handleServiceAccount(f *credsfile.ServiceAccountFile, opts *DetectOptions) 
 	if !regionalAccessBoundaryEnabled {
 		return tp, nil
 	}
-	saConfig := regionalaccessboundary.NewServiceAccountConfigProvider(opts2LO.Email, opts2LO.UniverseDomain)
+	saConfig := regionalaccessboundary.NewServiceAccountConfigProvider(f.ClientEmail, ud)
 	return regionalaccessboundary.NewProvider(opts.client(), saConfig, opts.logger(), tp)
 }
 
