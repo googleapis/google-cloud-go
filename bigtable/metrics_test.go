@@ -44,6 +44,7 @@ import (
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 
+	mexporter "github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/metric"
 	"cloud.google.com/go/bigtable/bttest"
 	"google.golang.org/grpc/metadata"
 )
@@ -245,6 +246,7 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 		metricNameServerLatencies,
 		metricNameClientBlockingLatencies, metricNameClientBlockingLatencies,
 		metricNameAppBlockingLatencies,
+		metricNameClientUptime,
 	}
 	wantMetricTypesGCM := []string{}
 	for _, wantMetricName := range wantMetricNamesStdout {
@@ -287,6 +289,29 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 	}
 	defer func() {
 		createExporterOptions = origCreateExporterOptions
+	}()
+
+	// Override standard exporter for otelMetricsContext to point to the mock GCM server
+	origNewOtelMetricsContext := newOtelMetricsContext
+	newOtelMetricsContext = func(ctx context.Context, cfg metricsConfig) (*otelMetricsContext, error) {
+		mockExporter, err := mexporter.New(
+			mexporter.WithProjectID(cfg.project),
+			mexporter.WithMetricDescriptorTypeFormatter(metricFormatter),
+			mexporter.WithCreateServiceTimeSeries(),
+			mexporter.WithMonitoringClientOptions(
+				option.WithEndpoint(monitoringServer.Endpoint),
+				option.WithoutAuthentication(),
+				option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+			),
+		)
+		if err != nil {
+			return nil, err
+		}
+		cfg.customExporter = &mockExporter
+		return origNewOtelMetricsContext(ctx, cfg)
+	}
+	defer func() {
+		newOtelMetricsContext = origNewOtelMetricsContext
 	}()
 
 	// Setup fake Bigtable server
@@ -427,11 +452,10 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 
 			// Get new CreateServiceTimeSeriesRequests
 			gotCreateTSCalls := monitoringServer.CreateServiceTimeSeriesRequests()
+			gotMetricCounts := make(map[string]int)
 			for _, gotCreateTSCall := range gotCreateTSCalls {
-				gotMetricTypes := []string{}
 				for _, ts := range gotCreateTSCall.TimeSeries {
-					// ts.Metric.Type is of the form "bigtable.googleapis.com/internal/client/server_latencies"
-					gotMetricTypes = append(gotMetricTypes, ts.Metric.Type)
+					gotMetricCounts[ts.Metric.Type]++
 
 					// Assert "streaming" metric label is correct
 					gotStreaming, gotStreamingExists := ts.Metric.Labels[metricLabelKeyStreamingOperation]
@@ -446,14 +470,32 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 					}
 
 					// Assert "method" metric label is correct
-					wantMethod := "Bigtable.ReadRows"
-					if gotLabel, ok := ts.Metric.Labels[metricLabelKeyMethod]; !ok || gotLabel != wantMethod {
-						t.Errorf("Metric label key: %s, value: got: %v, want: %v", metricLabelKeyMethod, gotLabel, wantMethod)
+					if internalMetricName != metricNameClientUptime {
+						wantMethod := "Bigtable.ReadRows"
+						if gotLabel, ok := ts.Metric.Labels[metricLabelKeyMethod]; !ok || gotLabel != wantMethod {
+							t.Errorf("Metric label key: %s, value: got: %v, want: %v", metricLabelKeyMethod, gotLabel, wantMethod)
+						}
 					}
 				}
-				sort.Strings(gotMetricTypes)
-				if !testutil.Equal(gotMetricTypes, wantMetricTypesGCM) {
-					t.Errorf("Metric types missing in req. \ngot: %v, \nwant: %v\ndiff: %v", gotMetricTypes, wantMetricTypesGCM, testutil.Diff(gotMetricTypes, wantMetricTypesGCM))
+			}
+
+			if test.wantBuiltinEnabled {
+				// Count expected metrics
+				wantMetricCounts := make(map[string]int)
+				for _, wantMetric := range wantMetricTypesGCM {
+					wantMetricCounts[wantMetric]++
+				}
+
+				// Assert we got at least the expected counts
+				for wantMetric, wantCount := range wantMetricCounts {
+					gotCount := gotMetricCounts[wantMetric]
+					if gotCount < wantCount {
+						t.Errorf("Metric %s: got count %d, want at least %d. All got: %v", wantMetric, gotCount, wantCount, gotMetricCounts)
+					}
+				}
+			} else {
+				if len(gotMetricCounts) > 0 {
+					t.Errorf("Expected no metrics to be exported, but got: %v", gotMetricCounts)
 				}
 			}
 

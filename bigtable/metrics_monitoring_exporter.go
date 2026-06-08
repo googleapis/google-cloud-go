@@ -257,7 +257,33 @@ func (me *monitoringExporter) recordToTimeSeriesPb(m otelmetricdata.Metrics) ([]
 			metric, mr := me.recordToMetricAndMonitoredResourcePbs(m, point.Attributes)
 			var ts *monitoringpb.TimeSeries
 			var err error
-			ts, err = sumToTimeSeries[int64](point, m, mr, kind)
+			ts, err = dataPointToTimeSeries[int64](point, m, mr, kind)
+			if err != nil {
+				errs = append(errs, err)
+				continue
+			}
+			ts.Metric = metric
+			tss = append(tss, ts)
+		}
+	case otelmetricdata.Gauge[int64]:
+		for _, point := range a.DataPoints {
+			metric, mr := me.recordToMetricAndMonitoredResourcePbs(m, point.Attributes)
+			var ts *monitoringpb.TimeSeries
+			var err error
+			ts, err = dataPointToTimeSeries[int64](point, m, mr, googlemetricpb.MetricDescriptor_GAUGE)
+			if err != nil {
+				errs = append(errs, err)
+				continue
+			}
+			ts.Metric = metric
+			tss = append(tss, ts)
+		}
+	case otelmetricdata.Gauge[float64]:
+		for _, point := range a.DataPoints {
+			metric, mr := me.recordToMetricAndMonitoredResourcePbs(m, point.Attributes)
+			var ts *monitoringpb.TimeSeries
+			var err error
+			ts, err = dataPointToTimeSeries[float64](point, m, mr, googlemetricpb.MetricDescriptor_GAUGE)
 			if err != nil {
 				errs = append(errs, err)
 				continue
@@ -271,7 +297,7 @@ func (me *monitoringExporter) recordToTimeSeriesPb(m otelmetricdata.Metrics) ([]
 	return tss, errors.Join(errs...)
 }
 
-func sumToTimeSeries[N int64 | float64](point otelmetricdata.DataPoint[N], metrics otelmetricdata.Metrics, mr *monitoredrespb.MonitoredResource, kind googlemetricpb.MetricDescriptor_MetricKind) (*monitoringpb.TimeSeries, error) {
+func dataPointToTimeSeries[N int64 | float64](point otelmetricdata.DataPoint[N], metrics otelmetricdata.Metrics, mr *monitoredrespb.MonitoredResource, kind googlemetricpb.MetricDescriptor_MetricKind) (*monitoringpb.TimeSeries, error) {
 	interval, err := toTimeIntervalPb(point.StartTime, point.Time, kind)
 	if err != nil {
 		return nil, err

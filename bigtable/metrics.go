@@ -74,6 +74,7 @@ const (
 	metricNameRetryCount              = "retry_count"
 	metricNameDebugTags               = "debug_tags"
 	metricNameConnErrCount            = "connectivity_error_count"
+	metricNameClientUptime            = "uptime"
 
 	// Metric units
 	metricUnitMS    = "ms"
@@ -160,6 +161,7 @@ var (
 			},
 			recordedPerAttempt: true,
 		},
+		metricNameClientUptime: {},
 	}
 
 	// Generates unique client ID in the format go-<random UUID>@<hostname>
@@ -221,6 +223,8 @@ type builtinMetricsTracerFactory struct {
 	retryCount              metric.Int64Counter
 	connErrCount            metric.Int64Counter
 	debugTags               metric.Int64Counter
+	clientUptime            metric.Int64ObservableGauge
+	startTime               time.Time
 }
 
 // Returns error only if metricsProvider is of unknown type. Rest all errors are swallowed
@@ -250,7 +254,8 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, project, instance, appP
 			attribute.String(metricLabelKeyClientUID, clientUID),
 			attribute.String(metricLabelKeyClientName, clientName),
 		},
-		shutdown: func() {},
+		shutdown:  func() {},
+		startTime: time.Now(),
 	}
 
 	// Create default meter provider
@@ -427,6 +432,27 @@ func (tf *builtinMetricsTracerFactory) createInstruments(meter metric.Meter) err
 		metric.WithDescription("A counter of internal client events used for debugging."),
 		metric.WithUnit(metricUnitCount),
 	)
+	if err != nil {
+		return err
+	}
+
+	// Create uptime
+	startTime := tf.startTime
+	clientAttrs := tf.clientAttributes
+	if tf.otelMeterProvider == nil {
+		// Fallback to built-in meter (custom exporter) if otelMeterProvider is nil (e.g. in some test setups)
+		tf.clientUptime, err = meter.Int64ObservableGauge(
+			metricNameClientUptime,
+			metric.WithDescription("The uptime of the client."),
+			metric.WithUnit(metricUnitMS),
+			metric.WithInt64Callback(func(ctx context.Context, obs metric.Int64Observer) error {
+				if !startTime.IsZero() {
+					obs.Observe(time.Since(startTime).Milliseconds(), metric.WithAttributes(clientAttrs...))
+				}
+				return nil
+			}),
+		)
+	}
 	return err
 }
 

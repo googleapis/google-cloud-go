@@ -22,7 +22,9 @@ import (
 	"strings"
 	"time"
 
+	"cloud.google.com/go/bigtable/internal"
 	mexporter "github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/metric"
+	otelmetric "go.opentelemetry.io/otel/metric"
 	"go.opentelemetry.io/contrib/detectors/gcp"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/sdk/metric"
@@ -176,7 +178,7 @@ type metricsConfig struct {
 	resourceOpts    []resource.Option    // used by tests
 }
 
-func newOtelMetricsContext(ctx context.Context, cfg metricsConfig) (*otelMetricsContext, error) {
+var newOtelMetricsContext = func(ctx context.Context, cfg metricsConfig) (*otelMetricsContext, error) {
 	var exporter metric.Exporter
 	meterOpts := []metric.Option{}
 	if cfg.customExporter == nil {
@@ -215,6 +217,24 @@ func newOtelMetricsContext(ctx context.Context, cfg metricsConfig) (*otelMetrics
 			metric.NewPeriodicReader(&exporterLogSuppressor{Exporter: exporter}, metric.WithInterval(interval))))
 	}
 	otelMeterProvider := metric.NewMeterProvider(meterOpts...)
+
+	// Register client uptime metric on the provider
+	otelMeter := otelMeterProvider.Meter(builtInMetricsMeterName, otelmetric.WithInstrumentationVersion(internal.Version))
+	startTime := time.Now()
+	_, err := otelMeter.Int64ObservableGauge(
+		"uptime",
+		otelmetric.WithDescription("The uptime of the client."),
+		otelmetric.WithUnit("ms"),
+		otelmetric.WithInt64Callback(func(ctx context.Context, obs otelmetric.Int64Observer) error {
+			obs.Observe(time.Since(startTime).Milliseconds())
+			return nil
+		}),
+	)
+	if err != nil {
+		otelMeterProvider.Shutdown(ctx)
+		return nil, fmt.Errorf("bigtable: registering uptime metric: %w", err)
+	}
+
 	mo := opentelemetry.MetricsOptions{
 		MeterProvider: otelMeterProvider,
 		Metrics: stats.NewMetricSet(
