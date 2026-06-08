@@ -3009,23 +3009,23 @@ func TestIntegration_ObjectCompose_DeleteSourceObjects(t *testing.T) {
 				// Verify source objects existence
 				_, err1 := src1.Attrs(ctx)
 				if tc.wantSourcesDeleted {
-					if err1 == nil {
-						t.Errorf("src1 still exists, expected it to be deleted")
+					if !errors.Is(err1, ErrObjectNotExist) {
+						t.Errorf("src1 still exists, expected it to be deleted. Err: %v", err1)
 					}
 				} else {
 					if err1 != nil {
-						t.Errorf("src1 does not exist, expected it to exist: %v", err1)
+						t.Errorf("Error: src1.Attrs(): %v", err1)
 					}
 				}
 
 				_, err2 := src2.Attrs(ctx)
 				if tc.wantSourcesDeleted {
-					if err2 == nil {
-						t.Errorf("src2 still exists, expected it to be deleted")
+					if !errors.Is(err2, ErrObjectNotExist) {
+						t.Errorf("src2 still exists, expected it to be deleted. Err: %v", err2)
 					}
 				} else {
 					if err2 != nil {
-						t.Errorf("src2 does not exist, expected it to exist: %v", err2)
+						t.Errorf("Error: src2.Attrs(): %v", err2)
 					}
 				}
 
