@@ -357,11 +357,12 @@ type moveObjectParams struct {
 }
 
 type composeObjectRequest struct {
-	dstBucket     string
-	dstObject     destinationObject
-	srcs          []sourceObject
-	predefinedACL string
-	sendCRC32C    bool
+	dstBucket           string
+	dstObject           destinationObject
+	srcs                []sourceObject
+	predefinedACL       string
+	sendCRC32C          bool
+	deleteSourceObjects bool
 }
 
 type sourceObject struct {

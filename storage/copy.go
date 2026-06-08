@@ -172,6 +172,10 @@ type Composer struct {
 	// the checksum, the compose will be rejected.
 	SendCRC32C bool
 
+	// DeleteSourceObjects specifies whether to delete the source objects after a
+	// successful composition.
+	DeleteSourceObjects bool
+
 	dst  *ObjectHandle
 	srcs []*ObjectHandle
 }
@@ -204,9 +208,10 @@ func (c *Composer) Run(ctx context.Context) (attrs *ObjectAttrs, err error) {
 	}
 
 	req := &composeObjectRequest{
-		dstBucket:     c.dst.bucket,
-		predefinedACL: c.PredefinedACL,
-		sendCRC32C:    c.SendCRC32C,
+		dstBucket:           c.dst.bucket,
+		predefinedACL:       c.PredefinedACL,
+		sendCRC32C:          c.SendCRC32C,
+		deleteSourceObjects: c.DeleteSourceObjects,
 	}
 	req.dstObject = destinationObject{
 		name:          c.dst.object,

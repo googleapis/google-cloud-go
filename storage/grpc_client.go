@@ -1055,6 +1055,9 @@ func (c *grpcStorageClient) ComposeObject(ctx context.Context, req *composeObjec
 		Destination:   dstObjPb,
 		SourceObjects: srcs,
 	}
+	if req.deleteSourceObjects {
+		rawReq.DeleteSourceObjects = proto.Bool(true)
+	}
 	if err := applyCondsProto("ComposeObject destination", defaultGen, req.dstObject.conds, rawReq); err != nil {
 		return nil, err
 	}
