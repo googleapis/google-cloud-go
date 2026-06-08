@@ -32,12 +32,13 @@ import (
 	"sync"
 	"time"
 
+	"regexp"
+
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/internal"
 	"cloud.google.com/go/auth/internal/retry"
 	"cloud.google.com/go/auth/internal/transport/cert"
 	"github.com/googleapis/gax-go/v2/internallog"
-	"regexp"
 )
 
 // ProviderKey is the key to fetch the DataProvider from Token Metadata.
@@ -72,7 +73,6 @@ var (
 
 	emailRegexp = regexp.MustCompile(`^[^@]+@[^@]+\.[^@]+$`)
 )
-
 
 // ConfigProvider provides specific configuration for Regional Access Boundary lookups.
 type ConfigProvider interface {

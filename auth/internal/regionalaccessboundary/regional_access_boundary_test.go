@@ -230,7 +230,6 @@ func TestFetchRegionalAccessBoundaryData(t *testing.T) {
 	}
 }
 
-
 func TestServiceAccountConfig(t *testing.T) {
 	t.Setenv("GOOGLE_API_USE_CLIENT_CERTIFICATE", "false")
 	saEmail := "test-sa@example.iam.gserviceaccount.com"
@@ -1092,6 +1091,3 @@ func TestDataProvider_GetHeaderValue_BypassesNonDefaultUniverse(t *testing.T) {
 		// Success: no fetch was initiated
 	}
 }
-
-
-
