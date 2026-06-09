@@ -18,7 +18,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io"
 	"log"
 	"math"
 	"math/rand/v2"
@@ -769,8 +768,12 @@ func (p *BigtableChannelPool) getBigtableConn() *BigtableConn {
 	return entry.conn
 }
 
-// NewStream selects the least loaded connection and calls NewStream on it.
-// This method provides automatic load tracking via a wrapped stream.
+// NewStream selects a connection by the configured load-balancing strategy
+// and opens a stream on it. grpc.OnFinish fires exactly once for any stream
+// that was successfully created (normal completion, context cancellation,
+// transport teardown), so it is the single source of truth for both load
+// accounting and per-stream error attribution — no need to wrap the
+// returned ClientStream.
 func (p *BigtableChannelPool) NewStream(ctx context.Context, desc *grpc.StreamDesc, method string, opts ...grpc.CallOption) (grpc.ClientStream, error) {
 	entry, err := p.selectFunc()
 	if err != nil {
@@ -778,18 +781,28 @@ func (p *BigtableChannelPool) NewStream(ctx context.Context, desc *grpc.StreamDe
 	}
 
 	entry.streamingLoad.Add(1)
+
+	onFinish := grpc.OnFinish(func(err error) {
+		if err != nil {
+			entry.errorCount.Add(1)
+			entry.applyErrorPenalty(err)
+		}
+		entry.streamingLoad.Add(-1)
+	})
+	// Prepend onto a fresh slice so we never write into spare capacity of
+	// the caller's opts (which would race with concurrent NewStream calls
+	// that share the same backing array).
+	opts = append([]grpc.CallOption{onFinish}, opts...)
+
 	stream, err := entry.conn.NewStream(ctx, desc, method, opts...)
 	if err != nil {
 		entry.errorCount.Add(1)
+		entry.applyErrorPenalty(err)
 		entry.streamingLoad.Add(-1) // Decrement immediately on creation failure
 		return nil, err
 	}
 
-	return &refCountedStream{
-		ClientStream: stream,
-		entry:        entry, // Store the entry itself
-		once:         sync.Once{},
-	}, nil
+	return stream, nil
 }
 
 // selectLeastLoadedRandomOfTwo() returns the index of the connection via random of two
@@ -877,51 +890,6 @@ func (p *BigtableChannelPool) selectLeastLoaded() (*connEntry, error) {
 		return nil, errNoConnections // All connections are draining
 	}
 	return conns[minIndex], nil
-}
-
-// refCountedStream wraps a grpc.ClientStream to decrement the load count when the stream is done.
-// refCountedStream in this BigtableConnectionPool is to hook into the stream's lifecycle
-// to decrement the load counter (s.pool.load[s.connIndex]) when the stream is no longer usable.
-// This is primarily detected by errors occurring during SendMsg or RecvMsg (including io.EOF on RecvMsg).
-
-// Another option would have been to use grpc.OnFinish for streams is about the timing of when the load should be considered "finished".
-// The grpc.OnFinish callback is executed only when the entire stream is fully closed and the final status is determined.
-type refCountedStream struct {
-	grpc.ClientStream
-	entry *connEntry // Reference to the connection entry
-	once  sync.Once
-}
-
-// SendMsg calls the embedded stream's SendMsg method.
-func (s *refCountedStream) SendMsg(m interface{}) error {
-	err := s.ClientStream.SendMsg(m)
-	if err != nil {
-		s.entry.errorCount.Add(1)
-		s.entry.applyErrorPenalty(err)
-		s.decrementLoad()
-	}
-	return err
-}
-
-// RecvMsg calls the embedded stream's RecvMsg method and decrements load on error.
-func (s *refCountedStream) RecvMsg(m interface{}) error {
-	err := s.ClientStream.RecvMsg(m)
-	if err != nil { // io.EOF is also an error, indicating stream end.
-		// io.EOF is a normal stream termination, not an error to be counted.
-		if !errors.Is(err, io.EOF) {
-			s.entry.errorCount.Add(1)
-			s.entry.applyErrorPenalty(err)
-		}
-		s.decrementLoad()
-	}
-	return err
-}
-
-// decrementLoad ensures the load count is decremented exactly once.
-func (s *refCountedStream) decrementLoad() {
-	s.once.Do(func() {
-		s.entry.streamingLoad.Add(-1)
-	})
 }
 
 // addConnections returns true if the pool size changed.
