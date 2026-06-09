@@ -759,8 +759,13 @@ func TestMultipleStreamsSingleConn(t *testing.T) {
 
 	connEntry := pool.getConns()[0]
 
+	// ClientStreams/ServerStreams both true so the stream stays open across
+	// the SendMsg/RecvMsg round-trip in the next loop; without them gRPC
+	// treats it as a unary call and fires OnFinish after the first response,
+	// which would decrement the load before the close-and-drain phase.
+	streamDesc := &grpc.StreamDesc{StreamName: "StreamingCall", ClientStreams: true, ServerStreams: true}
 	for i := 0; i < numStreams; i++ {
-		stream, err := pool.NewStream(ctx, &grpc.StreamDesc{StreamName: "StreamingCall"}, "/grpc.testing.BenchmarkService/StreamingCall")
+		stream, err := pool.NewStream(ctx, streamDesc, "/grpc.testing.BenchmarkService/StreamingCall")
 		if err != nil {
 			t.Fatalf("NewStream %d failed: %v", i, err)
 		}
@@ -976,10 +981,13 @@ func TestGracefulDraining(t *testing.T) {
 		if !isConnClosed(oldEntry.conn.ClientConn) {
 			t.Error("Connection was not force-closed after the draining timeout")
 		}
-		// In a real scenario, we'd log that the load was still > 0, e.g.,
-		if oldEntry.streamingLoad.Load() == 0 {
-			t.Error("Load was unexpectedly 0, timeout should not have been the reason for closing")
-		}
+		// Note: we used to assert streamingLoad > 0 here as a proxy for
+		// "the timeout — not natural drain — caused the close". That proxy
+		// no longer works: grpc.OnFinish fires when the transport is torn
+		// down by the force-close, which legitimately decrements the load.
+		// The isConnClosed check above is sufficient — the stream is stuck
+		// on streamSema so the only way the conn closes within the sleep
+		// window is the timeout.
 	})
 }
 

@@ -19,7 +19,6 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
-	"io"
 	"log"
 	"math/rand"
 	"net/url"
@@ -602,8 +601,15 @@ func (p *BigtableChannelPool) getBigtableConn() *BigtableConn {
 	return entry.conn
 }
 
-// NewStream selects the least loaded connection and calls NewStream on it.
-// This method provides automatic load tracking via a wrapped stream.
+// NewStream selects a connection by the configured load-balancing strategy
+// and opens a stream on it, tracking streamingLoad for the lifetime of the
+// stream and counting any terminal error against the connection.
+//
+// grpc.OnFinish fires exactly once for any stream that was successfully
+// created — on normal completion, context cancellation, transport teardown,
+// etc. That single hook is the source of truth for both load accounting and
+// per-stream error attribution, so there is no need to wrap the returned
+// ClientStream.
 func (p *BigtableChannelPool) NewStream(ctx context.Context, desc *grpc.StreamDesc, method string, opts ...grpc.CallOption) (grpc.ClientStream, error) {
 	entry, err := p.selectFunc()
 	if err != nil {
@@ -612,28 +618,21 @@ func (p *BigtableChannelPool) NewStream(ctx context.Context, desc *grpc.StreamDe
 
 	entry.streamingLoad.Add(1)
 
-	rcs := &refCountedStream{entry: entry}
-
-	// grpc.OnFinish fires exactly once when gRPC has fully finished with the
-	// stream (status received, context cancelled, transport closed, etc.). It
-	// guarantees the load counter is decremented even when the caller abandons
-	// the stream without observing a final SendMsg/RecvMsg error — without it
-	// any such stream leaks streamingLoad permanently, poisoning load-balancing
-	// and stalling draining connections until maxDrainingTimeout.
-	streamOpts := append(opts, grpc.OnFinish(func(error) {
-		rcs.decrementLoad()
+	streamOpts := append(opts, grpc.OnFinish(func(finishErr error) {
+		if finishErr != nil {
+			entry.errorCount.Add(1)
+		}
+		entry.streamingLoad.Add(-1)
 	}))
 
 	stream, err := entry.conn.NewStream(ctx, desc, method, streamOpts...)
 	if err != nil {
+		// gRPC does not invoke OnFinish when NewStream itself fails.
 		entry.errorCount.Add(1)
-		// gRPC does not invoke OnFinish when NewStream itself fails, so
-		// release the load here. decrementLoad is idempotent.
-		rcs.decrementLoad()
+		entry.streamingLoad.Add(-1)
 		return nil, err
 	}
-	rcs.ClientStream = stream
-	return rcs, nil
+	return stream, nil
 }
 
 // selectLeastLoadedRandomOfTwo() returns the index of the connection via random of two
@@ -721,52 +720,6 @@ func (p *BigtableChannelPool) selectLeastLoaded() (*connEntry, error) {
 		return nil, errNoConnections // All connections are draining
 	}
 	return conns[minIndex], nil
-}
-
-// refCountedStream wraps a grpc.ClientStream to decrement the connection's
-// streamingLoad counter exactly once when the stream is done. Decrement is
-// driven by two complementary signals:
-//   - SendMsg/RecvMsg errors (including io.EOF), which lets the load balancer
-//     stop counting the stream as soon as the caller observes it is finished.
-//   - grpc.OnFinish, wired in NewStream, which fires when gRPC fully closes
-//     the stream and acts as the backstop for callers that abandon the stream
-//     without draining (e.g. context cancellation).
-//
-// sync.Once ensures the two signals can race without double-decrementing.
-type refCountedStream struct {
-	grpc.ClientStream
-	entry *connEntry // Reference to the connection entry
-	once  sync.Once
-}
-
-// SendMsg calls the embedded stream's SendMsg method.
-func (s *refCountedStream) SendMsg(m interface{}) error {
-	err := s.ClientStream.SendMsg(m)
-	if err != nil {
-		s.entry.errorCount.Add(1)
-		s.decrementLoad()
-	}
-	return err
-}
-
-// RecvMsg calls the embedded stream's RecvMsg method and decrements load on error.
-func (s *refCountedStream) RecvMsg(m interface{}) error {
-	err := s.ClientStream.RecvMsg(m)
-	if err != nil { // io.EOF is also an error, indicating stream end.
-		// io.EOF is a normal stream termination, not an error to be counted.
-		if !errors.Is(err, io.EOF) {
-			s.entry.errorCount.Add(1)
-		}
-		s.decrementLoad()
-	}
-	return err
-}
-
-// decrementLoad ensures the load count is decremented exactly once.
-func (s *refCountedStream) decrementLoad() {
-	s.once.Do(func() {
-		s.entry.streamingLoad.Add(-1)
-	})
 }
 
 // addConnections returns true if the pool size changed.
