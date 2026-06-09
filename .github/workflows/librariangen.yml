@@ -1,0 +1,34 @@
+name: librariangen
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'internal/librariangen/**'
+      - '.github/workflows/librariangen.yml'
+  pull_request:
+    paths:
+      - 'internal/librariangen/**'
+      - '.github/workflows/librariangen.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: '1.26.x'
+
+      - name: Run unit tests
+        run: |
+          cd internal/librariangen
+          go test -v ./...
