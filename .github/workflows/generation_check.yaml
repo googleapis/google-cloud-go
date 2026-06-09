@@ -15,24 +15,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      # - uses: dorny/paths-filter@v4
-      #   id: changes
-      #   with:
-      #     filters: |
-      #       librarian:
-      #         - 'librarian.yaml'
+      - uses: dorny/paths-filter@v4
+        id: changes
+        with:
+          filters: |
+            librarian:
+              - 'librarian.yaml'
       # Version of librarian is pulled from librarian.yaml,
       # main corresponds to the action's source definition.
       - uses: googleapis/librarian@main
-        # if: steps.changes.outputs.librarian == 'true' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
+        if: steps.changes.outputs.librarian == 'true' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
         with:
           protoc-version: '33.2'
           protoc-checksum: '8c0a8577311720cc83488f813aeb5046d69cb9824cbf39cb7447e0c5132d677952d5bb7c1130d9df381835eee7352828878d409873ebb407d7a4649ea2a4aee5'
       - name: Install tools
-        # if: steps.changes.outputs.librarian == 'true' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
+        if: steps.changes.outputs.librarian == 'true' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
         run: librarian install
       - name: Regenerate
-        # if: steps.changes.outputs.librarian == 'true' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
+        if: steps.changes.outputs.librarian == 'true' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
         run: |
           librarian generate --all
           if [ -n "$(git status --porcelain)" ]; then
