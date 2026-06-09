@@ -3931,9 +3931,8 @@ func (s *customIdleFailingBidiStream) RecvMsg(m any) error {
 		// Third call: block until test tells us to fail.
 		<-s.rangeComplete
 		return status.Error(codes.Unavailable, "transient error on idle stream")
-	} else {
-		return status.Error(codes.Unavailable, "pre-warming connection failed")
 	}
+	return status.Error(codes.Unavailable, "pre-warming connection failed")
 }
 
 func TestMRDStreamEndIdleEmulated(t *testing.T) {
