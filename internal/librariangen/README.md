@@ -232,12 +232,12 @@ This method runs the generator directly as a Go binary, without any Docker conta
 
 To build and test `librariangen` locally, you must have the following tools installed and available in your `PATH`:
 
-*   **Go Toolchain:** (Version `1.23.0` is used in the container)
+*   **Go Toolchain:** (Version `1.25.8` is used; version `1.24.0` is used in the container)
 *   **`protoc`:** (Version `25.7` is used in the container)
-*   **`protoc-gen-go`:** `go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.35.2`
+*   **`protoc-gen-go`:** `go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.36.11`
 *   **`protoc-gen-go-grpc`:** `go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.3.0`
-*   **`protoc-gen-go_gapic`:** `go install github.com/googleapis/gapic-generator-go/cmd/protoc-gen-go_gapic@v0.53.1`
-*   **`goimports`:** `go install golang.org/x/tools/cmd/goimports@latest`
+*   **`protoc-gen-go_gapic`:** `go install github.com/googleapis/gapic-generator-go/cmd/protoc-gen-go_gapic@v0.61.0`
+*   **`goimports`:** `go install golang.org/x/tools/cmd/goimports@v0.44.0`
 *   **`staticcheck`:** `go install honnef.co/go/tools/cmd/staticcheck@2023.1.6`
 
 ### Running tests
