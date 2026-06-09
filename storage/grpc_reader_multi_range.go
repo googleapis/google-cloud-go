@@ -337,7 +337,11 @@ func (c *mrdAddStreamErrorCmd) apply(ctx context.Context, m *multiRangeDownloade
 		} else {
 			err = errors.New("no streams available")
 		}
-		m.failManager(err)
+		if m.pendingRangesCount > 0 || m.unsentRequests.Len() > 0 {
+			m.failManager(err)
+		} else {
+			m.suspendIdleConnect = true
+		}
 	}
 }
 
@@ -391,6 +395,7 @@ type multiRangeDownloaderManager struct {
 	unsentRequests     *requestQueue
 	addStreams         chan mrdCommand
 	atCapacityCount    int
+	suspendIdleConnect bool
 }
 
 type rangeRequest struct {
@@ -585,6 +590,7 @@ func (m *multiRangeDownloaderManager) eventLoop() {
 		// This path only triggers if space is available in the channel.
 		// It never blocks the eventLoop.
 		case targetChan <- nextReq:
+			nextRangeReq.attempts = 1
 			targetStream.pendingRanges[nextRangeReq.readID] = nextRangeReq
 			targetStream.updateCapacity(m, 1, nextRangeReq.length)
 
@@ -824,6 +830,8 @@ func (m *multiRangeDownloaderManager) handleAddCmd(ctx context.Context, cmd *mrd
 		return
 	}
 
+	m.suspendIdleConnect = false
+
 	req := &rangeRequest{
 		output:     cmd.output,
 		offset:     cmd.offset,
@@ -832,7 +840,7 @@ func (m *multiRangeDownloaderManager) handleAddCmd(ctx context.Context, cmd *mrd
 		origLength: cmd.length,
 		callback:   cmd.callback,
 		readID:     m.readIDCounter,
-		attempts:   1,
+		attempts:   0,
 	}
 	m.readIDCounter++
 
@@ -856,7 +864,13 @@ func (m *multiRangeDownloaderManager) shouldAddStream() bool {
 		len(m.streams) >= m.params.maxConnections {
 		return false
 	}
+	if m.unsentRequests.Len() > 0 {
+		return true
+	}
 	if len(m.streams) < m.params.minConnections {
+		if m.suspendIdleConnect {
+			return false
+		}
 		return true
 	}
 
@@ -927,7 +941,11 @@ func (m *multiRangeDownloaderManager) handleAddStreamCmd(ctx context.Context, cm
 			if err == nil {
 				err = errors.New("no streams available: stream creation failed or has error")
 			}
-			m.failManager(err)
+			if m.pendingRangesCount > 0 || m.unsentRequests.Len() > 0 {
+				m.failManager(err)
+			} else {
+				m.suspendIdleConnect = true
+			}
 		}
 		return
 	}
@@ -963,8 +981,10 @@ func (m *multiRangeDownloaderManager) handleReconnectStreamCmd(ctx context.Conte
 		}
 		m.failStream(stream, finalErr)
 		if len(m.streams) == 0 && !m.streamCreating {
-			err := fmt.Errorf("no streams available. Last observed error: %w", finalErr)
-			m.failManager(err)
+			if m.pendingRangesCount > 0 || m.unsentRequests.Len() > 0 {
+				err := fmt.Errorf("no streams available. Last observed error: %w", finalErr)
+				m.failManager(err)
+			}
 		}
 		return
 	}
@@ -1176,25 +1196,13 @@ func (m *multiRangeDownloaderManager) handleStreamEnd(result mrdSessionResult, s
 			for _, req := range failedRanges {
 				m.failRange(stream, req, fmt.Errorf("storage: retry failed after %v attempts; last error: %w", maxAttempts, err))
 			}
-		} else {
-			// If maxAttempts is not set, we still keep track of the attempt count.
-			for _, req := range stream.pendingRanges {
-				req.attempts++
-			}
 		}
 
 		// Only reconnect the stream if there are still pending ranges that need to be downloaded.
 		if len(stream.pendingRanges) > 0 {
 			m.ensureSession(m.ctx, stream)
 		} else {
-			// Clean up this stream. If all streams are terminated and no more streams are active,
-			// terminate the session with a permanent error.
 			delete(m.streams, stream.id)
-			if len(m.streams) == 0 && !m.streamCreating {
-				err := fmt.Errorf("no streams available. Last observed error: %w", err)
-				m.setPermanentError(err)
-				m.failAllPending(m.getPermanentError())
-			}
 		}
 	} else {
 		m.failStream(stream, err)
