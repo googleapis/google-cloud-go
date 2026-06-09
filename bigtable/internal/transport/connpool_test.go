@@ -21,6 +21,7 @@ import (
 	"io"
 	"net/url"
 	"reflect"
+	"runtime"
 	"sort"
 	"strings"
 	"sync"
@@ -1628,4 +1629,100 @@ func BenchmarkSelectionStrategies(b *testing.B) {
 			})
 		})
 	}
+}
+
+// BenchmarkAbandonedStreamLoadLeak measures whether streamingLoad is reclaimed
+// when callers abandon a stream by cancelling its context without draining
+// SendMsg/RecvMsg to a final error.
+//
+// Before the grpc.OnFinish wiring in NewStream, every iteration leaked one
+// count on streamingLoad, so residual_load/op approaches 1.0 and the
+// connection's calculateConnLoad() grows linearly with b.N — which both
+// poisons load-balancing decisions and prevents waitForDrainAndClose from
+// ever observing a zero load. After the fix, OnFinish fires when gRPC fully
+// tears the stream down, so residual_load/op should sit near 0.
+//
+// Run:
+//
+//	go test -bench BenchmarkAbandonedStreamLoadLeak -benchmem -run=^$ \
+//	    ./internal/transport
+func BenchmarkAbandonedStreamLoadLeak(b *testing.B) {
+	ctx := context.Background()
+	fake := &fakeService{}
+	// Block server-side StreamingCall so the stream stays open until the
+	// client cancels — this is the abandoned-stream shape we care about.
+	fake.streamSema = make(chan struct{})
+	defer close(fake.streamSema)
+
+	addr := setupTestServer(b, fake)
+	dialFunc := func() (*BigtableConn, error) { return dialBigtableserver(addr) }
+
+	pool, err := NewBigtableChannelPool(ctx, 1, btopt.RoundRobin, dialFunc, poolOpts()...)
+	if err != nil {
+		b.Fatalf("Failed to create pool: %v", err)
+	}
+	defer pool.Close()
+
+	desc := &grpc.StreamDesc{
+		StreamName:    "StreamingCall",
+		ClientStreams: true,
+		ServerStreams: true,
+	}
+	const method = "/grpc.testing.BenchmarkService/StreamingCall"
+
+	// Force GC and sample resident heap so we can report a real heap delta
+	// (B/op from -benchmem counts bytes ALLOCATED, not bytes RESIDENT).
+	runtime.GC()
+	var before, after runtime.MemStats
+	runtime.ReadMemStats(&before)
+
+	b.ResetTimer()
+	b.ReportAllocs()
+
+	for i := 0; i < b.N; i++ {
+		streamCtx, cancel := context.WithCancel(ctx)
+		if _, err := pool.NewStream(streamCtx, desc, method); err != nil {
+			cancel()
+			b.Fatalf("NewStream failed: %v", err)
+		}
+		// Abandon the stream — never call SendMsg/RecvMsg again. This is the
+		// real-world path that leaks load (caller hits ctx deadline, panics,
+		// or the stream value is dropped on the floor).
+		cancel()
+	}
+
+	b.StopTimer()
+
+	// OnFinish runs on a gRPC goroutine after the transport tears the stream
+	// down; poll briefly so we measure the steady-state residual rather than
+	// in-flight cleanup.
+	deadline := time.Now().Add(2 * time.Second)
+	var residual int32
+	for time.Now().Before(deadline) {
+		residual = 0
+		for _, entry := range pool.getConns() {
+			residual += entry.streamingLoad.Load()
+		}
+		if residual == 0 {
+			break
+		}
+		time.Sleep(10 * time.Millisecond)
+	}
+
+	// Sample heap after cleanup has settled. A second GC is needed because
+	// the first one runs concurrently with finalizers / unreachable-but-not-
+	// yet-collected gRPC stream state from the loop above.
+	runtime.GC()
+	runtime.GC()
+	runtime.ReadMemStats(&after)
+	heapDelta := int64(after.HeapAlloc) - int64(before.HeapAlloc)
+
+	// Report leaked load per operation. Without the fix this trends to 1.0;
+	// with the fix it should be ~0.
+	b.ReportMetric(float64(residual)/float64(b.N), "residual_load/op")
+	b.ReportMetric(float64(residual), "residual_load_total")
+	// Resident heap delta (post-GC). Captures memory pinned by leaked stream
+	// state — distinct from B/op, which is allocator throughput.
+	b.ReportMetric(float64(heapDelta)/float64(b.N), "heap_bytes/op")
+	b.ReportMetric(float64(heapDelta), "heap_bytes_total")
 }

@@ -611,18 +611,29 @@ func (p *BigtableChannelPool) NewStream(ctx context.Context, desc *grpc.StreamDe
 	}
 
 	entry.streamingLoad.Add(1)
-	stream, err := entry.conn.NewStream(ctx, desc, method, opts...)
+
+	rcs := &refCountedStream{entry: entry}
+
+	// grpc.OnFinish fires exactly once when gRPC has fully finished with the
+	// stream (status received, context cancelled, transport closed, etc.). It
+	// guarantees the load counter is decremented even when the caller abandons
+	// the stream without observing a final SendMsg/RecvMsg error — without it
+	// any such stream leaks streamingLoad permanently, poisoning load-balancing
+	// and stalling draining connections until maxDrainingTimeout.
+	streamOpts := append(opts, grpc.OnFinish(func(error) {
+		rcs.decrementLoad()
+	}))
+
+	stream, err := entry.conn.NewStream(ctx, desc, method, streamOpts...)
 	if err != nil {
 		entry.errorCount.Add(1)
-		entry.streamingLoad.Add(-1) // Decrement immediately on creation failure
+		// gRPC does not invoke OnFinish when NewStream itself fails, so
+		// release the load here. decrementLoad is idempotent.
+		rcs.decrementLoad()
 		return nil, err
 	}
-
-	return &refCountedStream{
-		ClientStream: stream,
-		entry:        entry, // Store the entry itself
-		once:         sync.Once{},
-	}, nil
+	rcs.ClientStream = stream
+	return rcs, nil
 }
 
 // selectLeastLoadedRandomOfTwo() returns the index of the connection via random of two
@@ -712,13 +723,16 @@ func (p *BigtableChannelPool) selectLeastLoaded() (*connEntry, error) {
 	return conns[minIndex], nil
 }
 
-// refCountedStream wraps a grpc.ClientStream to decrement the load count when the stream is done.
-// refCountedStream in this BigtableConnectionPool is to hook into the stream's lifecycle
-// to decrement the load counter (s.pool.load[s.connIndex]) when the stream is no longer usable.
-// This is primarily detected by errors occurring during SendMsg or RecvMsg (including io.EOF on RecvMsg).
-
-// Another option would have been to use grpc.OnFinish for streams is about the timing of when the load should be considered "finished".
-// The grpc.OnFinish callback is executed only when the entire stream is fully closed and the final status is determined.
+// refCountedStream wraps a grpc.ClientStream to decrement the connection's
+// streamingLoad counter exactly once when the stream is done. Decrement is
+// driven by two complementary signals:
+//   - SendMsg/RecvMsg errors (including io.EOF), which lets the load balancer
+//     stop counting the stream as soon as the caller observes it is finished.
+//   - grpc.OnFinish, wired in NewStream, which fires when gRPC fully closes
+//     the stream and acts as the backstop for callers that abandon the stream
+//     without draining (e.g. context cancellation).
+//
+// sync.Once ensures the two signals can race without double-decrementing.
 type refCountedStream struct {
 	grpc.ClientStream
 	entry *connEntry // Reference to the connection entry
