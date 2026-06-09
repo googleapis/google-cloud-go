@@ -30,7 +30,7 @@ import (
 
 const (
 	defaultPartSize      = 16 * 1024 * 1024 // 16 MiB
-	minPartSize          = 5 * 1024 * 1024  // 5 MiB
+	minPartSize          = 8 * 1024 * 1024  // 8 MiB
 	baseWorkers          = 4
 	maxWorkers           = 16
 	tmpObjectPrefix      = "gcs-go-sdk-pu-tmp/"
@@ -47,15 +47,13 @@ const (
 //
 // **Note:** This feature is currently experimental and its API surface may change
 // in future releases. It is not yet recommended for production use.
-//
-// TODO(b/521239530): Add option to delete source parts after compose operation and remove cleanup logic.
 type ParallelUploadConfig struct {
 
-	// PartSize is the size of each part to be uploaded in parallel.
-	// Defaults to 16MiB. If a value less than 5MiB is provided, it will be
-	// automatically increased to 5MiB. The value is automatically rounded up
-	// to the nearest multiple of 256KiB.
-	PartSize int
+	// PartSizeHint is the preferred size of each part to be uploaded in parallel.
+	// This is used as a hint; the actual part size used may be different (e.g. server-determined).
+	// Defaults to 16MiB. If a value less than 8MiB is provided, it will be
+	// automatically increased to 8MiB.
+	PartSizeHint int
 
 	// MaxConcurrency is the number of goroutines to use for uploading parts in parallel.
 	// Defaults to a dynamic value based on the number of CPUs (min(4 + NumCPU/2, 16)).
@@ -64,10 +62,10 @@ type ParallelUploadConfig struct {
 
 // defaults fills in values for the configuration options.
 func (c *ParallelUploadConfig) defaults() {
-	if c.PartSize == 0 {
-		c.PartSize = defaultPartSize
-	} else if c.PartSize < minPartSize {
-		c.PartSize = minPartSize
+	if c.PartSizeHint == 0 {
+		c.PartSizeHint = defaultPartSize
+	} else if c.PartSizeHint < minPartSize {
+		c.PartSizeHint = minPartSize
 	}
 	// Use a heuristic for the number of workers: start with 4, add 1 for
 	// every 2 CPUs, but don't exceed a cap of 16. This provides a
@@ -125,6 +123,7 @@ type pcuState struct {
 	collectorWG sync.WaitGroup
 	started     bool
 	closeOnce   sync.Once
+	finalComposeSucceeded bool
 
 	// Function to upload a part; can be overridden for testing.
 	uploadPartFn func(s *pcuState, task uploadTask) (*ObjectHandle, *ObjectAttrs, error)
@@ -176,8 +175,8 @@ func (w *Writer) initPCU(ctx context.Context) error {
 	cfg := &w.ParallelUploadConfig
 	cfg.defaults()
 
-	// Ensure PartSize is a multiple of googleapi.MinUploadChunkSize.
-	cfg.PartSize = gRPCChunkSize(cfg.PartSize)
+	// Ensure PartSizeHint is a multiple of googleapi.MinUploadChunkSize.
+	cfg.PartSizeHint = gRPCChunkSize(cfg.PartSizeHint)
 
 	s := newPCUSettings(cfg.MaxConcurrency)
 
@@ -218,7 +217,7 @@ func (w *Writer) initPCU(ctx context.Context) error {
 	go state.resultCollector()
 
 	// Handle to get the first buffer.
-	state.currentBuffer = make([]byte, cfg.PartSize)
+	state.currentBuffer = make([]byte, cfg.PartSizeHint)
 	state.buffersAlloc = 1
 	state.bytesBuffered = 0
 
@@ -354,7 +353,7 @@ func (s *pcuState) write(p []byte) (int, error) {
 				s.bytesBuffered = 0
 			default:
 				if s.buffersAlloc < s.settings.bufferPoolSize {
-					s.currentBuffer = make([]byte, s.config.PartSize)
+					s.currentBuffer = make([]byte, s.config.PartSizeHint)
 					s.buffersAlloc++
 					s.bytesBuffered = 0
 				} else {
@@ -373,7 +372,7 @@ func (s *pcuState) write(p []byte) (int, error) {
 		p = p[n:]
 
 		// If the buffer is full, dispatch it to a worker.
-		if s.bytesBuffered == int64(s.config.PartSize) {
+		if s.bytesBuffered == int64(s.config.PartSizeHint) {
 			if err := s.flushCurrentBuffer(); err != nil {
 				return total - len(p), err
 			}
@@ -441,9 +440,16 @@ func (s *pcuState) close() error {
 		close(s.resultCh)
 		s.collectorWG.Wait()
 
-		// Cleanup is always attempted. We do it in the background to not block returning.
+		// Cleanup is only attempted if the upload failed and the final compose did not succeed.
+		// We do it in the background to not block returning.
 		defer func() {
-			go s.doCleanupFn(s)
+			s.mu.Lock()
+			hasErr := s.firstErr != nil
+			finalSucceeded := s.finalComposeSucceeded
+			s.mu.Unlock()
+			if hasErr && !finalSucceeded {
+				go s.doCleanupFn(s)
+			}
 		}()
 
 		s.mu.Lock()
@@ -524,6 +530,7 @@ func (s *pcuState) composeParts() error {
 
 				interHandle := s.w.o.c.Bucket(s.w.o.bucket).Object(compName)
 				composer := interHandle.ComposerFrom(finalComps[start:end]...)
+				composer.DeleteSourceObjects = true
 
 				_, err := s.composeFn(s.ctx, composer)
 				if err != nil {
@@ -554,11 +561,16 @@ func (s *pcuState) composeParts() error {
 	composer.ObjectAttrs = s.w.ObjectAttrs
 	composer.KMSKeyName = s.w.ObjectAttrs.KMSKeyName
 	composer.SendCRC32C = s.w.SendCRC32C
+	composer.DeleteSourceObjects = true
 
 	attrs, err := s.composeFn(s.ctx, composer)
 	if err != nil {
 		return err
 	}
+
+	s.mu.Lock()
+	s.finalComposeSucceeded = true
+	s.mu.Unlock()
 
 	// Perform client-side CRC32C validation if a user-provided checksum was specified.
 	if s.w.SendCRC32C && s.w.CRC32C != 0 && attrs.CRC32C != s.w.CRC32C {
