@@ -36,8 +36,8 @@ jobs:
         run: |
           librarian generate --all
           if [ -n "$(git status --porcelain)" ]; then
-            git diff
             git status
+            echo "Regeneration failed. Please un 'librarian generate --all' to update the generated files."
             exit 1
           fi
       - name: Create issue on diff
