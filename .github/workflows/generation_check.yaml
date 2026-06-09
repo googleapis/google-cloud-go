@@ -35,7 +35,11 @@ jobs:
         if: steps.changes.outputs.librarian == 'true' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
         run: |
           librarian generate --all
-          git diff --exit-code
+          if [ -n "$(git status --porcelain)" ]; then
+            git diff
+            git status
+            exit 1
+          fi
       - name: Create issue on diff
         if: failure() && github.event_name == 'push' && github.ref == 'refs/heads/main'
         env:
