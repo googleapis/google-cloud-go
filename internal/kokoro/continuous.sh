@@ -113,7 +113,7 @@ runDirectoryTests() {
     # bigquery/benchmarks: build constraints exclude all Go files
     return
   fi
-  if [[ $PWD == *"/examples/"* && $PWD != *"/internal/examples/"* ]]; then
+  if [[ "$PWD/" == *"/examples/"* && "$PWD/" != *"/internal/examples/"* ]]; then
     # examples: build constraints exclude all Go files
     return
   fi
