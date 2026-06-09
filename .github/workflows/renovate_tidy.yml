@@ -1,0 +1,42 @@
+---
+name: renovate-tidy
+
+on:
+  pull_request:
+    branches:
+      - main
+      - preview
+
+permissions:
+  contents: write
+
+jobs:
+  tidy:
+    if: github.actor == 'renovate[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/setup-go@v6
+        with:
+          go-version: '1.26.x'
+      - name: Run go mod tidy across all modules
+        run: |
+          go mod tidy
+          for i in $(find . -name go.mod -not -path '*/vendor/*'); do
+            pushd $(dirname "$i")
+            go mod tidy
+            popd
+          done
+      - name: Commit and push changes if any
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if ! git diff --quiet; then
+            git add $(find . \( -name "go.mod" -o -name "go.sum" \) -not -path '*/vendor/*')
+            git commit -m "chore: run go mod tidy after Renovate dependency update"
+            git push
+          fi
