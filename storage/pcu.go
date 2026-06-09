@@ -116,13 +116,13 @@ type pcuState struct {
 	bytesBuffered   int64
 	buffersAlloc    int
 
-	bufferCh    chan []byte
-	uploadCh    chan uploadTask
-	resultCh    chan uploadResult
-	workerWG    sync.WaitGroup
-	collectorWG sync.WaitGroup
-	started     bool
-	closeOnce   sync.Once
+	bufferCh              chan []byte
+	uploadCh              chan uploadTask
+	resultCh              chan uploadResult
+	workerWG              sync.WaitGroup
+	collectorWG           sync.WaitGroup
+	started               bool
+	closeOnce             sync.Once
 	finalComposeSucceeded bool
 
 	// Function to upload a part; can be overridden for testing.
