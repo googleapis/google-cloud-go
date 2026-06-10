@@ -249,10 +249,17 @@ type DynamicChannelPoolConfig struct {
 	// E.g., 30 means a maximum increase of 30%.
 }
 
-// DefaultDynamicChannelPoolConfig is default settings for dynamic channel pool
+// DefaultDynamicChannelPoolConfig is default settings for dynamic channel pool.
+//
+// Enabled is false by default while the upstream gRPC-Go xDS client memory leak
+// is being addressed; scale events churn DirectPath-xDS connections often
+// enough to expose that leak as steady heap growth
+// (see https://github.com/googleapis/google-cloud-go/issues/14582). Callers
+// that want dynamic scaling can construct a DynamicChannelPoolConfig with
+// Enabled: true.
 func DefaultDynamicChannelPoolConfig() DynamicChannelPoolConfig {
 	return DynamicChannelPoolConfig{
-		Enabled:                          true, // Enabled by default
+		Enabled:                          false,
 		MinConns:                         10,
 		MaxConns:                         200,
 		AvgLoadHighThreshold:             50,
