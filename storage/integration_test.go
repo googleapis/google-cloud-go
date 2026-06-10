@@ -8992,6 +8992,53 @@ func TestIntegration_FetchBucketMetadata(t *testing.T) {
 	})
 }
 
+func TestIntegration_FetchBucketMetadata_NonRegional(t *testing.T) {
+	ctx := context.Background()
+
+	tests := []struct {
+		name     string
+		location string
+	}{
+		{
+			name:     "Multi-Region",
+			location: "US",
+		},
+		{
+			name:     "Dual-Region",
+			location: "NAM4",
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			ctx := skipExtraReadAPIs(ctx, "bucket operations")
+			multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, _ string, client *Client) {
+				bucketName := fmt.Sprintf("test-nonreg-metadata-%d", time.Now().UnixNano())
+				err := client.Bucket(bucketName).Create(ctx, testutil.ProjID(), &BucketAttrs{Location: tc.location})
+				if err != nil {
+					t.Skipf("skipping: failed to create bucket in %s: %v", tc.location, err)
+				}
+				t.Cleanup(func() {
+					client.Bucket(bucketName).Delete(ctx)
+				})
+
+				resource, location, err := client.tc.fetchBucketMetadata(ctx, bucketName)
+				if err != nil {
+					t.Fatalf("fetchBucketMetadata failed: %v", err)
+				}
+
+				if location != "global" {
+					t.Errorf("got location %q, want %q for %s bucket", location, "global", tc.name)
+				}
+
+				if !strings.HasPrefix(resource, "projects/") || !strings.HasSuffix(resource, "/buckets/"+bucketName) {
+					t.Errorf("unexpected resource format: %q", resource)
+				}
+			})
+		})
+	}
+}
+
 func TestIntegration_ClientTracing(t *testing.T) {
 	ctx := context.Background()
 

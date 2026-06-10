@@ -2238,12 +2238,17 @@ func (c *grpcStorageClient) fetchBucketMetadata(ctx context.Context, bucket stri
 	if err != nil {
 		return "", "", err
 	}
+	location = "global"
+	locationType := resp.GetLocationType()
+	if locationType == "zone" || locationType == "region" {
+		location = strings.ToLower(resp.GetLocation())
+	}
 	project := "_"
 	if proj := resp.GetProject(); proj != "" {
 		if strings.HasPrefix(proj, "projects/") {
-			return proj + "/buckets/" + bucket, strings.ToLower(resp.GetLocation()), nil
+			return proj + "/buckets/" + bucket, location, nil
 		}
 		project = proj
 	}
-	return fmt.Sprintf("projects/%s/buckets/%s", project, bucket), strings.ToLower(resp.GetLocation()), nil
+	return fmt.Sprintf("projects/%s/buckets/%s", project, bucket), location, nil
 }

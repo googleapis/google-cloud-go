@@ -257,7 +257,7 @@ func TestStartSpanWithBucket(t *testing.T) {
 			verifySpanAttributes(t, gotSpan, tc.wantResource, tc.wantLocation)
 
 			if tc.verifyCache {
-				// Wait for background fetch to complete and populate cache
+				// Wait for background fetch to complete and populate cache.
 				select {
 				case <-doneChan:
 				case <-time.After(fetchBackgroundTimeout):
@@ -340,7 +340,7 @@ func TestEndSpanEviction(t *testing.T) {
 			cache := newBucketMetadataCache(10, fetcher)
 			client := &Client{bucketMetadataCache: cache}
 
-			// Populate cache
+			// Populate cache.
 			cache.put(bucketName, bucketMetadata{resource: "res", location: "loc"})
 
 			ctx, _ := startSpanWithBucket(context.Background(), client, bucketName, tc.spanName)

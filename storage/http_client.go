@@ -1687,9 +1687,13 @@ func (c *httpStorageClient) fetchBucketMetadata(ctx context.Context, bucket stri
 	if err != nil {
 		return "", "", err
 	}
+	location = "global"
+	if resp.LocationType == "zone" || resp.LocationType == "region" {
+		location = strings.ToLower(resp.Location)
+	}
 	project := "_"
 	if resp.ProjectNumber != 0 {
 		project = strconv.FormatUint(resp.ProjectNumber, 10)
 	}
-	return fmt.Sprintf("projects/%s/buckets/%s", project, bucket), strings.ToLower(resp.Location), nil
+	return fmt.Sprintf("projects/%s/buckets/%s", project, bucket), location, nil
 }

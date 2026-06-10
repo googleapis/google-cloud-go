@@ -114,6 +114,8 @@ func (c *bucketMetadataCache) fetchBackground(bucket string) {
 					location: "global",
 				}
 				c.put(bucket, entry)
+			} else {
+				c.evict(bucket)
 			}
 		} else {
 			entry = resVal.(bucketMetadata)

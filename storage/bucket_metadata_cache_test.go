@@ -177,6 +177,37 @@ func TestCacheFetchBackgroundErrorPlaceholder(t *testing.T) {
 	}
 }
 
+func TestCacheFetchBackgroundTransientErrorEviction(t *testing.T) {
+	fetcher := &mockMetadataFetcher{
+		fetchFunc: func(ctx context.Context, bucket string) (resource string, location string, err error) {
+			return "", "", &googleapi.Error{Code: http.StatusInternalServerError}
+		},
+	}
+
+	cache := newBucketMetadataCache(10, fetcher)
+	doneChan := make(chan struct{}, 1)
+	cache.fetchDone = doneChan
+
+	// Populate cache with placeholder first (simulate startSpanWithBucket).
+	cache.put("failedBucket", bucketMetadata{
+		resource: "projects/_/buckets/failedBucket",
+		location: "global",
+	})
+
+	cache.fetchBackground("failedBucket")
+
+	select {
+	case <-doneChan:
+	case <-time.After(fetchBackgroundTimeout):
+		t.Fatalf("timeout waiting for fetchBackground completion")
+	}
+
+	_, found := cache.get("failedBucket")
+	if found {
+		t.Fatalf("expected placeholder to be evicted from cache on transient failure")
+	}
+}
+
 func TestOpportunisticCacheFill(t *testing.T) {
 	ctx := context.Background()
 	bucketName := "test-opportunistic-cache-fill"

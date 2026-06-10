@@ -327,6 +327,7 @@ func (c *Client) Close() error {
 	c.hc = nil
 	c.raw = nil
 	c.creds = nil
+	c.bucketMetadataCache = nil
 	if c.tc != nil {
 		return c.tc.Close()
 	}
