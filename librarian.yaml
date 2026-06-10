@@ -390,9 +390,9 @@ libraries:
           proto_only: true
       - path: google/bigtable/admin/v2
         go:
-          enabled_generator_features:
-            - F_selective_gapic_generation
+          no_metadata: true
           no_snippets: true
+          proto_only: true
     keep:
       - README.md
     skip_release: true
