@@ -1127,19 +1127,6 @@ libraries:
     release_exclude_paths:
       - internal/generated/snippets/developerconnect/
     tag_format: '{id}/v{version}'
-  - id: developers
-    version: 0.0.0
-    last_generated_commit: ""
-    apis:
-      - path: google/developers/knowledge/v1
-    source_roots:
-      - developers
-      - internal/generated/snippets/developers
-    preserve_regex: []
-    remove_regex: []
-    release_exclude_paths:
-      - internal/generated/snippets/developers/
-    tag_format: '{id}/v{version}'
   - id: devicestreaming
     version: 1.0.0
     last_generated_commit: ""
