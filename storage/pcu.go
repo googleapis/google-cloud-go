@@ -440,7 +440,9 @@ func (s *pcuState) close() error {
 		close(s.resultCh)
 		s.collectorWG.Wait()
 
-		// Cleanup is only attempted if the upload failed and the final compose did not succeed.
+		// Manual cleanup is only attempted if the upload failed or the final compose did not succeed.
+		// If the upload and composition succeed, the GCS compose operations will delete the source
+		// parts automatically (via DeleteSourceObjects = true).
 		// We do it in the background to not block returning.
 		defer func() {
 			s.mu.Lock()
