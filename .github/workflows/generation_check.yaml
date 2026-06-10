@@ -48,7 +48,7 @@ jobs:
           if [ -n "$(git status --porcelain)" ]; then
             TITLE="Regeneration check found diff"
             RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-            DIFF_STAT=$(git diff --stat)
+            DIFF_STAT=$(git status --porcelain)
             BODY="The post-submit [regeneration check]($RUN_URL) found a diff.
 
             Diff summary:
