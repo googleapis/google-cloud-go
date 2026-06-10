@@ -100,9 +100,11 @@ func credsFromDefault(creds *auth.Credentials, opts *Options) (*auth.Credentials
 			Audience:        opts.Audience,
 			TargetPrincipal: account,
 			IncludeEmail:    true,
-			Client:          opts.client(),
-			Credentials:     baseCreds, // Use the non-impersonated base credentials!
-			Logger:          internallog.New(opts.Logger),
+			// Do NOT default a nil Client here so that NewIDTokenCredentials
+			// builds a client authenticated with the base credentials!
+			Client:      opts.Client,
+			Credentials: baseCreds, // Use the non-impersonated base credentials!
+			Logger:      internallog.New(opts.Logger),
 		}
 		idTokenCreds, err := impersonate.NewIDTokenCredentials(&config)
 		if err != nil {
