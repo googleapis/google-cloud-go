@@ -349,6 +349,12 @@ func (r *gRPCReadObjectReader) Read(p []byte) (int, error) {
 	// Attempt to Recv the next message on the stream.
 	// This will update r.currMsg with the decoder for the new message.
 	err := r.recv()
+	if err == io.EOF {
+		if err := r.runCRCCheck(); err != nil {
+			return 0, err
+		}
+		return 0, io.EOF
+	}
 	if err != nil {
 		return 0, err
 	}
