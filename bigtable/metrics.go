@@ -400,7 +400,7 @@ func (tf *builtinMetricsTracerFactory) createInstruments(meter metric.Meter) err
 		return err
 	}
 
-return nil
+	return nil
 }
 
 // builtinMetricsTracer is created one per operation
