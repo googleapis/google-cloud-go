@@ -1164,6 +1164,7 @@ func TestIntegration_DirectConnectivityEnforcedError(t *testing.T) {
 
 		// Create a temporary client to set up the bucket in the same region.
 		client := testConfigGRPC(ctx, t)
+		defer client.Close()
 		bucketName := prefix + uidSpace.New()
 		bucket := client.Bucket(bucketName)
 		if err := bucket.Create(ctx, testutil.ProjID(), &BucketAttrs{Location: region}); err != nil {
@@ -1189,8 +1190,8 @@ func TestIntegration_DirectConnectivityEnforcedError(t *testing.T) {
 		obj := enforcedClient.Bucket(bucketName).Object("test-object")
 		w := obj.NewWriter(ctx)
 		_, err = w.Write([]byte("hello world"))
-		if err == nil {
-			err = w.Close()
+		if closeErr := w.Close(); err == nil {
+			err = closeErr
 		}
 		if err == nil {
 			t.Fatal("expected error when direct connectivity is enforced but disabled client-side, got nil")
