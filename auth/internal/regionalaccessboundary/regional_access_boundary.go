@@ -67,9 +67,9 @@ var (
 		MaxAttempts: 6,
 	}
 
-	// SkipRegionalAccessBoundary indicates that the Regional Access Boundary lookup
+	// ErrSkipRegionalAccessBoundary indicates that the Regional Access Boundary lookup
 	// should be permanently skipped for this instance or credential.
-	SkipRegionalAccessBoundary = errors.New("regionalaccessboundary: skip lookup")
+	ErrSkipRegionalAccessBoundary = errors.New("regionalaccessboundary: skip lookup")
 
 	emailRegexp = regexp.MustCompile(`^[^@]+@[^@]+\.[^@]+$`)
 )
@@ -328,7 +328,7 @@ func (p *DataProvider) fetchAsync(ctx context.Context, accessToken *auth.Token) 
 	}()
 
 	url, err := p.configProvider.GetRegionalAccessBoundaryEndpoint(ctx)
-	if errors.Is(err, SkipRegionalAccessBoundary) {
+	if errors.Is(err, ErrSkipRegionalAccessBoundary) {
 		// If the compute environment or identity does not support Regional Access Boundary
 		// lookups, permanently disable subsequent attempts to avoid redundant retries.
 		p.mu.Lock()
@@ -515,7 +515,7 @@ func (g *GCEConfigProvider) GetRegionalAccessBoundaryEndpoint(ctx context.Contex
 	g.saMu.Lock()
 	if g.skipLookup {
 		g.saMu.Unlock()
-		return "", SkipRegionalAccessBoundary
+		return "", ErrSkipRegionalAccessBoundary
 	}
 	if g.saEmail != "" {
 		email := g.saEmail
@@ -540,10 +540,10 @@ func (g *GCEConfigProvider) GetRegionalAccessBoundaryEndpoint(ctx context.Contex
 		alreadySkipped := g.skipLookup
 		g.skipLookup = true
 		g.saMu.Unlock()
-		if !alreadySkipped {
+		if !alreadySkipped && g.logger != nil {
 			g.logger.InfoContext(ctx, "regionalaccessboundary: RAB lookup is skipped for this instance", "response", email)
 		}
-		return "", SkipRegionalAccessBoundary
+		return "", ErrSkipRegionalAccessBoundary
 	}
 
 	// Cache the successful result.

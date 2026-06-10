@@ -868,8 +868,8 @@ func TestGCEConfigProvider_NonGSAIdentity_BypassesLookup(t *testing.T) {
 
 	// Fetch endpoint first time - should log and return error
 	endpoint, err := gceConfig.GetRegionalAccessBoundaryEndpoint(ctx)
-	if !errors.Is(err, SkipRegionalAccessBoundary) {
-		t.Fatalf("expected SkipRegionalAccessBoundary, got %v", err)
+	if !errors.Is(err, ErrSkipRegionalAccessBoundary) {
+		t.Fatalf("expected ErrSkipRegionalAccessBoundary, got %v", err)
 	}
 	if endpoint != "" {
 		t.Errorf("expected empty endpoint, got %q", endpoint)
@@ -886,8 +886,8 @@ func TestGCEConfigProvider_NonGSAIdentity_BypassesLookup(t *testing.T) {
 
 	// Fetch endpoint second time - should silently return SkipRegionalAccessBoundary without logging again
 	endpoint2, err2 := gceConfig.GetRegionalAccessBoundaryEndpoint(ctx)
-	if !errors.Is(err2, SkipRegionalAccessBoundary) {
-		t.Fatalf("second call: expected SkipRegionalAccessBoundary, got %v", err2)
+	if !errors.Is(err2, ErrSkipRegionalAccessBoundary) {
+		t.Fatalf("second call: expected ErrSkipRegionalAccessBoundary, got %v", err2)
 	}
 	if endpoint2 != "" {
 		t.Errorf("second call: expected empty endpoint, got %q", endpoint2)
