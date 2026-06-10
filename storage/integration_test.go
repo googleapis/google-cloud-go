@@ -1140,6 +1140,71 @@ func TestIntegration_DoNotDetectDirectConnectivityWhenDisabled(t *testing.T) {
 	})
 }
 
+// Test handles the case when Direct Connectivity is enforced but disabled
+// client-side. The GCS server must return an error because the request is not
+// routed via DirectPath.
+func TestIntegration_DirectConnectivityEnforcedError(t *testing.T) {
+	ctx := skipHTTP("grpc only test")
+	multiTransportTest(skipExtraReadAPIs(ctx, "no reads in test"), t, func(t *testing.T, ctx context.Context, _ string, prefix string, _ *Client) {
+		// Detect if we are running in GCE and get the region.
+		detectedAttrs, err := resource.New(ctx, resource.WithDetectors(gcp.NewDetector()))
+		if err != nil {
+			t.Fatalf("resource.New: %v", err)
+		}
+		attrs := detectedAttrs.Set()
+		if v, exists := attrs.Value("cloud.platform"); !exists || v.AsString() != "gcp_compute_engine" {
+			t.Skip("only testable in a GCE instance")
+		}
+		regionVal, exists := attrs.Value("cloud.region")
+		if !exists {
+			t.Skip("could not detect GCE region")
+		}
+		region := regionVal.AsString()
+		t.Logf("Detected GCE region: %q", region)
+
+		// Create a temporary client to set up the bucket in the same region.
+		client := testConfigGRPC(ctx, t)
+		bucketName := prefix + uidSpace.New()
+		bucket := client.Bucket(bucketName)
+		if err := bucket.Create(ctx, testutil.ProjID(), &BucketAttrs{Location: region}); err != nil {
+			t.Fatalf("failed to create bucket in region %q: %v", region, err)
+		}
+		t.Cleanup(func() {
+			bucket.Delete(ctx)
+		})
+
+		// Disable DirectPath client-side using environment variable.
+		t.Setenv("GOOGLE_CLOUD_DISABLE_DIRECT_PATH", "true")
+
+		// Create a client with Direct Connectivity Enforced.
+		enforcedClient, err := NewGRPCClient(ctx,
+			experimental.WithDirectConnectivityEnforced(),
+		)
+		if err != nil {
+			t.Fatalf("failed to create enforced client: %v", err)
+		}
+		defer enforcedClient.Close()
+
+		// Try writing an object and ensure it fails.
+		obj := enforcedClient.Bucket(bucketName).Object("test-object")
+		w := obj.NewWriter(ctx)
+		_, err = w.Write([]byte("hello world"))
+		if err == nil {
+			err = w.Close()
+		}
+		if err == nil {
+			t.Fatal("expected error when direct connectivity is enforced but disabled client-side, got nil")
+		}
+
+		// Verify the error message contains direct connectivity diagnostic details.
+		t.Logf("Got expected error: %v", err)
+		errStr := strings.ToLower(err.Error())
+		if !strings.Contains(errStr, "direct connectivity") && !strings.Contains(errStr, "directpath") {
+			t.Errorf("got error %q; want error to contain 'direct connectivity' or 'directpath'", err)
+		}
+	})
+}
+
 // TestIntegration_MetricsEnablement does not use multiTransportTest because it
 // only has to run once, and creating the manual reader multiple times can
 // cause it to be registered multiple times to packages that enable by default.
