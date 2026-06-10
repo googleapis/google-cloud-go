@@ -124,9 +124,12 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 	// Add gRPC client interceptors to supply Google client information. No external interceptors are passed.
 	o = append(o, btopt.ClientInterceptorOptions(nil, nil)...)
 	o = append(o, option.WithGRPCDialOption(grpc.WithStatsHandler(sharedLatencyStatsHandler)))
-	// Default to a small connection pool that can be overridden.
+	// Default to a connection pool that can be overridden. Raised from 4 to 10
+	// to align with defaultBigtableConnPoolSize and to compensate for dynamic
+	// channel pool scaling being disabled by default
+	// (see https://github.com/googleapis/google-cloud-go/issues/14582).
 	o = append(o,
-		option.WithGRPCConnectionPool(4),
+		option.WithGRPCConnectionPool(10),
 		// Set the max size to correspond to server-side limits.
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(grpc.MaxCallSendMsgSize(1<<28), grpc.MaxCallRecvMsgSize(1<<28))),
 	)
