@@ -38,6 +38,113 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// State of the experiment.
+type ExperimentConfig_State int32
+
+const (
+	// Unspecified state.
+	ExperimentConfig_STATE_UNSPECIFIED ExperimentConfig_State = 0
+	// Pending state. Experiment is pending and not valid.
+	ExperimentConfig_PENDING ExperimentConfig_State = 1
+	// Running state. Experiment is running and valid.
+	ExperimentConfig_RUNNING ExperimentConfig_State = 2
+	// Done state. Experiment is done and no longer valid.
+	ExperimentConfig_DONE ExperimentConfig_State = 3
+	// Expired state. Experiment is expired and no longer valid.
+	ExperimentConfig_EXPIRED ExperimentConfig_State = 4
+)
+
+// Enum value maps for ExperimentConfig_State.
+var (
+	ExperimentConfig_State_name = map[int32]string{
+		0: "STATE_UNSPECIFIED",
+		1: "PENDING",
+		2: "RUNNING",
+		3: "DONE",
+		4: "EXPIRED",
+	}
+	ExperimentConfig_State_value = map[string]int32{
+		"STATE_UNSPECIFIED": 0,
+		"PENDING":           1,
+		"RUNNING":           2,
+		"DONE":              3,
+		"EXPIRED":           4,
+	}
+)
+
+func (x ExperimentConfig_State) Enum() *ExperimentConfig_State {
+	p := new(ExperimentConfig_State)
+	*p = x
+	return p
+}
+
+func (x ExperimentConfig_State) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (ExperimentConfig_State) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_ces_v1beta_deployment_proto_enumTypes[0].Descriptor()
+}
+
+func (ExperimentConfig_State) Type() protoreflect.EnumType {
+	return &file_google_cloud_ces_v1beta_deployment_proto_enumTypes[0]
+}
+
+func (x ExperimentConfig_State) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use ExperimentConfig_State.Descriptor instead.
+func (ExperimentConfig_State) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_ces_v1beta_deployment_proto_rawDescGZIP(), []int{0, 0}
+}
+
+// Experiment for the deployment.
+type ExperimentConfig struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. Version release for the experiment.
+	VersionRelease *ExperimentConfig_VersionRelease `protobuf:"bytes,1,opt,name=version_release,json=versionRelease,proto3" json:"version_release,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *ExperimentConfig) Reset() {
+	*x = ExperimentConfig{}
+	mi := &file_google_cloud_ces_v1beta_deployment_proto_msgTypes[0]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ExperimentConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ExperimentConfig) ProtoMessage() {}
+
+func (x *ExperimentConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_ces_v1beta_deployment_proto_msgTypes[0]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ExperimentConfig.ProtoReflect.Descriptor instead.
+func (*ExperimentConfig) Descriptor() ([]byte, []int) {
+	return file_google_cloud_ces_v1beta_deployment_proto_rawDescGZIP(), []int{0}
+}
+
+func (x *ExperimentConfig) GetVersionRelease() *ExperimentConfig_VersionRelease {
+	if x != nil {
+		return x.VersionRelease
+	}
+	return nil
+}
+
 // A deployment represents an immutable, queryable version of the app.
 // It is used to deploy an app version with a specific channel profile.
 type Deployment struct {
@@ -63,14 +170,16 @@ type Deployment struct {
 	// Output only. Etag used to ensure the object hasn't changed during a
 	// read-modify-write operation. If the etag is empty, the update will
 	// overwrite any concurrent changes.
-	Etag          string `protobuf:"bytes,7,opt,name=etag,proto3" json:"etag,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	Etag string `protobuf:"bytes,7,opt,name=etag,proto3" json:"etag,omitempty"`
+	// Optional. Experiment configuration for the deployment.
+	ExperimentConfig *ExperimentConfig `protobuf:"bytes,9,opt,name=experiment_config,json=experimentConfig,proto3" json:"experiment_config,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
 }
 
 func (x *Deployment) Reset() {
 	*x = Deployment{}
-	mi := &file_google_cloud_ces_v1beta_deployment_proto_msgTypes[0]
+	mi := &file_google_cloud_ces_v1beta_deployment_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -82,7 +191,7 @@ func (x *Deployment) String() string {
 func (*Deployment) ProtoMessage() {}
 
 func (x *Deployment) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_deployment_proto_msgTypes[0]
+	mi := &file_google_cloud_ces_v1beta_deployment_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -95,7 +204,7 @@ func (x *Deployment) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Deployment.ProtoReflect.Descriptor instead.
 func (*Deployment) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_deployment_proto_rawDescGZIP(), []int{0}
+	return file_google_cloud_ces_v1beta_deployment_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *Deployment) GetName() string {
@@ -147,11 +256,158 @@ func (x *Deployment) GetEtag() string {
 	return ""
 }
 
+func (x *Deployment) GetExperimentConfig() *ExperimentConfig {
+	if x != nil {
+		return x.ExperimentConfig
+	}
+	return nil
+}
+
+// Version release for the experiment.
+type ExperimentConfig_VersionRelease struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. State of the version release.
+	State ExperimentConfig_State `protobuf:"varint,1,opt,name=state,proto3,enum=google.cloud.ces.v1beta.ExperimentConfig_State" json:"state,omitempty"`
+	// Optional. Traffic allocations for the version release.
+	TrafficAllocations []*ExperimentConfig_VersionRelease_TrafficAllocation `protobuf:"bytes,2,rep,name=traffic_allocations,json=trafficAllocations,proto3" json:"traffic_allocations,omitempty"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
+}
+
+func (x *ExperimentConfig_VersionRelease) Reset() {
+	*x = ExperimentConfig_VersionRelease{}
+	mi := &file_google_cloud_ces_v1beta_deployment_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ExperimentConfig_VersionRelease) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ExperimentConfig_VersionRelease) ProtoMessage() {}
+
+func (x *ExperimentConfig_VersionRelease) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_ces_v1beta_deployment_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ExperimentConfig_VersionRelease.ProtoReflect.Descriptor instead.
+func (*ExperimentConfig_VersionRelease) Descriptor() ([]byte, []int) {
+	return file_google_cloud_ces_v1beta_deployment_proto_rawDescGZIP(), []int{0, 0}
+}
+
+func (x *ExperimentConfig_VersionRelease) GetState() ExperimentConfig_State {
+	if x != nil {
+		return x.State
+	}
+	return ExperimentConfig_STATE_UNSPECIFIED
+}
+
+func (x *ExperimentConfig_VersionRelease) GetTrafficAllocations() []*ExperimentConfig_VersionRelease_TrafficAllocation {
+	if x != nil {
+		return x.TrafficAllocations
+	}
+	return nil
+}
+
+// Traffic allocation for the version release.
+type ExperimentConfig_VersionRelease_TrafficAllocation struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. Id of the traffic allocation.
+	// Free format string, up to 128 characters.
+	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	// Optional. Traffic percentage of the traffic allocation.
+	// Must be between 0 and 100.
+	TrafficPercentage int32 `protobuf:"varint,2,opt,name=traffic_percentage,json=trafficPercentage,proto3" json:"traffic_percentage,omitempty"`
+	// Optional. App version of the traffic allocation.
+	// Format:
+	// `projects/{project}/locations/{location}/apps/{app}/versions/{version}`
+	AppVersion    string `protobuf:"bytes,3,opt,name=app_version,json=appVersion,proto3" json:"app_version,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ExperimentConfig_VersionRelease_TrafficAllocation) Reset() {
+	*x = ExperimentConfig_VersionRelease_TrafficAllocation{}
+	mi := &file_google_cloud_ces_v1beta_deployment_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ExperimentConfig_VersionRelease_TrafficAllocation) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ExperimentConfig_VersionRelease_TrafficAllocation) ProtoMessage() {}
+
+func (x *ExperimentConfig_VersionRelease_TrafficAllocation) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_ces_v1beta_deployment_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ExperimentConfig_VersionRelease_TrafficAllocation.ProtoReflect.Descriptor instead.
+func (*ExperimentConfig_VersionRelease_TrafficAllocation) Descriptor() ([]byte, []int) {
+	return file_google_cloud_ces_v1beta_deployment_proto_rawDescGZIP(), []int{0, 0, 0}
+}
+
+func (x *ExperimentConfig_VersionRelease_TrafficAllocation) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *ExperimentConfig_VersionRelease_TrafficAllocation) GetTrafficPercentage() int32 {
+	if x != nil {
+		return x.TrafficPercentage
+	}
+	return 0
+}
+
+func (x *ExperimentConfig_VersionRelease_TrafficAllocation) GetAppVersion() string {
+	if x != nil {
+		return x.AppVersion
+	}
+	return ""
+}
+
 var File_google_cloud_ces_v1beta_deployment_proto protoreflect.FileDescriptor
 
 const file_google_cloud_ces_v1beta_deployment_proto_rawDesc = "" +
 	"\n" +
-	"(google/cloud/ces/v1beta/deployment.proto\x12\x17google.cloud.ces.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a$google/cloud/ces/v1beta/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x95\x04\n" +
+	"(google/cloud/ces/v1beta/deployment.proto\x12\x17google.cloud.ces.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a$google/cloud/ces/v1beta/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd4\x04\n" +
+	"\x10ExperimentConfig\x12f\n" +
+	"\x0fversion_release\x18\x01 \x01(\v28.google.cloud.ces.v1beta.ExperimentConfig.VersionReleaseB\x03\xe0A\x01R\x0eversionRelease\x1a\x86\x03\n" +
+	"\x0eVersionRelease\x12J\n" +
+	"\x05state\x18\x01 \x01(\x0e2/.google.cloud.ces.v1beta.ExperimentConfig.StateB\x03\xe0A\x01R\x05state\x12\x80\x01\n" +
+	"\x13traffic_allocations\x18\x02 \x03(\v2J.google.cloud.ces.v1beta.ExperimentConfig.VersionRelease.TrafficAllocationB\x03\xe0A\x01R\x12trafficAllocations\x1a\xa4\x01\n" +
+	"\x11TrafficAllocation\x12\x13\n" +
+	"\x02id\x18\x01 \x01(\tB\x03\xe0A\x01R\x02id\x122\n" +
+	"\x12traffic_percentage\x18\x02 \x01(\x05B\x03\xe0A\x01R\x11trafficPercentage\x12F\n" +
+	"\vapp_version\x18\x03 \x01(\tB%\xe0A\x01\xfaA\x1f\n" +
+	"\x1dces.googleapis.com/AppVersionR\n" +
+	"appVersion\"O\n" +
+	"\x05State\x12\x15\n" +
+	"\x11STATE_UNSPECIFIED\x10\x00\x12\v\n" +
+	"\aPENDING\x10\x01\x12\v\n" +
+	"\aRUNNING\x10\x02\x12\b\n" +
+	"\x04DONE\x10\x03\x12\v\n" +
+	"\aEXPIRED\x10\x04\"\xf2\x04\n" +
 	"\n" +
 	"Deployment\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12&\n" +
@@ -164,7 +420,8 @@ const file_google_cloud_ces_v1beta_deployment_proto_rawDesc = "" +
 	"createTime\x12@\n" +
 	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
 	"updateTime\x12\x17\n" +
-	"\x04etag\x18\a \x01(\tB\x03\xe0A\x03R\x04etag:\x89\x01\xeaA\x85\x01\n" +
+	"\x04etag\x18\a \x01(\tB\x03\xe0A\x03R\x04etag\x12[\n" +
+	"\x11experiment_config\x18\t \x01(\v2).google.cloud.ces.v1beta.ExperimentConfigB\x03\xe0A\x01R\x10experimentConfig:\x89\x01\xeaA\x85\x01\n" +
 	"\x1dces.googleapis.com/Deployment\x12Kprojects/{project}/locations/{location}/apps/{app}/deployments/{deployment}*\vdeployments2\n" +
 	"deploymentBc\n" +
 	"\x1bcom.google.cloud.ces.v1betaB\x13ChannelProfileProtoP\x01Z-cloud.google.com/go/ces/apiv1beta/cespb;cespbb\x06proto3"
@@ -181,21 +438,30 @@ func file_google_cloud_ces_v1beta_deployment_proto_rawDescGZIP() []byte {
 	return file_google_cloud_ces_v1beta_deployment_proto_rawDescData
 }
 
-var file_google_cloud_ces_v1beta_deployment_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
+var file_google_cloud_ces_v1beta_deployment_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_google_cloud_ces_v1beta_deployment_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_google_cloud_ces_v1beta_deployment_proto_goTypes = []any{
-	(*Deployment)(nil),            // 0: google.cloud.ces.v1beta.Deployment
-	(*ChannelProfile)(nil),        // 1: google.cloud.ces.v1beta.ChannelProfile
-	(*timestamppb.Timestamp)(nil), // 2: google.protobuf.Timestamp
+	(ExperimentConfig_State)(0),                               // 0: google.cloud.ces.v1beta.ExperimentConfig.State
+	(*ExperimentConfig)(nil),                                  // 1: google.cloud.ces.v1beta.ExperimentConfig
+	(*Deployment)(nil),                                        // 2: google.cloud.ces.v1beta.Deployment
+	(*ExperimentConfig_VersionRelease)(nil),                   // 3: google.cloud.ces.v1beta.ExperimentConfig.VersionRelease
+	(*ExperimentConfig_VersionRelease_TrafficAllocation)(nil), // 4: google.cloud.ces.v1beta.ExperimentConfig.VersionRelease.TrafficAllocation
+	(*ChannelProfile)(nil),                                    // 5: google.cloud.ces.v1beta.ChannelProfile
+	(*timestamppb.Timestamp)(nil),                             // 6: google.protobuf.Timestamp
 }
 var file_google_cloud_ces_v1beta_deployment_proto_depIdxs = []int32{
-	1, // 0: google.cloud.ces.v1beta.Deployment.channel_profile:type_name -> google.cloud.ces.v1beta.ChannelProfile
-	2, // 1: google.cloud.ces.v1beta.Deployment.create_time:type_name -> google.protobuf.Timestamp
-	2, // 2: google.cloud.ces.v1beta.Deployment.update_time:type_name -> google.protobuf.Timestamp
-	3, // [3:3] is the sub-list for method output_type
-	3, // [3:3] is the sub-list for method input_type
-	3, // [3:3] is the sub-list for extension type_name
-	3, // [3:3] is the sub-list for extension extendee
-	0, // [0:3] is the sub-list for field type_name
+	3, // 0: google.cloud.ces.v1beta.ExperimentConfig.version_release:type_name -> google.cloud.ces.v1beta.ExperimentConfig.VersionRelease
+	5, // 1: google.cloud.ces.v1beta.Deployment.channel_profile:type_name -> google.cloud.ces.v1beta.ChannelProfile
+	6, // 2: google.cloud.ces.v1beta.Deployment.create_time:type_name -> google.protobuf.Timestamp
+	6, // 3: google.cloud.ces.v1beta.Deployment.update_time:type_name -> google.protobuf.Timestamp
+	1, // 4: google.cloud.ces.v1beta.Deployment.experiment_config:type_name -> google.cloud.ces.v1beta.ExperimentConfig
+	0, // 5: google.cloud.ces.v1beta.ExperimentConfig.VersionRelease.state:type_name -> google.cloud.ces.v1beta.ExperimentConfig.State
+	4, // 6: google.cloud.ces.v1beta.ExperimentConfig.VersionRelease.traffic_allocations:type_name -> google.cloud.ces.v1beta.ExperimentConfig.VersionRelease.TrafficAllocation
+	7, // [7:7] is the sub-list for method output_type
+	7, // [7:7] is the sub-list for method input_type
+	7, // [7:7] is the sub-list for extension type_name
+	7, // [7:7] is the sub-list for extension extendee
+	0, // [0:7] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_ces_v1beta_deployment_proto_init() }
@@ -209,13 +475,14 @@ func file_google_cloud_ces_v1beta_deployment_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_ces_v1beta_deployment_proto_rawDesc), len(file_google_cloud_ces_v1beta_deployment_proto_rawDesc)),
-			NumEnums:      0,
-			NumMessages:   1,
+			NumEnums:      1,
+			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
 		GoTypes:           file_google_cloud_ces_v1beta_deployment_proto_goTypes,
 		DependencyIndexes: file_google_cloud_ces_v1beta_deployment_proto_depIdxs,
+		EnumInfos:         file_google_cloud_ces_v1beta_deployment_proto_enumTypes,
 		MessageInfos:      file_google_cloud_ces_v1beta_deployment_proto_msgTypes,
 	}.Build()
 	File_google_cloud_ces_v1beta_deployment_proto = out.File

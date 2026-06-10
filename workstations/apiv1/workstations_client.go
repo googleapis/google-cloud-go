@@ -639,6 +639,8 @@ func (c *Client) StopWorkstationOperation(name string) *StopWorkstationOperation
 
 // GenerateAccessToken returns a short-lived credential that can be used to send authenticated and
 // authorized traffic to a workstation.
+// Once generated this token cannot be revoked and is good for the lifetime
+// of the token.
 func (c *Client) GenerateAccessToken(ctx context.Context, req *workstationspb.GenerateAccessTokenRequest, opts ...gax.CallOption) (*workstationspb.GenerateAccessTokenResponse, error) {
 	return c.internalClient.GenerateAccessToken(ctx, req, opts...)
 }
@@ -1869,6 +1871,9 @@ func (c *restClient) ListWorkstationClusters(ctx context.Context, req *workstati
 
 		params := url.Values{}
 		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -2221,6 +2226,9 @@ func (c *restClient) ListWorkstationConfigs(ctx context.Context, req *workstatio
 
 		params := url.Values{}
 		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -2652,6 +2660,9 @@ func (c *restClient) ListWorkstations(ctx context.Context, req *workstationspb.L
 
 		params := url.Values{}
 		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -3134,6 +3145,8 @@ func (c *restClient) StopWorkstation(ctx context.Context, req *workstationspb.St
 
 // GenerateAccessToken returns a short-lived credential that can be used to send authenticated and
 // authorized traffic to a workstation.
+// Once generated this token cannot be revoked and is good for the lifetime
+// of the token.
 func (c *restClient) GenerateAccessToken(ctx context.Context, req *workstationspb.GenerateAccessTokenRequest, opts ...gax.CallOption) (*workstationspb.GenerateAccessTokenResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)

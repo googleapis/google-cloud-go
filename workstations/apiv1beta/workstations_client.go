@@ -68,6 +68,7 @@ type CallOptions struct {
 	StartWorkstation             []gax.CallOption
 	StopWorkstation              []gax.CallOption
 	GenerateAccessToken          []gax.CallOption
+	PushCredentials              []gax.CallOption
 	GetIamPolicy                 []gax.CallOption
 	SetIamPolicy                 []gax.CallOption
 	TestIamPermissions           []gax.CallOption
@@ -235,6 +236,7 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
+		PushCredentials:    []gax.CallOption{},
 		GetIamPolicy:       []gax.CallOption{},
 		SetIamPolicy:       []gax.CallOption{},
 		TestIamPermissions: []gax.CallOption{},
@@ -379,6 +381,7 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		PushCredentials:    []gax.CallOption{},
 		GetIamPolicy:       []gax.CallOption{},
 		SetIamPolicy:       []gax.CallOption{},
 		TestIamPermissions: []gax.CallOption{},
@@ -425,6 +428,8 @@ type internalClient interface {
 	StopWorkstation(context.Context, *workstationspb.StopWorkstationRequest, ...gax.CallOption) (*StopWorkstationOperation, error)
 	StopWorkstationOperation(name string) *StopWorkstationOperation
 	GenerateAccessToken(context.Context, *workstationspb.GenerateAccessTokenRequest, ...gax.CallOption) (*workstationspb.GenerateAccessTokenResponse, error)
+	PushCredentials(context.Context, *workstationspb.PushCredentialsRequest, ...gax.CallOption) (*PushCredentialsOperation, error)
+	PushCredentialsOperation(name string) *PushCredentialsOperation
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
 	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
 	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest, ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error)
@@ -639,8 +644,23 @@ func (c *Client) StopWorkstationOperation(name string) *StopWorkstationOperation
 
 // GenerateAccessToken returns a short-lived credential that can be used to send authenticated and
 // authorized traffic to a workstation.
+// Once generated this token cannot be revoked and is good for the lifetime
+// of the token.
 func (c *Client) GenerateAccessToken(ctx context.Context, req *workstationspb.GenerateAccessTokenRequest, opts ...gax.CallOption) (*workstationspb.GenerateAccessTokenResponse, error) {
 	return c.internalClient.GenerateAccessToken(ctx, req, opts...)
+}
+
+// PushCredentials pushes credentials to a running workstation on behalf of a user. Once
+// complete, supported credential types (application_default_credentials) are
+// made available to processes running in the user container.
+func (c *Client) PushCredentials(ctx context.Context, req *workstationspb.PushCredentialsRequest, opts ...gax.CallOption) (*PushCredentialsOperation, error) {
+	return c.internalClient.PushCredentials(ctx, req, opts...)
+}
+
+// PushCredentialsOperation returns a new PushCredentialsOperation from a given name.
+// The name must be that of a previously created PushCredentialsOperation, possibly from a different process.
+func (c *Client) PushCredentialsOperation(name string) *PushCredentialsOperation {
+	return c.internalClient.PushCredentialsOperation(name)
 }
 
 // GetIamPolicy gets the access control policy for a resource. Returns an empty policy
@@ -788,6 +808,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.StartWorkstation = append(client.CallOptions.StartWorkstation, gax.WithClientMetrics(metrics))
 		client.CallOptions.StopWorkstation = append(client.CallOptions.StopWorkstation, gax.WithClientMetrics(metrics))
 		client.CallOptions.GenerateAccessToken = append(client.CallOptions.GenerateAccessToken, gax.WithClientMetrics(metrics))
+		client.CallOptions.PushCredentials = append(client.CallOptions.PushCredentials, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientMetrics(metrics))
 		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientMetrics(metrics))
 		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientMetrics(metrics))
@@ -921,6 +942,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.StartWorkstation = append(callOpts.StartWorkstation, gax.WithClientMetrics(metrics))
 		callOpts.StopWorkstation = append(callOpts.StopWorkstation, gax.WithClientMetrics(metrics))
 		callOpts.GenerateAccessToken = append(callOpts.GenerateAccessToken, gax.WithClientMetrics(metrics))
+		callOpts.PushCredentials = append(callOpts.PushCredentials, gax.WithClientMetrics(metrics))
 		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientMetrics(metrics))
 		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientMetrics(metrics))
 		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientMetrics(metrics))
@@ -1613,6 +1635,32 @@ func (c *gRPCClient) GenerateAccessToken(ctx context.Context, req *workstationsp
 	return resp, nil
 }
 
+func (c *gRPCClient) PushCredentials(ctx context.Context, req *workstationspb.PushCredentialsRequest, opts ...gax.CallOption) (*PushCredentialsOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "workstation", url.QueryEscape(req.GetWorkstation()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//workstations.googleapis.com/%v", req.GetWorkstation()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.workstations.v1beta.Workstations/PushCredentials")
+	}
+	opts = append((*c.CallOptions).PushCredentials[0:len((*c.CallOptions).PushCredentials):len((*c.CallOptions).PushCredentials)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.PushCredentials, req, settings.GRPC, c.logger, "PushCredentials")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &PushCredentialsOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
 func (c *gRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
@@ -1869,6 +1917,9 @@ func (c *restClient) ListWorkstationClusters(ctx context.Context, req *workstati
 
 		params := url.Values{}
 		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -2221,6 +2272,9 @@ func (c *restClient) ListWorkstationConfigs(ctx context.Context, req *workstatio
 
 		params := url.Values{}
 		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -2652,6 +2706,9 @@ func (c *restClient) ListWorkstations(ctx context.Context, req *workstationspb.L
 
 		params := url.Values{}
 		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -3134,6 +3191,8 @@ func (c *restClient) StopWorkstation(ctx context.Context, req *workstationspb.St
 
 // GenerateAccessToken returns a short-lived credential that can be used to send authenticated and
 // authorized traffic to a workstation.
+// Once generated this token cannot be revoked and is good for the lifetime
+// of the token.
 func (c *restClient) GenerateAccessToken(ctx context.Context, req *workstationspb.GenerateAccessTokenRequest, opts ...gax.CallOption) (*workstationspb.GenerateAccessTokenResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -3194,6 +3253,74 @@ func (c *restClient) GenerateAccessToken(ctx context.Context, req *workstationsp
 		return nil, e
 	}
 	return resp, nil
+}
+
+// PushCredentials pushes credentials to a running workstation on behalf of a user. Once
+// complete, supported credential types (application_default_credentials) are
+// made available to processes running in the user container.
+func (c *restClient) PushCredentials(ctx context.Context, req *workstationspb.PushCredentialsRequest, opts ...gax.CallOption) (*PushCredentialsOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta/%v:pushCredentials", req.GetWorkstation())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "workstation", url.QueryEscape(req.GetWorkstation()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//workstations.googleapis.com/%v", req.GetWorkstation()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.workstations.v1beta.Workstations/PushCredentials")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{workstation=projects/*/locations/*/workstationClusters/*/workstationConfigs/*/workstations/*}:pushCredentials")
+	}
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "PushCredentials")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	return &PushCredentialsOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
 }
 
 // GetIamPolicy gets the access control policy for a resource. Returns an empty policy
@@ -3718,6 +3845,24 @@ func (c *gRPCClient) DeleteWorkstationConfigOperation(name string) *DeleteWorkst
 func (c *restClient) DeleteWorkstationConfigOperation(name string) *DeleteWorkstationConfigOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &DeleteWorkstationConfigOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// PushCredentialsOperation returns a new PushCredentialsOperation from a given name.
+// The name must be that of a previously created PushCredentialsOperation, possibly from a different process.
+func (c *gRPCClient) PushCredentialsOperation(name string) *PushCredentialsOperation {
+	return &PushCredentialsOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// PushCredentialsOperation returns a new PushCredentialsOperation from a given name.
+// The name must be that of a previously created PushCredentialsOperation, possibly from a different process.
+func (c *restClient) PushCredentialsOperation(name string) *PushCredentialsOperation {
+	override := fmt.Sprintf("/v1beta/%s", name)
+	return &PushCredentialsOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}

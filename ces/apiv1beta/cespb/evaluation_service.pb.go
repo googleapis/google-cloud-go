@@ -98,7 +98,7 @@ func (x ImportEvaluationsRequest_ImportOptions_ConflictResolutionStrategy) Numbe
 
 // Deprecated: Use ImportEvaluationsRequest_ImportOptions_ConflictResolutionStrategy.Descriptor instead.
 func (ImportEvaluationsRequest_ImportOptions_ConflictResolutionStrategy) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{6, 1, 0}
+	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{8, 1, 0}
 }
 
 // The format to export the items in. Defaults to JSON if not
@@ -152,7 +152,103 @@ func (x ExportOptions_ExportFormat) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use ExportOptions_ExportFormat.Descriptor instead.
 func (ExportOptions_ExportFormat) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{44, 0}
+	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{46, 0}
+}
+
+// Request message for
+// [EvaluationService.RunEvaluationResultMetrics][google.cloud.ces.v1beta.EvaluationService.RunEvaluationResultMetrics].
+type RunEvaluationResultMetricsRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The evaluation result to run metrics for.
+	// Format:
+	// `projects/{project}/locations/{location}/apps/{app}/evaluations/{evaluation}/results/{evaluation_result_id}`
+	EvaluationResultId string `protobuf:"bytes,1,opt,name=evaluation_result_id,json=evaluationResultId,proto3" json:"evaluation_result_id,omitempty"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
+}
+
+func (x *RunEvaluationResultMetricsRequest) Reset() {
+	*x = RunEvaluationResultMetricsRequest{}
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[0]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RunEvaluationResultMetricsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RunEvaluationResultMetricsRequest) ProtoMessage() {}
+
+func (x *RunEvaluationResultMetricsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[0]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RunEvaluationResultMetricsRequest.ProtoReflect.Descriptor instead.
+func (*RunEvaluationResultMetricsRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{0}
+}
+
+func (x *RunEvaluationResultMetricsRequest) GetEvaluationResultId() string {
+	if x != nil {
+		return x.EvaluationResultId
+	}
+	return ""
+}
+
+// Response message for
+// [EvaluationService.RunEvaluationResultMetrics][google.cloud.ces.v1beta.EvaluationService.RunEvaluationResultMetrics].
+type RunEvaluationResultMetricsResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Output only. The status of the evaluation result metrics calculation.
+	Status        EvaluationResult_Outcome `protobuf:"varint,1,opt,name=status,proto3,enum=google.cloud.ces.v1beta.EvaluationResult_Outcome" json:"status,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RunEvaluationResultMetricsResponse) Reset() {
+	*x = RunEvaluationResultMetricsResponse{}
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RunEvaluationResultMetricsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RunEvaluationResultMetricsResponse) ProtoMessage() {}
+
+func (x *RunEvaluationResultMetricsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RunEvaluationResultMetricsResponse.ProtoReflect.Descriptor instead.
+func (*RunEvaluationResultMetricsResponse) Descriptor() ([]byte, []int) {
+	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *RunEvaluationResultMetricsResponse) GetStatus() EvaluationResult_Outcome {
+	if x != nil {
+		return x.Status
+	}
+	return EvaluationResult_OUTCOME_UNSPECIFIED
 }
 
 // Response message for
@@ -169,7 +265,7 @@ type RunEvaluationResponse struct {
 
 func (x *RunEvaluationResponse) Reset() {
 	*x = RunEvaluationResponse{}
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[0]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -181,7 +277,7 @@ func (x *RunEvaluationResponse) String() string {
 func (*RunEvaluationResponse) ProtoMessage() {}
 
 func (x *RunEvaluationResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[0]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -194,7 +290,7 @@ func (x *RunEvaluationResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RunEvaluationResponse.ProtoReflect.Descriptor instead.
 func (*RunEvaluationResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{0}
+	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *RunEvaluationResponse) GetEvaluationRun() string {
@@ -234,7 +330,7 @@ type RunEvaluationOperationMetadata struct {
 
 func (x *RunEvaluationOperationMetadata) Reset() {
 	*x = RunEvaluationOperationMetadata{}
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[1]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -246,7 +342,7 @@ func (x *RunEvaluationOperationMetadata) String() string {
 func (*RunEvaluationOperationMetadata) ProtoMessage() {}
 
 func (x *RunEvaluationOperationMetadata) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[1]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -259,7 +355,7 @@ func (x *RunEvaluationOperationMetadata) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RunEvaluationOperationMetadata.ProtoReflect.Descriptor instead.
 func (*RunEvaluationOperationMetadata) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{1}
+	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *RunEvaluationOperationMetadata) GetEvaluations() []string {
@@ -314,7 +410,7 @@ type GenerateEvaluationOperationMetadata struct {
 
 func (x *GenerateEvaluationOperationMetadata) Reset() {
 	*x = GenerateEvaluationOperationMetadata{}
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[2]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -326,7 +422,7 @@ func (x *GenerateEvaluationOperationMetadata) String() string {
 func (*GenerateEvaluationOperationMetadata) ProtoMessage() {}
 
 func (x *GenerateEvaluationOperationMetadata) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[2]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -339,7 +435,7 @@ func (x *GenerateEvaluationOperationMetadata) ProtoReflect() protoreflect.Messag
 
 // Deprecated: Use GenerateEvaluationOperationMetadata.ProtoReflect.Descriptor instead.
 func (*GenerateEvaluationOperationMetadata) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{2}
+	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{4}
 }
 
 // Operation metadata for
@@ -352,7 +448,7 @@ type DeleteEvaluationRunOperationMetadata struct {
 
 func (x *DeleteEvaluationRunOperationMetadata) Reset() {
 	*x = DeleteEvaluationRunOperationMetadata{}
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[3]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -364,7 +460,7 @@ func (x *DeleteEvaluationRunOperationMetadata) String() string {
 func (*DeleteEvaluationRunOperationMetadata) ProtoMessage() {}
 
 func (x *DeleteEvaluationRunOperationMetadata) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[3]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -377,7 +473,7 @@ func (x *DeleteEvaluationRunOperationMetadata) ProtoReflect() protoreflect.Messa
 
 // Deprecated: Use DeleteEvaluationRunOperationMetadata.ProtoReflect.Descriptor instead.
 func (*DeleteEvaluationRunOperationMetadata) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{3}
+	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{5}
 }
 
 // Request message for
@@ -400,7 +496,7 @@ type CreateEvaluationRequest struct {
 
 func (x *CreateEvaluationRequest) Reset() {
 	*x = CreateEvaluationRequest{}
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[4]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -412,7 +508,7 @@ func (x *CreateEvaluationRequest) String() string {
 func (*CreateEvaluationRequest) ProtoMessage() {}
 
 func (x *CreateEvaluationRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[4]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -425,7 +521,7 @@ func (x *CreateEvaluationRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateEvaluationRequest.ProtoReflect.Descriptor instead.
 func (*CreateEvaluationRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{4}
+	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *CreateEvaluationRequest) GetParent() string {
@@ -468,7 +564,7 @@ type GenerateEvaluationRequest struct {
 
 func (x *GenerateEvaluationRequest) Reset() {
 	*x = GenerateEvaluationRequest{}
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[5]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -480,7 +576,7 @@ func (x *GenerateEvaluationRequest) String() string {
 func (*GenerateEvaluationRequest) ProtoMessage() {}
 
 func (x *GenerateEvaluationRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[5]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -493,7 +589,7 @@ func (x *GenerateEvaluationRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GenerateEvaluationRequest.ProtoReflect.Descriptor instead.
 func (*GenerateEvaluationRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{5}
+	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *GenerateEvaluationRequest) GetConversation() string {
@@ -535,7 +631,7 @@ type ImportEvaluationsRequest struct {
 
 func (x *ImportEvaluationsRequest) Reset() {
 	*x = ImportEvaluationsRequest{}
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[6]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -547,7 +643,7 @@ func (x *ImportEvaluationsRequest) String() string {
 func (*ImportEvaluationsRequest) ProtoMessage() {}
 
 func (x *ImportEvaluationsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[6]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -560,7 +656,7 @@ func (x *ImportEvaluationsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ImportEvaluationsRequest.ProtoReflect.Descriptor instead.
 func (*ImportEvaluationsRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{6}
+	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *ImportEvaluationsRequest) GetSource() isImportEvaluationsRequest_Source {
@@ -666,7 +762,7 @@ type ImportEvaluationsResponse struct {
 
 func (x *ImportEvaluationsResponse) Reset() {
 	*x = ImportEvaluationsResponse{}
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[7]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -678,7 +774,7 @@ func (x *ImportEvaluationsResponse) String() string {
 func (*ImportEvaluationsResponse) ProtoMessage() {}
 
 func (x *ImportEvaluationsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[7]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -691,7 +787,7 @@ func (x *ImportEvaluationsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ImportEvaluationsResponse.ProtoReflect.Descriptor instead.
 func (*ImportEvaluationsResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{7}
+	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *ImportEvaluationsResponse) GetEvaluations() []*Evaluation {
@@ -759,7 +855,7 @@ type ImportEvaluationsOperationMetadata struct {
 
 func (x *ImportEvaluationsOperationMetadata) Reset() {
 	*x = ImportEvaluationsOperationMetadata{}
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[8]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -771,7 +867,7 @@ func (x *ImportEvaluationsOperationMetadata) String() string {
 func (*ImportEvaluationsOperationMetadata) ProtoMessage() {}
 
 func (x *ImportEvaluationsOperationMetadata) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[8]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -784,7 +880,7 @@ func (x *ImportEvaluationsOperationMetadata) ProtoReflect() protoreflect.Message
 
 // Deprecated: Use ImportEvaluationsOperationMetadata.ProtoReflect.Descriptor instead.
 func (*ImportEvaluationsOperationMetadata) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{8}
+	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *ImportEvaluationsOperationMetadata) GetCreateTime() *timestamppb.Timestamp {
@@ -828,7 +924,7 @@ type CreateEvaluationDatasetRequest struct {
 
 func (x *CreateEvaluationDatasetRequest) Reset() {
 	*x = CreateEvaluationDatasetRequest{}
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[9]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -840,7 +936,7 @@ func (x *CreateEvaluationDatasetRequest) String() string {
 func (*CreateEvaluationDatasetRequest) ProtoMessage() {}
 
 func (x *CreateEvaluationDatasetRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[9]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -853,7 +949,7 @@ func (x *CreateEvaluationDatasetRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateEvaluationDatasetRequest.ProtoReflect.Descriptor instead.
 func (*CreateEvaluationDatasetRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{9}
+	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *CreateEvaluationDatasetRequest) GetParent() string {
@@ -892,7 +988,7 @@ type UpdateEvaluationRequest struct {
 
 func (x *UpdateEvaluationRequest) Reset() {
 	*x = UpdateEvaluationRequest{}
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[10]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -904,7 +1000,7 @@ func (x *UpdateEvaluationRequest) String() string {
 func (*UpdateEvaluationRequest) ProtoMessage() {}
 
 func (x *UpdateEvaluationRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[10]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -917,7 +1013,7 @@ func (x *UpdateEvaluationRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateEvaluationRequest.ProtoReflect.Descriptor instead.
 func (*UpdateEvaluationRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{10}
+	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *UpdateEvaluationRequest) GetEvaluation() *Evaluation {
@@ -949,7 +1045,7 @@ type UpdateEvaluationDatasetRequest struct {
 
 func (x *UpdateEvaluationDatasetRequest) Reset() {
 	*x = UpdateEvaluationDatasetRequest{}
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[11]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -961,7 +1057,7 @@ func (x *UpdateEvaluationDatasetRequest) String() string {
 func (*UpdateEvaluationDatasetRequest) ProtoMessage() {}
 
 func (x *UpdateEvaluationDatasetRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[11]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -974,7 +1070,7 @@ func (x *UpdateEvaluationDatasetRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateEvaluationDatasetRequest.ProtoReflect.Descriptor instead.
 func (*UpdateEvaluationDatasetRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{11}
+	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *UpdateEvaluationDatasetRequest) GetEvaluationDataset() *EvaluationDataset {
@@ -1016,7 +1112,7 @@ type DeleteEvaluationRequest struct {
 
 func (x *DeleteEvaluationRequest) Reset() {
 	*x = DeleteEvaluationRequest{}
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[12]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1028,7 +1124,7 @@ func (x *DeleteEvaluationRequest) String() string {
 func (*DeleteEvaluationRequest) ProtoMessage() {}
 
 func (x *DeleteEvaluationRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[12]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1041,7 +1137,7 @@ func (x *DeleteEvaluationRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteEvaluationRequest.ProtoReflect.Descriptor instead.
 func (*DeleteEvaluationRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{12}
+	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *DeleteEvaluationRequest) GetName() string {
@@ -1077,7 +1173,7 @@ type DeleteEvaluationResultRequest struct {
 
 func (x *DeleteEvaluationResultRequest) Reset() {
 	*x = DeleteEvaluationResultRequest{}
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[13]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1089,7 +1185,7 @@ func (x *DeleteEvaluationResultRequest) String() string {
 func (*DeleteEvaluationResultRequest) ProtoMessage() {}
 
 func (x *DeleteEvaluationResultRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[13]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1102,7 +1198,7 @@ func (x *DeleteEvaluationResultRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteEvaluationResultRequest.ProtoReflect.Descriptor instead.
 func (*DeleteEvaluationResultRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{13}
+	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *DeleteEvaluationResultRequest) GetName() string {
@@ -1129,7 +1225,7 @@ type DeleteEvaluationDatasetRequest struct {
 
 func (x *DeleteEvaluationDatasetRequest) Reset() {
 	*x = DeleteEvaluationDatasetRequest{}
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[14]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1141,7 +1237,7 @@ func (x *DeleteEvaluationDatasetRequest) String() string {
 func (*DeleteEvaluationDatasetRequest) ProtoMessage() {}
 
 func (x *DeleteEvaluationDatasetRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[14]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1154,7 +1250,7 @@ func (x *DeleteEvaluationDatasetRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteEvaluationDatasetRequest.ProtoReflect.Descriptor instead.
 func (*DeleteEvaluationDatasetRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{14}
+	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *DeleteEvaluationDatasetRequest) GetName() string {
@@ -1183,7 +1279,7 @@ type DeleteEvaluationRunRequest struct {
 
 func (x *DeleteEvaluationRunRequest) Reset() {
 	*x = DeleteEvaluationRunRequest{}
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[15]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1195,7 +1291,7 @@ func (x *DeleteEvaluationRunRequest) String() string {
 func (*DeleteEvaluationRunRequest) ProtoMessage() {}
 
 func (x *DeleteEvaluationRunRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[15]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1208,7 +1304,7 @@ func (x *DeleteEvaluationRunRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteEvaluationRunRequest.ProtoReflect.Descriptor instead.
 func (*DeleteEvaluationRunRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{15}
+	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *DeleteEvaluationRunRequest) GetName() string {
@@ -1230,7 +1326,7 @@ type GetEvaluationRequest struct {
 
 func (x *GetEvaluationRequest) Reset() {
 	*x = GetEvaluationRequest{}
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[16]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1242,7 +1338,7 @@ func (x *GetEvaluationRequest) String() string {
 func (*GetEvaluationRequest) ProtoMessage() {}
 
 func (x *GetEvaluationRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[16]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1255,7 +1351,7 @@ func (x *GetEvaluationRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetEvaluationRequest.ProtoReflect.Descriptor instead.
 func (*GetEvaluationRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{16}
+	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *GetEvaluationRequest) GetName() string {
@@ -1277,7 +1373,7 @@ type GetEvaluationResultRequest struct {
 
 func (x *GetEvaluationResultRequest) Reset() {
 	*x = GetEvaluationResultRequest{}
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[17]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1289,7 +1385,7 @@ func (x *GetEvaluationResultRequest) String() string {
 func (*GetEvaluationResultRequest) ProtoMessage() {}
 
 func (x *GetEvaluationResultRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[17]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1302,7 +1398,7 @@ func (x *GetEvaluationResultRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetEvaluationResultRequest.ProtoReflect.Descriptor instead.
 func (*GetEvaluationResultRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{17}
+	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *GetEvaluationResultRequest) GetName() string {
@@ -1324,7 +1420,7 @@ type GetEvaluationDatasetRequest struct {
 
 func (x *GetEvaluationDatasetRequest) Reset() {
 	*x = GetEvaluationDatasetRequest{}
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[18]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1336,7 +1432,7 @@ func (x *GetEvaluationDatasetRequest) String() string {
 func (*GetEvaluationDatasetRequest) ProtoMessage() {}
 
 func (x *GetEvaluationDatasetRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[18]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1349,7 +1445,7 @@ func (x *GetEvaluationDatasetRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetEvaluationDatasetRequest.ProtoReflect.Descriptor instead.
 func (*GetEvaluationDatasetRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{18}
+	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *GetEvaluationDatasetRequest) GetName() string {
@@ -1371,7 +1467,7 @@ type GetEvaluationRunRequest struct {
 
 func (x *GetEvaluationRunRequest) Reset() {
 	*x = GetEvaluationRunRequest{}
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[19]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1383,7 +1479,7 @@ func (x *GetEvaluationRunRequest) String() string {
 func (*GetEvaluationRunRequest) ProtoMessage() {}
 
 func (x *GetEvaluationRunRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[19]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1396,7 +1492,7 @@ func (x *GetEvaluationRunRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetEvaluationRunRequest.ProtoReflect.Descriptor instead.
 func (*GetEvaluationRunRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{19}
+	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *GetEvaluationRunRequest) GetName() string {
@@ -1449,7 +1545,7 @@ type ListEvaluationsRequest struct {
 
 func (x *ListEvaluationsRequest) Reset() {
 	*x = ListEvaluationsRequest{}
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[20]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1461,7 +1557,7 @@ func (x *ListEvaluationsRequest) String() string {
 func (*ListEvaluationsRequest) ProtoMessage() {}
 
 func (x *ListEvaluationsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[20]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1474,7 +1570,7 @@ func (x *ListEvaluationsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListEvaluationsRequest.ProtoReflect.Descriptor instead.
 func (*ListEvaluationsRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{20}
+	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *ListEvaluationsRequest) GetParent() string {
@@ -1567,7 +1663,7 @@ type ListEvaluationResultsRequest struct {
 
 func (x *ListEvaluationResultsRequest) Reset() {
 	*x = ListEvaluationResultsRequest{}
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[21]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1579,7 +1675,7 @@ func (x *ListEvaluationResultsRequest) String() string {
 func (*ListEvaluationResultsRequest) ProtoMessage() {}
 
 func (x *ListEvaluationResultsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[21]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1592,7 +1688,7 @@ func (x *ListEvaluationResultsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListEvaluationResultsRequest.ProtoReflect.Descriptor instead.
 func (*ListEvaluationResultsRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{21}
+	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *ListEvaluationResultsRequest) GetParent() string {
@@ -1660,7 +1756,7 @@ type ListEvaluationDatasetsRequest struct {
 
 func (x *ListEvaluationDatasetsRequest) Reset() {
 	*x = ListEvaluationDatasetsRequest{}
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[22]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1672,7 +1768,7 @@ func (x *ListEvaluationDatasetsRequest) String() string {
 func (*ListEvaluationDatasetsRequest) ProtoMessage() {}
 
 func (x *ListEvaluationDatasetsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[22]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1685,7 +1781,7 @@ func (x *ListEvaluationDatasetsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListEvaluationDatasetsRequest.ProtoReflect.Descriptor instead.
 func (*ListEvaluationDatasetsRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{22}
+	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *ListEvaluationDatasetsRequest) GetParent() string {
@@ -1753,7 +1849,7 @@ type ListEvaluationRunsRequest struct {
 
 func (x *ListEvaluationRunsRequest) Reset() {
 	*x = ListEvaluationRunsRequest{}
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[23]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1765,7 +1861,7 @@ func (x *ListEvaluationRunsRequest) String() string {
 func (*ListEvaluationRunsRequest) ProtoMessage() {}
 
 func (x *ListEvaluationRunsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[23]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1778,7 +1874,7 @@ func (x *ListEvaluationRunsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListEvaluationRunsRequest.ProtoReflect.Descriptor instead.
 func (*ListEvaluationRunsRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{23}
+	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{25}
 }
 
 func (x *ListEvaluationRunsRequest) GetParent() string {
@@ -1833,7 +1929,7 @@ type ListEvaluationsResponse struct {
 
 func (x *ListEvaluationsResponse) Reset() {
 	*x = ListEvaluationsResponse{}
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[24]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1845,7 +1941,7 @@ func (x *ListEvaluationsResponse) String() string {
 func (*ListEvaluationsResponse) ProtoMessage() {}
 
 func (x *ListEvaluationsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[24]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1858,7 +1954,7 @@ func (x *ListEvaluationsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListEvaluationsResponse.ProtoReflect.Descriptor instead.
 func (*ListEvaluationsResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{24}
+	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{26}
 }
 
 func (x *ListEvaluationsResponse) GetEvaluations() []*Evaluation {
@@ -1892,7 +1988,7 @@ type ListEvaluationResultsResponse struct {
 
 func (x *ListEvaluationResultsResponse) Reset() {
 	*x = ListEvaluationResultsResponse{}
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[25]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1904,7 +2000,7 @@ func (x *ListEvaluationResultsResponse) String() string {
 func (*ListEvaluationResultsResponse) ProtoMessage() {}
 
 func (x *ListEvaluationResultsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[25]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1917,7 +2013,7 @@ func (x *ListEvaluationResultsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListEvaluationResultsResponse.ProtoReflect.Descriptor instead.
 func (*ListEvaluationResultsResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{25}
+	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{27}
 }
 
 func (x *ListEvaluationResultsResponse) GetEvaluationResults() []*EvaluationResult {
@@ -1951,7 +2047,7 @@ type ListEvaluationDatasetsResponse struct {
 
 func (x *ListEvaluationDatasetsResponse) Reset() {
 	*x = ListEvaluationDatasetsResponse{}
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[26]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1963,7 +2059,7 @@ func (x *ListEvaluationDatasetsResponse) String() string {
 func (*ListEvaluationDatasetsResponse) ProtoMessage() {}
 
 func (x *ListEvaluationDatasetsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[26]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1976,7 +2072,7 @@ func (x *ListEvaluationDatasetsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListEvaluationDatasetsResponse.ProtoReflect.Descriptor instead.
 func (*ListEvaluationDatasetsResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{26}
+	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{28}
 }
 
 func (x *ListEvaluationDatasetsResponse) GetEvaluationDatasets() []*EvaluationDataset {
@@ -2010,7 +2106,7 @@ type ListEvaluationRunsResponse struct {
 
 func (x *ListEvaluationRunsResponse) Reset() {
 	*x = ListEvaluationRunsResponse{}
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[27]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[29]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2022,7 +2118,7 @@ func (x *ListEvaluationRunsResponse) String() string {
 func (*ListEvaluationRunsResponse) ProtoMessage() {}
 
 func (x *ListEvaluationRunsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[27]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[29]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2035,7 +2131,7 @@ func (x *ListEvaluationRunsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListEvaluationRunsResponse.ProtoReflect.Descriptor instead.
 func (*ListEvaluationRunsResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{27}
+	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{29}
 }
 
 func (x *ListEvaluationRunsResponse) GetEvaluationRuns() []*EvaluationRun {
@@ -2072,7 +2168,7 @@ type CreateScheduledEvaluationRunRequest struct {
 
 func (x *CreateScheduledEvaluationRunRequest) Reset() {
 	*x = CreateScheduledEvaluationRunRequest{}
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[28]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[30]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2084,7 +2180,7 @@ func (x *CreateScheduledEvaluationRunRequest) String() string {
 func (*CreateScheduledEvaluationRunRequest) ProtoMessage() {}
 
 func (x *CreateScheduledEvaluationRunRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[28]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[30]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2097,7 +2193,7 @@ func (x *CreateScheduledEvaluationRunRequest) ProtoReflect() protoreflect.Messag
 
 // Deprecated: Use CreateScheduledEvaluationRunRequest.ProtoReflect.Descriptor instead.
 func (*CreateScheduledEvaluationRunRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{28}
+	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{30}
 }
 
 func (x *CreateScheduledEvaluationRunRequest) GetParent() string {
@@ -2133,7 +2229,7 @@ type GetScheduledEvaluationRunRequest struct {
 
 func (x *GetScheduledEvaluationRunRequest) Reset() {
 	*x = GetScheduledEvaluationRunRequest{}
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[29]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[31]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2145,7 +2241,7 @@ func (x *GetScheduledEvaluationRunRequest) String() string {
 func (*GetScheduledEvaluationRunRequest) ProtoMessage() {}
 
 func (x *GetScheduledEvaluationRunRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[29]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[31]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2158,7 +2254,7 @@ func (x *GetScheduledEvaluationRunRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetScheduledEvaluationRunRequest.ProtoReflect.Descriptor instead.
 func (*GetScheduledEvaluationRunRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{29}
+	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{31}
 }
 
 func (x *GetScheduledEvaluationRunRequest) GetName() string {
@@ -2203,7 +2299,7 @@ type ListScheduledEvaluationRunsRequest struct {
 
 func (x *ListScheduledEvaluationRunsRequest) Reset() {
 	*x = ListScheduledEvaluationRunsRequest{}
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[30]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[32]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2215,7 +2311,7 @@ func (x *ListScheduledEvaluationRunsRequest) String() string {
 func (*ListScheduledEvaluationRunsRequest) ProtoMessage() {}
 
 func (x *ListScheduledEvaluationRunsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[30]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[32]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2228,7 +2324,7 @@ func (x *ListScheduledEvaluationRunsRequest) ProtoReflect() protoreflect.Message
 
 // Deprecated: Use ListScheduledEvaluationRunsRequest.ProtoReflect.Descriptor instead.
 func (*ListScheduledEvaluationRunsRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{30}
+	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{32}
 }
 
 func (x *ListScheduledEvaluationRunsRequest) GetParent() string {
@@ -2283,7 +2379,7 @@ type ListScheduledEvaluationRunsResponse struct {
 
 func (x *ListScheduledEvaluationRunsResponse) Reset() {
 	*x = ListScheduledEvaluationRunsResponse{}
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[31]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[33]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2295,7 +2391,7 @@ func (x *ListScheduledEvaluationRunsResponse) String() string {
 func (*ListScheduledEvaluationRunsResponse) ProtoMessage() {}
 
 func (x *ListScheduledEvaluationRunsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[31]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[33]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2308,7 +2404,7 @@ func (x *ListScheduledEvaluationRunsResponse) ProtoReflect() protoreflect.Messag
 
 // Deprecated: Use ListScheduledEvaluationRunsResponse.ProtoReflect.Descriptor instead.
 func (*ListScheduledEvaluationRunsResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{31}
+	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{33}
 }
 
 func (x *ListScheduledEvaluationRunsResponse) GetScheduledEvaluationRuns() []*ScheduledEvaluationRun {
@@ -2340,7 +2436,7 @@ type UpdateScheduledEvaluationRunRequest struct {
 
 func (x *UpdateScheduledEvaluationRunRequest) Reset() {
 	*x = UpdateScheduledEvaluationRunRequest{}
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[32]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[34]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2352,7 +2448,7 @@ func (x *UpdateScheduledEvaluationRunRequest) String() string {
 func (*UpdateScheduledEvaluationRunRequest) ProtoMessage() {}
 
 func (x *UpdateScheduledEvaluationRunRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[32]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[34]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2365,7 +2461,7 @@ func (x *UpdateScheduledEvaluationRunRequest) ProtoReflect() protoreflect.Messag
 
 // Deprecated: Use UpdateScheduledEvaluationRunRequest.ProtoReflect.Descriptor instead.
 func (*UpdateScheduledEvaluationRunRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{32}
+	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{34}
 }
 
 func (x *UpdateScheduledEvaluationRunRequest) GetScheduledEvaluationRun() *ScheduledEvaluationRun {
@@ -2397,7 +2493,7 @@ type DeleteScheduledEvaluationRunRequest struct {
 
 func (x *DeleteScheduledEvaluationRunRequest) Reset() {
 	*x = DeleteScheduledEvaluationRunRequest{}
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[33]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[35]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2409,7 +2505,7 @@ func (x *DeleteScheduledEvaluationRunRequest) String() string {
 func (*DeleteScheduledEvaluationRunRequest) ProtoMessage() {}
 
 func (x *DeleteScheduledEvaluationRunRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[33]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[35]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2422,7 +2518,7 @@ func (x *DeleteScheduledEvaluationRunRequest) ProtoReflect() protoreflect.Messag
 
 // Deprecated: Use DeleteScheduledEvaluationRunRequest.ProtoReflect.Descriptor instead.
 func (*DeleteScheduledEvaluationRunRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{33}
+	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{35}
 }
 
 func (x *DeleteScheduledEvaluationRunRequest) GetName() string {
@@ -2457,7 +2553,7 @@ type TestPersonaVoiceRequest struct {
 
 func (x *TestPersonaVoiceRequest) Reset() {
 	*x = TestPersonaVoiceRequest{}
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[34]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[36]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2469,7 +2565,7 @@ func (x *TestPersonaVoiceRequest) String() string {
 func (*TestPersonaVoiceRequest) ProtoMessage() {}
 
 func (x *TestPersonaVoiceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[34]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[36]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2482,7 +2578,7 @@ func (x *TestPersonaVoiceRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TestPersonaVoiceRequest.ProtoReflect.Descriptor instead.
 func (*TestPersonaVoiceRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{34}
+	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{36}
 }
 
 func (x *TestPersonaVoiceRequest) GetApp() string {
@@ -2527,7 +2623,7 @@ type UploadEvaluationAudioRequest struct {
 
 func (x *UploadEvaluationAudioRequest) Reset() {
 	*x = UploadEvaluationAudioRequest{}
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[35]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[37]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2539,7 +2635,7 @@ func (x *UploadEvaluationAudioRequest) String() string {
 func (*UploadEvaluationAudioRequest) ProtoMessage() {}
 
 func (x *UploadEvaluationAudioRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[35]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[37]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2552,7 +2648,7 @@ func (x *UploadEvaluationAudioRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UploadEvaluationAudioRequest.ProtoReflect.Descriptor instead.
 func (*UploadEvaluationAudioRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{35}
+	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{37}
 }
 
 func (x *UploadEvaluationAudioRequest) GetName() string {
@@ -2593,7 +2689,7 @@ type UploadEvaluationAudioResponse struct {
 
 func (x *UploadEvaluationAudioResponse) Reset() {
 	*x = UploadEvaluationAudioResponse{}
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[36]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[38]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2605,7 +2701,7 @@ func (x *UploadEvaluationAudioResponse) String() string {
 func (*UploadEvaluationAudioResponse) ProtoMessage() {}
 
 func (x *UploadEvaluationAudioResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[36]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[38]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2618,7 +2714,7 @@ func (x *UploadEvaluationAudioResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UploadEvaluationAudioResponse.ProtoReflect.Descriptor instead.
 func (*UploadEvaluationAudioResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{36}
+	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{38}
 }
 
 func (x *UploadEvaluationAudioResponse) GetAudioGcsUri() string {
@@ -2654,7 +2750,7 @@ type TestPersonaVoiceResponse struct {
 
 func (x *TestPersonaVoiceResponse) Reset() {
 	*x = TestPersonaVoiceResponse{}
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[37]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[39]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2666,7 +2762,7 @@ func (x *TestPersonaVoiceResponse) String() string {
 func (*TestPersonaVoiceResponse) ProtoMessage() {}
 
 func (x *TestPersonaVoiceResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[37]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[39]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2679,7 +2775,7 @@ func (x *TestPersonaVoiceResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TestPersonaVoiceResponse.ProtoReflect.Descriptor instead.
 func (*TestPersonaVoiceResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{37}
+	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{39}
 }
 
 func (x *TestPersonaVoiceResponse) GetAudio() []byte {
@@ -2710,7 +2806,7 @@ type CreateEvaluationExpectationRequest struct {
 
 func (x *CreateEvaluationExpectationRequest) Reset() {
 	*x = CreateEvaluationExpectationRequest{}
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[38]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[40]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2722,7 +2818,7 @@ func (x *CreateEvaluationExpectationRequest) String() string {
 func (*CreateEvaluationExpectationRequest) ProtoMessage() {}
 
 func (x *CreateEvaluationExpectationRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[38]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[40]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2735,7 +2831,7 @@ func (x *CreateEvaluationExpectationRequest) ProtoReflect() protoreflect.Message
 
 // Deprecated: Use CreateEvaluationExpectationRequest.ProtoReflect.Descriptor instead.
 func (*CreateEvaluationExpectationRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{38}
+	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{40}
 }
 
 func (x *CreateEvaluationExpectationRequest) GetParent() string {
@@ -2774,7 +2870,7 @@ type UpdateEvaluationExpectationRequest struct {
 
 func (x *UpdateEvaluationExpectationRequest) Reset() {
 	*x = UpdateEvaluationExpectationRequest{}
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[39]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[41]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2786,7 +2882,7 @@ func (x *UpdateEvaluationExpectationRequest) String() string {
 func (*UpdateEvaluationExpectationRequest) ProtoMessage() {}
 
 func (x *UpdateEvaluationExpectationRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[39]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[41]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2799,7 +2895,7 @@ func (x *UpdateEvaluationExpectationRequest) ProtoReflect() protoreflect.Message
 
 // Deprecated: Use UpdateEvaluationExpectationRequest.ProtoReflect.Descriptor instead.
 func (*UpdateEvaluationExpectationRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{39}
+	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{41}
 }
 
 func (x *UpdateEvaluationExpectationRequest) GetEvaluationExpectation() *EvaluationExpectation {
@@ -2833,7 +2929,7 @@ type DeleteEvaluationExpectationRequest struct {
 
 func (x *DeleteEvaluationExpectationRequest) Reset() {
 	*x = DeleteEvaluationExpectationRequest{}
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[40]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[42]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2845,7 +2941,7 @@ func (x *DeleteEvaluationExpectationRequest) String() string {
 func (*DeleteEvaluationExpectationRequest) ProtoMessage() {}
 
 func (x *DeleteEvaluationExpectationRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[40]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[42]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2858,7 +2954,7 @@ func (x *DeleteEvaluationExpectationRequest) ProtoReflect() protoreflect.Message
 
 // Deprecated: Use DeleteEvaluationExpectationRequest.ProtoReflect.Descriptor instead.
 func (*DeleteEvaluationExpectationRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{40}
+	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{42}
 }
 
 func (x *DeleteEvaluationExpectationRequest) GetName() string {
@@ -2887,7 +2983,7 @@ type GetEvaluationExpectationRequest struct {
 
 func (x *GetEvaluationExpectationRequest) Reset() {
 	*x = GetEvaluationExpectationRequest{}
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[41]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[43]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2899,7 +2995,7 @@ func (x *GetEvaluationExpectationRequest) String() string {
 func (*GetEvaluationExpectationRequest) ProtoMessage() {}
 
 func (x *GetEvaluationExpectationRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[41]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[43]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2912,7 +3008,7 @@ func (x *GetEvaluationExpectationRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetEvaluationExpectationRequest.ProtoReflect.Descriptor instead.
 func (*GetEvaluationExpectationRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{41}
+	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{43}
 }
 
 func (x *GetEvaluationExpectationRequest) GetName() string {
@@ -2953,7 +3049,7 @@ type ListEvaluationExpectationsRequest struct {
 
 func (x *ListEvaluationExpectationsRequest) Reset() {
 	*x = ListEvaluationExpectationsRequest{}
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[42]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[44]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2965,7 +3061,7 @@ func (x *ListEvaluationExpectationsRequest) String() string {
 func (*ListEvaluationExpectationsRequest) ProtoMessage() {}
 
 func (x *ListEvaluationExpectationsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[42]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[44]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2978,7 +3074,7 @@ func (x *ListEvaluationExpectationsRequest) ProtoReflect() protoreflect.Message 
 
 // Deprecated: Use ListEvaluationExpectationsRequest.ProtoReflect.Descriptor instead.
 func (*ListEvaluationExpectationsRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{42}
+	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{44}
 }
 
 func (x *ListEvaluationExpectationsRequest) GetParent() string {
@@ -3033,7 +3129,7 @@ type ListEvaluationExpectationsResponse struct {
 
 func (x *ListEvaluationExpectationsResponse) Reset() {
 	*x = ListEvaluationExpectationsResponse{}
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[43]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[45]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3045,7 +3141,7 @@ func (x *ListEvaluationExpectationsResponse) String() string {
 func (*ListEvaluationExpectationsResponse) ProtoMessage() {}
 
 func (x *ListEvaluationExpectationsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[43]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[45]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3058,7 +3154,7 @@ func (x *ListEvaluationExpectationsResponse) ProtoReflect() protoreflect.Message
 
 // Deprecated: Use ListEvaluationExpectationsResponse.ProtoReflect.Descriptor instead.
 func (*ListEvaluationExpectationsResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{43}
+	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{45}
 }
 
 func (x *ListEvaluationExpectationsResponse) GetEvaluationExpectations() []*EvaluationExpectation {
@@ -3090,7 +3186,7 @@ type ExportOptions struct {
 
 func (x *ExportOptions) Reset() {
 	*x = ExportOptions{}
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[44]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[46]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3102,7 +3198,7 @@ func (x *ExportOptions) String() string {
 func (*ExportOptions) ProtoMessage() {}
 
 func (x *ExportOptions) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[44]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[46]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3115,7 +3211,7 @@ func (x *ExportOptions) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExportOptions.ProtoReflect.Descriptor instead.
 func (*ExportOptions) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{44}
+	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{46}
 }
 
 func (x *ExportOptions) GetExportFormat() ExportOptions_ExportFormat {
@@ -3155,7 +3251,7 @@ type ExportEvaluationsRequest struct {
 
 func (x *ExportEvaluationsRequest) Reset() {
 	*x = ExportEvaluationsRequest{}
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[45]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[47]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3167,7 +3263,7 @@ func (x *ExportEvaluationsRequest) String() string {
 func (*ExportEvaluationsRequest) ProtoMessage() {}
 
 func (x *ExportEvaluationsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[45]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[47]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3180,7 +3276,7 @@ func (x *ExportEvaluationsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExportEvaluationsRequest.ProtoReflect.Descriptor instead.
 func (*ExportEvaluationsRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{45}
+	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{47}
 }
 
 func (x *ExportEvaluationsRequest) GetParent() string {
@@ -3238,7 +3334,7 @@ type ExportEvaluationsResponse struct {
 
 func (x *ExportEvaluationsResponse) Reset() {
 	*x = ExportEvaluationsResponse{}
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[46]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[48]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3250,7 +3346,7 @@ func (x *ExportEvaluationsResponse) String() string {
 func (*ExportEvaluationsResponse) ProtoMessage() {}
 
 func (x *ExportEvaluationsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[46]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[48]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3263,7 +3359,7 @@ func (x *ExportEvaluationsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExportEvaluationsResponse.ProtoReflect.Descriptor instead.
 func (*ExportEvaluationsResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{46}
+	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{48}
 }
 
 func (x *ExportEvaluationsResponse) GetEvaluations() isExportEvaluationsResponse_Evaluations {
@@ -3318,6 +3414,73 @@ func (*ExportEvaluationsResponse_EvaluationsContent) isExportEvaluationsResponse
 
 func (*ExportEvaluationsResponse_EvaluationsUri) isExportEvaluationsResponse_Evaluations() {}
 
+// Request message for
+// [EvaluationService.ExportEvaluationResults][google.cloud.ces.v1beta.EvaluationService.ExportEvaluationResults].
+type ExportEvaluationResultsRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The resource name of the evaluation to export evaluation results
+	// from. Format:
+	// `projects/{project}/locations/{location}/apps/{app}/evaluations/{evaluation}`
+	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
+	// Required. The resource names of the evaluation results to export.
+	Names []string `protobuf:"bytes,2,rep,name=names,proto3" json:"names,omitempty"`
+	// Optional. The export options for the evaluation results.
+	ExportOptions *ExportOptions `protobuf:"bytes,3,opt,name=export_options,json=exportOptions,proto3" json:"export_options,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ExportEvaluationResultsRequest) Reset() {
+	*x = ExportEvaluationResultsRequest{}
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[49]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ExportEvaluationResultsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ExportEvaluationResultsRequest) ProtoMessage() {}
+
+func (x *ExportEvaluationResultsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[49]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ExportEvaluationResultsRequest.ProtoReflect.Descriptor instead.
+func (*ExportEvaluationResultsRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{49}
+}
+
+func (x *ExportEvaluationResultsRequest) GetParent() string {
+	if x != nil {
+		return x.Parent
+	}
+	return ""
+}
+
+func (x *ExportEvaluationResultsRequest) GetNames() []string {
+	if x != nil {
+		return x.Names
+	}
+	return nil
+}
+
+func (x *ExportEvaluationResultsRequest) GetExportOptions() *ExportOptions {
+	if x != nil {
+		return x.ExportOptions
+	}
+	return nil
+}
+
 // Response message for
 // [EvaluationService.ExportEvaluationResults][google.cloud.ces.v1beta.EvaluationService.ExportEvaluationResults].
 type ExportEvaluationResultsResponse struct {
@@ -3335,7 +3498,7 @@ type ExportEvaluationResultsResponse struct {
 
 func (x *ExportEvaluationResultsResponse) Reset() {
 	*x = ExportEvaluationResultsResponse{}
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[47]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[50]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3347,7 +3510,7 @@ func (x *ExportEvaluationResultsResponse) String() string {
 func (*ExportEvaluationResultsResponse) ProtoMessage() {}
 
 func (x *ExportEvaluationResultsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[47]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[50]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3360,7 +3523,7 @@ func (x *ExportEvaluationResultsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExportEvaluationResultsResponse.ProtoReflect.Descriptor instead.
 func (*ExportEvaluationResultsResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{47}
+	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{50}
 }
 
 func (x *ExportEvaluationResultsResponse) GetEvaluationResults() isExportEvaluationResultsResponse_EvaluationResults {
@@ -3411,6 +3574,72 @@ func (*ExportEvaluationResultsResponse_EvaluationResultsContent) isExportEvaluat
 func (*ExportEvaluationResultsResponse_EvaluationResultsUri) isExportEvaluationResultsResponse_EvaluationResults() {
 }
 
+// Request message for
+// [EvaluationService.ExportEvaluationRuns][google.cloud.ces.v1beta.EvaluationService.ExportEvaluationRuns].
+type ExportEvaluationRunsRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The resource name of the app to export evaluation runs from.
+	// Format: `projects/{project}/locations/{location}/apps/{app}`
+	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
+	// Required. The resource names of the evaluation runs to export.
+	Names []string `protobuf:"bytes,2,rep,name=names,proto3" json:"names,omitempty"`
+	// Optional. The export options for the evaluation runs.
+	ExportOptions *ExportOptions `protobuf:"bytes,3,opt,name=export_options,json=exportOptions,proto3" json:"export_options,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ExportEvaluationRunsRequest) Reset() {
+	*x = ExportEvaluationRunsRequest{}
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[51]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ExportEvaluationRunsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ExportEvaluationRunsRequest) ProtoMessage() {}
+
+func (x *ExportEvaluationRunsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[51]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ExportEvaluationRunsRequest.ProtoReflect.Descriptor instead.
+func (*ExportEvaluationRunsRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{51}
+}
+
+func (x *ExportEvaluationRunsRequest) GetParent() string {
+	if x != nil {
+		return x.Parent
+	}
+	return ""
+}
+
+func (x *ExportEvaluationRunsRequest) GetNames() []string {
+	if x != nil {
+		return x.Names
+	}
+	return nil
+}
+
+func (x *ExportEvaluationRunsRequest) GetExportOptions() *ExportOptions {
+	if x != nil {
+		return x.ExportOptions
+	}
+	return nil
+}
+
 // Response message for
 // [EvaluationService.ExportEvaluationRuns][google.cloud.ces.v1beta.EvaluationService.ExportEvaluationRuns].
 type ExportEvaluationRunsResponse struct {
@@ -3428,7 +3657,7 @@ type ExportEvaluationRunsResponse struct {
 
 func (x *ExportEvaluationRunsResponse) Reset() {
 	*x = ExportEvaluationRunsResponse{}
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[48]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[52]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3440,7 +3669,7 @@ func (x *ExportEvaluationRunsResponse) String() string {
 func (*ExportEvaluationRunsResponse) ProtoMessage() {}
 
 func (x *ExportEvaluationRunsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[48]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[52]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3453,7 +3682,7 @@ func (x *ExportEvaluationRunsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExportEvaluationRunsResponse.ProtoReflect.Descriptor instead.
 func (*ExportEvaluationRunsResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{48}
+	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{52}
 }
 
 func (x *ExportEvaluationRunsResponse) GetEvaluationRuns() isExportEvaluationRunsResponse_EvaluationRuns {
@@ -3504,6 +3733,120 @@ func (*ExportEvaluationRunsResponse_EvaluationRunsContent) isExportEvaluationRun
 func (*ExportEvaluationRunsResponse_EvaluationRunsUri) isExportEvaluationRunsResponse_EvaluationRuns() {
 }
 
+// Operation metadata for
+// [EvaluationService.ExportEvaluationRuns][google.cloud.ces.v1beta.EvaluationService.ExportEvaluationRuns].
+type ExportEvaluationRunsOperationMetadata struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ExportEvaluationRunsOperationMetadata) Reset() {
+	*x = ExportEvaluationRunsOperationMetadata{}
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[53]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ExportEvaluationRunsOperationMetadata) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ExportEvaluationRunsOperationMetadata) ProtoMessage() {}
+
+func (x *ExportEvaluationRunsOperationMetadata) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[53]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ExportEvaluationRunsOperationMetadata.ProtoReflect.Descriptor instead.
+func (*ExportEvaluationRunsOperationMetadata) Descriptor() ([]byte, []int) {
+	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{53}
+}
+
+// Operation metadata for
+// [EvaluationService.ExportEvaluationResults][google.cloud.ces.v1beta.EvaluationService.ExportEvaluationResults].
+type ExportEvaluationResultsOperationMetadata struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ExportEvaluationResultsOperationMetadata) Reset() {
+	*x = ExportEvaluationResultsOperationMetadata{}
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[54]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ExportEvaluationResultsOperationMetadata) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ExportEvaluationResultsOperationMetadata) ProtoMessage() {}
+
+func (x *ExportEvaluationResultsOperationMetadata) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[54]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ExportEvaluationResultsOperationMetadata.ProtoReflect.Descriptor instead.
+func (*ExportEvaluationResultsOperationMetadata) Descriptor() ([]byte, []int) {
+	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{54}
+}
+
+// Operation metadata for
+// [EvaluationService.RunEvaluationResultMetrics][google.cloud.ces.v1beta.EvaluationService.RunEvaluationResultMetrics].
+type RunEvaluationResultMetricsOperationMetadata struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RunEvaluationResultMetricsOperationMetadata) Reset() {
+	*x = RunEvaluationResultMetricsOperationMetadata{}
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[55]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RunEvaluationResultMetricsOperationMetadata) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RunEvaluationResultMetricsOperationMetadata) ProtoMessage() {}
+
+func (x *RunEvaluationResultMetricsOperationMetadata) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[55]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RunEvaluationResultMetricsOperationMetadata.ProtoReflect.Descriptor instead.
+func (*RunEvaluationResultMetricsOperationMetadata) Descriptor() ([]byte, []int) {
+	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{55}
+}
+
 // A list of conversation resource names.
 type ImportEvaluationsRequest_ConversationList struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -3515,7 +3858,7 @@ type ImportEvaluationsRequest_ConversationList struct {
 
 func (x *ImportEvaluationsRequest_ConversationList) Reset() {
 	*x = ImportEvaluationsRequest_ConversationList{}
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[49]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[56]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3527,7 +3870,7 @@ func (x *ImportEvaluationsRequest_ConversationList) String() string {
 func (*ImportEvaluationsRequest_ConversationList) ProtoMessage() {}
 
 func (x *ImportEvaluationsRequest_ConversationList) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[49]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[56]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3540,7 +3883,7 @@ func (x *ImportEvaluationsRequest_ConversationList) ProtoReflect() protoreflect.
 
 // Deprecated: Use ImportEvaluationsRequest_ConversationList.ProtoReflect.Descriptor instead.
 func (*ImportEvaluationsRequest_ConversationList) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{6, 0}
+	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{8, 0}
 }
 
 func (x *ImportEvaluationsRequest_ConversationList) GetConversations() []string {
@@ -3563,7 +3906,7 @@ type ImportEvaluationsRequest_ImportOptions struct {
 
 func (x *ImportEvaluationsRequest_ImportOptions) Reset() {
 	*x = ImportEvaluationsRequest_ImportOptions{}
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[50]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[57]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3575,7 +3918,7 @@ func (x *ImportEvaluationsRequest_ImportOptions) String() string {
 func (*ImportEvaluationsRequest_ImportOptions) ProtoMessage() {}
 
 func (x *ImportEvaluationsRequest_ImportOptions) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[50]
+	mi := &file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[57]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3588,7 +3931,7 @@ func (x *ImportEvaluationsRequest_ImportOptions) ProtoReflect() protoreflect.Mes
 
 // Deprecated: Use ImportEvaluationsRequest_ImportOptions.ProtoReflect.Descriptor instead.
 func (*ImportEvaluationsRequest_ImportOptions) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{6, 1}
+	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{8, 1}
 }
 
 func (x *ImportEvaluationsRequest_ImportOptions) GetConflictResolutionStrategy() ImportEvaluationsRequest_ImportOptions_ConflictResolutionStrategy {
@@ -3602,7 +3945,12 @@ var File_google_cloud_ces_v1beta_evaluation_service_proto protoreflect.FileDescr
 
 const file_google_cloud_ces_v1beta_evaluation_service_proto_rawDesc = "" +
 	"\n" +
-	"0google/cloud/ces/v1beta/evaluation_service.proto\x12\x17google.cloud.ces.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a+google/cloud/ces/v1beta/agent_service.proto\x1a*google/cloud/ces/v1beta/conversation.proto\x1a(google/cloud/ces/v1beta/evaluation.proto\x1a#google/longrunning/operations.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"e\n" +
+	"0google/cloud/ces/v1beta/evaluation_service.proto\x12\x17google.cloud.ces.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a+google/cloud/ces/v1beta/agent_service.proto\x1a*google/cloud/ces/v1beta/conversation.proto\x1a(google/cloud/ces/v1beta/evaluation.proto\x1a#google/longrunning/operations.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x82\x01\n" +
+	"!RunEvaluationResultMetricsRequest\x12]\n" +
+	"\x14evaluation_result_id\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
+	"#ces.googleapis.com/EvaluationResultR\x12evaluationResultId\"t\n" +
+	"\"RunEvaluationResultMetricsResponse\x12N\n" +
+	"\x06status\x18\x01 \x01(\x0e21.google.cloud.ces.v1beta.EvaluationResult.OutcomeB\x03\xe0A\x03R\x06status\"e\n" +
 	"\x15RunEvaluationResponse\x12L\n" +
 	"\x0eevaluation_run\x18\x01 \x01(\tB%\xfaA\"\n" +
 	" ces.googleapis.com/EvaluationRunR\revaluationRun\"\x81\x03\n" +
@@ -3838,15 +4186,30 @@ const file_google_cloud_ces_v1beta_evaluation_service_proto_rawDesc = "" +
 	"\x16FailedEvaluationsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B\r\n" +
-	"\vevaluations\"\xaf\x01\n" +
+	"\vevaluations\"\xf6\x01\n" +
+	"\x1eExportEvaluationResultsRequest\x12=\n" +
+	"\x06parent\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
+	"\x1dces.googleapis.com/EvaluationR\x06parent\x12A\n" +
+	"\x05names\x18\x02 \x03(\tB+\xe0A\x02\xfaA%\n" +
+	"#ces.googleapis.com/EvaluationResultR\x05names\x12R\n" +
+	"\x0eexport_options\x18\x03 \x01(\v2&.google.cloud.ces.v1beta.ExportOptionsB\x03\xe0A\x01R\rexportOptions\"\xaf\x01\n" +
 	"\x1fExportEvaluationResultsResponse\x12>\n" +
 	"\x1aevaluation_results_content\x18\x01 \x01(\fH\x00R\x18evaluationResultsContent\x126\n" +
 	"\x16evaluation_results_uri\x18\x02 \x01(\tH\x00R\x14evaluationResultsUriB\x14\n" +
-	"\x12evaluation_results\"\x9d\x01\n" +
+	"\x12evaluation_results\"\xe9\x01\n" +
+	"\x1bExportEvaluationRunsRequest\x126\n" +
+	"\x06parent\x18\x01 \x01(\tB\x1e\xe0A\x02\xfaA\x18\n" +
+	"\x16ces.googleapis.com/AppR\x06parent\x12>\n" +
+	"\x05names\x18\x02 \x03(\tB(\xe0A\x02\xfaA\"\n" +
+	" ces.googleapis.com/EvaluationRunR\x05names\x12R\n" +
+	"\x0eexport_options\x18\x03 \x01(\v2&.google.cloud.ces.v1beta.ExportOptionsB\x03\xe0A\x01R\rexportOptions\"\x9d\x01\n" +
 	"\x1cExportEvaluationRunsResponse\x128\n" +
 	"\x17evaluation_runs_content\x18\x01 \x01(\fH\x00R\x15evaluationRunsContent\x120\n" +
 	"\x13evaluation_runs_uri\x18\x02 \x01(\tH\x00R\x11evaluationRunsUriB\x11\n" +
-	"\x0fevaluation_runs2\x96<\n" +
+	"\x0fevaluation_runs\"'\n" +
+	"%ExportEvaluationRunsOperationMetadata\"*\n" +
+	"(ExportEvaluationResultsOperationMetadata\"-\n" +
+	"+RunEvaluationResultMetricsOperationMetadata2\xb9C\n" +
 	"\x11EvaluationService\x12\xe4\x01\n" +
 	"\rRunEvaluation\x12-.google.cloud.ces.v1beta.RunEvaluationRequest\x1a\x1d.google.longrunning.Operation\"\x84\x01\xcaA7\n" +
 	"\x15RunEvaluationResponse\x12\x1eRunEvaluationOperationMetadata\xdaA\x03app\x82\xd3\xe4\x93\x02>:\x01*\"9/v1beta/{app=projects/*/locations/*/apps/*}:runEvaluation\x12\xf8\x01\n" +
@@ -3887,7 +4250,13 @@ const file_google_cloud_ces_v1beta_evaluation_service_proto_rawDesc = "" +
 	"\x1cDeleteScheduledEvaluationRun\x12<.google.cloud.ces.v1beta.DeleteScheduledEvaluationRunRequest\x1a\x16.google.protobuf.Empty\"U\xdaA\x04name\x82\xd3\xe4\x93\x02H*F/v1beta/{name=projects/*/locations/*/apps/*/scheduledEvaluationRuns/*}\x12\xc6\x01\n" +
 	"\x10TestPersonaVoice\x120.google.cloud.ces.v1beta.TestPersonaVoiceRequest\x1a1.google.cloud.ces.v1beta.TestPersonaVoiceResponse\"M\xdaA\x03app\x82\xd3\xe4\x93\x02A:\x01*\"</v1beta/{app=projects/*/locations/*/apps/*}:testPersonaVoice\x12\xee\x01\n" +
 	"\x11ExportEvaluations\x121.google.cloud.ces.v1beta.ExportEvaluationsRequest\x1a\x1d.google.longrunning.Operation\"\x86\x01\xcaA.\n" +
-	"\x19ExportEvaluationsResponse\x12\x11OperationMetadata\xdaA\x06parent\x82\xd3\xe4\x93\x02F:\x01*\"A/v1beta/{parent=projects/*/locations/*/apps/*}/evaluations:export\x1aj\xcaA\x12ces.googleapis.com\xd2ARhttps://www.googleapis.com/auth/ces,https://www.googleapis.com/auth/cloud-platformBf\n" +
+	"\x19ExportEvaluationsResponse\x12\x11OperationMetadata\xdaA\x06parent\x82\xd3\xe4\x93\x02F:\x01*\"A/v1beta/{parent=projects/*/locations/*/apps/*}/evaluations:export\x12\x94\x02\n" +
+	"\x14ExportEvaluationRuns\x124.google.cloud.ces.v1beta.ExportEvaluationRunsRequest\x1a\x1d.google.longrunning.Operation\"\xa6\x01\xcaAE\n" +
+	"\x1cExportEvaluationRunsResponse\x12%ExportEvaluationRunsOperationMetadata\xdaA\fparent,names\x82\xd3\xe4\x93\x02I:\x01*\"D/v1beta/{parent=projects/*/locations/*/apps/*}/evaluationRuns:export\x12\xa7\x02\n" +
+	"\x17ExportEvaluationResults\x127.google.cloud.ces.v1beta.ExportEvaluationResultsRequest\x1a\x1d.google.longrunning.Operation\"\xb3\x01\xcaAK\n" +
+	"\x1fExportEvaluationResultsResponse\x12(ExportEvaluationResultsOperationMetadata\xdaA\fparent,names\x82\xd3\xe4\x93\x02P:\x01*\"K/v1beta/{parent=projects/*/locations/*/apps/*/evaluations/*}/results:export\x12\xdf\x02\n" +
+	"\x1aRunEvaluationResultMetrics\x12:.google.cloud.ces.v1beta.RunEvaluationResultMetricsRequest\x1a\x1d.google.longrunning.Operation\"\xe5\x01\xcaAQ\n" +
+	"\"RunEvaluationResultMetricsResponse\x12+RunEvaluationResultMetricsOperationMetadata\xdaA\x14evaluation_result_id\x82\xd3\xe4\x93\x02t:\x01*\"o/v1beta/{evaluation_result_id=projects/*/locations/*/apps/*/evaluations/*/results/*}:runEvaluationResultMetrics\x1aj\xcaA\x12ces.googleapis.com\xd2ARhttps://www.googleapis.com/auth/ces,https://www.googleapis.com/auth/cloud-platformBf\n" +
 	"\x1bcom.google.cloud.ces.v1betaB\x16EvaluationServiceProtoP\x01Z-cloud.google.com/go/ces/apiv1beta/cespb;cespbb\x06proto3"
 
 var (
@@ -3903,179 +4272,196 @@ func file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP() []byte 
 }
 
 var file_google_cloud_ces_v1beta_evaluation_service_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes = make([]protoimpl.MessageInfo, 52)
+var file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes = make([]protoimpl.MessageInfo, 59)
 var file_google_cloud_ces_v1beta_evaluation_service_proto_goTypes = []any{
 	(ImportEvaluationsRequest_ImportOptions_ConflictResolutionStrategy)(0), // 0: google.cloud.ces.v1beta.ImportEvaluationsRequest.ImportOptions.ConflictResolutionStrategy
 	(ExportOptions_ExportFormat)(0),                                        // 1: google.cloud.ces.v1beta.ExportOptions.ExportFormat
-	(*RunEvaluationResponse)(nil),                                          // 2: google.cloud.ces.v1beta.RunEvaluationResponse
-	(*RunEvaluationOperationMetadata)(nil),                                 // 3: google.cloud.ces.v1beta.RunEvaluationOperationMetadata
-	(*GenerateEvaluationOperationMetadata)(nil),                            // 4: google.cloud.ces.v1beta.GenerateEvaluationOperationMetadata
-	(*DeleteEvaluationRunOperationMetadata)(nil),                           // 5: google.cloud.ces.v1beta.DeleteEvaluationRunOperationMetadata
-	(*CreateEvaluationRequest)(nil),                                        // 6: google.cloud.ces.v1beta.CreateEvaluationRequest
-	(*GenerateEvaluationRequest)(nil),                                      // 7: google.cloud.ces.v1beta.GenerateEvaluationRequest
-	(*ImportEvaluationsRequest)(nil),                                       // 8: google.cloud.ces.v1beta.ImportEvaluationsRequest
-	(*ImportEvaluationsResponse)(nil),                                      // 9: google.cloud.ces.v1beta.ImportEvaluationsResponse
-	(*ImportEvaluationsOperationMetadata)(nil),                             // 10: google.cloud.ces.v1beta.ImportEvaluationsOperationMetadata
-	(*CreateEvaluationDatasetRequest)(nil),                                 // 11: google.cloud.ces.v1beta.CreateEvaluationDatasetRequest
-	(*UpdateEvaluationRequest)(nil),                                        // 12: google.cloud.ces.v1beta.UpdateEvaluationRequest
-	(*UpdateEvaluationDatasetRequest)(nil),                                 // 13: google.cloud.ces.v1beta.UpdateEvaluationDatasetRequest
-	(*DeleteEvaluationRequest)(nil),                                        // 14: google.cloud.ces.v1beta.DeleteEvaluationRequest
-	(*DeleteEvaluationResultRequest)(nil),                                  // 15: google.cloud.ces.v1beta.DeleteEvaluationResultRequest
-	(*DeleteEvaluationDatasetRequest)(nil),                                 // 16: google.cloud.ces.v1beta.DeleteEvaluationDatasetRequest
-	(*DeleteEvaluationRunRequest)(nil),                                     // 17: google.cloud.ces.v1beta.DeleteEvaluationRunRequest
-	(*GetEvaluationRequest)(nil),                                           // 18: google.cloud.ces.v1beta.GetEvaluationRequest
-	(*GetEvaluationResultRequest)(nil),                                     // 19: google.cloud.ces.v1beta.GetEvaluationResultRequest
-	(*GetEvaluationDatasetRequest)(nil),                                    // 20: google.cloud.ces.v1beta.GetEvaluationDatasetRequest
-	(*GetEvaluationRunRequest)(nil),                                        // 21: google.cloud.ces.v1beta.GetEvaluationRunRequest
-	(*ListEvaluationsRequest)(nil),                                         // 22: google.cloud.ces.v1beta.ListEvaluationsRequest
-	(*ListEvaluationResultsRequest)(nil),                                   // 23: google.cloud.ces.v1beta.ListEvaluationResultsRequest
-	(*ListEvaluationDatasetsRequest)(nil),                                  // 24: google.cloud.ces.v1beta.ListEvaluationDatasetsRequest
-	(*ListEvaluationRunsRequest)(nil),                                      // 25: google.cloud.ces.v1beta.ListEvaluationRunsRequest
-	(*ListEvaluationsResponse)(nil),                                        // 26: google.cloud.ces.v1beta.ListEvaluationsResponse
-	(*ListEvaluationResultsResponse)(nil),                                  // 27: google.cloud.ces.v1beta.ListEvaluationResultsResponse
-	(*ListEvaluationDatasetsResponse)(nil),                                 // 28: google.cloud.ces.v1beta.ListEvaluationDatasetsResponse
-	(*ListEvaluationRunsResponse)(nil),                                     // 29: google.cloud.ces.v1beta.ListEvaluationRunsResponse
-	(*CreateScheduledEvaluationRunRequest)(nil),                            // 30: google.cloud.ces.v1beta.CreateScheduledEvaluationRunRequest
-	(*GetScheduledEvaluationRunRequest)(nil),                               // 31: google.cloud.ces.v1beta.GetScheduledEvaluationRunRequest
-	(*ListScheduledEvaluationRunsRequest)(nil),                             // 32: google.cloud.ces.v1beta.ListScheduledEvaluationRunsRequest
-	(*ListScheduledEvaluationRunsResponse)(nil),                            // 33: google.cloud.ces.v1beta.ListScheduledEvaluationRunsResponse
-	(*UpdateScheduledEvaluationRunRequest)(nil),                            // 34: google.cloud.ces.v1beta.UpdateScheduledEvaluationRunRequest
-	(*DeleteScheduledEvaluationRunRequest)(nil),                            // 35: google.cloud.ces.v1beta.DeleteScheduledEvaluationRunRequest
-	(*TestPersonaVoiceRequest)(nil),                                        // 36: google.cloud.ces.v1beta.TestPersonaVoiceRequest
-	(*UploadEvaluationAudioRequest)(nil),                                   // 37: google.cloud.ces.v1beta.UploadEvaluationAudioRequest
-	(*UploadEvaluationAudioResponse)(nil),                                  // 38: google.cloud.ces.v1beta.UploadEvaluationAudioResponse
-	(*TestPersonaVoiceResponse)(nil),                                       // 39: google.cloud.ces.v1beta.TestPersonaVoiceResponse
-	(*CreateEvaluationExpectationRequest)(nil),                             // 40: google.cloud.ces.v1beta.CreateEvaluationExpectationRequest
-	(*UpdateEvaluationExpectationRequest)(nil),                             // 41: google.cloud.ces.v1beta.UpdateEvaluationExpectationRequest
-	(*DeleteEvaluationExpectationRequest)(nil),                             // 42: google.cloud.ces.v1beta.DeleteEvaluationExpectationRequest
-	(*GetEvaluationExpectationRequest)(nil),                                // 43: google.cloud.ces.v1beta.GetEvaluationExpectationRequest
-	(*ListEvaluationExpectationsRequest)(nil),                              // 44: google.cloud.ces.v1beta.ListEvaluationExpectationsRequest
-	(*ListEvaluationExpectationsResponse)(nil),                             // 45: google.cloud.ces.v1beta.ListEvaluationExpectationsResponse
-	(*ExportOptions)(nil),                                                  // 46: google.cloud.ces.v1beta.ExportOptions
-	(*ExportEvaluationsRequest)(nil),                                       // 47: google.cloud.ces.v1beta.ExportEvaluationsRequest
-	(*ExportEvaluationsResponse)(nil),                                      // 48: google.cloud.ces.v1beta.ExportEvaluationsResponse
-	(*ExportEvaluationResultsResponse)(nil),                                // 49: google.cloud.ces.v1beta.ExportEvaluationResultsResponse
-	(*ExportEvaluationRunsResponse)(nil),                                   // 50: google.cloud.ces.v1beta.ExportEvaluationRunsResponse
-	(*ImportEvaluationsRequest_ConversationList)(nil),                      // 51: google.cloud.ces.v1beta.ImportEvaluationsRequest.ConversationList
-	(*ImportEvaluationsRequest_ImportOptions)(nil),                         // 52: google.cloud.ces.v1beta.ImportEvaluationsRequest.ImportOptions
-	nil,                             // 53: google.cloud.ces.v1beta.ExportEvaluationsResponse.FailedEvaluationsEntry
-	(*timestamppb.Timestamp)(nil),   // 54: google.protobuf.Timestamp
-	(*Evaluation)(nil),              // 55: google.cloud.ces.v1beta.Evaluation
-	(Conversation_Source)(0),        // 56: google.cloud.ces.v1beta.Conversation.Source
-	(*EvaluationResult)(nil),        // 57: google.cloud.ces.v1beta.EvaluationResult
-	(*EvaluationRun)(nil),           // 58: google.cloud.ces.v1beta.EvaluationRun
-	(*EvaluationDataset)(nil),       // 59: google.cloud.ces.v1beta.EvaluationDataset
-	(*fieldmaskpb.FieldMask)(nil),   // 60: google.protobuf.FieldMask
-	(*ScheduledEvaluationRun)(nil),  // 61: google.cloud.ces.v1beta.ScheduledEvaluationRun
-	(*durationpb.Duration)(nil),     // 62: google.protobuf.Duration
-	(*EvaluationExpectation)(nil),   // 63: google.cloud.ces.v1beta.EvaluationExpectation
-	(*RunEvaluationRequest)(nil),    // 64: google.cloud.ces.v1beta.RunEvaluationRequest
-	(*longrunningpb.Operation)(nil), // 65: google.longrunning.Operation
-	(*emptypb.Empty)(nil),           // 66: google.protobuf.Empty
+	(*RunEvaluationResultMetricsRequest)(nil),                              // 2: google.cloud.ces.v1beta.RunEvaluationResultMetricsRequest
+	(*RunEvaluationResultMetricsResponse)(nil),                             // 3: google.cloud.ces.v1beta.RunEvaluationResultMetricsResponse
+	(*RunEvaluationResponse)(nil),                                          // 4: google.cloud.ces.v1beta.RunEvaluationResponse
+	(*RunEvaluationOperationMetadata)(nil),                                 // 5: google.cloud.ces.v1beta.RunEvaluationOperationMetadata
+	(*GenerateEvaluationOperationMetadata)(nil),                            // 6: google.cloud.ces.v1beta.GenerateEvaluationOperationMetadata
+	(*DeleteEvaluationRunOperationMetadata)(nil),                           // 7: google.cloud.ces.v1beta.DeleteEvaluationRunOperationMetadata
+	(*CreateEvaluationRequest)(nil),                                        // 8: google.cloud.ces.v1beta.CreateEvaluationRequest
+	(*GenerateEvaluationRequest)(nil),                                      // 9: google.cloud.ces.v1beta.GenerateEvaluationRequest
+	(*ImportEvaluationsRequest)(nil),                                       // 10: google.cloud.ces.v1beta.ImportEvaluationsRequest
+	(*ImportEvaluationsResponse)(nil),                                      // 11: google.cloud.ces.v1beta.ImportEvaluationsResponse
+	(*ImportEvaluationsOperationMetadata)(nil),                             // 12: google.cloud.ces.v1beta.ImportEvaluationsOperationMetadata
+	(*CreateEvaluationDatasetRequest)(nil),                                 // 13: google.cloud.ces.v1beta.CreateEvaluationDatasetRequest
+	(*UpdateEvaluationRequest)(nil),                                        // 14: google.cloud.ces.v1beta.UpdateEvaluationRequest
+	(*UpdateEvaluationDatasetRequest)(nil),                                 // 15: google.cloud.ces.v1beta.UpdateEvaluationDatasetRequest
+	(*DeleteEvaluationRequest)(nil),                                        // 16: google.cloud.ces.v1beta.DeleteEvaluationRequest
+	(*DeleteEvaluationResultRequest)(nil),                                  // 17: google.cloud.ces.v1beta.DeleteEvaluationResultRequest
+	(*DeleteEvaluationDatasetRequest)(nil),                                 // 18: google.cloud.ces.v1beta.DeleteEvaluationDatasetRequest
+	(*DeleteEvaluationRunRequest)(nil),                                     // 19: google.cloud.ces.v1beta.DeleteEvaluationRunRequest
+	(*GetEvaluationRequest)(nil),                                           // 20: google.cloud.ces.v1beta.GetEvaluationRequest
+	(*GetEvaluationResultRequest)(nil),                                     // 21: google.cloud.ces.v1beta.GetEvaluationResultRequest
+	(*GetEvaluationDatasetRequest)(nil),                                    // 22: google.cloud.ces.v1beta.GetEvaluationDatasetRequest
+	(*GetEvaluationRunRequest)(nil),                                        // 23: google.cloud.ces.v1beta.GetEvaluationRunRequest
+	(*ListEvaluationsRequest)(nil),                                         // 24: google.cloud.ces.v1beta.ListEvaluationsRequest
+	(*ListEvaluationResultsRequest)(nil),                                   // 25: google.cloud.ces.v1beta.ListEvaluationResultsRequest
+	(*ListEvaluationDatasetsRequest)(nil),                                  // 26: google.cloud.ces.v1beta.ListEvaluationDatasetsRequest
+	(*ListEvaluationRunsRequest)(nil),                                      // 27: google.cloud.ces.v1beta.ListEvaluationRunsRequest
+	(*ListEvaluationsResponse)(nil),                                        // 28: google.cloud.ces.v1beta.ListEvaluationsResponse
+	(*ListEvaluationResultsResponse)(nil),                                  // 29: google.cloud.ces.v1beta.ListEvaluationResultsResponse
+	(*ListEvaluationDatasetsResponse)(nil),                                 // 30: google.cloud.ces.v1beta.ListEvaluationDatasetsResponse
+	(*ListEvaluationRunsResponse)(nil),                                     // 31: google.cloud.ces.v1beta.ListEvaluationRunsResponse
+	(*CreateScheduledEvaluationRunRequest)(nil),                            // 32: google.cloud.ces.v1beta.CreateScheduledEvaluationRunRequest
+	(*GetScheduledEvaluationRunRequest)(nil),                               // 33: google.cloud.ces.v1beta.GetScheduledEvaluationRunRequest
+	(*ListScheduledEvaluationRunsRequest)(nil),                             // 34: google.cloud.ces.v1beta.ListScheduledEvaluationRunsRequest
+	(*ListScheduledEvaluationRunsResponse)(nil),                            // 35: google.cloud.ces.v1beta.ListScheduledEvaluationRunsResponse
+	(*UpdateScheduledEvaluationRunRequest)(nil),                            // 36: google.cloud.ces.v1beta.UpdateScheduledEvaluationRunRequest
+	(*DeleteScheduledEvaluationRunRequest)(nil),                            // 37: google.cloud.ces.v1beta.DeleteScheduledEvaluationRunRequest
+	(*TestPersonaVoiceRequest)(nil),                                        // 38: google.cloud.ces.v1beta.TestPersonaVoiceRequest
+	(*UploadEvaluationAudioRequest)(nil),                                   // 39: google.cloud.ces.v1beta.UploadEvaluationAudioRequest
+	(*UploadEvaluationAudioResponse)(nil),                                  // 40: google.cloud.ces.v1beta.UploadEvaluationAudioResponse
+	(*TestPersonaVoiceResponse)(nil),                                       // 41: google.cloud.ces.v1beta.TestPersonaVoiceResponse
+	(*CreateEvaluationExpectationRequest)(nil),                             // 42: google.cloud.ces.v1beta.CreateEvaluationExpectationRequest
+	(*UpdateEvaluationExpectationRequest)(nil),                             // 43: google.cloud.ces.v1beta.UpdateEvaluationExpectationRequest
+	(*DeleteEvaluationExpectationRequest)(nil),                             // 44: google.cloud.ces.v1beta.DeleteEvaluationExpectationRequest
+	(*GetEvaluationExpectationRequest)(nil),                                // 45: google.cloud.ces.v1beta.GetEvaluationExpectationRequest
+	(*ListEvaluationExpectationsRequest)(nil),                              // 46: google.cloud.ces.v1beta.ListEvaluationExpectationsRequest
+	(*ListEvaluationExpectationsResponse)(nil),                             // 47: google.cloud.ces.v1beta.ListEvaluationExpectationsResponse
+	(*ExportOptions)(nil),                                                  // 48: google.cloud.ces.v1beta.ExportOptions
+	(*ExportEvaluationsRequest)(nil),                                       // 49: google.cloud.ces.v1beta.ExportEvaluationsRequest
+	(*ExportEvaluationsResponse)(nil),                                      // 50: google.cloud.ces.v1beta.ExportEvaluationsResponse
+	(*ExportEvaluationResultsRequest)(nil),                                 // 51: google.cloud.ces.v1beta.ExportEvaluationResultsRequest
+	(*ExportEvaluationResultsResponse)(nil),                                // 52: google.cloud.ces.v1beta.ExportEvaluationResultsResponse
+	(*ExportEvaluationRunsRequest)(nil),                                    // 53: google.cloud.ces.v1beta.ExportEvaluationRunsRequest
+	(*ExportEvaluationRunsResponse)(nil),                                   // 54: google.cloud.ces.v1beta.ExportEvaluationRunsResponse
+	(*ExportEvaluationRunsOperationMetadata)(nil),                          // 55: google.cloud.ces.v1beta.ExportEvaluationRunsOperationMetadata
+	(*ExportEvaluationResultsOperationMetadata)(nil),                       // 56: google.cloud.ces.v1beta.ExportEvaluationResultsOperationMetadata
+	(*RunEvaluationResultMetricsOperationMetadata)(nil),                    // 57: google.cloud.ces.v1beta.RunEvaluationResultMetricsOperationMetadata
+	(*ImportEvaluationsRequest_ConversationList)(nil),                      // 58: google.cloud.ces.v1beta.ImportEvaluationsRequest.ConversationList
+	(*ImportEvaluationsRequest_ImportOptions)(nil),                         // 59: google.cloud.ces.v1beta.ImportEvaluationsRequest.ImportOptions
+	nil,                             // 60: google.cloud.ces.v1beta.ExportEvaluationsResponse.FailedEvaluationsEntry
+	(EvaluationResult_Outcome)(0),   // 61: google.cloud.ces.v1beta.EvaluationResult.Outcome
+	(*timestamppb.Timestamp)(nil),   // 62: google.protobuf.Timestamp
+	(*Evaluation)(nil),              // 63: google.cloud.ces.v1beta.Evaluation
+	(Conversation_Source)(0),        // 64: google.cloud.ces.v1beta.Conversation.Source
+	(*EvaluationResult)(nil),        // 65: google.cloud.ces.v1beta.EvaluationResult
+	(*EvaluationRun)(nil),           // 66: google.cloud.ces.v1beta.EvaluationRun
+	(*EvaluationDataset)(nil),       // 67: google.cloud.ces.v1beta.EvaluationDataset
+	(*fieldmaskpb.FieldMask)(nil),   // 68: google.protobuf.FieldMask
+	(*ScheduledEvaluationRun)(nil),  // 69: google.cloud.ces.v1beta.ScheduledEvaluationRun
+	(*durationpb.Duration)(nil),     // 70: google.protobuf.Duration
+	(*EvaluationExpectation)(nil),   // 71: google.cloud.ces.v1beta.EvaluationExpectation
+	(*RunEvaluationRequest)(nil),    // 72: google.cloud.ces.v1beta.RunEvaluationRequest
+	(*longrunningpb.Operation)(nil), // 73: google.longrunning.Operation
+	(*emptypb.Empty)(nil),           // 74: google.protobuf.Empty
 }
 var file_google_cloud_ces_v1beta_evaluation_service_proto_depIdxs = []int32{
-	54, // 0: google.cloud.ces.v1beta.RunEvaluationOperationMetadata.create_time:type_name -> google.protobuf.Timestamp
-	54, // 1: google.cloud.ces.v1beta.RunEvaluationOperationMetadata.end_time:type_name -> google.protobuf.Timestamp
-	55, // 2: google.cloud.ces.v1beta.CreateEvaluationRequest.evaluation:type_name -> google.cloud.ces.v1beta.Evaluation
-	56, // 3: google.cloud.ces.v1beta.GenerateEvaluationRequest.source:type_name -> google.cloud.ces.v1beta.Conversation.Source
-	51, // 4: google.cloud.ces.v1beta.ImportEvaluationsRequest.conversation_list:type_name -> google.cloud.ces.v1beta.ImportEvaluationsRequest.ConversationList
-	52, // 5: google.cloud.ces.v1beta.ImportEvaluationsRequest.import_options:type_name -> google.cloud.ces.v1beta.ImportEvaluationsRequest.ImportOptions
-	55, // 6: google.cloud.ces.v1beta.ImportEvaluationsResponse.evaluations:type_name -> google.cloud.ces.v1beta.Evaluation
-	57, // 7: google.cloud.ces.v1beta.ImportEvaluationsResponse.evaluation_results:type_name -> google.cloud.ces.v1beta.EvaluationResult
-	58, // 8: google.cloud.ces.v1beta.ImportEvaluationsResponse.evaluation_runs:type_name -> google.cloud.ces.v1beta.EvaluationRun
-	54, // 9: google.cloud.ces.v1beta.ImportEvaluationsOperationMetadata.create_time:type_name -> google.protobuf.Timestamp
-	54, // 10: google.cloud.ces.v1beta.ImportEvaluationsOperationMetadata.end_time:type_name -> google.protobuf.Timestamp
-	59, // 11: google.cloud.ces.v1beta.CreateEvaluationDatasetRequest.evaluation_dataset:type_name -> google.cloud.ces.v1beta.EvaluationDataset
-	55, // 12: google.cloud.ces.v1beta.UpdateEvaluationRequest.evaluation:type_name -> google.cloud.ces.v1beta.Evaluation
-	60, // 13: google.cloud.ces.v1beta.UpdateEvaluationRequest.update_mask:type_name -> google.protobuf.FieldMask
-	59, // 14: google.cloud.ces.v1beta.UpdateEvaluationDatasetRequest.evaluation_dataset:type_name -> google.cloud.ces.v1beta.EvaluationDataset
-	60, // 15: google.cloud.ces.v1beta.UpdateEvaluationDatasetRequest.update_mask:type_name -> google.protobuf.FieldMask
-	55, // 16: google.cloud.ces.v1beta.ListEvaluationsResponse.evaluations:type_name -> google.cloud.ces.v1beta.Evaluation
-	57, // 17: google.cloud.ces.v1beta.ListEvaluationResultsResponse.evaluation_results:type_name -> google.cloud.ces.v1beta.EvaluationResult
-	59, // 18: google.cloud.ces.v1beta.ListEvaluationDatasetsResponse.evaluation_datasets:type_name -> google.cloud.ces.v1beta.EvaluationDataset
-	58, // 19: google.cloud.ces.v1beta.ListEvaluationRunsResponse.evaluation_runs:type_name -> google.cloud.ces.v1beta.EvaluationRun
-	61, // 20: google.cloud.ces.v1beta.CreateScheduledEvaluationRunRequest.scheduled_evaluation_run:type_name -> google.cloud.ces.v1beta.ScheduledEvaluationRun
-	61, // 21: google.cloud.ces.v1beta.ListScheduledEvaluationRunsResponse.scheduled_evaluation_runs:type_name -> google.cloud.ces.v1beta.ScheduledEvaluationRun
-	61, // 22: google.cloud.ces.v1beta.UpdateScheduledEvaluationRunRequest.scheduled_evaluation_run:type_name -> google.cloud.ces.v1beta.ScheduledEvaluationRun
-	60, // 23: google.cloud.ces.v1beta.UpdateScheduledEvaluationRunRequest.update_mask:type_name -> google.protobuf.FieldMask
-	62, // 24: google.cloud.ces.v1beta.UploadEvaluationAudioResponse.duration:type_name -> google.protobuf.Duration
-	63, // 25: google.cloud.ces.v1beta.CreateEvaluationExpectationRequest.evaluation_expectation:type_name -> google.cloud.ces.v1beta.EvaluationExpectation
-	63, // 26: google.cloud.ces.v1beta.UpdateEvaluationExpectationRequest.evaluation_expectation:type_name -> google.cloud.ces.v1beta.EvaluationExpectation
-	60, // 27: google.cloud.ces.v1beta.UpdateEvaluationExpectationRequest.update_mask:type_name -> google.protobuf.FieldMask
-	63, // 28: google.cloud.ces.v1beta.ListEvaluationExpectationsResponse.evaluation_expectations:type_name -> google.cloud.ces.v1beta.EvaluationExpectation
-	1,  // 29: google.cloud.ces.v1beta.ExportOptions.export_format:type_name -> google.cloud.ces.v1beta.ExportOptions.ExportFormat
-	46, // 30: google.cloud.ces.v1beta.ExportEvaluationsRequest.export_options:type_name -> google.cloud.ces.v1beta.ExportOptions
-	53, // 31: google.cloud.ces.v1beta.ExportEvaluationsResponse.failed_evaluations:type_name -> google.cloud.ces.v1beta.ExportEvaluationsResponse.FailedEvaluationsEntry
-	0,  // 32: google.cloud.ces.v1beta.ImportEvaluationsRequest.ImportOptions.conflict_resolution_strategy:type_name -> google.cloud.ces.v1beta.ImportEvaluationsRequest.ImportOptions.ConflictResolutionStrategy
-	64, // 33: google.cloud.ces.v1beta.EvaluationService.RunEvaluation:input_type -> google.cloud.ces.v1beta.RunEvaluationRequest
-	37, // 34: google.cloud.ces.v1beta.EvaluationService.UploadEvaluationAudio:input_type -> google.cloud.ces.v1beta.UploadEvaluationAudioRequest
-	6,  // 35: google.cloud.ces.v1beta.EvaluationService.CreateEvaluation:input_type -> google.cloud.ces.v1beta.CreateEvaluationRequest
-	7,  // 36: google.cloud.ces.v1beta.EvaluationService.GenerateEvaluation:input_type -> google.cloud.ces.v1beta.GenerateEvaluationRequest
-	8,  // 37: google.cloud.ces.v1beta.EvaluationService.ImportEvaluations:input_type -> google.cloud.ces.v1beta.ImportEvaluationsRequest
-	11, // 38: google.cloud.ces.v1beta.EvaluationService.CreateEvaluationDataset:input_type -> google.cloud.ces.v1beta.CreateEvaluationDatasetRequest
-	12, // 39: google.cloud.ces.v1beta.EvaluationService.UpdateEvaluation:input_type -> google.cloud.ces.v1beta.UpdateEvaluationRequest
-	13, // 40: google.cloud.ces.v1beta.EvaluationService.UpdateEvaluationDataset:input_type -> google.cloud.ces.v1beta.UpdateEvaluationDatasetRequest
-	14, // 41: google.cloud.ces.v1beta.EvaluationService.DeleteEvaluation:input_type -> google.cloud.ces.v1beta.DeleteEvaluationRequest
-	15, // 42: google.cloud.ces.v1beta.EvaluationService.DeleteEvaluationResult:input_type -> google.cloud.ces.v1beta.DeleteEvaluationResultRequest
-	16, // 43: google.cloud.ces.v1beta.EvaluationService.DeleteEvaluationDataset:input_type -> google.cloud.ces.v1beta.DeleteEvaluationDatasetRequest
-	17, // 44: google.cloud.ces.v1beta.EvaluationService.DeleteEvaluationRun:input_type -> google.cloud.ces.v1beta.DeleteEvaluationRunRequest
-	18, // 45: google.cloud.ces.v1beta.EvaluationService.GetEvaluation:input_type -> google.cloud.ces.v1beta.GetEvaluationRequest
-	19, // 46: google.cloud.ces.v1beta.EvaluationService.GetEvaluationResult:input_type -> google.cloud.ces.v1beta.GetEvaluationResultRequest
-	20, // 47: google.cloud.ces.v1beta.EvaluationService.GetEvaluationDataset:input_type -> google.cloud.ces.v1beta.GetEvaluationDatasetRequest
-	21, // 48: google.cloud.ces.v1beta.EvaluationService.GetEvaluationRun:input_type -> google.cloud.ces.v1beta.GetEvaluationRunRequest
-	22, // 49: google.cloud.ces.v1beta.EvaluationService.ListEvaluations:input_type -> google.cloud.ces.v1beta.ListEvaluationsRequest
-	23, // 50: google.cloud.ces.v1beta.EvaluationService.ListEvaluationResults:input_type -> google.cloud.ces.v1beta.ListEvaluationResultsRequest
-	24, // 51: google.cloud.ces.v1beta.EvaluationService.ListEvaluationDatasets:input_type -> google.cloud.ces.v1beta.ListEvaluationDatasetsRequest
-	25, // 52: google.cloud.ces.v1beta.EvaluationService.ListEvaluationRuns:input_type -> google.cloud.ces.v1beta.ListEvaluationRunsRequest
-	44, // 53: google.cloud.ces.v1beta.EvaluationService.ListEvaluationExpectations:input_type -> google.cloud.ces.v1beta.ListEvaluationExpectationsRequest
-	43, // 54: google.cloud.ces.v1beta.EvaluationService.GetEvaluationExpectation:input_type -> google.cloud.ces.v1beta.GetEvaluationExpectationRequest
-	40, // 55: google.cloud.ces.v1beta.EvaluationService.CreateEvaluationExpectation:input_type -> google.cloud.ces.v1beta.CreateEvaluationExpectationRequest
-	41, // 56: google.cloud.ces.v1beta.EvaluationService.UpdateEvaluationExpectation:input_type -> google.cloud.ces.v1beta.UpdateEvaluationExpectationRequest
-	42, // 57: google.cloud.ces.v1beta.EvaluationService.DeleteEvaluationExpectation:input_type -> google.cloud.ces.v1beta.DeleteEvaluationExpectationRequest
-	30, // 58: google.cloud.ces.v1beta.EvaluationService.CreateScheduledEvaluationRun:input_type -> google.cloud.ces.v1beta.CreateScheduledEvaluationRunRequest
-	31, // 59: google.cloud.ces.v1beta.EvaluationService.GetScheduledEvaluationRun:input_type -> google.cloud.ces.v1beta.GetScheduledEvaluationRunRequest
-	32, // 60: google.cloud.ces.v1beta.EvaluationService.ListScheduledEvaluationRuns:input_type -> google.cloud.ces.v1beta.ListScheduledEvaluationRunsRequest
-	34, // 61: google.cloud.ces.v1beta.EvaluationService.UpdateScheduledEvaluationRun:input_type -> google.cloud.ces.v1beta.UpdateScheduledEvaluationRunRequest
-	35, // 62: google.cloud.ces.v1beta.EvaluationService.DeleteScheduledEvaluationRun:input_type -> google.cloud.ces.v1beta.DeleteScheduledEvaluationRunRequest
-	36, // 63: google.cloud.ces.v1beta.EvaluationService.TestPersonaVoice:input_type -> google.cloud.ces.v1beta.TestPersonaVoiceRequest
-	47, // 64: google.cloud.ces.v1beta.EvaluationService.ExportEvaluations:input_type -> google.cloud.ces.v1beta.ExportEvaluationsRequest
-	65, // 65: google.cloud.ces.v1beta.EvaluationService.RunEvaluation:output_type -> google.longrunning.Operation
-	38, // 66: google.cloud.ces.v1beta.EvaluationService.UploadEvaluationAudio:output_type -> google.cloud.ces.v1beta.UploadEvaluationAudioResponse
-	55, // 67: google.cloud.ces.v1beta.EvaluationService.CreateEvaluation:output_type -> google.cloud.ces.v1beta.Evaluation
-	65, // 68: google.cloud.ces.v1beta.EvaluationService.GenerateEvaluation:output_type -> google.longrunning.Operation
-	65, // 69: google.cloud.ces.v1beta.EvaluationService.ImportEvaluations:output_type -> google.longrunning.Operation
-	59, // 70: google.cloud.ces.v1beta.EvaluationService.CreateEvaluationDataset:output_type -> google.cloud.ces.v1beta.EvaluationDataset
-	55, // 71: google.cloud.ces.v1beta.EvaluationService.UpdateEvaluation:output_type -> google.cloud.ces.v1beta.Evaluation
-	59, // 72: google.cloud.ces.v1beta.EvaluationService.UpdateEvaluationDataset:output_type -> google.cloud.ces.v1beta.EvaluationDataset
-	66, // 73: google.cloud.ces.v1beta.EvaluationService.DeleteEvaluation:output_type -> google.protobuf.Empty
-	66, // 74: google.cloud.ces.v1beta.EvaluationService.DeleteEvaluationResult:output_type -> google.protobuf.Empty
-	66, // 75: google.cloud.ces.v1beta.EvaluationService.DeleteEvaluationDataset:output_type -> google.protobuf.Empty
-	65, // 76: google.cloud.ces.v1beta.EvaluationService.DeleteEvaluationRun:output_type -> google.longrunning.Operation
-	55, // 77: google.cloud.ces.v1beta.EvaluationService.GetEvaluation:output_type -> google.cloud.ces.v1beta.Evaluation
-	57, // 78: google.cloud.ces.v1beta.EvaluationService.GetEvaluationResult:output_type -> google.cloud.ces.v1beta.EvaluationResult
-	59, // 79: google.cloud.ces.v1beta.EvaluationService.GetEvaluationDataset:output_type -> google.cloud.ces.v1beta.EvaluationDataset
-	58, // 80: google.cloud.ces.v1beta.EvaluationService.GetEvaluationRun:output_type -> google.cloud.ces.v1beta.EvaluationRun
-	26, // 81: google.cloud.ces.v1beta.EvaluationService.ListEvaluations:output_type -> google.cloud.ces.v1beta.ListEvaluationsResponse
-	27, // 82: google.cloud.ces.v1beta.EvaluationService.ListEvaluationResults:output_type -> google.cloud.ces.v1beta.ListEvaluationResultsResponse
-	28, // 83: google.cloud.ces.v1beta.EvaluationService.ListEvaluationDatasets:output_type -> google.cloud.ces.v1beta.ListEvaluationDatasetsResponse
-	29, // 84: google.cloud.ces.v1beta.EvaluationService.ListEvaluationRuns:output_type -> google.cloud.ces.v1beta.ListEvaluationRunsResponse
-	45, // 85: google.cloud.ces.v1beta.EvaluationService.ListEvaluationExpectations:output_type -> google.cloud.ces.v1beta.ListEvaluationExpectationsResponse
-	63, // 86: google.cloud.ces.v1beta.EvaluationService.GetEvaluationExpectation:output_type -> google.cloud.ces.v1beta.EvaluationExpectation
-	63, // 87: google.cloud.ces.v1beta.EvaluationService.CreateEvaluationExpectation:output_type -> google.cloud.ces.v1beta.EvaluationExpectation
-	63, // 88: google.cloud.ces.v1beta.EvaluationService.UpdateEvaluationExpectation:output_type -> google.cloud.ces.v1beta.EvaluationExpectation
-	66, // 89: google.cloud.ces.v1beta.EvaluationService.DeleteEvaluationExpectation:output_type -> google.protobuf.Empty
-	61, // 90: google.cloud.ces.v1beta.EvaluationService.CreateScheduledEvaluationRun:output_type -> google.cloud.ces.v1beta.ScheduledEvaluationRun
-	61, // 91: google.cloud.ces.v1beta.EvaluationService.GetScheduledEvaluationRun:output_type -> google.cloud.ces.v1beta.ScheduledEvaluationRun
-	33, // 92: google.cloud.ces.v1beta.EvaluationService.ListScheduledEvaluationRuns:output_type -> google.cloud.ces.v1beta.ListScheduledEvaluationRunsResponse
-	61, // 93: google.cloud.ces.v1beta.EvaluationService.UpdateScheduledEvaluationRun:output_type -> google.cloud.ces.v1beta.ScheduledEvaluationRun
-	66, // 94: google.cloud.ces.v1beta.EvaluationService.DeleteScheduledEvaluationRun:output_type -> google.protobuf.Empty
-	39, // 95: google.cloud.ces.v1beta.EvaluationService.TestPersonaVoice:output_type -> google.cloud.ces.v1beta.TestPersonaVoiceResponse
-	65, // 96: google.cloud.ces.v1beta.EvaluationService.ExportEvaluations:output_type -> google.longrunning.Operation
-	65, // [65:97] is the sub-list for method output_type
-	33, // [33:65] is the sub-list for method input_type
-	33, // [33:33] is the sub-list for extension type_name
-	33, // [33:33] is the sub-list for extension extendee
-	0,  // [0:33] is the sub-list for field type_name
+	61, // 0: google.cloud.ces.v1beta.RunEvaluationResultMetricsResponse.status:type_name -> google.cloud.ces.v1beta.EvaluationResult.Outcome
+	62, // 1: google.cloud.ces.v1beta.RunEvaluationOperationMetadata.create_time:type_name -> google.protobuf.Timestamp
+	62, // 2: google.cloud.ces.v1beta.RunEvaluationOperationMetadata.end_time:type_name -> google.protobuf.Timestamp
+	63, // 3: google.cloud.ces.v1beta.CreateEvaluationRequest.evaluation:type_name -> google.cloud.ces.v1beta.Evaluation
+	64, // 4: google.cloud.ces.v1beta.GenerateEvaluationRequest.source:type_name -> google.cloud.ces.v1beta.Conversation.Source
+	58, // 5: google.cloud.ces.v1beta.ImportEvaluationsRequest.conversation_list:type_name -> google.cloud.ces.v1beta.ImportEvaluationsRequest.ConversationList
+	59, // 6: google.cloud.ces.v1beta.ImportEvaluationsRequest.import_options:type_name -> google.cloud.ces.v1beta.ImportEvaluationsRequest.ImportOptions
+	63, // 7: google.cloud.ces.v1beta.ImportEvaluationsResponse.evaluations:type_name -> google.cloud.ces.v1beta.Evaluation
+	65, // 8: google.cloud.ces.v1beta.ImportEvaluationsResponse.evaluation_results:type_name -> google.cloud.ces.v1beta.EvaluationResult
+	66, // 9: google.cloud.ces.v1beta.ImportEvaluationsResponse.evaluation_runs:type_name -> google.cloud.ces.v1beta.EvaluationRun
+	62, // 10: google.cloud.ces.v1beta.ImportEvaluationsOperationMetadata.create_time:type_name -> google.protobuf.Timestamp
+	62, // 11: google.cloud.ces.v1beta.ImportEvaluationsOperationMetadata.end_time:type_name -> google.protobuf.Timestamp
+	67, // 12: google.cloud.ces.v1beta.CreateEvaluationDatasetRequest.evaluation_dataset:type_name -> google.cloud.ces.v1beta.EvaluationDataset
+	63, // 13: google.cloud.ces.v1beta.UpdateEvaluationRequest.evaluation:type_name -> google.cloud.ces.v1beta.Evaluation
+	68, // 14: google.cloud.ces.v1beta.UpdateEvaluationRequest.update_mask:type_name -> google.protobuf.FieldMask
+	67, // 15: google.cloud.ces.v1beta.UpdateEvaluationDatasetRequest.evaluation_dataset:type_name -> google.cloud.ces.v1beta.EvaluationDataset
+	68, // 16: google.cloud.ces.v1beta.UpdateEvaluationDatasetRequest.update_mask:type_name -> google.protobuf.FieldMask
+	63, // 17: google.cloud.ces.v1beta.ListEvaluationsResponse.evaluations:type_name -> google.cloud.ces.v1beta.Evaluation
+	65, // 18: google.cloud.ces.v1beta.ListEvaluationResultsResponse.evaluation_results:type_name -> google.cloud.ces.v1beta.EvaluationResult
+	67, // 19: google.cloud.ces.v1beta.ListEvaluationDatasetsResponse.evaluation_datasets:type_name -> google.cloud.ces.v1beta.EvaluationDataset
+	66, // 20: google.cloud.ces.v1beta.ListEvaluationRunsResponse.evaluation_runs:type_name -> google.cloud.ces.v1beta.EvaluationRun
+	69, // 21: google.cloud.ces.v1beta.CreateScheduledEvaluationRunRequest.scheduled_evaluation_run:type_name -> google.cloud.ces.v1beta.ScheduledEvaluationRun
+	69, // 22: google.cloud.ces.v1beta.ListScheduledEvaluationRunsResponse.scheduled_evaluation_runs:type_name -> google.cloud.ces.v1beta.ScheduledEvaluationRun
+	69, // 23: google.cloud.ces.v1beta.UpdateScheduledEvaluationRunRequest.scheduled_evaluation_run:type_name -> google.cloud.ces.v1beta.ScheduledEvaluationRun
+	68, // 24: google.cloud.ces.v1beta.UpdateScheduledEvaluationRunRequest.update_mask:type_name -> google.protobuf.FieldMask
+	70, // 25: google.cloud.ces.v1beta.UploadEvaluationAudioResponse.duration:type_name -> google.protobuf.Duration
+	71, // 26: google.cloud.ces.v1beta.CreateEvaluationExpectationRequest.evaluation_expectation:type_name -> google.cloud.ces.v1beta.EvaluationExpectation
+	71, // 27: google.cloud.ces.v1beta.UpdateEvaluationExpectationRequest.evaluation_expectation:type_name -> google.cloud.ces.v1beta.EvaluationExpectation
+	68, // 28: google.cloud.ces.v1beta.UpdateEvaluationExpectationRequest.update_mask:type_name -> google.protobuf.FieldMask
+	71, // 29: google.cloud.ces.v1beta.ListEvaluationExpectationsResponse.evaluation_expectations:type_name -> google.cloud.ces.v1beta.EvaluationExpectation
+	1,  // 30: google.cloud.ces.v1beta.ExportOptions.export_format:type_name -> google.cloud.ces.v1beta.ExportOptions.ExportFormat
+	48, // 31: google.cloud.ces.v1beta.ExportEvaluationsRequest.export_options:type_name -> google.cloud.ces.v1beta.ExportOptions
+	60, // 32: google.cloud.ces.v1beta.ExportEvaluationsResponse.failed_evaluations:type_name -> google.cloud.ces.v1beta.ExportEvaluationsResponse.FailedEvaluationsEntry
+	48, // 33: google.cloud.ces.v1beta.ExportEvaluationResultsRequest.export_options:type_name -> google.cloud.ces.v1beta.ExportOptions
+	48, // 34: google.cloud.ces.v1beta.ExportEvaluationRunsRequest.export_options:type_name -> google.cloud.ces.v1beta.ExportOptions
+	0,  // 35: google.cloud.ces.v1beta.ImportEvaluationsRequest.ImportOptions.conflict_resolution_strategy:type_name -> google.cloud.ces.v1beta.ImportEvaluationsRequest.ImportOptions.ConflictResolutionStrategy
+	72, // 36: google.cloud.ces.v1beta.EvaluationService.RunEvaluation:input_type -> google.cloud.ces.v1beta.RunEvaluationRequest
+	39, // 37: google.cloud.ces.v1beta.EvaluationService.UploadEvaluationAudio:input_type -> google.cloud.ces.v1beta.UploadEvaluationAudioRequest
+	8,  // 38: google.cloud.ces.v1beta.EvaluationService.CreateEvaluation:input_type -> google.cloud.ces.v1beta.CreateEvaluationRequest
+	9,  // 39: google.cloud.ces.v1beta.EvaluationService.GenerateEvaluation:input_type -> google.cloud.ces.v1beta.GenerateEvaluationRequest
+	10, // 40: google.cloud.ces.v1beta.EvaluationService.ImportEvaluations:input_type -> google.cloud.ces.v1beta.ImportEvaluationsRequest
+	13, // 41: google.cloud.ces.v1beta.EvaluationService.CreateEvaluationDataset:input_type -> google.cloud.ces.v1beta.CreateEvaluationDatasetRequest
+	14, // 42: google.cloud.ces.v1beta.EvaluationService.UpdateEvaluation:input_type -> google.cloud.ces.v1beta.UpdateEvaluationRequest
+	15, // 43: google.cloud.ces.v1beta.EvaluationService.UpdateEvaluationDataset:input_type -> google.cloud.ces.v1beta.UpdateEvaluationDatasetRequest
+	16, // 44: google.cloud.ces.v1beta.EvaluationService.DeleteEvaluation:input_type -> google.cloud.ces.v1beta.DeleteEvaluationRequest
+	17, // 45: google.cloud.ces.v1beta.EvaluationService.DeleteEvaluationResult:input_type -> google.cloud.ces.v1beta.DeleteEvaluationResultRequest
+	18, // 46: google.cloud.ces.v1beta.EvaluationService.DeleteEvaluationDataset:input_type -> google.cloud.ces.v1beta.DeleteEvaluationDatasetRequest
+	19, // 47: google.cloud.ces.v1beta.EvaluationService.DeleteEvaluationRun:input_type -> google.cloud.ces.v1beta.DeleteEvaluationRunRequest
+	20, // 48: google.cloud.ces.v1beta.EvaluationService.GetEvaluation:input_type -> google.cloud.ces.v1beta.GetEvaluationRequest
+	21, // 49: google.cloud.ces.v1beta.EvaluationService.GetEvaluationResult:input_type -> google.cloud.ces.v1beta.GetEvaluationResultRequest
+	22, // 50: google.cloud.ces.v1beta.EvaluationService.GetEvaluationDataset:input_type -> google.cloud.ces.v1beta.GetEvaluationDatasetRequest
+	23, // 51: google.cloud.ces.v1beta.EvaluationService.GetEvaluationRun:input_type -> google.cloud.ces.v1beta.GetEvaluationRunRequest
+	24, // 52: google.cloud.ces.v1beta.EvaluationService.ListEvaluations:input_type -> google.cloud.ces.v1beta.ListEvaluationsRequest
+	25, // 53: google.cloud.ces.v1beta.EvaluationService.ListEvaluationResults:input_type -> google.cloud.ces.v1beta.ListEvaluationResultsRequest
+	26, // 54: google.cloud.ces.v1beta.EvaluationService.ListEvaluationDatasets:input_type -> google.cloud.ces.v1beta.ListEvaluationDatasetsRequest
+	27, // 55: google.cloud.ces.v1beta.EvaluationService.ListEvaluationRuns:input_type -> google.cloud.ces.v1beta.ListEvaluationRunsRequest
+	46, // 56: google.cloud.ces.v1beta.EvaluationService.ListEvaluationExpectations:input_type -> google.cloud.ces.v1beta.ListEvaluationExpectationsRequest
+	45, // 57: google.cloud.ces.v1beta.EvaluationService.GetEvaluationExpectation:input_type -> google.cloud.ces.v1beta.GetEvaluationExpectationRequest
+	42, // 58: google.cloud.ces.v1beta.EvaluationService.CreateEvaluationExpectation:input_type -> google.cloud.ces.v1beta.CreateEvaluationExpectationRequest
+	43, // 59: google.cloud.ces.v1beta.EvaluationService.UpdateEvaluationExpectation:input_type -> google.cloud.ces.v1beta.UpdateEvaluationExpectationRequest
+	44, // 60: google.cloud.ces.v1beta.EvaluationService.DeleteEvaluationExpectation:input_type -> google.cloud.ces.v1beta.DeleteEvaluationExpectationRequest
+	32, // 61: google.cloud.ces.v1beta.EvaluationService.CreateScheduledEvaluationRun:input_type -> google.cloud.ces.v1beta.CreateScheduledEvaluationRunRequest
+	33, // 62: google.cloud.ces.v1beta.EvaluationService.GetScheduledEvaluationRun:input_type -> google.cloud.ces.v1beta.GetScheduledEvaluationRunRequest
+	34, // 63: google.cloud.ces.v1beta.EvaluationService.ListScheduledEvaluationRuns:input_type -> google.cloud.ces.v1beta.ListScheduledEvaluationRunsRequest
+	36, // 64: google.cloud.ces.v1beta.EvaluationService.UpdateScheduledEvaluationRun:input_type -> google.cloud.ces.v1beta.UpdateScheduledEvaluationRunRequest
+	37, // 65: google.cloud.ces.v1beta.EvaluationService.DeleteScheduledEvaluationRun:input_type -> google.cloud.ces.v1beta.DeleteScheduledEvaluationRunRequest
+	38, // 66: google.cloud.ces.v1beta.EvaluationService.TestPersonaVoice:input_type -> google.cloud.ces.v1beta.TestPersonaVoiceRequest
+	49, // 67: google.cloud.ces.v1beta.EvaluationService.ExportEvaluations:input_type -> google.cloud.ces.v1beta.ExportEvaluationsRequest
+	53, // 68: google.cloud.ces.v1beta.EvaluationService.ExportEvaluationRuns:input_type -> google.cloud.ces.v1beta.ExportEvaluationRunsRequest
+	51, // 69: google.cloud.ces.v1beta.EvaluationService.ExportEvaluationResults:input_type -> google.cloud.ces.v1beta.ExportEvaluationResultsRequest
+	2,  // 70: google.cloud.ces.v1beta.EvaluationService.RunEvaluationResultMetrics:input_type -> google.cloud.ces.v1beta.RunEvaluationResultMetricsRequest
+	73, // 71: google.cloud.ces.v1beta.EvaluationService.RunEvaluation:output_type -> google.longrunning.Operation
+	40, // 72: google.cloud.ces.v1beta.EvaluationService.UploadEvaluationAudio:output_type -> google.cloud.ces.v1beta.UploadEvaluationAudioResponse
+	63, // 73: google.cloud.ces.v1beta.EvaluationService.CreateEvaluation:output_type -> google.cloud.ces.v1beta.Evaluation
+	73, // 74: google.cloud.ces.v1beta.EvaluationService.GenerateEvaluation:output_type -> google.longrunning.Operation
+	73, // 75: google.cloud.ces.v1beta.EvaluationService.ImportEvaluations:output_type -> google.longrunning.Operation
+	67, // 76: google.cloud.ces.v1beta.EvaluationService.CreateEvaluationDataset:output_type -> google.cloud.ces.v1beta.EvaluationDataset
+	63, // 77: google.cloud.ces.v1beta.EvaluationService.UpdateEvaluation:output_type -> google.cloud.ces.v1beta.Evaluation
+	67, // 78: google.cloud.ces.v1beta.EvaluationService.UpdateEvaluationDataset:output_type -> google.cloud.ces.v1beta.EvaluationDataset
+	74, // 79: google.cloud.ces.v1beta.EvaluationService.DeleteEvaluation:output_type -> google.protobuf.Empty
+	74, // 80: google.cloud.ces.v1beta.EvaluationService.DeleteEvaluationResult:output_type -> google.protobuf.Empty
+	74, // 81: google.cloud.ces.v1beta.EvaluationService.DeleteEvaluationDataset:output_type -> google.protobuf.Empty
+	73, // 82: google.cloud.ces.v1beta.EvaluationService.DeleteEvaluationRun:output_type -> google.longrunning.Operation
+	63, // 83: google.cloud.ces.v1beta.EvaluationService.GetEvaluation:output_type -> google.cloud.ces.v1beta.Evaluation
+	65, // 84: google.cloud.ces.v1beta.EvaluationService.GetEvaluationResult:output_type -> google.cloud.ces.v1beta.EvaluationResult
+	67, // 85: google.cloud.ces.v1beta.EvaluationService.GetEvaluationDataset:output_type -> google.cloud.ces.v1beta.EvaluationDataset
+	66, // 86: google.cloud.ces.v1beta.EvaluationService.GetEvaluationRun:output_type -> google.cloud.ces.v1beta.EvaluationRun
+	28, // 87: google.cloud.ces.v1beta.EvaluationService.ListEvaluations:output_type -> google.cloud.ces.v1beta.ListEvaluationsResponse
+	29, // 88: google.cloud.ces.v1beta.EvaluationService.ListEvaluationResults:output_type -> google.cloud.ces.v1beta.ListEvaluationResultsResponse
+	30, // 89: google.cloud.ces.v1beta.EvaluationService.ListEvaluationDatasets:output_type -> google.cloud.ces.v1beta.ListEvaluationDatasetsResponse
+	31, // 90: google.cloud.ces.v1beta.EvaluationService.ListEvaluationRuns:output_type -> google.cloud.ces.v1beta.ListEvaluationRunsResponse
+	47, // 91: google.cloud.ces.v1beta.EvaluationService.ListEvaluationExpectations:output_type -> google.cloud.ces.v1beta.ListEvaluationExpectationsResponse
+	71, // 92: google.cloud.ces.v1beta.EvaluationService.GetEvaluationExpectation:output_type -> google.cloud.ces.v1beta.EvaluationExpectation
+	71, // 93: google.cloud.ces.v1beta.EvaluationService.CreateEvaluationExpectation:output_type -> google.cloud.ces.v1beta.EvaluationExpectation
+	71, // 94: google.cloud.ces.v1beta.EvaluationService.UpdateEvaluationExpectation:output_type -> google.cloud.ces.v1beta.EvaluationExpectation
+	74, // 95: google.cloud.ces.v1beta.EvaluationService.DeleteEvaluationExpectation:output_type -> google.protobuf.Empty
+	69, // 96: google.cloud.ces.v1beta.EvaluationService.CreateScheduledEvaluationRun:output_type -> google.cloud.ces.v1beta.ScheduledEvaluationRun
+	69, // 97: google.cloud.ces.v1beta.EvaluationService.GetScheduledEvaluationRun:output_type -> google.cloud.ces.v1beta.ScheduledEvaluationRun
+	35, // 98: google.cloud.ces.v1beta.EvaluationService.ListScheduledEvaluationRuns:output_type -> google.cloud.ces.v1beta.ListScheduledEvaluationRunsResponse
+	69, // 99: google.cloud.ces.v1beta.EvaluationService.UpdateScheduledEvaluationRun:output_type -> google.cloud.ces.v1beta.ScheduledEvaluationRun
+	74, // 100: google.cloud.ces.v1beta.EvaluationService.DeleteScheduledEvaluationRun:output_type -> google.protobuf.Empty
+	41, // 101: google.cloud.ces.v1beta.EvaluationService.TestPersonaVoice:output_type -> google.cloud.ces.v1beta.TestPersonaVoiceResponse
+	73, // 102: google.cloud.ces.v1beta.EvaluationService.ExportEvaluations:output_type -> google.longrunning.Operation
+	73, // 103: google.cloud.ces.v1beta.EvaluationService.ExportEvaluationRuns:output_type -> google.longrunning.Operation
+	73, // 104: google.cloud.ces.v1beta.EvaluationService.ExportEvaluationResults:output_type -> google.longrunning.Operation
+	73, // 105: google.cloud.ces.v1beta.EvaluationService.RunEvaluationResultMetrics:output_type -> google.longrunning.Operation
+	71, // [71:106] is the sub-list for method output_type
+	36, // [36:71] is the sub-list for method input_type
+	36, // [36:36] is the sub-list for extension type_name
+	36, // [36:36] is the sub-list for extension extendee
+	0,  // [0:36] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_ces_v1beta_evaluation_service_proto_init() }
@@ -4086,20 +4472,20 @@ func file_google_cloud_ces_v1beta_evaluation_service_proto_init() {
 	file_google_cloud_ces_v1beta_agent_service_proto_init()
 	file_google_cloud_ces_v1beta_conversation_proto_init()
 	file_google_cloud_ces_v1beta_evaluation_proto_init()
-	file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[6].OneofWrappers = []any{
+	file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[8].OneofWrappers = []any{
 		(*ImportEvaluationsRequest_ConversationList_)(nil),
 		(*ImportEvaluationsRequest_GcsUri)(nil),
 		(*ImportEvaluationsRequest_CsvContent)(nil),
 	}
-	file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[46].OneofWrappers = []any{
+	file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[48].OneofWrappers = []any{
 		(*ExportEvaluationsResponse_EvaluationsContent)(nil),
 		(*ExportEvaluationsResponse_EvaluationsUri)(nil),
 	}
-	file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[47].OneofWrappers = []any{
+	file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[50].OneofWrappers = []any{
 		(*ExportEvaluationResultsResponse_EvaluationResultsContent)(nil),
 		(*ExportEvaluationResultsResponse_EvaluationResultsUri)(nil),
 	}
-	file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[48].OneofWrappers = []any{
+	file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes[52].OneofWrappers = []any{
 		(*ExportEvaluationRunsResponse_EvaluationRunsContent)(nil),
 		(*ExportEvaluationRunsResponse_EvaluationRunsUri)(nil),
 	}
@@ -4109,7 +4495,7 @@ func file_google_cloud_ces_v1beta_evaluation_service_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_ces_v1beta_evaluation_service_proto_rawDesc), len(file_google_cloud_ces_v1beta_evaluation_service_proto_rawDesc)),
 			NumEnums:      2,
-			NumMessages:   52,
+			NumMessages:   59,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
