@@ -654,7 +654,6 @@ libraries:
     version: 1.0.0
     apis:
       - path: google/cloud/developerconnect/v1
-    copyright_year: "2026"
   - name: devicestreaming
     version: 1.0.0
     apis:
