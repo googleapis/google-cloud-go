@@ -249,7 +249,6 @@ func TestIntegration_Pinger(t *testing.T) {
 	}
 }
 
-
 func TestIntegration_UpdateFamilyValueType(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
