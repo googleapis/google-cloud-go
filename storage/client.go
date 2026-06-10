@@ -297,13 +297,13 @@ type openWriterParams struct {
 }
 
 type newMultiRangeDownloaderParams struct {
-	bucket              string
-	conds               *Conditions
-	disableReadChecksum bool
-	encryptionKey       []byte
-	gen                 int64
-	handle              *ReadHandle
-	object              string
+	bucket                 string
+	conds                  *Conditions
+	disableMRDReadChecksum bool
+	encryptionKey          []byte
+	gen                    int64
+	handle                 *ReadHandle
+	object                 string
 
 	// Multistream settings.
 	minConnections      int

@@ -231,15 +231,15 @@ func WithTargetPendingBytes(c int) MRDOption {
 	return targetPendingBytes(c)
 }
 
-type disableReadChecksum struct{}
+type disableMRDReadChecksum struct{}
 
-func (c disableReadChecksum) apply(params *newMultiRangeDownloaderParams) {
-	params.disableReadChecksum = true
+func (c disableMRDReadChecksum) apply(params *newMultiRangeDownloaderParams) {
+	params.disableMRDReadChecksum = true
 }
 
-// WithDisableReadChecksum returns an MRDOption that disables read checksum validation for the MRD range downloads.
-func WithDisableReadChecksum() MRDOption {
-	return disableReadChecksum{}
+// WithDisableMRDReadChecksum returns an MRDOption that disables read checksum validation for the MRD range downloads.
+func WithDisableMRDReadChecksum() MRDOption {
+	return disableMRDReadChecksum{}
 }
 
 type disableReaderChecksum struct{}

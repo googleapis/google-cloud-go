@@ -2249,7 +2249,7 @@ func TestMRDWrongChunkChecksumEmulated(t *testing.T) {
 
 			var opts []MRDOption
 			if disableChecksum {
-				opts = append(opts, WithDisableReadChecksum())
+				opts = append(opts, WithDisableMRDReadChecksum())
 			}
 
 			reader, err := o.NewMultiRangeDownloader(ctx, opts...)
