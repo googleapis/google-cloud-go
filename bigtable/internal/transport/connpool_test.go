@@ -21,6 +21,7 @@ import (
 	"io"
 	"net/url"
 	"reflect"
+	"runtime"
 	"sort"
 	"strings"
 	"sync"
@@ -2085,5 +2086,80 @@ func BenchmarkSelectionStrategies(b *testing.B) {
 				}
 			})
 		})
+	}
+}
+
+// TestCloseRaceWithAddConnections is a -race stress test for concurrent
+// Close + addConnections. It exercises the code path the fix protects:
+// without the dialMu serialization in Close, the addConnections writer
+// could store newly-dialed entries into p.conns *after* Close had
+// snapshotted and closed the old set, leaking those connections.
+//
+// The race is hard to trigger naturally because factory.newEntry honors
+// poolCtx — a Close that wins the race usually cancels poolCtx before
+// addConnections' workers finish priming, and the workers then return
+// errors instead of producing entries. A deterministic demonstration would
+// need a custom factory that bypasses ctx; this test mainly guards against
+// data races (caught by -race) and any future regression in the contract.
+func TestCloseRaceWithAddConnections(t *testing.T) {
+	const trials = 50
+
+	for trial := 0; trial < trials; trial++ {
+		var (
+			dialedMu sync.Mutex
+			dialed   []*BigtableConn
+		)
+
+		fake := &fakeService{}
+		addr := setupTestServer(t, fake)
+		countingDial := func() (*BigtableConn, error) {
+			c, err := dialBigtableserver(addr)
+			if err != nil {
+				return nil, err
+			}
+			dialedMu.Lock()
+			dialed = append(dialed, c)
+			dialedMu.Unlock()
+			return c, nil
+		}
+
+		pool, err := NewBigtableChannelPool(context.Background(), 1, btopt.RoundRobin, countingDial, time.Now(), poolOpts()...)
+		if err != nil {
+			t.Fatalf("trial %d: NewBigtableChannelPool failed: %v", trial, err)
+		}
+
+		var wg sync.WaitGroup
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			// Try to grow the pool by several connections while Close races us.
+			pool.addConnections(5, 16)
+		}()
+
+		// Yield so the goroutine has a chance to acquire dialMu and start
+		// dialing before Close arrives — this is the window the bug lives in.
+		runtime.Gosched()
+		if err := pool.Close(); err != nil {
+			t.Errorf("trial %d: Close returned error: %v", trial, err)
+		}
+		wg.Wait()
+
+		// Any conn dialed by countingDial must end up Shutdown — either
+		// because it was in p.conns when Close ran, or because addConnections
+		// (running under dialMu serialized after Close) saw poolCtx done and
+		// declined to add it (in which case factory.newEntry would not have
+		// produced a conn at all, so it wouldn't be in `dialed`).
+		dialedMu.Lock()
+		leaked := 0
+		for _, c := range dialed {
+			if !isConnClosed(c.ClientConn) {
+				leaked++
+			}
+		}
+		total := len(dialed)
+		dialedMu.Unlock()
+		if leaked > 0 {
+			t.Errorf("trial %d: %d/%d connections leaked (still alive after Close)", trial, leaked, total)
+		}
 	}
 }

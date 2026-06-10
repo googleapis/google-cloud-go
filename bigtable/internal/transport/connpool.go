@@ -664,6 +664,15 @@ func (p *BigtableChannelPool) Num() int {
 // Close closes all connections in the pool.
 func (p *BigtableChannelPool) Close() error {
 	p.poolCancel() // Cancel the context for background tasks
+	// Serialize against pool writers (addConnections, removeConnections,
+	// replaceConnection) so an in-flight writer cannot store freshly-dialed
+	// entries into p.conns after we have already snapshotted and closed
+	// what we thought was the full set. Without this lock, a writer that
+	// finishes after Close's snapshot but before returning would leak any
+	// connections it created — they would sit in p.conns with no Close to
+	// shut them down.
+	p.dialMu.Lock()
+	defer p.dialMu.Unlock()
 	// Stop all monitors.
 	for _, m := range p.monitors {
 		m.Stop()
