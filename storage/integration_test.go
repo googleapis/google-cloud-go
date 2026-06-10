@@ -1196,11 +1196,10 @@ func TestIntegration_DirectConnectivityEnforcedError(t *testing.T) {
 			t.Fatal("expected error when direct connectivity is enforced but disabled client-side, got nil")
 		}
 
-		// Verify the error message contains direct connectivity diagnostic details.
+		// Verify that the error is FailedPrecondition (400 / FailedPrecondition).
 		t.Logf("Got expected error: %v", err)
-		errStr := strings.ToLower(err.Error())
-		if !strings.Contains(errStr, "direct connectivity") && !strings.Contains(errStr, "directpath") {
-			t.Errorf("got error %q; want error to contain 'direct connectivity' or 'directpath'", err)
+		if gotCode := status.Code(err); gotCode != codes.FailedPrecondition {
+			t.Errorf("got error code %v, want FailedPrecondition", gotCode)
 		}
 	})
 }
