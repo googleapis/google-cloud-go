@@ -220,7 +220,6 @@ type builtinMetricsTracerFactory struct {
 	clientBlockingLatencies metric.Float64Histogram
 	retryCount              metric.Int64Counter
 	connErrCount            metric.Int64Counter
-	debugTags               metric.Int64Counter
 }
 
 // Returns error only if metricsProvider is of unknown type. Rest all errors are swallowed
@@ -312,26 +311,6 @@ func builtInMeterProviderOptions(project string, opts ...option.ClientOption) ([
 	)}, nil
 }
 
-func (tf *builtinMetricsTracerFactory) newAsyncRefreshErrHandler() func() {
-	if !tf.enabled {
-		return func() {}
-	}
-
-	asyncRefreshMetricAttrs := tf.clientAttributes
-	asyncRefreshMetricAttrs = append(asyncRefreshMetricAttrs,
-		attribute.String(metricLabelKeyTag, "async_refresh_dry_run"),
-		// Table, cluster and zone are unknown at this point
-		// Use default values
-		attribute.String(monitoredResLabelKeyTable, defaultTable),
-		attribute.String(monitoredResLabelKeyCluster, defaultCluster),
-		attribute.String(monitoredResLabelKeyZone, defaultZone),
-	)
-	return func() {
-		tf.debugTags.Add(context.Background(), 1,
-			metric.WithAttributes(asyncRefreshMetricAttrs...))
-	}
-}
-
 func (tf *builtinMetricsTracerFactory) createInstruments(meter metric.Meter) error {
 	var err error
 
@@ -421,13 +400,7 @@ func (tf *builtinMetricsTracerFactory) createInstruments(meter metric.Meter) err
 		return err
 	}
 
-	// Create debug_tags
-	tf.debugTags, err = meter.Int64Counter(
-		metricNameDebugTags,
-		metric.WithDescription("A counter of internal client events used for debugging."),
-		metric.WithUnit(metricUnitCount),
-	)
-	return err
+	return nil
 }
 
 // builtinMetricsTracer is created one per operation
@@ -577,7 +550,6 @@ func (tf *builtinMetricsTracerFactory) createBuiltinMetricsTracer(ctx context.Co
 		instrumentClientBlockingLatencies: tf.clientBlockingLatencies,
 		instrumentRetryCount:              tf.retryCount,
 		instrumentConnErrCount:            tf.connErrCount,
-		instrumentDebugTags:               tf.debugTags,
 
 		tableName:   tableName,
 		isStreaming: isStreaming,

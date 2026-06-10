@@ -145,7 +145,7 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 	o = append(o, opts...)
 
 	// TODO(b/372244283): Remove after b/358175516 has been fixed
-	o = append(o, internaloption.EnableAsyncRefreshDryRun(metricsTracerFactory.newAsyncRefreshErrHandler()))
+	o = append(o, internaloption.EnableNewAuthLibrary())
 
 	disableRetryInfo := false
 
