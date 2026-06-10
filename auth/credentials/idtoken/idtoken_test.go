@@ -323,7 +323,8 @@ func TestNewCredentials_ImpersonatedAndExternal_NoClient(t *testing.T) {
 	// by the impersonate package clone http.DefaultTransport, which preserves
 	// the dial overrides.
 	dial := func(ctx context.Context, network, addr string) (net.Conn, error) {
-		return net.Dial("tcp", ts.Listener.Addr().String())
+		var d net.Dialer
+		return d.DialContext(ctx, "tcp", ts.Listener.Addr().String())
 	}
 	origTransport := http.DefaultTransport
 	http.DefaultTransport = &http.Transport{
