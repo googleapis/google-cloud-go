@@ -229,10 +229,24 @@ func TestIntegration_Pinger(t *testing.T) {
 	if !testEnv.Config().UseProd {
 		t.Skip("emulator doesn't support PingAndWarm")
 	}
-	if err := client.PingAndWarm(ctx); err != nil {
+	err = internal.Retry(ctx, gax.Backoff{
+		Initial:    2 * time.Second,
+		Max:        30 * time.Second,
+		Multiplier: 2.0,
+	}, func() (bool, error) {
+		err := client.PingAndWarm(ctx)
+		if err != nil {
+			s, ok := status.FromError(err)
+			if ok && s.Code() == codes.FailedPrecondition {
+				return false, err // retry
+			}
+			return true, err // stop and return other errors
+		}
+		return true, nil // success
+	})
+	if err != nil {
 		t.Fatalf("pinger failed. got %v, want %v", err, nil)
 	}
-
 }
 
 func TestIntegration_UpdateFamilyValueType(t *testing.T) {
