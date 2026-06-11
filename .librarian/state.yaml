@@ -571,7 +571,8 @@ libraries:
         service_config: bigtable_v2.yaml
     source_roots:
       - bigtable
-    preserve_regex: []
+    preserve_regex:
+      - ^admin/apiv2/table_admin.*\.go$
     remove_regex: []
     release_exclude_paths:
       - bigtable/bttest
