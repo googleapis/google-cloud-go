@@ -5,6 +5,11 @@ modules:
     enabled_generator_features:
     - F_mtls_hard_bound_tokens
 
+  - name: backstory
+    apis:
+      - path: backstory
+        client_directory: backstorypb
+
   - name: bigquery/v2
     apis:
       - path: google/cloud/bigquery/v2
