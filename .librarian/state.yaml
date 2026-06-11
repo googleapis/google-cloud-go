@@ -406,6 +406,8 @@ libraries:
         go:
           import_path: backstory/backstorypb
           proto_only: true
+    source_roots:
+      - backstory
     preserve_regex: []
     remove_regex: []
     release_exclude_paths:
