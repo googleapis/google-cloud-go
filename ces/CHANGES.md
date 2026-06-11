@@ -1,5 +1,11 @@
 # Changes
 
+## [1.1.0](https://github.com/googleapis/google-cloud-go/releases/tag/ces%2Fv1.1.0) (2026-06-11)
+
+### Features
+
+* update API sources and regenerate (#19950) ([c7607be](https://github.com/googleapis/google-cloud-go/commit/c7607be52757b803df345670b5d0621c2bb9ba30))
+
 ## [1.0.0](https://github.com/googleapis/google-cloud-go/releases/tag/ces%2Fv1.0.0) (2026-05-08)
 
 ## [0.9.0](https://github.com/googleapis/google-cloud-go/releases/tag/ces%2Fv0.9.0) (2026-05-07)
