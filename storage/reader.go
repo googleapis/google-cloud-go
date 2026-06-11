@@ -92,8 +92,8 @@ type ReaderObjectAttrs struct {
 // when calling [NewClient]. This ensures consistency with other client
 // operations, which all use JSON. JSON will become the default in a future
 // release.
-func (o *ObjectHandle) NewReader(ctx context.Context) (*Reader, error) {
-	return o.NewRangeReader(ctx, 0, -1)
+func (o *ObjectHandle) NewReader(ctx context.Context, opts ...ReaderOption) (*Reader, error) {
+	return o.NewRangeReader(ctx, 0, -1, opts...)
 }
 
 // NewRangeReader reads part of an object, reading at most length bytes
@@ -113,7 +113,7 @@ func (o *ObjectHandle) NewReader(ctx context.Context) (*Reader, error) {
 // when calling [NewClient]. This ensures consistency with other client
 // operations, which all use JSON. JSON will become the default in a future
 // release.
-func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64) (r *Reader, err error) {
+func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64, opts ...ReaderOption) (r *Reader, err error) {
 	// This span covers the life of the reader. It is closed via the context
 	// in Reader.Close.
 	ctx, _ = startSpan(ctx, "Object.Reader")
@@ -131,7 +131,7 @@ func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64)
 		}
 	}
 
-	opts := makeStorageOpts(true, o.retry, o.userProject)
+	storageOpts := makeStorageOpts(true, o.retry, o.userProject)
 
 	params := &newRangeReaderParams{
 		bucket:         o.bucket,
@@ -144,8 +144,11 @@ func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64)
 		readCompressed: o.readCompressed,
 		handle:         &o.readHandle,
 	}
+	for _, opt := range opts {
+		opt.apply(params)
+	}
 
-	r, err = o.c.tc.NewRangeReader(ctx, params, opts...)
+	r, err = o.c.tc.NewRangeReader(ctx, params, storageOpts...)
 
 	// Pass the context so that the span can be closed in Reader.Close, or close the
 	// span now if there is an error.
@@ -154,6 +157,11 @@ func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64)
 	}
 
 	return r, err
+}
+
+// ReaderOption is an option for NewReader or NewRangeReader.
+type ReaderOption interface {
+	apply(*newRangeReaderParams)
 }
 
 // MRDOption is an option for MultiRangeDownloader.
@@ -223,15 +231,26 @@ func WithTargetPendingBytes(c int) MRDOption {
 	return targetPendingBytes(c)
 }
 
-type disableReadChecksum struct{}
+type disableMRDReadChecksum struct{}
 
-func (c disableReadChecksum) apply(params *newMultiRangeDownloaderParams) {
-	params.disableReadChecksum = true
+func (c disableMRDReadChecksum) apply(params *newMultiRangeDownloaderParams) {
+	params.disableMRDReadChecksum = true
 }
 
-// WithDisableReadChecksum returns an MRDOption that disables read checksum validation for the MRD range downloads.
-func WithDisableReadChecksum() MRDOption {
-	return disableReadChecksum{}
+// WithDisableMRDReadChecksum returns an MRDOption that disables read checksum validation for the MRD range downloads.
+func WithDisableMRDReadChecksum() MRDOption {
+	return disableMRDReadChecksum{}
+}
+
+type disableReaderChecksum struct{}
+
+func (c disableReaderChecksum) apply(params *newRangeReaderParams) {
+	params.disableCRCCheck = true
+}
+
+// WithDisableReaderChecksum returns a ReaderOption that disables read checksum validation.
+func WithDisableReaderChecksum() ReaderOption {
+	return disableReaderChecksum{}
 }
 
 // NewMultiRangeDownloader creates a multi-range reader for an object.

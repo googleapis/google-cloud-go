@@ -297,13 +297,13 @@ type openWriterParams struct {
 }
 
 type newMultiRangeDownloaderParams struct {
-	bucket              string
-	conds               *Conditions
-	disableReadChecksum bool
-	encryptionKey       []byte
-	gen                 int64
-	handle              *ReadHandle
-	object              string
+	bucket                 string
+	conds                  *Conditions
+	disableMRDReadChecksum bool
+	encryptionKey          []byte
+	gen                    int64
+	handle                 *ReadHandle
+	object                 string
 
 	// Multistream settings.
 	minConnections      int
@@ -313,15 +313,16 @@ type newMultiRangeDownloaderParams struct {
 }
 
 type newRangeReaderParams struct {
-	bucket         string
-	conds          *Conditions
-	encryptionKey  []byte
-	gen            int64
-	length         int64
-	object         string
-	offset         int64
-	readCompressed bool // Use accept-encoding: gzip. Only works for HTTP currently.
-	handle         *ReadHandle
+	bucket          string
+	conds           *Conditions
+	encryptionKey   []byte
+	gen             int64
+	length          int64
+	object          string
+	offset          int64
+	readCompressed  bool // Use accept-encoding: gzip. Only works for HTTP currently.
+	handle          *ReadHandle
+	disableCRCCheck bool
 }
 
 type getObjectParams struct {

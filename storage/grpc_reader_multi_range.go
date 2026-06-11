@@ -1066,7 +1066,7 @@ func (m *multiRangeDownloaderManager) processDataRanges(result mrdSessionResult,
 
 		var updateCRC func(b []byte)
 		// If checksum is enabled and data has checksum, validate it.
-		if !m.params.disableReadChecksum &&
+		if !m.params.disableMRDReadChecksum &&
 			dataRange.GetChecksummedData() != nil &&
 			dataRange.GetChecksummedData().Crc32C != nil {
 			req.gotChunkCRC = 0
@@ -1101,7 +1101,7 @@ func (m *multiRangeDownloaderManager) processDataRanges(result mrdSessionResult,
 }
 
 func (m *multiRangeDownloaderManager) checkAndResetChunkCRC(req *rangeRequest) error {
-	if m.params.disableReadChecksum || !req.chunkCRCPresent {
+	if m.params.disableMRDReadChecksum || !req.chunkCRCPresent {
 		return nil
 	}
 	if req.gotChunkCRC != req.wantChunkCRC {
