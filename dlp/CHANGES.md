@@ -1,5 +1,11 @@
 # Changes
 
+## [1.36.0](https://github.com/googleapis/google-cloud-go/releases/tag/dlp%2Fv1.36.0) (2026-06-11)
+
+### Features
+
+* update API sources and regenerate (#19950) ([c7607be](https://github.com/googleapis/google-cloud-go/commit/c7607be52757b803df345670b5d0621c2bb9ba30))
+
 ## [1.35.0](https://github.com/googleapis/google-cloud-go/releases/tag/dlp%2Fv1.35.0) (2026-06-04)
 
 ### Features
