@@ -122,6 +122,7 @@ func NewAdminClient(ctx context.Context, project, instance string, opts ...optio
 	// Need to add scopes for long running operations (for create table & snapshots)
 	o = append(o, option.WithScopes(cloudresourcemanager.CloudPlatformScope))
 	o = append(o, internaloption.EnableNewAuthLibrary())
+	o = append(o, internaloption.EnableJwtWithScope())
 	o = append(o, opts...)
 	connPool, err := gtransport.DialPool(ctx, o...)
 	if err != nil {
