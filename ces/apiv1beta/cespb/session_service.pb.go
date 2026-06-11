@@ -28,6 +28,7 @@ import (
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	_ "google.golang.org/protobuf/types/known/anypb"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 )
 
@@ -1677,9 +1678,11 @@ type Citations_CitedChunk struct {
 	// Title of the cited document.
 	Title string `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
 	// Text used for citation.
-	Text          string `protobuf:"bytes,3,opt,name=text,proto3" json:"text,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	Text string `protobuf:"bytes,3,opt,name=text,proto3" json:"text,omitempty"`
+	// Whether this citation requires attribution to be shown to the end users.
+	RequiresAttribution bool `protobuf:"varint,4,opt,name=requires_attribution,json=requiresAttribution,proto3" json:"requires_attribution,omitempty"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
 }
 
 func (x *Citations_CitedChunk) Reset() {
@@ -1731,6 +1734,13 @@ func (x *Citations_CitedChunk) GetText() string {
 		return x.Text
 	}
 	return ""
+}
+
+func (x *Citations_CitedChunk) GetRequiresAttribution() bool {
+	if x != nil {
+		return x.RequiresAttribution
+	}
+	return false
 }
 
 // Contains execution details during the processing.
@@ -1793,7 +1803,7 @@ var File_google_cloud_ces_v1beta_session_service_proto protoreflect.FileDescript
 
 const file_google_cloud_ces_v1beta_session_service_proto_rawDesc = "" +
 	"\n" +
-	"-google/cloud/ces/v1beta/session_service.proto\x12\x17google.cloud.ces.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a$google/cloud/ces/v1beta/common.proto\x1a%google/cloud/ces/v1beta/example.proto\x1a#google/cloud/ces/v1beta/mocks.proto\x1a0google/cloud/ces/v1beta/search_suggestions.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xd3\x02\n" +
+	"-google/cloud/ces/v1beta/session_service.proto\x12\x17google.cloud.ces.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a$google/cloud/ces/v1beta/common.proto\x1a%google/cloud/ces/v1beta/example.proto\x1a#google/cloud/ces/v1beta/mocks.proto\x1a0google/cloud/ces/v1beta/search_suggestions.proto\x1a\x19google/protobuf/any.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xd3\x02\n" +
 	"\n" +
 	"MockConfig\x12X\n" +
 	"\x11mocked_tool_calls\x18\x01 \x03(\v2'.google.cloud.ces.v1beta.MockedToolCallB\x03\xe0A\x01R\x0fmockedToolCalls\x12\x83\x01\n" +
@@ -1836,14 +1846,15 @@ const file_google_cloud_ces_v1beta_session_service_proto_rawDesc = "" +
 	"\n" +
 	"tool_calls\x18\x01 \x03(\v2!.google.cloud.ces.v1beta.ToolCallB\x03\xe0A\x01R\ttoolCalls\"b\n" +
 	"\rToolResponses\x12Q\n" +
-	"\x0etool_responses\x18\x01 \x03(\v2%.google.cloud.ces.v1beta.ToolResponseB\x03\xe0A\x01R\rtoolResponses\"\xa7\x01\n" +
+	"\x0etool_responses\x18\x01 \x03(\v2%.google.cloud.ces.v1beta.ToolResponseB\x03\xe0A\x01R\rtoolResponses\"\xda\x01\n" +
 	"\tCitations\x12P\n" +
-	"\fcited_chunks\x18\x01 \x03(\v2-.google.cloud.ces.v1beta.Citations.CitedChunkR\vcitedChunks\x1aH\n" +
+	"\fcited_chunks\x18\x01 \x03(\v2-.google.cloud.ces.v1beta.Citations.CitedChunkR\vcitedChunks\x1a{\n" +
 	"\n" +
 	"CitedChunk\x12\x10\n" +
 	"\x03uri\x18\x01 \x01(\tR\x03uri\x12\x14\n" +
 	"\x05title\x18\x02 \x01(\tR\x05title\x12\x12\n" +
-	"\x04text\x18\x03 \x01(\tR\x04text\"\"\n" +
+	"\x04text\x18\x03 \x01(\tR\x04text\x121\n" +
+	"\x14requires_attribution\x18\x04 \x01(\bR\x13requiresAttribution\"\"\n" +
 	"\x05Event\x12\x19\n" +
 	"\x05event\x18\x01 \x01(\tB\x03\xe0A\x02R\x05event\"\xe1\x03\n" +
 	"\fSessionInput\x12\x19\n" +

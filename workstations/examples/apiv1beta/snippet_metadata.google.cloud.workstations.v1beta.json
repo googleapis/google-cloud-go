@@ -409,7 +409,7 @@
         "resultType": "*workstationspb.GenerateAccessTokenResponse",
         "shortName": "GenerateAccessToken"
       },
-      "description": "GenerateAccessToken returns a short-lived credential that can be used to send authenticated and\nauthorized traffic to a workstation.",
+      "description": "GenerateAccessToken returns a short-lived credential that can be used to send authenticated and\nauthorized traffic to a workstation.\nOnce generated this token cannot be revoked and is good for the lifetime\nof the token.",
       "file": "Client/GenerateAccessToken/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -928,6 +928,52 @@
         }
       ],
       "title": "workstations ListWorkstations Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.workstations.v1beta.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.workstations.v1beta.Client.PushCredentials",
+        "method": {
+          "fullName": "google.cloud.workstations.v1beta.Workstations.PushCredentials",
+          "service": {
+            "fullName": "google.cloud.workstations.v1beta.Workstations",
+            "shortName": "Workstations"
+          },
+          "shortName": "PushCredentials"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "workstationspb.PushCredentialsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "PushCredentialsOperation",
+        "shortName": "PushCredentials"
+      },
+      "description": "PushCredentials pushes credentials to a running workstation on behalf of a user. Once\ncomplete, supported credential types (application_default_credentials) are\nmade available to processes running in the user container.",
+      "file": "Client/PushCredentials/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "workstations_v1beta_generated_Workstations_PushCredentials_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "workstations PushCredentials Sample"
     },
     {
       "clientMethod": {

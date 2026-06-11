@@ -17,6 +17,10 @@
 // Package geminidataanalytics is an auto-generated package for the
 // Data Analytics API with Gemini.
 //
+// The Gemini Data Analytics API enables developers to build intelligent data
+// analytics applications. Leverage AI-powered chat interfaces to allow users
+// to interact with and analyze structured data using natural language.
+//
 //	NOTE: This package is in beta. It is not stable, and may be subject to changes.
 //
 // # General documentation

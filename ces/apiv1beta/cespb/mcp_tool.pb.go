@@ -37,6 +37,65 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// Represents the dynamic availability state of the tool.
+type McpTool_State int32
+
+const (
+	// Default state.
+	McpTool_STATE_UNSPECIFIED McpTool_State = 0
+	// The tool is available and actively offered by the server.
+	McpTool_ACTIVE McpTool_State = 1
+	// The tool is configured or pinned, but currently not offered by the
+	// server.
+	McpTool_INACTIVE McpTool_State = 2
+	// The tool exists on the server, but does not match the version on the
+	// server.
+	McpTool_STALE McpTool_State = 3
+)
+
+// Enum value maps for McpTool_State.
+var (
+	McpTool_State_name = map[int32]string{
+		0: "STATE_UNSPECIFIED",
+		1: "ACTIVE",
+		2: "INACTIVE",
+		3: "STALE",
+	}
+	McpTool_State_value = map[string]int32{
+		"STATE_UNSPECIFIED": 0,
+		"ACTIVE":            1,
+		"INACTIVE":          2,
+		"STALE":             3,
+	}
+)
+
+func (x McpTool_State) Enum() *McpTool_State {
+	p := new(McpTool_State)
+	*p = x
+	return p
+}
+
+func (x McpTool_State) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (McpTool_State) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_ces_v1beta_mcp_tool_proto_enumTypes[0].Descriptor()
+}
+
+func (McpTool_State) Type() protoreflect.EnumType {
+	return &file_google_cloud_ces_v1beta_mcp_tool_proto_enumTypes[0]
+}
+
+func (x McpTool_State) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use McpTool_State.Descriptor instead.
+func (McpTool_State) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_ces_v1beta_mcp_tool_proto_rawDescGZIP(), []int{0, 0}
+}
+
 // An MCP tool.
 // See https://modelcontextprotocol.io/specification/2025-06-18/server/tools for
 // more details.
@@ -44,6 +103,9 @@ type McpTool struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. The name of the MCP tool.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Optional. The name override of the MCP tool.
+	// This is populated if the name was overridden by a Toolset override.
+	NameOverride string `protobuf:"bytes,13,opt,name=name_override,json=nameOverride,proto3" json:"name_override,omitempty"`
 	// Optional. The description of the MCP tool.
 	Description string `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
 	// Optional. The schema of the input arguments of the MCP tool.
@@ -75,6 +137,9 @@ type McpTool struct {
 	// https://docs.cloud.google.com/customer-engagement-ai/conversational-agents/ps/tool/open-api#openapi-injection
 	// for more details.
 	CustomHeaders map[string]string `protobuf:"bytes,9,rep,name=custom_headers,json=customHeaders,proto3" json:"custom_headers,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	// Output only. The dynamic availability state of the tool on the external
+	// server.
+	State         McpTool_State `protobuf:"varint,12,opt,name=state,proto3,enum=google.cloud.ces.v1beta.McpTool_State" json:"state,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -112,6 +177,13 @@ func (*McpTool) Descriptor() ([]byte, []int) {
 func (x *McpTool) GetName() string {
 	if x != nil {
 		return x.Name
+	}
+	return ""
+}
+
+func (x *McpTool) GetNameOverride() string {
+	if x != nil {
+		return x.NameOverride
 	}
 	return ""
 }
@@ -172,13 +244,21 @@ func (x *McpTool) GetCustomHeaders() map[string]string {
 	return nil
 }
 
+func (x *McpTool) GetState() McpTool_State {
+	if x != nil {
+		return x.State
+	}
+	return McpTool_STATE_UNSPECIFIED
+}
+
 var File_google_cloud_ces_v1beta_mcp_tool_proto protoreflect.FileDescriptor
 
 const file_google_cloud_ces_v1beta_mcp_tool_proto_rawDesc = "" +
 	"\n" +
-	"&google/cloud/ces/v1beta/mcp_tool.proto\x12\x17google.cloud.ces.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\"google/cloud/ces/v1beta/auth.proto\x1a$google/cloud/ces/v1beta/common.proto\x1a$google/cloud/ces/v1beta/schema.proto\"\xc4\x05\n" +
+	"&google/cloud/ces/v1beta/mcp_tool.proto\x12\x17google.cloud.ces.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\"google/cloud/ces/v1beta/auth.proto\x1a$google/cloud/ces/v1beta/common.proto\x1a$google/cloud/ces/v1beta/schema.proto\"\xf6\x06\n" +
 	"\aMcpTool\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12%\n" +
+	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12(\n" +
+	"\rname_override\x18\r \x01(\tB\x03\xe0A\x01R\fnameOverride\x12%\n" +
 	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x01R\vdescription\x12G\n" +
 	"\finput_schema\x18\x03 \x01(\v2\x1f.google.cloud.ces.v1beta.SchemaB\x03\xe0A\x01R\vinputSchema\x12I\n" +
 	"\routput_schema\x18\x04 \x01(\v2\x1f.google.cloud.ces.v1beta.SchemaB\x03\xe0A\x01R\foutputSchema\x12*\n" +
@@ -187,10 +267,17 @@ const file_google_cloud_ces_v1beta_mcp_tool_proto_rawDesc = "" +
 	"\n" +
 	"tls_config\x18\a \x01(\v2\".google.cloud.ces.v1beta.TlsConfigB\x03\xe0A\x01R\ttlsConfig\x12n\n" +
 	"\x18service_directory_config\x18\b \x01(\v2/.google.cloud.ces.v1beta.ServiceDirectoryConfigB\x03\xe0A\x01R\x16serviceDirectoryConfig\x12_\n" +
-	"\x0ecustom_headers\x18\t \x03(\v23.google.cloud.ces.v1beta.McpTool.CustomHeadersEntryB\x03\xe0A\x01R\rcustomHeaders\x1a@\n" +
+	"\x0ecustom_headers\x18\t \x03(\v23.google.cloud.ces.v1beta.McpTool.CustomHeadersEntryB\x03\xe0A\x01R\rcustomHeaders\x12A\n" +
+	"\x05state\x18\f \x01(\x0e2&.google.cloud.ces.v1beta.McpTool.StateB\x03\xe0A\x03R\x05state\x1a@\n" +
 	"\x12CustomHeadersEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B\\\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"C\n" +
+	"\x05State\x12\x15\n" +
+	"\x11STATE_UNSPECIFIED\x10\x00\x12\n" +
+	"\n" +
+	"\x06ACTIVE\x10\x01\x12\f\n" +
+	"\bINACTIVE\x10\x02\x12\t\n" +
+	"\x05STALE\x10\x03B\\\n" +
 	"\x1bcom.google.cloud.ces.v1betaB\fMcpToolProtoP\x01Z-cloud.google.com/go/ces/apiv1beta/cespb;cespbb\x06proto3"
 
 var (
@@ -205,27 +292,30 @@ func file_google_cloud_ces_v1beta_mcp_tool_proto_rawDescGZIP() []byte {
 	return file_google_cloud_ces_v1beta_mcp_tool_proto_rawDescData
 }
 
+var file_google_cloud_ces_v1beta_mcp_tool_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
 var file_google_cloud_ces_v1beta_mcp_tool_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_google_cloud_ces_v1beta_mcp_tool_proto_goTypes = []any{
-	(*McpTool)(nil),                // 0: google.cloud.ces.v1beta.McpTool
-	nil,                            // 1: google.cloud.ces.v1beta.McpTool.CustomHeadersEntry
-	(*Schema)(nil),                 // 2: google.cloud.ces.v1beta.Schema
-	(*ApiAuthentication)(nil),      // 3: google.cloud.ces.v1beta.ApiAuthentication
-	(*TlsConfig)(nil),              // 4: google.cloud.ces.v1beta.TlsConfig
-	(*ServiceDirectoryConfig)(nil), // 5: google.cloud.ces.v1beta.ServiceDirectoryConfig
+	(McpTool_State)(0),             // 0: google.cloud.ces.v1beta.McpTool.State
+	(*McpTool)(nil),                // 1: google.cloud.ces.v1beta.McpTool
+	nil,                            // 2: google.cloud.ces.v1beta.McpTool.CustomHeadersEntry
+	(*Schema)(nil),                 // 3: google.cloud.ces.v1beta.Schema
+	(*ApiAuthentication)(nil),      // 4: google.cloud.ces.v1beta.ApiAuthentication
+	(*TlsConfig)(nil),              // 5: google.cloud.ces.v1beta.TlsConfig
+	(*ServiceDirectoryConfig)(nil), // 6: google.cloud.ces.v1beta.ServiceDirectoryConfig
 }
 var file_google_cloud_ces_v1beta_mcp_tool_proto_depIdxs = []int32{
-	2, // 0: google.cloud.ces.v1beta.McpTool.input_schema:type_name -> google.cloud.ces.v1beta.Schema
-	2, // 1: google.cloud.ces.v1beta.McpTool.output_schema:type_name -> google.cloud.ces.v1beta.Schema
-	3, // 2: google.cloud.ces.v1beta.McpTool.api_authentication:type_name -> google.cloud.ces.v1beta.ApiAuthentication
-	4, // 3: google.cloud.ces.v1beta.McpTool.tls_config:type_name -> google.cloud.ces.v1beta.TlsConfig
-	5, // 4: google.cloud.ces.v1beta.McpTool.service_directory_config:type_name -> google.cloud.ces.v1beta.ServiceDirectoryConfig
-	1, // 5: google.cloud.ces.v1beta.McpTool.custom_headers:type_name -> google.cloud.ces.v1beta.McpTool.CustomHeadersEntry
-	6, // [6:6] is the sub-list for method output_type
-	6, // [6:6] is the sub-list for method input_type
-	6, // [6:6] is the sub-list for extension type_name
-	6, // [6:6] is the sub-list for extension extendee
-	0, // [0:6] is the sub-list for field type_name
+	3, // 0: google.cloud.ces.v1beta.McpTool.input_schema:type_name -> google.cloud.ces.v1beta.Schema
+	3, // 1: google.cloud.ces.v1beta.McpTool.output_schema:type_name -> google.cloud.ces.v1beta.Schema
+	4, // 2: google.cloud.ces.v1beta.McpTool.api_authentication:type_name -> google.cloud.ces.v1beta.ApiAuthentication
+	5, // 3: google.cloud.ces.v1beta.McpTool.tls_config:type_name -> google.cloud.ces.v1beta.TlsConfig
+	6, // 4: google.cloud.ces.v1beta.McpTool.service_directory_config:type_name -> google.cloud.ces.v1beta.ServiceDirectoryConfig
+	2, // 5: google.cloud.ces.v1beta.McpTool.custom_headers:type_name -> google.cloud.ces.v1beta.McpTool.CustomHeadersEntry
+	0, // 6: google.cloud.ces.v1beta.McpTool.state:type_name -> google.cloud.ces.v1beta.McpTool.State
+	7, // [7:7] is the sub-list for method output_type
+	7, // [7:7] is the sub-list for method input_type
+	7, // [7:7] is the sub-list for extension type_name
+	7, // [7:7] is the sub-list for extension extendee
+	0, // [0:7] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_ces_v1beta_mcp_tool_proto_init() }
@@ -241,13 +331,14 @@ func file_google_cloud_ces_v1beta_mcp_tool_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_ces_v1beta_mcp_tool_proto_rawDesc), len(file_google_cloud_ces_v1beta_mcp_tool_proto_rawDesc)),
-			NumEnums:      0,
+			NumEnums:      1,
 			NumMessages:   2,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
 		GoTypes:           file_google_cloud_ces_v1beta_mcp_tool_proto_goTypes,
 		DependencyIndexes: file_google_cloud_ces_v1beta_mcp_tool_proto_depIdxs,
+		EnumInfos:         file_google_cloud_ces_v1beta_mcp_tool_proto_enumTypes,
 		MessageInfos:      file_google_cloud_ces_v1beta_mcp_tool_proto_msgTypes,
 	}.Build()
 	File_google_cloud_ces_v1beta_mcp_tool_proto = out.File

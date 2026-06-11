@@ -222,7 +222,6 @@ func defaultCallOptions() *CallOptions {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
 					codes.Internal,
-					codes.DeadlineExceeded,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
@@ -452,8 +451,7 @@ func defaultRESTCallOptions() *CallOptions {
 					Multiplier: 1.30,
 				},
 					http.StatusServiceUnavailable,
-					http.StatusInternalServerError,
-					http.StatusGatewayTimeout)
+					http.StatusInternalServerError)
 			}),
 		},
 		RunAggregationQuery: []gax.CallOption{

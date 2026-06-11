@@ -25,6 +25,7 @@ import (
 	sync "sync"
 	unsafe "unsafe"
 
+	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
@@ -36,6 +37,59 @@ const (
 	// Verify that runtime/protoimpl is sufficiently up-to-date.
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
+
+// The type of concurrency control mode for transactions.
+type TransactionOptions_ConcurrencyMode int32
+
+const (
+	// Start the transaction with the database-level default concurrency mode.
+	TransactionOptions_CONCURRENCY_MODE_UNSPECIFIED TransactionOptions_ConcurrencyMode = 0
+	// Use optimistic concurrency control for the new transaction.
+	TransactionOptions_OPTIMISTIC TransactionOptions_ConcurrencyMode = 1
+	// Use pessimistic concurrency control for the new transaction.
+	TransactionOptions_PESSIMISTIC TransactionOptions_ConcurrencyMode = 2
+)
+
+// Enum value maps for TransactionOptions_ConcurrencyMode.
+var (
+	TransactionOptions_ConcurrencyMode_name = map[int32]string{
+		0: "CONCURRENCY_MODE_UNSPECIFIED",
+		1: "OPTIMISTIC",
+		2: "PESSIMISTIC",
+	}
+	TransactionOptions_ConcurrencyMode_value = map[string]int32{
+		"CONCURRENCY_MODE_UNSPECIFIED": 0,
+		"OPTIMISTIC":                   1,
+		"PESSIMISTIC":                  2,
+	}
+)
+
+func (x TransactionOptions_ConcurrencyMode) Enum() *TransactionOptions_ConcurrencyMode {
+	p := new(TransactionOptions_ConcurrencyMode)
+	*p = x
+	return p
+}
+
+func (x TransactionOptions_ConcurrencyMode) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (TransactionOptions_ConcurrencyMode) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_firestore_v1_common_proto_enumTypes[0].Descriptor()
+}
+
+func (TransactionOptions_ConcurrencyMode) Type() protoreflect.EnumType {
+	return &file_google_firestore_v1_common_proto_enumTypes[0]
+}
+
+func (x TransactionOptions_ConcurrencyMode) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use TransactionOptions_ConcurrencyMode.Descriptor instead.
+func (TransactionOptions_ConcurrencyMode) EnumDescriptor() ([]byte, []int) {
+	return file_google_firestore_v1_common_proto_rawDescGZIP(), []int{2, 0}
+}
 
 // A set of field paths on a document.
 // Used to restrict a get or update operation on a document to a subset of its
@@ -267,15 +321,21 @@ func (*TransactionOptions_ReadOnly_) isTransactionOptions_Mode() {}
 func (*TransactionOptions_ReadWrite_) isTransactionOptions_Mode() {}
 
 // Options for a transaction that can be used to read and write documents.
-//
-// Firestore does not allow 3rd party auth requests to create read-write.
-// transactions.
 type TransactionOptions_ReadWrite struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// An optional transaction to retry.
 	RetryTransaction []byte `protobuf:"bytes,1,opt,name=retry_transaction,json=retryTransaction,proto3" json:"retry_transaction,omitempty"`
-	unknownFields    protoimpl.UnknownFields
-	sizeCache        protoimpl.SizeCache
+	// Optional. The concurrency control mode to use for this transaction.
+	//
+	// A database is able to use different concurrency modes for different
+	// transactions simultaneously.
+	//
+	// 3rd party auth requests are only allowed to create optimistic
+	// read-write transactions and must specify that here even if the
+	// database-level setting is already configured to optimistic.
+	ConcurrencyMode TransactionOptions_ConcurrencyMode `protobuf:"varint,2,opt,name=concurrency_mode,json=concurrencyMode,proto3,enum=google.firestore.v1.TransactionOptions_ConcurrencyMode" json:"concurrency_mode,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
 }
 
 func (x *TransactionOptions_ReadWrite) Reset() {
@@ -313,6 +373,13 @@ func (x *TransactionOptions_ReadWrite) GetRetryTransaction() []byte {
 		return x.RetryTransaction
 	}
 	return nil
+}
+
+func (x *TransactionOptions_ReadWrite) GetConcurrencyMode() TransactionOptions_ConcurrencyMode {
+	if x != nil {
+		return x.ConcurrencyMode
+	}
+	return TransactionOptions_CONCURRENCY_MODE_UNSPECIFIED
 }
 
 // Options for a transaction that can only be used to read documents.
@@ -394,7 +461,7 @@ var File_google_firestore_v1_common_proto protoreflect.FileDescriptor
 
 const file_google_firestore_v1_common_proto_rawDesc = "" +
 	"\n" +
-	" google/firestore/v1/common.proto\x12\x13google.firestore.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"/\n" +
+	" google/firestore/v1/common.proto\x12\x13google.firestore.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"/\n" +
 	"\fDocumentMask\x12\x1f\n" +
 	"\vfield_paths\x18\x01 \x03(\tR\n" +
 	"fieldPaths\"y\n" +
@@ -402,16 +469,22 @@ const file_google_firestore_v1_common_proto_rawDesc = "" +
 	"\x06exists\x18\x01 \x01(\bH\x00R\x06exists\x12=\n" +
 	"\vupdate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampH\x00R\n" +
 	"updateTimeB\x10\n" +
-	"\x0econdition_type\"\xda\x02\n" +
+	"\x0econdition_type\"\x9a\x04\n" +
 	"\x12TransactionOptions\x12O\n" +
 	"\tread_only\x18\x02 \x01(\v20.google.firestore.v1.TransactionOptions.ReadOnlyH\x00R\breadOnly\x12R\n" +
 	"\n" +
-	"read_write\x18\x03 \x01(\v21.google.firestore.v1.TransactionOptions.ReadWriteH\x00R\treadWrite\x1a8\n" +
+	"read_write\x18\x03 \x01(\v21.google.firestore.v1.TransactionOptions.ReadWriteH\x00R\treadWrite\x1a\xa1\x01\n" +
 	"\tReadWrite\x12+\n" +
-	"\x11retry_transaction\x18\x01 \x01(\fR\x10retryTransaction\x1a]\n" +
+	"\x11retry_transaction\x18\x01 \x01(\fR\x10retryTransaction\x12g\n" +
+	"\x10concurrency_mode\x18\x02 \x01(\x0e27.google.firestore.v1.TransactionOptions.ConcurrencyModeB\x03\xe0A\x01R\x0fconcurrencyMode\x1a]\n" +
 	"\bReadOnly\x129\n" +
 	"\tread_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampH\x00R\breadTimeB\x16\n" +
-	"\x14consistency_selectorB\x06\n" +
+	"\x14consistency_selector\"T\n" +
+	"\x0fConcurrencyMode\x12 \n" +
+	"\x1cCONCURRENCY_MODE_UNSPECIFIED\x10\x00\x12\x0e\n" +
+	"\n" +
+	"OPTIMISTIC\x10\x01\x12\x0f\n" +
+	"\vPESSIMISTIC\x10\x02B\x06\n" +
 	"\x04modeB\xc3\x01\n" +
 	"\x17com.google.firestore.v1B\vCommonProtoP\x01Z;cloud.google.com/go/firestore/apiv1/firestorepb;firestorepb\xa2\x02\x04GCFS\xaa\x02\x19Google.Cloud.Firestore.V1\xca\x02\x19Google\\Cloud\\Firestore\\V1\xea\x02\x1cGoogle::Cloud::Firestore::V1b\x06proto3"
 
@@ -427,25 +500,28 @@ func file_google_firestore_v1_common_proto_rawDescGZIP() []byte {
 	return file_google_firestore_v1_common_proto_rawDescData
 }
 
+var file_google_firestore_v1_common_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
 var file_google_firestore_v1_common_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_google_firestore_v1_common_proto_goTypes = []any{
-	(*DocumentMask)(nil),                 // 0: google.firestore.v1.DocumentMask
-	(*Precondition)(nil),                 // 1: google.firestore.v1.Precondition
-	(*TransactionOptions)(nil),           // 2: google.firestore.v1.TransactionOptions
-	(*TransactionOptions_ReadWrite)(nil), // 3: google.firestore.v1.TransactionOptions.ReadWrite
-	(*TransactionOptions_ReadOnly)(nil),  // 4: google.firestore.v1.TransactionOptions.ReadOnly
-	(*timestamppb.Timestamp)(nil),        // 5: google.protobuf.Timestamp
+	(TransactionOptions_ConcurrencyMode)(0), // 0: google.firestore.v1.TransactionOptions.ConcurrencyMode
+	(*DocumentMask)(nil),                    // 1: google.firestore.v1.DocumentMask
+	(*Precondition)(nil),                    // 2: google.firestore.v1.Precondition
+	(*TransactionOptions)(nil),              // 3: google.firestore.v1.TransactionOptions
+	(*TransactionOptions_ReadWrite)(nil),    // 4: google.firestore.v1.TransactionOptions.ReadWrite
+	(*TransactionOptions_ReadOnly)(nil),     // 5: google.firestore.v1.TransactionOptions.ReadOnly
+	(*timestamppb.Timestamp)(nil),           // 6: google.protobuf.Timestamp
 }
 var file_google_firestore_v1_common_proto_depIdxs = []int32{
-	5, // 0: google.firestore.v1.Precondition.update_time:type_name -> google.protobuf.Timestamp
-	4, // 1: google.firestore.v1.TransactionOptions.read_only:type_name -> google.firestore.v1.TransactionOptions.ReadOnly
-	3, // 2: google.firestore.v1.TransactionOptions.read_write:type_name -> google.firestore.v1.TransactionOptions.ReadWrite
-	5, // 3: google.firestore.v1.TransactionOptions.ReadOnly.read_time:type_name -> google.protobuf.Timestamp
-	4, // [4:4] is the sub-list for method output_type
-	4, // [4:4] is the sub-list for method input_type
-	4, // [4:4] is the sub-list for extension type_name
-	4, // [4:4] is the sub-list for extension extendee
-	0, // [0:4] is the sub-list for field type_name
+	6, // 0: google.firestore.v1.Precondition.update_time:type_name -> google.protobuf.Timestamp
+	5, // 1: google.firestore.v1.TransactionOptions.read_only:type_name -> google.firestore.v1.TransactionOptions.ReadOnly
+	4, // 2: google.firestore.v1.TransactionOptions.read_write:type_name -> google.firestore.v1.TransactionOptions.ReadWrite
+	0, // 3: google.firestore.v1.TransactionOptions.ReadWrite.concurrency_mode:type_name -> google.firestore.v1.TransactionOptions.ConcurrencyMode
+	6, // 4: google.firestore.v1.TransactionOptions.ReadOnly.read_time:type_name -> google.protobuf.Timestamp
+	5, // [5:5] is the sub-list for method output_type
+	5, // [5:5] is the sub-list for method input_type
+	5, // [5:5] is the sub-list for extension type_name
+	5, // [5:5] is the sub-list for extension extendee
+	0, // [0:5] is the sub-list for field type_name
 }
 
 func init() { file_google_firestore_v1_common_proto_init() }
@@ -469,13 +545,14 @@ func file_google_firestore_v1_common_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_firestore_v1_common_proto_rawDesc), len(file_google_firestore_v1_common_proto_rawDesc)),
-			NumEnums:      0,
+			NumEnums:      1,
 			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
 		GoTypes:           file_google_firestore_v1_common_proto_goTypes,
 		DependencyIndexes: file_google_firestore_v1_common_proto_depIdxs,
+		EnumInfos:         file_google_firestore_v1_common_proto_enumTypes,
 		MessageInfos:      file_google_firestore_v1_common_proto_msgTypes,
 	}.Build()
 	File_google_firestore_v1_common_proto = out.File

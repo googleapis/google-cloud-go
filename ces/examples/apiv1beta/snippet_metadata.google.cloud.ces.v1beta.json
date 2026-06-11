@@ -2057,7 +2057,7 @@
         "resultType": "LocationIterator",
         "shortName": "ListLocations"
       },
-      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name] field: \n\n* **Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
+      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name][google.cloud.location.ListLocationsRequest.name] field: *\n**Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
       "file": "AgentClient/ListLocations/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -3174,6 +3174,98 @@
           "fullName": "google.cloud.ces.v1beta.EvaluationClient",
           "shortName": "EvaluationClient"
         },
+        "fullName": "google.cloud.ces.v1beta.EvaluationClient.ExportEvaluationResults",
+        "method": {
+          "fullName": "google.cloud.ces.v1beta.EvaluationService.ExportEvaluationResults",
+          "service": {
+            "fullName": "google.cloud.ces.v1beta.EvaluationService",
+            "shortName": "EvaluationService"
+          },
+          "shortName": "ExportEvaluationResults"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "cespb.ExportEvaluationResultsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "ExportEvaluationResultsOperation",
+        "shortName": "ExportEvaluationResults"
+      },
+      "description": "ExportEvaluationResults exports evaluations results.",
+      "file": "EvaluationClient/ExportEvaluationResults/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "ces_v1beta_generated_EvaluationService_ExportEvaluationResults_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "ces ExportEvaluationResults Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.ces.v1beta.EvaluationClient",
+          "shortName": "EvaluationClient"
+        },
+        "fullName": "google.cloud.ces.v1beta.EvaluationClient.ExportEvaluationRuns",
+        "method": {
+          "fullName": "google.cloud.ces.v1beta.EvaluationService.ExportEvaluationRuns",
+          "service": {
+            "fullName": "google.cloud.ces.v1beta.EvaluationService",
+            "shortName": "EvaluationService"
+          },
+          "shortName": "ExportEvaluationRuns"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "cespb.ExportEvaluationRunsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "ExportEvaluationRunsOperation",
+        "shortName": "ExportEvaluationRuns"
+      },
+      "description": "ExportEvaluationRuns exports evaluations runs.",
+      "file": "EvaluationClient/ExportEvaluationRuns/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "ces_v1beta_generated_EvaluationService_ExportEvaluationRuns_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "ces ExportEvaluationRuns Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.ces.v1beta.EvaluationClient",
+          "shortName": "EvaluationClient"
+        },
         "fullName": "google.cloud.ces.v1beta.EvaluationClient.ExportEvaluations",
         "method": {
           "fullName": "google.cloud.ces.v1beta.EvaluationService.ExportEvaluations",
@@ -3936,7 +4028,7 @@
         "resultType": "LocationIterator",
         "shortName": "ListLocations"
       },
-      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name] field: \n\n* **Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
+      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name][google.cloud.location.ListLocationsRequest.name] field: *\n**Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
       "file": "EvaluationClient/ListLocations/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -4087,6 +4179,52 @@
         }
       ],
       "title": "ces RunEvaluation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.ces.v1beta.EvaluationClient",
+          "shortName": "EvaluationClient"
+        },
+        "fullName": "google.cloud.ces.v1beta.EvaluationClient.RunEvaluationResultMetrics",
+        "method": {
+          "fullName": "google.cloud.ces.v1beta.EvaluationService.RunEvaluationResultMetrics",
+          "service": {
+            "fullName": "google.cloud.ces.v1beta.EvaluationService",
+            "shortName": "EvaluationService"
+          },
+          "shortName": "RunEvaluationResultMetrics"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "cespb.RunEvaluationResultMetricsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "RunEvaluationResultMetricsOperation",
+        "shortName": "RunEvaluationResultMetrics"
+      },
+      "description": "RunEvaluationResultMetrics runs metrics on an existing evaluation result.",
+      "file": "EvaluationClient/RunEvaluationResultMetrics/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "ces_v1beta_generated_EvaluationService_RunEvaluationResultMetrics_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "ces RunEvaluationResultMetrics Sample"
     },
     {
       "clientMethod": {
@@ -4620,7 +4758,7 @@
         "resultType": "LocationIterator",
         "shortName": "ListLocations"
       },
-      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name] field: \n\n* **Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
+      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name][google.cloud.location.ListLocationsRequest.name] field: *\n**Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
       "file": "SessionClient/ListLocations/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -4986,7 +5124,7 @@
         "resultType": "LocationIterator",
         "shortName": "ListLocations"
       },
-      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name] field: \n\n* **Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
+      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name][google.cloud.location.ListLocationsRequest.name] field: *\n**Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
       "file": "ToolClient/ListLocations/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -5398,7 +5536,7 @@
         "resultType": "LocationIterator",
         "shortName": "ListLocations"
       },
-      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name] field: \n\n* **Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
+      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name][google.cloud.location.ListLocationsRequest.name] field: *\n**Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
       "file": "WidgetClient/ListLocations/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",

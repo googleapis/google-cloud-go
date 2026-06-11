@@ -4236,6 +4236,7 @@ type GenerateAppResourceRequest struct {
 	//	*GenerateAppResourceRequest_Agent
 	//	*GenerateAppResourceRequest_Tool
 	//	*GenerateAppResourceRequest_Toolset
+	//	*GenerateAppResourceRequest_AppVersionContext_
 	Resource isGenerateAppResourceRequest_Resource `protobuf_oneof:"resource"`
 	// Required. The resource name of the app to generate the resource for.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
@@ -4321,6 +4322,15 @@ func (x *GenerateAppResourceRequest) GetToolset() *Toolset {
 	return nil
 }
 
+func (x *GenerateAppResourceRequest) GetAppVersionContext() *GenerateAppResourceRequest_AppVersionContext {
+	if x != nil {
+		if x, ok := x.Resource.(*GenerateAppResourceRequest_AppVersionContext_); ok {
+			return x.AppVersionContext
+		}
+	}
+	return nil
+}
+
 func (x *GenerateAppResourceRequest) GetParent() string {
 	if x != nil {
 		return x.Parent
@@ -4399,11 +4409,18 @@ type GenerateAppResourceRequest_Toolset struct {
 	Toolset *Toolset `protobuf:"bytes,6,opt,name=toolset,proto3,oneof"`
 }
 
+type GenerateAppResourceRequest_AppVersionContext_ struct {
+	// The app version context specifying the base snapshot and target agent.
+	AppVersionContext *GenerateAppResourceRequest_AppVersionContext `protobuf:"bytes,12,opt,name=app_version_context,json=appVersionContext,proto3,oneof"`
+}
+
 func (*GenerateAppResourceRequest_Agent) isGenerateAppResourceRequest_Resource() {}
 
 func (*GenerateAppResourceRequest_Tool) isGenerateAppResourceRequest_Resource() {}
 
 func (*GenerateAppResourceRequest_Toolset) isGenerateAppResourceRequest_Resource() {}
+
+func (*GenerateAppResourceRequest_AppVersionContext_) isGenerateAppResourceRequest_Resource() {}
 
 // Response message for
 // [AgentService.GenerateAppResource][google.cloud.ces.v1beta.AgentService.GenerateAppResource].
@@ -5111,6 +5128,65 @@ func (x *ImportAppRequest_ImportOptions) GetConflictResolutionStrategy() ImportA
 	return ImportAppRequest_ImportOptions_CONFLICT_RESOLUTION_STRATEGY_UNSPECIFIED
 }
 
+// The app version context specifying the base snapshot and target agent.
+type GenerateAppResourceRequest_AppVersionContext struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The resource name of the app version to be used by the LLM assistant.
+	// Format:
+	// `projects/{project}/locations/{location}/apps/{app}/versions/{version}`
+	AppVersion string `protobuf:"bytes,1,opt,name=app_version,json=appVersion,proto3" json:"app_version,omitempty"`
+	// The resource name of the target agent to be used by the LLM assistant.
+	// Format:
+	// `projects/{project}/locations/{location}/apps/{app}/agents/{agent}`
+	AgentResourceName string `protobuf:"bytes,2,opt,name=agent_resource_name,json=agentResourceName,proto3" json:"agent_resource_name,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *GenerateAppResourceRequest_AppVersionContext) Reset() {
+	*x = GenerateAppResourceRequest_AppVersionContext{}
+	mi := &file_google_cloud_ces_v1beta_agent_service_proto_msgTypes[70]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GenerateAppResourceRequest_AppVersionContext) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GenerateAppResourceRequest_AppVersionContext) ProtoMessage() {}
+
+func (x *GenerateAppResourceRequest_AppVersionContext) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_ces_v1beta_agent_service_proto_msgTypes[70]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GenerateAppResourceRequest_AppVersionContext.ProtoReflect.Descriptor instead.
+func (*GenerateAppResourceRequest_AppVersionContext) Descriptor() ([]byte, []int) {
+	return file_google_cloud_ces_v1beta_agent_service_proto_rawDescGZIP(), []int{60, 0}
+}
+
+func (x *GenerateAppResourceRequest_AppVersionContext) GetAppVersion() string {
+	if x != nil {
+		return x.AppVersion
+	}
+	return ""
+}
+
+func (x *GenerateAppResourceRequest_AppVersionContext) GetAgentResourceName() string {
+	if x != nil {
+		return x.AgentResourceName
+	}
+	return ""
+}
+
 // The instructions to be used to refine a part of the resource. The part of
 // the resource can be specified  with a start index, end index and a field
 // mask. For example, if you want to refine a part of the agent instructions
@@ -5135,7 +5211,7 @@ type GenerateAppResourceRequest_RefineInstructions struct {
 
 func (x *GenerateAppResourceRequest_RefineInstructions) Reset() {
 	*x = GenerateAppResourceRequest_RefineInstructions{}
-	mi := &file_google_cloud_ces_v1beta_agent_service_proto_msgTypes[70]
+	mi := &file_google_cloud_ces_v1beta_agent_service_proto_msgTypes[71]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5147,7 +5223,7 @@ func (x *GenerateAppResourceRequest_RefineInstructions) String() string {
 func (*GenerateAppResourceRequest_RefineInstructions) ProtoMessage() {}
 
 func (x *GenerateAppResourceRequest_RefineInstructions) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_agent_service_proto_msgTypes[70]
+	mi := &file_google_cloud_ces_v1beta_agent_service_proto_msgTypes[71]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5160,7 +5236,7 @@ func (x *GenerateAppResourceRequest_RefineInstructions) ProtoReflect() protorefl
 
 // Deprecated: Use GenerateAppResourceRequest_RefineInstructions.ProtoReflect.Descriptor instead.
 func (*GenerateAppResourceRequest_RefineInstructions) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_agent_service_proto_rawDescGZIP(), []int{60, 0}
+	return file_google_cloud_ces_v1beta_agent_service_proto_rawDescGZIP(), []int{60, 1}
 }
 
 func (x *GenerateAppResourceRequest_RefineInstructions) GetStartIndex() int64 {
@@ -5207,7 +5283,7 @@ type GenerateAppResourceRequest_ToolGenerationConfig struct {
 
 func (x *GenerateAppResourceRequest_ToolGenerationConfig) Reset() {
 	*x = GenerateAppResourceRequest_ToolGenerationConfig{}
-	mi := &file_google_cloud_ces_v1beta_agent_service_proto_msgTypes[71]
+	mi := &file_google_cloud_ces_v1beta_agent_service_proto_msgTypes[72]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5219,7 +5295,7 @@ func (x *GenerateAppResourceRequest_ToolGenerationConfig) String() string {
 func (*GenerateAppResourceRequest_ToolGenerationConfig) ProtoMessage() {}
 
 func (x *GenerateAppResourceRequest_ToolGenerationConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_agent_service_proto_msgTypes[71]
+	mi := &file_google_cloud_ces_v1beta_agent_service_proto_msgTypes[72]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5232,7 +5308,7 @@ func (x *GenerateAppResourceRequest_ToolGenerationConfig) ProtoReflect() protore
 
 // Deprecated: Use GenerateAppResourceRequest_ToolGenerationConfig.ProtoReflect.Descriptor instead.
 func (*GenerateAppResourceRequest_ToolGenerationConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_agent_service_proto_rawDescGZIP(), []int{60, 1}
+	return file_google_cloud_ces_v1beta_agent_service_proto_rawDescGZIP(), []int{60, 2}
 }
 
 func (x *GenerateAppResourceRequest_ToolGenerationConfig) GetContext() string {
@@ -5284,7 +5360,7 @@ type GenerateAppResourceRequest_AppGenerationConfig struct {
 
 func (x *GenerateAppResourceRequest_AppGenerationConfig) Reset() {
 	*x = GenerateAppResourceRequest_AppGenerationConfig{}
-	mi := &file_google_cloud_ces_v1beta_agent_service_proto_msgTypes[72]
+	mi := &file_google_cloud_ces_v1beta_agent_service_proto_msgTypes[73]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5296,7 +5372,7 @@ func (x *GenerateAppResourceRequest_AppGenerationConfig) String() string {
 func (*GenerateAppResourceRequest_AppGenerationConfig) ProtoMessage() {}
 
 func (x *GenerateAppResourceRequest_AppGenerationConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_agent_service_proto_msgTypes[72]
+	mi := &file_google_cloud_ces_v1beta_agent_service_proto_msgTypes[73]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5309,7 +5385,7 @@ func (x *GenerateAppResourceRequest_AppGenerationConfig) ProtoReflect() protoref
 
 // Deprecated: Use GenerateAppResourceRequest_AppGenerationConfig.ProtoReflect.Descriptor instead.
 func (*GenerateAppResourceRequest_AppGenerationConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_agent_service_proto_rawDescGZIP(), []int{60, 2}
+	return file_google_cloud_ces_v1beta_agent_service_proto_rawDescGZIP(), []int{60, 3}
 }
 
 func (x *GenerateAppResourceRequest_AppGenerationConfig) GetContext() string {
@@ -5361,7 +5437,7 @@ type GenerateAppResourceRequest_EvaluationGenerationConfig struct {
 
 func (x *GenerateAppResourceRequest_EvaluationGenerationConfig) Reset() {
 	*x = GenerateAppResourceRequest_EvaluationGenerationConfig{}
-	mi := &file_google_cloud_ces_v1beta_agent_service_proto_msgTypes[73]
+	mi := &file_google_cloud_ces_v1beta_agent_service_proto_msgTypes[74]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5373,7 +5449,7 @@ func (x *GenerateAppResourceRequest_EvaluationGenerationConfig) String() string 
 func (*GenerateAppResourceRequest_EvaluationGenerationConfig) ProtoMessage() {}
 
 func (x *GenerateAppResourceRequest_EvaluationGenerationConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_agent_service_proto_msgTypes[73]
+	mi := &file_google_cloud_ces_v1beta_agent_service_proto_msgTypes[74]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5386,7 +5462,7 @@ func (x *GenerateAppResourceRequest_EvaluationGenerationConfig) ProtoReflect() p
 
 // Deprecated: Use GenerateAppResourceRequest_EvaluationGenerationConfig.ProtoReflect.Descriptor instead.
 func (*GenerateAppResourceRequest_EvaluationGenerationConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_agent_service_proto_rawDescGZIP(), []int{60, 3}
+	return file_google_cloud_ces_v1beta_agent_service_proto_rawDescGZIP(), []int{60, 4}
 }
 
 func (x *GenerateAppResourceRequest_EvaluationGenerationConfig) GetDatasetId() string {
@@ -5405,7 +5481,7 @@ type GenerateAppResourceRequest_EvaluationPersonasGenerationConfig struct {
 
 func (x *GenerateAppResourceRequest_EvaluationPersonasGenerationConfig) Reset() {
 	*x = GenerateAppResourceRequest_EvaluationPersonasGenerationConfig{}
-	mi := &file_google_cloud_ces_v1beta_agent_service_proto_msgTypes[74]
+	mi := &file_google_cloud_ces_v1beta_agent_service_proto_msgTypes[75]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5417,7 +5493,7 @@ func (x *GenerateAppResourceRequest_EvaluationPersonasGenerationConfig) String()
 func (*GenerateAppResourceRequest_EvaluationPersonasGenerationConfig) ProtoMessage() {}
 
 func (x *GenerateAppResourceRequest_EvaluationPersonasGenerationConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_agent_service_proto_msgTypes[74]
+	mi := &file_google_cloud_ces_v1beta_agent_service_proto_msgTypes[75]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5430,7 +5506,7 @@ func (x *GenerateAppResourceRequest_EvaluationPersonasGenerationConfig) ProtoRef
 
 // Deprecated: Use GenerateAppResourceRequest_EvaluationPersonasGenerationConfig.ProtoReflect.Descriptor instead.
 func (*GenerateAppResourceRequest_EvaluationPersonasGenerationConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_agent_service_proto_rawDescGZIP(), []int{60, 4}
+	return file_google_cloud_ces_v1beta_agent_service_proto_rawDescGZIP(), []int{60, 5}
 }
 
 // The configuration to be used for quality report generation.
@@ -5444,7 +5520,7 @@ type GenerateAppResourceRequest_QualityReportGenerationConfig struct {
 
 func (x *GenerateAppResourceRequest_QualityReportGenerationConfig) Reset() {
 	*x = GenerateAppResourceRequest_QualityReportGenerationConfig{}
-	mi := &file_google_cloud_ces_v1beta_agent_service_proto_msgTypes[75]
+	mi := &file_google_cloud_ces_v1beta_agent_service_proto_msgTypes[76]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5456,7 +5532,7 @@ func (x *GenerateAppResourceRequest_QualityReportGenerationConfig) String() stri
 func (*GenerateAppResourceRequest_QualityReportGenerationConfig) ProtoMessage() {}
 
 func (x *GenerateAppResourceRequest_QualityReportGenerationConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_agent_service_proto_msgTypes[75]
+	mi := &file_google_cloud_ces_v1beta_agent_service_proto_msgTypes[76]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5469,7 +5545,7 @@ func (x *GenerateAppResourceRequest_QualityReportGenerationConfig) ProtoReflect(
 
 // Deprecated: Use GenerateAppResourceRequest_QualityReportGenerationConfig.ProtoReflect.Descriptor instead.
 func (*GenerateAppResourceRequest_QualityReportGenerationConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_agent_service_proto_rawDescGZIP(), []int{60, 5}
+	return file_google_cloud_ces_v1beta_agent_service_proto_rawDescGZIP(), []int{60, 6}
 }
 
 func (x *GenerateAppResourceRequest_QualityReportGenerationConfig) GetEvaluationRun() string {
@@ -5491,7 +5567,7 @@ type GenerateAppResourceRequest_HillClimbingFixConfig struct {
 
 func (x *GenerateAppResourceRequest_HillClimbingFixConfig) Reset() {
 	*x = GenerateAppResourceRequest_HillClimbingFixConfig{}
-	mi := &file_google_cloud_ces_v1beta_agent_service_proto_msgTypes[76]
+	mi := &file_google_cloud_ces_v1beta_agent_service_proto_msgTypes[77]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5503,7 +5579,7 @@ func (x *GenerateAppResourceRequest_HillClimbingFixConfig) String() string {
 func (*GenerateAppResourceRequest_HillClimbingFixConfig) ProtoMessage() {}
 
 func (x *GenerateAppResourceRequest_HillClimbingFixConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_agent_service_proto_msgTypes[76]
+	mi := &file_google_cloud_ces_v1beta_agent_service_proto_msgTypes[77]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5516,7 +5592,7 @@ func (x *GenerateAppResourceRequest_HillClimbingFixConfig) ProtoReflect() protor
 
 // Deprecated: Use GenerateAppResourceRequest_HillClimbingFixConfig.ProtoReflect.Descriptor instead.
 func (*GenerateAppResourceRequest_HillClimbingFixConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_agent_service_proto_rawDescGZIP(), []int{60, 6}
+	return file_google_cloud_ces_v1beta_agent_service_proto_rawDescGZIP(), []int{60, 7}
 }
 
 func (x *GenerateAppResourceRequest_HillClimbingFixConfig) GetQualityReport() *QualityReport {
@@ -5539,7 +5615,7 @@ type GenerateAppResourceRequest_ToolGenerationConfig_OpenApiToolsetGenerationCon
 
 func (x *GenerateAppResourceRequest_ToolGenerationConfig_OpenApiToolsetGenerationConfig) Reset() {
 	*x = GenerateAppResourceRequest_ToolGenerationConfig_OpenApiToolsetGenerationConfig{}
-	mi := &file_google_cloud_ces_v1beta_agent_service_proto_msgTypes[77]
+	mi := &file_google_cloud_ces_v1beta_agent_service_proto_msgTypes[78]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5552,7 +5628,7 @@ func (*GenerateAppResourceRequest_ToolGenerationConfig_OpenApiToolsetGenerationC
 }
 
 func (x *GenerateAppResourceRequest_ToolGenerationConfig_OpenApiToolsetGenerationConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_agent_service_proto_msgTypes[77]
+	mi := &file_google_cloud_ces_v1beta_agent_service_proto_msgTypes[78]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5565,7 +5641,7 @@ func (x *GenerateAppResourceRequest_ToolGenerationConfig_OpenApiToolsetGeneratio
 
 // Deprecated: Use GenerateAppResourceRequest_ToolGenerationConfig_OpenApiToolsetGenerationConfig.ProtoReflect.Descriptor instead.
 func (*GenerateAppResourceRequest_ToolGenerationConfig_OpenApiToolsetGenerationConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_agent_service_proto_rawDescGZIP(), []int{60, 1, 0}
+	return file_google_cloud_ces_v1beta_agent_service_proto_rawDescGZIP(), []int{60, 2, 0}
 }
 
 func (x *GenerateAppResourceRequest_ToolGenerationConfig_OpenApiToolsetGenerationConfig) GetUri() string {
@@ -5603,7 +5679,7 @@ type GenerateAppResourceRequest_ToolGenerationConfig_OpenApiToolsetGenerationCon
 
 func (x *GenerateAppResourceRequest_ToolGenerationConfig_OpenApiToolsetGenerationConfig_OperationGenerationConfig) Reset() {
 	*x = GenerateAppResourceRequest_ToolGenerationConfig_OpenApiToolsetGenerationConfig_OperationGenerationConfig{}
-	mi := &file_google_cloud_ces_v1beta_agent_service_proto_msgTypes[78]
+	mi := &file_google_cloud_ces_v1beta_agent_service_proto_msgTypes[79]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5616,7 +5692,7 @@ func (*GenerateAppResourceRequest_ToolGenerationConfig_OpenApiToolsetGenerationC
 }
 
 func (x *GenerateAppResourceRequest_ToolGenerationConfig_OpenApiToolsetGenerationConfig_OperationGenerationConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_agent_service_proto_msgTypes[78]
+	mi := &file_google_cloud_ces_v1beta_agent_service_proto_msgTypes[79]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5629,7 +5705,7 @@ func (x *GenerateAppResourceRequest_ToolGenerationConfig_OpenApiToolsetGeneratio
 
 // Deprecated: Use GenerateAppResourceRequest_ToolGenerationConfig_OpenApiToolsetGenerationConfig_OperationGenerationConfig.ProtoReflect.Descriptor instead.
 func (*GenerateAppResourceRequest_ToolGenerationConfig_OpenApiToolsetGenerationConfig_OperationGenerationConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_ces_v1beta_agent_service_proto_rawDescGZIP(), []int{60, 1, 0, 0}
+	return file_google_cloud_ces_v1beta_agent_service_proto_rawDescGZIP(), []int{60, 2, 0, 0}
 }
 
 func (x *GenerateAppResourceRequest_ToolGenerationConfig_OpenApiToolsetGenerationConfig_OperationGenerationConfig) GetMethod() string {
@@ -5671,7 +5747,7 @@ type GenerateAppResourceResponse_Evaluations struct {
 
 func (x *GenerateAppResourceResponse_Evaluations) Reset() {
 	*x = GenerateAppResourceResponse_Evaluations{}
-	mi := &file_google_cloud_ces_v1beta_agent_service_proto_msgTypes[79]
+	mi := &file_google_cloud_ces_v1beta_agent_service_proto_msgTypes[80]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5683,7 +5759,7 @@ func (x *GenerateAppResourceResponse_Evaluations) String() string {
 func (*GenerateAppResourceResponse_Evaluations) ProtoMessage() {}
 
 func (x *GenerateAppResourceResponse_Evaluations) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_agent_service_proto_msgTypes[79]
+	mi := &file_google_cloud_ces_v1beta_agent_service_proto_msgTypes[80]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5717,7 +5793,7 @@ type GenerateAppResourceResponse_Tools struct {
 
 func (x *GenerateAppResourceResponse_Tools) Reset() {
 	*x = GenerateAppResourceResponse_Tools{}
-	mi := &file_google_cloud_ces_v1beta_agent_service_proto_msgTypes[80]
+	mi := &file_google_cloud_ces_v1beta_agent_service_proto_msgTypes[81]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5729,7 +5805,7 @@ func (x *GenerateAppResourceResponse_Tools) String() string {
 func (*GenerateAppResourceResponse_Tools) ProtoMessage() {}
 
 func (x *GenerateAppResourceResponse_Tools) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_agent_service_proto_msgTypes[80]
+	mi := &file_google_cloud_ces_v1beta_agent_service_proto_msgTypes[81]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5766,7 +5842,7 @@ type GenerateAppResourceResponse_AppResources struct {
 
 func (x *GenerateAppResourceResponse_AppResources) Reset() {
 	*x = GenerateAppResourceResponse_AppResources{}
-	mi := &file_google_cloud_ces_v1beta_agent_service_proto_msgTypes[81]
+	mi := &file_google_cloud_ces_v1beta_agent_service_proto_msgTypes[82]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5778,7 +5854,7 @@ func (x *GenerateAppResourceResponse_AppResources) String() string {
 func (*GenerateAppResourceResponse_AppResources) ProtoMessage() {}
 
 func (x *GenerateAppResourceResponse_AppResources) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_agent_service_proto_msgTypes[81]
+	mi := &file_google_cloud_ces_v1beta_agent_service_proto_msgTypes[82]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5819,7 +5895,7 @@ type GenerateAppResourceResponse_GenerateResultInfo struct {
 
 func (x *GenerateAppResourceResponse_GenerateResultInfo) Reset() {
 	*x = GenerateAppResourceResponse_GenerateResultInfo{}
-	mi := &file_google_cloud_ces_v1beta_agent_service_proto_msgTypes[82]
+	mi := &file_google_cloud_ces_v1beta_agent_service_proto_msgTypes[83]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5831,7 +5907,7 @@ func (x *GenerateAppResourceResponse_GenerateResultInfo) String() string {
 func (*GenerateAppResourceResponse_GenerateResultInfo) ProtoMessage() {}
 
 func (x *GenerateAppResourceResponse_GenerateResultInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_agent_service_proto_msgTypes[82]
+	mi := &file_google_cloud_ces_v1beta_agent_service_proto_msgTypes[83]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5870,7 +5946,7 @@ type QualityReport_Issue struct {
 
 func (x *QualityReport_Issue) Reset() {
 	*x = QualityReport_Issue{}
-	mi := &file_google_cloud_ces_v1beta_agent_service_proto_msgTypes[83]
+	mi := &file_google_cloud_ces_v1beta_agent_service_proto_msgTypes[84]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5882,7 +5958,7 @@ func (x *QualityReport_Issue) String() string {
 func (*QualityReport_Issue) ProtoMessage() {}
 
 func (x *QualityReport_Issue) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_agent_service_proto_msgTypes[83]
+	mi := &file_google_cloud_ces_v1beta_agent_service_proto_msgTypes[84]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5934,7 +6010,7 @@ type QualityReport_AgentIssues struct {
 
 func (x *QualityReport_AgentIssues) Reset() {
 	*x = QualityReport_AgentIssues{}
-	mi := &file_google_cloud_ces_v1beta_agent_service_proto_msgTypes[84]
+	mi := &file_google_cloud_ces_v1beta_agent_service_proto_msgTypes[85]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5946,7 +6022,7 @@ func (x *QualityReport_AgentIssues) String() string {
 func (*QualityReport_AgentIssues) ProtoMessage() {}
 
 func (x *QualityReport_AgentIssues) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_agent_service_proto_msgTypes[84]
+	mi := &file_google_cloud_ces_v1beta_agent_service_proto_msgTypes[85]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6263,11 +6339,12 @@ const file_google_cloud_ces_v1beta_agent_service_proto_rawDesc = "" +
 	"\x18RestoreAppVersionRequest\x129\n" +
 	"\x04name\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
 	"\x1dces.googleapis.com/AppVersionR\x04name\"\x1b\n" +
-	"\x19RestoreAppVersionResponse\"\xf2\x16\n" +
+	"\x19RestoreAppVersionResponse\"\x95\x19\n" +
 	"\x1aGenerateAppResourceRequest\x126\n" +
 	"\x05agent\x18\x02 \x01(\v2\x1e.google.cloud.ces.v1beta.AgentH\x00R\x05agent\x123\n" +
 	"\x04tool\x18\x04 \x01(\v2\x1d.google.cloud.ces.v1beta.ToolH\x00R\x04tool\x12<\n" +
-	"\atoolset\x18\x06 \x01(\v2 .google.cloud.ces.v1beta.ToolsetH\x00R\atoolset\x126\n" +
+	"\atoolset\x18\x06 \x01(\v2 .google.cloud.ces.v1beta.ToolsetH\x00R\atoolset\x12w\n" +
+	"\x13app_version_context\x18\f \x01(\v2E.google.cloud.ces.v1beta.GenerateAppResourceRequest.AppVersionContextH\x00R\x11appVersionContext\x126\n" +
 	"\x06parent\x18\x01 \x01(\tB\x1e\xe0A\x02\xfaA\x18\n" +
 	"\x16ces.googleapis.com/AppR\x06parent\x12|\n" +
 	"\x13refine_instructions\x18\x03 \x03(\v2F.google.cloud.ces.v1beta.GenerateAppResourceRequest.RefineInstructionsB\x03\xe0A\x01R\x12refineInstructions\x12\x83\x01\n" +
@@ -6277,7 +6354,13 @@ const file_google_cloud_ces_v1beta_agent_service_proto_rawDesc = "" +
 	"%evaluation_personas_generation_config\x18\t \x01(\v2V.google.cloud.ces.v1beta.GenerateAppResourceRequest.EvaluationPersonasGenerationConfigB\x03\xe0A\x01R\"evaluationPersonasGenerationConfig\x12\x9f\x01\n" +
 	" quality_report_generation_config\x18\n" +
 	" \x01(\v2Q.google.cloud.ces.v1beta.GenerateAppResourceRequest.QualityReportGenerationConfigB\x03\xe0A\x01R\x1dqualityReportGenerationConfig\x12\x87\x01\n" +
-	"\x18hill_climbing_fix_config\x18\v \x01(\v2I.google.cloud.ces.v1beta.GenerateAppResourceRequest.HillClimbingFixConfigB\x03\xe0A\x01R\x15hillClimbingFixConfig\x1a\xc5\x01\n" +
+	"\x18hill_climbing_fix_config\x18\v \x01(\v2I.google.cloud.ces.v1beta.GenerateAppResourceRequest.HillClimbingFixConfigB\x03\xe0A\x01R\x15hillClimbingFixConfig\x1a\xa7\x01\n" +
+	"\x11AppVersionContext\x12C\n" +
+	"\vapp_version\x18\x01 \x01(\tB\"\xfaA\x1f\n" +
+	"\x1dces.googleapis.com/AppVersionR\n" +
+	"appVersion\x12M\n" +
+	"\x13agent_resource_name\x18\x02 \x01(\tB\x1d\xfaA\x1a\n" +
+	"\x18ces.googleapis.com/AgentR\x11agentResourceName\x1a\xc5\x01\n" +
 	"\x12RefineInstructions\x12$\n" +
 	"\vstart_index\x18\x01 \x01(\x03B\x03\xe0A\x02R\n" +
 	"startIndex\x12 \n" +
@@ -6472,7 +6555,7 @@ func file_google_cloud_ces_v1beta_agent_service_proto_rawDescGZIP() []byte {
 }
 
 var file_google_cloud_ces_v1beta_agent_service_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_google_cloud_ces_v1beta_agent_service_proto_msgTypes = make([]protoimpl.MessageInfo, 85)
+var file_google_cloud_ces_v1beta_agent_service_proto_msgTypes = make([]protoimpl.MessageInfo, 86)
 var file_google_cloud_ces_v1beta_agent_service_proto_goTypes = []any{
 	(ExportAppRequest_ExportFormat)(0),                                    // 0: google.cloud.ces.v1beta.ExportAppRequest.ExportFormat
 	(ImportAppRequest_ImportOptions_ConflictResolutionStrategy)(0),        // 1: google.cloud.ces.v1beta.ImportAppRequest.ImportOptions.ConflictResolutionStrategy
@@ -6547,228 +6630,230 @@ var file_google_cloud_ces_v1beta_agent_service_proto_goTypes = []any{
 	(*GetSecuritySettingsRequest)(nil),                                    // 70: google.cloud.ces.v1beta.GetSecuritySettingsRequest
 	(*UpdateSecuritySettingsRequest)(nil),                                 // 71: google.cloud.ces.v1beta.UpdateSecuritySettingsRequest
 	(*ImportAppRequest_ImportOptions)(nil),                                // 72: google.cloud.ces.v1beta.ImportAppRequest.ImportOptions
-	(*GenerateAppResourceRequest_RefineInstructions)(nil),                 // 73: google.cloud.ces.v1beta.GenerateAppResourceRequest.RefineInstructions
-	(*GenerateAppResourceRequest_ToolGenerationConfig)(nil),               // 74: google.cloud.ces.v1beta.GenerateAppResourceRequest.ToolGenerationConfig
-	(*GenerateAppResourceRequest_AppGenerationConfig)(nil),                // 75: google.cloud.ces.v1beta.GenerateAppResourceRequest.AppGenerationConfig
-	(*GenerateAppResourceRequest_EvaluationGenerationConfig)(nil),         // 76: google.cloud.ces.v1beta.GenerateAppResourceRequest.EvaluationGenerationConfig
-	(*GenerateAppResourceRequest_EvaluationPersonasGenerationConfig)(nil), // 77: google.cloud.ces.v1beta.GenerateAppResourceRequest.EvaluationPersonasGenerationConfig
-	(*GenerateAppResourceRequest_QualityReportGenerationConfig)(nil),      // 78: google.cloud.ces.v1beta.GenerateAppResourceRequest.QualityReportGenerationConfig
-	(*GenerateAppResourceRequest_HillClimbingFixConfig)(nil),              // 79: google.cloud.ces.v1beta.GenerateAppResourceRequest.HillClimbingFixConfig
-	(*GenerateAppResourceRequest_ToolGenerationConfig_OpenApiToolsetGenerationConfig)(nil),                           // 80: google.cloud.ces.v1beta.GenerateAppResourceRequest.ToolGenerationConfig.OpenApiToolsetGenerationConfig
-	(*GenerateAppResourceRequest_ToolGenerationConfig_OpenApiToolsetGenerationConfig_OperationGenerationConfig)(nil), // 81: google.cloud.ces.v1beta.GenerateAppResourceRequest.ToolGenerationConfig.OpenApiToolsetGenerationConfig.OperationGenerationConfig
-	(*GenerateAppResourceResponse_Evaluations)(nil),                                                                  // 82: google.cloud.ces.v1beta.GenerateAppResourceResponse.Evaluations
-	(*GenerateAppResourceResponse_Tools)(nil),                                                                        // 83: google.cloud.ces.v1beta.GenerateAppResourceResponse.Tools
-	(*GenerateAppResourceResponse_AppResources)(nil),                                                                 // 84: google.cloud.ces.v1beta.GenerateAppResourceResponse.AppResources
-	(*GenerateAppResourceResponse_GenerateResultInfo)(nil),                                                           // 85: google.cloud.ces.v1beta.GenerateAppResourceResponse.GenerateResultInfo
-	(*QualityReport_Issue)(nil),                                                                                      // 86: google.cloud.ces.v1beta.QualityReport.Issue
-	(*QualityReport_AgentIssues)(nil),                                                                                // 87: google.cloud.ces.v1beta.QualityReport.AgentIssues
-	(*App)(nil),                                                                                                      // 88: google.cloud.ces.v1beta.App
-	(*fieldmaskpb.FieldMask)(nil),                                                                                    // 89: google.protobuf.FieldMask
-	(*Agent)(nil),                                                                                                    // 90: google.cloud.ces.v1beta.Agent
-	(*timestamppb.Timestamp)(nil),                                                                                    // 91: google.protobuf.Timestamp
-	(*Example)(nil),                                                                                                  // 92: google.cloud.ces.v1beta.Example
-	(*Tool)(nil),                                                                                                     // 93: google.cloud.ces.v1beta.Tool
-	(Conversation_Source)(0),                                                                                         // 94: google.cloud.ces.v1beta.Conversation.Source
-	(*Conversation)(nil),                                                                                             // 95: google.cloud.ces.v1beta.Conversation
-	(*Guardrail)(nil),                                                                                                // 96: google.cloud.ces.v1beta.Guardrail
-	(*Deployment)(nil),                                                                                               // 97: google.cloud.ces.v1beta.Deployment
-	(*Toolset)(nil),                                                                                                  // 98: google.cloud.ces.v1beta.Toolset
-	(*AppVersion)(nil),                                                                                               // 99: google.cloud.ces.v1beta.AppVersion
-	(*AppSnapshot)(nil),                                                                                              // 100: google.cloud.ces.v1beta.AppSnapshot
-	(*status.Status)(nil),                                                                                            // 101: google.rpc.Status
-	(*Changelog)(nil),                                                                                                // 102: google.cloud.ces.v1beta.Changelog
-	(*SecuritySettings)(nil),                                                                                         // 103: google.cloud.ces.v1beta.SecuritySettings
-	(*FileContext)(nil),                                                                                              // 104: google.cloud.ces.v1beta.FileContext
-	(*Evaluation)(nil),                                                                                               // 105: google.cloud.ces.v1beta.Evaluation
-	(*longrunningpb.Operation)(nil),                                                                                  // 106: google.longrunning.Operation
-	(*emptypb.Empty)(nil),                                                                                            // 107: google.protobuf.Empty
+	(*GenerateAppResourceRequest_AppVersionContext)(nil),                  // 73: google.cloud.ces.v1beta.GenerateAppResourceRequest.AppVersionContext
+	(*GenerateAppResourceRequest_RefineInstructions)(nil),                 // 74: google.cloud.ces.v1beta.GenerateAppResourceRequest.RefineInstructions
+	(*GenerateAppResourceRequest_ToolGenerationConfig)(nil),               // 75: google.cloud.ces.v1beta.GenerateAppResourceRequest.ToolGenerationConfig
+	(*GenerateAppResourceRequest_AppGenerationConfig)(nil),                // 76: google.cloud.ces.v1beta.GenerateAppResourceRequest.AppGenerationConfig
+	(*GenerateAppResourceRequest_EvaluationGenerationConfig)(nil),         // 77: google.cloud.ces.v1beta.GenerateAppResourceRequest.EvaluationGenerationConfig
+	(*GenerateAppResourceRequest_EvaluationPersonasGenerationConfig)(nil), // 78: google.cloud.ces.v1beta.GenerateAppResourceRequest.EvaluationPersonasGenerationConfig
+	(*GenerateAppResourceRequest_QualityReportGenerationConfig)(nil),      // 79: google.cloud.ces.v1beta.GenerateAppResourceRequest.QualityReportGenerationConfig
+	(*GenerateAppResourceRequest_HillClimbingFixConfig)(nil),              // 80: google.cloud.ces.v1beta.GenerateAppResourceRequest.HillClimbingFixConfig
+	(*GenerateAppResourceRequest_ToolGenerationConfig_OpenApiToolsetGenerationConfig)(nil),                           // 81: google.cloud.ces.v1beta.GenerateAppResourceRequest.ToolGenerationConfig.OpenApiToolsetGenerationConfig
+	(*GenerateAppResourceRequest_ToolGenerationConfig_OpenApiToolsetGenerationConfig_OperationGenerationConfig)(nil), // 82: google.cloud.ces.v1beta.GenerateAppResourceRequest.ToolGenerationConfig.OpenApiToolsetGenerationConfig.OperationGenerationConfig
+	(*GenerateAppResourceResponse_Evaluations)(nil),                                                                  // 83: google.cloud.ces.v1beta.GenerateAppResourceResponse.Evaluations
+	(*GenerateAppResourceResponse_Tools)(nil),                                                                        // 84: google.cloud.ces.v1beta.GenerateAppResourceResponse.Tools
+	(*GenerateAppResourceResponse_AppResources)(nil),                                                                 // 85: google.cloud.ces.v1beta.GenerateAppResourceResponse.AppResources
+	(*GenerateAppResourceResponse_GenerateResultInfo)(nil),                                                           // 86: google.cloud.ces.v1beta.GenerateAppResourceResponse.GenerateResultInfo
+	(*QualityReport_Issue)(nil),                                                                                      // 87: google.cloud.ces.v1beta.QualityReport.Issue
+	(*QualityReport_AgentIssues)(nil),                                                                                // 88: google.cloud.ces.v1beta.QualityReport.AgentIssues
+	(*App)(nil),                                                                                                      // 89: google.cloud.ces.v1beta.App
+	(*fieldmaskpb.FieldMask)(nil),                                                                                    // 90: google.protobuf.FieldMask
+	(*Agent)(nil),                                                                                                    // 91: google.cloud.ces.v1beta.Agent
+	(*timestamppb.Timestamp)(nil),                                                                                    // 92: google.protobuf.Timestamp
+	(*Example)(nil),                                                                                                  // 93: google.cloud.ces.v1beta.Example
+	(*Tool)(nil),                                                                                                     // 94: google.cloud.ces.v1beta.Tool
+	(Conversation_Source)(0),                                                                                         // 95: google.cloud.ces.v1beta.Conversation.Source
+	(*Conversation)(nil),                                                                                             // 96: google.cloud.ces.v1beta.Conversation
+	(*Guardrail)(nil),                                                                                                // 97: google.cloud.ces.v1beta.Guardrail
+	(*Deployment)(nil),                                                                                               // 98: google.cloud.ces.v1beta.Deployment
+	(*Toolset)(nil),                                                                                                  // 99: google.cloud.ces.v1beta.Toolset
+	(*AppVersion)(nil),                                                                                               // 100: google.cloud.ces.v1beta.AppVersion
+	(*AppSnapshot)(nil),                                                                                              // 101: google.cloud.ces.v1beta.AppSnapshot
+	(*status.Status)(nil),                                                                                            // 102: google.rpc.Status
+	(*Changelog)(nil),                                                                                                // 103: google.cloud.ces.v1beta.Changelog
+	(*SecuritySettings)(nil),                                                                                         // 104: google.cloud.ces.v1beta.SecuritySettings
+	(*FileContext)(nil),                                                                                              // 105: google.cloud.ces.v1beta.FileContext
+	(*Evaluation)(nil),                                                                                               // 106: google.cloud.ces.v1beta.Evaluation
+	(*longrunningpb.Operation)(nil),                                                                                  // 107: google.longrunning.Operation
+	(*emptypb.Empty)(nil),                                                                                            // 108: google.protobuf.Empty
 }
 var file_google_cloud_ces_v1beta_agent_service_proto_depIdxs = []int32{
-	88,  // 0: google.cloud.ces.v1beta.ListAppsResponse.apps:type_name -> google.cloud.ces.v1beta.App
-	88,  // 1: google.cloud.ces.v1beta.CreateAppRequest.app:type_name -> google.cloud.ces.v1beta.App
-	88,  // 2: google.cloud.ces.v1beta.UpdateAppRequest.app:type_name -> google.cloud.ces.v1beta.App
-	89,  // 3: google.cloud.ces.v1beta.UpdateAppRequest.update_mask:type_name -> google.protobuf.FieldMask
+	89,  // 0: google.cloud.ces.v1beta.ListAppsResponse.apps:type_name -> google.cloud.ces.v1beta.App
+	89,  // 1: google.cloud.ces.v1beta.CreateAppRequest.app:type_name -> google.cloud.ces.v1beta.App
+	89,  // 2: google.cloud.ces.v1beta.UpdateAppRequest.app:type_name -> google.cloud.ces.v1beta.App
+	90,  // 3: google.cloud.ces.v1beta.UpdateAppRequest.update_mask:type_name -> google.protobuf.FieldMask
 	0,   // 4: google.cloud.ces.v1beta.ExportAppRequest.export_format:type_name -> google.cloud.ces.v1beta.ExportAppRequest.ExportFormat
 	72,  // 5: google.cloud.ces.v1beta.ImportAppRequest.import_options:type_name -> google.cloud.ces.v1beta.ImportAppRequest.ImportOptions
-	90,  // 6: google.cloud.ces.v1beta.ListAgentsResponse.agents:type_name -> google.cloud.ces.v1beta.Agent
-	90,  // 7: google.cloud.ces.v1beta.CreateAgentRequest.agent:type_name -> google.cloud.ces.v1beta.Agent
-	90,  // 8: google.cloud.ces.v1beta.UpdateAgentRequest.agent:type_name -> google.cloud.ces.v1beta.Agent
-	89,  // 9: google.cloud.ces.v1beta.UpdateAgentRequest.update_mask:type_name -> google.protobuf.FieldMask
-	91,  // 10: google.cloud.ces.v1beta.OperationMetadata.create_time:type_name -> google.protobuf.Timestamp
-	91,  // 11: google.cloud.ces.v1beta.OperationMetadata.end_time:type_name -> google.protobuf.Timestamp
-	92,  // 12: google.cloud.ces.v1beta.ListExamplesResponse.examples:type_name -> google.cloud.ces.v1beta.Example
-	92,  // 13: google.cloud.ces.v1beta.CreateExampleRequest.example:type_name -> google.cloud.ces.v1beta.Example
-	92,  // 14: google.cloud.ces.v1beta.UpdateExampleRequest.example:type_name -> google.cloud.ces.v1beta.Example
-	89,  // 15: google.cloud.ces.v1beta.UpdateExampleRequest.update_mask:type_name -> google.protobuf.FieldMask
-	93,  // 16: google.cloud.ces.v1beta.ListToolsResponse.tools:type_name -> google.cloud.ces.v1beta.Tool
-	93,  // 17: google.cloud.ces.v1beta.CreateToolRequest.tool:type_name -> google.cloud.ces.v1beta.Tool
-	93,  // 18: google.cloud.ces.v1beta.UpdateToolRequest.tool:type_name -> google.cloud.ces.v1beta.Tool
-	89,  // 19: google.cloud.ces.v1beta.UpdateToolRequest.update_mask:type_name -> google.protobuf.FieldMask
-	94,  // 20: google.cloud.ces.v1beta.ListConversationsRequest.source:type_name -> google.cloud.ces.v1beta.Conversation.Source
-	94,  // 21: google.cloud.ces.v1beta.ListConversationsRequest.sources:type_name -> google.cloud.ces.v1beta.Conversation.Source
-	95,  // 22: google.cloud.ces.v1beta.ListConversationsResponse.conversations:type_name -> google.cloud.ces.v1beta.Conversation
-	94,  // 23: google.cloud.ces.v1beta.GetConversationRequest.source:type_name -> google.cloud.ces.v1beta.Conversation.Source
-	94,  // 24: google.cloud.ces.v1beta.DeleteConversationRequest.source:type_name -> google.cloud.ces.v1beta.Conversation.Source
-	96,  // 25: google.cloud.ces.v1beta.ListGuardrailsResponse.guardrails:type_name -> google.cloud.ces.v1beta.Guardrail
-	96,  // 26: google.cloud.ces.v1beta.CreateGuardrailRequest.guardrail:type_name -> google.cloud.ces.v1beta.Guardrail
-	96,  // 27: google.cloud.ces.v1beta.UpdateGuardrailRequest.guardrail:type_name -> google.cloud.ces.v1beta.Guardrail
-	89,  // 28: google.cloud.ces.v1beta.UpdateGuardrailRequest.update_mask:type_name -> google.protobuf.FieldMask
-	97,  // 29: google.cloud.ces.v1beta.ListDeploymentsResponse.deployments:type_name -> google.cloud.ces.v1beta.Deployment
-	97,  // 30: google.cloud.ces.v1beta.CreateDeploymentRequest.deployment:type_name -> google.cloud.ces.v1beta.Deployment
-	97,  // 31: google.cloud.ces.v1beta.UpdateDeploymentRequest.deployment:type_name -> google.cloud.ces.v1beta.Deployment
-	89,  // 32: google.cloud.ces.v1beta.UpdateDeploymentRequest.update_mask:type_name -> google.protobuf.FieldMask
-	98,  // 33: google.cloud.ces.v1beta.ListToolsetsResponse.toolsets:type_name -> google.cloud.ces.v1beta.Toolset
-	98,  // 34: google.cloud.ces.v1beta.CreateToolsetRequest.toolset:type_name -> google.cloud.ces.v1beta.Toolset
-	98,  // 35: google.cloud.ces.v1beta.UpdateToolsetRequest.toolset:type_name -> google.cloud.ces.v1beta.Toolset
-	89,  // 36: google.cloud.ces.v1beta.UpdateToolsetRequest.update_mask:type_name -> google.protobuf.FieldMask
-	99,  // 37: google.cloud.ces.v1beta.ListAppVersionsResponse.app_versions:type_name -> google.cloud.ces.v1beta.AppVersion
-	99,  // 38: google.cloud.ces.v1beta.CreateAppVersionRequest.app_version:type_name -> google.cloud.ces.v1beta.AppVersion
-	90,  // 39: google.cloud.ces.v1beta.GenerateAppResourceRequest.agent:type_name -> google.cloud.ces.v1beta.Agent
-	93,  // 40: google.cloud.ces.v1beta.GenerateAppResourceRequest.tool:type_name -> google.cloud.ces.v1beta.Tool
-	98,  // 41: google.cloud.ces.v1beta.GenerateAppResourceRequest.toolset:type_name -> google.cloud.ces.v1beta.Toolset
-	73,  // 42: google.cloud.ces.v1beta.GenerateAppResourceRequest.refine_instructions:type_name -> google.cloud.ces.v1beta.GenerateAppResourceRequest.RefineInstructions
-	74,  // 43: google.cloud.ces.v1beta.GenerateAppResourceRequest.tool_generation_config:type_name -> google.cloud.ces.v1beta.GenerateAppResourceRequest.ToolGenerationConfig
-	75,  // 44: google.cloud.ces.v1beta.GenerateAppResourceRequest.app_generation_config:type_name -> google.cloud.ces.v1beta.GenerateAppResourceRequest.AppGenerationConfig
-	76,  // 45: google.cloud.ces.v1beta.GenerateAppResourceRequest.evaluation_generation_config:type_name -> google.cloud.ces.v1beta.GenerateAppResourceRequest.EvaluationGenerationConfig
-	77,  // 46: google.cloud.ces.v1beta.GenerateAppResourceRequest.evaluation_personas_generation_config:type_name -> google.cloud.ces.v1beta.GenerateAppResourceRequest.EvaluationPersonasGenerationConfig
-	78,  // 47: google.cloud.ces.v1beta.GenerateAppResourceRequest.quality_report_generation_config:type_name -> google.cloud.ces.v1beta.GenerateAppResourceRequest.QualityReportGenerationConfig
-	79,  // 48: google.cloud.ces.v1beta.GenerateAppResourceRequest.hill_climbing_fix_config:type_name -> google.cloud.ces.v1beta.GenerateAppResourceRequest.HillClimbingFixConfig
-	90,  // 49: google.cloud.ces.v1beta.GenerateAppResourceResponse.agent:type_name -> google.cloud.ces.v1beta.Agent
-	98,  // 50: google.cloud.ces.v1beta.GenerateAppResourceResponse.toolset:type_name -> google.cloud.ces.v1beta.Toolset
-	100, // 51: google.cloud.ces.v1beta.GenerateAppResourceResponse.app_snapshot:type_name -> google.cloud.ces.v1beta.AppSnapshot
-	83,  // 52: google.cloud.ces.v1beta.GenerateAppResourceResponse.tools:type_name -> google.cloud.ces.v1beta.GenerateAppResourceResponse.Tools
-	82,  // 53: google.cloud.ces.v1beta.GenerateAppResourceResponse.evaluations:type_name -> google.cloud.ces.v1beta.GenerateAppResourceResponse.Evaluations
-	84,  // 54: google.cloud.ces.v1beta.GenerateAppResourceResponse.app_resources:type_name -> google.cloud.ces.v1beta.GenerateAppResourceResponse.AppResources
-	65,  // 55: google.cloud.ces.v1beta.GenerateAppResourceResponse.quality_report:type_name -> google.cloud.ces.v1beta.QualityReport
-	85,  // 56: google.cloud.ces.v1beta.GenerateAppResourceResponse.generate_result_info:type_name -> google.cloud.ces.v1beta.GenerateAppResourceResponse.GenerateResultInfo
-	87,  // 57: google.cloud.ces.v1beta.QualityReport.issues:type_name -> google.cloud.ces.v1beta.QualityReport.AgentIssues
-	86,  // 58: google.cloud.ces.v1beta.QualityReport.general_issues:type_name -> google.cloud.ces.v1beta.QualityReport.Issue
-	2,   // 59: google.cloud.ces.v1beta.GenerateAppResourceOperationMetadata.generation_type:type_name -> google.cloud.ces.v1beta.GenerateAppResourceOperationMetadata.GenerationType
-	91,  // 60: google.cloud.ces.v1beta.GenerateAppResourceOperationMetadata.create_time:type_name -> google.protobuf.Timestamp
-	91,  // 61: google.cloud.ces.v1beta.GenerateAppResourceOperationMetadata.end_time:type_name -> google.protobuf.Timestamp
-	101, // 62: google.cloud.ces.v1beta.GenerateAppResourceOperationMetadata.partial_errors:type_name -> google.rpc.Status
-	102, // 63: google.cloud.ces.v1beta.ListChangelogsResponse.changelogs:type_name -> google.cloud.ces.v1beta.Changelog
-	103, // 64: google.cloud.ces.v1beta.UpdateSecuritySettingsRequest.security_settings:type_name -> google.cloud.ces.v1beta.SecuritySettings
-	89,  // 65: google.cloud.ces.v1beta.UpdateSecuritySettingsRequest.update_mask:type_name -> google.protobuf.FieldMask
-	1,   // 66: google.cloud.ces.v1beta.ImportAppRequest.ImportOptions.conflict_resolution_strategy:type_name -> google.cloud.ces.v1beta.ImportAppRequest.ImportOptions.ConflictResolutionStrategy
-	89,  // 67: google.cloud.ces.v1beta.GenerateAppResourceRequest.RefineInstructions.field_mask:type_name -> google.protobuf.FieldMask
-	104, // 68: google.cloud.ces.v1beta.GenerateAppResourceRequest.ToolGenerationConfig.file_contexts:type_name -> google.cloud.ces.v1beta.FileContext
-	80,  // 69: google.cloud.ces.v1beta.GenerateAppResourceRequest.ToolGenerationConfig.open_api_toolset_generation_config:type_name -> google.cloud.ces.v1beta.GenerateAppResourceRequest.ToolGenerationConfig.OpenApiToolsetGenerationConfig
-	104, // 70: google.cloud.ces.v1beta.GenerateAppResourceRequest.AppGenerationConfig.file_contexts:type_name -> google.cloud.ces.v1beta.FileContext
-	65,  // 71: google.cloud.ces.v1beta.GenerateAppResourceRequest.HillClimbingFixConfig.quality_report:type_name -> google.cloud.ces.v1beta.QualityReport
-	81,  // 72: google.cloud.ces.v1beta.GenerateAppResourceRequest.ToolGenerationConfig.OpenApiToolsetGenerationConfig.operation_generation_configs:type_name -> google.cloud.ces.v1beta.GenerateAppResourceRequest.ToolGenerationConfig.OpenApiToolsetGenerationConfig.OperationGenerationConfig
-	105, // 73: google.cloud.ces.v1beta.GenerateAppResourceResponse.Evaluations.evaluations:type_name -> google.cloud.ces.v1beta.Evaluation
-	93,  // 74: google.cloud.ces.v1beta.GenerateAppResourceResponse.Tools.tools:type_name -> google.cloud.ces.v1beta.Tool
-	100, // 75: google.cloud.ces.v1beta.GenerateAppResourceResponse.AppResources.app_snapshot:type_name -> google.cloud.ces.v1beta.AppSnapshot
-	105, // 76: google.cloud.ces.v1beta.GenerateAppResourceResponse.AppResources.evaluations:type_name -> google.cloud.ces.v1beta.Evaluation
-	86,  // 77: google.cloud.ces.v1beta.QualityReport.AgentIssues.issues:type_name -> google.cloud.ces.v1beta.QualityReport.Issue
-	3,   // 78: google.cloud.ces.v1beta.AgentService.ListApps:input_type -> google.cloud.ces.v1beta.ListAppsRequest
-	5,   // 79: google.cloud.ces.v1beta.AgentService.GetApp:input_type -> google.cloud.ces.v1beta.GetAppRequest
-	6,   // 80: google.cloud.ces.v1beta.AgentService.CreateApp:input_type -> google.cloud.ces.v1beta.CreateAppRequest
-	7,   // 81: google.cloud.ces.v1beta.AgentService.UpdateApp:input_type -> google.cloud.ces.v1beta.UpdateAppRequest
-	8,   // 82: google.cloud.ces.v1beta.AgentService.DeleteApp:input_type -> google.cloud.ces.v1beta.DeleteAppRequest
-	9,   // 83: google.cloud.ces.v1beta.AgentService.ExportApp:input_type -> google.cloud.ces.v1beta.ExportAppRequest
-	11,  // 84: google.cloud.ces.v1beta.AgentService.ImportApp:input_type -> google.cloud.ces.v1beta.ImportAppRequest
-	70,  // 85: google.cloud.ces.v1beta.AgentService.GetSecuritySettings:input_type -> google.cloud.ces.v1beta.GetSecuritySettingsRequest
-	71,  // 86: google.cloud.ces.v1beta.AgentService.UpdateSecuritySettings:input_type -> google.cloud.ces.v1beta.UpdateSecuritySettingsRequest
-	13,  // 87: google.cloud.ces.v1beta.AgentService.ListAgents:input_type -> google.cloud.ces.v1beta.ListAgentsRequest
-	15,  // 88: google.cloud.ces.v1beta.AgentService.GetAgent:input_type -> google.cloud.ces.v1beta.GetAgentRequest
-	16,  // 89: google.cloud.ces.v1beta.AgentService.CreateAgent:input_type -> google.cloud.ces.v1beta.CreateAgentRequest
-	17,  // 90: google.cloud.ces.v1beta.AgentService.UpdateAgent:input_type -> google.cloud.ces.v1beta.UpdateAgentRequest
-	18,  // 91: google.cloud.ces.v1beta.AgentService.DeleteAgent:input_type -> google.cloud.ces.v1beta.DeleteAgentRequest
-	20,  // 92: google.cloud.ces.v1beta.AgentService.ListExamples:input_type -> google.cloud.ces.v1beta.ListExamplesRequest
-	22,  // 93: google.cloud.ces.v1beta.AgentService.GetExample:input_type -> google.cloud.ces.v1beta.GetExampleRequest
-	23,  // 94: google.cloud.ces.v1beta.AgentService.CreateExample:input_type -> google.cloud.ces.v1beta.CreateExampleRequest
-	24,  // 95: google.cloud.ces.v1beta.AgentService.UpdateExample:input_type -> google.cloud.ces.v1beta.UpdateExampleRequest
-	25,  // 96: google.cloud.ces.v1beta.AgentService.DeleteExample:input_type -> google.cloud.ces.v1beta.DeleteExampleRequest
-	26,  // 97: google.cloud.ces.v1beta.AgentService.ListTools:input_type -> google.cloud.ces.v1beta.ListToolsRequest
-	28,  // 98: google.cloud.ces.v1beta.AgentService.GetTool:input_type -> google.cloud.ces.v1beta.GetToolRequest
-	32,  // 99: google.cloud.ces.v1beta.AgentService.ListConversations:input_type -> google.cloud.ces.v1beta.ListConversationsRequest
-	34,  // 100: google.cloud.ces.v1beta.AgentService.GetConversation:input_type -> google.cloud.ces.v1beta.GetConversationRequest
-	35,  // 101: google.cloud.ces.v1beta.AgentService.DeleteConversation:input_type -> google.cloud.ces.v1beta.DeleteConversationRequest
-	36,  // 102: google.cloud.ces.v1beta.AgentService.BatchDeleteConversations:input_type -> google.cloud.ces.v1beta.BatchDeleteConversationsRequest
-	29,  // 103: google.cloud.ces.v1beta.AgentService.CreateTool:input_type -> google.cloud.ces.v1beta.CreateToolRequest
-	30,  // 104: google.cloud.ces.v1beta.AgentService.UpdateTool:input_type -> google.cloud.ces.v1beta.UpdateToolRequest
-	31,  // 105: google.cloud.ces.v1beta.AgentService.DeleteTool:input_type -> google.cloud.ces.v1beta.DeleteToolRequest
-	38,  // 106: google.cloud.ces.v1beta.AgentService.ListGuardrails:input_type -> google.cloud.ces.v1beta.ListGuardrailsRequest
-	40,  // 107: google.cloud.ces.v1beta.AgentService.GetGuardrail:input_type -> google.cloud.ces.v1beta.GetGuardrailRequest
-	41,  // 108: google.cloud.ces.v1beta.AgentService.CreateGuardrail:input_type -> google.cloud.ces.v1beta.CreateGuardrailRequest
-	42,  // 109: google.cloud.ces.v1beta.AgentService.UpdateGuardrail:input_type -> google.cloud.ces.v1beta.UpdateGuardrailRequest
-	43,  // 110: google.cloud.ces.v1beta.AgentService.DeleteGuardrail:input_type -> google.cloud.ces.v1beta.DeleteGuardrailRequest
-	44,  // 111: google.cloud.ces.v1beta.AgentService.ListDeployments:input_type -> google.cloud.ces.v1beta.ListDeploymentsRequest
-	46,  // 112: google.cloud.ces.v1beta.AgentService.GetDeployment:input_type -> google.cloud.ces.v1beta.GetDeploymentRequest
-	47,  // 113: google.cloud.ces.v1beta.AgentService.CreateDeployment:input_type -> google.cloud.ces.v1beta.CreateDeploymentRequest
-	48,  // 114: google.cloud.ces.v1beta.AgentService.UpdateDeployment:input_type -> google.cloud.ces.v1beta.UpdateDeploymentRequest
-	49,  // 115: google.cloud.ces.v1beta.AgentService.DeleteDeployment:input_type -> google.cloud.ces.v1beta.DeleteDeploymentRequest
-	50,  // 116: google.cloud.ces.v1beta.AgentService.ListToolsets:input_type -> google.cloud.ces.v1beta.ListToolsetsRequest
-	52,  // 117: google.cloud.ces.v1beta.AgentService.GetToolset:input_type -> google.cloud.ces.v1beta.GetToolsetRequest
-	53,  // 118: google.cloud.ces.v1beta.AgentService.CreateToolset:input_type -> google.cloud.ces.v1beta.CreateToolsetRequest
-	54,  // 119: google.cloud.ces.v1beta.AgentService.UpdateToolset:input_type -> google.cloud.ces.v1beta.UpdateToolsetRequest
-	55,  // 120: google.cloud.ces.v1beta.AgentService.DeleteToolset:input_type -> google.cloud.ces.v1beta.DeleteToolsetRequest
-	56,  // 121: google.cloud.ces.v1beta.AgentService.ListAppVersions:input_type -> google.cloud.ces.v1beta.ListAppVersionsRequest
-	58,  // 122: google.cloud.ces.v1beta.AgentService.GetAppVersion:input_type -> google.cloud.ces.v1beta.GetAppVersionRequest
-	60,  // 123: google.cloud.ces.v1beta.AgentService.CreateAppVersion:input_type -> google.cloud.ces.v1beta.CreateAppVersionRequest
-	59,  // 124: google.cloud.ces.v1beta.AgentService.DeleteAppVersion:input_type -> google.cloud.ces.v1beta.DeleteAppVersionRequest
-	61,  // 125: google.cloud.ces.v1beta.AgentService.RestoreAppVersion:input_type -> google.cloud.ces.v1beta.RestoreAppVersionRequest
-	63,  // 126: google.cloud.ces.v1beta.AgentService.GenerateAppResource:input_type -> google.cloud.ces.v1beta.GenerateAppResourceRequest
-	67,  // 127: google.cloud.ces.v1beta.AgentService.ListChangelogs:input_type -> google.cloud.ces.v1beta.ListChangelogsRequest
-	69,  // 128: google.cloud.ces.v1beta.AgentService.GetChangelog:input_type -> google.cloud.ces.v1beta.GetChangelogRequest
-	4,   // 129: google.cloud.ces.v1beta.AgentService.ListApps:output_type -> google.cloud.ces.v1beta.ListAppsResponse
-	88,  // 130: google.cloud.ces.v1beta.AgentService.GetApp:output_type -> google.cloud.ces.v1beta.App
-	106, // 131: google.cloud.ces.v1beta.AgentService.CreateApp:output_type -> google.longrunning.Operation
-	88,  // 132: google.cloud.ces.v1beta.AgentService.UpdateApp:output_type -> google.cloud.ces.v1beta.App
-	106, // 133: google.cloud.ces.v1beta.AgentService.DeleteApp:output_type -> google.longrunning.Operation
-	106, // 134: google.cloud.ces.v1beta.AgentService.ExportApp:output_type -> google.longrunning.Operation
-	106, // 135: google.cloud.ces.v1beta.AgentService.ImportApp:output_type -> google.longrunning.Operation
-	103, // 136: google.cloud.ces.v1beta.AgentService.GetSecuritySettings:output_type -> google.cloud.ces.v1beta.SecuritySettings
-	103, // 137: google.cloud.ces.v1beta.AgentService.UpdateSecuritySettings:output_type -> google.cloud.ces.v1beta.SecuritySettings
-	14,  // 138: google.cloud.ces.v1beta.AgentService.ListAgents:output_type -> google.cloud.ces.v1beta.ListAgentsResponse
-	90,  // 139: google.cloud.ces.v1beta.AgentService.GetAgent:output_type -> google.cloud.ces.v1beta.Agent
-	90,  // 140: google.cloud.ces.v1beta.AgentService.CreateAgent:output_type -> google.cloud.ces.v1beta.Agent
-	90,  // 141: google.cloud.ces.v1beta.AgentService.UpdateAgent:output_type -> google.cloud.ces.v1beta.Agent
-	107, // 142: google.cloud.ces.v1beta.AgentService.DeleteAgent:output_type -> google.protobuf.Empty
-	21,  // 143: google.cloud.ces.v1beta.AgentService.ListExamples:output_type -> google.cloud.ces.v1beta.ListExamplesResponse
-	92,  // 144: google.cloud.ces.v1beta.AgentService.GetExample:output_type -> google.cloud.ces.v1beta.Example
-	92,  // 145: google.cloud.ces.v1beta.AgentService.CreateExample:output_type -> google.cloud.ces.v1beta.Example
-	92,  // 146: google.cloud.ces.v1beta.AgentService.UpdateExample:output_type -> google.cloud.ces.v1beta.Example
-	107, // 147: google.cloud.ces.v1beta.AgentService.DeleteExample:output_type -> google.protobuf.Empty
-	27,  // 148: google.cloud.ces.v1beta.AgentService.ListTools:output_type -> google.cloud.ces.v1beta.ListToolsResponse
-	93,  // 149: google.cloud.ces.v1beta.AgentService.GetTool:output_type -> google.cloud.ces.v1beta.Tool
-	33,  // 150: google.cloud.ces.v1beta.AgentService.ListConversations:output_type -> google.cloud.ces.v1beta.ListConversationsResponse
-	95,  // 151: google.cloud.ces.v1beta.AgentService.GetConversation:output_type -> google.cloud.ces.v1beta.Conversation
-	107, // 152: google.cloud.ces.v1beta.AgentService.DeleteConversation:output_type -> google.protobuf.Empty
-	106, // 153: google.cloud.ces.v1beta.AgentService.BatchDeleteConversations:output_type -> google.longrunning.Operation
-	93,  // 154: google.cloud.ces.v1beta.AgentService.CreateTool:output_type -> google.cloud.ces.v1beta.Tool
-	93,  // 155: google.cloud.ces.v1beta.AgentService.UpdateTool:output_type -> google.cloud.ces.v1beta.Tool
-	107, // 156: google.cloud.ces.v1beta.AgentService.DeleteTool:output_type -> google.protobuf.Empty
-	39,  // 157: google.cloud.ces.v1beta.AgentService.ListGuardrails:output_type -> google.cloud.ces.v1beta.ListGuardrailsResponse
-	96,  // 158: google.cloud.ces.v1beta.AgentService.GetGuardrail:output_type -> google.cloud.ces.v1beta.Guardrail
-	96,  // 159: google.cloud.ces.v1beta.AgentService.CreateGuardrail:output_type -> google.cloud.ces.v1beta.Guardrail
-	96,  // 160: google.cloud.ces.v1beta.AgentService.UpdateGuardrail:output_type -> google.cloud.ces.v1beta.Guardrail
-	107, // 161: google.cloud.ces.v1beta.AgentService.DeleteGuardrail:output_type -> google.protobuf.Empty
-	45,  // 162: google.cloud.ces.v1beta.AgentService.ListDeployments:output_type -> google.cloud.ces.v1beta.ListDeploymentsResponse
-	97,  // 163: google.cloud.ces.v1beta.AgentService.GetDeployment:output_type -> google.cloud.ces.v1beta.Deployment
-	97,  // 164: google.cloud.ces.v1beta.AgentService.CreateDeployment:output_type -> google.cloud.ces.v1beta.Deployment
-	97,  // 165: google.cloud.ces.v1beta.AgentService.UpdateDeployment:output_type -> google.cloud.ces.v1beta.Deployment
-	107, // 166: google.cloud.ces.v1beta.AgentService.DeleteDeployment:output_type -> google.protobuf.Empty
-	51,  // 167: google.cloud.ces.v1beta.AgentService.ListToolsets:output_type -> google.cloud.ces.v1beta.ListToolsetsResponse
-	98,  // 168: google.cloud.ces.v1beta.AgentService.GetToolset:output_type -> google.cloud.ces.v1beta.Toolset
-	98,  // 169: google.cloud.ces.v1beta.AgentService.CreateToolset:output_type -> google.cloud.ces.v1beta.Toolset
-	98,  // 170: google.cloud.ces.v1beta.AgentService.UpdateToolset:output_type -> google.cloud.ces.v1beta.Toolset
-	107, // 171: google.cloud.ces.v1beta.AgentService.DeleteToolset:output_type -> google.protobuf.Empty
-	57,  // 172: google.cloud.ces.v1beta.AgentService.ListAppVersions:output_type -> google.cloud.ces.v1beta.ListAppVersionsResponse
-	99,  // 173: google.cloud.ces.v1beta.AgentService.GetAppVersion:output_type -> google.cloud.ces.v1beta.AppVersion
-	99,  // 174: google.cloud.ces.v1beta.AgentService.CreateAppVersion:output_type -> google.cloud.ces.v1beta.AppVersion
-	107, // 175: google.cloud.ces.v1beta.AgentService.DeleteAppVersion:output_type -> google.protobuf.Empty
-	106, // 176: google.cloud.ces.v1beta.AgentService.RestoreAppVersion:output_type -> google.longrunning.Operation
-	106, // 177: google.cloud.ces.v1beta.AgentService.GenerateAppResource:output_type -> google.longrunning.Operation
-	68,  // 178: google.cloud.ces.v1beta.AgentService.ListChangelogs:output_type -> google.cloud.ces.v1beta.ListChangelogsResponse
-	102, // 179: google.cloud.ces.v1beta.AgentService.GetChangelog:output_type -> google.cloud.ces.v1beta.Changelog
-	129, // [129:180] is the sub-list for method output_type
-	78,  // [78:129] is the sub-list for method input_type
-	78,  // [78:78] is the sub-list for extension type_name
-	78,  // [78:78] is the sub-list for extension extendee
-	0,   // [0:78] is the sub-list for field type_name
+	91,  // 6: google.cloud.ces.v1beta.ListAgentsResponse.agents:type_name -> google.cloud.ces.v1beta.Agent
+	91,  // 7: google.cloud.ces.v1beta.CreateAgentRequest.agent:type_name -> google.cloud.ces.v1beta.Agent
+	91,  // 8: google.cloud.ces.v1beta.UpdateAgentRequest.agent:type_name -> google.cloud.ces.v1beta.Agent
+	90,  // 9: google.cloud.ces.v1beta.UpdateAgentRequest.update_mask:type_name -> google.protobuf.FieldMask
+	92,  // 10: google.cloud.ces.v1beta.OperationMetadata.create_time:type_name -> google.protobuf.Timestamp
+	92,  // 11: google.cloud.ces.v1beta.OperationMetadata.end_time:type_name -> google.protobuf.Timestamp
+	93,  // 12: google.cloud.ces.v1beta.ListExamplesResponse.examples:type_name -> google.cloud.ces.v1beta.Example
+	93,  // 13: google.cloud.ces.v1beta.CreateExampleRequest.example:type_name -> google.cloud.ces.v1beta.Example
+	93,  // 14: google.cloud.ces.v1beta.UpdateExampleRequest.example:type_name -> google.cloud.ces.v1beta.Example
+	90,  // 15: google.cloud.ces.v1beta.UpdateExampleRequest.update_mask:type_name -> google.protobuf.FieldMask
+	94,  // 16: google.cloud.ces.v1beta.ListToolsResponse.tools:type_name -> google.cloud.ces.v1beta.Tool
+	94,  // 17: google.cloud.ces.v1beta.CreateToolRequest.tool:type_name -> google.cloud.ces.v1beta.Tool
+	94,  // 18: google.cloud.ces.v1beta.UpdateToolRequest.tool:type_name -> google.cloud.ces.v1beta.Tool
+	90,  // 19: google.cloud.ces.v1beta.UpdateToolRequest.update_mask:type_name -> google.protobuf.FieldMask
+	95,  // 20: google.cloud.ces.v1beta.ListConversationsRequest.source:type_name -> google.cloud.ces.v1beta.Conversation.Source
+	95,  // 21: google.cloud.ces.v1beta.ListConversationsRequest.sources:type_name -> google.cloud.ces.v1beta.Conversation.Source
+	96,  // 22: google.cloud.ces.v1beta.ListConversationsResponse.conversations:type_name -> google.cloud.ces.v1beta.Conversation
+	95,  // 23: google.cloud.ces.v1beta.GetConversationRequest.source:type_name -> google.cloud.ces.v1beta.Conversation.Source
+	95,  // 24: google.cloud.ces.v1beta.DeleteConversationRequest.source:type_name -> google.cloud.ces.v1beta.Conversation.Source
+	97,  // 25: google.cloud.ces.v1beta.ListGuardrailsResponse.guardrails:type_name -> google.cloud.ces.v1beta.Guardrail
+	97,  // 26: google.cloud.ces.v1beta.CreateGuardrailRequest.guardrail:type_name -> google.cloud.ces.v1beta.Guardrail
+	97,  // 27: google.cloud.ces.v1beta.UpdateGuardrailRequest.guardrail:type_name -> google.cloud.ces.v1beta.Guardrail
+	90,  // 28: google.cloud.ces.v1beta.UpdateGuardrailRequest.update_mask:type_name -> google.protobuf.FieldMask
+	98,  // 29: google.cloud.ces.v1beta.ListDeploymentsResponse.deployments:type_name -> google.cloud.ces.v1beta.Deployment
+	98,  // 30: google.cloud.ces.v1beta.CreateDeploymentRequest.deployment:type_name -> google.cloud.ces.v1beta.Deployment
+	98,  // 31: google.cloud.ces.v1beta.UpdateDeploymentRequest.deployment:type_name -> google.cloud.ces.v1beta.Deployment
+	90,  // 32: google.cloud.ces.v1beta.UpdateDeploymentRequest.update_mask:type_name -> google.protobuf.FieldMask
+	99,  // 33: google.cloud.ces.v1beta.ListToolsetsResponse.toolsets:type_name -> google.cloud.ces.v1beta.Toolset
+	99,  // 34: google.cloud.ces.v1beta.CreateToolsetRequest.toolset:type_name -> google.cloud.ces.v1beta.Toolset
+	99,  // 35: google.cloud.ces.v1beta.UpdateToolsetRequest.toolset:type_name -> google.cloud.ces.v1beta.Toolset
+	90,  // 36: google.cloud.ces.v1beta.UpdateToolsetRequest.update_mask:type_name -> google.protobuf.FieldMask
+	100, // 37: google.cloud.ces.v1beta.ListAppVersionsResponse.app_versions:type_name -> google.cloud.ces.v1beta.AppVersion
+	100, // 38: google.cloud.ces.v1beta.CreateAppVersionRequest.app_version:type_name -> google.cloud.ces.v1beta.AppVersion
+	91,  // 39: google.cloud.ces.v1beta.GenerateAppResourceRequest.agent:type_name -> google.cloud.ces.v1beta.Agent
+	94,  // 40: google.cloud.ces.v1beta.GenerateAppResourceRequest.tool:type_name -> google.cloud.ces.v1beta.Tool
+	99,  // 41: google.cloud.ces.v1beta.GenerateAppResourceRequest.toolset:type_name -> google.cloud.ces.v1beta.Toolset
+	73,  // 42: google.cloud.ces.v1beta.GenerateAppResourceRequest.app_version_context:type_name -> google.cloud.ces.v1beta.GenerateAppResourceRequest.AppVersionContext
+	74,  // 43: google.cloud.ces.v1beta.GenerateAppResourceRequest.refine_instructions:type_name -> google.cloud.ces.v1beta.GenerateAppResourceRequest.RefineInstructions
+	75,  // 44: google.cloud.ces.v1beta.GenerateAppResourceRequest.tool_generation_config:type_name -> google.cloud.ces.v1beta.GenerateAppResourceRequest.ToolGenerationConfig
+	76,  // 45: google.cloud.ces.v1beta.GenerateAppResourceRequest.app_generation_config:type_name -> google.cloud.ces.v1beta.GenerateAppResourceRequest.AppGenerationConfig
+	77,  // 46: google.cloud.ces.v1beta.GenerateAppResourceRequest.evaluation_generation_config:type_name -> google.cloud.ces.v1beta.GenerateAppResourceRequest.EvaluationGenerationConfig
+	78,  // 47: google.cloud.ces.v1beta.GenerateAppResourceRequest.evaluation_personas_generation_config:type_name -> google.cloud.ces.v1beta.GenerateAppResourceRequest.EvaluationPersonasGenerationConfig
+	79,  // 48: google.cloud.ces.v1beta.GenerateAppResourceRequest.quality_report_generation_config:type_name -> google.cloud.ces.v1beta.GenerateAppResourceRequest.QualityReportGenerationConfig
+	80,  // 49: google.cloud.ces.v1beta.GenerateAppResourceRequest.hill_climbing_fix_config:type_name -> google.cloud.ces.v1beta.GenerateAppResourceRequest.HillClimbingFixConfig
+	91,  // 50: google.cloud.ces.v1beta.GenerateAppResourceResponse.agent:type_name -> google.cloud.ces.v1beta.Agent
+	99,  // 51: google.cloud.ces.v1beta.GenerateAppResourceResponse.toolset:type_name -> google.cloud.ces.v1beta.Toolset
+	101, // 52: google.cloud.ces.v1beta.GenerateAppResourceResponse.app_snapshot:type_name -> google.cloud.ces.v1beta.AppSnapshot
+	84,  // 53: google.cloud.ces.v1beta.GenerateAppResourceResponse.tools:type_name -> google.cloud.ces.v1beta.GenerateAppResourceResponse.Tools
+	83,  // 54: google.cloud.ces.v1beta.GenerateAppResourceResponse.evaluations:type_name -> google.cloud.ces.v1beta.GenerateAppResourceResponse.Evaluations
+	85,  // 55: google.cloud.ces.v1beta.GenerateAppResourceResponse.app_resources:type_name -> google.cloud.ces.v1beta.GenerateAppResourceResponse.AppResources
+	65,  // 56: google.cloud.ces.v1beta.GenerateAppResourceResponse.quality_report:type_name -> google.cloud.ces.v1beta.QualityReport
+	86,  // 57: google.cloud.ces.v1beta.GenerateAppResourceResponse.generate_result_info:type_name -> google.cloud.ces.v1beta.GenerateAppResourceResponse.GenerateResultInfo
+	88,  // 58: google.cloud.ces.v1beta.QualityReport.issues:type_name -> google.cloud.ces.v1beta.QualityReport.AgentIssues
+	87,  // 59: google.cloud.ces.v1beta.QualityReport.general_issues:type_name -> google.cloud.ces.v1beta.QualityReport.Issue
+	2,   // 60: google.cloud.ces.v1beta.GenerateAppResourceOperationMetadata.generation_type:type_name -> google.cloud.ces.v1beta.GenerateAppResourceOperationMetadata.GenerationType
+	92,  // 61: google.cloud.ces.v1beta.GenerateAppResourceOperationMetadata.create_time:type_name -> google.protobuf.Timestamp
+	92,  // 62: google.cloud.ces.v1beta.GenerateAppResourceOperationMetadata.end_time:type_name -> google.protobuf.Timestamp
+	102, // 63: google.cloud.ces.v1beta.GenerateAppResourceOperationMetadata.partial_errors:type_name -> google.rpc.Status
+	103, // 64: google.cloud.ces.v1beta.ListChangelogsResponse.changelogs:type_name -> google.cloud.ces.v1beta.Changelog
+	104, // 65: google.cloud.ces.v1beta.UpdateSecuritySettingsRequest.security_settings:type_name -> google.cloud.ces.v1beta.SecuritySettings
+	90,  // 66: google.cloud.ces.v1beta.UpdateSecuritySettingsRequest.update_mask:type_name -> google.protobuf.FieldMask
+	1,   // 67: google.cloud.ces.v1beta.ImportAppRequest.ImportOptions.conflict_resolution_strategy:type_name -> google.cloud.ces.v1beta.ImportAppRequest.ImportOptions.ConflictResolutionStrategy
+	90,  // 68: google.cloud.ces.v1beta.GenerateAppResourceRequest.RefineInstructions.field_mask:type_name -> google.protobuf.FieldMask
+	105, // 69: google.cloud.ces.v1beta.GenerateAppResourceRequest.ToolGenerationConfig.file_contexts:type_name -> google.cloud.ces.v1beta.FileContext
+	81,  // 70: google.cloud.ces.v1beta.GenerateAppResourceRequest.ToolGenerationConfig.open_api_toolset_generation_config:type_name -> google.cloud.ces.v1beta.GenerateAppResourceRequest.ToolGenerationConfig.OpenApiToolsetGenerationConfig
+	105, // 71: google.cloud.ces.v1beta.GenerateAppResourceRequest.AppGenerationConfig.file_contexts:type_name -> google.cloud.ces.v1beta.FileContext
+	65,  // 72: google.cloud.ces.v1beta.GenerateAppResourceRequest.HillClimbingFixConfig.quality_report:type_name -> google.cloud.ces.v1beta.QualityReport
+	82,  // 73: google.cloud.ces.v1beta.GenerateAppResourceRequest.ToolGenerationConfig.OpenApiToolsetGenerationConfig.operation_generation_configs:type_name -> google.cloud.ces.v1beta.GenerateAppResourceRequest.ToolGenerationConfig.OpenApiToolsetGenerationConfig.OperationGenerationConfig
+	106, // 74: google.cloud.ces.v1beta.GenerateAppResourceResponse.Evaluations.evaluations:type_name -> google.cloud.ces.v1beta.Evaluation
+	94,  // 75: google.cloud.ces.v1beta.GenerateAppResourceResponse.Tools.tools:type_name -> google.cloud.ces.v1beta.Tool
+	101, // 76: google.cloud.ces.v1beta.GenerateAppResourceResponse.AppResources.app_snapshot:type_name -> google.cloud.ces.v1beta.AppSnapshot
+	106, // 77: google.cloud.ces.v1beta.GenerateAppResourceResponse.AppResources.evaluations:type_name -> google.cloud.ces.v1beta.Evaluation
+	87,  // 78: google.cloud.ces.v1beta.QualityReport.AgentIssues.issues:type_name -> google.cloud.ces.v1beta.QualityReport.Issue
+	3,   // 79: google.cloud.ces.v1beta.AgentService.ListApps:input_type -> google.cloud.ces.v1beta.ListAppsRequest
+	5,   // 80: google.cloud.ces.v1beta.AgentService.GetApp:input_type -> google.cloud.ces.v1beta.GetAppRequest
+	6,   // 81: google.cloud.ces.v1beta.AgentService.CreateApp:input_type -> google.cloud.ces.v1beta.CreateAppRequest
+	7,   // 82: google.cloud.ces.v1beta.AgentService.UpdateApp:input_type -> google.cloud.ces.v1beta.UpdateAppRequest
+	8,   // 83: google.cloud.ces.v1beta.AgentService.DeleteApp:input_type -> google.cloud.ces.v1beta.DeleteAppRequest
+	9,   // 84: google.cloud.ces.v1beta.AgentService.ExportApp:input_type -> google.cloud.ces.v1beta.ExportAppRequest
+	11,  // 85: google.cloud.ces.v1beta.AgentService.ImportApp:input_type -> google.cloud.ces.v1beta.ImportAppRequest
+	70,  // 86: google.cloud.ces.v1beta.AgentService.GetSecuritySettings:input_type -> google.cloud.ces.v1beta.GetSecuritySettingsRequest
+	71,  // 87: google.cloud.ces.v1beta.AgentService.UpdateSecuritySettings:input_type -> google.cloud.ces.v1beta.UpdateSecuritySettingsRequest
+	13,  // 88: google.cloud.ces.v1beta.AgentService.ListAgents:input_type -> google.cloud.ces.v1beta.ListAgentsRequest
+	15,  // 89: google.cloud.ces.v1beta.AgentService.GetAgent:input_type -> google.cloud.ces.v1beta.GetAgentRequest
+	16,  // 90: google.cloud.ces.v1beta.AgentService.CreateAgent:input_type -> google.cloud.ces.v1beta.CreateAgentRequest
+	17,  // 91: google.cloud.ces.v1beta.AgentService.UpdateAgent:input_type -> google.cloud.ces.v1beta.UpdateAgentRequest
+	18,  // 92: google.cloud.ces.v1beta.AgentService.DeleteAgent:input_type -> google.cloud.ces.v1beta.DeleteAgentRequest
+	20,  // 93: google.cloud.ces.v1beta.AgentService.ListExamples:input_type -> google.cloud.ces.v1beta.ListExamplesRequest
+	22,  // 94: google.cloud.ces.v1beta.AgentService.GetExample:input_type -> google.cloud.ces.v1beta.GetExampleRequest
+	23,  // 95: google.cloud.ces.v1beta.AgentService.CreateExample:input_type -> google.cloud.ces.v1beta.CreateExampleRequest
+	24,  // 96: google.cloud.ces.v1beta.AgentService.UpdateExample:input_type -> google.cloud.ces.v1beta.UpdateExampleRequest
+	25,  // 97: google.cloud.ces.v1beta.AgentService.DeleteExample:input_type -> google.cloud.ces.v1beta.DeleteExampleRequest
+	26,  // 98: google.cloud.ces.v1beta.AgentService.ListTools:input_type -> google.cloud.ces.v1beta.ListToolsRequest
+	28,  // 99: google.cloud.ces.v1beta.AgentService.GetTool:input_type -> google.cloud.ces.v1beta.GetToolRequest
+	32,  // 100: google.cloud.ces.v1beta.AgentService.ListConversations:input_type -> google.cloud.ces.v1beta.ListConversationsRequest
+	34,  // 101: google.cloud.ces.v1beta.AgentService.GetConversation:input_type -> google.cloud.ces.v1beta.GetConversationRequest
+	35,  // 102: google.cloud.ces.v1beta.AgentService.DeleteConversation:input_type -> google.cloud.ces.v1beta.DeleteConversationRequest
+	36,  // 103: google.cloud.ces.v1beta.AgentService.BatchDeleteConversations:input_type -> google.cloud.ces.v1beta.BatchDeleteConversationsRequest
+	29,  // 104: google.cloud.ces.v1beta.AgentService.CreateTool:input_type -> google.cloud.ces.v1beta.CreateToolRequest
+	30,  // 105: google.cloud.ces.v1beta.AgentService.UpdateTool:input_type -> google.cloud.ces.v1beta.UpdateToolRequest
+	31,  // 106: google.cloud.ces.v1beta.AgentService.DeleteTool:input_type -> google.cloud.ces.v1beta.DeleteToolRequest
+	38,  // 107: google.cloud.ces.v1beta.AgentService.ListGuardrails:input_type -> google.cloud.ces.v1beta.ListGuardrailsRequest
+	40,  // 108: google.cloud.ces.v1beta.AgentService.GetGuardrail:input_type -> google.cloud.ces.v1beta.GetGuardrailRequest
+	41,  // 109: google.cloud.ces.v1beta.AgentService.CreateGuardrail:input_type -> google.cloud.ces.v1beta.CreateGuardrailRequest
+	42,  // 110: google.cloud.ces.v1beta.AgentService.UpdateGuardrail:input_type -> google.cloud.ces.v1beta.UpdateGuardrailRequest
+	43,  // 111: google.cloud.ces.v1beta.AgentService.DeleteGuardrail:input_type -> google.cloud.ces.v1beta.DeleteGuardrailRequest
+	44,  // 112: google.cloud.ces.v1beta.AgentService.ListDeployments:input_type -> google.cloud.ces.v1beta.ListDeploymentsRequest
+	46,  // 113: google.cloud.ces.v1beta.AgentService.GetDeployment:input_type -> google.cloud.ces.v1beta.GetDeploymentRequest
+	47,  // 114: google.cloud.ces.v1beta.AgentService.CreateDeployment:input_type -> google.cloud.ces.v1beta.CreateDeploymentRequest
+	48,  // 115: google.cloud.ces.v1beta.AgentService.UpdateDeployment:input_type -> google.cloud.ces.v1beta.UpdateDeploymentRequest
+	49,  // 116: google.cloud.ces.v1beta.AgentService.DeleteDeployment:input_type -> google.cloud.ces.v1beta.DeleteDeploymentRequest
+	50,  // 117: google.cloud.ces.v1beta.AgentService.ListToolsets:input_type -> google.cloud.ces.v1beta.ListToolsetsRequest
+	52,  // 118: google.cloud.ces.v1beta.AgentService.GetToolset:input_type -> google.cloud.ces.v1beta.GetToolsetRequest
+	53,  // 119: google.cloud.ces.v1beta.AgentService.CreateToolset:input_type -> google.cloud.ces.v1beta.CreateToolsetRequest
+	54,  // 120: google.cloud.ces.v1beta.AgentService.UpdateToolset:input_type -> google.cloud.ces.v1beta.UpdateToolsetRequest
+	55,  // 121: google.cloud.ces.v1beta.AgentService.DeleteToolset:input_type -> google.cloud.ces.v1beta.DeleteToolsetRequest
+	56,  // 122: google.cloud.ces.v1beta.AgentService.ListAppVersions:input_type -> google.cloud.ces.v1beta.ListAppVersionsRequest
+	58,  // 123: google.cloud.ces.v1beta.AgentService.GetAppVersion:input_type -> google.cloud.ces.v1beta.GetAppVersionRequest
+	60,  // 124: google.cloud.ces.v1beta.AgentService.CreateAppVersion:input_type -> google.cloud.ces.v1beta.CreateAppVersionRequest
+	59,  // 125: google.cloud.ces.v1beta.AgentService.DeleteAppVersion:input_type -> google.cloud.ces.v1beta.DeleteAppVersionRequest
+	61,  // 126: google.cloud.ces.v1beta.AgentService.RestoreAppVersion:input_type -> google.cloud.ces.v1beta.RestoreAppVersionRequest
+	63,  // 127: google.cloud.ces.v1beta.AgentService.GenerateAppResource:input_type -> google.cloud.ces.v1beta.GenerateAppResourceRequest
+	67,  // 128: google.cloud.ces.v1beta.AgentService.ListChangelogs:input_type -> google.cloud.ces.v1beta.ListChangelogsRequest
+	69,  // 129: google.cloud.ces.v1beta.AgentService.GetChangelog:input_type -> google.cloud.ces.v1beta.GetChangelogRequest
+	4,   // 130: google.cloud.ces.v1beta.AgentService.ListApps:output_type -> google.cloud.ces.v1beta.ListAppsResponse
+	89,  // 131: google.cloud.ces.v1beta.AgentService.GetApp:output_type -> google.cloud.ces.v1beta.App
+	107, // 132: google.cloud.ces.v1beta.AgentService.CreateApp:output_type -> google.longrunning.Operation
+	89,  // 133: google.cloud.ces.v1beta.AgentService.UpdateApp:output_type -> google.cloud.ces.v1beta.App
+	107, // 134: google.cloud.ces.v1beta.AgentService.DeleteApp:output_type -> google.longrunning.Operation
+	107, // 135: google.cloud.ces.v1beta.AgentService.ExportApp:output_type -> google.longrunning.Operation
+	107, // 136: google.cloud.ces.v1beta.AgentService.ImportApp:output_type -> google.longrunning.Operation
+	104, // 137: google.cloud.ces.v1beta.AgentService.GetSecuritySettings:output_type -> google.cloud.ces.v1beta.SecuritySettings
+	104, // 138: google.cloud.ces.v1beta.AgentService.UpdateSecuritySettings:output_type -> google.cloud.ces.v1beta.SecuritySettings
+	14,  // 139: google.cloud.ces.v1beta.AgentService.ListAgents:output_type -> google.cloud.ces.v1beta.ListAgentsResponse
+	91,  // 140: google.cloud.ces.v1beta.AgentService.GetAgent:output_type -> google.cloud.ces.v1beta.Agent
+	91,  // 141: google.cloud.ces.v1beta.AgentService.CreateAgent:output_type -> google.cloud.ces.v1beta.Agent
+	91,  // 142: google.cloud.ces.v1beta.AgentService.UpdateAgent:output_type -> google.cloud.ces.v1beta.Agent
+	108, // 143: google.cloud.ces.v1beta.AgentService.DeleteAgent:output_type -> google.protobuf.Empty
+	21,  // 144: google.cloud.ces.v1beta.AgentService.ListExamples:output_type -> google.cloud.ces.v1beta.ListExamplesResponse
+	93,  // 145: google.cloud.ces.v1beta.AgentService.GetExample:output_type -> google.cloud.ces.v1beta.Example
+	93,  // 146: google.cloud.ces.v1beta.AgentService.CreateExample:output_type -> google.cloud.ces.v1beta.Example
+	93,  // 147: google.cloud.ces.v1beta.AgentService.UpdateExample:output_type -> google.cloud.ces.v1beta.Example
+	108, // 148: google.cloud.ces.v1beta.AgentService.DeleteExample:output_type -> google.protobuf.Empty
+	27,  // 149: google.cloud.ces.v1beta.AgentService.ListTools:output_type -> google.cloud.ces.v1beta.ListToolsResponse
+	94,  // 150: google.cloud.ces.v1beta.AgentService.GetTool:output_type -> google.cloud.ces.v1beta.Tool
+	33,  // 151: google.cloud.ces.v1beta.AgentService.ListConversations:output_type -> google.cloud.ces.v1beta.ListConversationsResponse
+	96,  // 152: google.cloud.ces.v1beta.AgentService.GetConversation:output_type -> google.cloud.ces.v1beta.Conversation
+	108, // 153: google.cloud.ces.v1beta.AgentService.DeleteConversation:output_type -> google.protobuf.Empty
+	107, // 154: google.cloud.ces.v1beta.AgentService.BatchDeleteConversations:output_type -> google.longrunning.Operation
+	94,  // 155: google.cloud.ces.v1beta.AgentService.CreateTool:output_type -> google.cloud.ces.v1beta.Tool
+	94,  // 156: google.cloud.ces.v1beta.AgentService.UpdateTool:output_type -> google.cloud.ces.v1beta.Tool
+	108, // 157: google.cloud.ces.v1beta.AgentService.DeleteTool:output_type -> google.protobuf.Empty
+	39,  // 158: google.cloud.ces.v1beta.AgentService.ListGuardrails:output_type -> google.cloud.ces.v1beta.ListGuardrailsResponse
+	97,  // 159: google.cloud.ces.v1beta.AgentService.GetGuardrail:output_type -> google.cloud.ces.v1beta.Guardrail
+	97,  // 160: google.cloud.ces.v1beta.AgentService.CreateGuardrail:output_type -> google.cloud.ces.v1beta.Guardrail
+	97,  // 161: google.cloud.ces.v1beta.AgentService.UpdateGuardrail:output_type -> google.cloud.ces.v1beta.Guardrail
+	108, // 162: google.cloud.ces.v1beta.AgentService.DeleteGuardrail:output_type -> google.protobuf.Empty
+	45,  // 163: google.cloud.ces.v1beta.AgentService.ListDeployments:output_type -> google.cloud.ces.v1beta.ListDeploymentsResponse
+	98,  // 164: google.cloud.ces.v1beta.AgentService.GetDeployment:output_type -> google.cloud.ces.v1beta.Deployment
+	98,  // 165: google.cloud.ces.v1beta.AgentService.CreateDeployment:output_type -> google.cloud.ces.v1beta.Deployment
+	98,  // 166: google.cloud.ces.v1beta.AgentService.UpdateDeployment:output_type -> google.cloud.ces.v1beta.Deployment
+	108, // 167: google.cloud.ces.v1beta.AgentService.DeleteDeployment:output_type -> google.protobuf.Empty
+	51,  // 168: google.cloud.ces.v1beta.AgentService.ListToolsets:output_type -> google.cloud.ces.v1beta.ListToolsetsResponse
+	99,  // 169: google.cloud.ces.v1beta.AgentService.GetToolset:output_type -> google.cloud.ces.v1beta.Toolset
+	99,  // 170: google.cloud.ces.v1beta.AgentService.CreateToolset:output_type -> google.cloud.ces.v1beta.Toolset
+	99,  // 171: google.cloud.ces.v1beta.AgentService.UpdateToolset:output_type -> google.cloud.ces.v1beta.Toolset
+	108, // 172: google.cloud.ces.v1beta.AgentService.DeleteToolset:output_type -> google.protobuf.Empty
+	57,  // 173: google.cloud.ces.v1beta.AgentService.ListAppVersions:output_type -> google.cloud.ces.v1beta.ListAppVersionsResponse
+	100, // 174: google.cloud.ces.v1beta.AgentService.GetAppVersion:output_type -> google.cloud.ces.v1beta.AppVersion
+	100, // 175: google.cloud.ces.v1beta.AgentService.CreateAppVersion:output_type -> google.cloud.ces.v1beta.AppVersion
+	108, // 176: google.cloud.ces.v1beta.AgentService.DeleteAppVersion:output_type -> google.protobuf.Empty
+	107, // 177: google.cloud.ces.v1beta.AgentService.RestoreAppVersion:output_type -> google.longrunning.Operation
+	107, // 178: google.cloud.ces.v1beta.AgentService.GenerateAppResource:output_type -> google.longrunning.Operation
+	68,  // 179: google.cloud.ces.v1beta.AgentService.ListChangelogs:output_type -> google.cloud.ces.v1beta.ListChangelogsResponse
+	103, // 180: google.cloud.ces.v1beta.AgentService.GetChangelog:output_type -> google.cloud.ces.v1beta.Changelog
+	130, // [130:181] is the sub-list for method output_type
+	79,  // [79:130] is the sub-list for method input_type
+	79,  // [79:79] is the sub-list for extension type_name
+	79,  // [79:79] is the sub-list for extension extendee
+	0,   // [0:79] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_ces_v1beta_agent_service_proto_init() }
@@ -6801,6 +6886,7 @@ func file_google_cloud_ces_v1beta_agent_service_proto_init() {
 		(*GenerateAppResourceRequest_Agent)(nil),
 		(*GenerateAppResourceRequest_Tool)(nil),
 		(*GenerateAppResourceRequest_Toolset)(nil),
+		(*GenerateAppResourceRequest_AppVersionContext_)(nil),
 	}
 	file_google_cloud_ces_v1beta_agent_service_proto_msgTypes[61].OneofWrappers = []any{
 		(*GenerateAppResourceResponse_Agent)(nil),
@@ -6817,7 +6903,7 @@ func file_google_cloud_ces_v1beta_agent_service_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_ces_v1beta_agent_service_proto_rawDesc), len(file_google_cloud_ces_v1beta_agent_service_proto_rawDesc)),
 			NumEnums:      3,
-			NumMessages:   85,
+			NumMessages:   86,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

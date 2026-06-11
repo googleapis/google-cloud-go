@@ -19,6 +19,7 @@ package modelarmor
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"log/slog"
 	"math"
@@ -45,17 +46,19 @@ var newClientHook clientHook
 
 // CallOptions contains the retry settings for each method of Client.
 type CallOptions struct {
-	ListTemplates         []gax.CallOption
-	GetTemplate           []gax.CallOption
-	CreateTemplate        []gax.CallOption
-	UpdateTemplate        []gax.CallOption
-	DeleteTemplate        []gax.CallOption
-	GetFloorSetting       []gax.CallOption
-	UpdateFloorSetting    []gax.CallOption
-	SanitizeUserPrompt    []gax.CallOption
-	SanitizeModelResponse []gax.CallOption
-	GetLocation           []gax.CallOption
-	ListLocations         []gax.CallOption
+	ListTemplates               []gax.CallOption
+	GetTemplate                 []gax.CallOption
+	CreateTemplate              []gax.CallOption
+	UpdateTemplate              []gax.CallOption
+	DeleteTemplate              []gax.CallOption
+	GetFloorSetting             []gax.CallOption
+	UpdateFloorSetting          []gax.CallOption
+	SanitizeUserPrompt          []gax.CallOption
+	SanitizeModelResponse       []gax.CallOption
+	StreamSanitizeUserPrompt    []gax.CallOption
+	StreamSanitizeModelResponse []gax.CallOption
+	GetLocation                 []gax.CallOption
+	ListLocations               []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
@@ -147,8 +150,10 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		GetLocation:   []gax.CallOption{},
-		ListLocations: []gax.CallOption{},
+		StreamSanitizeUserPrompt:    []gax.CallOption{},
+		StreamSanitizeModelResponse: []gax.CallOption{},
+		GetLocation:                 []gax.CallOption{},
+		ListLocations:               []gax.CallOption{},
 	}
 }
 
@@ -221,8 +226,10 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		GetLocation:   []gax.CallOption{},
-		ListLocations: []gax.CallOption{},
+		StreamSanitizeUserPrompt:    []gax.CallOption{},
+		StreamSanitizeModelResponse: []gax.CallOption{},
+		GetLocation:                 []gax.CallOption{},
+		ListLocations:               []gax.CallOption{},
 	}
 }
 
@@ -240,6 +247,8 @@ type internalClient interface {
 	UpdateFloorSetting(context.Context, *modelarmorpb.UpdateFloorSettingRequest, ...gax.CallOption) (*modelarmorpb.FloorSetting, error)
 	SanitizeUserPrompt(context.Context, *modelarmorpb.SanitizeUserPromptRequest, ...gax.CallOption) (*modelarmorpb.SanitizeUserPromptResponse, error)
 	SanitizeModelResponse(context.Context, *modelarmorpb.SanitizeModelResponseRequest, ...gax.CallOption) (*modelarmorpb.SanitizeModelResponseResponse, error)
+	StreamSanitizeUserPrompt(context.Context, ...gax.CallOption) (modelarmorpb.ModelArmor_StreamSanitizeUserPromptClient, error)
+	StreamSanitizeModelResponse(context.Context, ...gax.CallOption) (modelarmorpb.ModelArmor_StreamSanitizeModelResponseClient, error)
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 }
@@ -322,6 +331,20 @@ func (c *Client) SanitizeUserPrompt(ctx context.Context, req *modelarmorpb.Sanit
 // SanitizeModelResponse sanitizes Model Response.
 func (c *Client) SanitizeModelResponse(ctx context.Context, req *modelarmorpb.SanitizeModelResponseRequest, opts ...gax.CallOption) (*modelarmorpb.SanitizeModelResponseResponse, error) {
 	return c.internalClient.SanitizeModelResponse(ctx, req, opts...)
+}
+
+// StreamSanitizeUserPrompt streaming version of Sanitize User Prompt.
+//
+// This method is not supported for the REST transport.
+func (c *Client) StreamSanitizeUserPrompt(ctx context.Context, opts ...gax.CallOption) (modelarmorpb.ModelArmor_StreamSanitizeUserPromptClient, error) {
+	return c.internalClient.StreamSanitizeUserPrompt(ctx, opts...)
+}
+
+// StreamSanitizeModelResponse streaming version of Sanitizes Model Response.
+//
+// This method is not supported for the REST transport.
+func (c *Client) StreamSanitizeModelResponse(ctx context.Context, opts ...gax.CallOption) (modelarmorpb.ModelArmor_StreamSanitizeModelResponseClient, error) {
+	return c.internalClient.StreamSanitizeModelResponse(ctx, opts...)
 }
 
 // GetLocation gets information about a location.
@@ -414,6 +437,8 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.UpdateFloorSetting = append(client.CallOptions.UpdateFloorSetting, gax.WithClientMetrics(metrics))
 		client.CallOptions.SanitizeUserPrompt = append(client.CallOptions.SanitizeUserPrompt, gax.WithClientMetrics(metrics))
 		client.CallOptions.SanitizeModelResponse = append(client.CallOptions.SanitizeModelResponse, gax.WithClientMetrics(metrics))
+		client.CallOptions.StreamSanitizeUserPrompt = append(client.CallOptions.StreamSanitizeUserPrompt, gax.WithClientMetrics(metrics))
+		client.CallOptions.StreamSanitizeModelResponse = append(client.CallOptions.StreamSanitizeModelResponse, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
 	}
@@ -515,6 +540,8 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.UpdateFloorSetting = append(callOpts.UpdateFloorSetting, gax.WithClientMetrics(metrics))
 		callOpts.SanitizeUserPrompt = append(callOpts.SanitizeUserPrompt, gax.WithClientMetrics(metrics))
 		callOpts.SanitizeModelResponse = append(callOpts.SanitizeModelResponse, gax.WithClientMetrics(metrics))
+		callOpts.StreamSanitizeUserPrompt = append(callOpts.StreamSanitizeUserPrompt, gax.WithClientMetrics(metrics))
+		callOpts.StreamSanitizeModelResponse = append(callOpts.StreamSanitizeModelResponse, gax.WithClientMetrics(metrics))
 		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientMetrics(metrics))
 		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientMetrics(metrics))
 	}
@@ -785,6 +812,46 @@ func (c *gRPCClient) SanitizeModelResponse(ctx context.Context, req *modelarmorp
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = executeRPC(ctx, c.client.SanitizeModelResponse, req, settings.GRPC, c.logger, "SanitizeModelResponse")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) StreamSanitizeUserPrompt(ctx context.Context, opts ...gax.CallOption) (modelarmorpb.ModelArmor_StreamSanitizeUserPromptClient, error) {
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.modelarmor.v1.ModelArmor/StreamSanitizeUserPrompt")
+	}
+	var resp modelarmorpb.ModelArmor_StreamSanitizeUserPromptClient
+	opts = append((*c.CallOptions).StreamSanitizeUserPrompt[0:len((*c.CallOptions).StreamSanitizeUserPrompt):len((*c.CallOptions).StreamSanitizeUserPrompt)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		c.logger.DebugContext(ctx, "api streaming client request", "serviceName", serviceName, "rpcName", "StreamSanitizeUserPrompt")
+		resp, err = c.client.StreamSanitizeUserPrompt(ctx, settings.GRPC...)
+		c.logger.DebugContext(ctx, "api streaming client response", "serviceName", serviceName, "rpcName", "StreamSanitizeUserPrompt")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) StreamSanitizeModelResponse(ctx context.Context, opts ...gax.CallOption) (modelarmorpb.ModelArmor_StreamSanitizeModelResponseClient, error) {
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.modelarmor.v1.ModelArmor/StreamSanitizeModelResponse")
+	}
+	var resp modelarmorpb.ModelArmor_StreamSanitizeModelResponseClient
+	opts = append((*c.CallOptions).StreamSanitizeModelResponse[0:len((*c.CallOptions).StreamSanitizeModelResponse):len((*c.CallOptions).StreamSanitizeModelResponse)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		c.logger.DebugContext(ctx, "api streaming client request", "serviceName", serviceName, "rpcName", "StreamSanitizeModelResponse")
+		resp, err = c.client.StreamSanitizeModelResponse(ctx, settings.GRPC...)
+		c.logger.DebugContext(ctx, "api streaming client response", "serviceName", serviceName, "rpcName", "StreamSanitizeModelResponse")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1437,6 +1504,20 @@ func (c *restClient) SanitizeModelResponse(ctx context.Context, req *modelarmorp
 		return nil, e
 	}
 	return resp, nil
+}
+
+// StreamSanitizeUserPrompt streaming version of Sanitize User Prompt.
+//
+// This method is not supported for the REST transport.
+func (c *restClient) StreamSanitizeUserPrompt(ctx context.Context, opts ...gax.CallOption) (modelarmorpb.ModelArmor_StreamSanitizeUserPromptClient, error) {
+	return nil, errors.New("StreamSanitizeUserPrompt not yet supported for REST clients")
+}
+
+// StreamSanitizeModelResponse streaming version of Sanitizes Model Response.
+//
+// This method is not supported for the REST transport.
+func (c *restClient) StreamSanitizeModelResponse(ctx context.Context, opts ...gax.CallOption) (modelarmorpb.ModelArmor_StreamSanitizeModelResponseClient, error) {
+	return nil, errors.New("StreamSanitizeModelResponse not yet supported for REST clients")
 }
 
 // GetLocation gets information about a location.
