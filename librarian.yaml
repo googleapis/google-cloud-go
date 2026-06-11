@@ -68,7 +68,7 @@ libraries:
       - path: google/cloud/aiplatform/v1beta1
     skip_generate: true
   - name: alloydb
-    version: 1.26.0
+    version: 1.27.0
     apis:
       - path: google/cloud/alloydb/v1
       - path: google/cloud/alloydb/connectors/v1
@@ -197,7 +197,7 @@ libraries:
       - path: google/cloud/automl/v1
       - path: google/cloud/automl/v1beta1
   - name: backstory
-    version: 0.0.0
+    version: 0.1.0
     apis:
       - path: backstory
         go:
@@ -424,7 +424,7 @@ libraries:
     apis:
       - path: google/cloud/certificatemanager/v1
   - name: ces
-    version: 1.0.0
+    version: 1.1.0
     apis:
       - path: google/cloud/ces/v1
       - path: google/cloud/ces/v1beta
@@ -534,7 +534,7 @@ libraries:
       - internal/version.go
     skip_release: true
   - name: confidentialcomputing
-    version: 1.16.0
+    version: 1.17.0
     apis:
       - path: google/cloud/confidentialcomputing/v1
       - path: google/cloud/confidentialcomputing/v1alpha1
@@ -672,7 +672,7 @@ libraries:
       - path: google/cloud/discoveryengine/v1beta
       - path: google/cloud/discoveryengine/v1alpha
   - name: dlp
-    version: 1.35.0
+    version: 1.36.0
     apis:
       - path: google/privacy/dlp/v2
         go:
@@ -759,7 +759,7 @@ libraries:
       - path: google/cloud/functions/v1
       - path: google/cloud/functions/v2beta
   - name: geminidataanalytics
-    version: 1.2.0
+    version: 1.3.0
     apis:
       - path: google/cloud/geminidataanalytics/v1
       - path: google/cloud/geminidataanalytics/v1beta
@@ -965,7 +965,7 @@ libraries:
     apis:
       - path: google/cloud/migrationcenter/v1
   - name: modelarmor
-    version: 1.0.0
+    version: 1.1.0
     apis:
       - path: google/cloud/modelarmor/v1
       - path: google/cloud/modelarmor/v1beta
@@ -1025,7 +1025,7 @@ libraries:
     apis:
       - path: google/cloud/optimization/v1
   - name: oracledatabase
-    version: 1.0.0
+    version: 1.1.0
     apis:
       - path: google/cloud/oracledatabase/v1
   - name: orchestration
@@ -1504,7 +1504,7 @@ libraries:
     apis:
       - path: google/cloud/workloadmanager/v1
   - name: workstations
-    version: 1.6.0
+    version: 1.7.0
     apis:
       - path: google/cloud/workstations/v1
       - path: google/cloud/workstations/v1beta
