@@ -34,7 +34,6 @@ import (
 	"go.opentelemetry.io/otel/metric"
 	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
 	"google.golang.org/api/option"
-	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/stats"
@@ -546,6 +545,10 @@ type attemptTracer struct {
 
 	// Tracker for t4t7
 	t4t7Tracker *t4t7Tracker
+
+	// Response header and trailer metadata captured by the stats handler.
+	headerMD  metadata.MD
+	trailerMD metadata.MD
 }
 
 func (a *attemptTracer) setStartTime(t time.Time) {
@@ -827,18 +830,6 @@ func (mt *builtinMetricsTracer) incrementAppBlockingLatency(latency float64) {
 	mt.currOp.incrementAppBlockingLatency(latency)
 }
 
-// recordAttemptClientBlockingLatency records the client blocking latency for the current attempt.
-// It is measured per attempt as the duration between when the attempt started preparing and when it was executed or dispatched.
-func (mt *builtinMetricsTracer) recordAttemptClientBlockingLatency() {
-	if !mt.builtInEnabled {
-		return
-	}
-	startTime := mt.currOp.currAttempt.startTime
-	if !startTime.IsZero() {
-		mt.currOp.currAttempt.clientBlockingLatency = convertToMs(time.Since(startTime))
-	}
-}
-
 // blockingLatencyTracker is used to calculate the time between stream creation and the first message send.
 type blockingLatencyTracker struct {
 	endNanos atomic.Int64
@@ -881,13 +872,44 @@ func (t *t4t7Tracker) getLatencyMs() float64 {
 	return float64(end-start) / float64(time.Millisecond)
 }
 
-// latencyStatsHandler is a gRPC stats.Handler to measure client blocking latency.
+// latencyStatsHandler is the gRPC stats.Handler that drives per-attempt metrics
+// recording. It is the single source of truth for attempt boundaries: TagRPC
+// starts a new attempt, HandleRPC observes the OutPayload/Header/Trailer events
+// to feed the blocking-latency and t4t7 trackers, and the End event records
+// attempt completion with the final status from gRPC (no io.EOF translation
+// needed because stats.End.Error is nil on successful stream close).
+//
+// A *builtinMetricsTracer is plumbed through the call context by the public
+// entry points (ReadRows, Apply, etc.) via contextWithMetricsTracer. RPCs that
+// don't carry a tracer (or carry a disabled one) are observed only for the
+// existing blocking/t4t7 trackers if present, so non-Bigtable RPCs on the same
+// channel emit no metrics.
 type latencyStatsHandler struct{}
 
 var _ stats.Handler = (*latencyStatsHandler)(nil)
 
 func (h *latencyStatsHandler) TagRPC(ctx context.Context, info *stats.RPCTagInfo) context.Context {
-	// The tracker should already be in the context, added by gaxInvokeWithRecorder.
+	mt := metricsTracerFromContext(ctx)
+	if !mt.builtInEnabled {
+		return ctx
+	}
+
+	mt.recordAttemptStart()
+
+	// Set method name if a caller (e.g. gaxInvokeWithRecorder) hasn't already.
+	if mt.method == "" {
+		parts := strings.Split(info.FullMethodName, "/")
+		mt.setMethod(parts[len(parts)-1])
+	}
+
+	blockTracker := &blockingLatencyTracker{}
+	mt.currOp.currAttempt.blockingLatencyTracker = blockTracker
+	ctx = context.WithValue(ctx, statsContextKey, blockTracker)
+
+	t4t7 := &t4t7Tracker{}
+	mt.currOp.currAttempt.t4t7Tracker = t4t7
+	ctx = context.WithValue(ctx, t4t7ContextKey, t4t7)
+
 	return ctx
 }
 
@@ -908,6 +930,27 @@ func (h *latencyStatsHandler) HandleRPC(ctx context.Context, s stats.RPCStats) {
 			t4t7.recordInHeaderRecv(time.Now())
 		}
 	}
+
+	mt := metricsTracerFromContext(ctx)
+	if !mt.builtInEnabled {
+		return
+	}
+	switch ev := s.(type) {
+	case *stats.InHeader:
+		mt.currOp.currAttempt.headerMD = ev.Header
+	case *stats.InTrailer:
+		mt.currOp.currAttempt.trailerMD = ev.Trailer
+	case *stats.End:
+		// stats.End fires after InTrailer and before the caller's final
+		// RecvMsg returns, so currAttempt.{header,trailer}MD are populated.
+		// ev.Error is nil on graceful stream close, so attempt status maps
+		// to OK without any io.EOF special-casing.
+		mt.recordAttemptCompletionWithMetadata(
+			mt.currOp.currAttempt.headerMD,
+			mt.currOp.currAttempt.trailerMD,
+			ev.Error,
+		)
+	}
 }
 
 func (h *latencyStatsHandler) TagConn(ctx context.Context, info *stats.ConnTagInfo) context.Context {
@@ -915,95 +958,6 @@ func (h *latencyStatsHandler) TagConn(ctx context.Context, info *stats.ConnTagIn
 }
 
 func (h *latencyStatsHandler) HandleConn(context.Context, stats.ConnStats) {}
-
-func metricsUnaryClientInterceptor() grpc.UnaryClientInterceptor {
-	return func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
-		mt := metricsTracerFromContext(ctx)
-		if !mt.builtInEnabled {
-			return invoker(ctx, method, req, reply, cc, opts...)
-		}
-
-		parts := strings.Split(method, "/")
-		shortMethod := parts[len(parts)-1]
-		mt.setMethod(shortMethod)
-		mt.recordAttemptStart()
-		mt.recordAttemptClientBlockingLatency()
-
-		blockTracker := &blockingLatencyTracker{}
-		mt.currOp.currAttempt.blockingLatencyTracker = blockTracker
-		ctx = context.WithValue(ctx, statsContextKey, blockTracker)
-
-		t4t7 := &t4t7Tracker{}
-		mt.currOp.currAttempt.t4t7Tracker = t4t7
-		ctx = context.WithValue(ctx, t4t7ContextKey, t4t7)
-
-		var headerMD, trailerMD metadata.MD
-		opts = append(opts, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
-
-		err := invoker(ctx, method, req, reply, cc, opts...)
-
-		mt.recordAttemptCompletionWithMetadata(headerMD, trailerMD, err)
-		return err
-	}
-}
-
-func metricsStreamClientInterceptor() grpc.StreamClientInterceptor {
-	return func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
-		mt := metricsTracerFromContext(ctx)
-		if !mt.builtInEnabled {
-			return streamer(ctx, desc, cc, method, opts...)
-		}
-
-		parts := strings.Split(method, "/")
-		shortMethod := parts[len(parts)-1]
-		mt.setMethod(shortMethod)
-		mt.recordAttemptStart()
-		mt.recordAttemptClientBlockingLatency()
-
-		blockTracker := &blockingLatencyTracker{}
-		mt.currOp.currAttempt.blockingLatencyTracker = blockTracker
-		ctx = context.WithValue(ctx, statsContextKey, blockTracker)
-
-		t4t7 := &t4t7Tracker{}
-		mt.currOp.currAttempt.t4t7Tracker = t4t7
-		ctx = context.WithValue(ctx, t4t7ContextKey, t4t7)
-
-		var headerMD, trailerMD metadata.MD
-		opts = append(opts, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
-
-		clientStream, err := streamer(ctx, desc, cc, method, opts...)
-		if err != nil {
-			mt.recordAttemptCompletionWithMetadata(headerMD, trailerMD, err)
-			return nil, err
-		}
-
-		wrapped := &metricsWrappedClientStream{
-			ClientStream: clientStream,
-			mt:           mt,
-			headerMD:     &headerMD,
-			trailerMD:    &trailerMD,
-		}
-		return wrapped, nil
-	}
-}
-
-type metricsWrappedClientStream struct {
-	grpc.ClientStream
-	mt        *builtinMetricsTracer
-	headerMD  *metadata.MD
-	trailerMD *metadata.MD
-	completed int32
-}
-
-func (w *metricsWrappedClientStream) RecvMsg(m interface{}) error {
-	err := w.ClientStream.RecvMsg(m)
-	if err != nil {
-		if atomic.CompareAndSwapInt32(&w.completed, 0, 1) {
-			w.mt.recordAttemptCompletionWithMetadata(*w.headerMD, *w.trailerMD, err)
-		}
-	}
-	return err
-}
 
 func fallbackString(a, b string) string {
 	if a != "" {

@@ -121,11 +121,11 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 		}
 	}
 
-	// Add gRPC client interceptors to supply Google client information and client-side metrics.
-	o = append(o, btopt.ClientInterceptorOptions(
-		[]grpc.StreamClientInterceptor{metricsStreamClientInterceptor()},
-		[]grpc.UnaryClientInterceptor{metricsUnaryClientInterceptor()},
-	)...)
+	// Add gRPC client interceptors to supply Google client information. No external interceptors are passed.
+	o = append(o, btopt.ClientInterceptorOptions(nil, nil)...)
+	// sharedLatencyStatsHandler drives per-attempt metric recording (attempt
+	// start in TagRPC, completion in HandleRPC(*stats.End)) in addition to
+	// blocking-latency and t4t7 tracking.
 	o = append(o, option.WithGRPCDialOption(grpc.WithStatsHandler(sharedLatencyStatsHandler)))
 	// Default to a small connection pool that can be overridden.
 	o = append(o,
