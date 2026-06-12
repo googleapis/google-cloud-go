@@ -571,6 +571,94 @@ func TestClient_ReadWriteTransaction_PreviousTransactionID(t *testing.T) {
 	}
 }
 
+func TestClient_ReadWriteTransaction_InlineBeginRetryCarriesPreviousTransactionID(t *testing.T) {
+	t.Parallel()
+
+	for _, test := range []struct {
+		name string
+		f    func(ctx context.Context, tx *ReadWriteTransaction) error
+	}{
+		{
+			name: "Update",
+			f: func(ctx context.Context, tx *ReadWriteTransaction) error {
+				_, err := tx.Update(ctx, NewStatement(UpdateBarSetFoo))
+				return err
+			},
+		},
+		{
+			name: "BatchUpdate",
+			f: func(ctx context.Context, tx *ReadWriteTransaction) error {
+				_, err := tx.BatchUpdate(ctx, []Statement{NewStatement(UpdateBarSetFoo)})
+				return err
+			},
+		},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			ctx := context.Background()
+			server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+				DisableNativeMetrics: true,
+			})
+			defer teardown()
+
+			// Abort the commit of the first attempt to force a retry of the
+			// transaction. The inline begin of the retry attempt must include
+			// the ID of the aborted transaction, so that the retry inherits
+			// its wound-wait lock priority.
+			server.TestSpanner.PutExecutionTime(MethodCommitTransaction,
+				SimulatedExecutionTime{
+					Errors: []error{status.Error(codes.Aborted, "Transaction aborted")},
+				})
+
+			attempts := 0
+			_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+				attempts++
+				return test.f(ctx, tx)
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			if g, w := attempts, 2; g != w {
+				t.Fatalf("attempts mismatch\ngot: %d\nwant: %d", g, w)
+			}
+
+			requests := drainRequestsFromServer(server.TestSpanner)
+			var abortedTxID []byte
+			var beginOpts []*sppb.TransactionOptions_ReadWrite
+			for _, req := range requests {
+				var selector *sppb.TransactionSelector
+				switch r := req.(type) {
+				case *sppb.ExecuteSqlRequest:
+					selector = r.Transaction
+				case *sppb.ExecuteBatchDmlRequest:
+					selector = r.Transaction
+				case *sppb.CommitRequest:
+					if abortedTxID == nil {
+						abortedTxID = r.GetTransactionId()
+					}
+					continue
+				default:
+					continue
+				}
+				if begin, ok := selector.GetSelector().(*sppb.TransactionSelector_Begin); ok {
+					beginOpts = append(beginOpts, begin.Begin.GetReadWrite())
+				}
+			}
+			if g, w := len(beginOpts), 2; g != w {
+				t.Fatalf("inline-begin request count mismatch\ngot: %d\nwant: %d", g, w)
+			}
+			if got := beginOpts[0].GetMultiplexedSessionPreviousTransactionId(); len(got) != 0 {
+				t.Errorf("first attempt should not include a previous transaction ID, got %v", got)
+			}
+			if len(abortedTxID) == 0 {
+				t.Fatal("no transaction ID found in the first CommitRequest")
+			}
+			if g, w := beginOpts[1].GetMultiplexedSessionPreviousTransactionId(), abortedTxID; !bytes.Equal(g, w) {
+				t.Errorf("previous transaction ID mismatch on retry\ngot: %v\nwant: %v", g, w)
+			}
+		})
+	}
+}
+
 func TestMutationOnlyCaseAborted(t *testing.T) {
 	if !isMultiplexEnabled {
 		t.Skip("Skipping multiplex session tests when regular sessions enabled")
