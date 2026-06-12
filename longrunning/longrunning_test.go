@@ -244,7 +244,7 @@ func TestInternalNewOperationWithMetadata(t *testing.T) {
 	}
 }
 
-func TestWaitTracedWaitSpanOnly(t *testing.T) {
+func TestWaitTraced(t *testing.T) {
 	t.Setenv("GOOGLE_SDK_GO_EXPERIMENTAL_TRACING", "true")
 	if !gax.IsFeatureEnabled("TRACING") {
 		t.Skip("TRACING feature flag is not enabled")
@@ -264,6 +264,7 @@ func TestWaitTracedWaitSpanOnly(t *testing.T) {
 
 	s := &getterService{
 		results: []*pb.Operation{
+			{Name: "foo"},
 			{Name: "foo"},
 			{
 				Name: "foo",
@@ -296,9 +297,17 @@ func TestWaitTracedWaitSpanOnly(t *testing.T) {
 
 	spans := sr.Ended()
 	var waitSpan sdktrace.ReadOnlySpan
+	var pollSpans []sdktrace.ReadOnlySpan
+	var sleepSpans []sdktrace.ReadOnlySpan
+
 	for _, span := range spans {
-		if span.Name() == "*speech.Client.BatchRecognizeOperation.Wait" {
+		switch span.Name() {
+		case "*speech.Client.BatchRecognizeOperation.Wait":
 			waitSpan = span
+		case "*longrunning.OperationsClient.GetOperation":
+			pollSpans = append(pollSpans, span)
+		case "LRO Sleep":
+			sleepSpans = append(sleepSpans, span)
 		}
 	}
 
@@ -324,9 +333,84 @@ func TestWaitTracedWaitSpanOnly(t *testing.T) {
 	if !hasResID {
 		t.Error("expected wait span to have gcp.resource.destination.id attribute set to 'foo'")
 	}
+
+	// Verify T3 Poll Spans
+	if len(pollSpans) != 3 {
+		t.Fatalf("expected 3 poll spans, got %d", len(pollSpans))
+	}
+
+	for i, pollSpan := range pollSpans {
+		attrs := pollSpan.Attributes()
+		var resID string
+		var count int
+		var done bool
+		var hasDone, hasCount bool
+
+		for _, attr := range attrs {
+			switch attr.Key {
+			case "gcp.resource.destination.id":
+				resID = attr.Value.AsString()
+			case "gcp.longrunning.poll_attempt_count":
+				count = int(attr.Value.AsInt64())
+				hasCount = true
+			case "gcp.longrunning.done":
+				done = attr.Value.AsBool()
+				hasDone = true
+			}
+		}
+
+		if resID != "foo" {
+			t.Errorf("poll span %d expected gcp.resource.destination.id to be 'foo', got '%s'", i, resID)
+		}
+		if !hasCount || count != i+1 {
+			t.Errorf("poll span %d expected count to be %d, got %d", i, i+1, count)
+		}
+		if !hasDone {
+			t.Errorf("poll span %d expected gcp.longrunning.done to be set", i)
+		}
+
+		if i == 2 {
+			if !done {
+				t.Error("expected done to be true on terminal poll span")
+			}
+			// check status code is present and 0 (OK)
+			hasStatus := false
+			var statusCode int
+			for _, attr := range attrs {
+				if attr.Key == "gcp.longrunning.status_code" {
+					statusCode = int(attr.Value.AsInt64())
+					hasStatus = true
+				}
+			}
+			if !hasStatus || statusCode != 0 {
+				t.Errorf("expected status code 0 on terminal poll, got %d (hasStatus: %t)", statusCode, hasStatus)
+			}
+		} else {
+			if done {
+				t.Errorf("expected done to be false on non-terminal poll span %d", i)
+			}
+		}
+	}
+
+	// Verify T5 Sleep Spans
+	if len(sleepSpans) != 2 {
+		t.Errorf("expected 2 sleep spans, got %d", len(sleepSpans))
+	}
+	for i, sleepSpan := range sleepSpans {
+		attrs := sleepSpan.Attributes()
+		var resID string
+		for _, attr := range attrs {
+			if attr.Key == "gcp.resource.destination.id" {
+				resID = attr.Value.AsString()
+			}
+		}
+		if resID != "foo" {
+			t.Errorf("sleep span %d expected gcp.resource.destination.id to be 'foo', got '%s'", i, resID)
+		}
+	}
 }
 
-func TestWaitTracedResumedWaitSpanOnly(t *testing.T) {
+func TestWaitTracedResumed(t *testing.T) {
 	t.Setenv("GOOGLE_SDK_GO_EXPERIMENTAL_TRACING", "true")
 	if !gax.IsFeatureEnabled("TRACING") {
 		t.Skip("TRACING feature flag is not enabled")
@@ -377,9 +461,14 @@ func TestWaitTracedResumedWaitSpanOnly(t *testing.T) {
 
 	spans := sr.Ended()
 	var waitSpan sdktrace.ReadOnlySpan
+	var pollSpans []sdktrace.ReadOnlySpan
+
 	for _, span := range spans {
-		if span.Name() == "*speech.BatchRecognizeOperation.Wait" {
+		switch span.Name() {
+		case "*speech.BatchRecognizeOperation.Wait":
 			waitSpan = span
+		case "*longrunning.OperationsClient.GetOperation":
+			pollSpans = append(pollSpans, span)
 		}
 	}
 
@@ -391,9 +480,13 @@ func TestWaitTracedResumedWaitSpanOnly(t *testing.T) {
 	if len(links) != 0 {
 		t.Fatalf("expected 0 span links for resumed LRO tracing, got %d", len(links))
 	}
+
+	if len(pollSpans) != 2 {
+		t.Fatalf("expected 2 poll spans, got %d", len(pollSpans))
+	}
 }
 
-func TestWaitTracedFallbackWaitSpanOnly(t *testing.T) {
+func TestWaitTracedFallback(t *testing.T) {
 	t.Setenv("GOOGLE_SDK_GO_EXPERIMENTAL_TRACING", "true")
 	if !gax.IsFeatureEnabled("TRACING") {
 		t.Skip("TRACING feature flag is not enabled")
@@ -443,9 +536,14 @@ func TestWaitTracedFallbackWaitSpanOnly(t *testing.T) {
 
 	spans := sr.Ended()
 	var waitSpan sdktrace.ReadOnlySpan
+	var pollSpans []sdktrace.ReadOnlySpan
+
 	for _, span := range spans {
-		if span.Name() == "*longrunning.Operation.Wait" {
+		switch span.Name() {
+		case "*longrunning.Operation.Wait":
 			waitSpan = span
+		case "*longrunning.OperationsClient.GetOperation":
+			pollSpans = append(pollSpans, span)
 		}
 	}
 
@@ -456,5 +554,9 @@ func TestWaitTracedFallbackWaitSpanOnly(t *testing.T) {
 	links := waitSpan.Links()
 	if len(links) != 0 {
 		t.Fatalf("expected 0 span links for fallback LRO tracing, got %d", len(links))
+	}
+
+	if len(pollSpans) != 2 {
+		t.Fatalf("expected 2 poll spans, got %d", len(pollSpans))
 	}
 }
