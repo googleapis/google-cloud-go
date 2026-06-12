@@ -2195,7 +2195,7 @@ libraries:
       - internal/generated/snippets/pubsub/v2/
     tag_format: pubsub/v{version}
   - id: pubsublite
-    version: 1.8.2
+    version: 1.9.0
     last_generated_commit: ""
     apis:
       - path: google/cloud/pubsublite/v1
