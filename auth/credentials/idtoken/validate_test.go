@@ -287,6 +287,54 @@ func TestValidateES256(t *testing.T) {
 	}
 }
 
+func TestValidateES256MalformedSignature(t *testing.T) {
+	header, claims := commonToken(t, "ES256")
+	// A real key so findMatchingKey and decode(X)/decode(Y) succeed and the
+	// token reaches signature verification.
+	priv, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
+	if err != nil {
+		t.Fatalf("unable to generate key: %v", err)
+	}
+
+	for _, tt := range []struct {
+		name   string
+		sigLen int
+	}{
+		{name: "short signature", sigLen: 3},
+		{name: "empty signature", sigLen: 0},
+		{name: "long signature", sigLen: 100},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			sig := base64.RawURLEncoding.EncodeToString(make([]byte, tt.sigLen))
+			idToken := fmt.Sprintf("%s.%s.%s", header, claims, sig)
+
+			client := &http.Client{Transport: RoundTripFn(func(req *http.Request) *http.Response {
+				cr := certResponse{Keys: []jwk{{
+					Kid: keyID,
+					X:   base64.RawURLEncoding.EncodeToString(priv.X.Bytes()),
+					Y:   base64.RawURLEncoding.EncodeToString(priv.Y.Bytes()),
+				}}}
+				b, err := json.Marshal(&cr)
+				if err != nil {
+					t.Fatalf("unable to marshal response: %v", err)
+				}
+				return &http.Response{StatusCode: 200, Body: io.NopCloser(bytes.NewReader(b)), Header: make(http.Header)}
+			})}
+			oldNow := now
+			defer func() { now = oldNow }()
+			now = beforeExp
+
+			v, err := NewValidator(&ValidatorOptions{Client: client, ES256CertsURL: "http://example.com"})
+			if err != nil {
+				t.Fatalf("NewValidator(...) = %q, want nil", err)
+			}
+			if _, err := v.Validate(context.Background(), idToken, testAudience); err == nil {
+				t.Fatal("Validate(...) = nil, want error for malformed ES256 signature")
+			}
+		})
+	}
+}
+
 func TestParsePayload(t *testing.T) {
 	idToken, _ := createRS256JWT(t)
 	tests := []struct {
