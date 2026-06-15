@@ -122,3 +122,47 @@ func TestCachedTokenProvider_TokenAsyncRace(t *testing.T) {
 		})
 	}
 }
+
+func TestCachedTokenProvider_TokenSyncRace(t *testing.T) {
+	for _, disableAsync := range []bool{false, true} {
+		name := fmt.Sprintf("DisableAsyncRefresh-%t", disableAsync)
+		t.Run(name, func(t *testing.T) {
+			now := time.Now()
+			timeNow = func() time.Time { return now }
+			defer func() { timeNow = time.Now }()
+
+			tp := &controllableTokenProvider{}
+			ctp := NewCachedTokenProvider(tp, &CachedTokenProviderOptions{
+				DisableAsyncRefresh: disableAsync,
+			}).(*cachedTokenProvider)
+
+			// Keep the underlying provider blocked initially
+			blockChan := make(chan struct{})
+			tp.setBlockChan(blockChan)
+			tp.tok = &Token{Value: "refreshed", Expiry: now.Add(1 * time.Hour)}
+
+			var wg sync.WaitGroup
+			numGoroutines := 20
+			wg.Add(numGoroutines)
+			for i := 0; i < numGoroutines; i++ {
+				go func() {
+					defer wg.Done()
+					_, _ = ctp.Token(context.Background())
+				}()
+			}
+
+			// Give goroutines time to block on the mutex or the channel
+			time.Sleep(50 * time.Millisecond)
+
+			// Release the block on the underlying provider
+			close(blockChan)
+			wg.Wait()
+
+			// Verify the underlying provider was only called once
+			if got, want := tp.getCount(), 1; got != want {
+				t.Errorf("tp.count = %d; want %d. Synchronous thundering herd protection failed.", got, want)
+			}
+		})
+	}
+}
+
