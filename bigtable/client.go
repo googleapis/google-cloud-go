@@ -35,7 +35,7 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
-const directpathEnvVar = "CBT_ENABLE_DIRECTPATH"
+const directAccessEnvVar = "CBT_ENABLE_DIRECTPATH"
 
 // Client is a client for reading and writing data to tables in an instance.
 //
@@ -130,7 +130,7 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(grpc.MaxCallSendMsgSize(1<<28), grpc.MaxCallRecvMsgSize(1<<28))),
 	)
 
-	var directPathOptions = []option.ClientOption{
+	var directAccessOptions = []option.ClientOption{
 		internaloption.EnableDirectPath(true),
 		internaloption.EnableDirectPathXds(),
 		internaloption.AllowHardBoundTokens("ALTS"),
@@ -176,8 +176,8 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 	if !enableBigtableConnPool {
 		// Use the regular ConnPool
 		// For regular ConnPool the Direct Access is off by default so we need to check the env var again.
-		if enabled, _ := strconv.ParseBool(os.Getenv(directpathEnvVar)); enabled {
-			o = append(o, directPathOptions...)
+		if enabled, _ := strconv.ParseBool(os.Getenv(directAccessEnvVar)); enabled {
+			o = append(o, directAccessOptions...)
 		}
 	}
 
@@ -195,7 +195,7 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 		poolConfig,
 		metricsTracerFactory.otelMeterProvider,
 		o,
-		directPathOptions,
+		directAccessOptions,
 		directAccessMD,
 		clientCreationTimestamp,
 		enableBigtableConnPool,
@@ -340,9 +340,9 @@ func (c *Client) newBuiltinMetricsTracer(ctx context.Context, table string, isSt
 }
 
 func isDirectAccessEnabled(config ClientConfig) bool {
-	if os.Getenv(directpathEnvVar) == "" {
+	if os.Getenv(directAccessEnvVar) == "" {
 		return !config.DisableDirectAccess
 	}
-	res, _ := strconv.ParseBool(os.Getenv(directpathEnvVar))
+	res, _ := strconv.ParseBool(os.Getenv(directAccessEnvVar))
 	return res
 }

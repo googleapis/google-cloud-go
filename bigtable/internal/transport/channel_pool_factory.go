@@ -31,7 +31,11 @@ import (
 )
 
 const (
-	directpathEnvVar            = "CBT_ENABLE_DIRECTPATH"
+	// directAccessEnvVar is the user-facing env var that toggles direct
+	// access. Its value is intentionally still "CBT_ENABLE_DIRECTPATH" for
+	// back-compat — only the Go identifier was renamed to align with the
+	// rest of the direct-access naming in this package.
+	directAccessEnvVar          = "CBT_ENABLE_DIRECTPATH"
 	defaultBigtableConnPoolSize = 10
 )
 
@@ -65,13 +69,22 @@ func (m ManagedChannelPool) Close() error {
 }
 
 // CreateAndStartManagedChannelPool initializes and starts the lifecycle monitors for a classic or session connection pool.
+//
+// `o` is the full set of base ClientOptions used to dial both the classic
+// pool and each per-connection dial inside the Bigtable channel pool.
+// `directAccessOptions` is the *separate* set of options that opt a single
+// dial in to direct access (DirectPath / DirectPathXds / AllowHardBoundTokens).
+// They are kept apart because direct access is per-connection and conditional:
+// it is layered on top of `o` only when isDirectAccessEnabled(config) is true,
+// and only on the dedicated direct-access dialer — never on the fallback
+// dialer used when direct access is disabled or unavailable.
 func CreateAndStartManagedChannelPool(
 	ctx context.Context,
 	project, instance string,
 	config ChannelPoolConfig,
 	otelMeterProvider metric.MeterProvider,
 	o []option.ClientOption,
-	directPathOptions []option.ClientOption,
+	directAccessOptions []option.ClientOption,
 	directAccessMD metadata.MD,
 	clientCreationTimestamp time.Time,
 	enableBigtableConnPool bool,
@@ -83,13 +96,17 @@ func CreateAndStartManagedChannelPool(
 		return m, err
 	}
 
-	pool, err := CreateBigtableChannelPool(ctx, project, instance, config, otelMeterProvider, o, directPathOptions, directAccessMD, clientCreationTimestamp)
+	pool, err := CreateBigtableChannelPool(ctx, project, instance, config, otelMeterProvider, o, directAccessOptions, directAccessMD, clientCreationTimestamp)
 	if err != nil {
 		return m, err
 	}
 	m.Pool = pool
 
-	// Validate dynamic config early if enabled
+	// DefaultDynamicChannelPoolConfig() returns a valid config today, but we
+	// validate here as a guardrail: ValidateDynamicConfig is the single source
+	// of truth for what "valid" means, so any future tweak to the defaults
+	// (or to the validation rules) is caught at client construction instead
+	// of silently misbehaving at runtime.
 	if !config.DisableDynamicChannelPool {
 		if err := ValidateDynamicConfig(btopt.DefaultDynamicChannelPoolConfig(), defaultBigtableConnPoolSize); err != nil {
 			pool.Close()
@@ -110,13 +127,16 @@ func CreateAndStartManagedChannelPool(
 }
 
 // CreateBigtableChannelPool is a helper function to initialize a separate BigtableChannelPool instance.
+//
+// See CreateAndStartManagedChannelPool for the contract on `o` vs.
+// `directAccessOptions`.
 func CreateBigtableChannelPool(
 	ctx context.Context,
 	project, instance string,
 	config ChannelPoolConfig,
 	otelMeterProvider metric.MeterProvider,
 	o []option.ClientOption,
-	directPathOptions []option.ClientOption,
+	directAccessOptions []option.ClientOption,
 	directAccessMD metadata.MD,
 	clientCreationTimestamp time.Time,
 ) (*BigtableChannelPool, error) {
@@ -145,7 +165,7 @@ func CreateBigtableChannelPool(
 	if isDirectAccessEnabled(config) {
 		directAccessDialerOptions := make([]option.ClientOption, len(o))
 		copy(directAccessDialerOptions, o)
-		directAccessDialerOptions = append(directAccessDialerOptions, directPathOptions...)
+		directAccessDialerOptions = append(directAccessDialerOptions, directAccessOptions...)
 		directAccessDialerOptions = append(directAccessDialerOptions, internaloption.AllowHardBoundTokens("ALTS"))
 
 		directAccessDialer := func() (*BigtableConn, error) {
@@ -174,9 +194,9 @@ func CreateBigtableChannelPool(
 }
 
 func isDirectAccessEnabled(config ChannelPoolConfig) bool {
-	if os.Getenv(directpathEnvVar) == "" {
+	if os.Getenv(directAccessEnvVar) == "" {
 		return !config.DisableDirectAccess
 	}
-	res, _ := strconv.ParseBool(os.Getenv(directpathEnvVar))
+	res, _ := strconv.ParseBool(os.Getenv(directAccessEnvVar))
 	return res
 }
