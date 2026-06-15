@@ -15,6 +15,7 @@
 package retry
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"io"
@@ -211,3 +212,16 @@ func TestNewWithOptions(t *testing.T) {
 		}
 	})
 }
+
+func TestSleep_Cancellation(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	// Cancel context immediately
+	cancel()
+
+	// Sleep for a long time. It should return immediately because of the canceled context.
+	err := Sleep(ctx, 10*time.Hour)
+	if err != context.Canceled {
+		t.Errorf("Sleep() error = %v, want %v", err, context.Canceled)
+	}
+}
+
