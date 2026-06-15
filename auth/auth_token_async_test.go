@@ -16,6 +16,7 @@ package auth
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"runtime"
 	"sync"
@@ -122,3 +123,65 @@ func TestCachedTokenProvider_TokenAsyncRace(t *testing.T) {
 		})
 	}
 }
+func TestCachedTokenProvider_GracefulDegradation(t *testing.T) {
+	now := time.Now()
+	timeNow = func() time.Time { return now }
+	defer func() { timeNow = time.Now }()
+
+	tp := &controllableTokenProvider{}
+	ctp := NewCachedTokenProvider(tp, &CachedTokenProviderOptions{
+		ExpireEarly: 2 * time.Second,
+	}).(*cachedTokenProvider)
+
+	// 1. Cache a stale token.
+	staleTok := &Token{Value: "initial", Expiry: now.Add(1 * time.Second)}
+	tp.tok = staleTok
+	if _, err := ctp.Token(context.Background()); err != nil {
+		t.Fatalf("initial Token() failed: %v", err)
+	}
+
+	if got, want := ctp.tokenState(), stale; got != want {
+		t.Fatalf("tokenState = %v; want %v", got, want)
+	}
+
+	// 2. Set provider to return transient error.
+	tp.mu.Lock()
+	tp.tok = nil
+	tp.err = errors.New("transient error")
+	tp.mu.Unlock()
+
+	// 3. Call Token(), which should trigger async refresh and immediately return the stale token.
+	tok1, err := ctp.Token(context.Background())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got, want := tok1.Value, "initial"; got != want {
+		t.Errorf("got token %q, want %q", got, want)
+	}
+
+	// 4. Wait for background goroutine to execute and fail.
+	start := time.Now()
+	for {
+		ctp.mu.Lock()
+		isErr := ctp.isRefreshErr
+		ctp.mu.Unlock()
+		if isErr {
+			break
+		}
+		if time.Since(start) > 2*time.Second {
+			t.Fatal("timeout waiting for background refresh to fail")
+		}
+		time.Sleep(10 * time.Millisecond)
+	}
+
+	// 5. Verify the stale token is still preserved and returned.
+	tok2, err := ctp.Token(context.Background())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got, want := tok2.Value, "initial"; got != want {
+		t.Errorf("got token %q, want %q", got, want)
+	}
+}
+
+
