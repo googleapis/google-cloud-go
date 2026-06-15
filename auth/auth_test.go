@@ -680,3 +680,50 @@ func TestComputeTokenProvider_BlockingRefresh(t *testing.T) {
 		})
 	}
 }
+func TestCachedTokenProvider_TokenBlockingCancellation(t *testing.T) {
+	now := time.Now()
+	timeNow = func() time.Time { return now }
+	defer func() { timeNow = time.Now }()
+
+	blockChan := make(chan struct{})
+	tp := &cancellationTestProvider{block: blockChan}
+	ctp := NewCachedTokenProvider(tp, &CachedTokenProviderOptions{
+		DisableAsyncRefresh: true,
+	}).(*cachedTokenProvider)
+
+	ctx, cancel := context.WithCancel(context.Background())
+
+	errChan := make(chan error, 1)
+	go func() {
+		_, err := ctp.Token(ctx)
+		errChan <- err
+	}()
+
+	// Cancel the context
+	time.Sleep(50 * time.Millisecond)
+	cancel()
+
+	select {
+	case err := <-errChan:
+		if err != context.Canceled {
+			t.Errorf("got error %v, want %v", err, context.Canceled)
+		}
+	case <-time.After(1 * time.Second):
+		t.Fatal("timeout waiting for Token() to return after context cancellation")
+	}
+}
+
+type cancellationTestProvider struct {
+	block chan struct{}
+}
+
+func (p *cancellationTestProvider) Token(ctx context.Context) (*Token, error) {
+	select {
+	case <-ctx.Done():
+		return nil, ctx.Err()
+	case <-p.block:
+		return &Token{Value: "token"}, nil
+	}
+}
+
+
