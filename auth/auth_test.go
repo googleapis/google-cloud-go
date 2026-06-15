@@ -680,3 +680,43 @@ func TestComputeTokenProvider_BlockingRefresh(t *testing.T) {
 		})
 	}
 }
+
+func TestComputeTokenProvider_FullyExpiredBlockingRefresh(t *testing.T) {
+	now := time.Now()
+	timeNow = func() time.Time { return now }
+	defer func() { timeNow = time.Now }()
+
+	countingTp := &countingTestProvider{count: 1}
+	tp := NewCachedTokenProvider(countingTp, &CachedTokenProviderOptions{
+		DisableAsyncRefresh: true,
+	})
+
+	// First call to populate cache
+	tok1, err := tp.Token(context.Background())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if tok1.Value != "1" {
+		t.Errorf("got %q, want %q", tok1.Value, "1")
+	}
+
+	// Manually set expiry of the cached token to the past.
+	ctp := tp.(*cachedTokenProvider)
+	ctp.mu.Lock()
+	ctp.cachedToken.Expiry = now.Add(-1 * time.Hour)
+	ctp.mu.Unlock()
+
+	// Verify it is invalid
+	if state := ctp.tokenState(); state != invalid {
+		t.Errorf("got %d, want %d", state, invalid)
+	}
+
+	// Calling Token() should block and call the underlying provider again, returning "2".
+	tok2, err := tp.Token(context.Background())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if tok2.Value != "2" {
+		t.Errorf("got %q, want %q", tok2.Value, "2")
+	}
+}
