@@ -66,7 +66,9 @@ func TestComputeUniverseDomainProvider(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			httpGetMetadataUniverseDomain = tc.getFunc
-			c := ComputeUniverseDomainProvider{}
+			c := ComputeUniverseDomainProvider{
+				MetadataClient: metadata.NewClient(nil),
+			}
 			got, err := c.GetProperty(context.Background())
 			if err != tc.wantErr {
 				t.Errorf("got error %v; want error %v", err, tc.wantErr)
@@ -75,6 +77,56 @@ func TestComputeUniverseDomainProvider(t *testing.T) {
 				t.Errorf("got %v; want %v", got, tc.want)
 			}
 		})
+	}
+}
+
+func TestComputeUniverseDomainProvider_RetriesOnTransientError(t *testing.T) {
+	oldGet := httpGetMetadataUniverseDomain
+	defer func() {
+		httpGetMetadataUniverseDomain = oldGet
+	}()
+
+	var calls int
+	httpGetMetadataUniverseDomain = func(ctx context.Context, client *metadata.Client) (string, error) {
+		calls++
+		if calls == 1 {
+			return "", context.DeadlineExceeded
+		}
+		return "example.com", nil
+	}
+
+	c := ComputeUniverseDomainProvider{
+		MetadataClient: metadata.NewClient(nil),
+	}
+
+	// First call simulates a context timeout.
+	_, err := c.GetProperty(context.Background())
+	if !errors.Is(err, context.DeadlineExceeded) {
+		t.Fatalf("first call got error %v; want %v", err, context.DeadlineExceeded)
+	}
+
+	// Second call should retry and succeed.
+	got, err := c.GetProperty(context.Background())
+	if err != nil {
+		t.Fatalf("second call got error %v; want nil", err)
+	}
+	if got != "example.com" {
+		t.Errorf("second call got %v; want 'example.com'", got)
+	}
+	if calls != 2 {
+		t.Errorf("got %d HTTP calls; want 2 after retry", calls)
+	}
+
+	// Third call should return the cached value without incrementing the call count.
+	got, err = c.GetProperty(context.Background())
+	if err != nil {
+		t.Fatalf("third call got error %v; want nil", err)
+	}
+	if got != "example.com" {
+		t.Errorf("third call got %v; want 'example.com'", got)
+	}
+	if calls != 2 {
+		t.Errorf("got %d HTTP calls; want 2 after cache hit", calls)
 	}
 }
 

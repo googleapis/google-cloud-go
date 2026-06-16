@@ -523,7 +523,7 @@ func (sac *serviceAccountConfig) GetUniverseDomain(ctx context.Context) (string,
 }
 
 // GCEConfigProvider implements ConfigProvider for GCE environments.
-// It lazily fetches and caches the necessary metadata (service account email, universe domain)
+// It lazily fetches and caches the necessary service account email metadata.
 type GCEConfigProvider struct {
 	// universeDomainProvider provides the universe domain and underlying metadata client.
 	universeDomainProvider *internal.ComputeUniverseDomainProvider
@@ -533,11 +533,6 @@ type GCEConfigProvider struct {
 	saMu       sync.Mutex
 	saEmail    string
 	skipLookup bool
-
-	// Caching for universe domain
-	udOnce sync.Once
-	ud     string
-	udErr  error
 }
 
 // NewGCEConfigProvider creates a new GCEConfigProvider
@@ -564,22 +559,6 @@ func (g *GCEConfigProvider) fetchSA(ctx context.Context) (string, error) {
 		return "", fmt.Errorf("regionalaccessboundary: GCE config: failed to get service account email: %w", err)
 	}
 	return saEmail, nil
-}
-
-func (g *GCEConfigProvider) fetchUD(ctx context.Context) {
-	if g.universeDomainProvider == nil || g.universeDomainProvider.MetadataClient == nil {
-		g.udErr = errors.New("regionalaccessboundary: GCEConfigProvider not properly initialized (missing ComputeUniverseDomainProvider or MetadataClient)")
-		return
-	}
-	ud, err := g.universeDomainProvider.GetProperty(ctx)
-	if err != nil {
-		g.udErr = fmt.Errorf("regionalaccessboundary: GCE config: failed to get universe domain: %w", err)
-		return
-	}
-	if ud == "" {
-		ud = internal.DefaultUniverseDomain
-	}
-	g.ud = ud
 }
 
 // GetRegionalAccessBoundaryEndpoint constructs the Regional Access Boundary lookup URL for a GCE environment.
@@ -631,11 +610,16 @@ func (g *GCEConfigProvider) GetRegionalAccessBoundaryEndpoint(ctx context.Contex
 }
 
 // GetUniverseDomain retrieves the universe domain from the GCE metadata server.
-// It uses a cached value after the first call.
 func (g *GCEConfigProvider) GetUniverseDomain(ctx context.Context) (string, error) {
-	g.udOnce.Do(func() { g.fetchUD(ctx) })
-	if g.udErr != nil {
-		return "", g.udErr
+	if g.universeDomainProvider == nil || g.universeDomainProvider.MetadataClient == nil {
+		return "", errors.New("regionalaccessboundary: GCEConfigProvider not properly initialized (missing ComputeUniverseDomainProvider or MetadataClient)")
 	}
-	return g.ud, nil
+	ud, err := g.universeDomainProvider.GetProperty(ctx)
+	if err != nil {
+		return "", fmt.Errorf("regionalaccessboundary: GCE config: failed to get universe domain: %w", err)
+	}
+	if ud == "" {
+		return internal.DefaultUniverseDomain, nil
+	}
+	return ud, nil
 }
