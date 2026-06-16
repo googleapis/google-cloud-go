@@ -65,9 +65,13 @@ type DirectAccessChecker interface {
 	// when CheckCompatibility returned true.
 	Dialer() func() (*BigtableConn, error)
 
-	// FeatureFlagsMetadata returns the feature-flag metadata to attach when
-	// priming direct-access connections post-check. Only consulted when
-	// CheckCompatibility returned true.
+	// FeatureFlagsMetadata returns the feature-flag metadata the pool should
+	// attach when priming connections. Consulted by NewBigtableChannelPool
+	// for both paths when a checker is wired in: the direct-access connection
+	// factory after a successful probe, and the standard-path connection
+	// factory when the probe fails (or when the checker is the disabled stub).
+	// The disabled stub holds the same metadata so the standard path is fed
+	// from the same source instead of via a separate pool option.
 	FeatureFlagsMetadata() metadata.MD
 }
 
@@ -353,14 +357,19 @@ func (c *pingAndWarmDirectAccessChecker) probeSingleEndpoint(ctx context.Context
 // metric still surfaces the "off" state — keeping observability identical to
 // the pre-modularization behavior in NewBigtableChannelPool.
 type disabledDirectAccessChecker struct {
+	featureFlagsMD  metadata.MD
 	daEligibleGauge metric.Int64Gauge
 	reported        bool
 }
 
 // newDisabledDirectAccessChecker constructs the always-disabled checker and
-// emits the manually_disabled metric immediately.
-func newDisabledDirectAccessChecker(meterProvider metric.MeterProvider, logger *log.Logger) *disabledDirectAccessChecker {
+// emits the manually_disabled metric immediately. featureFlagsMD is the
+// feature-flag metadata the pool should attach when priming standard-path
+// connections; it is surfaced via FeatureFlagsMetadata() so the pool reads it
+// from a single source instead of taking it via a separate option.
+func newDisabledDirectAccessChecker(featureFlagsMD metadata.MD, meterProvider metric.MeterProvider, logger *log.Logger) *disabledDirectAccessChecker {
 	c := &disabledDirectAccessChecker{
+		featureFlagsMD:  featureFlagsMD,
 		daEligibleGauge: newDirectAccessEligibleGauge(meterProvider, logger),
 	}
 	c.recordManuallyDisabled()
@@ -389,10 +398,12 @@ func (c *disabledDirectAccessChecker) Dialer() func() (*BigtableConn, error) {
 	return nil
 }
 
-// FeatureFlagsMetadata returns nil; never consulted by the pool because
-// CheckCompatibility returns false.
+// FeatureFlagsMetadata returns the feature-flag metadata the pool should
+// attach to standard-path priming. CheckCompatibility always returns false on
+// this stub, so the pool falls through to the standard-path factory — which
+// reads this value as the single source of feature-flag metadata.
 func (c *disabledDirectAccessChecker) FeatureFlagsMetadata() metadata.MD {
-	return nil
+	return c.featureFlagsMD
 }
 
 // checkIPPlumbing verifies whether the IPs assigned by the metadata server are

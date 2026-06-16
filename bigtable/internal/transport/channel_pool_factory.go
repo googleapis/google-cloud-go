@@ -153,10 +153,14 @@ func CreateBigtableChannelPool(
 
 	fullInstanceName := fmt.Sprintf("projects/%s/instances/%s", project, instance)
 
+	// directAccessMD is the feature-flag metadata used for priming. The
+	// checker (pingAndWarm when DA is enabled, disabled stub otherwise) holds
+	// it and surfaces it via FeatureFlagsMetadata(); the pool sources it from
+	// there for both the DA path and the standard-path fallback, so it is
+	// threaded through only once instead of also via WithFeatureFlagsMetadata.
 	poolOpts := []BigtableChannelPoolOption{
 		WithInstanceName(fullInstanceName),
 		WithAppProfile(config.AppProfile),
-		WithFeatureFlagsMetadata(directAccessMD),
 		WithMetricsReporterConfig(btopt.DefaultMetricsReporterConfig()),
 		WithMeterProvider(otelMeterProvider),
 	}
@@ -189,7 +193,7 @@ func CreateBigtableChannelPool(
 		)
 		poolOpts = append(poolOpts, WithDirectAccessChecker(checker))
 	} else {
-		poolOpts = append(poolOpts, WithDirectAccessChecker(newDisabledDirectAccessChecker(otelMeterProvider, nil)))
+		poolOpts = append(poolOpts, WithDirectAccessChecker(newDisabledDirectAccessChecker(directAccessMD, otelMeterProvider, nil)))
 	}
 
 	return NewBigtableChannelPool(ctx,
