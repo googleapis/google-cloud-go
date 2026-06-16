@@ -1,5 +1,11 @@
 # Changes
 
+## [1.9.0](https://github.com/googleapis/google-cloud-go/releases/tag/pubsublite%2Fv1.9.0) (2026-06-12)
+
+### Features
+
+feat(pubsublite): add GMK Implementation changes (#14466)
+
 ## [1.8.2](https://github.com/googleapis/google-cloud-go/compare/pubsublite/v1.8.1...pubsublite/v1.8.2) (2024-06-05)
 
 
