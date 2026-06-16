@@ -50,7 +50,7 @@ libraries:
     apis:
       - path: google/cloud/advisorynotifications/v1
   - name: agentplatform
-    version: 0.21.0
+    version: 0.22.0
     skip_generate: true
     skip_release: true
   - name: ai
@@ -177,7 +177,7 @@ libraries:
     apis:
       - path: google/cloud/auditmanager/v1
   - name: auth
-    version: 0.20.0
+    version: 0.21.0
     keep:
       - README.md
       - internal/version.go
@@ -229,7 +229,7 @@ libraries:
       - path: google/cloud/biglake/hive/v1beta
     copyright_year: "2026"
   - name: bigquery
-    version: 1.77.0
+    version: 1.78.0
     apis:
       - path: google/cloud/bigquery/migration/v2
         go:
@@ -351,7 +351,7 @@ libraries:
     go:
       nested_module: v2
   - name: bigquery/v2
-    version: 0.0.0
+    version: 1.0.0
     apis:
       - path: google/cloud/bigquery/v2
         go:
@@ -365,7 +365,7 @@ libraries:
       - README.md
     skip_release: true
   - name: bigtable
-    version: 1.49.0
+    version: 1.50.0
     apis:
       - path: google/bigtable/v2
         go:
@@ -695,7 +695,7 @@ libraries:
     apis:
       - path: google/cloud/financialservices/v1
   - name: firestore
-    version: 1.22.0
+    version: 1.23.0
     apis:
       - path: google/firestore/v1
         go:
@@ -1064,7 +1064,7 @@ libraries:
     go:
       nested_module: v2
   - name: pubsub/v2
-    version: 2.6.0
+    version: 3.0.0
     apis:
       - path: google/pubsub/v1
         go:
@@ -1078,7 +1078,7 @@ libraries:
       - README.md
     skip_release: true
   - name: pubsublite
-    version: 1.8.2
+    version: 2.0.0
     apis:
       - path: google/cloud/pubsublite/v1
         go:
@@ -1298,7 +1298,7 @@ libraries:
       - path: google/cloud/speech/v1
       - path: google/cloud/speech/v1p1beta1
   - name: storage
-    version: 1.62.2
+    version: 1.63.0
     apis:
       - path: google/storage/v2
         go:
@@ -1378,7 +1378,7 @@ libraries:
       - path: google/cloud/vectorsearch/v1
       - path: google/cloud/vectorsearch/v1beta
   - name: vertexai
-    version: 0.19.0
+    version: 0.20.0
     keep:
       - README.md
       - internal/version.go

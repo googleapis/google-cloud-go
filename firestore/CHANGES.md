@@ -1,5 +1,24 @@
 # Changes
 
+## [1.23.0](https://github.com/googleapis/google-cloud-go/compare/firestore/v1.22.0...firestore/v1.23.0) (2026-06-16)
+
+
+### Features
+
+* **firestore:** Add Data and DataTo methods to AggregationResult ([#14592](https://github.com/googleapis/google-cloud-go/issues/14592)) ([66c66c5](https://github.com/googleapis/google-cloud-go/commit/66c66c5038a3adde16e841396d910a1148eb4482)), closes [#13646](https://github.com/googleapis/google-cloud-go/issues/13646)
+* **firestore:** Configure client to support 16MB documents ([#14684](https://github.com/googleapis/google-cloud-go/issues/14684)) ([1a52421](https://github.com/googleapis/google-cloud-go/commit/1a524213e136c36855e2c952be37f90da1bb8583))
+* **firestore:** Support Transaction ReadTime ([#14615](https://github.com/googleapis/google-cloud-go/issues/14615)) ([b54d7a4](https://github.com/googleapis/google-cloud-go/commit/b54d7a43fdd658081298f0b2ebf84e23aa26b848))
+* **firestore:** Support vector query in transactions ([#14460](https://github.com/googleapis/google-cloud-go/issues/14460)) ([4b8c904](https://github.com/googleapis/google-cloud-go/commit/4b8c9041ae32062b19f4f92cfb46f5e9ac8009a7))
+* Update API sources and regenerate ([#19950](https://github.com/googleapis/google-cloud-go/issues/19950)) ([c7607be](https://github.com/googleapis/google-cloud-go/commit/c7607be52757b803df345670b5d0621c2bb9ba30))
+
+
+### Bug Fixes
+
+* **firestore:** Bubble up errors in BulkWriter  ([#14481](https://github.com/googleapis/google-cloud-go/issues/14481)) ([3553da6](https://github.com/googleapis/google-cloud-go/commit/3553da6677c23ddc8c97587bbc2c44935ad732d1))
+* **firestore:** Enforce backpressure in BulkWriter ([#12938](https://github.com/googleapis/google-cloud-go/issues/12938)) ([820d0a2](https://github.com/googleapis/google-cloud-go/commit/820d0a24477750133f26288be51aceb9cd1613f9)), closes [#11422](https://github.com/googleapis/google-cloud-go/issues/11422)
+* **firestore:** Robust transaction rollback on cancellation ([#14687](https://github.com/googleapis/google-cloud-go/issues/14687)) ([7c5b013](https://github.com/googleapis/google-cloud-go/commit/7c5b0136a2578a7e5fbfc9f85f2e89d7d2b1cfc6))
+* **firestore:** Use passthrough scheme for emulator connections ([#14616](https://github.com/googleapis/google-cloud-go/issues/14616)) ([f8eb671](https://github.com/googleapis/google-cloud-go/commit/f8eb67150b47c958482e917336323ff5772ea94f))
+
 ## [1.22.0](https://github.com/googleapis/google-cloud-go/releases/tag/firestore%2Fv1.22.0) (2026-04-14)
 
 ## [1.21.0](https://github.com/googleapis/google-cloud-go/releases/tag/firestore%2Fv1.21.0) (2026-01-15)

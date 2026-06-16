@@ -1,5 +1,14 @@
 # Changes
 
+## [0.20.0](https://github.com/googleapis/google-cloud-go/compare/vertexai/v0.19.0...vertexai/v0.20.0) (2026-06-16)
+
+
+### Features
+
+* Add Agent Engine-level configuration for generation_trigger_config. ([427745c](https://github.com/googleapis/google-cloud-go/commit/427745cc2a481dfa5a96399ceb553f6f8cf80fe0))
+* Add ingest_events method for Memory Bank. ([427745c](https://github.com/googleapis/google-cloud-go/commit/427745cc2a481dfa5a96399ceb553f6f8cf80fe0))
+* **vertexai:** Add subset_topics to Memory Bank GenerateMemories ([45d75e5](https://github.com/googleapis/google-cloud-go/commit/45d75e5d0693fbd1a7fba6472be00e4120e388ed))
+
 ## [0.19.0](https://github.com/googleapis/google-cloud-go/releases/tag/vertexai%2Fv0.19.0) (2026-04-09)
 
 ## [0.18.0](https://github.com/googleapis/google-cloud-go/releases/tag/vertexai%2Fv0.18.0) (2026-04-02)
