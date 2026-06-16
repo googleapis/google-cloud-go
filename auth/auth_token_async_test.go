@@ -165,4 +165,3 @@ func TestCachedTokenProvider_TokenSyncRace(t *testing.T) {
 		})
 	}
 }
-
