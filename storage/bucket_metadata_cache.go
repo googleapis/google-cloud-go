@@ -19,6 +19,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"sync"
 	"time"
 
 	"golang.org/x/sync/singleflight"
@@ -37,15 +38,17 @@ type bucketMetadataFetcher interface {
 }
 
 type bucketMetadata struct {
-	resource string
-	location string
+	resource    string
+	location    string
+	placeholder bool
 }
 
 type bucketMetadataCache struct {
+	mu      sync.Mutex
 	muSF    singleflight.Group
 	lru     *lruCache[string, bucketMetadata]
 	fetcher bucketMetadataFetcher
-	// fetchDone is a hook channel used to signal completion of fetchBackground in tests
+	// fetchDone is a hook channel used to signal completion of fetchBackground in tests.
 	fetchDone chan struct{}
 }
 
@@ -60,12 +63,22 @@ func (c *bucketMetadataCache) get(bucket string) (bucketMetadata, bool) {
 	if c == nil {
 		return bucketMetadata{}, false
 	}
+	c.mu.Lock()
+	defer c.mu.Unlock()
 	return c.lru.get(bucket)
 }
 
 func (c *bucketMetadataCache) put(bucket string, entry bucketMetadata) {
 	if c == nil {
 		return
+	}
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	// Don't let a placeholder overwrite valid metadata
+	if entry.placeholder {
+		if curr, hit := c.lru.get(bucket); hit && !curr.placeholder {
+			return
+		}
 	}
 	c.lru.put(bucket, entry)
 }
@@ -74,6 +87,8 @@ func (c *bucketMetadataCache) evict(bucket string) {
 	if c == nil {
 		return
 	}
+	c.mu.Lock()
+	defer c.mu.Unlock()
 	c.lru.evict(bucket)
 }
 
@@ -92,35 +107,40 @@ func (c *bucketMetadataCache) fetchBackground(bucket string) {
 			}
 		}()
 
-		resVal, err, _ := c.muSF.Do(bucket, func() (interface{}, error) {
-			// Perform the call with context.Background and a timeout so it runs outside request context lifetime but is bounded
+		c.muSF.Do(bucket, func() (interface{}, error) {
+			// Perform the call with context.Background and a timeout so it runs outside request context lifetime but is bounded.
 			ctx, cancel := context.WithTimeout(context.Background(), fetchBackgroundTimeout)
 			defer cancel()
 			resource, location, err := c.fetcher.fetchBucketMetadata(ctx, bucket)
+
+			c.mu.Lock()
+			defer c.mu.Unlock()
+
+			curr, hit := c.lru.get(bucket)
 			if err != nil {
+				// Only write placeholder if the cache is empty or currently holds a placeholder.
+				if isForbiddenOrPermissionError(err) {
+					if !hit {
+						c.lru.put(bucket, bucketMetadata{
+							resource:    fmt.Sprintf("projects/_/buckets/%s", bucket),
+							location:    "global",
+							placeholder: true,
+						})
+					}
+				} else if hit && curr.placeholder {
+					// Only evict if the current entry in the cache is a placeholder.
+					c.lru.evict(bucket)
+				}
 				return nil, err
 			}
-			return bucketMetadata{
+
+			entry := bucketMetadata{
 				resource: resource,
 				location: location,
-			}, nil
-		})
-
-		var entry bucketMetadata
-		if err != nil {
-			if isForbiddenOrPermissionError(err) {
-				entry = bucketMetadata{
-					resource: fmt.Sprintf("projects/_/buckets/%s", bucket),
-					location: "global",
-				}
-				c.put(bucket, entry)
-			} else {
-				c.evict(bucket)
 			}
-		} else {
-			entry = resVal.(bucketMetadata)
-			c.put(bucket, entry)
-		}
+			c.lru.put(bucket, entry)
+			return entry, nil
+		})
 	}()
 }
 

@@ -2232,7 +2232,7 @@ func (r *gRPCReader) reopenStream() error {
 func (c *grpcStorageClient) fetchBucketMetadata(ctx context.Context, bucket string) (resource string, location string, err error) {
 	req := &storagepb.GetBucketRequest{
 		Name:     bucketResourceName(globalProjectAlias, bucket),
-		ReadMask: &fieldmaskpb.FieldMask{Paths: []string{"name", "project", "location"}},
+		ReadMask: &fieldmaskpb.FieldMask{Paths: []string{"name", "project", "location", "location_type"}},
 	}
 	resp, err := c.raw.GetBucket(ctx, req)
 	if err != nil {

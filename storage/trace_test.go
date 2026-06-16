@@ -18,7 +18,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"strings"
 	"testing"
 	"time"
 
@@ -284,12 +283,7 @@ func verifySpanAttributes(t *testing.T, span tracetest.SpanStub, wantResource, w
 		}
 	}
 
-	if strings.Contains(wantResource, "*") {
-		parts := strings.Split(wantResource, "*")
-		if len(parts) == 2 && (!strings.HasPrefix(gotResource, parts[0]) || !strings.HasSuffix(gotResource, parts[1])) {
-			t.Errorf("got resource %q, want pattern %q", gotResource, wantResource)
-		}
-	} else if gotResource != wantResource {
+	if gotResource != wantResource {
 		t.Errorf("got resource %q, want %q", gotResource, wantResource)
 	}
 

@@ -8973,39 +8973,44 @@ func TestIntegration_ParallelUpload_ChecksumValidation(t *testing.T) {
 }
 
 func TestIntegration_FetchBucketMetadata(t *testing.T) {
-	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
-		// Call the internal fetchBucketMetadata on client.tc
-		resource, location, err := client.tc.fetchBucketMetadata(ctx, bucket)
-		if err != nil {
-			t.Fatalf("fetchBucketMetadata failed: %v", err)
-		}
-
-		// Verify resource name format.
-		if !strings.HasPrefix(resource, "projects/") || !strings.HasSuffix(resource, "/buckets/"+bucket) {
-			t.Errorf("unexpected resource format: %q", resource)
-		}
-
-		// Verify location is not empty
-		if location == "" {
-			t.Errorf("expected location to be populated, got empty string")
-		}
-	})
-}
-
-func TestIntegration_FetchBucketMetadata_NonRegional(t *testing.T) {
 	ctx := context.Background()
 
 	tests := []struct {
-		name     string
-		location string
+		name             string
+		bucketAttrs      *BucketAttrs
+		expectedLocation string
 	}{
 		{
-			name:     "Multi-Region",
-			location: "US",
+			name:             "Multi-Region",
+			bucketAttrs:      &BucketAttrs{Location: "US"},
+			expectedLocation: "global",
 		},
 		{
-			name:     "Dual-Region",
-			location: "NAM4",
+			name:             "Dual-Region",
+			bucketAttrs:      &BucketAttrs{Location: "NAM4"},
+			expectedLocation: "global",
+		},
+		{
+			name:             "Regional",
+			bucketAttrs:      &BucketAttrs{Location: "US-West1"},
+			expectedLocation: "us-west1",
+		},
+		{
+			name: "Zonal",
+			bucketAttrs: &BucketAttrs{
+				Location: testZonalLocation,
+				CustomPlacementConfig: &CustomPlacementConfig{
+					DataLocations: []string{testZonalZone},
+				},
+				StorageClass: "RAPID",
+				HierarchicalNamespace: &HierarchicalNamespace{
+					Enabled: true,
+				},
+				UniformBucketLevelAccess: UniformBucketLevelAccess{
+					Enabled: true,
+				},
+			},
+			expectedLocation: testZonalLocation,
 		},
 	}
 
@@ -9014,9 +9019,9 @@ func TestIntegration_FetchBucketMetadata_NonRegional(t *testing.T) {
 			ctx := skipExtraReadAPIs(ctx, "bucket operations")
 			multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, _ string, client *Client) {
 				bucketName := fmt.Sprintf("test-nonreg-metadata-%d", time.Now().UnixNano())
-				err := client.Bucket(bucketName).Create(ctx, testutil.ProjID(), &BucketAttrs{Location: tc.location})
+				err := client.Bucket(bucketName).Create(ctx, testutil.ProjID(), tc.bucketAttrs)
 				if err != nil {
-					t.Skipf("skipping: failed to create bucket in %s: %v", tc.location, err)
+					t.Skipf("skipping: failed to create bucket in %s: %v", tc.bucketAttrs.Location, err)
 				}
 				t.Cleanup(func() {
 					client.Bucket(bucketName).Delete(ctx)
@@ -9027,8 +9032,8 @@ func TestIntegration_FetchBucketMetadata_NonRegional(t *testing.T) {
 					t.Fatalf("fetchBucketMetadata failed: %v", err)
 				}
 
-				if location != "global" {
-					t.Errorf("got location %q, want %q for %s bucket", location, "global", tc.name)
+				if location != tc.expectedLocation {
+					t.Errorf("got location %q, want %q for %s bucket", location, tc.expectedLocation, tc.name)
 				}
 
 				if !strings.HasPrefix(resource, "projects/") || !strings.HasSuffix(resource, "/buckets/"+bucketName) {
@@ -9134,7 +9139,7 @@ func TestIntegration_ClientTracing(t *testing.T) {
 
 			// 2. Second operation: Cache Hit. Should get resolved attributes.
 			spanCountAfterFirstOp := len(te.Spans())
-			_, err = client.Bucket(bucketName).Attrs(ctx)
+			bAttrs, err := client.Bucket(bucketName).Attrs(ctx)
 			if err != nil {
 				t.Fatalf("Bucket.Attrs failed: %v", err)
 			}
@@ -9153,7 +9158,7 @@ func TestIntegration_ClientTracing(t *testing.T) {
 			}
 
 			// Second call should have resolved attributes
-			verifySpanAttributes(t, attrsSpan, "projects/*/buckets/"+bucketName, "us-east1")
+			verifySpanAttributes(t, attrsSpan, fmt.Sprintf("projects/%d/buckets/%s", bAttrs.ProjectNumber, bucketName), "us-east1")
 		})
 	}
 }

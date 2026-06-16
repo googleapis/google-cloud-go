@@ -234,7 +234,9 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		creds:   creds,
 		tc:      tc,
 	}
-	c.bucketMetadataCache = newBucketMetadataCache(defaultBucketMetadataCacheLimit, c.tc)
+	if isACOEnabled() {
+		c.bucketMetadataCache = newBucketMetadataCache(defaultBucketMetadataCacheLimit, c.tc)
+	}
 	return c, nil
 }
 
@@ -259,7 +261,9 @@ func NewGRPCClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		tc:                    tc,
 		grpcAppendableUploads: tc.config.grpcAppendableUploads,
 	}
-	c.bucketMetadataCache = newBucketMetadataCache(defaultBucketMetadataCacheLimit, c.tc)
+	if isACOEnabled() {
+		c.bucketMetadataCache = newBucketMetadataCache(defaultBucketMetadataCacheLimit, c.tc)
+	}
 	return c, nil
 }
 

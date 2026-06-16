@@ -52,16 +52,21 @@ func traceAttributesFromContext(ctx context.Context) ([]attribute.KeyValue, bool
 }
 
 const (
-	storageOtelTracingDevVar = "GO_STORAGE_DEV_OTEL_TRACING"
-	defaultTracerName        = "cloud.google.com/go/storage"
-	gcpClientRepo            = "googleapis/google-cloud-go"
-	gcpClientArtifact        = "cloud.google.com/go/storage"
+	storageOtelTracingDevVar         = "GO_STORAGE_DEV_OTEL_TRACING"
+	defaultTracerName                = "cloud.google.com/go/storage"
+	gcpClientRepo                    = "googleapis/google-cloud-go"
+	gcpClientArtifact                = "cloud.google.com/go/storage"
+	storageBucketMetadataDisabledVar = "GO_OTEL_BUCKETMETADATA_DISABLED"
 )
 
 // isOTelTracingDevEnabled checks the development flag until experimental feature is launched.
 // TODO: Remove development flag upon experimental launch.
 func isOTelTracingDevEnabled() bool {
 	return os.Getenv(storageOtelTracingDevVar) == "true"
+}
+
+func isACOEnabled() bool {
+	return os.Getenv(storageBucketMetadataDisabledVar) != "true"
 }
 
 func tracer() trace.Tracer {
@@ -82,8 +87,9 @@ func startSpanWithBucket(ctx context.Context, client *Client, bucket string, nam
 		meta, hit := cache.get(bucket)
 		if !hit {
 			placeholder := bucketMetadata{
-				resource: fmt.Sprintf("projects/_/buckets/%s", bucket),
-				location: "global",
+				resource:    fmt.Sprintf("projects/_/buckets/%s", bucket),
+				location:    "global",
+				placeholder: true,
 			}
 			cache.put(bucket, placeholder)
 			cache.fetchBackground(bucket)

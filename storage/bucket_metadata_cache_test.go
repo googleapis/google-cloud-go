@@ -190,8 +190,9 @@ func TestCacheFetchBackgroundTransientErrorEviction(t *testing.T) {
 
 	// Populate cache with placeholder first (simulate startSpanWithBucket).
 	cache.put("failedBucket", bucketMetadata{
-		resource: "projects/_/buckets/failedBucket",
-		location: "global",
+		resource:    "projects/_/buckets/failedBucket",
+		location:    "global",
+		placeholder: true,
 	})
 
 	cache.fetchBackground("failedBucket")

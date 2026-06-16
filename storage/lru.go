@@ -16,12 +16,10 @@ package storage
 
 import (
 	"container/list"
-	"sync"
 )
 
-// lruCache is a generic, concurrency-safe Least Recently Used cache.
+// lruCache is a generic Least Recently Used cache. It is not thread-safe.
 type lruCache[K comparable, V any] struct {
-	mu        sync.Mutex
 	entries   map[K]*list.Element
 	evictList *list.List
 	limit     int
@@ -45,8 +43,6 @@ func (c *lruCache[K, V]) get(key K) (V, bool) {
 		var zero V
 		return zero, false
 	}
-	c.mu.Lock()
-	defer c.mu.Unlock()
 
 	if elem, ok := c.entries[key]; ok {
 		c.evictList.MoveToFront(elem)
@@ -60,8 +56,6 @@ func (c *lruCache[K, V]) put(key K, val V) {
 	if c == nil {
 		return
 	}
-	c.mu.Lock()
-	defer c.mu.Unlock()
 
 	// If element already exists, update the value and promote it
 	if elem, ok := c.entries[key]; ok {
@@ -84,8 +78,6 @@ func (c *lruCache[K, V]) evict(key K) {
 	if c == nil {
 		return
 	}
-	c.mu.Lock()
-	defer c.mu.Unlock()
 
 	if elem, ok := c.entries[key]; ok {
 		c.removeElement(elem)
