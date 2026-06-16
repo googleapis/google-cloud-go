@@ -707,9 +707,7 @@ func TestComputeTokenProvider_FullyExpiredBlockingRefresh(t *testing.T) {
 	ctp.mu.Unlock()
 
 	// Verify it is invalid
-	ctp.mu.Lock()
 	state := ctp.tokenState()
-	ctp.mu.Unlock()
 	if state != invalid {
 		t.Errorf("got %d, want %d", state, invalid)
 	}
