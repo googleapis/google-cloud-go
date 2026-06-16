@@ -17,6 +17,7 @@ package regionalaccessboundary
 import (
 	"bytes"
 	"context"
+	"crypto/tls"
 	"errors"
 	"fmt"
 	"log/slog"
@@ -1090,4 +1091,153 @@ func TestDataProvider_GetHeaderValue_BypassesNonDefaultUniverse(t *testing.T) {
 	case <-time.After(50 * time.Millisecond):
 		// Success: no fetch was initiated
 	}
+}
+
+func TestMaybeCloneClientWithMTLS(t *testing.T) {
+	fakeProvider := func(*tls.CertificateRequestInfo) (*tls.Certificate, error) {
+		return nil, nil
+	}
+
+	t.Run("nil transport", func(t *testing.T) {
+		client := &http.Client{}
+		cloned := maybeCloneClientWithMTLS(client, fakeProvider)
+		if cloned == nil {
+			t.Fatal("expected non-nil client")
+		}
+		if cloned == client {
+			t.Error("expected a new client pointer, got the same")
+		}
+		trans, ok := cloned.Transport.(*http.Transport)
+		if !ok {
+			t.Fatalf("expected cloned transport to be *http.Transport, got %T", cloned.Transport)
+		}
+		if trans.TLSClientConfig == nil {
+			t.Fatal("expected non-nil TLSClientConfig")
+		}
+		if reflect.ValueOf(trans.TLSClientConfig.GetClientCertificate).Pointer() != reflect.ValueOf(fakeProvider).Pointer() {
+			t.Error("provider callback did not match")
+		}
+	})
+
+	t.Run("existing http.Transport", func(t *testing.T) {
+		originalTrans := &http.Transport{
+			ForceAttemptHTTP2: true,
+			TLSClientConfig: &tls.Config{
+				ServerName: "original",
+			},
+		}
+		client := &http.Client{Transport: originalTrans}
+		cloned := maybeCloneClientWithMTLS(client, fakeProvider)
+		if cloned == nil {
+			t.Fatal("expected non-nil client")
+		}
+		if cloned == client {
+			t.Error("expected a new client pointer, got the same")
+		}
+		trans, ok := cloned.Transport.(*http.Transport)
+		if !ok {
+			t.Fatalf("expected cloned transport to be *http.Transport, got %T", cloned.Transport)
+		}
+		if trans == originalTrans {
+			t.Error("expected a cloned transport pointer, got the same")
+		}
+		if trans.TLSClientConfig.ServerName != "original" {
+			t.Errorf("expected ServerName to be preserved as 'original', got %q", trans.TLSClientConfig.ServerName)
+		}
+		if reflect.ValueOf(trans.TLSClientConfig.GetClientCertificate).Pointer() != reflect.ValueOf(fakeProvider).Pointer() {
+			t.Error("provider callback did not match")
+		}
+	})
+
+	t.Run("pre-configured client certs are preserved", func(t *testing.T) {
+		existingProvider := func(*tls.CertificateRequestInfo) (*tls.Certificate, error) {
+			return &tls.Certificate{}, nil
+		}
+		originalTrans := &http.Transport{
+			TLSClientConfig: &tls.Config{
+				GetClientCertificate: existingProvider,
+			},
+		}
+		client := &http.Client{Transport: originalTrans}
+		cloned := maybeCloneClientWithMTLS(client, fakeProvider)
+		trans := cloned.Transport.(*http.Transport)
+		if reflect.ValueOf(trans.TLSClientConfig.GetClientCertificate).Pointer() != reflect.ValueOf(existingProvider).Pointer() {
+			t.Error("expected existing client cert provider to be preserved, but it was overwritten")
+		}
+	})
+
+	t.Run("pre-configured Certificates are preserved", func(t *testing.T) {
+		originalTrans := &http.Transport{
+			TLSClientConfig: &tls.Config{
+				Certificates: []tls.Certificate{{}},
+			},
+		}
+		client := &http.Client{Transport: originalTrans}
+		cloned := maybeCloneClientWithMTLS(client, fakeProvider)
+		trans := cloned.Transport.(*http.Transport)
+		if trans.TLSClientConfig.GetClientCertificate != nil {
+			t.Error("expected GetClientCertificate to remain nil when Certificates are pre-configured")
+		}
+	})
+
+	t.Run("custom RoundTripper is returned as-is", func(t *testing.T) {
+		customTrans := &fakeRoundTripper{}
+		client := &http.Client{Transport: customTrans}
+		cloned := maybeCloneClientWithMTLS(client, fakeProvider)
+		if cloned != client {
+			t.Error("expected client to be returned unmodified for custom RoundTripper")
+		}
+	})
+
+	t.Run("nil transport with non-cloneable default transport", func(t *testing.T) {
+		oldDefault := http.DefaultTransport
+		defer func() { http.DefaultTransport = oldDefault }()
+		http.DefaultTransport = &fakeRoundTripper{}
+
+		client := &http.Client{}
+		cloned := maybeCloneClientWithMTLS(client, fakeProvider)
+		trans, ok := cloned.Transport.(*http.Transport)
+		if !ok {
+			t.Fatalf("expected cloned transport to be *http.Transport, got %T", cloned.Transport)
+		}
+		if trans.TLSClientConfig == nil {
+			t.Fatal("expected non-nil TLSClientConfig")
+		}
+		if reflect.ValueOf(trans.TLSClientConfig.GetClientCertificate).Pointer() != reflect.ValueOf(fakeProvider).Pointer() {
+			t.Error("provider callback did not match")
+		}
+	})
+
+	t.Run("nil client input", func(t *testing.T) {
+		cloned := maybeCloneClientWithMTLS(nil, fakeProvider)
+		if cloned != nil {
+			t.Errorf("expected nil client, got %v", cloned)
+		}
+	})
+
+	t.Run("clone returns nil", func(t *testing.T) {
+		client := &http.Client{Transport: &fakeCloneableTransport{clone: nil}}
+		cloned := maybeCloneClientWithMTLS(client, fakeProvider)
+		if cloned != client {
+			t.Error("expected client to be returned unmodified when clone is nil")
+		}
+	})
+}
+
+type fakeRoundTripper struct{}
+
+func (f *fakeRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
+	return nil, nil
+}
+
+type fakeCloneableTransport struct {
+	clone *http.Transport
+}
+
+func (f *fakeCloneableTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+	return nil, nil
+}
+
+func (f *fakeCloneableTransport) Clone() *http.Transport {
+	return f.clone
 }

@@ -16,6 +16,7 @@ package regionalaccessboundary
 
 import (
 	"context"
+	"crypto/tls"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -321,10 +322,15 @@ func (p *DataProvider) GetHeaderValue(ctx context.Context, reqURL string, access
 // fetchAsync performs the background lookup for Regional Access Boundary data.
 // It updates the provider's state based on the result (success or failure).
 func (p *DataProvider) fetchAsync(ctx context.Context, accessToken *auth.Token) {
+	var cloned bool
+	var fetchClient *http.Client
 	defer func() {
 		p.mu.Lock()
 		p.isFetching = false
 		p.mu.Unlock()
+		if cloned && fetchClient != nil {
+			fetchClient.CloseIdleConnections()
+		}
 	}()
 
 	url, err := p.configProvider.GetRegionalAccessBoundaryEndpoint(ctx)
@@ -342,7 +348,17 @@ func (p *DataProvider) fetchAsync(ctx context.Context, accessToken *auth.Token) 
 		return
 	}
 
-	newData, fetchErr := fetchRegionalAccessBoundaryData(ctx, p.client, url, accessToken, p.logger)
+	fetchClient = p.client
+	if strings.Contains(url, ".mtls.") {
+		if provider, err := cert.DefaultProvider(); err == nil && provider != nil {
+			clonedClient := maybeCloneClientWithMTLS(p.client, provider)
+			if clonedClient != p.client {
+				fetchClient = clonedClient
+				cloned = true
+			}
+		}
+	}
+	newData, fetchErr := fetchRegionalAccessBoundaryData(ctx, fetchClient, url, accessToken, p.logger)
 
 	if fetchErr != nil {
 		p.logger.WarnContext(ctx, "regionalaccessboundary: async fetch failed", "error", fetchErr)
@@ -411,6 +427,64 @@ func resolveLocalMTLSEndpoint(base, mtls string) (string, error) {
 		return mtls, nil
 	}
 	return base, nil
+}
+
+type cloneableTransport interface {
+	Clone() *http.Transport
+}
+
+// maybeCloneClientWithMTLS returns a clone of client configured to use the client
+// certificate provider if the client's transport is cloneable. If the transport
+// cannot be cloned, it returns the original client unmodified.
+func maybeCloneClientWithMTLS(client *http.Client, provider cert.Provider) *http.Client {
+	if client == nil {
+		return nil
+	}
+	c := *client
+	var trans *http.Transport
+	if client.Transport == nil {
+		if defaultTrans, ok := http.DefaultTransport.(cloneableTransport); ok {
+			trans = defaultTrans.Clone()
+		} else {
+			// Fallback to a clean transport configured with standard timeouts
+			// and ForceAttemptHTTP2 enabled.
+			trans = &http.Transport{
+				Proxy: http.ProxyFromEnvironment,
+				DialContext: (&net.Dialer{
+					Timeout:   30 * time.Second,
+					KeepAlive: 30 * time.Second,
+				}).DialContext,
+				ForceAttemptHTTP2:     true,
+				MaxIdleConns:          100,
+				IdleConnTimeout:       90 * time.Second,
+				TLSHandshakeTimeout:   10 * time.Second,
+				ExpectContinueTimeout: 1 * time.Second,
+			}
+		}
+	} else if cloneable, ok := client.Transport.(cloneableTransport); ok {
+		trans = cloneable.Clone()
+		if trans == nil {
+			return client
+		}
+	} else {
+		// If transport is not cloneable (e.g. custom wrapper), we return the client unmodified.
+		return client
+	}
+
+	if trans.TLSClientConfig == nil {
+		trans.TLSClientConfig = &tls.Config{}
+	} else {
+		trans.TLSClientConfig = trans.TLSClientConfig.Clone()
+	}
+
+	// Only set GetClientCertificate if the user has not already configured
+	// client certificates on this transport.
+	if trans.TLSClientConfig.GetClientCertificate == nil && len(trans.TLSClientConfig.Certificates) == 0 {
+		trans.TLSClientConfig.GetClientCertificate = provider
+	}
+
+	c.Transport = trans
+	return &c
 }
 
 // serviceAccountConfig holds configuration for SA Regional Access Boundary lookups.
