@@ -27,6 +27,7 @@ import (
 	"reflect"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"testing"
 	"time"
 
@@ -165,13 +166,13 @@ func TestFetchRegionalAccessBoundaryData(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			var server *httptest.Server
 			var url string
-			requestCount := 0
+			var requestCount atomic.Int32
 
 			if tt.serverResponse != nil {
 				server = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-					requestCount++
+					requestCount.Add(1)
 					// Use second response if it's a retry
-					if tt.secondResponse != nil && requestCount > 1 {
+					if tt.secondResponse != nil && requestCount.Load() > 1 {
 						w.Header().Set("Content-Type", "application/json")
 						w.WriteHeader(tt.secondResponse.status)
 						fmt.Fprint(w, tt.secondResponse.body)
@@ -206,8 +207,8 @@ func TestFetchRegionalAccessBoundaryData(t *testing.T) {
 
 			data, err := fetchRegionalAccessBoundaryData(tt.ctx, client, url, tt.token, nil)
 
-			if tt.wantRequestCount > 0 && requestCount != tt.wantRequestCount {
-				t.Errorf("fetchRegionalAccessBoundaryData() requestCount = %d, want %d", requestCount, tt.wantRequestCount)
+			if tt.wantRequestCount > 0 && requestCount.Load() != int32(tt.wantRequestCount) {
+				t.Errorf("fetchRegionalAccessBoundaryData() requestCount = %d, want %d", requestCount.Load(), tt.wantRequestCount)
 			}
 
 			if tt.wantErr != "" {
@@ -495,9 +496,9 @@ func TestGCEConfigProvider(t *testing.T) {
 
 func TestGCEConfigProvider_CachesResults(t *testing.T) {
 
-	var requestCount int
+	var requestCount atomic.Int32
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		requestCount++
+		requestCount.Add(1)
 		switch r.URL.Path {
 		case "/computeMetadata/v1/instance/service-accounts/default/email":
 			w.Write([]byte("test-sa@example.com"))
@@ -520,8 +521,8 @@ func TestGCEConfigProvider_CachesResults(t *testing.T) {
 			provider.GetRegionalAccessBoundaryEndpoint(context.Background())
 			provider.GetUniverseDomain(context.Background())
 			// The actual number of requests to the metadata server is 2 (one for email, one for UD)
-			if requestCount > 2 {
-				t.Errorf("expected metadata server to be called at most 2 times, but was called %d times", requestCount)
+			if m := requestCount.Load(); m > 2 {
+				t.Errorf("expected metadata server to be called at most 2 times, but was called %d times", m)
 			}
 		})
 	}
@@ -529,9 +530,10 @@ func TestGCEConfigProvider_CachesResults(t *testing.T) {
 
 func TestGCEConfigProvider_TransientFailure(t *testing.T) {
 	t.Setenv("GOOGLE_API_USE_CLIENT_CERTIFICATE", "false")
-	var failMDS bool = true
+	var failMDS atomic.Bool
+	failMDS.Store(true)
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if failMDS {
+		if failMDS.Load() {
 			http.Error(w, "metadata server down", http.StatusInternalServerError)
 			return
 		}
@@ -559,7 +561,7 @@ func TestGCEConfigProvider_TransientFailure(t *testing.T) {
 	}
 
 	// Enable success for the next call
-	failMDS = false
+	failMDS.Store(false)
 
 	// Second call should succeed (MDS up)
 	endpoint, err := provider.GetRegionalAccessBoundaryEndpoint(ctx)
@@ -902,9 +904,9 @@ func TestDataProvider_GetHeaderValue_BypassesNonGSA(t *testing.T) {
 	ctx := context.Background()
 	nonGSAEmail := "project.svc.id.goog[ns/sa]"
 
-	var mdsRequestCount int
+	var mdsRequestCount atomic.Int32
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		mdsRequestCount++
+		mdsRequestCount.Add(1)
 		switch r.URL.Path {
 		case "/computeMetadata/v1/instance/service-accounts/default/email":
 			w.Write([]byte(nonGSAEmail))
@@ -953,7 +955,7 @@ func TestDataProvider_GetHeaderValue_BypassesNonGSA(t *testing.T) {
 	}
 
 	// Reset request count to check that no more calls are made to MDS.
-	mdsRequestCount = 0
+	mdsRequestCount.Store(0)
 
 	// Second and subsequent calls should immediately return empty string, bypassing all fetches.
 	for i := 0; i < 5; i++ {
@@ -963,17 +965,17 @@ func TestDataProvider_GetHeaderValue_BypassesNonGSA(t *testing.T) {
 		}
 	}
 
-	if mdsRequestCount > 0 {
-		t.Errorf("expected zero MDS metadata calls during bypass, got %d", mdsRequestCount)
+	if m := mdsRequestCount.Load(); m > 0 {
+		t.Errorf("expected zero MDS metadata calls during bypass, got %d", m)
 	}
 }
 
 func TestDataProvider_GetHeaderValue_BypassesMissingSA(t *testing.T) {
 	ctx := context.Background()
 
-	var mdsRequestCount int
+	var mdsRequestCount atomic.Int32
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		mdsRequestCount++
+		mdsRequestCount.Add(1)
 		switch r.URL.Path {
 		case "/computeMetadata/v1/instance/service-accounts/default/email":
 			http.NotFound(w, r) // returns metadata.NotDefinedError
@@ -1023,7 +1025,7 @@ func TestDataProvider_GetHeaderValue_BypassesMissingSA(t *testing.T) {
 	}
 
 	// Reset request count to check that no more calls are made to MDS.
-	mdsRequestCount = 0
+	mdsRequestCount.Store(0)
 
 	// Second and subsequent calls should immediately return empty string, bypassing all fetches.
 	for i := 0; i < 5; i++ {
@@ -1033,8 +1035,8 @@ func TestDataProvider_GetHeaderValue_BypassesMissingSA(t *testing.T) {
 		}
 	}
 
-	if mdsRequestCount > 0 {
-		t.Errorf("expected zero MDS metadata calls during bypass, got %d", mdsRequestCount)
+	if m := mdsRequestCount.Load(); m > 0 {
+		t.Errorf("expected zero MDS metadata calls during bypass, got %d", m)
 	}
 }
 
@@ -1158,7 +1160,7 @@ func TestDataProvider_GetHeaderValue_BypassesNonDefaultUniverse(t *testing.T) {
 	select {
 	case <-mockConfig.endpointCallCh:
 		t.Error("GetHeaderValue triggered Allowed Locations fetch on non-default universe domain, want skip")
-	case <-time.After(50 * time.Millisecond):
+	case <-time.After(100 * time.Millisecond):
 		// Success: no fetch was initiated
 	}
 }

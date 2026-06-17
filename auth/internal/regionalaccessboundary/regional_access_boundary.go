@@ -594,6 +594,7 @@ func (g *GCEConfigProvider) GetRegionalAccessBoundaryEndpoint(ctx context.Contex
 		}
 		return "", err
 	}
+	email = strings.TrimSpace(email)
 
 	if !emailRegexp.MatchString(email) {
 		// If the metadata server response does not look like a standard email (e.g.,
