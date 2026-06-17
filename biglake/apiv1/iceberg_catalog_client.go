@@ -59,6 +59,7 @@ type IcebergCatalogCallOptions struct {
 	LoadIcebergTableCredentials []gax.CallOption
 	UpdateIcebergTable          []gax.CallOption
 	RegisterIcebergTable        []gax.CallOption
+	ReportIcebergTableMetrics   []gax.CallOption
 	GetIcebergCatalog           []gax.CallOption
 	ListIcebergCatalogs         []gax.CallOption
 	DeleteIcebergCatalog        []gax.CallOption
@@ -99,6 +100,7 @@ func defaultIcebergCatalogCallOptions() *IcebergCatalogCallOptions {
 		LoadIcebergTableCredentials: []gax.CallOption{},
 		UpdateIcebergTable:          []gax.CallOption{},
 		RegisterIcebergTable:        []gax.CallOption{},
+		ReportIcebergTableMetrics:   []gax.CallOption{},
 		GetIcebergCatalog:           []gax.CallOption{},
 		ListIcebergCatalogs:         []gax.CallOption{},
 		DeleteIcebergCatalog:        []gax.CallOption{},
@@ -125,6 +127,7 @@ func defaultIcebergCatalogRESTCallOptions() *IcebergCatalogCallOptions {
 		LoadIcebergTableCredentials: []gax.CallOption{},
 		UpdateIcebergTable:          []gax.CallOption{},
 		RegisterIcebergTable:        []gax.CallOption{},
+		ReportIcebergTableMetrics:   []gax.CallOption{},
 		GetIcebergCatalog:           []gax.CallOption{},
 		ListIcebergCatalogs:         []gax.CallOption{},
 		DeleteIcebergCatalog:        []gax.CallOption{},
@@ -154,6 +157,7 @@ type internalIcebergCatalogClient interface {
 	LoadIcebergTableCredentials(context.Context, *biglakepb.GetIcebergTableRequest, ...gax.CallOption) (*biglakepb.LoadIcebergTableCredentialsResponse, error)
 	UpdateIcebergTable(context.Context, *biglakepb.UpdateIcebergTableRequest, ...gax.CallOption) (*httpbodypb.HttpBody, error)
 	RegisterIcebergTable(context.Context, *biglakepb.RegisterIcebergTableRequest, ...gax.CallOption) (*httpbodypb.HttpBody, error)
+	ReportIcebergTableMetrics(context.Context, *biglakepb.ReportIcebergTableMetricsRequest, ...gax.CallOption) error
 	GetIcebergCatalog(context.Context, *biglakepb.GetIcebergCatalogRequest, ...gax.CallOption) (*biglakepb.IcebergCatalog, error)
 	ListIcebergCatalogs(context.Context, *biglakepb.ListIcebergCatalogsRequest, ...gax.CallOption) *IcebergCatalogIterator
 	DeleteIcebergCatalog(context.Context, *biglakepb.DeleteIcebergCatalogRequest, ...gax.CallOption) error
@@ -165,48 +169,19 @@ type internalIcebergCatalogClient interface {
 // IcebergCatalogClient is a client for interacting with BigLake API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Iceberg Catalog Service API: this implements the open-source Iceberg REST
-// Catalog API.
-// See the API definition here:
-// https://github.com/apache/iceberg/blob/main/open-api/rest-catalog-open-api.yaml (at https://github.com/apache/iceberg/blob/main/open-api/rest-catalog-open-api.yaml)
+// Lakehouse runtime catalog supports the following catalog management methods:
 //
-// The API is defined as OpenAPI 3.1.1 spec.
+//	GetIcebergCatalog
 //
-// Currently we only support the following methods:
+//	ListIcebergCatalogs
 //
-//	GetConfig/GetIcebergCatalogConfig
+//	DeleteIcebergCatalog
 //
-//	ListIcebergNamespaces
+//	UpdateIcebergCatalog
 //
-//	CheckIcebergNamespaceExists
+//	CreateIcebergCatalog
 //
-//	GetIcebergNamespace
-//
-//	CreateIcebergNamespace (only supports single level)
-//
-//	DeleteIcebergNamespace
-//
-//	UpdateIcebergNamespace properties
-//
-//	ListTableIdentifiers
-//
-//	CreateIcebergTable
-//
-//	DeleteIcebergTable
-//
-//	GetIcebergTable
-//
-//	UpdateIcebergTable (CommitTable)
-//
-//	LoadIcebergTableCredentials
-//
-//	RegisterTable
-//
-// Users are required to provided the X-Goog-User-Project header with the
-// project id or number which can be different from the bucket project id.
-// That project will be charged for the API calls and the calling user must have
-// access to that project. The caller must have serviceusage.services.use
-// permission on the project.
+//	FailoverIcebergCatalog
 type IcebergCatalogClient struct {
 	// The internal transport-dependent client.
 	internalClient internalIcebergCatalogClient
@@ -324,6 +299,11 @@ func (c *IcebergCatalogClient) RegisterIcebergTable(ctx context.Context, req *bi
 	return c.internalClient.RegisterIcebergTable(ctx, req, opts...)
 }
 
+// ReportIcebergTableMetrics reports a metrics report for a table.
+func (c *IcebergCatalogClient) ReportIcebergTableMetrics(ctx context.Context, req *biglakepb.ReportIcebergTableMetricsRequest, opts ...gax.CallOption) error {
+	return c.internalClient.ReportIcebergTableMetrics(ctx, req, opts...)
+}
+
 // GetIcebergCatalog returns the Iceberg REST Catalog configuration options.
 func (c *IcebergCatalogClient) GetIcebergCatalog(ctx context.Context, req *biglakepb.GetIcebergCatalogRequest, opts ...gax.CallOption) (*biglakepb.IcebergCatalog, error) {
 	return c.internalClient.GetIcebergCatalog(ctx, req, opts...)
@@ -349,7 +329,6 @@ func (c *IcebergCatalogClient) UpdateIcebergCatalog(ctx context.Context, req *bi
 }
 
 // CreateIcebergCatalog creates the Iceberg REST Catalog.
-// Currently only supports Google Cloud Storage Bucket catalogs.
 // Google Cloud Storage Bucket catalog id is the bucket for which the
 // catalog is created (e.g. my-catalog for gs://my-catalog).
 //
@@ -386,48 +365,19 @@ type icebergCatalogGRPCClient struct {
 // NewIcebergCatalogClient creates a new iceberg catalog service client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Iceberg Catalog Service API: this implements the open-source Iceberg REST
-// Catalog API.
-// See the API definition here:
-// https://github.com/apache/iceberg/blob/main/open-api/rest-catalog-open-api.yaml (at https://github.com/apache/iceberg/blob/main/open-api/rest-catalog-open-api.yaml)
+// Lakehouse runtime catalog supports the following catalog management methods:
 //
-// The API is defined as OpenAPI 3.1.1 spec.
+//	GetIcebergCatalog
 //
-// Currently we only support the following methods:
+//	ListIcebergCatalogs
 //
-//	GetConfig/GetIcebergCatalogConfig
+//	DeleteIcebergCatalog
 //
-//	ListIcebergNamespaces
+//	UpdateIcebergCatalog
 //
-//	CheckIcebergNamespaceExists
+//	CreateIcebergCatalog
 //
-//	GetIcebergNamespace
-//
-//	CreateIcebergNamespace (only supports single level)
-//
-//	DeleteIcebergNamespace
-//
-//	UpdateIcebergNamespace properties
-//
-//	ListTableIdentifiers
-//
-//	CreateIcebergTable
-//
-//	DeleteIcebergTable
-//
-//	GetIcebergTable
-//
-//	UpdateIcebergTable (CommitTable)
-//
-//	LoadIcebergTableCredentials
-//
-//	RegisterTable
-//
-// Users are required to provided the X-Goog-User-Project header with the
-// project id or number which can be different from the bucket project id.
-// That project will be charged for the API calls and the calling user must have
-// access to that project. The caller must have serviceusage.services.use
-// permission on the project.
+//	FailoverIcebergCatalog
 func NewIcebergCatalogClient(ctx context.Context, opts ...option.ClientOption) (*IcebergCatalogClient, error) {
 	clientOpts := defaultIcebergCatalogGRPCClientOptions()
 	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
@@ -488,6 +438,7 @@ func NewIcebergCatalogClient(ctx context.Context, opts ...option.ClientOption) (
 		client.CallOptions.LoadIcebergTableCredentials = append(client.CallOptions.LoadIcebergTableCredentials, gax.WithClientMetrics(metrics))
 		client.CallOptions.UpdateIcebergTable = append(client.CallOptions.UpdateIcebergTable, gax.WithClientMetrics(metrics))
 		client.CallOptions.RegisterIcebergTable = append(client.CallOptions.RegisterIcebergTable, gax.WithClientMetrics(metrics))
+		client.CallOptions.ReportIcebergTableMetrics = append(client.CallOptions.ReportIcebergTableMetrics, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetIcebergCatalog = append(client.CallOptions.GetIcebergCatalog, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListIcebergCatalogs = append(client.CallOptions.ListIcebergCatalogs, gax.WithClientMetrics(metrics))
 		client.CallOptions.DeleteIcebergCatalog = append(client.CallOptions.DeleteIcebergCatalog, gax.WithClientMetrics(metrics))
@@ -545,48 +496,19 @@ type icebergCatalogRESTClient struct {
 
 // NewIcebergCatalogRESTClient creates a new iceberg catalog service rest client.
 //
-// Iceberg Catalog Service API: this implements the open-source Iceberg REST
-// Catalog API.
-// See the API definition here:
-// https://github.com/apache/iceberg/blob/main/open-api/rest-catalog-open-api.yaml (at https://github.com/apache/iceberg/blob/main/open-api/rest-catalog-open-api.yaml)
+// Lakehouse runtime catalog supports the following catalog management methods:
 //
-// The API is defined as OpenAPI 3.1.1 spec.
+//	GetIcebergCatalog
 //
-// Currently we only support the following methods:
+//	ListIcebergCatalogs
 //
-//	GetConfig/GetIcebergCatalogConfig
+//	DeleteIcebergCatalog
 //
-//	ListIcebergNamespaces
+//	UpdateIcebergCatalog
 //
-//	CheckIcebergNamespaceExists
+//	CreateIcebergCatalog
 //
-//	GetIcebergNamespace
-//
-//	CreateIcebergNamespace (only supports single level)
-//
-//	DeleteIcebergNamespace
-//
-//	UpdateIcebergNamespace properties
-//
-//	ListTableIdentifiers
-//
-//	CreateIcebergTable
-//
-//	DeleteIcebergTable
-//
-//	GetIcebergTable
-//
-//	UpdateIcebergTable (CommitTable)
-//
-//	LoadIcebergTableCredentials
-//
-//	RegisterTable
-//
-// Users are required to provided the X-Goog-User-Project header with the
-// project id or number which can be different from the bucket project id.
-// That project will be charged for the API calls and the calling user must have
-// access to that project. The caller must have serviceusage.services.use
-// permission on the project.
+//	FailoverIcebergCatalog
 func NewIcebergCatalogRESTClient(ctx context.Context, opts ...option.ClientOption) (*IcebergCatalogClient, error) {
 	clientOpts := append(defaultIcebergCatalogRESTClientOptions(), opts...)
 	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
@@ -640,6 +562,7 @@ func NewIcebergCatalogRESTClient(ctx context.Context, opts ...option.ClientOptio
 		callOpts.LoadIcebergTableCredentials = append(callOpts.LoadIcebergTableCredentials, gax.WithClientMetrics(metrics))
 		callOpts.UpdateIcebergTable = append(callOpts.UpdateIcebergTable, gax.WithClientMetrics(metrics))
 		callOpts.RegisterIcebergTable = append(callOpts.RegisterIcebergTable, gax.WithClientMetrics(metrics))
+		callOpts.ReportIcebergTableMetrics = append(callOpts.ReportIcebergTableMetrics, gax.WithClientMetrics(metrics))
 		callOpts.GetIcebergCatalog = append(callOpts.GetIcebergCatalog, gax.WithClientMetrics(metrics))
 		callOpts.ListIcebergCatalogs = append(callOpts.ListIcebergCatalogs, gax.WithClientMetrics(metrics))
 		callOpts.DeleteIcebergCatalog = append(callOpts.DeleteIcebergCatalog, gax.WithClientMetrics(metrics))
@@ -1065,6 +988,26 @@ func (c *icebergCatalogGRPCClient) RegisterIcebergTable(ctx context.Context, req
 		return nil, err
 	}
 	return resp, nil
+}
+
+func (c *icebergCatalogGRPCClient) ReportIcebergTableMetrics(ctx context.Context, req *biglakepb.ReportIcebergTableMetricsRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//biglake.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.biglake.v1.IcebergCatalogService/ReportIcebergTableMetrics")
+	}
+	opts = append((*c.CallOptions).ReportIcebergTableMetrics[0:len((*c.CallOptions).ReportIcebergTableMetrics):len((*c.CallOptions).ReportIcebergTableMetrics)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = executeRPC(ctx, c.icebergCatalogClient.ReportIcebergTableMetrics, req, settings.GRPC, c.logger, "ReportIcebergTableMetrics")
+		return err
+	}, opts...)
+	return err
 }
 
 func (c *icebergCatalogGRPCClient) GetIcebergCatalog(ctx context.Context, req *biglakepb.GetIcebergCatalogRequest, opts ...gax.CallOption) (*biglakepb.IcebergCatalog, error) {
@@ -2107,6 +2050,54 @@ func (c *icebergCatalogRESTClient) RegisterIcebergTable(ctx context.Context, req
 	return resp, nil
 }
 
+// ReportIcebergTableMetrics reports a metrics report for a table.
+func (c *icebergCatalogRESTClient) ReportIcebergTableMetrics(ctx context.Context, req *biglakepb.ReportIcebergTableMetricsRequest, opts ...gax.CallOption) error {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/iceberg/v1/restcatalog/v1/%v/metrics", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//biglake.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.biglake.v1.IcebergCatalogService/ReportIcebergTableMetrics")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/iceberg/v1/restcatalog/v1/{name=projects/*/catalogs/*/namespaces/*/tables/*}/metrics")
+	}
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ReportIcebergTableMetrics")
+		return err
+	}, opts...)
+}
+
 // GetIcebergCatalog returns the Iceberg REST Catalog configuration options.
 func (c *icebergCatalogRESTClient) GetIcebergCatalog(ctx context.Context, req *biglakepb.GetIcebergCatalogRequest, opts ...gax.CallOption) (*biglakepb.IcebergCatalog, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -2360,7 +2351,6 @@ func (c *icebergCatalogRESTClient) UpdateIcebergCatalog(ctx context.Context, req
 }
 
 // CreateIcebergCatalog creates the Iceberg REST Catalog.
-// Currently only supports Google Cloud Storage Bucket catalogs.
 // Google Cloud Storage Bucket catalog id is the bucket for which the
 // catalog is created (e.g. my-catalog for gs://my-catalog).
 //
@@ -2383,6 +2373,9 @@ func (c *icebergCatalogRESTClient) CreateIcebergCatalog(ctx context.Context, req
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	params.Add("icebergCatalogId", fmt.Sprintf("%v", req.GetIcebergCatalogId()))
+	if req.GetPrimaryLocation() != "" {
+		params.Add("primaryLocation", fmt.Sprintf("%v", req.GetPrimaryLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 

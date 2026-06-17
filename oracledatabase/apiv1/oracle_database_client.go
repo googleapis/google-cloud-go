@@ -114,13 +114,9 @@ type CallOptions struct {
 	GetGoldengateConnection              []gax.CallOption
 	CreateGoldengateConnection           []gax.CallOption
 	DeleteGoldengateConnection           []gax.CallOption
-	GetGoldengateDeploymentVersion       []gax.CallOption
 	ListGoldengateDeploymentVersions     []gax.CallOption
-	GetGoldengateDeploymentType          []gax.CallOption
 	ListGoldengateDeploymentTypes        []gax.CallOption
-	GetGoldengateDeploymentEnvironment   []gax.CallOption
 	ListGoldengateDeploymentEnvironments []gax.CallOption
-	GetGoldengateConnectionType          []gax.CallOption
 	ListGoldengateConnectionTypes        []gax.CallOption
 	ListDbVersions                       []gax.CallOption
 	ListDatabaseCharacterSets            []gax.CallOption
@@ -692,9 +688,6 @@ func defaultCallOptions() *CallOptions {
 		DeleteGoldengateConnection: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
-		GetGoldengateDeploymentVersion: []gax.CallOption{
-			gax.WithTimeout(60000 * time.Millisecond),
-		},
 		ListGoldengateDeploymentVersions: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -707,9 +700,6 @@ func defaultCallOptions() *CallOptions {
 					Multiplier: 1.30,
 				})
 			}),
-		},
-		GetGoldengateDeploymentType: []gax.CallOption{
-			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		ListGoldengateDeploymentTypes: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
@@ -724,9 +714,6 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		GetGoldengateDeploymentEnvironment: []gax.CallOption{
-			gax.WithTimeout(60000 * time.Millisecond),
-		},
 		ListGoldengateDeploymentEnvironments: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -739,9 +726,6 @@ func defaultCallOptions() *CallOptions {
 					Multiplier: 1.30,
 				})
 			}),
-		},
-		GetGoldengateConnectionType: []gax.CallOption{
-			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		ListGoldengateConnectionTypes: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
@@ -1332,9 +1316,6 @@ func defaultRESTCallOptions() *CallOptions {
 		DeleteGoldengateConnection: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
-		GetGoldengateDeploymentVersion: []gax.CallOption{
-			gax.WithTimeout(60000 * time.Millisecond),
-		},
 		ListGoldengateDeploymentVersions: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -1346,9 +1327,6 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable,
 					http.StatusGatewayTimeout)
 			}),
-		},
-		GetGoldengateDeploymentType: []gax.CallOption{
-			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		ListGoldengateDeploymentTypes: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
@@ -1362,9 +1340,6 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusGatewayTimeout)
 			}),
 		},
-		GetGoldengateDeploymentEnvironment: []gax.CallOption{
-			gax.WithTimeout(60000 * time.Millisecond),
-		},
 		ListGoldengateDeploymentEnvironments: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -1376,9 +1351,6 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable,
 					http.StatusGatewayTimeout)
 			}),
-		},
-		GetGoldengateConnectionType: []gax.CallOption{
-			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		ListGoldengateConnectionTypes: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
@@ -1560,13 +1532,9 @@ type internalClient interface {
 	CreateGoldengateConnectionOperation(name string) *CreateGoldengateConnectionOperation
 	DeleteGoldengateConnection(context.Context, *oracledatabasepb.DeleteGoldengateConnectionRequest, ...gax.CallOption) (*DeleteGoldengateConnectionOperation, error)
 	DeleteGoldengateConnectionOperation(name string) *DeleteGoldengateConnectionOperation
-	GetGoldengateDeploymentVersion(context.Context, *oracledatabasepb.GetGoldengateDeploymentVersionRequest, ...gax.CallOption) (*oracledatabasepb.GoldengateDeploymentVersion, error)
 	ListGoldengateDeploymentVersions(context.Context, *oracledatabasepb.ListGoldengateDeploymentVersionsRequest, ...gax.CallOption) *GoldengateDeploymentVersionIterator
-	GetGoldengateDeploymentType(context.Context, *oracledatabasepb.GetGoldengateDeploymentTypeRequest, ...gax.CallOption) (*oracledatabasepb.GoldengateDeploymentType, error)
 	ListGoldengateDeploymentTypes(context.Context, *oracledatabasepb.ListGoldengateDeploymentTypesRequest, ...gax.CallOption) *GoldengateDeploymentTypeIterator
-	GetGoldengateDeploymentEnvironment(context.Context, *oracledatabasepb.GetGoldengateDeploymentEnvironmentRequest, ...gax.CallOption) (*oracledatabasepb.GoldengateDeploymentEnvironment, error)
 	ListGoldengateDeploymentEnvironments(context.Context, *oracledatabasepb.ListGoldengateDeploymentEnvironmentsRequest, ...gax.CallOption) *GoldengateDeploymentEnvironmentIterator
-	GetGoldengateConnectionType(context.Context, *oracledatabasepb.GetGoldengateConnectionTypeRequest, ...gax.CallOption) (*oracledatabasepb.GoldengateConnectionType, error)
 	ListGoldengateConnectionTypes(context.Context, *oracledatabasepb.ListGoldengateConnectionTypesRequest, ...gax.CallOption) *GoldengateConnectionTypeIterator
 	ListDbVersions(context.Context, *oracledatabasepb.ListDbVersionsRequest, ...gax.CallOption) *DbVersionIterator
 	ListDatabaseCharacterSets(context.Context, *oracledatabasepb.ListDatabaseCharacterSetsRequest, ...gax.CallOption) *DatabaseCharacterSetIterator
@@ -2151,19 +2119,9 @@ func (c *Client) DeleteGoldengateConnectionOperation(name string) *DeleteGoldeng
 	return c.internalClient.DeleteGoldengateConnectionOperation(name)
 }
 
-// GetGoldengateDeploymentVersion gets details of a single GoldengateDeploymentVersion.
-func (c *Client) GetGoldengateDeploymentVersion(ctx context.Context, req *oracledatabasepb.GetGoldengateDeploymentVersionRequest, opts ...gax.CallOption) (*oracledatabasepb.GoldengateDeploymentVersion, error) {
-	return c.internalClient.GetGoldengateDeploymentVersion(ctx, req, opts...)
-}
-
 // ListGoldengateDeploymentVersions lists GoldengateDeploymentVersions in a given project and location.
 func (c *Client) ListGoldengateDeploymentVersions(ctx context.Context, req *oracledatabasepb.ListGoldengateDeploymentVersionsRequest, opts ...gax.CallOption) *GoldengateDeploymentVersionIterator {
 	return c.internalClient.ListGoldengateDeploymentVersions(ctx, req, opts...)
-}
-
-// GetGoldengateDeploymentType gets details of a single GoldenGateDeploymentType.
-func (c *Client) GetGoldengateDeploymentType(ctx context.Context, req *oracledatabasepb.GetGoldengateDeploymentTypeRequest, opts ...gax.CallOption) (*oracledatabasepb.GoldengateDeploymentType, error) {
-	return c.internalClient.GetGoldengateDeploymentType(ctx, req, opts...)
 }
 
 // ListGoldengateDeploymentTypes lists GoldenGateDeploymentTypes in a given project and location.
@@ -2171,19 +2129,9 @@ func (c *Client) ListGoldengateDeploymentTypes(ctx context.Context, req *oracled
 	return c.internalClient.ListGoldengateDeploymentTypes(ctx, req, opts...)
 }
 
-// GetGoldengateDeploymentEnvironment gets details of a single GoldengateDeploymentEnvironment.
-func (c *Client) GetGoldengateDeploymentEnvironment(ctx context.Context, req *oracledatabasepb.GetGoldengateDeploymentEnvironmentRequest, opts ...gax.CallOption) (*oracledatabasepb.GoldengateDeploymentEnvironment, error) {
-	return c.internalClient.GetGoldengateDeploymentEnvironment(ctx, req, opts...)
-}
-
 // ListGoldengateDeploymentEnvironments lists GoldengateDeploymentEnvironments in a given project and location.
 func (c *Client) ListGoldengateDeploymentEnvironments(ctx context.Context, req *oracledatabasepb.ListGoldengateDeploymentEnvironmentsRequest, opts ...gax.CallOption) *GoldengateDeploymentEnvironmentIterator {
 	return c.internalClient.ListGoldengateDeploymentEnvironments(ctx, req, opts...)
-}
-
-// GetGoldengateConnectionType gets details of a single GoldengateConnectionType.
-func (c *Client) GetGoldengateConnectionType(ctx context.Context, req *oracledatabasepb.GetGoldengateConnectionTypeRequest, opts ...gax.CallOption) (*oracledatabasepb.GoldengateConnectionType, error) {
-	return c.internalClient.GetGoldengateConnectionType(ctx, req, opts...)
 }
 
 // ListGoldengateConnectionTypes lists GoldengateConnectionTypes in a given project and location.
@@ -2429,13 +2377,9 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.GetGoldengateConnection = append(client.CallOptions.GetGoldengateConnection, gax.WithClientMetrics(metrics))
 		client.CallOptions.CreateGoldengateConnection = append(client.CallOptions.CreateGoldengateConnection, gax.WithClientMetrics(metrics))
 		client.CallOptions.DeleteGoldengateConnection = append(client.CallOptions.DeleteGoldengateConnection, gax.WithClientMetrics(metrics))
-		client.CallOptions.GetGoldengateDeploymentVersion = append(client.CallOptions.GetGoldengateDeploymentVersion, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListGoldengateDeploymentVersions = append(client.CallOptions.ListGoldengateDeploymentVersions, gax.WithClientMetrics(metrics))
-		client.CallOptions.GetGoldengateDeploymentType = append(client.CallOptions.GetGoldengateDeploymentType, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListGoldengateDeploymentTypes = append(client.CallOptions.ListGoldengateDeploymentTypes, gax.WithClientMetrics(metrics))
-		client.CallOptions.GetGoldengateDeploymentEnvironment = append(client.CallOptions.GetGoldengateDeploymentEnvironment, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListGoldengateDeploymentEnvironments = append(client.CallOptions.ListGoldengateDeploymentEnvironments, gax.WithClientMetrics(metrics))
-		client.CallOptions.GetGoldengateConnectionType = append(client.CallOptions.GetGoldengateConnectionType, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListGoldengateConnectionTypes = append(client.CallOptions.ListGoldengateConnectionTypes, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListDbVersions = append(client.CallOptions.ListDbVersions, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListDatabaseCharacterSets = append(client.CallOptions.ListDatabaseCharacterSets, gax.WithClientMetrics(metrics))
@@ -2622,13 +2566,9 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.GetGoldengateConnection = append(callOpts.GetGoldengateConnection, gax.WithClientMetrics(metrics))
 		callOpts.CreateGoldengateConnection = append(callOpts.CreateGoldengateConnection, gax.WithClientMetrics(metrics))
 		callOpts.DeleteGoldengateConnection = append(callOpts.DeleteGoldengateConnection, gax.WithClientMetrics(metrics))
-		callOpts.GetGoldengateDeploymentVersion = append(callOpts.GetGoldengateDeploymentVersion, gax.WithClientMetrics(metrics))
 		callOpts.ListGoldengateDeploymentVersions = append(callOpts.ListGoldengateDeploymentVersions, gax.WithClientMetrics(metrics))
-		callOpts.GetGoldengateDeploymentType = append(callOpts.GetGoldengateDeploymentType, gax.WithClientMetrics(metrics))
 		callOpts.ListGoldengateDeploymentTypes = append(callOpts.ListGoldengateDeploymentTypes, gax.WithClientMetrics(metrics))
-		callOpts.GetGoldengateDeploymentEnvironment = append(callOpts.GetGoldengateDeploymentEnvironment, gax.WithClientMetrics(metrics))
 		callOpts.ListGoldengateDeploymentEnvironments = append(callOpts.ListGoldengateDeploymentEnvironments, gax.WithClientMetrics(metrics))
-		callOpts.GetGoldengateConnectionType = append(callOpts.GetGoldengateConnectionType, gax.WithClientMetrics(metrics))
 		callOpts.ListGoldengateConnectionTypes = append(callOpts.ListGoldengateConnectionTypes, gax.WithClientMetrics(metrics))
 		callOpts.ListDbVersions = append(callOpts.ListDbVersions, gax.WithClientMetrics(metrics))
 		callOpts.ListDatabaseCharacterSets = append(callOpts.ListDatabaseCharacterSets, gax.WithClientMetrics(metrics))
@@ -4951,30 +4891,6 @@ func (c *gRPCClient) DeleteGoldengateConnection(ctx context.Context, req *oracle
 	}, nil
 }
 
-func (c *gRPCClient) GetGoldengateDeploymentVersion(ctx context.Context, req *oracledatabasepb.GetGoldengateDeploymentVersionRequest, opts ...gax.CallOption) (*oracledatabasepb.GoldengateDeploymentVersion, error) {
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
-
-	hds = append(c.xGoogHeaders, hds...)
-	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
-	}
-	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/GetGoldengateDeploymentVersion")
-	}
-	opts = append((*c.CallOptions).GetGoldengateDeploymentVersion[0:len((*c.CallOptions).GetGoldengateDeploymentVersion):len((*c.CallOptions).GetGoldengateDeploymentVersion)], opts...)
-	var resp *oracledatabasepb.GoldengateDeploymentVersion
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = executeRPC(ctx, c.client.GetGoldengateDeploymentVersion, req, settings.GRPC, c.logger, "GetGoldengateDeploymentVersion")
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
 func (c *gRPCClient) ListGoldengateDeploymentVersions(ctx context.Context, req *oracledatabasepb.ListGoldengateDeploymentVersionsRequest, opts ...gax.CallOption) *GoldengateDeploymentVersionIterator {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
@@ -5025,30 +4941,6 @@ func (c *gRPCClient) ListGoldengateDeploymentVersions(ctx context.Context, req *
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
-}
-
-func (c *gRPCClient) GetGoldengateDeploymentType(ctx context.Context, req *oracledatabasepb.GetGoldengateDeploymentTypeRequest, opts ...gax.CallOption) (*oracledatabasepb.GoldengateDeploymentType, error) {
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
-
-	hds = append(c.xGoogHeaders, hds...)
-	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
-	}
-	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/GetGoldengateDeploymentType")
-	}
-	opts = append((*c.CallOptions).GetGoldengateDeploymentType[0:len((*c.CallOptions).GetGoldengateDeploymentType):len((*c.CallOptions).GetGoldengateDeploymentType)], opts...)
-	var resp *oracledatabasepb.GoldengateDeploymentType
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = executeRPC(ctx, c.client.GetGoldengateDeploymentType, req, settings.GRPC, c.logger, "GetGoldengateDeploymentType")
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
 }
 
 func (c *gRPCClient) ListGoldengateDeploymentTypes(ctx context.Context, req *oracledatabasepb.ListGoldengateDeploymentTypesRequest, opts ...gax.CallOption) *GoldengateDeploymentTypeIterator {
@@ -5103,30 +4995,6 @@ func (c *gRPCClient) ListGoldengateDeploymentTypes(ctx context.Context, req *ora
 	return it
 }
 
-func (c *gRPCClient) GetGoldengateDeploymentEnvironment(ctx context.Context, req *oracledatabasepb.GetGoldengateDeploymentEnvironmentRequest, opts ...gax.CallOption) (*oracledatabasepb.GoldengateDeploymentEnvironment, error) {
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
-
-	hds = append(c.xGoogHeaders, hds...)
-	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
-	}
-	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/GetGoldengateDeploymentEnvironment")
-	}
-	opts = append((*c.CallOptions).GetGoldengateDeploymentEnvironment[0:len((*c.CallOptions).GetGoldengateDeploymentEnvironment):len((*c.CallOptions).GetGoldengateDeploymentEnvironment)], opts...)
-	var resp *oracledatabasepb.GoldengateDeploymentEnvironment
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = executeRPC(ctx, c.client.GetGoldengateDeploymentEnvironment, req, settings.GRPC, c.logger, "GetGoldengateDeploymentEnvironment")
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
 func (c *gRPCClient) ListGoldengateDeploymentEnvironments(ctx context.Context, req *oracledatabasepb.ListGoldengateDeploymentEnvironmentsRequest, opts ...gax.CallOption) *GoldengateDeploymentEnvironmentIterator {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
@@ -5177,30 +5045,6 @@ func (c *gRPCClient) ListGoldengateDeploymentEnvironments(ctx context.Context, r
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
-}
-
-func (c *gRPCClient) GetGoldengateConnectionType(ctx context.Context, req *oracledatabasepb.GetGoldengateConnectionTypeRequest, opts ...gax.CallOption) (*oracledatabasepb.GoldengateConnectionType, error) {
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
-
-	hds = append(c.xGoogHeaders, hds...)
-	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
-	}
-	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/GetGoldengateConnectionType")
-	}
-	opts = append((*c.CallOptions).GetGoldengateConnectionType[0:len((*c.CallOptions).GetGoldengateConnectionType):len((*c.CallOptions).GetGoldengateConnectionType)], opts...)
-	var resp *oracledatabasepb.GoldengateConnectionType
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = executeRPC(ctx, c.client.GetGoldengateConnectionType, req, settings.GRPC, c.logger, "GetGoldengateConnectionType")
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
 }
 
 func (c *gRPCClient) ListGoldengateConnectionTypes(ctx context.Context, req *oracledatabasepb.ListGoldengateConnectionTypesRequest, opts ...gax.CallOption) *GoldengateConnectionTypeIterator {
@@ -10324,63 +10168,6 @@ func (c *restClient) DeleteGoldengateConnection(ctx context.Context, req *oracle
 	}, nil
 }
 
-// GetGoldengateDeploymentVersion gets details of a single GoldengateDeploymentVersion.
-func (c *restClient) GetGoldengateDeploymentVersion(ctx context.Context, req *oracledatabasepb.GetGoldengateDeploymentVersionRequest, opts ...gax.CallOption) (*oracledatabasepb.GoldengateDeploymentVersion, error) {
-	baseUrl, err := url.Parse(c.endpoint)
-	if err != nil {
-		return nil, err
-	}
-	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
-
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
-	// Build HTTP headers from client and context metadata.
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
-
-	hds = append(c.xGoogHeaders, hds...)
-	hds = append(hds, "Content-Type", "application/json")
-	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
-	}
-	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/GetGoldengateDeploymentVersion")
-		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/goldengateDeploymentVersions/*}")
-	}
-	opts = append((*c.CallOptions).GetGoldengateDeploymentVersion[0:len((*c.CallOptions).GetGoldengateDeploymentVersion):len((*c.CallOptions).GetGoldengateDeploymentVersion)], opts...)
-	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	resp := &oracledatabasepb.GoldengateDeploymentVersion{}
-	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		if settings.Path != "" {
-			baseUrl.Path = settings.Path
-		}
-		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
-		if err != nil {
-			return err
-		}
-		httpReq = httpReq.WithContext(ctx)
-		httpReq.Header = headers
-
-		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetGoldengateDeploymentVersion")
-		if err != nil {
-			return err
-		}
-
-		if err := unm.Unmarshal(buf, resp); err != nil {
-			return err
-		}
-
-		return nil
-	}, opts...)
-	if e != nil {
-		return nil, e
-	}
-	return resp, nil
-}
-
 // ListGoldengateDeploymentVersions lists GoldengateDeploymentVersions in a given project and location.
 func (c *restClient) ListGoldengateDeploymentVersions(ctx context.Context, req *oracledatabasepb.ListGoldengateDeploymentVersionsRequest, opts ...gax.CallOption) *GoldengateDeploymentVersionIterator {
 	it := &GoldengateDeploymentVersionIterator{}
@@ -10460,63 +10247,6 @@ func (c *restClient) ListGoldengateDeploymentVersions(ctx context.Context, req *
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
-}
-
-// GetGoldengateDeploymentType gets details of a single GoldenGateDeploymentType.
-func (c *restClient) GetGoldengateDeploymentType(ctx context.Context, req *oracledatabasepb.GetGoldengateDeploymentTypeRequest, opts ...gax.CallOption) (*oracledatabasepb.GoldengateDeploymentType, error) {
-	baseUrl, err := url.Parse(c.endpoint)
-	if err != nil {
-		return nil, err
-	}
-	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
-
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
-	// Build HTTP headers from client and context metadata.
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
-
-	hds = append(c.xGoogHeaders, hds...)
-	hds = append(hds, "Content-Type", "application/json")
-	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
-	}
-	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/GetGoldengateDeploymentType")
-		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/goldengateDeploymentTypes/*}")
-	}
-	opts = append((*c.CallOptions).GetGoldengateDeploymentType[0:len((*c.CallOptions).GetGoldengateDeploymentType):len((*c.CallOptions).GetGoldengateDeploymentType)], opts...)
-	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	resp := &oracledatabasepb.GoldengateDeploymentType{}
-	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		if settings.Path != "" {
-			baseUrl.Path = settings.Path
-		}
-		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
-		if err != nil {
-			return err
-		}
-		httpReq = httpReq.WithContext(ctx)
-		httpReq.Header = headers
-
-		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetGoldengateDeploymentType")
-		if err != nil {
-			return err
-		}
-
-		if err := unm.Unmarshal(buf, resp); err != nil {
-			return err
-		}
-
-		return nil
-	}, opts...)
-	if e != nil {
-		return nil, e
-	}
-	return resp, nil
 }
 
 // ListGoldengateDeploymentTypes lists GoldenGateDeploymentTypes in a given project and location.
@@ -10603,63 +10333,6 @@ func (c *restClient) ListGoldengateDeploymentTypes(ctx context.Context, req *ora
 	return it
 }
 
-// GetGoldengateDeploymentEnvironment gets details of a single GoldengateDeploymentEnvironment.
-func (c *restClient) GetGoldengateDeploymentEnvironment(ctx context.Context, req *oracledatabasepb.GetGoldengateDeploymentEnvironmentRequest, opts ...gax.CallOption) (*oracledatabasepb.GoldengateDeploymentEnvironment, error) {
-	baseUrl, err := url.Parse(c.endpoint)
-	if err != nil {
-		return nil, err
-	}
-	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
-
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
-	// Build HTTP headers from client and context metadata.
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
-
-	hds = append(c.xGoogHeaders, hds...)
-	hds = append(hds, "Content-Type", "application/json")
-	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
-	}
-	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/GetGoldengateDeploymentEnvironment")
-		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/goldengateDeploymentEnvironments/*}")
-	}
-	opts = append((*c.CallOptions).GetGoldengateDeploymentEnvironment[0:len((*c.CallOptions).GetGoldengateDeploymentEnvironment):len((*c.CallOptions).GetGoldengateDeploymentEnvironment)], opts...)
-	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	resp := &oracledatabasepb.GoldengateDeploymentEnvironment{}
-	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		if settings.Path != "" {
-			baseUrl.Path = settings.Path
-		}
-		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
-		if err != nil {
-			return err
-		}
-		httpReq = httpReq.WithContext(ctx)
-		httpReq.Header = headers
-
-		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetGoldengateDeploymentEnvironment")
-		if err != nil {
-			return err
-		}
-
-		if err := unm.Unmarshal(buf, resp); err != nil {
-			return err
-		}
-
-		return nil
-	}, opts...)
-	if e != nil {
-		return nil, e
-	}
-	return resp, nil
-}
-
 // ListGoldengateDeploymentEnvironments lists GoldengateDeploymentEnvironments in a given project and location.
 func (c *restClient) ListGoldengateDeploymentEnvironments(ctx context.Context, req *oracledatabasepb.ListGoldengateDeploymentEnvironmentsRequest, opts ...gax.CallOption) *GoldengateDeploymentEnvironmentIterator {
 	it := &GoldengateDeploymentEnvironmentIterator{}
@@ -10736,63 +10409,6 @@ func (c *restClient) ListGoldengateDeploymentEnvironments(ctx context.Context, r
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
-}
-
-// GetGoldengateConnectionType gets details of a single GoldengateConnectionType.
-func (c *restClient) GetGoldengateConnectionType(ctx context.Context, req *oracledatabasepb.GetGoldengateConnectionTypeRequest, opts ...gax.CallOption) (*oracledatabasepb.GoldengateConnectionType, error) {
-	baseUrl, err := url.Parse(c.endpoint)
-	if err != nil {
-		return nil, err
-	}
-	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
-
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
-	// Build HTTP headers from client and context metadata.
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
-
-	hds = append(c.xGoogHeaders, hds...)
-	hds = append(hds, "Content-Type", "application/json")
-	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
-	}
-	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/GetGoldengateConnectionType")
-		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/goldengateConnectionTypes/*}")
-	}
-	opts = append((*c.CallOptions).GetGoldengateConnectionType[0:len((*c.CallOptions).GetGoldengateConnectionType):len((*c.CallOptions).GetGoldengateConnectionType)], opts...)
-	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	resp := &oracledatabasepb.GoldengateConnectionType{}
-	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		if settings.Path != "" {
-			baseUrl.Path = settings.Path
-		}
-		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
-		if err != nil {
-			return err
-		}
-		httpReq = httpReq.WithContext(ctx)
-		httpReq.Header = headers
-
-		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetGoldengateConnectionType")
-		if err != nil {
-			return err
-		}
-
-		if err := unm.Unmarshal(buf, resp); err != nil {
-			return err
-		}
-
-		return nil
-	}, opts...)
-	if e != nil {
-		return nil, e
-	}
-	return resp, nil
 }
 
 // ListGoldengateConnectionTypes lists GoldengateConnectionTypes in a given project and location.

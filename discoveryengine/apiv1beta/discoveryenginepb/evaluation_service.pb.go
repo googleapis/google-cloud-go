@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -109,14 +109,14 @@ type ListEvaluationsRequest struct {
 	// location, regardless of whether or not this location exists, a
 	// `PERMISSION_DENIED` error is returned.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
-	// Maximum number of
+	// Optional. Maximum number of
 	// [Evaluation][google.cloud.discoveryengine.v1beta.Evaluation]s to return. If
 	// unspecified, defaults to 100. The maximum allowed value is 1000. Values
 	// above 1000 will be coerced to 1000.
 	//
 	// If this field is negative, an `INVALID_ARGUMENT` error is returned.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	// A page token
+	// Optional. A page token
 	// [ListEvaluationsResponse.next_page_token][google.cloud.discoveryengine.v1beta.ListEvaluationsResponse.next_page_token],
 	// received from a previous
 	// [EvaluationService.ListEvaluations][google.cloud.discoveryengine.v1beta.EvaluationService.ListEvaluations]
@@ -348,17 +348,19 @@ type ListEvaluationResultsRequest struct {
 	// Required. The evaluation resource name, such as
 	// `projects/{project}/locations/{location}/evaluations/{evaluation}`.
 	//
-	// If the caller does not have permission to list [EvaluationResult][]
-	// under this evaluation, regardless of whether or not this evaluation
-	// set exists, a `PERMISSION_DENIED` error is returned.
+	// If the caller does not have permission to list
+	// [ListEvaluationResultsResponse.EvaluationResult][google.cloud.discoveryengine.v1beta.ListEvaluationResultsResponse.EvaluationResult]
+	// under this evaluation, regardless of whether or not this evaluation set
+	// exists, a `PERMISSION_DENIED` error is returned.
 	Evaluation string `protobuf:"bytes,1,opt,name=evaluation,proto3" json:"evaluation,omitempty"`
-	// Maximum number of [EvaluationResult][] to return. If unspecified,
-	// defaults to 100. The maximum allowed value is 1000. Values above 1000 will
-	// be coerced to 1000.
+	// Optional. Maximum number of
+	// [ListEvaluationResultsResponse.EvaluationResult][google.cloud.discoveryengine.v1beta.ListEvaluationResultsResponse.EvaluationResult]
+	// to return. If unspecified, defaults to 100. The maximum allowed value is
+	// 1000. Values above 1000 will be coerced to 1000.
 	//
 	// If this field is negative, an `INVALID_ARGUMENT` error is returned.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	// A page token
+	// Optional. A page token
 	// [ListEvaluationResultsResponse.next_page_token][google.cloud.discoveryengine.v1beta.ListEvaluationResultsResponse.next_page_token],
 	// received from a previous
 	// [EvaluationService.ListEvaluationResults][google.cloud.discoveryengine.v1beta.EvaluationService.ListEvaluationResults]
@@ -429,8 +431,8 @@ func (x *ListEvaluationResultsRequest) GetPageToken() string {
 // method.
 type ListEvaluationResultsResponse struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// The
-	// [EvaluationResult][google.cloud.discoveryengine.v1beta.ListEvaluationResultsResponse.EvaluationResult]s.
+	// The evaluation results for the
+	// [SampleQuery][google.cloud.discoveryengine.v1beta.SampleQuery]s.
 	EvaluationResults []*ListEvaluationResultsResponse_EvaluationResult `protobuf:"bytes,1,rep,name=evaluation_results,json=evaluationResults,proto3" json:"evaluation_results,omitempty"`
 	// A token that can be sent as
 	// [ListEvaluationResultsRequest.page_token][google.cloud.discoveryengine.v1beta.ListEvaluationResultsRequest.page_token]
@@ -551,13 +553,13 @@ const file_google_cloud_discoveryengine_v1beta_evaluation_service_proto_rawDesc 
 	"<google/cloud/discoveryengine/v1beta/evaluation_service.proto\x12#google.cloud.discoveryengine.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a4google/cloud/discoveryengine/v1beta/evaluation.proto\x1a6google/cloud/discoveryengine/v1beta/sample_query.proto\x1a#google/longrunning/operations.proto\"]\n" +
 	"\x14GetEvaluationRequest\x12E\n" +
 	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
-	")discoveryengine.googleapis.com/EvaluationR\x04name\"\x9d\x01\n" +
+	")discoveryengine.googleapis.com/EvaluationR\x04name\"\xa7\x01\n" +
 	"\x16ListEvaluationsRequest\x12G\n" +
 	"\x06parent\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'discoveryengine.googleapis.com/LocationR\x06parent\x12\x1b\n" +
-	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
+	"'discoveryengine.googleapis.com/LocationR\x06parent\x12 \n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tR\tpageToken\"\x94\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x94\x01\n" +
 	"\x17ListEvaluationsResponse\x12Q\n" +
 	"\vevaluations\x18\x01 \x03(\v2/.google.cloud.discoveryengine.v1beta.EvaluationR\vevaluations\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xb8\x01\n" +
@@ -567,21 +569,21 @@ const file_google_cloud_discoveryengine_v1beta_evaluation_service_proto_rawDesc 
 	"\n" +
 	"evaluation\x18\x02 \x01(\v2/.google.cloud.discoveryengine.v1beta.EvaluationB\x03\xe0A\x02R\n" +
 	"evaluation\"\x1a\n" +
-	"\x18CreateEvaluationMetadata\"\xad\x01\n" +
+	"\x18CreateEvaluationMetadata\"\xb7\x01\n" +
 	"\x1cListEvaluationResultsRequest\x12Q\n" +
 	"\n" +
 	"evaluation\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
 	")discoveryengine.googleapis.com/EvaluationR\n" +
-	"evaluation\x12\x1b\n" +
-	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
+	"evaluation\x12 \n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tR\tpageToken\"\x9e\x03\n" +
+	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x9e\x03\n" +
 	"\x1dListEvaluationResultsResponse\x12\x82\x01\n" +
 	"\x12evaluation_results\x18\x01 \x03(\v2S.google.cloud.discoveryengine.v1beta.ListEvaluationResultsResponse.EvaluationResultR\x11evaluationResults\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x1a\xcf\x01\n" +
 	"\x10EvaluationResult\x12X\n" +
 	"\fsample_query\x18\x01 \x01(\v20.google.cloud.discoveryengine.v1beta.SampleQueryB\x03\xe0A\x03R\vsampleQuery\x12a\n" +
-	"\x0fquality_metrics\x18\x02 \x01(\v23.google.cloud.discoveryengine.v1beta.QualityMetricsB\x03\xe0A\x03R\x0equalityMetrics2\xbc\b\n" +
+	"\x0fquality_metrics\x18\x02 \x01(\v23.google.cloud.discoveryengine.v1beta.QualityMetricsB\x03\xe0A\x03R\x0equalityMetrics2\xfb\t\n" +
 	"\x11EvaluationService\x12\xbf\x01\n" +
 	"\rGetEvaluation\x129.google.cloud.discoveryengine.v1beta.GetEvaluationRequest\x1a/.google.cloud.discoveryengine.v1beta.Evaluation\"B\xdaA\x04name\x82\xd3\xe4\x93\x025\x123/v1beta/{name=projects/*/locations/*/evaluations/*}\x12\xd2\x01\n" +
 	"\x0fListEvaluations\x12;.google.cloud.discoveryengine.v1beta.ListEvaluationsRequest\x1a<.google.cloud.discoveryengine.v1beta.ListEvaluationsResponse\"D\xdaA\x06parent\x82\xd3\xe4\x93\x025\x123/v1beta/{parent=projects/*/locations/*}/evaluations\x12\xbe\x02\n" +
@@ -589,7 +591,7 @@ const file_google_cloud_discoveryengine_v1beta_evaluation_service_proto_rawDesc 
 	".google.cloud.discoveryengine.v1beta.Evaluation\x12<google.cloud.discoveryengine.v1beta.CreateEvaluationMetadata\xdaA\x11parent,evaluation\x82\xd3\xe4\x93\x02A:\n" +
 	"evaluation\"3/v1beta/{parent=projects/*/locations/*}/evaluations\x12\xfa\x01\n" +
 	"\x15ListEvaluationResults\x12A.google.cloud.discoveryengine.v1beta.ListEvaluationResultsRequest\x1aB.google.cloud.discoveryengine.v1beta.ListEvaluationResultsResponse\"Z\xdaA\n" +
-	"evaluation\x82\xd3\xe4\x93\x02G\x12E/v1beta/{evaluation=projects/*/locations/*/evaluations/*}:listResults\x1aR\xcaA\x1ediscoveryengine.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\x9d\x02\n" +
+	"evaluation\x82\xd3\xe4\x93\x02G\x12E/v1beta/{evaluation=projects/*/locations/*/evaluations/*}:listResults\x1a\x90\x02\xcaA\x1ediscoveryengine.googleapis.com\xd2A\xeb\x01https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/discoveryengine.assist.readwrite,https://www.googleapis.com/auth/discoveryengine.readwrite,https://www.googleapis.com/auth/discoveryengine.serving.readwriteB\x9d\x02\n" +
 	"'com.google.cloud.discoveryengine.v1betaB\x16EvaluationServiceProtoP\x01ZQcloud.google.com/go/discoveryengine/apiv1beta/discoveryenginepb;discoveryenginepb\xa2\x02\x0fDISCOVERYENGINE\xaa\x02#Google.Cloud.DiscoveryEngine.V1Beta\xca\x02#Google\\Cloud\\DiscoveryEngine\\V1beta\xea\x02&Google::Cloud::DiscoveryEngine::V1betab\x06proto3"
 
 var (

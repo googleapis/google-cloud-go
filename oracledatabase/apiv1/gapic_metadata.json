@@ -185,29 +185,9 @@
                 "GetGoldengateConnectionAssignment"
               ]
             },
-            "GetGoldengateConnectionType": {
-              "methods": [
-                "GetGoldengateConnectionType"
-              ]
-            },
             "GetGoldengateDeployment": {
               "methods": [
                 "GetGoldengateDeployment"
-              ]
-            },
-            "GetGoldengateDeploymentEnvironment": {
-              "methods": [
-                "GetGoldengateDeploymentEnvironment"
-              ]
-            },
-            "GetGoldengateDeploymentType": {
-              "methods": [
-                "GetGoldengateDeploymentType"
-              ]
-            },
-            "GetGoldengateDeploymentVersion": {
-              "methods": [
-                "GetGoldengateDeploymentVersion"
               ]
             },
             "GetLocation": {
@@ -625,29 +605,9 @@
                 "GetGoldengateConnectionAssignment"
               ]
             },
-            "GetGoldengateConnectionType": {
-              "methods": [
-                "GetGoldengateConnectionType"
-              ]
-            },
             "GetGoldengateDeployment": {
               "methods": [
                 "GetGoldengateDeployment"
-              ]
-            },
-            "GetGoldengateDeploymentEnvironment": {
-              "methods": [
-                "GetGoldengateDeploymentEnvironment"
-              ]
-            },
-            "GetGoldengateDeploymentType": {
-              "methods": [
-                "GetGoldengateDeploymentType"
-              ]
-            },
-            "GetGoldengateDeploymentVersion": {
-              "methods": [
-                "GetGoldengateDeploymentVersion"
               ]
             },
             "GetLocation": {

@@ -101,13 +101,9 @@ const (
 	OracleDatabase_GetGoldengateConnection_FullMethodName              = "/google.cloud.oracledatabase.v1.OracleDatabase/GetGoldengateConnection"
 	OracleDatabase_CreateGoldengateConnection_FullMethodName           = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateGoldengateConnection"
 	OracleDatabase_DeleteGoldengateConnection_FullMethodName           = "/google.cloud.oracledatabase.v1.OracleDatabase/DeleteGoldengateConnection"
-	OracleDatabase_GetGoldengateDeploymentVersion_FullMethodName       = "/google.cloud.oracledatabase.v1.OracleDatabase/GetGoldengateDeploymentVersion"
 	OracleDatabase_ListGoldengateDeploymentVersions_FullMethodName     = "/google.cloud.oracledatabase.v1.OracleDatabase/ListGoldengateDeploymentVersions"
-	OracleDatabase_GetGoldengateDeploymentType_FullMethodName          = "/google.cloud.oracledatabase.v1.OracleDatabase/GetGoldengateDeploymentType"
 	OracleDatabase_ListGoldengateDeploymentTypes_FullMethodName        = "/google.cloud.oracledatabase.v1.OracleDatabase/ListGoldengateDeploymentTypes"
-	OracleDatabase_GetGoldengateDeploymentEnvironment_FullMethodName   = "/google.cloud.oracledatabase.v1.OracleDatabase/GetGoldengateDeploymentEnvironment"
 	OracleDatabase_ListGoldengateDeploymentEnvironments_FullMethodName = "/google.cloud.oracledatabase.v1.OracleDatabase/ListGoldengateDeploymentEnvironments"
-	OracleDatabase_GetGoldengateConnectionType_FullMethodName          = "/google.cloud.oracledatabase.v1.OracleDatabase/GetGoldengateConnectionType"
 	OracleDatabase_ListGoldengateConnectionTypes_FullMethodName        = "/google.cloud.oracledatabase.v1.OracleDatabase/ListGoldengateConnectionTypes"
 	OracleDatabase_ListDbVersions_FullMethodName                       = "/google.cloud.oracledatabase.v1.OracleDatabase/ListDbVersions"
 	OracleDatabase_ListDatabaseCharacterSets_FullMethodName            = "/google.cloud.oracledatabase.v1.OracleDatabase/ListDatabaseCharacterSets"
@@ -264,20 +260,12 @@ type OracleDatabaseClient interface {
 	CreateGoldengateConnection(ctx context.Context, in *CreateGoldengateConnectionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes a single GoldengateConnection.
 	DeleteGoldengateConnection(ctx context.Context, in *DeleteGoldengateConnectionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
-	// Gets details of a single GoldengateDeploymentVersion.
-	GetGoldengateDeploymentVersion(ctx context.Context, in *GetGoldengateDeploymentVersionRequest, opts ...grpc.CallOption) (*GoldengateDeploymentVersion, error)
 	// Lists GoldengateDeploymentVersions in a given project and location.
 	ListGoldengateDeploymentVersions(ctx context.Context, in *ListGoldengateDeploymentVersionsRequest, opts ...grpc.CallOption) (*ListGoldengateDeploymentVersionsResponse, error)
-	// Gets details of a single GoldenGateDeploymentType.
-	GetGoldengateDeploymentType(ctx context.Context, in *GetGoldengateDeploymentTypeRequest, opts ...grpc.CallOption) (*GoldengateDeploymentType, error)
 	// Lists GoldenGateDeploymentTypes in a given project and location.
 	ListGoldengateDeploymentTypes(ctx context.Context, in *ListGoldengateDeploymentTypesRequest, opts ...grpc.CallOption) (*ListGoldengateDeploymentTypesResponse, error)
-	// Gets details of a single GoldengateDeploymentEnvironment.
-	GetGoldengateDeploymentEnvironment(ctx context.Context, in *GetGoldengateDeploymentEnvironmentRequest, opts ...grpc.CallOption) (*GoldengateDeploymentEnvironment, error)
 	// Lists GoldengateDeploymentEnvironments in a given project and location.
 	ListGoldengateDeploymentEnvironments(ctx context.Context, in *ListGoldengateDeploymentEnvironmentsRequest, opts ...grpc.CallOption) (*ListGoldengateDeploymentEnvironmentsResponse, error)
-	// Gets details of a single GoldengateConnectionType.
-	GetGoldengateConnectionType(ctx context.Context, in *GetGoldengateConnectionTypeRequest, opts ...grpc.CallOption) (*GoldengateConnectionType, error)
 	// Lists GoldengateConnectionTypes in a given project and location.
 	ListGoldengateConnectionTypes(ctx context.Context, in *ListGoldengateConnectionTypesRequest, opts ...grpc.CallOption) (*ListGoldengateConnectionTypesResponse, error)
 	// List DbVersions for the given project and location.
@@ -899,27 +887,9 @@ func (c *oracleDatabaseClient) DeleteGoldengateConnection(ctx context.Context, i
 	return out, nil
 }
 
-func (c *oracleDatabaseClient) GetGoldengateDeploymentVersion(ctx context.Context, in *GetGoldengateDeploymentVersionRequest, opts ...grpc.CallOption) (*GoldengateDeploymentVersion, error) {
-	out := new(GoldengateDeploymentVersion)
-	err := c.cc.Invoke(ctx, OracleDatabase_GetGoldengateDeploymentVersion_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *oracleDatabaseClient) ListGoldengateDeploymentVersions(ctx context.Context, in *ListGoldengateDeploymentVersionsRequest, opts ...grpc.CallOption) (*ListGoldengateDeploymentVersionsResponse, error) {
 	out := new(ListGoldengateDeploymentVersionsResponse)
 	err := c.cc.Invoke(ctx, OracleDatabase_ListGoldengateDeploymentVersions_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *oracleDatabaseClient) GetGoldengateDeploymentType(ctx context.Context, in *GetGoldengateDeploymentTypeRequest, opts ...grpc.CallOption) (*GoldengateDeploymentType, error) {
-	out := new(GoldengateDeploymentType)
-	err := c.cc.Invoke(ctx, OracleDatabase_GetGoldengateDeploymentType_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -935,27 +905,9 @@ func (c *oracleDatabaseClient) ListGoldengateDeploymentTypes(ctx context.Context
 	return out, nil
 }
 
-func (c *oracleDatabaseClient) GetGoldengateDeploymentEnvironment(ctx context.Context, in *GetGoldengateDeploymentEnvironmentRequest, opts ...grpc.CallOption) (*GoldengateDeploymentEnvironment, error) {
-	out := new(GoldengateDeploymentEnvironment)
-	err := c.cc.Invoke(ctx, OracleDatabase_GetGoldengateDeploymentEnvironment_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *oracleDatabaseClient) ListGoldengateDeploymentEnvironments(ctx context.Context, in *ListGoldengateDeploymentEnvironmentsRequest, opts ...grpc.CallOption) (*ListGoldengateDeploymentEnvironmentsResponse, error) {
 	out := new(ListGoldengateDeploymentEnvironmentsResponse)
 	err := c.cc.Invoke(ctx, OracleDatabase_ListGoldengateDeploymentEnvironments_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *oracleDatabaseClient) GetGoldengateConnectionType(ctx context.Context, in *GetGoldengateConnectionTypeRequest, opts ...grpc.CallOption) (*GoldengateConnectionType, error) {
-	out := new(GoldengateConnectionType)
-	err := c.cc.Invoke(ctx, OracleDatabase_GetGoldengateConnectionType_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1180,20 +1132,12 @@ type OracleDatabaseServer interface {
 	CreateGoldengateConnection(context.Context, *CreateGoldengateConnectionRequest) (*longrunningpb.Operation, error)
 	// Deletes a single GoldengateConnection.
 	DeleteGoldengateConnection(context.Context, *DeleteGoldengateConnectionRequest) (*longrunningpb.Operation, error)
-	// Gets details of a single GoldengateDeploymentVersion.
-	GetGoldengateDeploymentVersion(context.Context, *GetGoldengateDeploymentVersionRequest) (*GoldengateDeploymentVersion, error)
 	// Lists GoldengateDeploymentVersions in a given project and location.
 	ListGoldengateDeploymentVersions(context.Context, *ListGoldengateDeploymentVersionsRequest) (*ListGoldengateDeploymentVersionsResponse, error)
-	// Gets details of a single GoldenGateDeploymentType.
-	GetGoldengateDeploymentType(context.Context, *GetGoldengateDeploymentTypeRequest) (*GoldengateDeploymentType, error)
 	// Lists GoldenGateDeploymentTypes in a given project and location.
 	ListGoldengateDeploymentTypes(context.Context, *ListGoldengateDeploymentTypesRequest) (*ListGoldengateDeploymentTypesResponse, error)
-	// Gets details of a single GoldengateDeploymentEnvironment.
-	GetGoldengateDeploymentEnvironment(context.Context, *GetGoldengateDeploymentEnvironmentRequest) (*GoldengateDeploymentEnvironment, error)
 	// Lists GoldengateDeploymentEnvironments in a given project and location.
 	ListGoldengateDeploymentEnvironments(context.Context, *ListGoldengateDeploymentEnvironmentsRequest) (*ListGoldengateDeploymentEnvironmentsResponse, error)
-	// Gets details of a single GoldengateConnectionType.
-	GetGoldengateConnectionType(context.Context, *GetGoldengateConnectionTypeRequest) (*GoldengateConnectionType, error)
 	// Lists GoldengateConnectionTypes in a given project and location.
 	ListGoldengateConnectionTypes(context.Context, *ListGoldengateConnectionTypesRequest) (*ListGoldengateConnectionTypesResponse, error)
 	// List DbVersions for the given project and location.
@@ -1415,26 +1359,14 @@ func (UnimplementedOracleDatabaseServer) CreateGoldengateConnection(context.Cont
 func (UnimplementedOracleDatabaseServer) DeleteGoldengateConnection(context.Context, *DeleteGoldengateConnectionRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteGoldengateConnection not implemented")
 }
-func (UnimplementedOracleDatabaseServer) GetGoldengateDeploymentVersion(context.Context, *GetGoldengateDeploymentVersionRequest) (*GoldengateDeploymentVersion, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetGoldengateDeploymentVersion not implemented")
-}
 func (UnimplementedOracleDatabaseServer) ListGoldengateDeploymentVersions(context.Context, *ListGoldengateDeploymentVersionsRequest) (*ListGoldengateDeploymentVersionsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListGoldengateDeploymentVersions not implemented")
-}
-func (UnimplementedOracleDatabaseServer) GetGoldengateDeploymentType(context.Context, *GetGoldengateDeploymentTypeRequest) (*GoldengateDeploymentType, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetGoldengateDeploymentType not implemented")
 }
 func (UnimplementedOracleDatabaseServer) ListGoldengateDeploymentTypes(context.Context, *ListGoldengateDeploymentTypesRequest) (*ListGoldengateDeploymentTypesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListGoldengateDeploymentTypes not implemented")
 }
-func (UnimplementedOracleDatabaseServer) GetGoldengateDeploymentEnvironment(context.Context, *GetGoldengateDeploymentEnvironmentRequest) (*GoldengateDeploymentEnvironment, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetGoldengateDeploymentEnvironment not implemented")
-}
 func (UnimplementedOracleDatabaseServer) ListGoldengateDeploymentEnvironments(context.Context, *ListGoldengateDeploymentEnvironmentsRequest) (*ListGoldengateDeploymentEnvironmentsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListGoldengateDeploymentEnvironments not implemented")
-}
-func (UnimplementedOracleDatabaseServer) GetGoldengateConnectionType(context.Context, *GetGoldengateConnectionTypeRequest) (*GoldengateConnectionType, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetGoldengateConnectionType not implemented")
 }
 func (UnimplementedOracleDatabaseServer) ListGoldengateConnectionTypes(context.Context, *ListGoldengateConnectionTypesRequest) (*ListGoldengateConnectionTypesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListGoldengateConnectionTypes not implemented")
@@ -2660,24 +2592,6 @@ func _OracleDatabase_DeleteGoldengateConnection_Handler(srv interface{}, ctx con
 	return interceptor(ctx, in, info, handler)
 }
 
-func _OracleDatabase_GetGoldengateDeploymentVersion_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetGoldengateDeploymentVersionRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(OracleDatabaseServer).GetGoldengateDeploymentVersion(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: OracleDatabase_GetGoldengateDeploymentVersion_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(OracleDatabaseServer).GetGoldengateDeploymentVersion(ctx, req.(*GetGoldengateDeploymentVersionRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _OracleDatabase_ListGoldengateDeploymentVersions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ListGoldengateDeploymentVersionsRequest)
 	if err := dec(in); err != nil {
@@ -2692,24 +2606,6 @@ func _OracleDatabase_ListGoldengateDeploymentVersions_Handler(srv interface{}, c
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(OracleDatabaseServer).ListGoldengateDeploymentVersions(ctx, req.(*ListGoldengateDeploymentVersionsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _OracleDatabase_GetGoldengateDeploymentType_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetGoldengateDeploymentTypeRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(OracleDatabaseServer).GetGoldengateDeploymentType(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: OracleDatabase_GetGoldengateDeploymentType_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(OracleDatabaseServer).GetGoldengateDeploymentType(ctx, req.(*GetGoldengateDeploymentTypeRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -2732,24 +2628,6 @@ func _OracleDatabase_ListGoldengateDeploymentTypes_Handler(srv interface{}, ctx 
 	return interceptor(ctx, in, info, handler)
 }
 
-func _OracleDatabase_GetGoldengateDeploymentEnvironment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetGoldengateDeploymentEnvironmentRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(OracleDatabaseServer).GetGoldengateDeploymentEnvironment(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: OracleDatabase_GetGoldengateDeploymentEnvironment_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(OracleDatabaseServer).GetGoldengateDeploymentEnvironment(ctx, req.(*GetGoldengateDeploymentEnvironmentRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _OracleDatabase_ListGoldengateDeploymentEnvironments_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ListGoldengateDeploymentEnvironmentsRequest)
 	if err := dec(in); err != nil {
@@ -2764,24 +2642,6 @@ func _OracleDatabase_ListGoldengateDeploymentEnvironments_Handler(srv interface{
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(OracleDatabaseServer).ListGoldengateDeploymentEnvironments(ctx, req.(*ListGoldengateDeploymentEnvironmentsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _OracleDatabase_GetGoldengateConnectionType_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetGoldengateConnectionTypeRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(OracleDatabaseServer).GetGoldengateConnectionType(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: OracleDatabase_GetGoldengateConnectionType_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(OracleDatabaseServer).GetGoldengateConnectionType(ctx, req.(*GetGoldengateConnectionTypeRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -3202,32 +3062,16 @@ var OracleDatabase_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _OracleDatabase_DeleteGoldengateConnection_Handler,
 		},
 		{
-			MethodName: "GetGoldengateDeploymentVersion",
-			Handler:    _OracleDatabase_GetGoldengateDeploymentVersion_Handler,
-		},
-		{
 			MethodName: "ListGoldengateDeploymentVersions",
 			Handler:    _OracleDatabase_ListGoldengateDeploymentVersions_Handler,
-		},
-		{
-			MethodName: "GetGoldengateDeploymentType",
-			Handler:    _OracleDatabase_GetGoldengateDeploymentType_Handler,
 		},
 		{
 			MethodName: "ListGoldengateDeploymentTypes",
 			Handler:    _OracleDatabase_ListGoldengateDeploymentTypes_Handler,
 		},
 		{
-			MethodName: "GetGoldengateDeploymentEnvironment",
-			Handler:    _OracleDatabase_GetGoldengateDeploymentEnvironment_Handler,
-		},
-		{
 			MethodName: "ListGoldengateDeploymentEnvironments",
 			Handler:    _OracleDatabase_ListGoldengateDeploymentEnvironments_Handler,
-		},
-		{
-			MethodName: "GetGoldengateConnectionType",
-			Handler:    _OracleDatabase_GetGoldengateConnectionType_Handler,
 		},
 		{
 			MethodName: "ListGoldengateConnectionTypes",

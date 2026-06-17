@@ -3471,7 +3471,7 @@ const file_google_cloud_oracledatabase_v1_oracledatabase_proto_rawDesc = "" +
 	",oracledatabase.googleapis.com/ExadbVmClusterR\x04name\x12*\n" +
 	"\n" +
 	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12!\n" +
-	"\thostnames\x18\x04 \x03(\tB\x03\xe0A\x02R\thostnames2\x91\x9d\x01\n" +
+	"\thostnames\x18\x04 \x03(\tB\x03\xe0A\x02R\thostnames2\xb9\x95\x01\n" +
 	"\x0eOracleDatabase\x12\x84\x02\n" +
 	"\x1fListCloudExadataInfrastructures\x12F.google.cloud.oracledatabase.v1.ListCloudExadataInfrastructuresRequest\x1aG.google.cloud.oracledatabase.v1.ListCloudExadataInfrastructuresResponse\"P\xdaA\x06parent\x82\xd3\xe4\x93\x02A\x12?/v1/{parent=projects/*/locations/*}/cloudExadataInfrastructures\x12\xf1\x01\n" +
 	"\x1dGetCloudExadataInfrastructure\x12D.google.cloud.oracledatabase.v1.GetCloudExadataInfrastructureRequest\x1a:.google.cloud.oracledatabase.v1.CloudExadataInfrastructure\"N\xdaA\x04name\x82\xd3\xe4\x93\x02A\x12?/v1/{name=projects/*/locations/*/cloudExadataInfrastructures/*}\x12\xea\x02\n" +
@@ -3571,14 +3571,10 @@ const file_google_cloud_oracledatabase_v1_oracledatabase_proto_rawDesc = "" +
 	"\x1aCreateGoldengateConnection\x12A.google.cloud.oracledatabase.v1.CreateGoldengateConnectionRequest\x1a\x1d.google.longrunning.Operation\"\xbc\x01\xcaA)\n" +
 	"\x14GoldengateConnection\x12\x11OperationMetadata\xdaA5parent,goldengate_connection,goldengate_connection_id\x82\xd3\xe4\x93\x02R:\x15goldengate_connection\"9/v1/{parent=projects/*/locations/*}/goldengateConnections\x12\xf5\x01\n" +
 	"\x1aDeleteGoldengateConnection\x12A.google.cloud.oracledatabase.v1.DeleteGoldengateConnectionRequest\x1a\x1d.google.longrunning.Operation\"u\xcaA*\n" +
-	"\x15google.protobuf.Empty\x12\x11OperationMetadata\xdaA\x04name\x82\xd3\xe4\x93\x02;*9/v1/{name=projects/*/locations/*/goldengateConnections/*}\x12\xf5\x01\n" +
-	"\x1eGetGoldengateDeploymentVersion\x12E.google.cloud.oracledatabase.v1.GetGoldengateDeploymentVersionRequest\x1a;.google.cloud.oracledatabase.v1.GoldengateDeploymentVersion\"O\xdaA\x04name\x82\xd3\xe4\x93\x02B\x12@/v1/{name=projects/*/locations/*/goldengateDeploymentVersions/*}\x12\x88\x02\n" +
-	" ListGoldengateDeploymentVersions\x12G.google.cloud.oracledatabase.v1.ListGoldengateDeploymentVersionsRequest\x1aH.google.cloud.oracledatabase.v1.ListGoldengateDeploymentVersionsResponse\"Q\xdaA\x06parent\x82\xd3\xe4\x93\x02B\x12@/v1/{parent=projects/*/locations/*}/goldengateDeploymentVersions\x12\xe9\x01\n" +
-	"\x1bGetGoldengateDeploymentType\x12B.google.cloud.oracledatabase.v1.GetGoldengateDeploymentTypeRequest\x1a8.google.cloud.oracledatabase.v1.GoldengateDeploymentType\"L\xdaA\x04name\x82\xd3\xe4\x93\x02?\x12=/v1/{name=projects/*/locations/*/goldengateDeploymentTypes/*}\x12\xfc\x01\n" +
-	"\x1dListGoldengateDeploymentTypes\x12D.google.cloud.oracledatabase.v1.ListGoldengateDeploymentTypesRequest\x1aE.google.cloud.oracledatabase.v1.ListGoldengateDeploymentTypesResponse\"N\xdaA\x06parent\x82\xd3\xe4\x93\x02?\x12=/v1/{parent=projects/*/locations/*}/goldengateDeploymentTypes\x12\x85\x02\n" +
-	"\"GetGoldengateDeploymentEnvironment\x12I.google.cloud.oracledatabase.v1.GetGoldengateDeploymentEnvironmentRequest\x1a?.google.cloud.oracledatabase.v1.GoldengateDeploymentEnvironment\"S\xdaA\x04name\x82\xd3\xe4\x93\x02F\x12D/v1/{name=projects/*/locations/*/goldengateDeploymentEnvironments/*}\x12\x98\x02\n" +
-	"$ListGoldengateDeploymentEnvironments\x12K.google.cloud.oracledatabase.v1.ListGoldengateDeploymentEnvironmentsRequest\x1aL.google.cloud.oracledatabase.v1.ListGoldengateDeploymentEnvironmentsResponse\"U\xdaA\x06parent\x82\xd3\xe4\x93\x02F\x12D/v1/{parent=projects/*/locations/*}/goldengateDeploymentEnvironments\x12\xe9\x01\n" +
-	"\x1bGetGoldengateConnectionType\x12B.google.cloud.oracledatabase.v1.GetGoldengateConnectionTypeRequest\x1a8.google.cloud.oracledatabase.v1.GoldengateConnectionType\"L\xdaA\x04name\x82\xd3\xe4\x93\x02?\x12=/v1/{name=projects/*/locations/*/goldengateConnectionTypes/*}\x12\xfc\x01\n" +
+	"\x15google.protobuf.Empty\x12\x11OperationMetadata\xdaA\x04name\x82\xd3\xe4\x93\x02;*9/v1/{name=projects/*/locations/*/goldengateConnections/*}\x12\x88\x02\n" +
+	" ListGoldengateDeploymentVersions\x12G.google.cloud.oracledatabase.v1.ListGoldengateDeploymentVersionsRequest\x1aH.google.cloud.oracledatabase.v1.ListGoldengateDeploymentVersionsResponse\"Q\xdaA\x06parent\x82\xd3\xe4\x93\x02B\x12@/v1/{parent=projects/*/locations/*}/goldengateDeploymentVersions\x12\xfc\x01\n" +
+	"\x1dListGoldengateDeploymentTypes\x12D.google.cloud.oracledatabase.v1.ListGoldengateDeploymentTypesRequest\x1aE.google.cloud.oracledatabase.v1.ListGoldengateDeploymentTypesResponse\"N\xdaA\x06parent\x82\xd3\xe4\x93\x02?\x12=/v1/{parent=projects/*/locations/*}/goldengateDeploymentTypes\x12\x98\x02\n" +
+	"$ListGoldengateDeploymentEnvironments\x12K.google.cloud.oracledatabase.v1.ListGoldengateDeploymentEnvironmentsRequest\x1aL.google.cloud.oracledatabase.v1.ListGoldengateDeploymentEnvironmentsResponse\"U\xdaA\x06parent\x82\xd3\xe4\x93\x02F\x12D/v1/{parent=projects/*/locations/*}/goldengateDeploymentEnvironments\x12\xfc\x01\n" +
 	"\x1dListGoldengateConnectionTypes\x12D.google.cloud.oracledatabase.v1.ListGoldengateConnectionTypesRequest\x1aE.google.cloud.oracledatabase.v1.ListGoldengateConnectionTypesResponse\"N\xdaA\x06parent\x82\xd3\xe4\x93\x02?\x12=/v1/{parent=projects/*/locations/*}/goldengateConnectionTypes\x12\xc0\x01\n" +
 	"\x0eListDbVersions\x125.google.cloud.oracledatabase.v1.ListDbVersionsRequest\x1a6.google.cloud.oracledatabase.v1.ListDbVersionsResponse\"?\xdaA\x06parent\x82\xd3\xe4\x93\x020\x12./v1/{parent=projects/*/locations/*}/dbVersions\x12\xec\x01\n" +
 	"\x19ListDatabaseCharacterSets\x12@.google.cloud.oracledatabase.v1.ListDatabaseCharacterSetsRequest\x1aA.google.cloud.oracledatabase.v1.ListDatabaseCharacterSetsResponse\"J\xdaA\x06parent\x82\xd3\xe4\x93\x02;\x129/v1/{parent=projects/*/locations/*}/databaseCharacterSets\x12\x94\x02\n" +
@@ -3703,53 +3699,45 @@ var file_google_cloud_oracledatabase_v1_oracledatabase_proto_goTypes = []any{
 	(*GetGoldengateConnectionRequest)(nil),               // 92: google.cloud.oracledatabase.v1.GetGoldengateConnectionRequest
 	(*CreateGoldengateConnectionRequest)(nil),            // 93: google.cloud.oracledatabase.v1.CreateGoldengateConnectionRequest
 	(*DeleteGoldengateConnectionRequest)(nil),            // 94: google.cloud.oracledatabase.v1.DeleteGoldengateConnectionRequest
-	(*GetGoldengateDeploymentVersionRequest)(nil),        // 95: google.cloud.oracledatabase.v1.GetGoldengateDeploymentVersionRequest
-	(*ListGoldengateDeploymentVersionsRequest)(nil),      // 96: google.cloud.oracledatabase.v1.ListGoldengateDeploymentVersionsRequest
-	(*GetGoldengateDeploymentTypeRequest)(nil),           // 97: google.cloud.oracledatabase.v1.GetGoldengateDeploymentTypeRequest
-	(*ListGoldengateDeploymentTypesRequest)(nil),         // 98: google.cloud.oracledatabase.v1.ListGoldengateDeploymentTypesRequest
-	(*GetGoldengateDeploymentEnvironmentRequest)(nil),    // 99: google.cloud.oracledatabase.v1.GetGoldengateDeploymentEnvironmentRequest
-	(*ListGoldengateDeploymentEnvironmentsRequest)(nil),  // 100: google.cloud.oracledatabase.v1.ListGoldengateDeploymentEnvironmentsRequest
-	(*GetGoldengateConnectionTypeRequest)(nil),           // 101: google.cloud.oracledatabase.v1.GetGoldengateConnectionTypeRequest
-	(*ListGoldengateConnectionTypesRequest)(nil),         // 102: google.cloud.oracledatabase.v1.ListGoldengateConnectionTypesRequest
-	(*ListDbVersionsRequest)(nil),                        // 103: google.cloud.oracledatabase.v1.ListDbVersionsRequest
-	(*ListDatabaseCharacterSetsRequest)(nil),             // 104: google.cloud.oracledatabase.v1.ListDatabaseCharacterSetsRequest
-	(*ListGoldengateConnectionAssignmentsRequest)(nil),   // 105: google.cloud.oracledatabase.v1.ListGoldengateConnectionAssignmentsRequest
-	(*GetGoldengateConnectionAssignmentRequest)(nil),     // 106: google.cloud.oracledatabase.v1.GetGoldengateConnectionAssignmentRequest
-	(*CreateGoldengateConnectionAssignmentRequest)(nil),  // 107: google.cloud.oracledatabase.v1.CreateGoldengateConnectionAssignmentRequest
-	(*DeleteGoldengateConnectionAssignmentRequest)(nil),  // 108: google.cloud.oracledatabase.v1.DeleteGoldengateConnectionAssignmentRequest
-	(*TestGoldengateConnectionAssignmentRequest)(nil),    // 109: google.cloud.oracledatabase.v1.TestGoldengateConnectionAssignmentRequest
-	(*longrunningpb.Operation)(nil),                      // 110: google.longrunning.Operation
-	(*ListMinorVersionsResponse)(nil),                    // 111: google.cloud.oracledatabase.v1.ListMinorVersionsResponse
-	(*ListOdbNetworksResponse)(nil),                      // 112: google.cloud.oracledatabase.v1.ListOdbNetworksResponse
-	(*OdbNetwork)(nil),                                   // 113: google.cloud.oracledatabase.v1.OdbNetwork
-	(*ListOdbSubnetsResponse)(nil),                       // 114: google.cloud.oracledatabase.v1.ListOdbSubnetsResponse
-	(*OdbSubnet)(nil),                                    // 115: google.cloud.oracledatabase.v1.OdbSubnet
-	(*ListExascaleDbStorageVaultsResponse)(nil),          // 116: google.cloud.oracledatabase.v1.ListExascaleDbStorageVaultsResponse
-	(*ExascaleDbStorageVault)(nil),                       // 117: google.cloud.oracledatabase.v1.ExascaleDbStorageVault
-	(*ListDbSystemInitialStorageSizesResponse)(nil),      // 118: google.cloud.oracledatabase.v1.ListDbSystemInitialStorageSizesResponse
-	(*ListDatabasesResponse)(nil),                        // 119: google.cloud.oracledatabase.v1.ListDatabasesResponse
-	(*Database)(nil),                                     // 120: google.cloud.oracledatabase.v1.Database
-	(*ListPluggableDatabasesResponse)(nil),               // 121: google.cloud.oracledatabase.v1.ListPluggableDatabasesResponse
-	(*PluggableDatabase)(nil),                            // 122: google.cloud.oracledatabase.v1.PluggableDatabase
-	(*ListDbSystemsResponse)(nil),                        // 123: google.cloud.oracledatabase.v1.ListDbSystemsResponse
-	(*DbSystem)(nil),                                     // 124: google.cloud.oracledatabase.v1.DbSystem
-	(*ListGoldengateDeploymentsResponse)(nil),            // 125: google.cloud.oracledatabase.v1.ListGoldengateDeploymentsResponse
-	(*GoldengateDeployment)(nil),                         // 126: google.cloud.oracledatabase.v1.GoldengateDeployment
-	(*ListGoldengateConnectionsResponse)(nil),            // 127: google.cloud.oracledatabase.v1.ListGoldengateConnectionsResponse
-	(*GoldengateConnection)(nil),                         // 128: google.cloud.oracledatabase.v1.GoldengateConnection
-	(*GoldengateDeploymentVersion)(nil),                  // 129: google.cloud.oracledatabase.v1.GoldengateDeploymentVersion
-	(*ListGoldengateDeploymentVersionsResponse)(nil),     // 130: google.cloud.oracledatabase.v1.ListGoldengateDeploymentVersionsResponse
-	(*GoldengateDeploymentType)(nil),                     // 131: google.cloud.oracledatabase.v1.GoldengateDeploymentType
-	(*ListGoldengateDeploymentTypesResponse)(nil),        // 132: google.cloud.oracledatabase.v1.ListGoldengateDeploymentTypesResponse
-	(*GoldengateDeploymentEnvironment)(nil),              // 133: google.cloud.oracledatabase.v1.GoldengateDeploymentEnvironment
-	(*ListGoldengateDeploymentEnvironmentsResponse)(nil), // 134: google.cloud.oracledatabase.v1.ListGoldengateDeploymentEnvironmentsResponse
-	(*GoldengateConnectionType)(nil),                     // 135: google.cloud.oracledatabase.v1.GoldengateConnectionType
-	(*ListGoldengateConnectionTypesResponse)(nil),        // 136: google.cloud.oracledatabase.v1.ListGoldengateConnectionTypesResponse
-	(*ListDbVersionsResponse)(nil),                       // 137: google.cloud.oracledatabase.v1.ListDbVersionsResponse
-	(*ListDatabaseCharacterSetsResponse)(nil),            // 138: google.cloud.oracledatabase.v1.ListDatabaseCharacterSetsResponse
-	(*ListGoldengateConnectionAssignmentsResponse)(nil),  // 139: google.cloud.oracledatabase.v1.ListGoldengateConnectionAssignmentsResponse
-	(*GoldengateConnectionAssignment)(nil),               // 140: google.cloud.oracledatabase.v1.GoldengateConnectionAssignment
-	(*TestGoldengateConnectionAssignmentResponse)(nil),   // 141: google.cloud.oracledatabase.v1.TestGoldengateConnectionAssignmentResponse
+	(*ListGoldengateDeploymentVersionsRequest)(nil),      // 95: google.cloud.oracledatabase.v1.ListGoldengateDeploymentVersionsRequest
+	(*ListGoldengateDeploymentTypesRequest)(nil),         // 96: google.cloud.oracledatabase.v1.ListGoldengateDeploymentTypesRequest
+	(*ListGoldengateDeploymentEnvironmentsRequest)(nil),  // 97: google.cloud.oracledatabase.v1.ListGoldengateDeploymentEnvironmentsRequest
+	(*ListGoldengateConnectionTypesRequest)(nil),         // 98: google.cloud.oracledatabase.v1.ListGoldengateConnectionTypesRequest
+	(*ListDbVersionsRequest)(nil),                        // 99: google.cloud.oracledatabase.v1.ListDbVersionsRequest
+	(*ListDatabaseCharacterSetsRequest)(nil),             // 100: google.cloud.oracledatabase.v1.ListDatabaseCharacterSetsRequest
+	(*ListGoldengateConnectionAssignmentsRequest)(nil),   // 101: google.cloud.oracledatabase.v1.ListGoldengateConnectionAssignmentsRequest
+	(*GetGoldengateConnectionAssignmentRequest)(nil),     // 102: google.cloud.oracledatabase.v1.GetGoldengateConnectionAssignmentRequest
+	(*CreateGoldengateConnectionAssignmentRequest)(nil),  // 103: google.cloud.oracledatabase.v1.CreateGoldengateConnectionAssignmentRequest
+	(*DeleteGoldengateConnectionAssignmentRequest)(nil),  // 104: google.cloud.oracledatabase.v1.DeleteGoldengateConnectionAssignmentRequest
+	(*TestGoldengateConnectionAssignmentRequest)(nil),    // 105: google.cloud.oracledatabase.v1.TestGoldengateConnectionAssignmentRequest
+	(*longrunningpb.Operation)(nil),                      // 106: google.longrunning.Operation
+	(*ListMinorVersionsResponse)(nil),                    // 107: google.cloud.oracledatabase.v1.ListMinorVersionsResponse
+	(*ListOdbNetworksResponse)(nil),                      // 108: google.cloud.oracledatabase.v1.ListOdbNetworksResponse
+	(*OdbNetwork)(nil),                                   // 109: google.cloud.oracledatabase.v1.OdbNetwork
+	(*ListOdbSubnetsResponse)(nil),                       // 110: google.cloud.oracledatabase.v1.ListOdbSubnetsResponse
+	(*OdbSubnet)(nil),                                    // 111: google.cloud.oracledatabase.v1.OdbSubnet
+	(*ListExascaleDbStorageVaultsResponse)(nil),          // 112: google.cloud.oracledatabase.v1.ListExascaleDbStorageVaultsResponse
+	(*ExascaleDbStorageVault)(nil),                       // 113: google.cloud.oracledatabase.v1.ExascaleDbStorageVault
+	(*ListDbSystemInitialStorageSizesResponse)(nil),      // 114: google.cloud.oracledatabase.v1.ListDbSystemInitialStorageSizesResponse
+	(*ListDatabasesResponse)(nil),                        // 115: google.cloud.oracledatabase.v1.ListDatabasesResponse
+	(*Database)(nil),                                     // 116: google.cloud.oracledatabase.v1.Database
+	(*ListPluggableDatabasesResponse)(nil),               // 117: google.cloud.oracledatabase.v1.ListPluggableDatabasesResponse
+	(*PluggableDatabase)(nil),                            // 118: google.cloud.oracledatabase.v1.PluggableDatabase
+	(*ListDbSystemsResponse)(nil),                        // 119: google.cloud.oracledatabase.v1.ListDbSystemsResponse
+	(*DbSystem)(nil),                                     // 120: google.cloud.oracledatabase.v1.DbSystem
+	(*ListGoldengateDeploymentsResponse)(nil),            // 121: google.cloud.oracledatabase.v1.ListGoldengateDeploymentsResponse
+	(*GoldengateDeployment)(nil),                         // 122: google.cloud.oracledatabase.v1.GoldengateDeployment
+	(*ListGoldengateConnectionsResponse)(nil),            // 123: google.cloud.oracledatabase.v1.ListGoldengateConnectionsResponse
+	(*GoldengateConnection)(nil),                         // 124: google.cloud.oracledatabase.v1.GoldengateConnection
+	(*ListGoldengateDeploymentVersionsResponse)(nil),     // 125: google.cloud.oracledatabase.v1.ListGoldengateDeploymentVersionsResponse
+	(*ListGoldengateDeploymentTypesResponse)(nil),        // 126: google.cloud.oracledatabase.v1.ListGoldengateDeploymentTypesResponse
+	(*ListGoldengateDeploymentEnvironmentsResponse)(nil), // 127: google.cloud.oracledatabase.v1.ListGoldengateDeploymentEnvironmentsResponse
+	(*ListGoldengateConnectionTypesResponse)(nil),        // 128: google.cloud.oracledatabase.v1.ListGoldengateConnectionTypesResponse
+	(*ListDbVersionsResponse)(nil),                       // 129: google.cloud.oracledatabase.v1.ListDbVersionsResponse
+	(*ListDatabaseCharacterSetsResponse)(nil),            // 130: google.cloud.oracledatabase.v1.ListDatabaseCharacterSetsResponse
+	(*ListGoldengateConnectionAssignmentsResponse)(nil),  // 131: google.cloud.oracledatabase.v1.ListGoldengateConnectionAssignmentsResponse
+	(*GoldengateConnectionAssignment)(nil),               // 132: google.cloud.oracledatabase.v1.GoldengateConnectionAssignment
+	(*TestGoldengateConnectionAssignmentResponse)(nil),   // 133: google.cloud.oracledatabase.v1.TestGoldengateConnectionAssignmentResponse
 }
 var file_google_cloud_oracledatabase_v1_oracledatabase_proto_depIdxs = []int32{
 	48,  // 0: google.cloud.oracledatabase.v1.ListCloudExadataInfrastructuresResponse.cloud_exadata_infrastructures:type_name -> google.cloud.oracledatabase.v1.CloudExadataInfrastructure
@@ -3842,104 +3830,96 @@ var file_google_cloud_oracledatabase_v1_oracledatabase_proto_depIdxs = []int32{
 	92,  // 87: google.cloud.oracledatabase.v1.OracleDatabase.GetGoldengateConnection:input_type -> google.cloud.oracledatabase.v1.GetGoldengateConnectionRequest
 	93,  // 88: google.cloud.oracledatabase.v1.OracleDatabase.CreateGoldengateConnection:input_type -> google.cloud.oracledatabase.v1.CreateGoldengateConnectionRequest
 	94,  // 89: google.cloud.oracledatabase.v1.OracleDatabase.DeleteGoldengateConnection:input_type -> google.cloud.oracledatabase.v1.DeleteGoldengateConnectionRequest
-	95,  // 90: google.cloud.oracledatabase.v1.OracleDatabase.GetGoldengateDeploymentVersion:input_type -> google.cloud.oracledatabase.v1.GetGoldengateDeploymentVersionRequest
-	96,  // 91: google.cloud.oracledatabase.v1.OracleDatabase.ListGoldengateDeploymentVersions:input_type -> google.cloud.oracledatabase.v1.ListGoldengateDeploymentVersionsRequest
-	97,  // 92: google.cloud.oracledatabase.v1.OracleDatabase.GetGoldengateDeploymentType:input_type -> google.cloud.oracledatabase.v1.GetGoldengateDeploymentTypeRequest
-	98,  // 93: google.cloud.oracledatabase.v1.OracleDatabase.ListGoldengateDeploymentTypes:input_type -> google.cloud.oracledatabase.v1.ListGoldengateDeploymentTypesRequest
-	99,  // 94: google.cloud.oracledatabase.v1.OracleDatabase.GetGoldengateDeploymentEnvironment:input_type -> google.cloud.oracledatabase.v1.GetGoldengateDeploymentEnvironmentRequest
-	100, // 95: google.cloud.oracledatabase.v1.OracleDatabase.ListGoldengateDeploymentEnvironments:input_type -> google.cloud.oracledatabase.v1.ListGoldengateDeploymentEnvironmentsRequest
-	101, // 96: google.cloud.oracledatabase.v1.OracleDatabase.GetGoldengateConnectionType:input_type -> google.cloud.oracledatabase.v1.GetGoldengateConnectionTypeRequest
-	102, // 97: google.cloud.oracledatabase.v1.OracleDatabase.ListGoldengateConnectionTypes:input_type -> google.cloud.oracledatabase.v1.ListGoldengateConnectionTypesRequest
-	103, // 98: google.cloud.oracledatabase.v1.OracleDatabase.ListDbVersions:input_type -> google.cloud.oracledatabase.v1.ListDbVersionsRequest
-	104, // 99: google.cloud.oracledatabase.v1.OracleDatabase.ListDatabaseCharacterSets:input_type -> google.cloud.oracledatabase.v1.ListDatabaseCharacterSetsRequest
-	105, // 100: google.cloud.oracledatabase.v1.OracleDatabase.ListGoldengateConnectionAssignments:input_type -> google.cloud.oracledatabase.v1.ListGoldengateConnectionAssignmentsRequest
-	106, // 101: google.cloud.oracledatabase.v1.OracleDatabase.GetGoldengateConnectionAssignment:input_type -> google.cloud.oracledatabase.v1.GetGoldengateConnectionAssignmentRequest
-	107, // 102: google.cloud.oracledatabase.v1.OracleDatabase.CreateGoldengateConnectionAssignment:input_type -> google.cloud.oracledatabase.v1.CreateGoldengateConnectionAssignmentRequest
-	108, // 103: google.cloud.oracledatabase.v1.OracleDatabase.DeleteGoldengateConnectionAssignment:input_type -> google.cloud.oracledatabase.v1.DeleteGoldengateConnectionAssignmentRequest
-	109, // 104: google.cloud.oracledatabase.v1.OracleDatabase.TestGoldengateConnectionAssignment:input_type -> google.cloud.oracledatabase.v1.TestGoldengateConnectionAssignmentRequest
-	1,   // 105: google.cloud.oracledatabase.v1.OracleDatabase.ListCloudExadataInfrastructures:output_type -> google.cloud.oracledatabase.v1.ListCloudExadataInfrastructuresResponse
-	48,  // 106: google.cloud.oracledatabase.v1.OracleDatabase.GetCloudExadataInfrastructure:output_type -> google.cloud.oracledatabase.v1.CloudExadataInfrastructure
-	110, // 107: google.cloud.oracledatabase.v1.OracleDatabase.CreateCloudExadataInfrastructure:output_type -> google.longrunning.Operation
-	110, // 108: google.cloud.oracledatabase.v1.OracleDatabase.DeleteCloudExadataInfrastructure:output_type -> google.longrunning.Operation
-	6,   // 109: google.cloud.oracledatabase.v1.OracleDatabase.ListCloudVmClusters:output_type -> google.cloud.oracledatabase.v1.ListCloudVmClustersResponse
-	49,  // 110: google.cloud.oracledatabase.v1.OracleDatabase.GetCloudVmCluster:output_type -> google.cloud.oracledatabase.v1.CloudVmCluster
-	110, // 111: google.cloud.oracledatabase.v1.OracleDatabase.CreateCloudVmCluster:output_type -> google.longrunning.Operation
-	110, // 112: google.cloud.oracledatabase.v1.OracleDatabase.DeleteCloudVmCluster:output_type -> google.longrunning.Operation
-	11,  // 113: google.cloud.oracledatabase.v1.OracleDatabase.ListEntitlements:output_type -> google.cloud.oracledatabase.v1.ListEntitlementsResponse
-	13,  // 114: google.cloud.oracledatabase.v1.OracleDatabase.ListDbServers:output_type -> google.cloud.oracledatabase.v1.ListDbServersResponse
-	15,  // 115: google.cloud.oracledatabase.v1.OracleDatabase.ListDbNodes:output_type -> google.cloud.oracledatabase.v1.ListDbNodesResponse
-	17,  // 116: google.cloud.oracledatabase.v1.OracleDatabase.ListGiVersions:output_type -> google.cloud.oracledatabase.v1.ListGiVersionsResponse
-	111, // 117: google.cloud.oracledatabase.v1.OracleDatabase.ListMinorVersions:output_type -> google.cloud.oracledatabase.v1.ListMinorVersionsResponse
-	19,  // 118: google.cloud.oracledatabase.v1.OracleDatabase.ListDbSystemShapes:output_type -> google.cloud.oracledatabase.v1.ListDbSystemShapesResponse
-	22,  // 119: google.cloud.oracledatabase.v1.OracleDatabase.ListAutonomousDatabases:output_type -> google.cloud.oracledatabase.v1.ListAutonomousDatabasesResponse
-	56,  // 120: google.cloud.oracledatabase.v1.OracleDatabase.GetAutonomousDatabase:output_type -> google.cloud.oracledatabase.v1.AutonomousDatabase
-	110, // 121: google.cloud.oracledatabase.v1.OracleDatabase.CreateAutonomousDatabase:output_type -> google.longrunning.Operation
-	110, // 122: google.cloud.oracledatabase.v1.OracleDatabase.UpdateAutonomousDatabase:output_type -> google.longrunning.Operation
-	110, // 123: google.cloud.oracledatabase.v1.OracleDatabase.DeleteAutonomousDatabase:output_type -> google.longrunning.Operation
-	110, // 124: google.cloud.oracledatabase.v1.OracleDatabase.RestoreAutonomousDatabase:output_type -> google.longrunning.Operation
-	34,  // 125: google.cloud.oracledatabase.v1.OracleDatabase.GenerateAutonomousDatabaseWallet:output_type -> google.cloud.oracledatabase.v1.GenerateAutonomousDatabaseWalletResponse
-	36,  // 126: google.cloud.oracledatabase.v1.OracleDatabase.ListAutonomousDbVersions:output_type -> google.cloud.oracledatabase.v1.ListAutonomousDbVersionsResponse
-	38,  // 127: google.cloud.oracledatabase.v1.OracleDatabase.ListAutonomousDatabaseCharacterSets:output_type -> google.cloud.oracledatabase.v1.ListAutonomousDatabaseCharacterSetsResponse
-	40,  // 128: google.cloud.oracledatabase.v1.OracleDatabase.ListAutonomousDatabaseBackups:output_type -> google.cloud.oracledatabase.v1.ListAutonomousDatabaseBackupsResponse
-	110, // 129: google.cloud.oracledatabase.v1.OracleDatabase.StopAutonomousDatabase:output_type -> google.longrunning.Operation
-	110, // 130: google.cloud.oracledatabase.v1.OracleDatabase.StartAutonomousDatabase:output_type -> google.longrunning.Operation
-	110, // 131: google.cloud.oracledatabase.v1.OracleDatabase.RestartAutonomousDatabase:output_type -> google.longrunning.Operation
-	110, // 132: google.cloud.oracledatabase.v1.OracleDatabase.SwitchoverAutonomousDatabase:output_type -> google.longrunning.Operation
-	110, // 133: google.cloud.oracledatabase.v1.OracleDatabase.FailoverAutonomousDatabase:output_type -> google.longrunning.Operation
-	112, // 134: google.cloud.oracledatabase.v1.OracleDatabase.ListOdbNetworks:output_type -> google.cloud.oracledatabase.v1.ListOdbNetworksResponse
-	113, // 135: google.cloud.oracledatabase.v1.OracleDatabase.GetOdbNetwork:output_type -> google.cloud.oracledatabase.v1.OdbNetwork
-	110, // 136: google.cloud.oracledatabase.v1.OracleDatabase.CreateOdbNetwork:output_type -> google.longrunning.Operation
-	110, // 137: google.cloud.oracledatabase.v1.OracleDatabase.DeleteOdbNetwork:output_type -> google.longrunning.Operation
-	114, // 138: google.cloud.oracledatabase.v1.OracleDatabase.ListOdbSubnets:output_type -> google.cloud.oracledatabase.v1.ListOdbSubnetsResponse
-	115, // 139: google.cloud.oracledatabase.v1.OracleDatabase.GetOdbSubnet:output_type -> google.cloud.oracledatabase.v1.OdbSubnet
-	110, // 140: google.cloud.oracledatabase.v1.OracleDatabase.CreateOdbSubnet:output_type -> google.longrunning.Operation
-	110, // 141: google.cloud.oracledatabase.v1.OracleDatabase.DeleteOdbSubnet:output_type -> google.longrunning.Operation
-	45,  // 142: google.cloud.oracledatabase.v1.OracleDatabase.ListExadbVmClusters:output_type -> google.cloud.oracledatabase.v1.ListExadbVmClustersResponse
-	62,  // 143: google.cloud.oracledatabase.v1.OracleDatabase.GetExadbVmCluster:output_type -> google.cloud.oracledatabase.v1.ExadbVmCluster
-	110, // 144: google.cloud.oracledatabase.v1.OracleDatabase.CreateExadbVmCluster:output_type -> google.longrunning.Operation
-	110, // 145: google.cloud.oracledatabase.v1.OracleDatabase.DeleteExadbVmCluster:output_type -> google.longrunning.Operation
-	110, // 146: google.cloud.oracledatabase.v1.OracleDatabase.UpdateExadbVmCluster:output_type -> google.longrunning.Operation
-	110, // 147: google.cloud.oracledatabase.v1.OracleDatabase.RemoveVirtualMachineExadbVmCluster:output_type -> google.longrunning.Operation
-	116, // 148: google.cloud.oracledatabase.v1.OracleDatabase.ListExascaleDbStorageVaults:output_type -> google.cloud.oracledatabase.v1.ListExascaleDbStorageVaultsResponse
-	117, // 149: google.cloud.oracledatabase.v1.OracleDatabase.GetExascaleDbStorageVault:output_type -> google.cloud.oracledatabase.v1.ExascaleDbStorageVault
-	110, // 150: google.cloud.oracledatabase.v1.OracleDatabase.CreateExascaleDbStorageVault:output_type -> google.longrunning.Operation
-	110, // 151: google.cloud.oracledatabase.v1.OracleDatabase.DeleteExascaleDbStorageVault:output_type -> google.longrunning.Operation
-	118, // 152: google.cloud.oracledatabase.v1.OracleDatabase.ListDbSystemInitialStorageSizes:output_type -> google.cloud.oracledatabase.v1.ListDbSystemInitialStorageSizesResponse
-	119, // 153: google.cloud.oracledatabase.v1.OracleDatabase.ListDatabases:output_type -> google.cloud.oracledatabase.v1.ListDatabasesResponse
-	120, // 154: google.cloud.oracledatabase.v1.OracleDatabase.GetDatabase:output_type -> google.cloud.oracledatabase.v1.Database
-	121, // 155: google.cloud.oracledatabase.v1.OracleDatabase.ListPluggableDatabases:output_type -> google.cloud.oracledatabase.v1.ListPluggableDatabasesResponse
-	122, // 156: google.cloud.oracledatabase.v1.OracleDatabase.GetPluggableDatabase:output_type -> google.cloud.oracledatabase.v1.PluggableDatabase
-	123, // 157: google.cloud.oracledatabase.v1.OracleDatabase.ListDbSystems:output_type -> google.cloud.oracledatabase.v1.ListDbSystemsResponse
-	124, // 158: google.cloud.oracledatabase.v1.OracleDatabase.GetDbSystem:output_type -> google.cloud.oracledatabase.v1.DbSystem
-	110, // 159: google.cloud.oracledatabase.v1.OracleDatabase.CreateDbSystem:output_type -> google.longrunning.Operation
-	110, // 160: google.cloud.oracledatabase.v1.OracleDatabase.DeleteDbSystem:output_type -> google.longrunning.Operation
-	125, // 161: google.cloud.oracledatabase.v1.OracleDatabase.ListGoldengateDeployments:output_type -> google.cloud.oracledatabase.v1.ListGoldengateDeploymentsResponse
-	126, // 162: google.cloud.oracledatabase.v1.OracleDatabase.GetGoldengateDeployment:output_type -> google.cloud.oracledatabase.v1.GoldengateDeployment
-	110, // 163: google.cloud.oracledatabase.v1.OracleDatabase.CreateGoldengateDeployment:output_type -> google.longrunning.Operation
-	110, // 164: google.cloud.oracledatabase.v1.OracleDatabase.DeleteGoldengateDeployment:output_type -> google.longrunning.Operation
-	110, // 165: google.cloud.oracledatabase.v1.OracleDatabase.StopGoldengateDeployment:output_type -> google.longrunning.Operation
-	110, // 166: google.cloud.oracledatabase.v1.OracleDatabase.StartGoldengateDeployment:output_type -> google.longrunning.Operation
-	127, // 167: google.cloud.oracledatabase.v1.OracleDatabase.ListGoldengateConnections:output_type -> google.cloud.oracledatabase.v1.ListGoldengateConnectionsResponse
-	128, // 168: google.cloud.oracledatabase.v1.OracleDatabase.GetGoldengateConnection:output_type -> google.cloud.oracledatabase.v1.GoldengateConnection
-	110, // 169: google.cloud.oracledatabase.v1.OracleDatabase.CreateGoldengateConnection:output_type -> google.longrunning.Operation
-	110, // 170: google.cloud.oracledatabase.v1.OracleDatabase.DeleteGoldengateConnection:output_type -> google.longrunning.Operation
-	129, // 171: google.cloud.oracledatabase.v1.OracleDatabase.GetGoldengateDeploymentVersion:output_type -> google.cloud.oracledatabase.v1.GoldengateDeploymentVersion
-	130, // 172: google.cloud.oracledatabase.v1.OracleDatabase.ListGoldengateDeploymentVersions:output_type -> google.cloud.oracledatabase.v1.ListGoldengateDeploymentVersionsResponse
-	131, // 173: google.cloud.oracledatabase.v1.OracleDatabase.GetGoldengateDeploymentType:output_type -> google.cloud.oracledatabase.v1.GoldengateDeploymentType
-	132, // 174: google.cloud.oracledatabase.v1.OracleDatabase.ListGoldengateDeploymentTypes:output_type -> google.cloud.oracledatabase.v1.ListGoldengateDeploymentTypesResponse
-	133, // 175: google.cloud.oracledatabase.v1.OracleDatabase.GetGoldengateDeploymentEnvironment:output_type -> google.cloud.oracledatabase.v1.GoldengateDeploymentEnvironment
-	134, // 176: google.cloud.oracledatabase.v1.OracleDatabase.ListGoldengateDeploymentEnvironments:output_type -> google.cloud.oracledatabase.v1.ListGoldengateDeploymentEnvironmentsResponse
-	135, // 177: google.cloud.oracledatabase.v1.OracleDatabase.GetGoldengateConnectionType:output_type -> google.cloud.oracledatabase.v1.GoldengateConnectionType
-	136, // 178: google.cloud.oracledatabase.v1.OracleDatabase.ListGoldengateConnectionTypes:output_type -> google.cloud.oracledatabase.v1.ListGoldengateConnectionTypesResponse
-	137, // 179: google.cloud.oracledatabase.v1.OracleDatabase.ListDbVersions:output_type -> google.cloud.oracledatabase.v1.ListDbVersionsResponse
-	138, // 180: google.cloud.oracledatabase.v1.OracleDatabase.ListDatabaseCharacterSets:output_type -> google.cloud.oracledatabase.v1.ListDatabaseCharacterSetsResponse
-	139, // 181: google.cloud.oracledatabase.v1.OracleDatabase.ListGoldengateConnectionAssignments:output_type -> google.cloud.oracledatabase.v1.ListGoldengateConnectionAssignmentsResponse
-	140, // 182: google.cloud.oracledatabase.v1.OracleDatabase.GetGoldengateConnectionAssignment:output_type -> google.cloud.oracledatabase.v1.GoldengateConnectionAssignment
-	110, // 183: google.cloud.oracledatabase.v1.OracleDatabase.CreateGoldengateConnectionAssignment:output_type -> google.longrunning.Operation
-	110, // 184: google.cloud.oracledatabase.v1.OracleDatabase.DeleteGoldengateConnectionAssignment:output_type -> google.longrunning.Operation
-	141, // 185: google.cloud.oracledatabase.v1.OracleDatabase.TestGoldengateConnectionAssignment:output_type -> google.cloud.oracledatabase.v1.TestGoldengateConnectionAssignmentResponse
-	105, // [105:186] is the sub-list for method output_type
-	24,  // [24:105] is the sub-list for method input_type
+	95,  // 90: google.cloud.oracledatabase.v1.OracleDatabase.ListGoldengateDeploymentVersions:input_type -> google.cloud.oracledatabase.v1.ListGoldengateDeploymentVersionsRequest
+	96,  // 91: google.cloud.oracledatabase.v1.OracleDatabase.ListGoldengateDeploymentTypes:input_type -> google.cloud.oracledatabase.v1.ListGoldengateDeploymentTypesRequest
+	97,  // 92: google.cloud.oracledatabase.v1.OracleDatabase.ListGoldengateDeploymentEnvironments:input_type -> google.cloud.oracledatabase.v1.ListGoldengateDeploymentEnvironmentsRequest
+	98,  // 93: google.cloud.oracledatabase.v1.OracleDatabase.ListGoldengateConnectionTypes:input_type -> google.cloud.oracledatabase.v1.ListGoldengateConnectionTypesRequest
+	99,  // 94: google.cloud.oracledatabase.v1.OracleDatabase.ListDbVersions:input_type -> google.cloud.oracledatabase.v1.ListDbVersionsRequest
+	100, // 95: google.cloud.oracledatabase.v1.OracleDatabase.ListDatabaseCharacterSets:input_type -> google.cloud.oracledatabase.v1.ListDatabaseCharacterSetsRequest
+	101, // 96: google.cloud.oracledatabase.v1.OracleDatabase.ListGoldengateConnectionAssignments:input_type -> google.cloud.oracledatabase.v1.ListGoldengateConnectionAssignmentsRequest
+	102, // 97: google.cloud.oracledatabase.v1.OracleDatabase.GetGoldengateConnectionAssignment:input_type -> google.cloud.oracledatabase.v1.GetGoldengateConnectionAssignmentRequest
+	103, // 98: google.cloud.oracledatabase.v1.OracleDatabase.CreateGoldengateConnectionAssignment:input_type -> google.cloud.oracledatabase.v1.CreateGoldengateConnectionAssignmentRequest
+	104, // 99: google.cloud.oracledatabase.v1.OracleDatabase.DeleteGoldengateConnectionAssignment:input_type -> google.cloud.oracledatabase.v1.DeleteGoldengateConnectionAssignmentRequest
+	105, // 100: google.cloud.oracledatabase.v1.OracleDatabase.TestGoldengateConnectionAssignment:input_type -> google.cloud.oracledatabase.v1.TestGoldengateConnectionAssignmentRequest
+	1,   // 101: google.cloud.oracledatabase.v1.OracleDatabase.ListCloudExadataInfrastructures:output_type -> google.cloud.oracledatabase.v1.ListCloudExadataInfrastructuresResponse
+	48,  // 102: google.cloud.oracledatabase.v1.OracleDatabase.GetCloudExadataInfrastructure:output_type -> google.cloud.oracledatabase.v1.CloudExadataInfrastructure
+	106, // 103: google.cloud.oracledatabase.v1.OracleDatabase.CreateCloudExadataInfrastructure:output_type -> google.longrunning.Operation
+	106, // 104: google.cloud.oracledatabase.v1.OracleDatabase.DeleteCloudExadataInfrastructure:output_type -> google.longrunning.Operation
+	6,   // 105: google.cloud.oracledatabase.v1.OracleDatabase.ListCloudVmClusters:output_type -> google.cloud.oracledatabase.v1.ListCloudVmClustersResponse
+	49,  // 106: google.cloud.oracledatabase.v1.OracleDatabase.GetCloudVmCluster:output_type -> google.cloud.oracledatabase.v1.CloudVmCluster
+	106, // 107: google.cloud.oracledatabase.v1.OracleDatabase.CreateCloudVmCluster:output_type -> google.longrunning.Operation
+	106, // 108: google.cloud.oracledatabase.v1.OracleDatabase.DeleteCloudVmCluster:output_type -> google.longrunning.Operation
+	11,  // 109: google.cloud.oracledatabase.v1.OracleDatabase.ListEntitlements:output_type -> google.cloud.oracledatabase.v1.ListEntitlementsResponse
+	13,  // 110: google.cloud.oracledatabase.v1.OracleDatabase.ListDbServers:output_type -> google.cloud.oracledatabase.v1.ListDbServersResponse
+	15,  // 111: google.cloud.oracledatabase.v1.OracleDatabase.ListDbNodes:output_type -> google.cloud.oracledatabase.v1.ListDbNodesResponse
+	17,  // 112: google.cloud.oracledatabase.v1.OracleDatabase.ListGiVersions:output_type -> google.cloud.oracledatabase.v1.ListGiVersionsResponse
+	107, // 113: google.cloud.oracledatabase.v1.OracleDatabase.ListMinorVersions:output_type -> google.cloud.oracledatabase.v1.ListMinorVersionsResponse
+	19,  // 114: google.cloud.oracledatabase.v1.OracleDatabase.ListDbSystemShapes:output_type -> google.cloud.oracledatabase.v1.ListDbSystemShapesResponse
+	22,  // 115: google.cloud.oracledatabase.v1.OracleDatabase.ListAutonomousDatabases:output_type -> google.cloud.oracledatabase.v1.ListAutonomousDatabasesResponse
+	56,  // 116: google.cloud.oracledatabase.v1.OracleDatabase.GetAutonomousDatabase:output_type -> google.cloud.oracledatabase.v1.AutonomousDatabase
+	106, // 117: google.cloud.oracledatabase.v1.OracleDatabase.CreateAutonomousDatabase:output_type -> google.longrunning.Operation
+	106, // 118: google.cloud.oracledatabase.v1.OracleDatabase.UpdateAutonomousDatabase:output_type -> google.longrunning.Operation
+	106, // 119: google.cloud.oracledatabase.v1.OracleDatabase.DeleteAutonomousDatabase:output_type -> google.longrunning.Operation
+	106, // 120: google.cloud.oracledatabase.v1.OracleDatabase.RestoreAutonomousDatabase:output_type -> google.longrunning.Operation
+	34,  // 121: google.cloud.oracledatabase.v1.OracleDatabase.GenerateAutonomousDatabaseWallet:output_type -> google.cloud.oracledatabase.v1.GenerateAutonomousDatabaseWalletResponse
+	36,  // 122: google.cloud.oracledatabase.v1.OracleDatabase.ListAutonomousDbVersions:output_type -> google.cloud.oracledatabase.v1.ListAutonomousDbVersionsResponse
+	38,  // 123: google.cloud.oracledatabase.v1.OracleDatabase.ListAutonomousDatabaseCharacterSets:output_type -> google.cloud.oracledatabase.v1.ListAutonomousDatabaseCharacterSetsResponse
+	40,  // 124: google.cloud.oracledatabase.v1.OracleDatabase.ListAutonomousDatabaseBackups:output_type -> google.cloud.oracledatabase.v1.ListAutonomousDatabaseBackupsResponse
+	106, // 125: google.cloud.oracledatabase.v1.OracleDatabase.StopAutonomousDatabase:output_type -> google.longrunning.Operation
+	106, // 126: google.cloud.oracledatabase.v1.OracleDatabase.StartAutonomousDatabase:output_type -> google.longrunning.Operation
+	106, // 127: google.cloud.oracledatabase.v1.OracleDatabase.RestartAutonomousDatabase:output_type -> google.longrunning.Operation
+	106, // 128: google.cloud.oracledatabase.v1.OracleDatabase.SwitchoverAutonomousDatabase:output_type -> google.longrunning.Operation
+	106, // 129: google.cloud.oracledatabase.v1.OracleDatabase.FailoverAutonomousDatabase:output_type -> google.longrunning.Operation
+	108, // 130: google.cloud.oracledatabase.v1.OracleDatabase.ListOdbNetworks:output_type -> google.cloud.oracledatabase.v1.ListOdbNetworksResponse
+	109, // 131: google.cloud.oracledatabase.v1.OracleDatabase.GetOdbNetwork:output_type -> google.cloud.oracledatabase.v1.OdbNetwork
+	106, // 132: google.cloud.oracledatabase.v1.OracleDatabase.CreateOdbNetwork:output_type -> google.longrunning.Operation
+	106, // 133: google.cloud.oracledatabase.v1.OracleDatabase.DeleteOdbNetwork:output_type -> google.longrunning.Operation
+	110, // 134: google.cloud.oracledatabase.v1.OracleDatabase.ListOdbSubnets:output_type -> google.cloud.oracledatabase.v1.ListOdbSubnetsResponse
+	111, // 135: google.cloud.oracledatabase.v1.OracleDatabase.GetOdbSubnet:output_type -> google.cloud.oracledatabase.v1.OdbSubnet
+	106, // 136: google.cloud.oracledatabase.v1.OracleDatabase.CreateOdbSubnet:output_type -> google.longrunning.Operation
+	106, // 137: google.cloud.oracledatabase.v1.OracleDatabase.DeleteOdbSubnet:output_type -> google.longrunning.Operation
+	45,  // 138: google.cloud.oracledatabase.v1.OracleDatabase.ListExadbVmClusters:output_type -> google.cloud.oracledatabase.v1.ListExadbVmClustersResponse
+	62,  // 139: google.cloud.oracledatabase.v1.OracleDatabase.GetExadbVmCluster:output_type -> google.cloud.oracledatabase.v1.ExadbVmCluster
+	106, // 140: google.cloud.oracledatabase.v1.OracleDatabase.CreateExadbVmCluster:output_type -> google.longrunning.Operation
+	106, // 141: google.cloud.oracledatabase.v1.OracleDatabase.DeleteExadbVmCluster:output_type -> google.longrunning.Operation
+	106, // 142: google.cloud.oracledatabase.v1.OracleDatabase.UpdateExadbVmCluster:output_type -> google.longrunning.Operation
+	106, // 143: google.cloud.oracledatabase.v1.OracleDatabase.RemoveVirtualMachineExadbVmCluster:output_type -> google.longrunning.Operation
+	112, // 144: google.cloud.oracledatabase.v1.OracleDatabase.ListExascaleDbStorageVaults:output_type -> google.cloud.oracledatabase.v1.ListExascaleDbStorageVaultsResponse
+	113, // 145: google.cloud.oracledatabase.v1.OracleDatabase.GetExascaleDbStorageVault:output_type -> google.cloud.oracledatabase.v1.ExascaleDbStorageVault
+	106, // 146: google.cloud.oracledatabase.v1.OracleDatabase.CreateExascaleDbStorageVault:output_type -> google.longrunning.Operation
+	106, // 147: google.cloud.oracledatabase.v1.OracleDatabase.DeleteExascaleDbStorageVault:output_type -> google.longrunning.Operation
+	114, // 148: google.cloud.oracledatabase.v1.OracleDatabase.ListDbSystemInitialStorageSizes:output_type -> google.cloud.oracledatabase.v1.ListDbSystemInitialStorageSizesResponse
+	115, // 149: google.cloud.oracledatabase.v1.OracleDatabase.ListDatabases:output_type -> google.cloud.oracledatabase.v1.ListDatabasesResponse
+	116, // 150: google.cloud.oracledatabase.v1.OracleDatabase.GetDatabase:output_type -> google.cloud.oracledatabase.v1.Database
+	117, // 151: google.cloud.oracledatabase.v1.OracleDatabase.ListPluggableDatabases:output_type -> google.cloud.oracledatabase.v1.ListPluggableDatabasesResponse
+	118, // 152: google.cloud.oracledatabase.v1.OracleDatabase.GetPluggableDatabase:output_type -> google.cloud.oracledatabase.v1.PluggableDatabase
+	119, // 153: google.cloud.oracledatabase.v1.OracleDatabase.ListDbSystems:output_type -> google.cloud.oracledatabase.v1.ListDbSystemsResponse
+	120, // 154: google.cloud.oracledatabase.v1.OracleDatabase.GetDbSystem:output_type -> google.cloud.oracledatabase.v1.DbSystem
+	106, // 155: google.cloud.oracledatabase.v1.OracleDatabase.CreateDbSystem:output_type -> google.longrunning.Operation
+	106, // 156: google.cloud.oracledatabase.v1.OracleDatabase.DeleteDbSystem:output_type -> google.longrunning.Operation
+	121, // 157: google.cloud.oracledatabase.v1.OracleDatabase.ListGoldengateDeployments:output_type -> google.cloud.oracledatabase.v1.ListGoldengateDeploymentsResponse
+	122, // 158: google.cloud.oracledatabase.v1.OracleDatabase.GetGoldengateDeployment:output_type -> google.cloud.oracledatabase.v1.GoldengateDeployment
+	106, // 159: google.cloud.oracledatabase.v1.OracleDatabase.CreateGoldengateDeployment:output_type -> google.longrunning.Operation
+	106, // 160: google.cloud.oracledatabase.v1.OracleDatabase.DeleteGoldengateDeployment:output_type -> google.longrunning.Operation
+	106, // 161: google.cloud.oracledatabase.v1.OracleDatabase.StopGoldengateDeployment:output_type -> google.longrunning.Operation
+	106, // 162: google.cloud.oracledatabase.v1.OracleDatabase.StartGoldengateDeployment:output_type -> google.longrunning.Operation
+	123, // 163: google.cloud.oracledatabase.v1.OracleDatabase.ListGoldengateConnections:output_type -> google.cloud.oracledatabase.v1.ListGoldengateConnectionsResponse
+	124, // 164: google.cloud.oracledatabase.v1.OracleDatabase.GetGoldengateConnection:output_type -> google.cloud.oracledatabase.v1.GoldengateConnection
+	106, // 165: google.cloud.oracledatabase.v1.OracleDatabase.CreateGoldengateConnection:output_type -> google.longrunning.Operation
+	106, // 166: google.cloud.oracledatabase.v1.OracleDatabase.DeleteGoldengateConnection:output_type -> google.longrunning.Operation
+	125, // 167: google.cloud.oracledatabase.v1.OracleDatabase.ListGoldengateDeploymentVersions:output_type -> google.cloud.oracledatabase.v1.ListGoldengateDeploymentVersionsResponse
+	126, // 168: google.cloud.oracledatabase.v1.OracleDatabase.ListGoldengateDeploymentTypes:output_type -> google.cloud.oracledatabase.v1.ListGoldengateDeploymentTypesResponse
+	127, // 169: google.cloud.oracledatabase.v1.OracleDatabase.ListGoldengateDeploymentEnvironments:output_type -> google.cloud.oracledatabase.v1.ListGoldengateDeploymentEnvironmentsResponse
+	128, // 170: google.cloud.oracledatabase.v1.OracleDatabase.ListGoldengateConnectionTypes:output_type -> google.cloud.oracledatabase.v1.ListGoldengateConnectionTypesResponse
+	129, // 171: google.cloud.oracledatabase.v1.OracleDatabase.ListDbVersions:output_type -> google.cloud.oracledatabase.v1.ListDbVersionsResponse
+	130, // 172: google.cloud.oracledatabase.v1.OracleDatabase.ListDatabaseCharacterSets:output_type -> google.cloud.oracledatabase.v1.ListDatabaseCharacterSetsResponse
+	131, // 173: google.cloud.oracledatabase.v1.OracleDatabase.ListGoldengateConnectionAssignments:output_type -> google.cloud.oracledatabase.v1.ListGoldengateConnectionAssignmentsResponse
+	132, // 174: google.cloud.oracledatabase.v1.OracleDatabase.GetGoldengateConnectionAssignment:output_type -> google.cloud.oracledatabase.v1.GoldengateConnectionAssignment
+	106, // 175: google.cloud.oracledatabase.v1.OracleDatabase.CreateGoldengateConnectionAssignment:output_type -> google.longrunning.Operation
+	106, // 176: google.cloud.oracledatabase.v1.OracleDatabase.DeleteGoldengateConnectionAssignment:output_type -> google.longrunning.Operation
+	133, // 177: google.cloud.oracledatabase.v1.OracleDatabase.TestGoldengateConnectionAssignment:output_type -> google.cloud.oracledatabase.v1.TestGoldengateConnectionAssignmentResponse
+	101, // [101:178] is the sub-list for method output_type
+	24,  // [24:101] is the sub-list for method input_type
 	24,  // [24:24] is the sub-list for extension type_name
 	24,  // [24:24] is the sub-list for extension extendee
 	0,   // [0:24] is the sub-list for field type_name

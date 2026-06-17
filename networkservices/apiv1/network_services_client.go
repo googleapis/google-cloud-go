@@ -106,6 +106,11 @@ type CallOptions struct {
 	GetMeshRouteView        []gax.CallOption
 	ListGatewayRouteViews   []gax.CallOption
 	ListMeshRouteViews      []gax.CallOption
+	ListAgentGateways       []gax.CallOption
+	GetAgentGateway         []gax.CallOption
+	CreateAgentGateway      []gax.CallOption
+	UpdateAgentGateway      []gax.CallOption
+	DeleteAgentGateway      []gax.CallOption
 	GetLocation             []gax.CallOption
 	ListLocations           []gax.CallOption
 	GetIamPolicy            []gax.CallOption
@@ -308,6 +313,21 @@ func defaultCallOptions() *CallOptions {
 		ListMeshRouteViews: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		ListAgentGateways: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetAgentGateway: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateAgentGateway: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateAgentGateway: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteAgentGateway: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetLocation:        []gax.CallOption{},
 		ListLocations:      []gax.CallOption{},
 		GetIamPolicy:       []gax.CallOption{},
@@ -496,6 +516,21 @@ func defaultRESTCallOptions() *CallOptions {
 		ListMeshRouteViews: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		ListAgentGateways: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetAgentGateway: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateAgentGateway: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateAgentGateway: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteAgentGateway: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetLocation:        []gax.CallOption{},
 		ListLocations:      []gax.CallOption{},
 		GetIamPolicy:       []gax.CallOption{},
@@ -603,6 +638,14 @@ type internalClient interface {
 	GetMeshRouteView(context.Context, *networkservicespb.GetMeshRouteViewRequest, ...gax.CallOption) (*networkservicespb.MeshRouteView, error)
 	ListGatewayRouteViews(context.Context, *networkservicespb.ListGatewayRouteViewsRequest, ...gax.CallOption) *GatewayRouteViewIterator
 	ListMeshRouteViews(context.Context, *networkservicespb.ListMeshRouteViewsRequest, ...gax.CallOption) *MeshRouteViewIterator
+	ListAgentGateways(context.Context, *networkservicespb.ListAgentGatewaysRequest, ...gax.CallOption) *AgentGatewayIterator
+	GetAgentGateway(context.Context, *networkservicespb.GetAgentGatewayRequest, ...gax.CallOption) (*networkservicespb.AgentGateway, error)
+	CreateAgentGateway(context.Context, *networkservicespb.CreateAgentGatewayRequest, ...gax.CallOption) (*CreateAgentGatewayOperation, error)
+	CreateAgentGatewayOperation(name string) *CreateAgentGatewayOperation
+	UpdateAgentGateway(context.Context, *networkservicespb.UpdateAgentGatewayRequest, ...gax.CallOption) (*UpdateAgentGatewayOperation, error)
+	UpdateAgentGatewayOperation(name string) *UpdateAgentGatewayOperation
+	DeleteAgentGateway(context.Context, *networkservicespb.DeleteAgentGatewayRequest, ...gax.CallOption) (*DeleteAgentGatewayOperation, error)
+	DeleteAgentGatewayOperation(name string) *DeleteAgentGatewayOperation
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
@@ -1140,6 +1183,49 @@ func (c *Client) ListMeshRouteViews(ctx context.Context, req *networkservicespb.
 	return c.internalClient.ListMeshRouteViews(ctx, req, opts...)
 }
 
+// ListAgentGateways lists AgentGateways in a given project and location.
+func (c *Client) ListAgentGateways(ctx context.Context, req *networkservicespb.ListAgentGatewaysRequest, opts ...gax.CallOption) *AgentGatewayIterator {
+	return c.internalClient.ListAgentGateways(ctx, req, opts...)
+}
+
+// GetAgentGateway gets details of a single AgentGateway.
+func (c *Client) GetAgentGateway(ctx context.Context, req *networkservicespb.GetAgentGatewayRequest, opts ...gax.CallOption) (*networkservicespb.AgentGateway, error) {
+	return c.internalClient.GetAgentGateway(ctx, req, opts...)
+}
+
+// CreateAgentGateway creates a new AgentGateway in a given project and location.
+func (c *Client) CreateAgentGateway(ctx context.Context, req *networkservicespb.CreateAgentGatewayRequest, opts ...gax.CallOption) (*CreateAgentGatewayOperation, error) {
+	return c.internalClient.CreateAgentGateway(ctx, req, opts...)
+}
+
+// CreateAgentGatewayOperation returns a new CreateAgentGatewayOperation from a given name.
+// The name must be that of a previously created CreateAgentGatewayOperation, possibly from a different process.
+func (c *Client) CreateAgentGatewayOperation(name string) *CreateAgentGatewayOperation {
+	return c.internalClient.CreateAgentGatewayOperation(name)
+}
+
+// UpdateAgentGateway updates the parameters of a single AgentGateway.
+func (c *Client) UpdateAgentGateway(ctx context.Context, req *networkservicespb.UpdateAgentGatewayRequest, opts ...gax.CallOption) (*UpdateAgentGatewayOperation, error) {
+	return c.internalClient.UpdateAgentGateway(ctx, req, opts...)
+}
+
+// UpdateAgentGatewayOperation returns a new UpdateAgentGatewayOperation from a given name.
+// The name must be that of a previously created UpdateAgentGatewayOperation, possibly from a different process.
+func (c *Client) UpdateAgentGatewayOperation(name string) *UpdateAgentGatewayOperation {
+	return c.internalClient.UpdateAgentGatewayOperation(name)
+}
+
+// DeleteAgentGateway deletes a single AgentGateway.
+func (c *Client) DeleteAgentGateway(ctx context.Context, req *networkservicespb.DeleteAgentGatewayRequest, opts ...gax.CallOption) (*DeleteAgentGatewayOperation, error) {
+	return c.internalClient.DeleteAgentGateway(ctx, req, opts...)
+}
+
+// DeleteAgentGatewayOperation returns a new DeleteAgentGatewayOperation from a given name.
+// The name must be that of a previously created DeleteAgentGatewayOperation, possibly from a different process.
+func (c *Client) DeleteAgentGatewayOperation(name string) *DeleteAgentGatewayOperation {
+	return c.internalClient.DeleteAgentGatewayOperation(name)
+}
+
 // GetLocation gets information about a location.
 func (c *Client) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	return c.internalClient.GetLocation(ctx, req, opts...)
@@ -1336,6 +1422,11 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.GetMeshRouteView = append(client.CallOptions.GetMeshRouteView, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListGatewayRouteViews = append(client.CallOptions.ListGatewayRouteViews, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListMeshRouteViews = append(client.CallOptions.ListMeshRouteViews, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListAgentGateways = append(client.CallOptions.ListAgentGateways, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetAgentGateway = append(client.CallOptions.GetAgentGateway, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateAgentGateway = append(client.CallOptions.CreateAgentGateway, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateAgentGateway = append(client.CallOptions.UpdateAgentGateway, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteAgentGateway = append(client.CallOptions.DeleteAgentGateway, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientMetrics(metrics))
@@ -1509,6 +1600,11 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.GetMeshRouteView = append(callOpts.GetMeshRouteView, gax.WithClientMetrics(metrics))
 		callOpts.ListGatewayRouteViews = append(callOpts.ListGatewayRouteViews, gax.WithClientMetrics(metrics))
 		callOpts.ListMeshRouteViews = append(callOpts.ListMeshRouteViews, gax.WithClientMetrics(metrics))
+		callOpts.ListAgentGateways = append(callOpts.ListAgentGateways, gax.WithClientMetrics(metrics))
+		callOpts.GetAgentGateway = append(callOpts.GetAgentGateway, gax.WithClientMetrics(metrics))
+		callOpts.CreateAgentGateway = append(callOpts.CreateAgentGateway, gax.WithClientMetrics(metrics))
+		callOpts.UpdateAgentGateway = append(callOpts.UpdateAgentGateway, gax.WithClientMetrics(metrics))
+		callOpts.DeleteAgentGateway = append(callOpts.DeleteAgentGateway, gax.WithClientMetrics(metrics))
 		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientMetrics(metrics))
 		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientMetrics(metrics))
 		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientMetrics(metrics))
@@ -3358,6 +3454,157 @@ func (c *gRPCClient) ListMeshRouteViews(ctx context.Context, req *networkservice
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+func (c *gRPCClient) ListAgentGateways(ctx context.Context, req *networkservicespb.ListAgentGatewaysRequest, opts ...gax.CallOption) *AgentGatewayIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networkservices.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkservices.v1.NetworkServices/ListAgentGateways")
+	}
+	opts = append((*c.CallOptions).ListAgentGateways[0:len((*c.CallOptions).ListAgentGateways):len((*c.CallOptions).ListAgentGateways)], opts...)
+	it := &AgentGatewayIterator{}
+	req = proto.CloneOf(req)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkservicespb.AgentGateway, string, error) {
+		resp := &networkservicespb.ListAgentGatewaysResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListAgentGateways, req, settings.GRPC, c.logger, "ListAgentGateways")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetAgentGateways(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) GetAgentGateway(ctx context.Context, req *networkservicespb.GetAgentGatewayRequest, opts ...gax.CallOption) (*networkservicespb.AgentGateway, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networkservices.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkservices.v1.NetworkServices/GetAgentGateway")
+	}
+	opts = append((*c.CallOptions).GetAgentGateway[0:len((*c.CallOptions).GetAgentGateway):len((*c.CallOptions).GetAgentGateway)], opts...)
+	var resp *networkservicespb.AgentGateway
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetAgentGateway, req, settings.GRPC, c.logger, "GetAgentGateway")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) CreateAgentGateway(ctx context.Context, req *networkservicespb.CreateAgentGatewayRequest, opts ...gax.CallOption) (*CreateAgentGatewayOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networkservices.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkservices.v1.NetworkServices/CreateAgentGateway")
+	}
+	opts = append((*c.CallOptions).CreateAgentGateway[0:len((*c.CallOptions).CreateAgentGateway):len((*c.CallOptions).CreateAgentGateway)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.CreateAgentGateway, req, settings.GRPC, c.logger, "CreateAgentGateway")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CreateAgentGatewayOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) UpdateAgentGateway(ctx context.Context, req *networkservicespb.UpdateAgentGatewayRequest, opts ...gax.CallOption) (*UpdateAgentGatewayOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "agent_gateway.name", url.QueryEscape(req.GetAgentGateway().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkservices.v1.NetworkServices/UpdateAgentGateway")
+	}
+	opts = append((*c.CallOptions).UpdateAgentGateway[0:len((*c.CallOptions).UpdateAgentGateway):len((*c.CallOptions).UpdateAgentGateway)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.UpdateAgentGateway, req, settings.GRPC, c.logger, "UpdateAgentGateway")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &UpdateAgentGatewayOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) DeleteAgentGateway(ctx context.Context, req *networkservicespb.DeleteAgentGatewayRequest, opts ...gax.CallOption) (*DeleteAgentGatewayOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networkservices.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkservices.v1.NetworkServices/DeleteAgentGateway")
+	}
+	opts = append((*c.CallOptions).DeleteAgentGateway[0:len((*c.CallOptions).DeleteAgentGateway):len((*c.CallOptions).DeleteAgentGateway)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.DeleteAgentGateway, req, settings.GRPC, c.logger, "DeleteAgentGateway")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeleteAgentGatewayOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
 }
 
 func (c *gRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
@@ -5241,6 +5488,9 @@ func (c *restClient) ListHttpRoutes(ctx context.Context, req *networkservicespb.
 
 		params := url.Values{}
 		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -5374,6 +5624,9 @@ func (c *restClient) CreateHttpRoute(ctx context.Context, req *networkservicespb
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
 	params.Add("httpRouteId", fmt.Sprintf("%v", req.GetHttpRouteId()))
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -7504,6 +7757,346 @@ func (c *restClient) ListMeshRouteViews(ctx context.Context, req *networkservice
 	return it
 }
 
+// ListAgentGateways lists AgentGateways in a given project and location.
+func (c *restClient) ListAgentGateways(ctx context.Context, req *networkservicespb.ListAgentGatewaysRequest, opts ...gax.CallOption) *AgentGatewayIterator {
+	it := &AgentGatewayIterator{}
+	req = proto.CloneOf(req)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkservicespb.AgentGateway, string, error) {
+		resp := &networkservicespb.ListAgentGatewaysResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/agentGateways", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req.GetReturnPartialSuccess() {
+			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListAgentGateways")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetAgentGateways(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetAgentGateway gets details of a single AgentGateway.
+func (c *restClient) GetAgentGateway(ctx context.Context, req *networkservicespb.GetAgentGatewayRequest, opts ...gax.CallOption) (*networkservicespb.AgentGateway, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networkservices.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkservices.v1.NetworkServices/GetAgentGateway")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/agentGateways/*}")
+	}
+	opts = append((*c.CallOptions).GetAgentGateway[0:len((*c.CallOptions).GetAgentGateway):len((*c.CallOptions).GetAgentGateway)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &networkservicespb.AgentGateway{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetAgentGateway")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CreateAgentGateway creates a new AgentGateway in a given project and location.
+func (c *restClient) CreateAgentGateway(ctx context.Context, req *networkservicespb.CreateAgentGatewayRequest, opts ...gax.CallOption) (*CreateAgentGatewayOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetAgentGateway()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/agentGateways", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("agentGatewayId", fmt.Sprintf("%v", req.GetAgentGatewayId()))
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networkservices.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkservices.v1.NetworkServices/CreateAgentGateway")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/agentGateways")
+	}
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateAgentGateway")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &CreateAgentGatewayOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// UpdateAgentGateway updates the parameters of a single AgentGateway.
+func (c *restClient) UpdateAgentGateway(ctx context.Context, req *networkservicespb.UpdateAgentGatewayRequest, opts ...gax.CallOption) (*UpdateAgentGatewayOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetAgentGateway()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetAgentGateway().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "agent_gateway.name", url.QueryEscape(req.GetAgentGateway().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkservices.v1.NetworkServices/UpdateAgentGateway")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{agent_gateway.name=projects/*/locations/*/agentGateways/*}")
+	}
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateAgentGateway")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &UpdateAgentGatewayOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// DeleteAgentGateway deletes a single AgentGateway.
+func (c *restClient) DeleteAgentGateway(ctx context.Context, req *networkservicespb.DeleteAgentGatewayRequest, opts ...gax.CallOption) (*DeleteAgentGatewayOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetEtag() != "" {
+		params.Add("etag", fmt.Sprintf("%v", req.GetEtag()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networkservices.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkservices.v1.NetworkServices/DeleteAgentGateway")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/agentGateways/*}")
+	}
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteAgentGateway")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &DeleteAgentGatewayOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
 // GetLocation gets information about a location.
 func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -8058,6 +8651,24 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 	return it
 }
 
+// CreateAgentGatewayOperation returns a new CreateAgentGatewayOperation from a given name.
+// The name must be that of a previously created CreateAgentGatewayOperation, possibly from a different process.
+func (c *gRPCClient) CreateAgentGatewayOperation(name string) *CreateAgentGatewayOperation {
+	return &CreateAgentGatewayOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// CreateAgentGatewayOperation returns a new CreateAgentGatewayOperation from a given name.
+// The name must be that of a previously created CreateAgentGatewayOperation, possibly from a different process.
+func (c *restClient) CreateAgentGatewayOperation(name string) *CreateAgentGatewayOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &CreateAgentGatewayOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // CreateEndpointPolicyOperation returns a new CreateEndpointPolicyOperation from a given name.
 // The name must be that of a previously created CreateEndpointPolicyOperation, possibly from a different process.
 func (c *gRPCClient) CreateEndpointPolicyOperation(name string) *CreateEndpointPolicyOperation {
@@ -8256,6 +8867,24 @@ func (c *restClient) CreateWasmPluginVersionOperation(name string) *CreateWasmPl
 	}
 }
 
+// DeleteAgentGatewayOperation returns a new DeleteAgentGatewayOperation from a given name.
+// The name must be that of a previously created DeleteAgentGatewayOperation, possibly from a different process.
+func (c *gRPCClient) DeleteAgentGatewayOperation(name string) *DeleteAgentGatewayOperation {
+	return &DeleteAgentGatewayOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// DeleteAgentGatewayOperation returns a new DeleteAgentGatewayOperation from a given name.
+// The name must be that of a previously created DeleteAgentGatewayOperation, possibly from a different process.
+func (c *restClient) DeleteAgentGatewayOperation(name string) *DeleteAgentGatewayOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &DeleteAgentGatewayOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // DeleteEndpointPolicyOperation returns a new DeleteEndpointPolicyOperation from a given name.
 // The name must be that of a previously created DeleteEndpointPolicyOperation, possibly from a different process.
 func (c *gRPCClient) DeleteEndpointPolicyOperation(name string) *DeleteEndpointPolicyOperation {
@@ -8449,6 +9078,24 @@ func (c *gRPCClient) DeleteWasmPluginVersionOperation(name string) *DeleteWasmPl
 func (c *restClient) DeleteWasmPluginVersionOperation(name string) *DeleteWasmPluginVersionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteWasmPluginVersionOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// UpdateAgentGatewayOperation returns a new UpdateAgentGatewayOperation from a given name.
+// The name must be that of a previously created UpdateAgentGatewayOperation, possibly from a different process.
+func (c *gRPCClient) UpdateAgentGatewayOperation(name string) *UpdateAgentGatewayOperation {
+	return &UpdateAgentGatewayOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// UpdateAgentGatewayOperation returns a new UpdateAgentGatewayOperation from a given name.
+// The name must be that of a previously created UpdateAgentGatewayOperation, possibly from a different process.
+func (c *restClient) UpdateAgentGatewayOperation(name string) *UpdateAgentGatewayOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &UpdateAgentGatewayOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}

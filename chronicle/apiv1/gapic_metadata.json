@@ -1065,6 +1065,11 @@
               "methods": [
                 "UpdateReferenceList"
               ]
+            },
+            "VerifyReferenceList": {
+              "methods": [
+                "VerifyReferenceList"
+              ]
             }
           }
         },
@@ -1109,6 +1114,11 @@
             "UpdateReferenceList": {
               "methods": [
                 "UpdateReferenceList"
+              ]
+            },
+            "VerifyReferenceList": {
+              "methods": [
+                "VerifyReferenceList"
               ]
             }
           }
@@ -1199,6 +1209,11 @@
               "methods": [
                 "UpdateRuleDeployment"
               ]
+            },
+            "VerifyRuleText": {
+              "methods": [
+                "VerifyRuleText"
+              ]
             }
           }
         },
@@ -1283,6 +1298,11 @@
             "UpdateRuleDeployment": {
               "methods": [
                 "UpdateRuleDeployment"
+              ]
+            },
+            "VerifyRuleText": {
+              "methods": [
+                "VerifyRuleText"
               ]
             }
           }

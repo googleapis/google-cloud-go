@@ -10,6 +10,11 @@
         "grpc": {
           "libraryClient": "IngestionClient",
           "rpcs": {
+            "IngestAdEvents": {
+              "methods": [
+                "IngestAdEvents"
+              ]
+            },
             "IngestAudienceMembers": {
               "methods": [
                 "IngestAudienceMembers"
@@ -35,6 +40,11 @@
         "rest": {
           "libraryClient": "IngestionClient",
           "rpcs": {
+            "IngestAdEvents": {
+              "methods": [
+                "IngestAdEvents"
+              ]
+            },
             "IngestAudienceMembers": {
               "methods": [
                 "IngestAudienceMembers"
