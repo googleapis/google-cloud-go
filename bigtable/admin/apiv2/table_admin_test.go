@@ -214,7 +214,7 @@ func TestRestoreTable_Error(t *testing.T) {
 	}
 }
 
-func TestWaitForReplication_Success(t *testing.T) {
+func TestWaitForConsistency_Success(t *testing.T) {
 	mock := &mockServer{}
 	const token = "test-consistency-token"
 
@@ -238,9 +238,9 @@ func TestWaitForReplication_Success(t *testing.T) {
 	client, cleanup := setupMockClient(t, mock)
 	defer cleanup()
 
-	err := client.WaitForReplication(context.Background(), "projects/p/instances/i/tables/t")
+	err := client.WaitForConsistency(context.Background(), "projects/p/instances/i/tables/t")
 	if err != nil {
-		t.Fatalf("WaitForReplication failed: %v", err)
+		t.Fatalf("WaitForConsistency failed: %v", err)
 	}
 
 	if checkCalls != 1 {
@@ -248,7 +248,7 @@ func TestWaitForReplication_Success(t *testing.T) {
 	}
 }
 
-func TestWaitForReplication_ContextCancelled(t *testing.T) {
+func TestWaitForConsistency_ContextCancelled(t *testing.T) {
 	mock := &mockServer{}
 	const token = "test-consistency-token"
 
@@ -271,8 +271,8 @@ func TestWaitForReplication_ContextCancelled(t *testing.T) {
 	client, cleanup := setupMockClient(t, mock)
 	defer cleanup()
 
-	err := client.WaitForReplication(ctx, "projects/p/instances/i/tables/t")
+	err := client.WaitForConsistency(ctx, "projects/p/instances/i/tables/t")
 	if err != context.Canceled && status.Code(err) != codes.Canceled {
-		t.Fatalf("WaitForReplication error: %v, want %v or gRPC Canceled status", err, context.Canceled)
+		t.Fatalf("WaitForConsistency error: %v, want %v or gRPC Canceled status", err, context.Canceled)
 	}
 }

@@ -172,7 +172,7 @@ func TestIntegration_RestoreTable(t *testing.T) {
 	}
 }
 
-func TestIntegration_WaitForReplication(t *testing.T) {
+func TestIntegration_WaitForConsistency(t *testing.T) {
 	env := setupIntegration(t)
 
 	ctx := context.Background()
@@ -197,8 +197,8 @@ func TestIntegration_WaitForReplication(t *testing.T) {
 	})
 
 	// Wait for replication
-	err = client.WaitForReplication(ctx, tablePath)
+	err = client.WaitForConsistency(ctx, tablePath)
 	if err != nil {
-		t.Fatalf("WaitForReplication failed: %v", err)
+		t.Fatalf("WaitForConsistency failed: %v", err)
 	}
 }

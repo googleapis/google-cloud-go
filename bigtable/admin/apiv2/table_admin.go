@@ -37,8 +37,8 @@ func (c *BigtableTableAdminClient) RestoreTable(ctx context.Context, req *adminp
 	return nil
 }
 
-// WaitForReplication waits until all the writes committed before the call started have been propagated to all the clusters in the instance via replication.
-func (c *BigtableTableAdminClient) WaitForReplication(ctx context.Context, tableName string, opts ...gax.CallOption) error {
+// WaitForConsistency waits until all the writes committed before the call started have been propagated to all the clusters in the instance via replication.
+func (c *BigtableTableAdminClient) WaitForConsistency(ctx context.Context, tableName string, opts ...gax.CallOption) error {
 	// Get the token.
 	tokenResp, err := c.GenerateConsistencyToken(ctx, &adminpb.GenerateConsistencyTokenRequest{
 		Name: tableName,
