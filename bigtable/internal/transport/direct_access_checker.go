@@ -164,7 +164,7 @@ func (c *pingAndWarmDirectAccessChecker) CheckCompatibility(ctx context.Context)
 	}
 
 	if conn.isALTSConn.Load() {
-		c.reportSuccess(conn.ipProtocol())
+		c.reportSuccess(ctx, conn.ipProtocol())
 		return conn, true
 	}
 
@@ -174,11 +174,11 @@ func (c *pingAndWarmDirectAccessChecker) CheckCompatibility(ctx context.Context)
 }
 
 // reportSuccess records a direct_access/compatible=1 reading.
-func (c *pingAndWarmDirectAccessChecker) reportSuccess(ipPreference string) {
+func (c *pingAndWarmDirectAccessChecker) reportSuccess(ctx context.Context, ipPreference string) {
 	if c.daEligibleGauge == nil {
 		return
 	}
-	c.daEligibleGauge.Record(context.Background(), 1, metric.WithAttributes(
+	c.daEligibleGauge.Record(ctx, 1, metric.WithAttributes(
 		attribute.String("ip_preference", ipPreference),
 		attribute.String("reason", ""),
 	))
@@ -351,44 +351,41 @@ func (c *pingAndWarmDirectAccessChecker) probeSingleEndpoint(ctx context.Context
 	return nil
 }
 
-// disabledDirectAccessChecker records a single manually_disabled reading on
-// construction and refuses every compatibility check. The factory wires it up
-// when isDirectAccessEnabled returns false so the direct_access/compatible
-// metric still surfaces the "off" state — keeping observability identical to
+// disabledDirectAccessChecker refuses every compatibility check and records a
+// single manually_disabled reading the first (and only) time CheckCompatibility
+// runs. The factory wires it up when isDirectAccessEnabled returns false so the
+// direct_access/compatible metric still surfaces the "off" state — keeping
+// observability identical to
 // the pre-modularization behavior in NewBigtableChannelPool.
 type disabledDirectAccessChecker struct {
 	featureFlagsMD  metadata.MD
 	daEligibleGauge metric.Int64Gauge
-	reported        bool
 }
 
-// newDisabledDirectAccessChecker constructs the always-disabled checker and
-// emits the manually_disabled metric immediately. featureFlagsMD is the
-// feature-flag metadata the pool should attach when priming standard-path
-// connections; it is surfaced via FeatureFlagsMetadata() so the pool reads it
-// from a single source instead of taking it via a separate option.
+// newDisabledDirectAccessChecker constructs the always-disabled checker.
+// featureFlagsMD is the feature-flag metadata the pool should attach when
+// priming standard-path connections; it is surfaced via FeatureFlagsMetadata()
+// so the pool reads it from a single source instead of taking it via a
+// separate option. The manually_disabled metric is recorded lazily inside
+// CheckCompatibility so it uses the pool's ctx for propagation and keeps
+// construction side-effect-free.
 func newDisabledDirectAccessChecker(featureFlagsMD metadata.MD, meterProvider metric.MeterProvider, logger *log.Logger) *disabledDirectAccessChecker {
-	c := &disabledDirectAccessChecker{
+	return &disabledDirectAccessChecker{
 		featureFlagsMD:  featureFlagsMD,
 		daEligibleGauge: newDirectAccessEligibleGauge(meterProvider, logger),
 	}
-	c.recordManuallyDisabled()
-	return c
 }
 
-func (c *disabledDirectAccessChecker) recordManuallyDisabled() {
-	if c.reported || c.daEligibleGauge == nil {
-		return
+// CheckCompatibility always returns (nil, false) and records the
+// manually_disabled metric exactly once — the pool calls it exactly once at
+// startup, with the pool ctx.
+func (c *disabledDirectAccessChecker) CheckCompatibility(ctx context.Context) (*BigtableConn, bool) {
+	if c.daEligibleGauge != nil {
+		c.daEligibleGauge.Record(ctx, 0, metric.WithAttributes(
+			attribute.String("ip_preference", ""),
+			attribute.String("reason", "manually_disabled"),
+		))
 	}
-	c.reported = true
-	c.daEligibleGauge.Record(context.Background(), 0, metric.WithAttributes(
-		attribute.String("ip_preference", ""),
-		attribute.String("reason", "manually_disabled"),
-	))
-}
-
-// CheckCompatibility always returns (nil, false).
-func (c *disabledDirectAccessChecker) CheckCompatibility(context.Context) (*BigtableConn, bool) {
 	return nil, false
 }
 
