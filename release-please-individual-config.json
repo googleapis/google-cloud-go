@@ -20,7 +20,7 @@
       ]
     },
     "bigquery/v2": {
-      "component": "bigquery/v2"
+      "component": "bigquery"
     },
     "bigtable": {
       "component": "bigtable"
@@ -41,7 +41,7 @@
       ]
     },
     "pubsub/v2": {
-      "component": "pubsub/v2"
+      "component": "pubsub"
     },
     "pubsublite": {
       "component": "pubsublite"
