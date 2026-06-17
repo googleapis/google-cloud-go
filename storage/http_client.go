@@ -1682,18 +1682,11 @@ func setHeadersFromCtx(ctx context.Context, header http.Header) {
 	}
 }
 
-func (c *httpStorageClient) fetchBucketMetadata(ctx context.Context, bucket string) (resource string, location string, err error) {
+func (c *httpStorageClient) fetchBucketMetadata(ctx context.Context, bucket string) (string, string, error) {
 	resp, err := c.raw.Buckets.Get(bucket).Projection("noAcl").Context(ctx).Do()
 	if err != nil {
 		return "", "", err
 	}
-	location = "global"
-	if resp.LocationType == "zone" || resp.LocationType == "region" {
-		location = strings.ToLower(resp.Location)
-	}
-	project := "_"
-	if resp.ProjectNumber != 0 {
-		project = strconv.FormatUint(resp.ProjectNumber, 10)
-	}
-	return fmt.Sprintf("projects/%s/buckets/%s", project, bucket), location, nil
+	resource, location := getMetadataFromAttrs(resp.Location, resp.LocationType, strconv.FormatUint(resp.ProjectNumber, 10), bucket)
+	return resource, location, nil
 }

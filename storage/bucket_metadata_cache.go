@@ -19,13 +19,12 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strings"
 	"sync"
 	"time"
 
 	"golang.org/x/sync/singleflight"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 )
 
 const (
@@ -74,7 +73,7 @@ func (c *bucketMetadataCache) put(bucket string, entry bucketMetadata) {
 	}
 	c.mu.Lock()
 	defer c.mu.Unlock()
-	// Don't let a placeholder overwrite valid metadata
+	// Don't let a placeholder overwrite valid metadata.
 	if entry.placeholder {
 		if curr, hit := c.lru.get(bucket); hit && !curr.placeholder {
 			return
@@ -146,17 +145,17 @@ func (c *bucketMetadataCache) fetchBackground(bucket string) {
 	}()
 }
 
-func isError(err error, httpErrorCode int, grpcErrorCode codes.Code) bool {
-	var e *googleapi.Error
-	if errors.As(err, &e) {
-		if e.Code == httpErrorCode {
-			return true
-		}
+func getMetadataFromAttrs(location, locationType, project, bucket string) (string, string) {
+	finalLocation := "global"
+	if locationType == "zone" || locationType == "region" {
+		finalLocation = strings.ToLower(location)
 	}
-	if s, ok := status.FromError(err); ok {
-		if s.Code() == grpcErrorCode {
-			return true
-		}
+	if strings.HasPrefix(project, "projects/") {
+		return project + "/buckets/" + bucket, finalLocation
 	}
-	return false
+	finalProject := "_"
+	if project != "0" && project != "" {
+		finalProject = project
+	}
+	return fmt.Sprintf("projects/%s/buckets/%s", finalProject, bucket), finalLocation
 }

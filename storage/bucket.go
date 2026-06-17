@@ -156,18 +156,8 @@ func (b *BucketHandle) Attrs(ctx context.Context) (attrs *BucketAttrs, err error
 	o := makeStorageOpts(true, b.retry, b.userProject)
 	attrs, err = b.c.tc.GetBucket(ctx, b.name, b.conds, o...)
 	if err == nil && b.c != nil && b.c.bucketMetadataCache != nil {
-		project := "_"
-		if attrs.ProjectNumber != 0 {
-			project = strconv.FormatUint(attrs.ProjectNumber, 10)
-		}
-		location := "global"
-		if attrs.LocationType == "zone" || attrs.LocationType == "region" {
-			location = strings.ToLower(attrs.Location)
-		}
-		b.c.bucketMetadataCache.put(b.name, bucketMetadata{
-			resource: fmt.Sprintf("projects/%s/buckets/%s", project, b.name),
-			location: location,
-		})
+		resource, location := getMetadataFromAttrs(attrs.Location, attrs.LocationType, strconv.FormatUint(attrs.ProjectNumber, 10), b.name)
+		b.c.bucketMetadataCache.put(b.name, bucketMetadata{resource: resource, location: location})
 	}
 	return attrs, err
 }
