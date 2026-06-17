@@ -1315,6 +1315,8 @@ func NewInstanceAdminClient(ctx context.Context, project string, opts ...option.
 	}
 	// Add gRPC client interceptors to supply Google client information. No external interceptors are passed.
 	o = append(o, btopt.ClientInterceptorOptions(nil, nil)...)
+	o = append(o, internaloption.EnableNewAuthLibrary())
+	o = append(o, internaloption.EnableJwtWithScope())
 	o = append(o, opts...)
 	connPool, err := gtransport.DialPool(ctx, o...)
 	if err != nil {
