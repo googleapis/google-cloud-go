@@ -16,7 +16,6 @@ package internal
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log"
 	"math"
@@ -36,6 +35,7 @@ import (
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
 	"golang.org/x/oauth2/google"
+	"golang.org/x/sync/errgroup"
 	gtransport "google.golang.org/api/transport/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/alts"
@@ -61,6 +61,11 @@ const (
 	artificialLoadIfError        = 10
 	artificialLoadPenalizedTimer = 5 * time.Second
 	requestParamsHeader          = "x-goog-request-params"
+	// maxPrimeWorkers caps the goroutines used to prime initial pool
+	// connections in parallel. Pools smaller than this naturally fan out to
+	// connPoolSize workers; larger pools cap here so we don't spawn one
+	// dial+Prime goroutine per connection.
+	maxPrimeWorkers = 10
 )
 
 // ipProtocol represents the type of IP protocol used.
@@ -502,45 +507,23 @@ func NewBigtableChannelPool(ctx context.Context, connPoolSize int, strategy btop
 		pool.selectFunc = pool.selectRoundRobin
 	}
 
-	var exitSignal error
 	btopt.Debugf(pool.logger, "bigtable_connpool: Creating conn pool with %d connections", connPoolSize)
 	// TODO: Replace this logic with addConnections(...).
 	initialConns := make([]*connEntry, connPoolSize)
-	for i := 0; i < connPoolSize; i++ {
-		select {
-		case <-pool.poolCtx.Done():
-			exitSignal = errors.New("bigtable_connpool: pool context canceled")
-		default:
-		}
-
-		if exitSignal != nil {
-			break
-		}
-
-		var entry *connEntry
-		var err error
-
-		if i == 0 && firstConn != nil {
-			entry = &connEntry{conn: firstConn}
-		} else {
-			entry, err = pool.factory.newEntry(ctx)
-		}
-
-		if err != nil {
-			exitSignal = err
-			break
-		}
-		initialConns[i] = entry
+	primeStart := 0
+	if firstConn != nil {
+		initialConns[0] = &connEntry{conn: firstConn}
+		primeStart = 1
 	}
-	if exitSignal != nil {
-		btopt.Debugf(pool.logger, "bigtable_connpool: error during initial connection creation: %v\n", exitSignal)
-		// Close populated conns
+
+	if err := pool.primeInitialConns(pool.poolCtx, initialConns, primeStart); err != nil {
+		btopt.Debugf(pool.logger, "bigtable_connpool: error during initial connection creation: %v\n", err)
 		for _, entry := range initialConns {
 			if entry != nil && entry.conn != nil {
 				entry.conn.Close()
 			}
 		}
-		return nil, exitSignal
+		return nil, err
 	}
 
 	pool.conns.Store(&initialConns)
@@ -567,6 +550,43 @@ func NewBigtableChannelPool(ctx context.Context, connPoolSize int, strategy btop
 	pool.recordClientStartUp(clientCreationTimestamp, transportType)
 
 	return pool, nil
+}
+
+// primeInitialConns dials and primes the connections at indices [primeStart, len(out))
+// in parallel, capped at maxPrimeWorkers. Successful entries are written into out at
+// their target index; if any prime fails, the first error is returned and the caller is
+// responsible for closing any populated entries.
+//
+// ctx scopes the prime operations: the first worker error (or ctx cancellation) tears
+// down the rest via errgroup's derived context.
+func (p *BigtableChannelPool) primeInitialConns(ctx context.Context, out []*connEntry, primeStart int) error {
+	jobs := len(out) - primeStart
+	if jobs <= 0 {
+		return nil
+	}
+	if err := ctx.Err(); err != nil {
+		return fmt.Errorf("bigtable_connpool: pool context canceled: %w", err)
+	}
+
+	workers := jobs
+	if workers > maxPrimeWorkers {
+		workers = maxPrimeWorkers
+	}
+
+	g, gctx := errgroup.WithContext(ctx)
+	g.SetLimit(workers)
+	for i := primeStart; i < len(out); i++ {
+		idx := i
+		g.Go(func() error {
+			entry, err := p.factory.newEntry(gctx)
+			if err != nil {
+				return err
+			}
+			out[idx] = entry
+			return nil
+		})
+	}
+	return g.Wait()
 }
 
 // checkIfDirectAccessCompatible attempts to create a single connection using the directAccessDialer,
