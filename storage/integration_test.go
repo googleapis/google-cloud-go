@@ -140,6 +140,11 @@ func TestMain(m *testing.M) {
 // Return a cleanup function.
 func initIntegrationTest() func() error {
 	flag.Parse() // needed for testing.Short()
+	if os.Getenv("GOOGLE_APPLICATION_CREDENTIALS") == "" {
+		if key := os.Getenv("GCLOUD_TESTS_GOLANG_KEY"); key != "" {
+			os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", key)
+		}
+	}
 	switch {
 	case testing.Short() && *record:
 		log.Fatal("cannot combine -short and -record")

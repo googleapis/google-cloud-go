@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 language: go
-version: v0.20.0
+version: v0.21.0
 repo: googleapis/google-cloud-go
 sources:
   googleapis:
@@ -34,7 +34,6 @@ default:
     toolchain: go1.25.8
     default_enabled_generator_features:
       - F_open_telemetry_attributes
-      - F_proto_cloneof
 libraries:
   - name: accessapproval
     version: 1.13.0
@@ -68,7 +67,7 @@ libraries:
       - path: google/cloud/aiplatform/v1beta1
     skip_generate: true
   - name: alloydb
-    version: 1.26.0
+    version: 1.27.0
     apis:
       - path: google/cloud/alloydb/v1
       - path: google/cloud/alloydb/connectors/v1
@@ -156,21 +155,18 @@ libraries:
           enabled_generator_features:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
-            - F_proto_cloneof
           no_metadata: true
       - path: google/cloud/asset/v1p5beta1
         go:
           enabled_generator_features:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
-            - F_proto_cloneof
           no_metadata: true
       - path: google/cloud/asset/v1p2beta1
         go:
           enabled_generator_features:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
-            - F_proto_cloneof
   - name: assuredworkloads
     version: 1.18.0
     apis:
@@ -197,7 +193,7 @@ libraries:
       - path: google/cloud/automl/v1
       - path: google/cloud/automl/v1beta1
   - name: backstory
-    version: 0.0.0
+    version: 0.1.0
     apis:
       - path: backstory
         go:
@@ -240,133 +236,114 @@ libraries:
           enabled_generator_features:
             - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
-            - F_proto_cloneof
           no_snippets: true
       - path: google/cloud/bigquery/datapolicies/v2
         go:
           enabled_generator_features:
             - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
-            - F_proto_cloneof
           no_snippets: true
       - path: google/cloud/bigquery/datatransfer/v1
         go:
           enabled_generator_features:
             - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
-            - F_proto_cloneof
           no_snippets: true
       - path: google/cloud/bigquery/biglake/v1
         go:
           enabled_generator_features:
             - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
-            - F_proto_cloneof
           no_snippets: true
       - path: google/cloud/bigquery/storage/v1
         go:
           enabled_generator_features:
             - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
-            - F_proto_cloneof
           no_snippets: true
       - path: google/cloud/bigquery/connection/v1
         go:
           enabled_generator_features:
             - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
-            - F_proto_cloneof
           no_snippets: true
       - path: google/cloud/bigquery/reservation/v1
         go:
           enabled_generator_features:
             - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
-            - F_proto_cloneof
           no_snippets: true
       - path: google/cloud/bigquery/analyticshub/v1
         go:
           enabled_generator_features:
             - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
-            - F_proto_cloneof
           no_snippets: true
       - path: google/cloud/bigquery/datapolicies/v1
         go:
           enabled_generator_features:
             - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
-            - F_proto_cloneof
           no_snippets: true
       - path: google/cloud/bigquery/datapolicies/v2beta1
         go:
           enabled_generator_features:
             - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
-            - F_proto_cloneof
           no_snippets: true
       - path: google/cloud/bigquery/migration/v2alpha
         go:
           enabled_generator_features:
             - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
-            - F_proto_cloneof
           no_snippets: true
       - path: google/cloud/bigquery/storage/v1beta2
         go:
           enabled_generator_features:
             - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
-            - F_proto_cloneof
           no_snippets: true
       - path: google/cloud/bigquery/datapolicies/v1beta1
         go:
           enabled_generator_features:
             - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
-            - F_proto_cloneof
           no_snippets: true
       - path: google/cloud/bigquery/dataexchange/v1beta1
         go:
           enabled_generator_features:
             - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
-            - F_proto_cloneof
           no_snippets: true
       - path: google/cloud/bigquery/connection/v1beta1
         go:
           enabled_generator_features:
             - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
-            - F_proto_cloneof
           no_snippets: true
       - path: google/cloud/bigquery/storage/v1beta1
         go:
           enabled_generator_features:
             - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
-            - F_proto_cloneof
           no_snippets: true
       - path: google/cloud/bigquery/storage/v1beta
         go:
           enabled_generator_features:
             - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
-            - F_proto_cloneof
           no_snippets: true
       - path: google/cloud/bigquery/biglake/v1alpha1
         go:
           enabled_generator_features:
             - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
-            - F_proto_cloneof
           no_snippets: true
       - path: google/cloud/bigquery/storage/v1alpha
         go:
           enabled_generator_features:
             - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
-            - F_proto_cloneof
           no_snippets: true
     keep:
       - README.md
@@ -382,7 +359,6 @@ libraries:
             - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
             - F_wrapper_types_for_page_size
-            - F_proto_cloneof
           import_path: bigquery/v2/apiv2
           no_snippets: true
     keep:
@@ -424,7 +400,7 @@ libraries:
     apis:
       - path: google/cloud/certificatemanager/v1
   - name: ces
-    version: 1.0.0
+    version: 1.1.0
     apis:
       - path: google/cloud/ces/v1
       - path: google/cloud/ces/v1beta
@@ -486,7 +462,6 @@ libraries:
           enabled_generator_features:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
-            - F_proto_cloneof
           import_path: cloudtasks/apiv2
       - path: google/cloud/tasks/v2beta3
         go:
@@ -494,7 +469,6 @@ libraries:
           enabled_generator_features:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
-            - F_proto_cloneof
           import_path: cloudtasks/apiv2beta3
       - path: google/cloud/tasks/v2beta2
         go:
@@ -502,7 +476,6 @@ libraries:
           enabled_generator_features:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
-            - F_proto_cloneof
           import_path: cloudtasks/apiv2beta2
   - name: commerce
     version: 1.7.0
@@ -517,14 +490,12 @@ libraries:
           enabled_generator_features:
             - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
-            - F_proto_cloneof
       - path: google/cloud/compute/v1beta
         go:
           diregapic: true
           enabled_generator_features:
             - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
-            - F_proto_cloneof
     go:
       nested_module: metadata
   - name: compute/metadata
@@ -534,7 +505,7 @@ libraries:
       - internal/version.go
     skip_release: true
   - name: confidentialcomputing
-    version: 1.16.0
+    version: 1.17.0
     apis:
       - path: google/cloud/confidentialcomputing/v1
       - path: google/cloud/confidentialcomputing/v1alpha1
@@ -586,7 +557,6 @@ libraries:
           enabled_generator_features:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
-            - F_proto_cloneof
   - name: dataform
     version: 1.0.0
     apis:
@@ -630,14 +600,12 @@ libraries:
           enabled_generator_features:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
-            - F_proto_cloneof
           proto_only: true
       - path: google/datastore/admin/v1
         go:
           enabled_generator_features:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
-            - F_proto_cloneof
     skip_release: true
   - name: datastream
     version: 1.20.0
@@ -672,7 +640,7 @@ libraries:
       - path: google/cloud/discoveryengine/v1beta
       - path: google/cloud/discoveryengine/v1alpha
   - name: dlp
-    version: 1.35.0
+    version: 1.36.0
     apis:
       - path: google/privacy/dlp/v2
         go:
@@ -704,7 +672,6 @@ libraries:
           enabled_generator_features:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
-            - F_proto_cloneof
           import_path: errorreporting/apiv1beta1
   - name: essentialcontacts
     version: 1.12.0
@@ -714,7 +681,6 @@ libraries:
           enabled_generator_features:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
-            - F_proto_cloneof
   - name: eventarc
     version: 1.23.0
     apis:
@@ -737,7 +703,6 @@ libraries:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
             - F_ordered_routing_headers
-            - F_proto_cloneof
           no_snippets: true
       - path: google/firestore/admin/v1
         go:
@@ -746,7 +711,6 @@ libraries:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
             - F_ordered_routing_headers
-            - F_proto_cloneof
           import_path: firestore/apiv1/admin
           no_snippets: true
     keep:
@@ -759,7 +723,7 @@ libraries:
       - path: google/cloud/functions/v1
       - path: google/cloud/functions/v2beta
   - name: geminidataanalytics
-    version: 1.2.0
+    version: 1.3.0
     apis:
       - path: google/cloud/geminidataanalytics/v1
       - path: google/cloud/geminidataanalytics/v1beta
@@ -806,32 +770,27 @@ libraries:
           enabled_generator_features:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
-            - F_proto_cloneof
       - path: google/iam/v2
         go:
           enabled_generator_features:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
-            - F_proto_cloneof
       - path: google/iam/v1
         go:
           enabled_generator_features:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
-            - F_proto_cloneof
       - path: google/iam/credentials/v1
         go:
           enabled_generator_features:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
-            - F_proto_cloneof
           no_metadata: true
       - path: google/iam/v3beta
         go:
           enabled_generator_features:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
-            - F_proto_cloneof
     go:
       nested_module: admin
   - name: iap
@@ -858,13 +817,11 @@ libraries:
           enabled_generator_features:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
-            - F_proto_cloneof
       - path: google/cloud/kms/inventory/v1
         go:
           enabled_generator_features:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
-            - F_proto_cloneof
   - name: language
     version: 1.18.0
     apis:
@@ -891,7 +848,6 @@ libraries:
           enabled_generator_features:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
-            - F_proto_cloneof
     go:
       nested_module: logadmin
   - name: longrunning
@@ -965,7 +921,7 @@ libraries:
     apis:
       - path: google/cloud/migrationcenter/v1
   - name: modelarmor
-    version: 1.0.0
+    version: 1.1.0
     apis:
       - path: google/cloud/modelarmor/v1
       - path: google/cloud/modelarmor/v1beta
@@ -977,20 +933,17 @@ libraries:
           enabled_generator_features:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
-            - F_proto_cloneof
           import_path: monitoring/apiv3/v2
       - path: google/monitoring/dashboard/v1
         go:
           enabled_generator_features:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
-            - F_proto_cloneof
       - path: google/monitoring/metricsscope/v1
         go:
           enabled_generator_features:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
-            - F_proto_cloneof
   - name: netapp
     version: 1.17.0
     apis:
@@ -1025,7 +978,7 @@ libraries:
     apis:
       - path: google/cloud/optimization/v1
   - name: oracledatabase
-    version: 1.0.0
+    version: 1.1.0
     apis:
       - path: google/cloud/oracledatabase/v1
   - name: orchestration
@@ -1040,13 +993,11 @@ libraries:
           enabled_generator_features:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
-            - F_proto_cloneof
       - path: google/cloud/orgpolicy/v1
         go:
           enabled_generator_features:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
-            - F_proto_cloneof
           proto_only: true
   - name: osconfig
     version: 1.21.0
@@ -1120,7 +1071,6 @@ libraries:
           enabled_generator_features:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
-            - F_proto_cloneof
           import_path: pubsub/v2/apiv1
           no_metadata: true
           no_snippets: true
@@ -1128,7 +1078,7 @@ libraries:
       - README.md
     skip_release: true
   - name: pubsublite
-    version: 1.8.2
+    version: 2.0.0
     apis:
       - path: google/cloud/pubsublite/v1
         go:
@@ -1161,13 +1111,11 @@ libraries:
           enabled_generator_features:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
-            - F_proto_cloneof
       - path: google/cloud/recommender/v1beta1
         go:
           enabled_generator_features:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
-            - F_proto_cloneof
   - name: redis
     version: 1.23.0
     apis:
@@ -1182,13 +1130,11 @@ libraries:
           enabled_generator_features:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
-            - F_proto_cloneof
       - path: google/cloud/resourcemanager/v2
         go:
           enabled_generator_features:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
-            - F_proto_cloneof
   - name: retail
     version: 1.31.0
     apis:
@@ -1225,13 +1171,11 @@ libraries:
           enabled_generator_features:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
-            - F_proto_cloneof
       - path: google/cloud/secretmanager/v1beta2
         go:
           enabled_generator_features:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
-            - F_proto_cloneof
   - name: securesourcemanager
     version: 1.9.0
     apis:
@@ -1324,7 +1268,7 @@ libraries:
           import_path: shopping/type
           proto_only: true
   - name: spanner
-    version: 1.91.0
+    version: 1.92.0
     apis:
       - path: google/spanner/v1
         go:
@@ -1413,7 +1357,6 @@ libraries:
           enabled_generator_features:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
-            - F_proto_cloneof
           import_path: trace/apiv2
       - path: google/devtools/cloudtrace/v1
         go:
@@ -1421,7 +1364,6 @@ libraries:
           enabled_generator_features:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
-            - F_proto_cloneof
           import_path: trace/apiv1
           no_metadata: true
   - name: translate
@@ -1504,7 +1446,7 @@ libraries:
     apis:
       - path: google/cloud/workloadmanager/v1
   - name: workstations
-    version: 1.6.0
+    version: 1.7.0
     apis:
       - path: google/cloud/workstations/v1
       - path: google/cloud/workstations/v1beta

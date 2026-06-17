@@ -370,3 +370,18 @@ func readTestFile(t *testing.T, filename string) []byte {
 	}
 	return b
 }
+
+func TestNewCredentials_UserCredentials_ADC_Unsupported(t *testing.T) {
+	t.Setenv(credsfile.GoogleAppCredsEnvVar, "../../internal/testdata/user.json")
+	opts := &Options{
+		Audience: "aud",
+	}
+	_, err := NewCredentials(opts)
+	if err == nil {
+		t.Fatal("expected error, got nil")
+	}
+	wantErrMsg := "idtoken: unsupported credentials type: authorized_user"
+	if !strings.Contains(err.Error(), wantErrMsg) {
+		t.Errorf("got error message %q, want error message containing %q", err.Error(), wantErrMsg)
+	}
+}

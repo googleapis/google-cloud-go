@@ -1,5 +1,21 @@
 # Changes
 
+## [1.92.0](https://github.com/googleapis/google-cloud-go/releases/tag/spanner%2Fv1.92.0) (2026-06-15)
+
+### Features
+
+* Enable EEF for cloud spanner when direct access is enabled (#14414) ([d7c4e0f](https://github.com/googleapis/google-cloud-go/commit/d7c4e0fd226cb0b8899e59e6aced4a2111fa5aed))
+* add OpenTelemetry metrics for dynamic channel pool (#14613) ([b54b4f0](https://github.com/googleapis/google-cloud-go/commit/b54b4f022fbda8910349ce26127c364bc16f9d2c))
+* add dynamic channel pool (#14611) ([51a53ce](https://github.com/googleapis/google-cloud-go/commit/51a53ceeb599e0d72ae8e77cd9c971bc1082cf58))
+* add option for auto-tagging transactions (#14646) ([be0afd9](https://github.com/googleapis/google-cloud-go/commit/be0afd99fc050f734ef36f7644f03d8db94b7d90))
+* update API sources and regenerate (#14537) ([07fe29b](https://github.com/googleapis/google-cloud-go/commit/07fe29ba4c5069d27d4149d8fa5f8814eb8789d7))
+
+### Bug Fixes
+
+* Support UUID as a base data type (#14117) ([f8b9a93](https://github.com/googleapis/google-cloud-go/commit/f8b9a93aefedc167db7c7a28140d47ef2f1e3a82))
+* handle unused variables (#13088) ([b295156](https://github.com/googleapis/google-cloud-go/commit/b2951564ca759c51300fdb5957b696f411c5b662))
+* propagate previous transaction ID on inline-begin retries (#19955) ([827f70e](https://github.com/googleapis/google-cloud-go/commit/827f70e66172ef66599c8ab7f38a8c1b901231a1))
+
 ## [1.91.0](https://github.com/googleapis/google-cloud-go/releases/tag/spanner%2Fv1.91.0) (2026-04-22)
 
 ## [1.90.0](https://github.com/googleapis/google-cloud-go/releases/tag/spanner%2Fv1.90.0) (2026-04-14)
