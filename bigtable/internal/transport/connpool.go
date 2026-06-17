@@ -379,9 +379,11 @@ type BigtableChannelPool struct {
 	metricsConfig btopt.MetricsReporterConfig
 
 	// directAccessChecker is the pluggable Direct Access compatibility
-	// strategy. nil means Direct Access is not configured for this pool;
-	// non-nil means CheckCompatibility runs at startup and may switch the
-	// connection factory to the direct-access dialer.
+	// strategy. Required (NewBigtableChannelPool refuses construction
+	// without one): CheckCompatibility runs at startup and may switch the
+	// connection factory to the direct-access dialer. Callers that want
+	// Direct Access off pass the disabled stub so the
+	// direct_access/compatible metric still surfaces the off state.
 	directAccessChecker DirectAccessChecker
 
 	// background monitors
