@@ -21,6 +21,7 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"sort"
 	"strings"
 	"sync"
 	"time"
@@ -44,13 +45,26 @@ var (
 
 // rowToProto converts a Bigtable Go client Row struct into a
 // Bigtable protobuf Row struct. It iterates over all of the column families
-// (keys) and ReadItem slices (values) in the client Row struct
+// (keys) and ReadItem slices (values) in the client Row struct.
+//
+// Families are emitted in sorted name order. bigtable.Row is
+// map[string][]ReadItem, so a plain range loop would surface families in
+// random order, and the conformance tests (which assert with
+// protocmp.Transform — repeated-field order is significant) would fail
+// non-deterministically on any row with more than one family.
 func rowToProto(btRow bigtable.Row) (*btpb.Row, error) {
 	pbRow := &btpb.Row{
 		Key: []byte(btRow.Key()),
 	}
 
-	for fam, ris := range btRow {
+	famNames := make([]string, 0, len(btRow))
+	for fam := range btRow {
+		famNames = append(famNames, fam)
+	}
+	sort.Strings(famNames)
+
+	for _, fam := range famNames {
+		ris := btRow[fam]
 		pbFam := &btpb.Family{
 			Name: fam,
 		}
