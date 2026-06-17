@@ -1106,6 +1106,11 @@ func TestResolveLocalMTLSEndpoint(t *testing.T) {
 			want:               base,
 		},
 		{
+			name:               "invalid env var value forces base (never)",
+			envUseMTLSEndpoint: "invalid_value",
+			want:               base,
+		},
+		{
 			name: "default when no env vars checks client cert availability",
 			want: func() string {
 				if hasClientCert {

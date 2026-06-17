@@ -407,6 +407,9 @@ func resolveLocalMTLSEndpoint(base, mtls string) (string, error) {
 	if mode == "never" {
 		return base, nil
 	}
+	if mode != "" && mode != "auto" {
+		return base, nil
+	}
 
 	// Honor explicit client certificate suppression matching transport.isClientCertificateEnabled.
 	// We ignore parsing errors to default to false, matching the behavior in cba.go.
