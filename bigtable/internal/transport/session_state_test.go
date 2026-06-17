@@ -23,8 +23,9 @@ func TestState_String(t *testing.T) {
 	}{
 		{StateNew, "New"},
 		{StateStarting, "Starting"},
-		{StateActive, "Active"},
+		{StateReady, "Ready"},
 		{StateClosing, "Closing"},
+		{StateWaitServerClose, "WaitServerClose"},
 		{StateClosed, "Closed"},
 		{State(99), "Unknown"},
 	}
@@ -38,7 +39,8 @@ func TestState_String(t *testing.T) {
 // TestState_OrdinalsPinned guards against accidental renumbering of the State
 // constants. Several downstream paths (logs, metrics labels) rely on the
 // numeric ordinals being stable across releases; bumping one shifts every
-// state above it.
+// state above it. Ordinals also match the Java SessionState.phase values so
+// telemetry compares across language clients.
 func TestState_OrdinalsPinned(t *testing.T) {
 	cases := []struct {
 		state State
@@ -46,9 +48,10 @@ func TestState_OrdinalsPinned(t *testing.T) {
 	}{
 		{StateNew, 0},
 		{StateStarting, 1},
-		{StateActive, 2},
+		{StateReady, 2},
 		{StateClosing, 3},
-		{StateClosed, 4},
+		{StateWaitServerClose, 4},
+		{StateClosed, 5},
 	}
 	for _, tc := range cases {
 		if got := int(tc.state); got != tc.want {

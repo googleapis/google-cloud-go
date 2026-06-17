@@ -15,22 +15,27 @@
 package internal
 
 // State represents the lifecycle state of a Session. Sessions move strictly
-// forward through the values; once StateClosed is reached the session is
-// terminal.
+// forward through the values (monotonic by ordinal); once StateClosed is
+// reached the session is terminal. Modeled on the SessionState enum in the
+// Java Bigtable client (google-cloud-java).
 type State int
 
 const (
-	// StateNew indicates the session is newly created and not yet active.
+	// StateNew indicates the session is newly created and not yet started.
 	StateNew State = iota
-	// StateStarting indicates the session is dialing and handshaking.
+	// StateStarting indicates the session is dialing and handshaking
+	// (OpenSession in flight).
 	StateStarting
-	// StateActive indicates the session is active and ready for RPCs.
-	StateActive
-	// StateClosing indicates the session is draining and shutting down. It
-	// covers both the pre-CloseSession drain and the post-CloseSession wait
-	// for the server's EOF.
+	// StateReady indicates the session has received OpenSessionResponse and
+	// is ready to dispatch vRPCs.
+	StateReady
+	// StateClosing indicates a client-initiated close is in progress: the
+	// session is draining outstanding vRPCs before sending CloseSession.
 	StateClosing
-	// StateClosed indicates the session is closed.
+	// StateWaitServerClose indicates CloseSession has been sent and the
+	// session is waiting for the server's EOF (trailers) on the stream.
+	StateWaitServerClose
+	// StateClosed indicates the session is fully closed. Terminal.
 	StateClosed
 )
 
@@ -41,10 +46,12 @@ func (s State) String() string {
 		return "New"
 	case StateStarting:
 		return "Starting"
-	case StateActive:
-		return "Active"
+	case StateReady:
+		return "Ready"
 	case StateClosing:
 		return "Closing"
+	case StateWaitServerClose:
+		return "WaitServerClose"
 	case StateClosed:
 		return "Closed"
 	default:
