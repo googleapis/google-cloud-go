@@ -25,7 +25,6 @@ jobs:
           go-version: '1.26.x'
       - name: Run go mod tidy across all modules
         run: |
-          go mod tidy
           for i in $(find . -name go.mod -not -path '*/vendor/*'); do
             pushd $(dirname "$i")
             go mod tidy
@@ -36,7 +35,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           if ! git diff --quiet; then
-            git add $(find . \( -name "go.mod" -o -name "go.sum" \) -not -path '*/vendor/*')
+            git add -u '**/go.mod' '**/go.sum'
             git commit -m "chore: run go mod tidy after Renovate dependency update"
             git push
           fi
