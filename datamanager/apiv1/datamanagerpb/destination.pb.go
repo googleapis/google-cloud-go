@@ -286,7 +286,7 @@ type ProductAccount struct {
 	Product Product `protobuf:"varint,1,opt,name=product,proto3,enum=google.ads.datamanager.v1.Product" json:"product,omitempty"`
 	// Required. The ID of the account. For example, your Google Ads account ID.
 	AccountId string `protobuf:"bytes,2,opt,name=account_id,json=accountId,proto3" json:"account_id,omitempty"`
-	// Optional. The type of the account. For example, `GOOGLE_ADS`.
+	// Required. The type of the account. For example, `GOOGLE_ADS`.
 	// Either `account_type` or the deprecated `product` is required.
 	// If both are set, the values must match.
 	AccountType   ProductAccount_AccountType `protobuf:"varint,3,opt,name=account_type,json=accountType,proto3,enum=google.ads.datamanager.v1.ProductAccount_AccountType" json:"account_type,omitempty"`
@@ -361,7 +361,7 @@ const file_google_ads_datamanager_v1_destination_proto_rawDesc = "" +
 	"\aproduct\x18\x01 \x01(\x0e2\".google.ads.datamanager.v1.ProductB\x02\x18\x01R\aproduct\x12\"\n" +
 	"\n" +
 	"account_id\x18\x02 \x01(\tB\x03\xe0A\x02R\taccountId\x12]\n" +
-	"\faccount_type\x18\x03 \x01(\x0e25.google.ads.datamanager.v1.ProductAccount.AccountTypeB\x03\xe0A\x01R\vaccountType\"\xe1\x01\n" +
+	"\faccount_type\x18\x03 \x01(\x0e25.google.ads.datamanager.v1.ProductAccount.AccountTypeB\x03\xe0A\x02R\vaccountType\"\xe1\x01\n" +
 	"\vAccountType\x12\x1c\n" +
 	"\x18ACCOUNT_TYPE_UNSPECIFIED\x10\x00\x12\x0e\n" +
 	"\n" +

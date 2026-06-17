@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -57,6 +57,8 @@ type RankingRecord struct {
 	// be set otherwise an INVALID_ARGUMENT error is thrown.
 	Content string `protobuf:"bytes,3,opt,name=content,proto3" json:"content,omitempty"`
 	// The score of this record based on the given query and selected model.
+	// The score will be rounded to 4 decimal places. If the score is close to 0,
+	// it will be rounded to 0.00001 to avoid returning unset.
 	Score         float32 `protobuf:"fixed32,4,opt,name=score,proto3" json:"score,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -130,7 +132,7 @@ type RankRequest struct {
 	RankingConfig string `protobuf:"bytes,1,opt,name=ranking_config,json=rankingConfig,proto3" json:"ranking_config,omitempty"`
 	// The identifier of the model to use. It is one of:
 	//
-	// * `semantic-ranker-512@latest`: Semantic ranking model with maxiumn input
+	// * `semantic-ranker-512@latest`: Semantic ranking model with maximum input
 	// token size 512.
 	//
 	// It is set to `semantic-ranker-512@latest` by default if unspecified.
@@ -140,7 +142,7 @@ type RankRequest struct {
 	TopN int32 `protobuf:"varint,3,opt,name=top_n,json=topN,proto3" json:"top_n,omitempty"`
 	// The query to use.
 	Query string `protobuf:"bytes,4,opt,name=query,proto3" json:"query,omitempty"`
-	// Required. A list of records to rank. At most 200 records to rank.
+	// Required. A list of records to rank.
 	Records []*RankingRecord `protobuf:"bytes,5,rep,name=records,proto3" json:"records,omitempty"`
 	// If true, the response will contain only record ID and score. By default, it
 	// is false, the response will contain record details.
@@ -318,9 +320,9 @@ const file_google_cloud_discoveryengine_v1beta_rank_service_proto_rawDesc = "" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\\\n" +
 	"\fRankResponse\x12L\n" +
-	"\arecords\x18\x05 \x03(\v22.google.cloud.discoveryengine.v1beta.RankingRecordR\arecords2\xa1\x02\n" +
+	"\arecords\x18\x05 \x03(\v22.google.cloud.discoveryengine.v1beta.RankingRecordR\arecords2\x9f\x03\n" +
 	"\vRankService\x12\xbd\x01\n" +
-	"\x04Rank\x120.google.cloud.discoveryengine.v1beta.RankRequest\x1a1.google.cloud.discoveryengine.v1beta.RankResponse\"P\x82\xd3\xe4\x93\x02J:\x01*\"E/v1beta/{ranking_config=projects/*/locations/*/rankingConfigs/*}:rank\x1aR\xcaA\x1ediscoveryengine.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\x97\x02\n" +
+	"\x04Rank\x120.google.cloud.discoveryengine.v1beta.RankRequest\x1a1.google.cloud.discoveryengine.v1beta.RankResponse\"P\x82\xd3\xe4\x93\x02J:\x01*\"E/v1beta/{ranking_config=projects/*/locations/*/rankingConfigs/*}:rank\x1a\xcf\x01\xcaA\x1ediscoveryengine.googleapis.com\xd2A\xaa\x01https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/discoveryengine.readwrite,https://www.googleapis.com/auth/discoveryengine.serving.readwriteB\x97\x02\n" +
 	"'com.google.cloud.discoveryengine.v1betaB\x10RankServiceProtoP\x01ZQcloud.google.com/go/discoveryengine/apiv1beta/discoveryenginepb;discoveryenginepb\xa2\x02\x0fDISCOVERYENGINE\xaa\x02#Google.Cloud.DiscoveryEngine.V1Beta\xca\x02#Google\\Cloud\\DiscoveryEngine\\V1beta\xea\x02&Google::Cloud::DiscoveryEngine::V1betab\x06proto3"
 
 var (

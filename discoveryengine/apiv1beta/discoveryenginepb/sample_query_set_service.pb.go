@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -485,14 +485,13 @@ const file_google_cloud_discoveryengine_v1beta_sample_query_set_service_proto_ra
 	"updateMask\"h\n" +
 	"\x1bDeleteSampleQuerySetRequest\x12I\n" +
 	"\x04name\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
-	"-discoveryengine.googleapis.com/SampleQuerySetR\x04name2\x82\n" +
-	"\n" +
+	"-discoveryengine.googleapis.com/SampleQuerySetR\x04name2\x80\v\n" +
 	"\x15SampleQuerySetService\x12\xcf\x01\n" +
 	"\x11GetSampleQuerySet\x12=.google.cloud.discoveryengine.v1beta.GetSampleQuerySetRequest\x1a3.google.cloud.discoveryengine.v1beta.SampleQuerySet\"F\xdaA\x04name\x82\xd3\xe4\x93\x029\x127/v1beta/{name=projects/*/locations/*/sampleQuerySets/*}\x12\xe2\x01\n" +
 	"\x13ListSampleQuerySets\x12?.google.cloud.discoveryengine.v1beta.ListSampleQuerySetsRequest\x1a@.google.cloud.discoveryengine.v1beta.ListSampleQuerySetsResponse\"H\xdaA\x06parent\x82\xd3\xe4\x93\x029\x127/v1beta/{parent=projects/*/locations/*}/sampleQuerySets\x12\x8e\x02\n" +
 	"\x14CreateSampleQuerySet\x12@.google.cloud.discoveryengine.v1beta.CreateSampleQuerySetRequest\x1a3.google.cloud.discoveryengine.v1beta.SampleQuerySet\"\x7f\xdaA+parent,sample_query_set,sample_query_set_id\x82\xd3\xe4\x93\x02K:\x10sample_query_set\"7/v1beta/{parent=projects/*/locations/*}/sampleQuerySets\x12\x91\x02\n" +
 	"\x14UpdateSampleQuerySet\x12@.google.cloud.discoveryengine.v1beta.UpdateSampleQuerySetRequest\x1a3.google.cloud.discoveryengine.v1beta.SampleQuerySet\"\x81\x01\xdaA\x1csample_query_set,update_mask\x82\xd3\xe4\x93\x02\\:\x10sample_query_set2H/v1beta/{sample_query_set.name=projects/*/locations/*/sampleQuerySets/*}\x12\xb8\x01\n" +
-	"\x14DeleteSampleQuerySet\x12@.google.cloud.discoveryengine.v1beta.DeleteSampleQuerySetRequest\x1a\x16.google.protobuf.Empty\"F\xdaA\x04name\x82\xd3\xe4\x93\x029*7/v1beta/{name=projects/*/locations/*/sampleQuerySets/*}\x1aR\xcaA\x1ediscoveryengine.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\xa1\x02\n" +
+	"\x14DeleteSampleQuerySet\x12@.google.cloud.discoveryengine.v1beta.DeleteSampleQuerySetRequest\x1a\x16.google.protobuf.Empty\"F\xdaA\x04name\x82\xd3\xe4\x93\x029*7/v1beta/{name=projects/*/locations/*/sampleQuerySets/*}\x1a\xcf\x01\xcaA\x1ediscoveryengine.googleapis.com\xd2A\xaa\x01https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/discoveryengine.readwrite,https://www.googleapis.com/auth/discoveryengine.serving.readwriteB\xa1\x02\n" +
 	"'com.google.cloud.discoveryengine.v1betaB\x1aSampleQuerySetServiceProtoP\x01ZQcloud.google.com/go/discoveryengine/apiv1beta/discoveryenginepb;discoveryenginepb\xa2\x02\x0fDISCOVERYENGINE\xaa\x02#Google.Cloud.DiscoveryEngine.V1Beta\xca\x02#Google\\Cloud\\DiscoveryEngine\\V1beta\xea\x02&Google::Cloud::DiscoveryEngine::V1betab\x06proto3"
 
 var (

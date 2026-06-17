@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -153,7 +153,7 @@ func (GrpcRoute_HeaderMatch_Type) EnumDescriptor() ([]byte, []int) {
 type GrpcRoute struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Identifier. Name of the GrpcRoute resource. It matches pattern
-	// `projects/*/locations/global/grpcRoutes/<grpc_route_name>`
+	// `projects/*/locations/*/grpcRoutes/<grpc_route_name>`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Output only. Server-defined URL of this resource
 	SelfLink string `protobuf:"bytes,12,opt,name=self_link,json=selfLink,proto3" json:"self_link,omitempty"`
@@ -202,14 +202,14 @@ type GrpcRoute struct {
 	// one of the routing rules to route the requests served by the mesh.
 	//
 	// Each mesh reference should match the pattern:
-	// `projects/*/locations/global/meshes/<mesh_name>`
+	// `projects/*/locations/*/meshes/<mesh_name>`
 	Meshes []string `protobuf:"bytes,9,rep,name=meshes,proto3" json:"meshes,omitempty"`
 	// Optional. Gateways defines a list of gateways this GrpcRoute is attached
 	// to, as one of the routing rules to route the requests served by the
 	// gateway.
 	//
 	// Each gateway reference should match the pattern:
-	// `projects/*/locations/global/gateways/<gateway_name>`
+	// `projects/*/locations/*/gateways/<gateway_name>`
 	Gateways []string `protobuf:"bytes,10,rep,name=gateways,proto3" json:"gateways,omitempty"`
 	// Required. A list of detailed rules defining how to route traffic.
 	//
@@ -325,7 +325,7 @@ func (x *GrpcRoute) GetRules() []*GrpcRoute_RouteRule {
 type ListGrpcRoutesRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. The project and location from which the GrpcRoutes should be
-	// listed, specified in the format `projects/*/locations/global`.
+	// listed, specified in the format `projects/*/locations/*`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Maximum number of GrpcRoutes to return per call.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
@@ -472,7 +472,7 @@ func (x *ListGrpcRoutesResponse) GetUnreachable() []string {
 type GetGrpcRouteRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. A name of the GrpcRoute to get. Must be in the format
-	// `projects/*/locations/global/grpcRoutes/*`.
+	// `projects/*/locations/*/grpcRoutes/*`.
 	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -519,7 +519,7 @@ func (x *GetGrpcRouteRequest) GetName() string {
 type CreateGrpcRouteRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. The parent resource of the GrpcRoute. Must be in the
-	// format `projects/*/locations/global`.
+	// format `projects/*/locations/*`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. Short name of the GrpcRoute resource to be created.
 	GrpcRouteId string `protobuf:"bytes,2,opt,name=grpc_route_id,json=grpcRouteId,proto3" json:"grpc_route_id,omitempty"`
@@ -643,7 +643,7 @@ func (x *UpdateGrpcRouteRequest) GetGrpcRoute() *GrpcRoute {
 type DeleteGrpcRouteRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. A name of the GrpcRoute to delete. Must be in the format
-	// `projects/*/locations/global/grpcRoutes/*`.
+	// `projects/*/locations/*/grpcRoutes/*`.
 	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache

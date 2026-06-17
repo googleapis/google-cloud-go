@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -45,7 +45,7 @@ const (
 type TcpRoute struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Identifier. Name of the TcpRoute resource. It matches pattern
-	// `projects/*/locations/global/tcpRoutes/tcp_route_name>`.
+	// `projects/*/locations/*/tcpRoutes/tcp_route_name>`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Output only. Server-defined URL of this resource
 	SelfLink string `protobuf:"bytes,11,opt,name=self_link,json=selfLink,proto3" json:"self_link,omitempty"`
@@ -64,7 +64,7 @@ type TcpRoute struct {
 	// one of the routing rules to route the requests served by the mesh.
 	//
 	// Each mesh reference should match the pattern:
-	// `projects/*/locations/global/meshes/<mesh_name>`
+	// `projects/*/locations/*/meshes/<mesh_name>`
 	//
 	// The attached Mesh should be of a type SIDECAR
 	Meshes []string `protobuf:"bytes,8,rep,name=meshes,proto3" json:"meshes,omitempty"`
@@ -72,7 +72,7 @@ type TcpRoute struct {
 	// as one of the routing rules to route the requests served by the gateway.
 	//
 	// Each gateway reference should match the pattern:
-	// `projects/*/locations/global/gateways/<gateway_name>`
+	// `projects/*/locations/*/gateways/<gateway_name>`
 	Gateways []string `protobuf:"bytes,9,rep,name=gateways,proto3" json:"gateways,omitempty"`
 	// Optional. Set of label tags associated with the TcpRoute resource.
 	Labels        map[string]string `protobuf:"bytes,10,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
@@ -177,7 +177,7 @@ func (x *TcpRoute) GetLabels() map[string]string {
 type ListTcpRoutesRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. The project and location from which the TcpRoutes should be
-	// listed, specified in the format `projects/*/locations/global`.
+	// listed, specified in the format `projects/*/locations/*`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Maximum number of TcpRoutes to return per call.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
@@ -324,7 +324,7 @@ func (x *ListTcpRoutesResponse) GetUnreachable() []string {
 type GetTcpRouteRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. A name of the TcpRoute to get. Must be in the format
-	// `projects/*/locations/global/tcpRoutes/*`.
+	// `projects/*/locations/*/tcpRoutes/*`.
 	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -371,7 +371,7 @@ func (x *GetTcpRouteRequest) GetName() string {
 type CreateTcpRouteRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. The parent resource of the TcpRoute. Must be in the
-	// format `projects/*/locations/global`.
+	// format `projects/*/locations/*`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. Short name of the TcpRoute resource to be created.
 	TcpRouteId string `protobuf:"bytes,2,opt,name=tcp_route_id,json=tcpRouteId,proto3" json:"tcp_route_id,omitempty"`
@@ -495,7 +495,7 @@ func (x *UpdateTcpRouteRequest) GetTcpRoute() *TcpRoute {
 type DeleteTcpRouteRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. A name of the TcpRoute to delete. Must be in the format
-	// `projects/*/locations/global/tcpRoutes/*`.
+	// `projects/*/locations/*/tcpRoutes/*`.
 	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache

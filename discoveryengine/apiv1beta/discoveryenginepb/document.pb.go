@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -64,13 +64,12 @@ type Document struct {
 	// Immutable. The identifier of the document.
 	//
 	// Id should conform to [RFC-1034](https://tools.ietf.org/html/rfc1034)
-	// standard with a length limit of 63 characters.
+	// standard with a length limit of 128 characters.
 	Id string `protobuf:"bytes,2,opt,name=id,proto3" json:"id,omitempty"`
 	// The identifier of the schema located in the same data store.
 	SchemaId string `protobuf:"bytes,3,opt,name=schema_id,json=schemaId,proto3" json:"schema_id,omitempty"`
-	// The unstructured data linked to this document. Content must be set if this
-	// document is under a
-	// `CONTENT_REQUIRED` data store.
+	// The unstructured data linked to this document. Content can only be set
+	// and must be set if this document is under a `CONTENT_REQUIRED` data store.
 	Content *Document_Content `protobuf:"bytes,10,opt,name=content,proto3" json:"content,omitempty"`
 	// The identifier of the parent document. Currently supports at most two level
 	// document hierarchy.
@@ -81,18 +80,24 @@ type Document struct {
 	// Output only. This field is OUTPUT_ONLY.
 	// It contains derived data that are not in the original input document.
 	DerivedStructData *structpb.Struct `protobuf:"bytes,6,opt,name=derived_struct_data,json=derivedStructData,proto3" json:"derived_struct_data,omitempty"`
-	// Output only. The last time the document was indexed. If this field is set,
-	// the document could be returned in search results.
+	// Access control information for the document.
+	AclInfo *Document_AclInfo `protobuf:"bytes,11,opt,name=acl_info,json=aclInfo,proto3" json:"acl_info,omitempty"`
+	// Output only. The time when the document was last indexed.
 	//
-	// This field is OUTPUT_ONLY. If this field is not populated, it means the
-	// document has never been indexed.
+	// If this field is populated, it means the document has been indexed.
+	// While documents typically become searchable within seconds of indexing,
+	// it can sometimes take up to a few hours.
+	//
+	// If this field is not populated, it means the document has never been
+	// indexed.
 	IndexTime *timestamppb.Timestamp `protobuf:"bytes,13,opt,name=index_time,json=indexTime,proto3" json:"index_time,omitempty"`
 	// Output only. The index status of the document.
 	//
 	//   - If document is indexed successfully, the index_time field is populated.
 	//   - Otherwise, if document is not indexed due to errors, the error_samples
 	//     field is populated.
-	//   - Otherwise, index_status is unset.
+	//   - Otherwise, if document's index is in progress, the pending_message field
+	//     is populated.
 	IndexStatus   *Document_IndexStatus `protobuf:"bytes,15,opt,name=index_status,json=indexStatus,proto3" json:"index_status,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -195,6 +200,13 @@ func (x *Document) GetDerivedStructData() *structpb.Struct {
 	return nil
 }
 
+func (x *Document) GetAclInfo() *Document_AclInfo {
+	if x != nil {
+		return x.AclInfo
+	}
+	return nil
+}
+
 func (x *Document) GetIndexTime() *timestamppb.Timestamp {
 	if x != nil {
 		return x.IndexTime
@@ -234,6 +246,8 @@ func (*Document_JsonData) isDocument_Data() {}
 // Unstructured data linked to this document.
 type Document_Content struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
+	// The content of the unstructured document.
+	//
 	// Types that are valid to be assigned to Content:
 	//
 	//	*Document_Content_RawBytes
@@ -243,9 +257,23 @@ type Document_Content struct {
 	//
 	// * `application/pdf` (PDF, only native PDFs are supported for now)
 	// * `text/html` (HTML)
+	// * `text/plain` (TXT)
+	// * `application/xml` or `text/xml` (XML)
+	// * `application/json` (JSON)
 	// * `application/vnd.openxmlformats-officedocument.wordprocessingml.document` (DOCX)
 	// * `application/vnd.openxmlformats-officedocument.presentationml.presentation` (PPTX)
-	// * `text/plain` (TXT)
+	// * `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`
+	// (XLSX)
+	// * `application/vnd.ms-excel.sheet.macroenabled.12` (XLSM)
+	//
+	// The following types are supported only if layout parser is enabled in the
+	// data store:
+	//
+	// * `image/bmp` (BMP)
+	// * `image/gif` (GIF)
+	// * `image/jpeg` (JPEG)
+	// * `image/png` (PNG)
+	// * `image/tiff` (TIFF)
 	//
 	// See https://www.iana.org/assignments/media-types/media-types.xhtml.
 	MimeType      string `protobuf:"bytes,1,opt,name=mime_type,json=mimeType,proto3" json:"mime_type,omitempty"`
@@ -342,22 +370,73 @@ func (*Document_Content_RawBytes) isDocument_Content_Content() {}
 
 func (*Document_Content_Uri) isDocument_Content_Content() {}
 
+// ACL Information of the Document.
+type Document_AclInfo struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Readers of the document.
+	Readers       []*Document_AclInfo_AccessRestriction `protobuf:"bytes,1,rep,name=readers,proto3" json:"readers,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Document_AclInfo) Reset() {
+	*x = Document_AclInfo{}
+	mi := &file_google_cloud_discoveryengine_v1beta_document_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Document_AclInfo) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Document_AclInfo) ProtoMessage() {}
+
+func (x *Document_AclInfo) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_discoveryengine_v1beta_document_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Document_AclInfo.ProtoReflect.Descriptor instead.
+func (*Document_AclInfo) Descriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1beta_document_proto_rawDescGZIP(), []int{0, 1}
+}
+
+func (x *Document_AclInfo) GetReaders() []*Document_AclInfo_AccessRestriction {
+	if x != nil {
+		return x.Readers
+	}
+	return nil
+}
+
 // Index status of the document.
 type Document_IndexStatus struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The time when the document was indexed.
 	// If this field is populated, it means the document has been indexed.
+	// While documents typically become searchable within seconds of indexing,
+	// it can sometimes take up to a few hours.
 	IndexTime *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=index_time,json=indexTime,proto3" json:"index_time,omitempty"`
 	// A sample of errors encountered while indexing the document.
 	// If this field is populated, the document is not indexed due to errors.
-	ErrorSamples  []*status.Status `protobuf:"bytes,2,rep,name=error_samples,json=errorSamples,proto3" json:"error_samples,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	ErrorSamples []*status.Status `protobuf:"bytes,2,rep,name=error_samples,json=errorSamples,proto3" json:"error_samples,omitempty"`
+	// Immutable. The message indicates the document index is in progress.
+	// If this field is populated, the document index is pending.
+	PendingMessage string `protobuf:"bytes,3,opt,name=pending_message,json=pendingMessage,proto3" json:"pending_message,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *Document_IndexStatus) Reset() {
 	*x = Document_IndexStatus{}
-	mi := &file_google_cloud_discoveryengine_v1beta_document_proto_msgTypes[2]
+	mi := &file_google_cloud_discoveryengine_v1beta_document_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -369,7 +448,7 @@ func (x *Document_IndexStatus) String() string {
 func (*Document_IndexStatus) ProtoMessage() {}
 
 func (x *Document_IndexStatus) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1beta_document_proto_msgTypes[2]
+	mi := &file_google_cloud_discoveryengine_v1beta_document_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -382,7 +461,7 @@ func (x *Document_IndexStatus) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Document_IndexStatus.ProtoReflect.Descriptor instead.
 func (*Document_IndexStatus) Descriptor() ([]byte, []int) {
-	return file_google_cloud_discoveryengine_v1beta_document_proto_rawDescGZIP(), []int{0, 1}
+	return file_google_cloud_discoveryengine_v1beta_document_proto_rawDescGZIP(), []int{0, 2}
 }
 
 func (x *Document_IndexStatus) GetIndexTime() *timestamppb.Timestamp {
@@ -399,11 +478,134 @@ func (x *Document_IndexStatus) GetErrorSamples() []*status.Status {
 	return nil
 }
 
+func (x *Document_IndexStatus) GetPendingMessage() string {
+	if x != nil {
+		return x.PendingMessage
+	}
+	return ""
+}
+
+// AclRestriction to model complex inheritance restrictions.
+//
+// Example: Modeling a "Both Permit" inheritance, where to access a
+// child document, user needs to have access to parent document.
+//
+// Document Hierarchy - Space_S --> Page_P.
+//
+// Readers:
+//
+//	Space_S: group_1, user_1
+//	Page_P: group_2, group_3, user_2
+//
+// Space_S ACL Restriction -
+//
+//	{
+//	  "acl_info": {
+//	    "readers": [
+//	      {
+//	        "principals": [
+//	          {
+//	            "group_id": "group_1"
+//	          },
+//	          {
+//	            "user_id": "user_1"
+//	          }
+//	        ]
+//	      }
+//	    ]
+//	  }
+//	}
+//
+// Page_P ACL Restriction.
+//
+//	{
+//	  "acl_info": {
+//	    "readers": [
+//	      {
+//	        "principals": [
+//	          {
+//	            "group_id": "group_2"
+//	          },
+//	          {
+//	            "group_id": "group_3"
+//	          },
+//	          {
+//	            "user_id": "user_2"
+//	          }
+//	        ],
+//	      },
+//	      {
+//	        "principals": [
+//	          {
+//	            "group_id": "group_1"
+//	          },
+//	          {
+//	            "user_id": "user_1"
+//	          }
+//	        ],
+//	      }
+//	    ]
+//	  }
+//	}
+type Document_AclInfo_AccessRestriction struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// List of principals.
+	Principals []*Principal `protobuf:"bytes,1,rep,name=principals,proto3" json:"principals,omitempty"`
+	// All users within the Identity Provider.
+	IdpWide       bool `protobuf:"varint,2,opt,name=idp_wide,json=idpWide,proto3" json:"idp_wide,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Document_AclInfo_AccessRestriction) Reset() {
+	*x = Document_AclInfo_AccessRestriction{}
+	mi := &file_google_cloud_discoveryengine_v1beta_document_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Document_AclInfo_AccessRestriction) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Document_AclInfo_AccessRestriction) ProtoMessage() {}
+
+func (x *Document_AclInfo_AccessRestriction) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_discoveryengine_v1beta_document_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Document_AclInfo_AccessRestriction.ProtoReflect.Descriptor instead.
+func (*Document_AclInfo_AccessRestriction) Descriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1beta_document_proto_rawDescGZIP(), []int{0, 1, 0}
+}
+
+func (x *Document_AclInfo_AccessRestriction) GetPrincipals() []*Principal {
+	if x != nil {
+		return x.Principals
+	}
+	return nil
+}
+
+func (x *Document_AclInfo_AccessRestriction) GetIdpWide() bool {
+	if x != nil {
+		return x.IdpWide
+	}
+	return false
+}
+
 var File_google_cloud_discoveryengine_v1beta_document_proto protoreflect.FileDescriptor
 
 const file_google_cloud_discoveryengine_v1beta_document_proto_rawDesc = "" +
 	"\n" +
-	"2google/cloud/discoveryengine/v1beta/document.proto\x12#google.cloud.discoveryengine.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\xab\b\n" +
+	"2google/cloud/discoveryengine/v1beta/document.proto\x12#google.cloud.discoveryengine.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a0google/cloud/discoveryengine/v1beta/common.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\x9a\v\n" +
 	"\bDocument\x12:\n" +
 	"\vstruct_data\x18\x04 \x01(\v2\x17.google.protobuf.StructH\x00R\n" +
 	"structData\x12\x1d\n" +
@@ -414,7 +616,8 @@ const file_google_cloud_discoveryengine_v1beta_document_proto_rawDesc = "" +
 	"\acontent\x18\n" +
 	" \x01(\v25.google.cloud.discoveryengine.v1beta.Document.ContentR\acontent\x12,\n" +
 	"\x12parent_document_id\x18\a \x01(\tR\x10parentDocumentId\x12L\n" +
-	"\x13derived_struct_data\x18\x06 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x03R\x11derivedStructData\x12>\n" +
+	"\x13derived_struct_data\x18\x06 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x03R\x11derivedStructData\x12P\n" +
+	"\bacl_info\x18\v \x01(\v25.google.cloud.discoveryengine.v1beta.Document.AclInfoR\aaclInfo\x12>\n" +
 	"\n" +
 	"index_time\x18\r \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tindexTime\x12a\n" +
 	"\findex_status\x18\x0f \x01(\v29.google.cloud.discoveryengine.v1beta.Document.IndexStatusB\x03\xe0A\x03R\vindexStatus\x1ad\n" +
@@ -422,11 +625,19 @@ const file_google_cloud_discoveryengine_v1beta_document_proto_rawDesc = "" +
 	"\traw_bytes\x18\x02 \x01(\fH\x00R\brawBytes\x12\x12\n" +
 	"\x03uri\x18\x03 \x01(\tH\x00R\x03uri\x12\x1b\n" +
 	"\tmime_type\x18\x01 \x01(\tR\bmimeTypeB\t\n" +
-	"\acontent\x1a\x81\x01\n" +
+	"\acontent\x1a\xec\x01\n" +
+	"\aAclInfo\x12a\n" +
+	"\areaders\x18\x01 \x03(\v2G.google.cloud.discoveryengine.v1beta.Document.AclInfo.AccessRestrictionR\areaders\x1a~\n" +
+	"\x11AccessRestriction\x12N\n" +
+	"\n" +
+	"principals\x18\x01 \x03(\v2..google.cloud.discoveryengine.v1beta.PrincipalR\n" +
+	"principals\x12\x19\n" +
+	"\bidp_wide\x18\x02 \x01(\bR\aidpWide\x1a\xaf\x01\n" +
 	"\vIndexStatus\x129\n" +
 	"\n" +
 	"index_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\tindexTime\x127\n" +
-	"\rerror_samples\x18\x02 \x03(\v2\x12.google.rpc.StatusR\ferrorSamples:\x96\x02\xeaA\x92\x02\n" +
+	"\rerror_samples\x18\x02 \x03(\v2\x12.google.rpc.StatusR\ferrorSamples\x12,\n" +
+	"\x0fpending_message\x18\x03 \x01(\tB\x03\xe0A\x05R\x0ependingMessage:\x96\x02\xeaA\x92\x02\n" +
 	"'discoveryengine.googleapis.com/Document\x12fprojects/{project}/locations/{location}/dataStores/{data_store}/branches/{branch}/documents/{document}\x12\x7fprojects/{project}/locations/{location}/collections/{collection}/dataStores/{data_store}/branches/{branch}/documents/{document}B\x06\n" +
 	"\x04dataB\x94\x02\n" +
 	"'com.google.cloud.discoveryengine.v1betaB\rDocumentProtoP\x01ZQcloud.google.com/go/discoveryengine/apiv1beta/discoveryenginepb;discoveryenginepb\xa2\x02\x0fDISCOVERYENGINE\xaa\x02#Google.Cloud.DiscoveryEngine.V1Beta\xca\x02#Google\\Cloud\\DiscoveryEngine\\V1beta\xea\x02&Google::Cloud::DiscoveryEngine::V1betab\x06proto3"
@@ -443,28 +654,34 @@ func file_google_cloud_discoveryengine_v1beta_document_proto_rawDescGZIP() []byt
 	return file_google_cloud_discoveryengine_v1beta_document_proto_rawDescData
 }
 
-var file_google_cloud_discoveryengine_v1beta_document_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
+var file_google_cloud_discoveryengine_v1beta_document_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_google_cloud_discoveryengine_v1beta_document_proto_goTypes = []any{
-	(*Document)(nil),              // 0: google.cloud.discoveryengine.v1beta.Document
-	(*Document_Content)(nil),      // 1: google.cloud.discoveryengine.v1beta.Document.Content
-	(*Document_IndexStatus)(nil),  // 2: google.cloud.discoveryengine.v1beta.Document.IndexStatus
-	(*structpb.Struct)(nil),       // 3: google.protobuf.Struct
-	(*timestamppb.Timestamp)(nil), // 4: google.protobuf.Timestamp
-	(*status.Status)(nil),         // 5: google.rpc.Status
+	(*Document)(nil),                           // 0: google.cloud.discoveryengine.v1beta.Document
+	(*Document_Content)(nil),                   // 1: google.cloud.discoveryengine.v1beta.Document.Content
+	(*Document_AclInfo)(nil),                   // 2: google.cloud.discoveryengine.v1beta.Document.AclInfo
+	(*Document_IndexStatus)(nil),               // 3: google.cloud.discoveryengine.v1beta.Document.IndexStatus
+	(*Document_AclInfo_AccessRestriction)(nil), // 4: google.cloud.discoveryengine.v1beta.Document.AclInfo.AccessRestriction
+	(*structpb.Struct)(nil),                    // 5: google.protobuf.Struct
+	(*timestamppb.Timestamp)(nil),              // 6: google.protobuf.Timestamp
+	(*status.Status)(nil),                      // 7: google.rpc.Status
+	(*Principal)(nil),                          // 8: google.cloud.discoveryengine.v1beta.Principal
 }
 var file_google_cloud_discoveryengine_v1beta_document_proto_depIdxs = []int32{
-	3, // 0: google.cloud.discoveryengine.v1beta.Document.struct_data:type_name -> google.protobuf.Struct
-	1, // 1: google.cloud.discoveryengine.v1beta.Document.content:type_name -> google.cloud.discoveryengine.v1beta.Document.Content
-	3, // 2: google.cloud.discoveryengine.v1beta.Document.derived_struct_data:type_name -> google.protobuf.Struct
-	4, // 3: google.cloud.discoveryengine.v1beta.Document.index_time:type_name -> google.protobuf.Timestamp
-	2, // 4: google.cloud.discoveryengine.v1beta.Document.index_status:type_name -> google.cloud.discoveryengine.v1beta.Document.IndexStatus
-	4, // 5: google.cloud.discoveryengine.v1beta.Document.IndexStatus.index_time:type_name -> google.protobuf.Timestamp
-	5, // 6: google.cloud.discoveryengine.v1beta.Document.IndexStatus.error_samples:type_name -> google.rpc.Status
-	7, // [7:7] is the sub-list for method output_type
-	7, // [7:7] is the sub-list for method input_type
-	7, // [7:7] is the sub-list for extension type_name
-	7, // [7:7] is the sub-list for extension extendee
-	0, // [0:7] is the sub-list for field type_name
+	5,  // 0: google.cloud.discoveryengine.v1beta.Document.struct_data:type_name -> google.protobuf.Struct
+	1,  // 1: google.cloud.discoveryengine.v1beta.Document.content:type_name -> google.cloud.discoveryengine.v1beta.Document.Content
+	5,  // 2: google.cloud.discoveryengine.v1beta.Document.derived_struct_data:type_name -> google.protobuf.Struct
+	2,  // 3: google.cloud.discoveryengine.v1beta.Document.acl_info:type_name -> google.cloud.discoveryengine.v1beta.Document.AclInfo
+	6,  // 4: google.cloud.discoveryengine.v1beta.Document.index_time:type_name -> google.protobuf.Timestamp
+	3,  // 5: google.cloud.discoveryengine.v1beta.Document.index_status:type_name -> google.cloud.discoveryengine.v1beta.Document.IndexStatus
+	4,  // 6: google.cloud.discoveryengine.v1beta.Document.AclInfo.readers:type_name -> google.cloud.discoveryengine.v1beta.Document.AclInfo.AccessRestriction
+	6,  // 7: google.cloud.discoveryengine.v1beta.Document.IndexStatus.index_time:type_name -> google.protobuf.Timestamp
+	7,  // 8: google.cloud.discoveryengine.v1beta.Document.IndexStatus.error_samples:type_name -> google.rpc.Status
+	8,  // 9: google.cloud.discoveryengine.v1beta.Document.AclInfo.AccessRestriction.principals:type_name -> google.cloud.discoveryengine.v1beta.Principal
+	10, // [10:10] is the sub-list for method output_type
+	10, // [10:10] is the sub-list for method input_type
+	10, // [10:10] is the sub-list for extension type_name
+	10, // [10:10] is the sub-list for extension extendee
+	0,  // [0:10] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_discoveryengine_v1beta_document_proto_init() }
@@ -472,6 +689,7 @@ func file_google_cloud_discoveryengine_v1beta_document_proto_init() {
 	if File_google_cloud_discoveryengine_v1beta_document_proto != nil {
 		return
 	}
+	file_google_cloud_discoveryengine_v1beta_common_proto_init()
 	file_google_cloud_discoveryengine_v1beta_document_proto_msgTypes[0].OneofWrappers = []any{
 		(*Document_StructData)(nil),
 		(*Document_JsonData)(nil),
@@ -486,7 +704,7 @@ func file_google_cloud_discoveryengine_v1beta_document_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_discoveryengine_v1beta_document_proto_rawDesc), len(file_google_cloud_discoveryengine_v1beta_document_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   3,
+			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

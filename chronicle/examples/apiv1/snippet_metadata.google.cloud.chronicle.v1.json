@@ -4450,6 +4450,52 @@
     {
       "clientMethod": {
         "client": {
+          "fullName": "google.cloud.chronicle.v1.ReferenceListClient",
+          "shortName": "ReferenceListClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.ReferenceListClient.VerifyReferenceList",
+        "method": {
+          "fullName": "google.cloud.chronicle.v1.ReferenceListService.VerifyReferenceList",
+          "service": {
+            "fullName": "google.cloud.chronicle.v1.ReferenceListService",
+            "shortName": "ReferenceListService"
+          },
+          "shortName": "VerifyReferenceList"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chroniclepb.VerifyReferenceListRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*chroniclepb.VerifyReferenceListResponse",
+        "shortName": "VerifyReferenceList"
+      },
+      "description": "VerifyReferenceList verifyReferenceList validates list content and returns line errors, if any.",
+      "file": "ReferenceListClient/VerifyReferenceList/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_ReferenceListService_VerifyReferenceList_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle VerifyReferenceList Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
           "fullName": "google.cloud.chronicle.v1.RuleClient",
           "shortName": "RuleClient"
         },
@@ -5179,6 +5225,52 @@
         }
       ],
       "title": "chronicle UpdateRuleDeployment Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.RuleClient",
+          "shortName": "RuleClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.RuleClient.VerifyRuleText",
+        "method": {
+          "fullName": "google.cloud.chronicle.v1.RuleService.VerifyRuleText",
+          "service": {
+            "fullName": "google.cloud.chronicle.v1.RuleService",
+            "shortName": "RuleService"
+          },
+          "shortName": "VerifyRuleText"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chroniclepb.VerifyRuleTextRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*chroniclepb.VerifyRuleTextResponse",
+        "shortName": "VerifyRuleText"
+      },
+      "description": "VerifyRuleText verifies the given rule text.",
+      "file": "RuleClient/VerifyRuleText/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_RuleService_VerifyRuleText_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle VerifyRuleText Sample"
     }
   ]
 }

@@ -290,53 +290,6 @@ func (x *GoldengateDeploymentEnvironment) GetStorageUsageLimitGbPerCpuCore() int
 	return 0
 }
 
-// Message for getting a GoldengateDeploymentEnvironment.
-type GetGoldengateDeploymentEnvironmentRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. Name of the resource with the format:
-	// projects/{project}/locations/{location}/goldengateDeploymentEnvironments/{goldengate_deployment_environment}
-	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *GetGoldengateDeploymentEnvironmentRequest) Reset() {
-	*x = GetGoldengateDeploymentEnvironmentRequest{}
-	mi := &file_google_cloud_oracledatabase_v1_goldengate_deployment_environment_proto_msgTypes[1]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *GetGoldengateDeploymentEnvironmentRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*GetGoldengateDeploymentEnvironmentRequest) ProtoMessage() {}
-
-func (x *GetGoldengateDeploymentEnvironmentRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_oracledatabase_v1_goldengate_deployment_environment_proto_msgTypes[1]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use GetGoldengateDeploymentEnvironmentRequest.ProtoReflect.Descriptor instead.
-func (*GetGoldengateDeploymentEnvironmentRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_oracledatabase_v1_goldengate_deployment_environment_proto_rawDescGZIP(), []int{1}
-}
-
-func (x *GetGoldengateDeploymentEnvironmentRequest) GetName() string {
-	if x != nil {
-		return x.Name
-	}
-	return ""
-}
-
 // Message for listing GoldengateDeploymentEnvironments.
 type ListGoldengateDeploymentEnvironmentsRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -356,7 +309,7 @@ type ListGoldengateDeploymentEnvironmentsRequest struct {
 
 func (x *ListGoldengateDeploymentEnvironmentsRequest) Reset() {
 	*x = ListGoldengateDeploymentEnvironmentsRequest{}
-	mi := &file_google_cloud_oracledatabase_v1_goldengate_deployment_environment_proto_msgTypes[2]
+	mi := &file_google_cloud_oracledatabase_v1_goldengate_deployment_environment_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -368,7 +321,7 @@ func (x *ListGoldengateDeploymentEnvironmentsRequest) String() string {
 func (*ListGoldengateDeploymentEnvironmentsRequest) ProtoMessage() {}
 
 func (x *ListGoldengateDeploymentEnvironmentsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_oracledatabase_v1_goldengate_deployment_environment_proto_msgTypes[2]
+	mi := &file_google_cloud_oracledatabase_v1_goldengate_deployment_environment_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -381,7 +334,7 @@ func (x *ListGoldengateDeploymentEnvironmentsRequest) ProtoReflect() protoreflec
 
 // Deprecated: Use ListGoldengateDeploymentEnvironmentsRequest.ProtoReflect.Descriptor instead.
 func (*ListGoldengateDeploymentEnvironmentsRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_oracledatabase_v1_goldengate_deployment_environment_proto_rawDescGZIP(), []int{2}
+	return file_google_cloud_oracledatabase_v1_goldengate_deployment_environment_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *ListGoldengateDeploymentEnvironmentsRequest) GetParent() string {
@@ -421,7 +374,7 @@ type ListGoldengateDeploymentEnvironmentsResponse struct {
 
 func (x *ListGoldengateDeploymentEnvironmentsResponse) Reset() {
 	*x = ListGoldengateDeploymentEnvironmentsResponse{}
-	mi := &file_google_cloud_oracledatabase_v1_goldengate_deployment_environment_proto_msgTypes[3]
+	mi := &file_google_cloud_oracledatabase_v1_goldengate_deployment_environment_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -433,7 +386,7 @@ func (x *ListGoldengateDeploymentEnvironmentsResponse) String() string {
 func (*ListGoldengateDeploymentEnvironmentsResponse) ProtoMessage() {}
 
 func (x *ListGoldengateDeploymentEnvironmentsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_oracledatabase_v1_goldengate_deployment_environment_proto_msgTypes[3]
+	mi := &file_google_cloud_oracledatabase_v1_goldengate_deployment_environment_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -446,7 +399,7 @@ func (x *ListGoldengateDeploymentEnvironmentsResponse) ProtoReflect() protorefle
 
 // Deprecated: Use ListGoldengateDeploymentEnvironmentsResponse.ProtoReflect.Descriptor instead.
 func (*ListGoldengateDeploymentEnvironmentsResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_oracledatabase_v1_goldengate_deployment_environment_proto_rawDescGZIP(), []int{3}
+	return file_google_cloud_oracledatabase_v1_goldengate_deployment_environment_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *ListGoldengateDeploymentEnvironmentsResponse) GetGoldengateDeploymentEnvironments() []*GoldengateDeploymentEnvironment {
@@ -497,10 +450,7 @@ const file_google_cloud_oracledatabase_v1_goldengate_deployment_environment_prot
 	"\n" +
 	"PRODUCTION\x10\x01\x12\x1a\n" +
 	"\x16DEVELOPMENT_OR_TESTING\x10\x02:\xf4\x01\xeaA\xf0\x01\n" +
-	"=oracledatabase.googleapis.com/GoldengateDeploymentEnvironment\x12lprojects/{project}/locations/{location}/goldengateDeploymentEnvironments/{goldengate_deployment_environment}* goldengateDeploymentEnvironments2\x1fgoldengateDeploymentEnvironment\"\x86\x01\n" +
-	")GetGoldengateDeploymentEnvironmentRequest\x12Y\n" +
-	"\x04name\x18\x01 \x01(\tBE\xe0A\x02\xfaA?\n" +
-	"=oracledatabase.googleapis.com/GoldengateDeploymentEnvironmentR\x04name\"\xd2\x01\n" +
+	"=oracledatabase.googleapis.com/GoldengateDeploymentEnvironment\x12lprojects/{project}/locations/{location}/goldengateDeploymentEnvironments/{goldengate_deployment_environment}* goldengateDeploymentEnvironments2\x1fgoldengateDeploymentEnvironment\"\xd2\x01\n" +
 	"+ListGoldengateDeploymentEnvironmentsRequest\x12]\n" +
 	"\x06parent\x18\x01 \x01(\tBE\xe0A\x02\xfaA?\x12=oracledatabase.googleapis.com/GoldengateDeploymentEnvironmentR\x06parent\x12 \n" +
 	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
@@ -525,14 +475,13 @@ func file_google_cloud_oracledatabase_v1_goldengate_deployment_environment_proto
 }
 
 var file_google_cloud_oracledatabase_v1_goldengate_deployment_environment_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_google_cloud_oracledatabase_v1_goldengate_deployment_environment_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_google_cloud_oracledatabase_v1_goldengate_deployment_environment_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
 var file_google_cloud_oracledatabase_v1_goldengate_deployment_environment_proto_goTypes = []any{
 	(GoldengateDeploymentEnvironment_DeploymentCategory)(0),        // 0: google.cloud.oracledatabase.v1.GoldengateDeploymentEnvironment.DeploymentCategory
 	(GoldengateDeploymentEnvironment_DeploymentEnvironmentType)(0), // 1: google.cloud.oracledatabase.v1.GoldengateDeploymentEnvironment.DeploymentEnvironmentType
 	(*GoldengateDeploymentEnvironment)(nil),                        // 2: google.cloud.oracledatabase.v1.GoldengateDeploymentEnvironment
-	(*GetGoldengateDeploymentEnvironmentRequest)(nil),              // 3: google.cloud.oracledatabase.v1.GetGoldengateDeploymentEnvironmentRequest
-	(*ListGoldengateDeploymentEnvironmentsRequest)(nil),            // 4: google.cloud.oracledatabase.v1.ListGoldengateDeploymentEnvironmentsRequest
-	(*ListGoldengateDeploymentEnvironmentsResponse)(nil),           // 5: google.cloud.oracledatabase.v1.ListGoldengateDeploymentEnvironmentsResponse
+	(*ListGoldengateDeploymentEnvironmentsRequest)(nil),            // 3: google.cloud.oracledatabase.v1.ListGoldengateDeploymentEnvironmentsRequest
+	(*ListGoldengateDeploymentEnvironmentsResponse)(nil),           // 4: google.cloud.oracledatabase.v1.ListGoldengateDeploymentEnvironmentsResponse
 }
 var file_google_cloud_oracledatabase_v1_goldengate_deployment_environment_proto_depIdxs = []int32{
 	0, // 0: google.cloud.oracledatabase.v1.GoldengateDeploymentEnvironment.category:type_name -> google.cloud.oracledatabase.v1.GoldengateDeploymentEnvironment.DeploymentCategory
@@ -556,7 +505,7 @@ func file_google_cloud_oracledatabase_v1_goldengate_deployment_environment_proto
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_oracledatabase_v1_goldengate_deployment_environment_proto_rawDesc), len(file_google_cloud_oracledatabase_v1_goldengate_deployment_environment_proto_rawDesc)),
 			NumEnums:      2,
-			NumMessages:   4,
+			NumMessages:   3,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

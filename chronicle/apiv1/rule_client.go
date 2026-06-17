@@ -52,6 +52,7 @@ type RuleCallOptions struct {
 	ListRules            []gax.CallOption
 	UpdateRule           []gax.CallOption
 	DeleteRule           []gax.CallOption
+	VerifyRuleText       []gax.CallOption
 	ListRuleRevisions    []gax.CallOption
 	CreateRetrohunt      []gax.CallOption
 	GetRetrohunt         []gax.CallOption
@@ -114,6 +115,18 @@ func defaultRuleCallOptions() *RuleCallOptions {
 		},
 		DeleteRule: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		VerifyRuleText: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
 		},
 		ListRuleRevisions: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
@@ -221,6 +234,17 @@ func defaultRuleRESTCallOptions() *RuleCallOptions {
 		DeleteRule: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		VerifyRuleText: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		ListRuleRevisions: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -299,6 +323,7 @@ type internalRuleClient interface {
 	ListRules(context.Context, *chroniclepb.ListRulesRequest, ...gax.CallOption) *RuleIterator
 	UpdateRule(context.Context, *chroniclepb.UpdateRuleRequest, ...gax.CallOption) (*chroniclepb.Rule, error)
 	DeleteRule(context.Context, *chroniclepb.DeleteRuleRequest, ...gax.CallOption) error
+	VerifyRuleText(context.Context, *chroniclepb.VerifyRuleTextRequest, ...gax.CallOption) (*chroniclepb.VerifyRuleTextResponse, error)
 	ListRuleRevisions(context.Context, *chroniclepb.ListRuleRevisionsRequest, ...gax.CallOption) *RuleIterator
 	CreateRetrohunt(context.Context, *chroniclepb.CreateRetrohuntRequest, ...gax.CallOption) (*CreateRetrohuntOperation, error)
 	CreateRetrohuntOperation(name string) *CreateRetrohuntOperation
@@ -376,6 +401,11 @@ func (c *RuleClient) UpdateRule(ctx context.Context, req *chroniclepb.UpdateRule
 // DeleteRule deletes a Rule.
 func (c *RuleClient) DeleteRule(ctx context.Context, req *chroniclepb.DeleteRuleRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteRule(ctx, req, opts...)
+}
+
+// VerifyRuleText verifies the given rule text.
+func (c *RuleClient) VerifyRuleText(ctx context.Context, req *chroniclepb.VerifyRuleTextRequest, opts ...gax.CallOption) (*chroniclepb.VerifyRuleTextResponse, error) {
+	return c.internalClient.VerifyRuleText(ctx, req, opts...)
 }
 
 // ListRuleRevisions lists all revisions of the rule.
@@ -523,6 +553,7 @@ func NewRuleClient(ctx context.Context, opts ...option.ClientOption) (*RuleClien
 		client.CallOptions.ListRules = append(client.CallOptions.ListRules, gax.WithClientMetrics(metrics))
 		client.CallOptions.UpdateRule = append(client.CallOptions.UpdateRule, gax.WithClientMetrics(metrics))
 		client.CallOptions.DeleteRule = append(client.CallOptions.DeleteRule, gax.WithClientMetrics(metrics))
+		client.CallOptions.VerifyRuleText = append(client.CallOptions.VerifyRuleText, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListRuleRevisions = append(client.CallOptions.ListRuleRevisions, gax.WithClientMetrics(metrics))
 		client.CallOptions.CreateRetrohunt = append(client.CallOptions.CreateRetrohunt, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetRetrohunt = append(client.CallOptions.GetRetrohunt, gax.WithClientMetrics(metrics))
@@ -645,6 +676,7 @@ func NewRuleRESTClient(ctx context.Context, opts ...option.ClientOption) (*RuleC
 		callOpts.ListRules = append(callOpts.ListRules, gax.WithClientMetrics(metrics))
 		callOpts.UpdateRule = append(callOpts.UpdateRule, gax.WithClientMetrics(metrics))
 		callOpts.DeleteRule = append(callOpts.DeleteRule, gax.WithClientMetrics(metrics))
+		callOpts.VerifyRuleText = append(callOpts.VerifyRuleText, gax.WithClientMetrics(metrics))
 		callOpts.ListRuleRevisions = append(callOpts.ListRuleRevisions, gax.WithClientMetrics(metrics))
 		callOpts.CreateRetrohunt = append(callOpts.CreateRetrohunt, gax.WithClientMetrics(metrics))
 		callOpts.GetRetrohunt = append(callOpts.GetRetrohunt, gax.WithClientMetrics(metrics))
@@ -847,6 +879,30 @@ func (c *ruleGRPCClient) DeleteRule(ctx context.Context, req *chroniclepb.Delete
 		return err
 	}, opts...)
 	return err
+}
+
+func (c *ruleGRPCClient) VerifyRuleText(ctx context.Context, req *chroniclepb.VerifyRuleTextRequest, opts ...gax.CallOption) (*chroniclepb.VerifyRuleTextResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "instance", url.QueryEscape(req.GetInstance()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetInstance()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.RuleService/VerifyRuleText")
+	}
+	opts = append((*c.CallOptions).VerifyRuleText[0:len((*c.CallOptions).VerifyRuleText):len((*c.CallOptions).VerifyRuleText)], opts...)
+	var resp *chroniclepb.VerifyRuleTextResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.ruleClient.VerifyRuleText, req, settings.GRPC, c.logger, "VerifyRuleText")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (c *ruleGRPCClient) ListRuleRevisions(ctx context.Context, req *chroniclepb.ListRuleRevisionsRequest, opts ...gax.CallOption) *RuleIterator {
@@ -1523,6 +1579,69 @@ func (c *ruleRESTClient) DeleteRule(ctx context.Context, req *chroniclepb.Delete
 		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteRule")
 		return err
 	}, opts...)
+}
+
+// VerifyRuleText verifies the given rule text.
+func (c *ruleRESTClient) VerifyRuleText(ctx context.Context, req *chroniclepb.VerifyRuleTextRequest, opts ...gax.CallOption) (*chroniclepb.VerifyRuleTextResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:verifyRuleText", req.GetInstance())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "instance", url.QueryEscape(req.GetInstance()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetInstance()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.RuleService/VerifyRuleText")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{instance=projects/*/locations/*/instances/*}:verifyRuleText")
+	}
+	opts = append((*c.CallOptions).VerifyRuleText[0:len((*c.CallOptions).VerifyRuleText):len((*c.CallOptions).VerifyRuleText)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &chroniclepb.VerifyRuleTextResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "VerifyRuleText")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }
 
 // ListRuleRevisions lists all revisions of the rule.
