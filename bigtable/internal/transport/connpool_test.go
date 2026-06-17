@@ -51,6 +51,7 @@ func poolOpts() []BigtableChannelPoolOption {
 	return []BigtableChannelPoolOption{
 		WithInstanceName(testInstanceName),
 		WithAppProfile(testAppProfile),
+		WithDirectAccessChecker(newDisabledDirectAccessChecker(nil, nil)),
 	}
 }
 
@@ -145,18 +146,26 @@ func TestNewBigtableChannelPoolEdgeCases(t *testing.T) {
 		name     string
 		size     int
 		dial     func() (*BigtableConn, error)
+		opts     []BigtableChannelPoolOption
 		wantErr  bool
 		errMatch string
 	}{
-		{name: "ZeroSize", size: 0, dial: dialFunc, wantErr: true, errMatch: "must be positive"},
-		{name: "NegativeSize", size: -1, dial: dialFunc, wantErr: true, errMatch: "must be positive"},
-		{name: "NilDial", size: 1, dial: nil, wantErr: true, errMatch: "dial function cannot be nil"},
-		{name: "Valid", size: 1, dial: dialFunc, wantErr: false},
+		{name: "ZeroSize", size: 0, dial: dialFunc, opts: poolOpts(), wantErr: true, errMatch: "must be positive"},
+		{name: "NegativeSize", size: -1, dial: dialFunc, opts: poolOpts(), wantErr: true, errMatch: "must be positive"},
+		{name: "NilDial", size: 1, dial: nil, opts: poolOpts(), wantErr: true, errMatch: "dial function cannot be nil"},
+		{
+			name: "NilDirectAccessChecker",
+			size: 1, dial: dialFunc,
+			opts:     []BigtableChannelPoolOption{WithInstanceName(testInstanceName), WithAppProfile(testAppProfile)},
+			wantErr:  true,
+			errMatch: "DirectAccessChecker is required",
+		},
+		{name: "Valid", size: 1, dial: dialFunc, opts: poolOpts(), wantErr: false},
 	}
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			pool, err := NewBigtableChannelPool(ctx, tc.size, btopt.RoundRobin, tc.dial, time.Now(), poolOpts()...)
+			pool, err := NewBigtableChannelPool(ctx, tc.size, btopt.RoundRobin, tc.dial, time.Now(), tc.opts...)
 			if tc.wantErr {
 				if err == nil {
 					t.Errorf("NewBigtableChannelPool(%d) succeeded, want error containing %q", tc.size, tc.errMatch)

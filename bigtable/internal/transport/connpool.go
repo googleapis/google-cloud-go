@@ -114,7 +114,10 @@ func WithMeterProvider(mp metric.MeterProvider) BigtableChannelPoolOption {
 // Access (DirectPath / DirectPathXds) is compatible at startup. Today the
 // classic channel pool factory wires up a PingAndWarm-based checker; a future
 // session-pool factory will wire up a GetClientConfiguration-based checker.
-// When no checker is provided, the pool runs entirely on the standard dialer.
+// Required: NewBigtableChannelPool refuses construction if no checker is
+// supplied. Callers that want Direct Access off should pass the disabled
+// stub (newDisabledDirectAccessChecker) so the direct_access/compatible
+// metric still surfaces the off state.
 func WithDirectAccessChecker(checker DirectAccessChecker) BigtableChannelPoolOption {
 	return func(p *BigtableChannelPool) {
 		p.directAccessChecker = checker
@@ -424,31 +427,31 @@ func NewBigtableChannelPool(ctx context.Context, connPoolSize int, strategy btop
 		opt(pool)
 	}
 
-	// Default to the standard dialer. The Direct Access checker (when
-	// configured) may swap the dialer for the direct-access equivalent after
-	// a successful compatibility probe. Feature-flag metadata always comes
-	// from pool.featureFlagsMD (set via WithFeatureFlagsMetadata) — both the
-	// direct-access and standard-path connection factories read it from the
-	// same place.
+	if pool.directAccessChecker == nil {
+		poolCancel()
+		return nil, fmt.Errorf("bigtable_connpool: DirectAccessChecker is required (use WithDirectAccessChecker)")
+	}
+
+	// Default to the standard dialer. The Direct Access checker may swap the
+	// dialer for the direct-access equivalent after a successful compatibility
+	// probe. Feature-flag metadata always comes from pool.featureFlagsMD (set
+	// via WithFeatureFlagsMetadata) — both the direct-access and standard-path
+	// connection factories read it from the same place.
 	factoryDial := dial
 
 	var firstConn *BigtableConn
 
-	if pool.directAccessChecker != nil {
-		directAccessConn, isDirectAccess := pool.directAccessChecker.CheckCompatibility(pool.poolCtx)
-		if isDirectAccess {
-			btopt.Debugf(pool.logger, "bigtable_connpool: Direct Access is available. Using Direct Access now.")
-			factoryDial = pool.directAccessChecker.Dialer()
-			firstConn = directAccessConn
-		} else {
-			if directAccessConn != nil {
-				btopt.Debugf(pool.logger, "bigtable_connpool: Closing probe connection (Direct Access unavailable).")
-				directAccessConn.Close()
-			}
-			btopt.Debugf(pool.logger, "bigtable_connpool: Direct Access is not available. Using standard path.")
-		}
+	directAccessConn, isDirectAccess := pool.directAccessChecker.CheckCompatibility(pool.poolCtx)
+	if isDirectAccess {
+		btopt.Debugf(pool.logger, "bigtable_connpool: Direct Access is available. Using Direct Access now.")
+		factoryDial = pool.directAccessChecker.Dialer()
+		firstConn = directAccessConn
 	} else {
-		btopt.Debugf(pool.logger, "bigtable_connpool: Direct Access not configured.")
+		if directAccessConn != nil {
+			btopt.Debugf(pool.logger, "bigtable_connpool: Closing probe connection (Direct Access unavailable).")
+			directAccessConn.Close()
+		}
+		btopt.Debugf(pool.logger, "bigtable_connpool: Direct Access is not available. Using standard path.")
 	}
 
 	// Initialize the connectionFactory
