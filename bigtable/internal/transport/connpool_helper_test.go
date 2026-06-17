@@ -36,8 +36,8 @@ type fakeService struct {
 	btpb.UnimplementedBigtableServer
 	mu                      sync.Mutex
 	pingCount               int
-	pingInflight            int           // Currently in-flight PingAndWarm RPCs
-	pingPeakInflight        int           // High-water mark for concurrent PingAndWarm RPCs
+	pingInflight            int // Currently in-flight PingAndWarm RPCs
+	pingPeakInflight        int // High-water mark for concurrent PingAndWarm RPCs
 	callCount               int
 	streamSema              chan struct{} // To control stream lifetime
 	delay                   time.Duration // To simulate work
