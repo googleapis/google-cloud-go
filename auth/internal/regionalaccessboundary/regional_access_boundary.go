@@ -39,6 +39,7 @@ import (
 	"cloud.google.com/go/auth/internal"
 	"cloud.google.com/go/auth/internal/retry"
 	"cloud.google.com/go/auth/internal/transport/cert"
+	"cloud.google.com/go/compute/metadata"
 	"github.com/googleapis/gax-go/v2/internallog"
 )
 
@@ -242,6 +243,16 @@ func (p *DataProvider) Token(ctx context.Context) (*auth.Token, error) {
 // GetHeaderValue immediately returns a valid header if it's cached, or kicks off a background fetch
 // if it is unpopulated or expired.
 func (p *DataProvider) GetHeaderValue(ctx context.Context, reqURL string, accessToken *auth.Token) string {
+	p.mu.RLock()
+	skip := p.skipLookup
+	data := p.data
+	dataExpiry := p.dataExpiry
+	p.mu.RUnlock()
+
+	if skip {
+		return ""
+	}
+
 	if !strings.Contains(reqURL, "://") {
 		reqURL = "https://" + reqURL
 	}
@@ -272,17 +283,6 @@ func (p *DataProvider) GetHeaderValue(ctx context.Context, reqURL string, access
 		return ""
 	}
 	if uniDomain != "" && uniDomain != internal.DefaultUniverseDomain {
-		return ""
-	}
-
-	// Return the cached data if present and not expired.
-	p.mu.RLock()
-	skip := p.skipLookup
-	data := p.data
-	dataExpiry := p.dataExpiry
-	p.mu.RUnlock()
-
-	if skip {
 		return ""
 	}
 
@@ -556,6 +556,10 @@ func (g *GCEConfigProvider) fetchSA(ctx context.Context) (string, error) {
 	mdClient := g.universeDomainProvider.MetadataClient
 	saEmail, err := mdClient.EmailWithContext(ctx, "default")
 	if err != nil {
+		var ndErr metadata.NotDefinedError
+		if errors.As(err, &ndErr) {
+			return "", ErrSkipRegionalAccessBoundary
+		}
 		return "", fmt.Errorf("regionalaccessboundary: GCE config: failed to get service account email: %w", err)
 	}
 	return saEmail, nil
@@ -583,6 +587,11 @@ func (g *GCEConfigProvider) GetRegionalAccessBoundaryEndpoint(ctx context.Contex
 	// during this I/O operation to avoid blocking other goroutines.
 	email, err := g.fetchSA(ctx)
 	if err != nil {
+		if errors.Is(err, ErrSkipRegionalAccessBoundary) {
+			g.saMu.Lock()
+			g.skipLookup = true
+			g.saMu.Unlock()
+		}
 		return "", err
 	}
 

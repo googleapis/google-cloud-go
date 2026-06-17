@@ -418,7 +418,7 @@ func TestGCEConfigProvider(t *testing.T) {
 					http.NotFound(w, r)
 				}
 			},
-			wantErrEndpoint: "regionalaccessboundary: GCE config: failed to get service account email: metadata: GCE metadata \"instance/service-accounts/default/email\" not defined",
+			wantErrEndpoint: "regionalaccessboundary: skip lookup",
 			expectedUD:      defaultTestUD,
 		},
 		{
@@ -950,6 +950,76 @@ func TestDataProvider_GetHeaderValue_BypassesNonGSA(t *testing.T) {
 
 	if !skipLookupSet {
 		t.Fatal("skipLookup was not set on DataProvider after detecting invalid identity")
+	}
+
+	// Reset request count to check that no more calls are made to MDS.
+	mdsRequestCount = 0
+
+	// Second and subsequent calls should immediately return empty string, bypassing all fetches.
+	for i := 0; i < 5; i++ {
+		val2 := provider.GetHeaderValue(ctx, "https://example.com/v1", token)
+		if val2 != "" {
+			t.Errorf("Call %d: expected empty header, got %q", i+2, val2)
+		}
+	}
+
+	if mdsRequestCount > 0 {
+		t.Errorf("expected zero MDS metadata calls during bypass, got %d", mdsRequestCount)
+	}
+}
+
+func TestDataProvider_GetHeaderValue_BypassesMissingSA(t *testing.T) {
+	ctx := context.Background()
+
+	var mdsRequestCount int
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		mdsRequestCount++
+		switch r.URL.Path {
+		case "/computeMetadata/v1/instance/service-accounts/default/email":
+			http.NotFound(w, r) // returns metadata.NotDefinedError
+		case "/computeMetadata/v1/universe/universe-domain":
+			w.Write([]byte("googleapis.com"))
+		default:
+			http.NotFound(w, r)
+		}
+	}))
+	defer server.Close()
+
+	parsedURL, _ := url.Parse(server.URL)
+	t.Setenv("GCE_METADATA_HOST", parsedURL.Host)
+	mdClient := metadata.NewClient(server.Client())
+	udp := &internal.ComputeUniverseDomainProvider{MetadataClient: mdClient}
+
+	gceConfig := NewGCEConfigProvider(udp, nil)
+	token := &auth.Token{Value: "base-token"}
+	provider, err := NewProvider(server.Client(), gceConfig, nil, &mockTokenProvider{TokenToReturn: token})
+	if err != nil {
+		t.Fatalf("NewProvider() failed: %v", err)
+	}
+
+	// First call triggers background fetchAsync which fetches metadata email, gets 404 (NotDefinedError),
+	// and returns ErrSkipRegionalAccessBoundary.
+	val := provider.GetHeaderValue(ctx, "https://example.com/v1", token)
+	if val != "" {
+		t.Errorf("First call expected empty header, got %q", val)
+	}
+
+	// Wait for the async fetch to run and update provider.skipLookup to true.
+	deadline := time.Now().Add(1 * time.Second)
+	skipLookupSet := false
+	for time.Now().Before(deadline) {
+		provider.mu.RLock()
+		if provider.skipLookup {
+			skipLookupSet = true
+			provider.mu.RUnlock()
+			break
+		}
+		provider.mu.RUnlock()
+		time.Sleep(10 * time.Millisecond)
+	}
+
+	if !skipLookupSet {
+		t.Fatal("skipLookup was not set on DataProvider after detecting missing GCE SA")
 	}
 
 	// Reset request count to check that no more calls are made to MDS.
