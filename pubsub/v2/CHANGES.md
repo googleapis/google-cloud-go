@@ -1,5 +1,48 @@
 # Changes
 
+## [2.7.0](https://github.com/googleapis/google-cloud-go/compare/pubsub/v2/v2.6.0...pubsub/v2/v2.7.0) (2026-06-17)
+
+
+### Features
+
+* Add `ParameterizedSecureViewParameters` message and field for PSV ([177550d](https://github.com/googleapis/google-cloud-go/commit/177550d454fe98dcd1cd6645bf9b4c51eef7a419))
+* Add `ThinkingMode` enum and field to control agent thinking mode ([177550d](https://github.com/googleapis/google-cloud-go/commit/177550d454fe98dcd1cd6645bf9b4c51eef7a419))
+* Add a new Waypoint source to accept a token that identifies a ([177550d](https://github.com/googleapis/google-cloud-go/commit/177550d454fe98dcd1cd6645bf9b4c51eef7a419))
+* Add BigtableConfig type ([177550d](https://github.com/googleapis/google-cloud-go/commit/177550d454fe98dcd1cd6645bf9b4c51eef7a419))
+* Add custom memory id field to create memory v1beta1 ([177550d](https://github.com/googleapis/google-cloud-go/commit/177550d454fe98dcd1cd6645bf9b4c51eef7a419))
+* Add custom session id field to create session v1 ([177550d](https://github.com/googleapis/google-cloud-go/commit/177550d454fe98dcd1cd6645bf9b4c51eef7a419))
+* Add custom session id field to create session v1beta1 ([177550d](https://github.com/googleapis/google-cloud-go/commit/177550d454fe98dcd1cd6645bf9b4c51eef7a419))
+* Add more values in DestintionEnum ([177550d](https://github.com/googleapis/google-cloud-go/commit/177550d454fe98dcd1cd6645bf9b4c51eef7a419))
+* Add raw_event field to event proto v1 ([177550d](https://github.com/googleapis/google-cloud-go/commit/177550d454fe98dcd1cd6645bf9b4c51eef7a419))
+* Add raw_event field to event proto v1beta1 ([177550d](https://github.com/googleapis/google-cloud-go/commit/177550d454fe98dcd1cd6645bf9b4c51eef7a419))
+* Deprecate INVALID_COUNTRY_CODE and add ([177550d](https://github.com/googleapis/google-cloud-go/commit/177550d454fe98dcd1cd6645bf9b4c51eef7a419))
+* Enable open telemetry attrs ([#14426](https://github.com/googleapis/google-cloud-go/issues/14426)) ([74eab64](https://github.com/googleapis/google-cloud-go/commit/74eab64d1b4e22d8c79b0de4e5fc9a36bc4c6c19))
+* **pubsub/v2:** Add keep alive support ([#13457](https://github.com/googleapis/google-cloud-go/issues/13457)) ([aeffa93](https://github.com/googleapis/google-cloud-go/commit/aeffa932f86ee8b221bc8f71faef7876791054db))
+* **pubsub/v2:** Introduce per stream flow control ([#13642](https://github.com/googleapis/google-cloud-go/issues/13642)) ([9bb9541](https://github.com/googleapis/google-cloud-go/commit/9bb9541773cde3a934eb0ab15032d777468cba9c))
+* RagMetadata and RagDataSchema concepts and Batch API definitions ([177550d](https://github.com/googleapis/google-cloud-go/commit/177550d454fe98dcd1cd6645bf9b4c51eef7a419))
+* Update Compute Engine v1 API to revision 20260227 ([177550d](https://github.com/googleapis/google-cloud-go/commit/177550d454fe98dcd1cd6645bf9b4c51eef7a419))
+* Update Compute Engine v1beta API to revision 20260227 ([177550d](https://github.com/googleapis/google-cloud-go/commit/177550d454fe98dcd1cd6645bf9b4c51eef7a419))
+* Update public libraries for CES v1beta ([177550d](https://github.com/googleapis/google-cloud-go/commit/177550d454fe98dcd1cd6645bf9b4c51eef7a419))
+* Upgrade protobuf from v25.7 to v31.0 ([177550d](https://github.com/googleapis/google-cloud-go/commit/177550d454fe98dcd1cd6645bf9b4c51eef7a419))
+
+
+### Bug Fixes
+
+* An existing field `app` is renamed to `name` in message ([177550d](https://github.com/googleapis/google-cloud-go/commit/177550d454fe98dcd1cd6645bf9b4c51eef7a419))
+* An existing field `audio_duration` is renamed to `duration` in ([177550d](https://github.com/googleapis/google-cloud-go/commit/177550d454fe98dcd1cd6645bf9b4c51eef7a419))
+* An existing field `audio_transcript` is renamed to `transcript` in ([177550d](https://github.com/googleapis/google-cloud-go/commit/177550d454fe98dcd1cd6645bf9b4c51eef7a419))
+* An existing field `variables` is moved in to oneof in message ([177550d](https://github.com/googleapis/google-cloud-go/commit/177550d454fe98dcd1cd6645bf9b4c51eef7a419))
+* An existing google.api.http annotation `http_uri` is changed for ([177550d](https://github.com/googleapis/google-cloud-go/commit/177550d454fe98dcd1cd6645bf9b4c51eef7a419))
+* An existing method_signature `app,audio_content` is removed from ([177550d](https://github.com/googleapis/google-cloud-go/commit/177550d454fe98dcd1cd6645bf9b4c51eef7a419))
+* Feat: update advertiser_identifier_count in PairIdInfo to be ([177550d](https://github.com/googleapis/google-cloud-go/commit/177550d454fe98dcd1cd6645bf9b4c51eef7a419))
+* **pubsub/v2/pstest:** Make ackIDs unique per delivery ([#14554](https://github.com/googleapis/google-cloud-go/issues/14554)) ([9072072](https://github.com/googleapis/google-cloud-go/commit/9072072537a0e3284043c803b54c5d60065e752f)), closes [#10707](https://github.com/googleapis/google-cloud-go/issues/10707)
+* **pubsub/v2:** Fix span linking and add missing attributes ([#14326](https://github.com/googleapis/google-cloud-go/issues/14326)) ([ec20708](https://github.com/googleapis/google-cloud-go/commit/ec20708bfb2c04a60909ffc3bd956580b82a4713))
+* **pubsub/v2:** Manage exactly once spans properly on failure ([#14559](https://github.com/googleapis/google-cloud-go/issues/14559)) ([dd8448b](https://github.com/googleapis/google-cloud-go/commit/dd8448b9186401259e24a68286e41522e0a8a27c)), closes [#14555](https://github.com/googleapis/google-cloud-go/issues/14555)
+* **pubsub/v2:** Prevent nil span panic in Subscriber.Receive ([#14278](https://github.com/googleapis/google-cloud-go/issues/14278)) ([c590c35](https://github.com/googleapis/google-cloud-go/commit/c590c350583b42d9739842e838811caef254c72e)), closes [#14277](https://github.com/googleapis/google-cloud-go/issues/14277)
+* Removed field DenseScannParams from SearchHint ([177550d](https://github.com/googleapis/google-cloud-go/commit/177550d454fe98dcd1cd6645bf9b4c51eef7a419))
+* Update match_rate_percentage in PairIdInfo to be required ([177550d](https://github.com/googleapis/google-cloud-go/commit/177550d454fe98dcd1cd6645bf9b4c51eef7a419))
+* Update publisher_name in PairIdInfo to be required ([177550d](https://github.com/googleapis/google-cloud-go/commit/177550d454fe98dcd1cd6645bf9b4c51eef7a419))
+
 ## [2.6.0](https://github.com/googleapis/google-cloud-go/releases/tag/pubsub%2Fv2.6.0) (2026-04-14)
 
 ## [2.5.1](https://github.com/googleapis/google-cloud-go/releases/tag/pubsub%2Fv2.5.1) (2026-03-31)
