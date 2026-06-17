@@ -118,8 +118,13 @@ func (c *bucketMetadataCache) fetchBackground(bucket string) {
 
 			curr, hit := c.lru.get(bucket)
 			if err != nil {
-				// Only write placeholder if the cache is empty or currently holds a placeholder.
-				if isForbiddenOrPermissionError(err) {
+				if errors.Is(err, ErrBucketNotExist) || isError(err, http.StatusNotFound, codes.NotFound) {
+					c.lru.evict(bucket)
+				} else if ShouldRetry(err) {
+					if curr.placeholder {
+						c.lru.evict(bucket)
+					}
+				} else {
 					if !hit {
 						c.lru.put(bucket, bucketMetadata{
 							resource:    fmt.Sprintf("projects/_/buckets/%s", bucket),
@@ -127,9 +132,6 @@ func (c *bucketMetadataCache) fetchBackground(bucket string) {
 							placeholder: true,
 						})
 					}
-				} else if hit && curr.placeholder {
-					// Only evict if the current entry in the cache is a placeholder.
-					c.lru.evict(bucket)
 				}
 				return nil, err
 			}
@@ -144,15 +146,15 @@ func (c *bucketMetadataCache) fetchBackground(bucket string) {
 	}()
 }
 
-func isForbiddenOrPermissionError(err error) bool {
+func isError(err error, httpErrorCode int, grpcErrorCode codes.Code) bool {
 	var e *googleapi.Error
 	if errors.As(err, &e) {
-		if e.Code == http.StatusForbidden {
+		if e.Code == httpErrorCode {
 			return true
 		}
 	}
 	if s, ok := status.FromError(err); ok {
-		if s.Code() == codes.PermissionDenied {
+		if s.Code() == grpcErrorCode {
 			return true
 		}
 	}

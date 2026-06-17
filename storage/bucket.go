@@ -160,9 +160,13 @@ func (b *BucketHandle) Attrs(ctx context.Context) (attrs *BucketAttrs, err error
 		if attrs.ProjectNumber != 0 {
 			project = strconv.FormatUint(attrs.ProjectNumber, 10)
 		}
+		location := "global"
+		if attrs.LocationType == "zone" || attrs.LocationType == "region" {
+			location = strings.ToLower(attrs.Location)
+		}
 		b.c.bucketMetadataCache.put(b.name, bucketMetadata{
 			resource: fmt.Sprintf("projects/%s/buckets/%s", project, b.name),
-			location: strings.ToLower(attrs.Location),
+			location: location,
 		})
 	}
 	return attrs, err

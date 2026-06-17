@@ -226,6 +226,7 @@ func TestOpportunisticCacheFill(t *testing.T) {
 			"name":          bucketName,
 			"location":      expectedLocation,
 			"projectNumber": "987654321",
+			"locationType":  "region",
 		}
 		json.NewEncoder(w).Encode(resp)
 	}))
