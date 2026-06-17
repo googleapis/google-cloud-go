@@ -426,18 +426,15 @@ func NewBigtableChannelPool(ctx context.Context, connPoolSize int, strategy btop
 
 	// Default to the standard dialer. The Direct Access checker (when
 	// configured) may swap the dialer for the direct-access equivalent after
-	// a successful compatibility probe. Feature-flag metadata is sourced from
-	// the checker when one is wired in — it is the single source of truth
-	// across both the direct-access and standard-path connection factories.
-	// pool.featureFlagsMD (set via WithFeatureFlagsMetadata) is only the
-	// fallback for callers that construct the pool without a checker.
+	// a successful compatibility probe. Feature-flag metadata always comes
+	// from pool.featureFlagsMD (set via WithFeatureFlagsMetadata) — both the
+	// direct-access and standard-path connection factories read it from the
+	// same place.
 	factoryDial := dial
-	factoryFeatureFlagsMD := pool.featureFlagsMD
 
 	var firstConn *BigtableConn
 
 	if pool.directAccessChecker != nil {
-		factoryFeatureFlagsMD = pool.directAccessChecker.FeatureFlagsMetadata()
 		directAccessConn, isDirectAccess := pool.directAccessChecker.CheckCompatibility(pool.poolCtx)
 		if isDirectAccess {
 			btopt.Debugf(pool.logger, "bigtable_connpool: Direct Access is available. Using Direct Access now.")
@@ -459,7 +456,7 @@ func NewBigtableChannelPool(ctx context.Context, connPoolSize int, strategy btop
 		dial:           factoryDial,
 		instanceName:   pool.instanceName,
 		appProfile:     pool.appProfile,
-		featureFlagsMD: factoryFeatureFlagsMD,
+		featureFlagsMD: pool.featureFlagsMD,
 		logger:         pool.logger,
 	}
 

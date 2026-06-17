@@ -1808,7 +1808,7 @@ func TestDirectAccessLogic(t *testing.T) {
 		_ = daDial // referenced only to keep the same shape as sibling tests
 
 		poolSize := 1
-		opts := append(poolOpts(), WithDirectAccessChecker(newDisabledDirectAccessChecker(nil, nil, nil)))
+		opts := append(poolOpts(), WithDirectAccessChecker(newDisabledDirectAccessChecker(nil, nil)))
 		pool, err := NewBigtableChannelPool(ctx, poolSize, btopt.RoundRobin, baseDialFunc, time.Now(), opts...)
 		if err != nil {
 			t.Fatalf("Failed to create pool: %v", err)
