@@ -60,5 +60,6 @@
     "sentence-case"
   ],
   "release-type": "go-librarian",
+  "separate-pull-requests": true,
   "tag-separator": "/"
 }
