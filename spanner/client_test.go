@@ -856,14 +856,14 @@ func newLocationAwareQueryStreamHarness(t *testing.T) (*locationAwareQueryStream
 	waitForLocationAwareEndpointHealthy(t, client, replicaHarness.ReplicaAddresses[1])
 
 	return &locationAwareQueryStreamHarness{
-		client:         client,
-		replicaHarness: replicaHarness,
-		leaderAddress:  replicaHarness.ReplicaAddresses[0],
-		replicaAddress: replicaHarness.ReplicaAddresses[1],
-	}, func() {
-		client.Close()
-		teardownReplicas()
-	}
+			client:         client,
+			replicaHarness: replicaHarness,
+			leaderAddress:  replicaHarness.ReplicaAddresses[0],
+			replicaAddress: replicaHarness.ReplicaAddresses[1],
+		}, func() {
+			client.Close()
+			teardownReplicas()
+		}
 }
 
 func (h *locationAwareQueryStreamHarness) query(ctx context.Context) *RowIterator {
@@ -942,14 +942,14 @@ func newLocationAwareReadStreamHarness(t *testing.T) (*locationAwareReadStreamHa
 	waitForLocationAwareEndpointHealthy(t, client, replicaHarness.ReplicaAddresses[1])
 
 	return &locationAwareReadStreamHarness{
-		client:         client,
-		replicaHarness: replicaHarness,
-		leaderAddress:  replicaHarness.ReplicaAddresses[0],
-		replicaAddress: replicaHarness.ReplicaAddresses[1],
-	}, func() {
-		client.Close()
-		teardownReplicas()
-	}
+			client:         client,
+			replicaHarness: replicaHarness,
+			leaderAddress:  replicaHarness.ReplicaAddresses[0],
+			replicaAddress: replicaHarness.ReplicaAddresses[1],
+		}, func() {
+			client.Close()
+			teardownReplicas()
+		}
 }
 
 func (h *locationAwareReadStreamHarness) read(ctx context.Context) *RowIterator {
