@@ -508,6 +508,7 @@ func (p *sessionManager) errGetSessionTimeout(ctx context.Context) error {
 
 // takeMultiplexed returns a multiplexed session.
 func (p *sessionManager) takeMultiplexed(ctx context.Context) (*sessionHandle, error) {
+	time.Sleep(10 * time.Millisecond)
 	trace.TracePrintf(ctx, nil, "Acquiring a multiplexed session")
 	for {
 		var s *session
