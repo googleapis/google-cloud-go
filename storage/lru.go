@@ -57,7 +57,7 @@ func (c *lruCache[K, V]) put(key K, val V) {
 		return
 	}
 
-	// If element already exists, update the value and promote it
+	// If element already exists, update the value and promote it.
 	if elem, ok := c.entries[key]; ok {
 		c.evictList.MoveToFront(elem)
 		elem.Value.(*cacheEntry[K, V]).value = val
@@ -68,7 +68,7 @@ func (c *lruCache[K, V]) put(key K, val V) {
 	elem := c.evictList.PushFront(&cacheEntry[K, V]{key: key, value: val})
 	c.entries[key] = elem
 
-	// Evict oldest element if limit exceeded
+	// Evict oldest element if limit exceeded.
 	if c.evictList.Len() > c.limit {
 		c.removeOldest()
 	}

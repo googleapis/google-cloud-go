@@ -19,32 +19,32 @@ import "testing"
 func TestLRUCache(t *testing.T) {
 	c := newLRUCache[string, int](3)
 
-	// Put b1, b2, b3
+	// Put b1, b2, b3.
 	c.put("b1", 1)
 	c.put("b2", 2)
 	c.put("b3", 3)
 
-	// Access b1 to promote it (MRU)
+	// Access b1 to promote it (MRU).
 	if _, found := c.get("b1"); !found {
 		t.Fatalf("expected b1 to be found")
 	}
 
-	// Put b4 to trigger eviction of oldest key (b2)
+	// Put b4 to trigger eviction of oldest key (b2).
 	c.put("b4", 4)
 
-	// Verify b2 is evicted
+	// Verify b2 is evicted.
 	if _, found := c.get("b2"); found {
 		t.Errorf("expected b2 to be evicted")
 	}
 
-	// Verify others still exist
+	// Verify others still exist.
 	for _, k := range []string{"b1", "b3", "b4"} {
 		if _, found := c.get(k); !found {
 			t.Errorf("expected %q to remain in cache", k)
 		}
 	}
 
-	// Evict b3 manually
+	// Evict b3 manually.
 	c.evict("b3")
 	if _, found := c.get("b3"); found {
 		t.Errorf("expected b3 to be evicted manually")

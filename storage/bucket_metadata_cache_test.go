@@ -44,7 +44,7 @@ func (m *mockMetadataFetcher) fetchBucketMetadata(ctx context.Context, bucket st
 
 func TestCacheNilSafety(t *testing.T) {
 	var cache *bucketMetadataCache = nil
-	// Must not panic
+	// Must not panic.
 	if _, found := cache.get("b1"); found {
 		t.Errorf("expected miss on nil cache")
 	}
@@ -109,7 +109,7 @@ func TestCacheFetchBackgroundSingleFlight(t *testing.T) {
 	fetcher := &mockMetadataFetcher{
 		fetchFunc: func(ctx context.Context, bucket string) (resource string, location string, err error) {
 			atomic.AddInt32(&callCount, 1)
-			// Lock it inside fetch for 100ms to guarantee overlapping concurrent threads will join singleflight
+			// Lock it inside fetch for 100ms to guarantee overlapping concurrent threads will join singleflight.
 			time.Sleep(100 * time.Millisecond)
 			return "projects/p/buckets/foo", "us", nil
 		},
@@ -124,7 +124,7 @@ func TestCacheFetchBackgroundSingleFlight(t *testing.T) {
 		go cache.fetchBackground("foo")
 	}
 
-	// Wait for all 10 calls to finish
+	// Wait for all 10 calls to finish.
 	for i := 0; i < 10; i++ {
 		select {
 		case <-doneChan:
@@ -138,7 +138,7 @@ func TestCacheFetchBackgroundSingleFlight(t *testing.T) {
 		t.Fatalf("expected foo to be in cache")
 	}
 
-	// Deduplication verification: Only 1 call allowed to execute mock fetcher
+	// Deduplication verification: Only 1 call allowed to execute mock fetcher.
 	calls := atomic.LoadInt32(&callCount)
 	if calls != 1 {
 		t.Errorf("expected exactly 1 fetch call via singleflight due to concurrent overlap, got %d", calls)
@@ -238,12 +238,12 @@ func TestOpportunisticCacheFill(t *testing.T) {
 	}
 	defer client.Close()
 
-	// Verify cache is empty initially
+	// Verify cache is empty initially.
 	if _, found := client.bucketMetadataCache.get(bucketName); found {
 		t.Fatalf("expected cache to be empty for %q", bucketName)
 	}
 
-	// Trigger GetBucket via Attrs
+	// Trigger GetBucket via Attrs.
 	attrs, err := client.Bucket(bucketName).Attrs(ctx)
 	if err != nil {
 		t.Fatalf("Bucket.Attrs failed: %v", err)
@@ -253,7 +253,7 @@ func TestOpportunisticCacheFill(t *testing.T) {
 		t.Errorf("got ProjectNumber %d, want %d", attrs.ProjectNumber, 987654321)
 	}
 
-	// Verify the cache got populated synchronously (opportunistic cache fill)
+	// Verify the cache got populated synchronously (opportunistic cache fill).
 	entry, found := client.bucketMetadataCache.get(bucketName)
 	if !found {
 		t.Fatalf("expected cache to be populated synchronously by Attrs")

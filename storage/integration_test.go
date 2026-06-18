@@ -9074,7 +9074,7 @@ func TestIntegration_ClientTracing(t *testing.T) {
 
 			t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "true")
 
-			// 1. Create bucket using a separate admin client
+			// 1. Create bucket using a separate admin client.
 			adminClient, err := tc.newClient(t, ctx)
 			if err != nil {
 				t.Fatalf("failed to create admin client: %v", err)
@@ -9090,7 +9090,7 @@ func TestIntegration_ClientTracing(t *testing.T) {
 				adminClient.Close()
 			})
 
-			// 2. Create the test client which will have an empty cache
+			// 2. Create the test client which will have an empty cache.
 			client, err := tc.newClient(t, ctx)
 			if err != nil {
 				t.Fatalf("failed to create test client: %v", err)
@@ -9100,7 +9100,7 @@ func TestIntegration_ClientTracing(t *testing.T) {
 			doneChan := make(chan struct{}, 1)
 			client.bucketMetadataCache.fetchDone = doneChan
 
-			// Get the number of spans before our test operations
+			// Get the number of spans before our test operations.
 			initialSpanCount := len(te.Spans())
 
 			// 1. First operation: Cache Miss. Should get placeholder attributes.
@@ -9123,10 +9123,10 @@ func TestIntegration_ClientTracing(t *testing.T) {
 				t.Fatalf("Bucket.Attrs span not found")
 			}
 
-			// First call should have placeholder
+			// First call should have placeholder.
 			verifySpanAttributes(t, attrsSpan, "projects/_/buckets/"+bucketName, "global")
 
-			// Wait for background fetch to complete and populate cache
+			// Wait for background fetch to complete and populate cache.
 			select {
 			case <-doneChan:
 			case <-time.After(fetchBackgroundTimeout):
@@ -9157,7 +9157,7 @@ func TestIntegration_ClientTracing(t *testing.T) {
 				t.Fatalf("second Bucket.Attrs span not found")
 			}
 
-			// Second call should have resolved attributes
+			// Second call should have resolved attributes.
 			verifySpanAttributes(t, attrsSpan, fmt.Sprintf("projects/%d/buckets/%s", bAttrs.ProjectNumber, bucketName), "us-east1")
 		})
 	}
