@@ -265,6 +265,7 @@ libraries:
           enabled_generator_features:
             - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
+            - F_export_set_google_client_info
           no_snippets: true
       - path: google/cloud/bigquery/connection/v1
         go:
@@ -677,6 +678,7 @@ libraries:
           enabled_generator_features:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
+            - F_export_set_google_client_info
           import_path: errorreporting/apiv1beta1
   - name: essentialcontacts
     version: 1.12.0
@@ -853,6 +855,7 @@ libraries:
           enabled_generator_features:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
+            - F_export_set_google_client_info
     go:
       nested_module: logadmin
   - name: longrunning
@@ -1076,6 +1079,7 @@ libraries:
           enabled_generator_features:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
+            - F_export_set_google_client_info
           import_path: pubsub/v2/apiv1
           no_metadata: true
           no_snippets: true
@@ -1369,6 +1373,7 @@ libraries:
           enabled_generator_features:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
+            - F_export_set_google_client_info
           import_path: trace/apiv1
           no_metadata: true
   - name: translate
