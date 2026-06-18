@@ -386,7 +386,7 @@ type ClientConfig struct {
 	DisableNativeMetrics bool
 
 	// Type specifies the type of Spanner instance to connect to (CLOUD or OMNI).
-	// CLOUD is a no-op and for connecting to Spanner Omni its mandatory to set type as OMNI.
+	// CLOUD is a no-op and for connecting to Spanner Omni it's mandatory to set Type to OMNI.
 	// If unspecified, it defaults to CLOUD.
 	Type InstanceType
 

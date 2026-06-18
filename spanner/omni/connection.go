@@ -67,7 +67,9 @@ func ConnectionOptions(usePlainText bool, caCertFile, clientCertFile, clientKeyF
 		}, nil
 	}
 
-	tlsConfig := &tls.Config{}
+	tlsConfig := &tls.Config{
+		MinVersion: tls.VersionTLS12,
+	}
 	if caCertFile != "" {
 		capool, err := certPool(caCertFile)
 		if err != nil {
