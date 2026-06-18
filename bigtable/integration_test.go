@@ -537,7 +537,7 @@ func TestIntegration_ExportBuiltInMetrics(t *testing.T) {
 		t.Skip("Skip long running tests in short mode or non-prod environments")
 	}
 
-	client, err := testEnv.NewClient()
+	client, err := newClientWithRetry(ctx, testEnv)
 	if err != nil {
 		t.Fatal(err)
 	}

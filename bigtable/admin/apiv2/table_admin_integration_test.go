@@ -22,6 +22,7 @@ import (
 	"time"
 
 	adminpb "cloud.google.com/go/bigtable/admin/apiv2/adminpb"
+	"cloud.google.com/go/internal/uid"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -36,6 +37,13 @@ type testEnv struct {
 	instance string
 	cluster  string
 }
+
+var (
+	sourceTableSpace   = uid.NewSpace("it-src-table", &uid.Options{Short: true})
+	backupSpace        = uid.NewSpace("it-backup", &uid.Options{Short: true})
+	restoredTableSpace = uid.NewSpace("it-restored-table", &uid.Options{Short: true})
+	replTestTableSpace = uid.NewSpace("it-repl-table", &uid.Options{Short: true})
+)
 
 func setupIntegration(t *testing.T) *testEnv {
 	t.Helper()
@@ -94,10 +102,9 @@ func TestIntegration_RestoreTable(t *testing.T) {
 	ctx := context.Background()
 	client := env.client
 
-	suffix := time.Now().Format("20060102-150405")
-	sourceTableID := fmt.Sprintf("src-table-%s", suffix)
-	backupID := fmt.Sprintf("backup-%s", suffix)
-	restoredTableID := fmt.Sprintf("restored-table-%s", suffix)
+	sourceTableID := sourceTableSpace.New()
+	backupID := backupSpace.New()
+	restoredTableID := restoredTableSpace.New()
 
 	instancePath := fmt.Sprintf("projects/%s/instances/%s", env.project, env.instance)
 	sourceTablePath := fmt.Sprintf("%s/tables/%s", instancePath, sourceTableID)
@@ -178,8 +185,7 @@ func TestIntegration_WaitForConsistency(t *testing.T) {
 	ctx := context.Background()
 	client := env.client
 
-	suffix := time.Now().Format("20060102-150405")
-	tableID := fmt.Sprintf("repl-test-table-%s", suffix)
+	tableID := replTestTableSpace.New()
 	instancePath := fmt.Sprintf("projects/%s/instances/%s", env.project, env.instance)
 	tablePath := fmt.Sprintf("%s/tables/%s", instancePath, tableID)
 
