@@ -1737,3 +1737,12 @@ func setHeadersFromCtx(ctx context.Context, header http.Header) {
 		}
 	}
 }
+
+func (c *httpStorageClient) fetchBucketMetadata(ctx context.Context, bucket string) (string, string, error) {
+	resp, err := c.raw.Buckets.Get(bucket).Projection("noAcl").Context(ctx).Do()
+	if err != nil {
+		return "", "", err
+	}
+	resource, location := getMetadataFromAttrs(resp.Location, resp.LocationType, strconv.FormatUint(resp.ProjectNumber, 10), bucket)
+	return resource, location, nil
+}

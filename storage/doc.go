@@ -407,6 +407,9 @@ roles which must be enabled in order to do the export successfully. To
 disable this export, you can use the [WithDisabledClientMetrics] client
 option.
 
+To disable OpenTelemetry bucket metadata in traces, you can set the
+environment variable GO_OTEL_BUCKETMETADATA_DISABLED=true.
+
 The client automatically computes and sends CRC32C checksums for uploads using [Writer],
 providing an additional layer of data integrity validation with a slight CPU overhead.
 
