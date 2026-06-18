@@ -2,6 +2,7 @@
   "accessapproval": "1.13.0",
   "accesscontextmanager": "1.14.0",
   "advisorynotifications": "1.10.0",
+  "agentregistry": "0.0.0",
   "ai": "1.0.0",
   "aiplatform": "1.125.0",
   "alloydb": "1.27.0",

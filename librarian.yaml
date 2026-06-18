@@ -53,6 +53,11 @@ libraries:
     version: 0.21.0
     skip_generate: true
     skip_release: true
+  - name: agentregistry
+    version: 0.0.0
+    apis:
+      - path: google/cloud/agentregistry/v1
+    copyright_year: "2026"
   - name: ai
     version: 1.0.0
     apis:

@@ -10,6 +10,9 @@
     "advisorynotifications": {
       "component": "advisorynotifications"
     },
+    "agentregistry": {
+      "component": "agentregistry"
+    },
     "ai": {
       "component": "ai"
     },
