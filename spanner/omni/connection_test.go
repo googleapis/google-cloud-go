@@ -126,10 +126,13 @@ func TestConnectionOptions(t *testing.T) {
 		}
 	})
 
-	t.Run("TLS connection options with no CA", func(t *testing.T) {
-		_, err := ConnectionOptions(false, "", "", "")
-		if err == nil {
-			t.Fatal("expected error when TLS enabled but no CA cert provided")
+	t.Run("valid TLS connection options (System Roots)", func(t *testing.T) {
+		opts, err := ConnectionOptions(false, "", "", "")
+		if err != nil {
+			t.Fatalf("ConnectionOptions() unexpected error: %v", err)
+		}
+		if len(opts) != 2 {
+			t.Errorf("expected 2 connection options, got %v", len(opts))
 		}
 	})
 

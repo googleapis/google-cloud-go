@@ -24,33 +24,9 @@ import (
 
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/credentials/insecure"
-	"google.golang.org/grpc/security/advancedtls"
 )
-
-func tlsOptions(caCertFile, clientCertificatePath, clientKeyPath string) (*advancedtls.Options, error) {
-	if caCertFile == "" {
-		return nil, nil
-	}
-	clientCerts, err := clientCertificate(clientCertificatePath, clientKeyPath)
-	if err != nil {
-		return nil, fmt.Errorf("failed to load client cert and key: %w", err)
-	}
-	capool, err := certPool(caCertFile)
-	if err != nil {
-		return nil, fmt.Errorf("failed to load root CA: %w", err)
-	}
-	options := &advancedtls.Options{
-		VerificationType: advancedtls.CertAndHostVerification,
-		IdentityOptions: advancedtls.IdentityCertificateOptions{
-			Certificates: clientCerts, // mTLS client certificates.
-		},
-		RootOptions: advancedtls.RootCertificateOptions{
-			RootCertificates: capool, // The CA certificate.
-		},
-	}
-	return options, nil
-}
 
 // certPool creates a x509.CertPool from the given CA certificate file.
 func certPool(caCertFile string) (*x509.CertPool, error) {
@@ -82,23 +58,32 @@ func clientCertificate(clientCertificatePath string, clientKeyPath string) ([]tl
 // ConnectionOptions generates standard ClientOption credentials configurations for Spanner Omni.
 func ConnectionOptions(usePlainText bool, caCertFile, clientCertFile, clientKeyFile string) ([]option.ClientOption, error) {
 	if usePlainText {
+		if caCertFile != "" || clientCertFile != "" || clientKeyFile != "" {
+			return nil, fmt.Errorf("cannot use plain text and provide TLS certificates at the same time")
+		}
 		return []option.ClientOption{
 			option.WithoutAuthentication(),
 			option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
 		}, nil
 	}
-	tlsOpts, err := tlsOptions(caCertFile, clientCertFile, clientKeyFile)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create TLS options: %w", err)
+
+	tlsConfig := &tls.Config{}
+	if caCertFile != "" {
+		capool, err := certPool(caCertFile)
+		if err != nil {
+			return nil, fmt.Errorf("failed to load root CA: %w", err)
+		}
+		tlsConfig.RootCAs = capool
 	}
-	if tlsOpts == nil {
-		return nil, fmt.Errorf("TLS configuration options are empty; CA certificate is required for TLS connections")
-	}
-	creds, err := advancedtls.NewClientCreds(tlsOpts)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create TLS credentials: %w", err)
+	if clientCertFile != "" || clientKeyFile != "" {
+		clientCerts, err := clientCertificate(clientCertFile, clientKeyFile)
+		if err != nil {
+			return nil, err
+		}
+		tlsConfig.Certificates = clientCerts
 	}
 
+	creds := credentials.NewTLS(tlsConfig)
 	return []option.ClientOption{
 		option.WithoutAuthentication(),
 		option.WithGRPCDialOption(grpc.WithTransportCredentials(creds)),
