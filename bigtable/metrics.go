@@ -707,8 +707,6 @@ func (mt *builtinMetricsTracer) recordAttemptCompletion(attemptHeaderMD, attempT
 		mt.currOp.lastZoneID = zoneID
 	}
 
-
-
 	// Calculate elapsed time
 	elapsedTime := convertToMs(time.Since(mt.currOp.currAttempt.startTime))
 
