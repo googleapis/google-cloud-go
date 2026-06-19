@@ -433,8 +433,8 @@ project's service account.
 Datastore databases. If not provided, default database i.e. empty string is used.
 - `GCLOUD_TESTS_GOLANG_FIRESTORE_PROJECT_ID`: Developers Console project's ID
 (e.g. doorway-cliff-677) for the Firestore project.
-- `GCLOUD_TESTS_GOLANG_FIRESTORE_DATABASES`: Comma separated list of developer's
-Firestore databases. If not provided, default database is used.
+- `GCLOUD_TESTS_GOLANG_FIRESTORE_ENTERPRISE_DATABASES`: Comma separated list of developer's
+Firestore Enterprise databases. If not provided, only standard default database is used.
 - `GCLOUD_TESTS_GOLANG_FIRESTORE_KEY`: The path to the JSON key file of the
 Firestore project's service account.
 - `GCLOUD_TESTS_API_KEY`: API key for using the Translate API created above.
@@ -604,8 +604,8 @@ export GCLOUD_TESTS_GOLANG_DATASTORE_DATABASES=your-database-1,your-database-2
 # Developers Console project's ID (e.g. doorway-cliff-677) for the Firestore project.
 export GCLOUD_TESTS_GOLANG_FIRESTORE_PROJECT_ID=your-firestore-project
 
-# Comma separated list of developer's Firestore databases. If not provided, default database is used.
-export GCLOUD_TESTS_GOLANG_FIRESTORE_DATABASES=your-database-1,your-database-2
+# Comma separated list of developer's Firestore Enterprise databases. If not provided, only default database is used.
+export GCLOUD_TESTS_GOLANG_FIRESTORE_ENTERPRISE_DATABASES=your-enterprise-database-1,your-enterprise-database-2
 
 # The path to the JSON key file of the Firestore project's service account.
 export GCLOUD_TESTS_GOLANG_FIRESTORE_KEY=~/directory/your-firestore-project-abcd1234.json
