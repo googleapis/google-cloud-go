@@ -1179,6 +1179,18 @@ func gaxInvokeWithRecorder(ctx context.Context, method string,
 
 		err := f(newCtx, &attemptHeaderMD, &attempTrailerMD, callSettings)
 
+		// Record completion here — at the same boundary as recordAttemptStart
+		// — so every attempt is paired regardless of transport. For gRPC, all
+		// stats events (OutPayload feeding blockingLatencyTracker, InHeader /
+		// InTrailer carrying headerMD / trailerMD) have already fired by the
+		// time f returns: stats.End fires inside the final RecvMsg call that
+		// returns io.EOF (streaming) or before the unary call returns. f's
+		// err is nil on graceful streaming close (the recv loop converts
+		// io.EOF to a clean break), so attempt status maps to OK without any
+		// io.EOF translation. Non-gRPC transports (session/vRPC) get the
+		// same recording for free.
+		mt.recordAttemptCompletionWithMetadata(attemptHeaderMD, attempTrailerMD, err)
+
 		extractCookies(attemptHeaderMD, op)
 		extractCookies(attempTrailerMD, op)
 		return err

@@ -518,10 +518,6 @@ type attemptTracer struct {
 
 	// Tracker for t4t7
 	t4t7Tracker *t4t7Tracker
-
-	// Response header and trailer metadata captured by the stats handler.
-	headerMD  metadata.MD
-	trailerMD metadata.MD
 }
 
 func (a *attemptTracer) setStartTime(t time.Time) {
@@ -844,25 +840,17 @@ func (t *t4t7Tracker) getLatencyMs() float64 {
 	return float64(end-start) / float64(time.Millisecond)
 }
 
-// latencyStatsHandler is the gRPC stats.Handler that observes per-attempt
-// gRPC events and records attempt completion on stats.End.
+// latencyStatsHandler is the gRPC stats.Handler that feeds the per-attempt
+// blockingLatencyTracker and t4t7Tracker with wire-level timestamps that are
+// only observable inside the gRPC stack: OutPayload (for client blocking
+// latency) and OutHeader / InHeader (for t4t7).
 //
-// Attempt boundaries (recordAttemptStart, blockingLatencyTracker / t4t7Tracker
-// creation) are owned by gaxInvokeWithRecorder, which is the one place every
-// attempt — gRPC or otherwise — is guaranteed to cross. HandleRPC reads the
-// trackers and *builtinMetricsTracer back out of the call context (placed
-// there by gaxInvokeWithRecorder and the public entry points) and uses
-// OutPayload / InHeader / InTrailer / End to:
-//   - feed blockingLatencyTracker.recordLatency from OutPayload.SentTime,
-//   - feed t4t7Tracker from OutHeader / InHeader timestamps,
-//   - capture per-attempt response metadata, and
-//   - call recordAttemptCompletionWithMetadata on stats.End using ev.Error
-//     (which is nil on graceful stream close, so attempt status maps to OK
-//     without any io.EOF translation).
-//
-// RPCs without a tracer in context (or with a disabled one) are observed only
-// for the trackers if present, so non-Bigtable RPCs on the same channel emit
-// no metrics.
+// It deliberately does NOT own attempt start or completion — both are recorded
+// by gaxInvokeWithRecorder, the single boundary every attempt (gRPC or
+// otherwise) crosses. Keeping attempt lifecycle out of the stats handler is
+// what makes the upcoming session / vRPC path work without re-refactoring
+// metrics: a non-gRPC transport simply never fires these events, and that's
+// fine — its trackers stay zero and the tracer fills them via its own path.
 type latencyStatsHandler struct{}
 
 var _ stats.Handler = (*latencyStatsHandler)(nil)
@@ -887,27 +875,6 @@ func (h *latencyStatsHandler) HandleRPC(ctx context.Context, s stats.RPCStats) {
 			// The client has received the initial metadata from the server.
 			t4t7.recordInHeaderRecv(time.Now())
 		}
-	}
-
-	mt := metricsTracerFromContext(ctx)
-	if !mt.builtInEnabled {
-		return
-	}
-	switch ev := s.(type) {
-	case *stats.InHeader:
-		mt.currOp.currAttempt.headerMD = ev.Header
-	case *stats.InTrailer:
-		mt.currOp.currAttempt.trailerMD = ev.Trailer
-	case *stats.End:
-		// stats.End fires after InTrailer and before the caller's final
-		// RecvMsg returns, so currAttempt.{header,trailer}MD are populated.
-		// ev.Error is nil on graceful stream close, so attempt status maps
-		// to OK without any io.EOF special-casing.
-		mt.recordAttemptCompletionWithMetadata(
-			mt.currOp.currAttempt.headerMD,
-			mt.currOp.currAttempt.trailerMD,
-			ev.Error,
-		)
 	}
 }
 
