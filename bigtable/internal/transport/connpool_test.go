@@ -680,10 +680,9 @@ func TestNewBigtableChannelPool(t *testing.T) {
 
 	t.Run("DialFailure", func(t *testing.T) {
 		poolSize := 3
-		dialCount := 0
+		var dialCount atomic.Int64
 		dialFunc := func() (*BigtableConn, error) {
-			dialCount++
-			if dialCount > 1 {
+			if dialCount.Add(1) > 1 {
 				return nil, errors.New("simulated dial error")
 			}
 			fake := &fakeService{}
@@ -696,6 +695,59 @@ func TestNewBigtableChannelPool(t *testing.T) {
 			t.Errorf("NewBigtableChannelPool should have failed due to dial error")
 		}
 	})
+}
+
+// TestNewBigtableChannelPoolParallelPriming verifies that initial pool priming
+// fans out across multiple workers, capped at maxPrimeWorkers. The fake server
+// holds each PingAndWarm open for primeDelay so we can read the peak concurrent
+// in-flight count; with sequential priming the peak would be 1.
+func TestNewBigtableChannelPoolParallelPriming(t *testing.T) {
+	ctx := context.Background()
+	primeDelay := 200 * time.Millisecond
+
+	cases := []struct {
+		name     string
+		poolSize int
+		wantPeak int
+	}{
+		{name: "BelowWorkerCap", poolSize: 4, wantPeak: 4},
+		{name: "AtWorkerCap", poolSize: maxPrimeWorkers, wantPeak: maxPrimeWorkers},
+		{name: "AboveWorkerCap", poolSize: maxPrimeWorkers * 2, wantPeak: maxPrimeWorkers},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			fake := &fakeService{}
+			fake.setDelay(primeDelay)
+			addr := setupTestServer(t, fake)
+			dialFunc := func() (*BigtableConn, error) { return dialBigtableserver(addr) }
+
+			start := time.Now()
+			pool, err := NewBigtableChannelPool(ctx, tc.poolSize, btopt.RoundRobin, dialFunc, time.Now(), poolOpts()...)
+			elapsed := time.Since(start)
+			if err != nil {
+				t.Fatalf("NewBigtableChannelPool failed: %v", err)
+			}
+			defer pool.Close()
+
+			if got := fake.getPingPeakInflight(); got != tc.wantPeak {
+				t.Errorf("peak in-flight PingAndWarm = %d, want %d", got, tc.wantPeak)
+			}
+
+			// Sanity bound on wall time: at most ceil(poolSize / workers) prime
+			// batches plus generous slack for dial/handshake overhead. A
+			// sequential implementation would take ~poolSize * primeDelay.
+			workers := tc.wantPeak
+			batches := (tc.poolSize + workers - 1) / workers
+			wantUnderSequential := time.Duration(tc.poolSize) * primeDelay
+			wantAtMost := time.Duration(batches)*primeDelay + 2*time.Second
+			if elapsed >= wantUnderSequential {
+				t.Errorf("elapsed %v >= sequential bound %v — priming did not parallelize", elapsed, wantUnderSequential)
+			}
+			if elapsed > wantAtMost {
+				t.Errorf("elapsed %v > expected upper bound %v", elapsed, wantAtMost)
+			}
+		})
+	}
 }
 
 func TestConnEntryCalculateConnLoadWithPenalty(t *testing.T) {

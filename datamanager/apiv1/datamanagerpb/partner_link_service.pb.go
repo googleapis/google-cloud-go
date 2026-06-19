@@ -38,6 +38,60 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// The set of supported features for a partner link.
+type FeatureSet int32
+
+const (
+	// Unspecified feature set. If unspecified, the system behavior defaults to
+	// [FEATURE_SET_AUDIENCE_AND_EVENT_MANAGEMENT][google.ads.datamanager.v1.FeatureSet.FEATURE_SET_AUDIENCE_AND_EVENT_MANAGEMENT].
+	FeatureSet_FEATURE_SET_UNSPECIFIED FeatureSet = 0
+	// Indicates a link used for audience and event management.
+	FeatureSet_FEATURE_SET_AUDIENCE_AND_EVENT_MANAGEMENT FeatureSet = 1
+	// Indicates a link used for ad event management.
+	FeatureSet_FEATURE_SET_AD_EVENT_MANAGEMENT FeatureSet = 2
+)
+
+// Enum value maps for FeatureSet.
+var (
+	FeatureSet_name = map[int32]string{
+		0: "FEATURE_SET_UNSPECIFIED",
+		1: "FEATURE_SET_AUDIENCE_AND_EVENT_MANAGEMENT",
+		2: "FEATURE_SET_AD_EVENT_MANAGEMENT",
+	}
+	FeatureSet_value = map[string]int32{
+		"FEATURE_SET_UNSPECIFIED":                   0,
+		"FEATURE_SET_AUDIENCE_AND_EVENT_MANAGEMENT": 1,
+		"FEATURE_SET_AD_EVENT_MANAGEMENT":           2,
+	}
+)
+
+func (x FeatureSet) Enum() *FeatureSet {
+	p := new(FeatureSet)
+	*p = x
+	return p
+}
+
+func (x FeatureSet) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (FeatureSet) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_ads_datamanager_v1_partner_link_service_proto_enumTypes[0].Descriptor()
+}
+
+func (FeatureSet) Type() protoreflect.EnumType {
+	return &file_google_ads_datamanager_v1_partner_link_service_proto_enumTypes[0]
+}
+
+func (x FeatureSet) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use FeatureSet.Descriptor instead.
+func (FeatureSet) EnumDescriptor() ([]byte, []int) {
+	return file_google_ads_datamanager_v1_partner_link_service_proto_rawDescGZIP(), []int{0}
+}
+
 // Request to create a [PartnerLink][google.ads.datamanager.v1.PartnerLink]
 // resource. Returns a
 // [PartnerLink][google.ads.datamanager.v1.PartnerLink].
@@ -324,8 +378,21 @@ type PartnerLink struct {
 	OwningAccount *ProductAccount `protobuf:"bytes,3,opt,name=owning_account,json=owningAccount,proto3" json:"owning_account,omitempty"`
 	// Required. The partner account granted access by the owning account.
 	PartnerAccount *ProductAccount `protobuf:"bytes,4,opt,name=partner_account,json=partnerAccount,proto3" json:"partner_account,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	// Optional. Immutable. The set of features supported for the partner link.
+	// If not specified, the system behavior defaults to
+	// [FEATURE_SET_AUDIENCE_AND_EVENT_MANAGEMENT][google.ads.datamanager.v1.FeatureSet.FEATURE_SET_AUDIENCE_AND_EVENT_MANAGEMENT].
+	FeatureSet FeatureSet `protobuf:"varint,5,opt,name=feature_set,json=featureSet,proto3,enum=google.ads.datamanager.v1.FeatureSet" json:"feature_set,omitempty"`
+	// Optional. The customer account in the partner system.
+	// This is required for partner links with the
+	// [FEATURE_SET_AD_EVENT_MANAGEMENT][google.ads.datamanager.v1.FeatureSet.FEATURE_SET_AD_EVENT_MANAGEMENT]
+	// feature set.
+	PartnerCustomerAccount *PartnerCustomerAccount `protobuf:"bytes,6,opt,name=partner_customer_account,json=partnerCustomerAccount,proto3" json:"partner_customer_account,omitempty"`
+	// Optional. Metadata associated with the partner link.
+	// This is optional and only accepted for partner links with the
+	// [FEATURE_SET_AD_EVENT_MANAGEMENT][google.ads.datamanager.v1.FeatureSet.FEATURE_SET_AD_EVENT_MANAGEMENT].
+	PartnerLinkMetadata *PartnerLinkMetadata `protobuf:"bytes,7,opt,name=partner_link_metadata,json=partnerLinkMetadata,proto3" json:"partner_link_metadata,omitempty"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
 }
 
 func (x *PartnerLink) Reset() {
@@ -386,6 +453,138 @@ func (x *PartnerLink) GetPartnerAccount() *ProductAccount {
 	return nil
 }
 
+func (x *PartnerLink) GetFeatureSet() FeatureSet {
+	if x != nil {
+		return x.FeatureSet
+	}
+	return FeatureSet_FEATURE_SET_UNSPECIFIED
+}
+
+func (x *PartnerLink) GetPartnerCustomerAccount() *PartnerCustomerAccount {
+	if x != nil {
+		return x.PartnerCustomerAccount
+	}
+	return nil
+}
+
+func (x *PartnerLink) GetPartnerLinkMetadata() *PartnerLinkMetadata {
+	if x != nil {
+		return x.PartnerLinkMetadata
+	}
+	return nil
+}
+
+// Represents a customer account in the partner's system.
+type PartnerCustomerAccount struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The identifier of the customer account in the partner's ID space.
+	AccountId string `protobuf:"bytes,1,opt,name=account_id,json=accountId,proto3" json:"account_id,omitempty"`
+	// Optional. The name of the account.
+	AccountName string `protobuf:"bytes,2,opt,name=account_name,json=accountName,proto3" json:"account_name,omitempty"`
+	// Optional. The type of the account. Can be used to distinguish between
+	// advertiser accounts and business level accounts, for example.
+	AccountType   string `protobuf:"bytes,3,opt,name=account_type,json=accountType,proto3" json:"account_type,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *PartnerCustomerAccount) Reset() {
+	*x = PartnerCustomerAccount{}
+	mi := &file_google_ads_datamanager_v1_partner_link_service_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PartnerCustomerAccount) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PartnerCustomerAccount) ProtoMessage() {}
+
+func (x *PartnerCustomerAccount) ProtoReflect() protoreflect.Message {
+	mi := &file_google_ads_datamanager_v1_partner_link_service_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PartnerCustomerAccount.ProtoReflect.Descriptor instead.
+func (*PartnerCustomerAccount) Descriptor() ([]byte, []int) {
+	return file_google_ads_datamanager_v1_partner_link_service_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *PartnerCustomerAccount) GetAccountId() string {
+	if x != nil {
+		return x.AccountId
+	}
+	return ""
+}
+
+func (x *PartnerCustomerAccount) GetAccountName() string {
+	if x != nil {
+		return x.AccountName
+	}
+	return ""
+}
+
+func (x *PartnerCustomerAccount) GetAccountType() string {
+	if x != nil {
+		return x.AccountType
+	}
+	return ""
+}
+
+// Represents metadata associated with a partner link.
+type PartnerLinkMetadata struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. The list of implicit accounts.
+	ImplicitAccounts []*PartnerCustomerAccount `protobuf:"bytes,1,rep,name=implicit_accounts,json=implicitAccounts,proto3" json:"implicit_accounts,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *PartnerLinkMetadata) Reset() {
+	*x = PartnerLinkMetadata{}
+	mi := &file_google_ads_datamanager_v1_partner_link_service_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PartnerLinkMetadata) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PartnerLinkMetadata) ProtoMessage() {}
+
+func (x *PartnerLinkMetadata) ProtoReflect() protoreflect.Message {
+	mi := &file_google_ads_datamanager_v1_partner_link_service_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PartnerLinkMetadata.ProtoReflect.Descriptor instead.
+func (*PartnerLinkMetadata) Descriptor() ([]byte, []int) {
+	return file_google_ads_datamanager_v1_partner_link_service_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *PartnerLinkMetadata) GetImplicitAccounts() []*PartnerCustomerAccount {
+	if x != nil {
+		return x.ImplicitAccounts
+	}
+	return nil
+}
+
 var File_google_ads_datamanager_v1_partner_link_service_proto protoreflect.FileDescriptor
 
 const file_google_ads_datamanager_v1_partner_link_service_proto_rawDesc = "" +
@@ -405,13 +604,29 @@ const file_google_ads_datamanager_v1_partner_link_service_proto_rawDesc = "" +
 	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\"\x91\x01\n" +
 	"\x1aSearchPartnerLinksResponse\x12K\n" +
 	"\rpartner_links\x18\x01 \x03(\v2&.google.ads.datamanager.v1.PartnerLinkR\fpartnerLinks\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x99\x03\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xc4\x05\n" +
 	"\vPartnerLink\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12+\n" +
 	"\x0fpartner_link_id\x18\x02 \x01(\tB\x03\xe0A\x03R\rpartnerLinkId\x12U\n" +
 	"\x0eowning_account\x18\x03 \x01(\v2).google.ads.datamanager.v1.ProductAccountB\x03\xe0A\x02R\rowningAccount\x12W\n" +
-	"\x0fpartner_account\x18\x04 \x01(\v2).google.ads.datamanager.v1.ProductAccountB\x03\xe0A\x02R\x0epartnerAccount:\x93\x01\xeaA\x8f\x01\n" +
-	"&datamanager.googleapis.com/PartnerLink\x12JaccountTypes/{account_type}/accounts/{account}/partnerLinks/{partner_link}*\fpartnerLinks2\vpartnerLink2\xe6\x05\n" +
+	"\x0fpartner_account\x18\x04 \x01(\v2).google.ads.datamanager.v1.ProductAccountB\x03\xe0A\x02R\x0epartnerAccount\x12N\n" +
+	"\vfeature_set\x18\x05 \x01(\x0e2%.google.ads.datamanager.v1.FeatureSetB\x06\xe0A\x01\xe0A\x05R\n" +
+	"featureSet\x12p\n" +
+	"\x18partner_customer_account\x18\x06 \x01(\v21.google.ads.datamanager.v1.PartnerCustomerAccountB\x03\xe0A\x01R\x16partnerCustomerAccount\x12g\n" +
+	"\x15partner_link_metadata\x18\a \x01(\v2..google.ads.datamanager.v1.PartnerLinkMetadataB\x03\xe0A\x01R\x13partnerLinkMetadata:\x93\x01\xeaA\x8f\x01\n" +
+	"&datamanager.googleapis.com/PartnerLink\x12JaccountTypes/{account_type}/accounts/{account}/partnerLinks/{partner_link}*\fpartnerLinks2\vpartnerLink\"\x8c\x01\n" +
+	"\x16PartnerCustomerAccount\x12\"\n" +
+	"\n" +
+	"account_id\x18\x01 \x01(\tB\x03\xe0A\x02R\taccountId\x12&\n" +
+	"\faccount_name\x18\x02 \x01(\tB\x03\xe0A\x01R\vaccountName\x12&\n" +
+	"\faccount_type\x18\x03 \x01(\tB\x03\xe0A\x01R\vaccountType\"z\n" +
+	"\x13PartnerLinkMetadata\x12c\n" +
+	"\x11implicit_accounts\x18\x01 \x03(\v21.google.ads.datamanager.v1.PartnerCustomerAccountB\x03\xe0A\x01R\x10implicitAccounts*}\n" +
+	"\n" +
+	"FeatureSet\x12\x1b\n" +
+	"\x17FEATURE_SET_UNSPECIFIED\x10\x00\x12-\n" +
+	")FEATURE_SET_AUDIENCE_AND_EVENT_MANAGEMENT\x10\x01\x12#\n" +
+	"\x1fFEATURE_SET_AD_EVENT_MANAGEMENT\x10\x022\xe6\x05\n" +
 	"\x12PartnerLinkService\x12\xd1\x01\n" +
 	"\x11CreatePartnerLink\x123.google.ads.datamanager.v1.CreatePartnerLinkRequest\x1a&.google.ads.datamanager.v1.PartnerLink\"_\xdaA\x13parent,partner_link\x82\xd3\xe4\x93\x02C:\fpartner_link\"3/v1/{parent=accountTypes/*/accounts/*}/partnerLinks\x12\xa4\x01\n" +
 	"\x11DeletePartnerLink\x123.google.ads.datamanager.v1.DeletePartnerLinkRequest\x1a\x16.google.protobuf.Empty\"B\xdaA\x04name\x82\xd3\xe4\x93\x025*3/v1/{name=accountTypes/*/accounts/*/partnerLinks/*}\x12\xce\x01\n" +
@@ -430,32 +645,40 @@ func file_google_ads_datamanager_v1_partner_link_service_proto_rawDescGZIP() []b
 	return file_google_ads_datamanager_v1_partner_link_service_proto_rawDescData
 }
 
-var file_google_ads_datamanager_v1_partner_link_service_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
+var file_google_ads_datamanager_v1_partner_link_service_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_google_ads_datamanager_v1_partner_link_service_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
 var file_google_ads_datamanager_v1_partner_link_service_proto_goTypes = []any{
-	(*CreatePartnerLinkRequest)(nil),   // 0: google.ads.datamanager.v1.CreatePartnerLinkRequest
-	(*DeletePartnerLinkRequest)(nil),   // 1: google.ads.datamanager.v1.DeletePartnerLinkRequest
-	(*SearchPartnerLinksRequest)(nil),  // 2: google.ads.datamanager.v1.SearchPartnerLinksRequest
-	(*SearchPartnerLinksResponse)(nil), // 3: google.ads.datamanager.v1.SearchPartnerLinksResponse
-	(*PartnerLink)(nil),                // 4: google.ads.datamanager.v1.PartnerLink
-	(*ProductAccount)(nil),             // 5: google.ads.datamanager.v1.ProductAccount
-	(*emptypb.Empty)(nil),              // 6: google.protobuf.Empty
+	(FeatureSet)(0),                    // 0: google.ads.datamanager.v1.FeatureSet
+	(*CreatePartnerLinkRequest)(nil),   // 1: google.ads.datamanager.v1.CreatePartnerLinkRequest
+	(*DeletePartnerLinkRequest)(nil),   // 2: google.ads.datamanager.v1.DeletePartnerLinkRequest
+	(*SearchPartnerLinksRequest)(nil),  // 3: google.ads.datamanager.v1.SearchPartnerLinksRequest
+	(*SearchPartnerLinksResponse)(nil), // 4: google.ads.datamanager.v1.SearchPartnerLinksResponse
+	(*PartnerLink)(nil),                // 5: google.ads.datamanager.v1.PartnerLink
+	(*PartnerCustomerAccount)(nil),     // 6: google.ads.datamanager.v1.PartnerCustomerAccount
+	(*PartnerLinkMetadata)(nil),        // 7: google.ads.datamanager.v1.PartnerLinkMetadata
+	(*ProductAccount)(nil),             // 8: google.ads.datamanager.v1.ProductAccount
+	(*emptypb.Empty)(nil),              // 9: google.protobuf.Empty
 }
 var file_google_ads_datamanager_v1_partner_link_service_proto_depIdxs = []int32{
-	4, // 0: google.ads.datamanager.v1.CreatePartnerLinkRequest.partner_link:type_name -> google.ads.datamanager.v1.PartnerLink
-	4, // 1: google.ads.datamanager.v1.SearchPartnerLinksResponse.partner_links:type_name -> google.ads.datamanager.v1.PartnerLink
-	5, // 2: google.ads.datamanager.v1.PartnerLink.owning_account:type_name -> google.ads.datamanager.v1.ProductAccount
-	5, // 3: google.ads.datamanager.v1.PartnerLink.partner_account:type_name -> google.ads.datamanager.v1.ProductAccount
-	0, // 4: google.ads.datamanager.v1.PartnerLinkService.CreatePartnerLink:input_type -> google.ads.datamanager.v1.CreatePartnerLinkRequest
-	1, // 5: google.ads.datamanager.v1.PartnerLinkService.DeletePartnerLink:input_type -> google.ads.datamanager.v1.DeletePartnerLinkRequest
-	2, // 6: google.ads.datamanager.v1.PartnerLinkService.SearchPartnerLinks:input_type -> google.ads.datamanager.v1.SearchPartnerLinksRequest
-	4, // 7: google.ads.datamanager.v1.PartnerLinkService.CreatePartnerLink:output_type -> google.ads.datamanager.v1.PartnerLink
-	6, // 8: google.ads.datamanager.v1.PartnerLinkService.DeletePartnerLink:output_type -> google.protobuf.Empty
-	3, // 9: google.ads.datamanager.v1.PartnerLinkService.SearchPartnerLinks:output_type -> google.ads.datamanager.v1.SearchPartnerLinksResponse
-	7, // [7:10] is the sub-list for method output_type
-	4, // [4:7] is the sub-list for method input_type
-	4, // [4:4] is the sub-list for extension type_name
-	4, // [4:4] is the sub-list for extension extendee
-	0, // [0:4] is the sub-list for field type_name
+	5,  // 0: google.ads.datamanager.v1.CreatePartnerLinkRequest.partner_link:type_name -> google.ads.datamanager.v1.PartnerLink
+	5,  // 1: google.ads.datamanager.v1.SearchPartnerLinksResponse.partner_links:type_name -> google.ads.datamanager.v1.PartnerLink
+	8,  // 2: google.ads.datamanager.v1.PartnerLink.owning_account:type_name -> google.ads.datamanager.v1.ProductAccount
+	8,  // 3: google.ads.datamanager.v1.PartnerLink.partner_account:type_name -> google.ads.datamanager.v1.ProductAccount
+	0,  // 4: google.ads.datamanager.v1.PartnerLink.feature_set:type_name -> google.ads.datamanager.v1.FeatureSet
+	6,  // 5: google.ads.datamanager.v1.PartnerLink.partner_customer_account:type_name -> google.ads.datamanager.v1.PartnerCustomerAccount
+	7,  // 6: google.ads.datamanager.v1.PartnerLink.partner_link_metadata:type_name -> google.ads.datamanager.v1.PartnerLinkMetadata
+	6,  // 7: google.ads.datamanager.v1.PartnerLinkMetadata.implicit_accounts:type_name -> google.ads.datamanager.v1.PartnerCustomerAccount
+	1,  // 8: google.ads.datamanager.v1.PartnerLinkService.CreatePartnerLink:input_type -> google.ads.datamanager.v1.CreatePartnerLinkRequest
+	2,  // 9: google.ads.datamanager.v1.PartnerLinkService.DeletePartnerLink:input_type -> google.ads.datamanager.v1.DeletePartnerLinkRequest
+	3,  // 10: google.ads.datamanager.v1.PartnerLinkService.SearchPartnerLinks:input_type -> google.ads.datamanager.v1.SearchPartnerLinksRequest
+	5,  // 11: google.ads.datamanager.v1.PartnerLinkService.CreatePartnerLink:output_type -> google.ads.datamanager.v1.PartnerLink
+	9,  // 12: google.ads.datamanager.v1.PartnerLinkService.DeletePartnerLink:output_type -> google.protobuf.Empty
+	4,  // 13: google.ads.datamanager.v1.PartnerLinkService.SearchPartnerLinks:output_type -> google.ads.datamanager.v1.SearchPartnerLinksResponse
+	11, // [11:14] is the sub-list for method output_type
+	8,  // [8:11] is the sub-list for method input_type
+	8,  // [8:8] is the sub-list for extension type_name
+	8,  // [8:8] is the sub-list for extension extendee
+	0,  // [0:8] is the sub-list for field type_name
 }
 
 func init() { file_google_ads_datamanager_v1_partner_link_service_proto_init() }
@@ -469,13 +692,14 @@ func file_google_ads_datamanager_v1_partner_link_service_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_ads_datamanager_v1_partner_link_service_proto_rawDesc), len(file_google_ads_datamanager_v1_partner_link_service_proto_rawDesc)),
-			NumEnums:      0,
-			NumMessages:   5,
+			NumEnums:      1,
+			NumMessages:   7,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
 		GoTypes:           file_google_ads_datamanager_v1_partner_link_service_proto_goTypes,
 		DependencyIndexes: file_google_ads_datamanager_v1_partner_link_service_proto_depIdxs,
+		EnumInfos:         file_google_ads_datamanager_v1_partner_link_service_proto_enumTypes,
 		MessageInfos:      file_google_ads_datamanager_v1_partner_link_service_proto_msgTypes,
 	}.Build()
 	File_google_ads_datamanager_v1_partner_link_service_proto = out.File

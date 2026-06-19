@@ -12,12 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 language: go
-version: v0.20.0
+version: v0.21.0
 repo: googleapis/google-cloud-go
 sources:
   googleapis:
-    commit: d8daa97972d091191898915589335cef66fcdc8a
-    sha256: 7dbdf2b1b667fe57128d41c77e530a2541767772cfe3487713f29b7b25d9f5ad
+    commit: 4c284f1366a46993646dc9267cba257acbab6f45
+    sha256: 449ecc0edd76de7d592cf7f5c2a98070bef11af2593f8b64428e71b11211857e
 tools:
   go:
     - name: github.com/googleapis/gapic-generator-go/cmd/protoc-gen-go_gapic
@@ -53,6 +53,11 @@ libraries:
     version: 0.21.0
     skip_generate: true
     skip_release: true
+  - name: agentregistry
+    version: 0.0.0
+    apis:
+      - path: google/cloud/agentregistry/v1
+    copyright_year: "2026"
   - name: ai
     version: 1.0.0
     apis:
@@ -260,6 +265,7 @@ libraries:
           enabled_generator_features:
             - F_dynamic_resource_heuristics
             - F_open_telemetry_attributes
+            - F_export_set_google_client_info
           no_snippets: true
       - path: google/cloud/bigquery/connection/v1
         go:
@@ -365,7 +371,7 @@ libraries:
       - README.md
     skip_release: true
   - name: bigtable
-    version: 1.49.0
+    version: 1.50.0
     apis:
       - path: google/bigtable/v2
         go:
@@ -672,6 +678,7 @@ libraries:
           enabled_generator_features:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
+            - F_export_set_google_client_info
           import_path: errorreporting/apiv1beta1
   - name: essentialcontacts
     version: 1.12.0
@@ -848,6 +855,7 @@ libraries:
           enabled_generator_features:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
+            - F_export_set_google_client_info
     go:
       nested_module: logadmin
   - name: longrunning
@@ -1071,6 +1079,7 @@ libraries:
           enabled_generator_features:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
+            - F_export_set_google_client_info
           import_path: pubsub/v2/apiv1
           no_metadata: true
           no_snippets: true
@@ -1364,6 +1373,7 @@ libraries:
           enabled_generator_features:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
+            - F_export_set_google_client_info
           import_path: trace/apiv1
           no_metadata: true
   - name: translate

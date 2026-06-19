@@ -17,6 +17,52 @@
           "fullName": "google.ads.datamanager.v1.IngestionClient",
           "shortName": "IngestionClient"
         },
+        "fullName": "google.ads.datamanager.v1.IngestionClient.IngestAdEvents",
+        "method": {
+          "fullName": "google.ads.datamanager.v1.IngestionService.IngestAdEvents",
+          "service": {
+            "fullName": "google.ads.datamanager.v1.IngestionService",
+            "shortName": "IngestionService"
+          },
+          "shortName": "IngestAdEvents"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "datamanagerpb.IngestAdEventsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*datamanagerpb.IngestAdEventsResponse",
+        "shortName": "IngestAdEvents"
+      },
+      "description": "IngestAdEvents uploads a list of\n[AdEvent][google.ads.datamanager.v1.AdEvent] resources to Google\nAnalytics.\n\nThis feature is only available to accounts on an allowlist.",
+      "file": "IngestionClient/IngestAdEvents/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "datamanager_v1_generated_IngestionService_IngestAdEvents_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "datamanager IngestAdEvents Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.ads.datamanager.v1.IngestionClient",
+          "shortName": "IngestionClient"
+        },
         "fullName": "google.ads.datamanager.v1.IngestionClient.IngestAudienceMembers",
         "method": {
           "fullName": "google.ads.datamanager.v1.IngestionService.IngestAudienceMembers",

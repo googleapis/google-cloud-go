@@ -140,6 +140,11 @@ func TestMain(m *testing.M) {
 // Return a cleanup function.
 func initIntegrationTest() func() error {
 	flag.Parse() // needed for testing.Short()
+	if os.Getenv("GOOGLE_APPLICATION_CREDENTIALS") == "" {
+		if key := os.Getenv("GCLOUD_TESTS_GOLANG_KEY"); key != "" {
+			os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", key)
+		}
+	}
 	switch {
 	case testing.Short() && *record:
 		log.Fatal("cannot combine -short and -record")
@@ -9197,4 +9202,195 @@ func TestIntegration_ParallelUpload_ChecksumValidation(t *testing.T) {
 			})
 		}
 	})
+}
+
+func TestIntegration_FetchBucketMetadata(t *testing.T) {
+	ctx := context.Background()
+
+	tests := []struct {
+		name             string
+		bucketAttrs      *BucketAttrs
+		expectedLocation string
+	}{
+		{
+			name:             "Multi-Region",
+			bucketAttrs:      &BucketAttrs{Location: "US"},
+			expectedLocation: "global",
+		},
+		{
+			name:             "Dual-Region",
+			bucketAttrs:      &BucketAttrs{Location: "NAM4"},
+			expectedLocation: "global",
+		},
+		{
+			name:             "Regional",
+			bucketAttrs:      &BucketAttrs{Location: "US-West1"},
+			expectedLocation: "us-west1",
+		},
+		{
+			name: "Zonal",
+			bucketAttrs: &BucketAttrs{
+				Location: testZonalLocation,
+				CustomPlacementConfig: &CustomPlacementConfig{
+					DataLocations: []string{testZonalZone},
+				},
+				StorageClass: "RAPID",
+				HierarchicalNamespace: &HierarchicalNamespace{
+					Enabled: true,
+				},
+				UniformBucketLevelAccess: UniformBucketLevelAccess{
+					Enabled: true,
+				},
+			},
+			expectedLocation: testZonalLocation,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			ctx := skipExtraReadAPIs(ctx, "bucket operations")
+			multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, _ string, client *Client) {
+				bucketName := fmt.Sprintf("test-nonreg-metadata-%d", time.Now().UnixNano())
+				err := client.Bucket(bucketName).Create(ctx, testutil.ProjID(), tc.bucketAttrs)
+				if err != nil {
+					t.Skipf("skipping: failed to create bucket in %s: %v", tc.bucketAttrs.Location, err)
+				}
+				t.Cleanup(func() {
+					client.Bucket(bucketName).Delete(ctx)
+				})
+
+				resource, location, err := client.tc.fetchBucketMetadata(ctx, bucketName)
+				if err != nil {
+					t.Fatalf("fetchBucketMetadata failed: %v", err)
+				}
+
+				if location != tc.expectedLocation {
+					t.Errorf("got location %q, want %q for %s bucket", location, tc.expectedLocation, tc.name)
+				}
+
+				if !strings.HasPrefix(resource, "projects/") || !strings.HasSuffix(resource, "/buckets/"+bucketName) {
+					t.Errorf("unexpected resource format: %q", resource)
+				}
+			})
+		})
+	}
+}
+
+func TestIntegration_ClientTracing(t *testing.T) {
+	ctx := context.Background()
+
+	tests := []struct {
+		name      string
+		newClient func(t *testing.T, ctx context.Context, opts ...option.ClientOption) (*Client, error)
+	}{
+		{
+			name: "gRPC",
+			newClient: func(t *testing.T, ctx context.Context, opts ...option.ClientOption) (*Client, error) {
+				return testConfigGRPC(ctx, t, opts...), nil
+			},
+		},
+		{
+			name: "HTTP",
+			newClient: func(t *testing.T, ctx context.Context, opts ...option.ClientOption) (*Client, error) {
+				return testConfig(ctx, t, opts...), nil
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			te := testutil.NewOpenTelemetryTestExporter()
+			t.Cleanup(func() {
+				te.Unregister(ctx)
+			})
+
+			t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "true")
+
+			// 1. Create bucket using a separate admin client.
+			adminClient, err := tc.newClient(t, ctx)
+			if err != nil {
+				t.Fatalf("failed to create admin client: %v", err)
+			}
+			adminClient.bucketMetadataCache = nil
+			bucketName := fmt.Sprintf("test-trace-int-%s-%d", strings.ToLower(tc.name), time.Now().UnixNano())
+			if err := adminClient.Bucket(bucketName).Create(ctx, testutil.ProjID(), &BucketAttrs{Location: "us-east1"}); err != nil {
+				adminClient.Close()
+				t.Fatalf("failed to create bucket: %v", err)
+			}
+			t.Cleanup(func() {
+				adminClient.Bucket(bucketName).Delete(ctx)
+				adminClient.Close()
+			})
+
+			// 2. Create the test client which will have an empty cache.
+			client, err := tc.newClient(t, ctx)
+			if err != nil {
+				t.Fatalf("failed to create test client: %v", err)
+			}
+			defer client.Close()
+
+			doneChan := make(chan struct{}, 1)
+			client.bucketMetadataCache.fetchDone = doneChan
+
+			// Get the number of spans before our test operations.
+			initialSpanCount := len(te.Spans())
+
+			// 1. First operation: Cache Miss. Should get placeholder attributes.
+			_, err = client.Bucket(bucketName).Attrs(ctx)
+			if err != nil {
+				t.Fatalf("Bucket.Attrs failed: %v", err)
+			}
+
+			spans := te.Spans()
+			var attrsSpan tracetest.SpanStub
+			found := false
+			for _, s := range spans[initialSpanCount:] {
+				if s.Name == "cloud.google.com/go/storage.Bucket.Attrs" {
+					attrsSpan = s
+					found = true
+					break
+				}
+			}
+			if !found {
+				t.Fatalf("Bucket.Attrs span not found")
+			}
+
+			// First call should have placeholder.
+			verifySpanAttributes(t, attrsSpan, "projects/_/buckets/"+bucketName, "global")
+
+			// Wait for background fetch to complete and populate cache.
+			select {
+			case <-doneChan:
+			case <-time.After(fetchBackgroundTimeout):
+				t.Fatalf("timeout waiting for fetchBackground completion")
+			}
+			entry, cacheFound := client.bucketMetadataCache.get(bucketName)
+			if !cacheFound || entry.location != "us-east1" {
+				t.Fatalf("expected entry to be populated in cache with us-east1, got %+v (found: %t)", entry, cacheFound)
+			}
+
+			// 2. Second operation: Cache Hit. Should get resolved attributes.
+			spanCountAfterFirstOp := len(te.Spans())
+			bAttrs, err := client.Bucket(bucketName).Attrs(ctx)
+			if err != nil {
+				t.Fatalf("Bucket.Attrs failed: %v", err)
+			}
+
+			spans = te.Spans()
+			found = false
+			for _, s := range spans[spanCountAfterFirstOp:] {
+				if s.Name == "cloud.google.com/go/storage.Bucket.Attrs" {
+					attrsSpan = s
+					found = true
+					break
+				}
+			}
+			if !found {
+				t.Fatalf("second Bucket.Attrs span not found")
+			}
+
+			// Second call should have resolved attributes.
+			verifySpanAttributes(t, attrsSpan, fmt.Sprintf("projects/%d/buckets/%s", bAttrs.ProjectNumber, bucketName), "us-east1")
+		})
+	}
 }

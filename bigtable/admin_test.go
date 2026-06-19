@@ -28,6 +28,7 @@ import (
 	"cloud.google.com/go/internal/testutil"
 	longrunning "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	"github.com/google/go-cmp/cmp"
+	"google.golang.org/api/option"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/anypb"
 	"google.golang.org/protobuf/types/known/durationpb"
@@ -1803,5 +1804,61 @@ func TestInstanceAdmin_UpdateAppProfile(t *testing.T) {
 				t.Errorf("UpdateAppProfileRequest mismatch (-got +want):\n%s", diff)
 			}
 		})
+	}
+}
+
+func TestTableAdminClientV2(t *testing.T) {
+	ctx := context.Background()
+	c, err := NewAdminClient(ctx, "my-cool-project", "my-cool-instance", option.WithoutAuthentication())
+	if err != nil {
+		t.Fatalf("NewAdminClient failed: %v", err)
+	}
+
+	gapicClient := c.TableAdminClientV2()
+	if gapicClient == nil {
+		t.Fatal("Expected non-nil BigtableTableAdminClient")
+	}
+
+	// Close the gapic client. It should close the underlying connPool.
+	if err := gapicClient.Close(); err != nil {
+		t.Errorf("gapicClient.Close() failed: %v", err)
+	}
+
+	// Now trying to use AdminClient should fail because the connection pool is closed.
+	err = c.CreateTable(ctx, "some-table")
+	if err == nil {
+		t.Error("Expected error when calling method on closed client")
+	} else {
+		if !strings.Contains(err.Error(), "closing") && !strings.Contains(err.Error(), "closed") && !strings.Contains(err.Error(), "Shutdown") {
+			t.Errorf("Unexpected error: %v", err)
+		}
+	}
+}
+
+func TestInstanceAdminClientV2(t *testing.T) {
+	ctx := context.Background()
+	c, err := NewInstanceAdminClient(ctx, "my-cool-project", option.WithoutAuthentication())
+	if err != nil {
+		t.Fatalf("NewInstanceAdminClient failed: %v", err)
+	}
+
+	gapicClient := c.InstanceAdminClientV2()
+	if gapicClient == nil {
+		t.Fatal("Expected non-nil BigtableInstanceAdminClient")
+	}
+
+	// Close the gapic client. It should close the underlying connPool.
+	if err := gapicClient.Close(); err != nil {
+		t.Errorf("gapicClient.Close() failed: %v", err)
+	}
+
+	// Now trying to use InstanceAdminClient should fail because the connection pool is closed.
+	_, err = c.Instances(ctx)
+	if err == nil {
+		t.Error("Expected error when calling method on closed client")
+	} else {
+		if !strings.Contains(err.Error(), "closing") && !strings.Contains(err.Error(), "closed") && !strings.Contains(err.Error(), "Shutdown") {
+			t.Errorf("Unexpected error: %v", err)
+		}
 	}
 }

@@ -1,0 +1,1163 @@
+{
+  "clientLibrary": {
+    "apis": [
+      {
+        "id": "google.cloud.agentregistry.v1",
+        "version": "v1"
+      }
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/agentregistry/apiv1",
+    "version": "0.0.0"
+  },
+  "snippets": [
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.agentregistry.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.agentregistry.v1.Client.CancelOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "CancelOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.CancelOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "CancelOperation"
+      },
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/CancelOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "agentregistry_v1_generated_AgentRegistry_CancelOperation_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "agentregistry CancelOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.agentregistry.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.agentregistry.v1.Client.CreateBinding",
+        "method": {
+          "fullName": "google.cloud.agentregistry.v1.AgentRegistry.CreateBinding",
+          "service": {
+            "fullName": "google.cloud.agentregistry.v1.AgentRegistry",
+            "shortName": "AgentRegistry"
+          },
+          "shortName": "CreateBinding"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "agentregistrypb.CreateBindingRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "CreateBindingOperation",
+        "shortName": "CreateBinding"
+      },
+      "description": "CreateBinding creates a new Binding in a given project and location.",
+      "file": "Client/CreateBinding/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "agentregistry_v1_generated_AgentRegistry_CreateBinding_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "agentregistry CreateBinding Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.agentregistry.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.agentregistry.v1.Client.CreateService",
+        "method": {
+          "fullName": "google.cloud.agentregistry.v1.AgentRegistry.CreateService",
+          "service": {
+            "fullName": "google.cloud.agentregistry.v1.AgentRegistry",
+            "shortName": "AgentRegistry"
+          },
+          "shortName": "CreateService"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "agentregistrypb.CreateServiceRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "CreateServiceOperation",
+        "shortName": "CreateService"
+      },
+      "description": "CreateService creates a new Service in a given project and location.",
+      "file": "Client/CreateService/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "agentregistry_v1_generated_AgentRegistry_CreateService_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "agentregistry CreateService Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.agentregistry.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.agentregistry.v1.Client.DeleteBinding",
+        "method": {
+          "fullName": "google.cloud.agentregistry.v1.AgentRegistry.DeleteBinding",
+          "service": {
+            "fullName": "google.cloud.agentregistry.v1.AgentRegistry",
+            "shortName": "AgentRegistry"
+          },
+          "shortName": "DeleteBinding"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "agentregistrypb.DeleteBindingRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "DeleteBindingOperation",
+        "shortName": "DeleteBinding"
+      },
+      "description": "DeleteBinding deletes a single Binding.",
+      "file": "Client/DeleteBinding/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "agentregistry_v1_generated_AgentRegistry_DeleteBinding_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "agentregistry DeleteBinding Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.agentregistry.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.agentregistry.v1.Client.DeleteOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "DeleteOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.DeleteOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteOperation"
+      },
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/DeleteOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "agentregistry_v1_generated_AgentRegistry_DeleteOperation_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "agentregistry DeleteOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.agentregistry.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.agentregistry.v1.Client.DeleteService",
+        "method": {
+          "fullName": "google.cloud.agentregistry.v1.AgentRegistry.DeleteService",
+          "service": {
+            "fullName": "google.cloud.agentregistry.v1.AgentRegistry",
+            "shortName": "AgentRegistry"
+          },
+          "shortName": "DeleteService"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "agentregistrypb.DeleteServiceRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "DeleteServiceOperation",
+        "shortName": "DeleteService"
+      },
+      "description": "DeleteService deletes a single Service.",
+      "file": "Client/DeleteService/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "agentregistry_v1_generated_AgentRegistry_DeleteService_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "agentregistry DeleteService Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.agentregistry.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.agentregistry.v1.Client.FetchAvailableBindings",
+        "method": {
+          "fullName": "google.cloud.agentregistry.v1.AgentRegistry.FetchAvailableBindings",
+          "service": {
+            "fullName": "google.cloud.agentregistry.v1.AgentRegistry",
+            "shortName": "AgentRegistry"
+          },
+          "shortName": "FetchAvailableBindings"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "agentregistrypb.FetchAvailableBindingsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "BindingIterator",
+        "shortName": "FetchAvailableBindings"
+      },
+      "description": "FetchAvailableBindings fetches available Bindings.",
+      "file": "Client/FetchAvailableBindings/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "agentregistry_v1_generated_AgentRegistry_FetchAvailableBindings_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "agentregistry FetchAvailableBindings Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.agentregistry.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.agentregistry.v1.Client.GetAgent",
+        "method": {
+          "fullName": "google.cloud.agentregistry.v1.AgentRegistry.GetAgent",
+          "service": {
+            "fullName": "google.cloud.agentregistry.v1.AgentRegistry",
+            "shortName": "AgentRegistry"
+          },
+          "shortName": "GetAgent"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "agentregistrypb.GetAgentRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*agentregistrypb.Agent",
+        "shortName": "GetAgent"
+      },
+      "description": "GetAgent gets details of a single Agent.",
+      "file": "Client/GetAgent/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "agentregistry_v1_generated_AgentRegistry_GetAgent_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "agentregistry GetAgent Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.agentregistry.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.agentregistry.v1.Client.GetBinding",
+        "method": {
+          "fullName": "google.cloud.agentregistry.v1.AgentRegistry.GetBinding",
+          "service": {
+            "fullName": "google.cloud.agentregistry.v1.AgentRegistry",
+            "shortName": "AgentRegistry"
+          },
+          "shortName": "GetBinding"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "agentregistrypb.GetBindingRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*agentregistrypb.Binding",
+        "shortName": "GetBinding"
+      },
+      "description": "GetBinding gets details of a single Binding.",
+      "file": "Client/GetBinding/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "agentregistry_v1_generated_AgentRegistry_GetBinding_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "agentregistry GetBinding Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.agentregistry.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.agentregistry.v1.Client.GetEndpoint",
+        "method": {
+          "fullName": "google.cloud.agentregistry.v1.AgentRegistry.GetEndpoint",
+          "service": {
+            "fullName": "google.cloud.agentregistry.v1.AgentRegistry",
+            "shortName": "AgentRegistry"
+          },
+          "shortName": "GetEndpoint"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "agentregistrypb.GetEndpointRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*agentregistrypb.Endpoint",
+        "shortName": "GetEndpoint"
+      },
+      "description": "GetEndpoint gets details of a single Endpoint.",
+      "file": "Client/GetEndpoint/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "agentregistry_v1_generated_AgentRegistry_GetEndpoint_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "agentregistry GetEndpoint Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.agentregistry.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.agentregistry.v1.Client.GetLocation",
+        "method": {
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "GetLocation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "locationpb.GetLocationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "shortName": "GetLocation"
+      },
+      "description": "GetLocation gets information about a location.",
+      "file": "Client/GetLocation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "agentregistry_v1_generated_AgentRegistry_GetLocation_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "agentregistry GetLocation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.agentregistry.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.agentregistry.v1.Client.GetMcpServer",
+        "method": {
+          "fullName": "google.cloud.agentregistry.v1.AgentRegistry.GetMcpServer",
+          "service": {
+            "fullName": "google.cloud.agentregistry.v1.AgentRegistry",
+            "shortName": "AgentRegistry"
+          },
+          "shortName": "GetMcpServer"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "agentregistrypb.GetMcpServerRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*agentregistrypb.McpServer",
+        "shortName": "GetMcpServer"
+      },
+      "description": "GetMcpServer gets details of a single McpServer.",
+      "file": "Client/GetMcpServer/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "agentregistry_v1_generated_AgentRegistry_GetMcpServer_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "agentregistry GetMcpServer Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.agentregistry.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.agentregistry.v1.Client.GetOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "GetOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.GetOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "shortName": "GetOperation"
+      },
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/GetOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "agentregistry_v1_generated_AgentRegistry_GetOperation_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "agentregistry GetOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.agentregistry.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.agentregistry.v1.Client.GetService",
+        "method": {
+          "fullName": "google.cloud.agentregistry.v1.AgentRegistry.GetService",
+          "service": {
+            "fullName": "google.cloud.agentregistry.v1.AgentRegistry",
+            "shortName": "AgentRegistry"
+          },
+          "shortName": "GetService"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "agentregistrypb.GetServiceRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*agentregistrypb.Service",
+        "shortName": "GetService"
+      },
+      "description": "GetService gets details of a single Service.",
+      "file": "Client/GetService/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "agentregistry_v1_generated_AgentRegistry_GetService_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "agentregistry GetService Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.agentregistry.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.agentregistry.v1.Client.ListAgents",
+        "method": {
+          "fullName": "google.cloud.agentregistry.v1.AgentRegistry.ListAgents",
+          "service": {
+            "fullName": "google.cloud.agentregistry.v1.AgentRegistry",
+            "shortName": "AgentRegistry"
+          },
+          "shortName": "ListAgents"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "agentregistrypb.ListAgentsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "AgentIterator",
+        "shortName": "ListAgents"
+      },
+      "description": "ListAgents lists Agents in a given project and location.",
+      "file": "Client/ListAgents/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "agentregistry_v1_generated_AgentRegistry_ListAgents_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "agentregistry ListAgents Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.agentregistry.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.agentregistry.v1.Client.ListBindings",
+        "method": {
+          "fullName": "google.cloud.agentregistry.v1.AgentRegistry.ListBindings",
+          "service": {
+            "fullName": "google.cloud.agentregistry.v1.AgentRegistry",
+            "shortName": "AgentRegistry"
+          },
+          "shortName": "ListBindings"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "agentregistrypb.ListBindingsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "BindingIterator",
+        "shortName": "ListBindings"
+      },
+      "description": "ListBindings lists Bindings in a given project and location.",
+      "file": "Client/ListBindings/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "agentregistry_v1_generated_AgentRegistry_ListBindings_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "agentregistry ListBindings Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.agentregistry.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.agentregistry.v1.Client.ListEndpoints",
+        "method": {
+          "fullName": "google.cloud.agentregistry.v1.AgentRegistry.ListEndpoints",
+          "service": {
+            "fullName": "google.cloud.agentregistry.v1.AgentRegistry",
+            "shortName": "AgentRegistry"
+          },
+          "shortName": "ListEndpoints"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "agentregistrypb.ListEndpointsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "EndpointIterator",
+        "shortName": "ListEndpoints"
+      },
+      "description": "ListEndpoints lists Endpoints in a given project and location.",
+      "file": "Client/ListEndpoints/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "agentregistry_v1_generated_AgentRegistry_ListEndpoints_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "agentregistry ListEndpoints Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.agentregistry.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.agentregistry.v1.Client.ListLocations",
+        "method": {
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "ListLocations"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "locationpb.ListLocationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "shortName": "ListLocations"
+      },
+      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name][google.cloud.location.ListLocationsRequest.name] field: *\n**Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
+      "file": "Client/ListLocations/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "agentregistry_v1_generated_AgentRegistry_ListLocations_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "agentregistry ListLocations Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.agentregistry.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.agentregistry.v1.Client.ListMcpServers",
+        "method": {
+          "fullName": "google.cloud.agentregistry.v1.AgentRegistry.ListMcpServers",
+          "service": {
+            "fullName": "google.cloud.agentregistry.v1.AgentRegistry",
+            "shortName": "AgentRegistry"
+          },
+          "shortName": "ListMcpServers"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "agentregistrypb.ListMcpServersRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "McpServerIterator",
+        "shortName": "ListMcpServers"
+      },
+      "description": "ListMcpServers lists McpServers in a given project and location.",
+      "file": "Client/ListMcpServers/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "agentregistry_v1_generated_AgentRegistry_ListMcpServers_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "agentregistry ListMcpServers Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.agentregistry.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.agentregistry.v1.Client.ListOperations",
+        "method": {
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "ListOperations"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.ListOperationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "shortName": "ListOperations"
+      },
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "Client/ListOperations/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "agentregistry_v1_generated_AgentRegistry_ListOperations_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "agentregistry ListOperations Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.agentregistry.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.agentregistry.v1.Client.ListServices",
+        "method": {
+          "fullName": "google.cloud.agentregistry.v1.AgentRegistry.ListServices",
+          "service": {
+            "fullName": "google.cloud.agentregistry.v1.AgentRegistry",
+            "shortName": "AgentRegistry"
+          },
+          "shortName": "ListServices"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "agentregistrypb.ListServicesRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "ServiceIterator",
+        "shortName": "ListServices"
+      },
+      "description": "ListServices lists Services in a given project and location.",
+      "file": "Client/ListServices/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "agentregistry_v1_generated_AgentRegistry_ListServices_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "agentregistry ListServices Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.agentregistry.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.agentregistry.v1.Client.SearchAgents",
+        "method": {
+          "fullName": "google.cloud.agentregistry.v1.AgentRegistry.SearchAgents",
+          "service": {
+            "fullName": "google.cloud.agentregistry.v1.AgentRegistry",
+            "shortName": "AgentRegistry"
+          },
+          "shortName": "SearchAgents"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "agentregistrypb.SearchAgentsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "AgentIterator",
+        "shortName": "SearchAgents"
+      },
+      "description": "SearchAgents searches Agents in a given project and location.",
+      "file": "Client/SearchAgents/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "agentregistry_v1_generated_AgentRegistry_SearchAgents_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "agentregistry SearchAgents Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.agentregistry.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.agentregistry.v1.Client.SearchMcpServers",
+        "method": {
+          "fullName": "google.cloud.agentregistry.v1.AgentRegistry.SearchMcpServers",
+          "service": {
+            "fullName": "google.cloud.agentregistry.v1.AgentRegistry",
+            "shortName": "AgentRegistry"
+          },
+          "shortName": "SearchMcpServers"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "agentregistrypb.SearchMcpServersRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "McpServerIterator",
+        "shortName": "SearchMcpServers"
+      },
+      "description": "SearchMcpServers searches McpServers in a given project and location.",
+      "file": "Client/SearchMcpServers/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "agentregistry_v1_generated_AgentRegistry_SearchMcpServers_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "agentregistry SearchMcpServers Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.agentregistry.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.agentregistry.v1.Client.UpdateBinding",
+        "method": {
+          "fullName": "google.cloud.agentregistry.v1.AgentRegistry.UpdateBinding",
+          "service": {
+            "fullName": "google.cloud.agentregistry.v1.AgentRegistry",
+            "shortName": "AgentRegistry"
+          },
+          "shortName": "UpdateBinding"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "agentregistrypb.UpdateBindingRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "UpdateBindingOperation",
+        "shortName": "UpdateBinding"
+      },
+      "description": "UpdateBinding updates the parameters of a single Binding.",
+      "file": "Client/UpdateBinding/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "agentregistry_v1_generated_AgentRegistry_UpdateBinding_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "agentregistry UpdateBinding Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.agentregistry.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.agentregistry.v1.Client.UpdateService",
+        "method": {
+          "fullName": "google.cloud.agentregistry.v1.AgentRegistry.UpdateService",
+          "service": {
+            "fullName": "google.cloud.agentregistry.v1.AgentRegistry",
+            "shortName": "AgentRegistry"
+          },
+          "shortName": "UpdateService"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "agentregistrypb.UpdateServiceRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "UpdateServiceOperation",
+        "shortName": "UpdateService"
+      },
+      "description": "UpdateService updates the parameters of a single Service.",
+      "file": "Client/UpdateService/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "agentregistry_v1_generated_AgentRegistry_UpdateService_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "agentregistry UpdateService Sample"
+    }
+  ]
+}

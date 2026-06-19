@@ -26,6 +26,7 @@ import (
 	"strings"
 	"time"
 
+	admin "cloud.google.com/go/bigtable/admin/apiv2"
 	btapb "cloud.google.com/go/bigtable/admin/apiv2/adminpb"
 	btopt "cloud.google.com/go/bigtable/internal/option"
 	"cloud.google.com/go/iam"
@@ -101,9 +102,10 @@ func (e ErrPartiallyUnavailable) Error() string {
 
 // AdminClient is a client type for performing admin operations within a specific instance.
 type AdminClient struct {
-	connPool  gtransport.ConnPool
-	tClient   btapb.BigtableTableAdminClient
-	lroClient *lroauto.OperationsClient
+	connPool         gtransport.ConnPool
+	tClient          btapb.BigtableTableAdminClient
+	lroClient        *lroauto.OperationsClient
+	tableAdminClient *admin.BigtableTableAdminClient
 
 	project, instance string
 
@@ -140,19 +142,35 @@ func NewAdminClient(ctx context.Context, project, instance string, opts ...optio
 		return nil, err
 	}
 
+	tableAdminClient, err := admin.NewBigtableTableAdminClient(ctx, gtransport.WithConnPool(connPool))
+	if err != nil {
+		return nil, err
+	}
+
 	return &AdminClient{
-		connPool:  connPool,
-		tClient:   btapb.NewBigtableTableAdminClient(connPool),
-		lroClient: lroClient,
-		project:   project,
-		instance:  instance,
-		md:        metadata.Pairs(resourcePrefixHeader, fmt.Sprintf("projects/%s/instances/%s", project, instance)),
+		connPool:         connPool,
+		tClient:          btapb.NewBigtableTableAdminClient(connPool),
+		lroClient:        lroClient,
+		tableAdminClient: tableAdminClient,
+		project:          project,
+		instance:         instance,
+		md:               metadata.Pairs(resourcePrefixHeader, fmt.Sprintf("projects/%s/instances/%s", project, instance)),
 	}, nil
 }
 
 // Close closes the AdminClient.
 func (ac *AdminClient) Close() error {
 	return ac.connPool.Close()
+}
+
+// TableAdminClientV2 returns the GAPIC generated BigtableTableAdminClient.
+//
+// The returned client shares the underlying connection pool with AdminClient.
+// Since the connection pool is shared, calling Close on either the returned client
+// or the parent AdminClient will close the connection pool, making both clients
+// unusable.
+func (ac *AdminClient) TableAdminClientV2() *admin.BigtableTableAdminClient {
+	return ac.tableAdminClient
 }
 
 func (ac *AdminClient) instancePrefix() string {
@@ -1278,9 +1296,10 @@ const mtlsInstanceAdminAddr = "bigtableadmin.mtls.googleapis.com:443"
 // InstanceAdminClient is a client type for performing admin operations on instances.
 // These operations can be substantially more dangerous than those provided by AdminClient.
 type InstanceAdminClient struct {
-	connPool  gtransport.ConnPool
-	iClient   btapb.BigtableInstanceAdminClient
-	lroClient *lroauto.OperationsClient
+	connPool            gtransport.ConnPool
+	iClient             btapb.BigtableInstanceAdminClient
+	lroClient           *lroauto.OperationsClient
+	instanceAdminClient *admin.BigtableInstanceAdminClient
 
 	project string
 
@@ -1296,6 +1315,8 @@ func NewInstanceAdminClient(ctx context.Context, project string, opts ...option.
 	}
 	// Add gRPC client interceptors to supply Google client information. No external interceptors are passed.
 	o = append(o, btopt.ClientInterceptorOptions(nil, nil)...)
+	o = append(o, internaloption.EnableNewAuthLibrary())
+	o = append(o, internaloption.EnableJwtWithScope())
 	o = append(o, opts...)
 	connPool, err := gtransport.DialPool(ctx, o...)
 	if err != nil {
@@ -1313,19 +1334,34 @@ func NewInstanceAdminClient(ctx context.Context, project string, opts ...option.
 		return nil, err
 	}
 
-	return &InstanceAdminClient{
-		connPool:  connPool,
-		iClient:   btapb.NewBigtableInstanceAdminClient(connPool),
-		lroClient: lroClient,
+	instanceAdminClient, err := admin.NewBigtableInstanceAdminClient(ctx, gtransport.WithConnPool(connPool))
+	if err != nil {
+		return nil, err
+	}
 
-		project: project,
-		md:      metadata.Pairs(resourcePrefixHeader, "projects/"+project),
+	return &InstanceAdminClient{
+		connPool:            connPool,
+		iClient:             btapb.NewBigtableInstanceAdminClient(connPool),
+		lroClient:           lroClient,
+		instanceAdminClient: instanceAdminClient,
+		project:             project,
+		md:                  metadata.Pairs(resourcePrefixHeader, "projects/"+project),
 	}, nil
 }
 
 // Close closes the InstanceAdminClient.
 func (iac *InstanceAdminClient) Close() error {
 	return iac.connPool.Close()
+}
+
+// InstanceAdminClientV2 returns the GAPIC generated BigtableInstanceAdminClient.
+//
+// The returned client shares the underlying connection pool with InstanceAdminClient.
+// Since the connection pool is shared, calling Close on either the returned client
+// or the parent InstanceAdminClient will close the connection pool, making both clients
+// unusable.
+func (iac *InstanceAdminClient) InstanceAdminClientV2() *admin.BigtableInstanceAdminClient {
+	return iac.instanceAdminClient
 }
 
 // StorageType is the type of storage used for all tables in an instance
