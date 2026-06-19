@@ -228,6 +228,7 @@ func TestIntegration_Pinger(t *testing.T) {
 	if err != nil {
 		t.Fatalf("NewIntegrationEnv: %v", err)
 	}
+	t.Cleanup(func() { testEnv.Close() })
 	if !testEnv.Config().UseProd {
 		t.Skip("emulator doesn't support PingAndWarm")
 	}
