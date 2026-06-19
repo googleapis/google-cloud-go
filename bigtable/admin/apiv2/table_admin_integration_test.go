@@ -94,12 +94,14 @@ func setupIntegration(t *testing.T) *testEnv {
 }
 
 func TestIntegration_RestoreTable(t *testing.T) {
+	t.Parallel()
 	env := setupIntegration(t)
 	if os.Getenv("BIGTABLE_EMULATOR_HOST") == "" && env.cluster == "" {
 		t.Skip("Missing GCLOUD_TESTS_BIGTABLE_CLUSTER for non-emulator run")
 	}
 
-	ctx := context.Background()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Minute)
+	t.Cleanup(cancel)
 	client := env.client
 
 	sourceTableID := sourceTableSpace.New()
@@ -180,9 +182,11 @@ func TestIntegration_RestoreTable(t *testing.T) {
 }
 
 func TestIntegration_WaitForConsistency(t *testing.T) {
+	t.Parallel()
 	env := setupIntegration(t)
 
-	ctx := context.Background()
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	t.Cleanup(cancel)
 	client := env.client
 
 	tableID := replTestTableSpace.New()
