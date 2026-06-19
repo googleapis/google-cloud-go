@@ -89,13 +89,13 @@ func newDirectAccessEligibleGauge(meterProvider metric.MeterProvider, logger *lo
 // kicks off an asynchronous investigation that records a more specific
 // failure reason on the direct_access/compatible metric.
 //
-// The checker reuses the same *pingAndWarmChannelPrimer that the pool's
-// connection factory uses, so the exact PingAndWarm invocation (instance
-// name, app profile, feature-flag metadata) stays in one place — both the
+// The checker reuses the same ChannelPrimer that the pool's connection
+// factory uses, so the exact PingAndWarm invocation (instance name, app
+// profile, feature-flag metadata) stays in one place — both the
 // compatibility probe and any single-endpoint investigation go through it.
 type pingAndWarmDirectAccessChecker struct {
 	dialer          func() (*BigtableConn, error)
-	primer          *pingAndWarmChannelPrimer
+	primer          ChannelPrimer
 	daEligibleGauge metric.Int64Gauge
 	logger          *log.Logger
 }
@@ -103,11 +103,11 @@ type pingAndWarmDirectAccessChecker struct {
 // newPingAndWarmDirectAccessChecker constructs the today-default checker.
 // A nil meterProvider produces a checker that silently skips metric
 // reporting. The primer must be non-nil; the channel pool factory
-// constructs a single *pingAndWarmChannelPrimer and shares it with both the
-// pool (via WithChannelPrimer) and this checker.
+// constructs a single ChannelPrimer and shares it with both the pool (via
+// WithChannelPrimer) and this checker.
 func newPingAndWarmDirectAccessChecker(
 	dialer func() (*BigtableConn, error),
-	primer *pingAndWarmChannelPrimer,
+	primer ChannelPrimer,
 	meterProvider metric.MeterProvider,
 	logger *log.Logger,
 ) *pingAndWarmDirectAccessChecker {
