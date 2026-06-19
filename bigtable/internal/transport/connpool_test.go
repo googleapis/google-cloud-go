@@ -51,6 +51,7 @@ func poolOpts() []BigtableChannelPoolOption {
 	return []BigtableChannelPoolOption{
 		WithInstanceName(testInstanceName),
 		WithAppProfile(testAppProfile),
+		WithDirectAccessChecker(newDisabledDirectAccessChecker(nil, nil)),
 	}
 }
 
@@ -145,18 +146,26 @@ func TestNewBigtableChannelPoolEdgeCases(t *testing.T) {
 		name     string
 		size     int
 		dial     func() (*BigtableConn, error)
+		opts     []BigtableChannelPoolOption
 		wantErr  bool
 		errMatch string
 	}{
-		{name: "ZeroSize", size: 0, dial: dialFunc, wantErr: true, errMatch: "must be positive"},
-		{name: "NegativeSize", size: -1, dial: dialFunc, wantErr: true, errMatch: "must be positive"},
-		{name: "NilDial", size: 1, dial: nil, wantErr: true, errMatch: "dial function cannot be nil"},
-		{name: "Valid", size: 1, dial: dialFunc, wantErr: false},
+		{name: "ZeroSize", size: 0, dial: dialFunc, opts: poolOpts(), wantErr: true, errMatch: "must be positive"},
+		{name: "NegativeSize", size: -1, dial: dialFunc, opts: poolOpts(), wantErr: true, errMatch: "must be positive"},
+		{name: "NilDial", size: 1, dial: nil, opts: poolOpts(), wantErr: true, errMatch: "dial function cannot be nil"},
+		{
+			name: "NilDirectAccessChecker",
+			size: 1, dial: dialFunc,
+			opts:     []BigtableChannelPoolOption{WithInstanceName(testInstanceName), WithAppProfile(testAppProfile)},
+			wantErr:  true,
+			errMatch: "DirectAccessChecker is required",
+		},
+		{name: "Valid", size: 1, dial: dialFunc, opts: poolOpts(), wantErr: false},
 	}
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			pool, err := NewBigtableChannelPool(ctx, tc.size, btopt.RoundRobin, tc.dial, time.Now(), poolOpts()...)
+			pool, err := NewBigtableChannelPool(ctx, tc.size, btopt.RoundRobin, tc.dial, time.Now(), tc.opts...)
 			if tc.wantErr {
 				if err == nil {
 					t.Errorf("NewBigtableChannelPool(%d) succeeded, want error containing %q", tc.size, tc.errMatch)
@@ -1729,7 +1738,7 @@ func TestDirectAccessLogic(t *testing.T) {
 
 		poolSize := 3
 		fake.setPingCount(0)
-		opts := append(poolOpts(), WithDirectAccessDialer(daDial))
+		opts := append(poolOpts(), WithDirectAccessChecker(newPingAndWarmDirectAccessChecker(daDial, testInstanceName, testAppProfile, nil, nil, nil)))
 		pool, err := NewBigtableChannelPool(ctx, poolSize, btopt.RoundRobin, baseDialFunc, time.Now(), opts...)
 
 		if err != nil {
@@ -1772,7 +1781,7 @@ func TestDirectAccessLogic(t *testing.T) {
 		}
 
 		poolSize := 2
-		opts := append(poolOpts(), WithDirectAccessDialer(daDial))
+		opts := append(poolOpts(), WithDirectAccessChecker(newPingAndWarmDirectAccessChecker(daDial, testInstanceName, testAppProfile, nil, nil, nil)))
 		pool, err := NewBigtableChannelPool(ctx, poolSize, btopt.RoundRobin, baseDialFunc, time.Now(), opts...)
 		if err != nil {
 			t.Fatalf("Failed to create pool: %v", err)
@@ -1797,7 +1806,7 @@ func TestDirectAccessLogic(t *testing.T) {
 		}
 
 		poolSize := 1
-		opts := append(poolOpts(), WithDirectAccessDialer(daDial))
+		opts := append(poolOpts(), WithDirectAccessChecker(newPingAndWarmDirectAccessChecker(daDial, testInstanceName, testAppProfile, nil, nil, nil)))
 		pool, err := NewBigtableChannelPool(ctx, poolSize, btopt.RoundRobin, baseDialFunc, time.Now(), opts...)
 		if err != nil {
 			t.Fatalf("Failed to create pool: %v", err)
@@ -1823,7 +1832,7 @@ func TestDirectAccessLogic(t *testing.T) {
 			daConn = c
 			return c, nil
 		}
-		opts := append(poolOpts(), WithDirectAccessDialer(daDial))
+		opts := append(poolOpts(), WithDirectAccessChecker(newPingAndWarmDirectAccessChecker(daDial, testInstanceName, testAppProfile, nil, nil, nil)))
 		poolSize := 1
 		pool, err := NewBigtableChannelPool(ctx, poolSize, btopt.RoundRobin, baseDialFunc, time.Now(), opts...)
 		if err != nil {
@@ -1840,9 +1849,12 @@ func TestDirectAccessLogic(t *testing.T) {
 			t.Error("Failed DA connection was not closed")
 		}
 	})
-	t.Run("DirectAccess_DisabledByEnv", func(t *testing.T) {
+	t.Run("DirectAccess_DisabledChecker", func(t *testing.T) {
+		// The pool no longer reads CBT_ENABLE_DIRECTPATH — the factory does,
+		// and wires a disabledDirectAccessChecker when Direct Access is off.
+		// This test verifies the pool honors that disabled checker: no dial,
+		// no probe, no fallback.
 		fake.reset()
-		t.Setenv("CBT_ENABLE_DIRECTPATH", "false")
 
 		daDialCalled := false
 		daDial := func() (*BigtableConn, error) {
@@ -1854,18 +1866,18 @@ func TestDirectAccessLogic(t *testing.T) {
 			c.isALTSConn.Store(true)
 			return c, nil
 		}
+		_ = daDial // referenced only to keep the same shape as sibling tests
 
 		poolSize := 1
-		opts := append(poolOpts(), WithDirectAccessDialer(daDial))
+		opts := append(poolOpts(), WithDirectAccessChecker(newDisabledDirectAccessChecker(nil, nil)))
 		pool, err := NewBigtableChannelPool(ctx, poolSize, btopt.RoundRobin, baseDialFunc, time.Now(), opts...)
 		if err != nil {
 			t.Fatalf("Failed to create pool: %v", err)
 		}
 		defer pool.Close()
 
-		// The dialer should be completely bypassed now.
 		if daDialCalled {
-			t.Error("Direct Access dialer should NOT be called when CBT_ENABLE_DIRECTPATH=false")
+			t.Error("Direct Access dialer should NOT be called when disabled checker is wired up")
 		}
 	})
 	t.Run("DirectAccess_PermissionDenied_ChecksALTS", func(t *testing.T) {
@@ -1885,7 +1897,7 @@ func TestDirectAccessLogic(t *testing.T) {
 		}
 
 		poolSize := 1
-		opts := append(poolOpts(), WithDirectAccessDialer(daDial))
+		opts := append(poolOpts(), WithDirectAccessChecker(newPingAndWarmDirectAccessChecker(daDial, testInstanceName, testAppProfile, nil, nil, nil)))
 		pool, err := NewBigtableChannelPool(ctx, poolSize, btopt.RoundRobin, baseDialFunc, time.Now(), opts...)
 		if err != nil {
 			t.Fatalf("Failed to create pool: %v", err)

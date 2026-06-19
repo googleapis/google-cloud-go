@@ -153,15 +153,22 @@ func CreateBigtableChannelPool(
 
 	fullInstanceName := fmt.Sprintf("projects/%s/instances/%s", project, instance)
 
+	// directAccessMD is the feature-flag metadata used for priming on both
+	// the direct-access and standard-path connection factories — the pool
+	// holds it via WithFeatureFlagsMetadata and applies it to every Prime().
 	poolOpts := []BigtableChannelPoolOption{
 		WithInstanceName(fullInstanceName),
 		WithAppProfile(config.AppProfile),
-		WithFeatureFlagsMetadata(directAccessMD),
 		WithMetricsReporterConfig(btopt.DefaultMetricsReporterConfig()),
 		WithMeterProvider(otelMeterProvider),
-		WithDirectAccessFeatureFlagsMetadata(directAccessMD),
+		WithFeatureFlagsMetadata(directAccessMD),
 	}
 
+	// Pluggable Direct Access strategy: the classic channel pool factory uses
+	// a PingAndWarm probe; when the env/config disables Direct Access we still
+	// wire a "disabled" checker so the direct_access/compatible metric keeps
+	// surfacing the off state with reason=manually_disabled. The future
+	// session pool factory will swap in a GetClientConfiguration-based checker.
 	if isDirectAccessEnabled(config) {
 		directAccessDialerOptions := make([]option.ClientOption, len(o))
 		copy(directAccessDialerOptions, o)
@@ -175,7 +182,17 @@ func CreateBigtableChannelPool(
 			}
 			return NewBigtableConn(grpcConn), nil
 		}
-		poolOpts = append(poolOpts, WithDirectAccessDialer(directAccessDialer))
+		checker := newPingAndWarmDirectAccessChecker(
+			directAccessDialer,
+			fullInstanceName,
+			config.AppProfile,
+			directAccessMD,
+			otelMeterProvider,
+			nil, // logger plumbed by callers once available
+		)
+		poolOpts = append(poolOpts, WithDirectAccessChecker(checker))
+	} else {
+		poolOpts = append(poolOpts, WithDirectAccessChecker(newDisabledDirectAccessChecker(otelMeterProvider, nil)))
 	}
 
 	return NewBigtableChannelPool(ctx,
