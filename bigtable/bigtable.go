@@ -1161,9 +1161,22 @@ func gaxInvokeWithRecorder(ctx context.Context, method string,
 		finalMD := metadata.Join(existingMD, md)
 		newCtx := metadata.NewOutgoingContext(ctx, finalMD)
 
-		// Per-attempt metric setup (recordAttemptStart, blockingLatencyTracker,
-		// t4t7Tracker) is owned by latencyStatsHandler.TagRPC. f's headerMD /
-		// trailerMD are still needed for routing-cookie extraction below.
+		// Stamp the attempt boundary here — at the start of each gax.Invoke
+		// iteration — so startTime reflects when the user-level attempt begins
+		// (after any backoff) rather than when gRPC's stats handler happens to
+		// observe the call. Non-gRPC transports (e.g. the session/vRPC path)
+		// also funnel through gaxInvokeWithRecorder, so this is the one place
+		// every attempt is guaranteed to cross.
+		mt.recordAttemptStart()
+
+		blockTracker := &blockingLatencyTracker{}
+		mt.currOp.currAttempt.blockingLatencyTracker = blockTracker
+		newCtx = context.WithValue(newCtx, statsContextKey, blockTracker)
+
+		t4t7 := &t4t7Tracker{}
+		mt.currOp.currAttempt.t4t7Tracker = t4t7
+		newCtx = context.WithValue(newCtx, t4t7ContextKey, t4t7)
+
 		err := f(newCtx, &attemptHeaderMD, &attempTrailerMD, callSettings)
 
 		extractCookies(attemptHeaderMD, op)

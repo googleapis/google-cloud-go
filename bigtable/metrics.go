@@ -844,44 +844,30 @@ func (t *t4t7Tracker) getLatencyMs() float64 {
 	return float64(end-start) / float64(time.Millisecond)
 }
 
-// latencyStatsHandler is the gRPC stats.Handler that drives per-attempt metrics
-// recording. It is the single source of truth for attempt boundaries: TagRPC
-// starts a new attempt, HandleRPC observes the OutPayload/Header/Trailer events
-// to feed the blocking-latency and t4t7 trackers, and the End event records
-// attempt completion with the final status from gRPC (no io.EOF translation
-// needed because stats.End.Error is nil on successful stream close).
+// latencyStatsHandler is the gRPC stats.Handler that observes per-attempt
+// gRPC events and records attempt completion on stats.End.
 //
-// A *builtinMetricsTracer is plumbed through the call context by the public
-// entry points (ReadRows, Apply, etc.) via contextWithMetricsTracer. RPCs that
-// don't carry a tracer (or carry a disabled one) are observed only for the
-// existing blocking/t4t7 trackers if present, so non-Bigtable RPCs on the same
-// channel emit no metrics.
+// Attempt boundaries (recordAttemptStart, blockingLatencyTracker / t4t7Tracker
+// creation) are owned by gaxInvokeWithRecorder, which is the one place every
+// attempt — gRPC or otherwise — is guaranteed to cross. HandleRPC reads the
+// trackers and *builtinMetricsTracer back out of the call context (placed
+// there by gaxInvokeWithRecorder and the public entry points) and uses
+// OutPayload / InHeader / InTrailer / End to:
+//   - feed blockingLatencyTracker.recordLatency from OutPayload.SentTime,
+//   - feed t4t7Tracker from OutHeader / InHeader timestamps,
+//   - capture per-attempt response metadata, and
+//   - call recordAttemptCompletionWithMetadata on stats.End using ev.Error
+//     (which is nil on graceful stream close, so attempt status maps to OK
+//     without any io.EOF translation).
+//
+// RPCs without a tracer in context (or with a disabled one) are observed only
+// for the trackers if present, so non-Bigtable RPCs on the same channel emit
+// no metrics.
 type latencyStatsHandler struct{}
 
 var _ stats.Handler = (*latencyStatsHandler)(nil)
 
 func (h *latencyStatsHandler) TagRPC(ctx context.Context, info *stats.RPCTagInfo) context.Context {
-	mt := metricsTracerFromContext(ctx)
-	if !mt.builtInEnabled {
-		return ctx
-	}
-
-	mt.recordAttemptStart()
-
-	// Set method name if a caller (e.g. gaxInvokeWithRecorder) hasn't already.
-	if mt.method == "" {
-		parts := strings.Split(info.FullMethodName, "/")
-		mt.setMethod(parts[len(parts)-1])
-	}
-
-	blockTracker := &blockingLatencyTracker{}
-	mt.currOp.currAttempt.blockingLatencyTracker = blockTracker
-	ctx = context.WithValue(ctx, statsContextKey, blockTracker)
-
-	t4t7 := &t4t7Tracker{}
-	mt.currOp.currAttempt.t4t7Tracker = t4t7
-	ctx = context.WithValue(ctx, t4t7ContextKey, t4t7)
-
 	return ctx
 }
 
