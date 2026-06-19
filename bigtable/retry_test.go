@@ -39,7 +39,7 @@ func setupFakeServer(project, instance string, config ClientConfig, opt ...grpc.
 	if err != nil {
 		return nil, nil, err
 	}
-	conn, err := grpc.Dial(srv.Addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock())
+	conn, err := grpc.Dial(srv.Addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock(), grpc.WithStatsHandler(sharedLatencyStatsHandler))
 	if err != nil {
 		return nil, nil, err
 	}
