@@ -153,15 +153,17 @@ func CreateBigtableChannelPool(
 
 	fullInstanceName := fmt.Sprintf("projects/%s/instances/%s", project, instance)
 
-	// directAccessMD is the feature-flag metadata used for priming on both
-	// the direct-access and standard-path connection factories — the pool
-	// holds it via WithFeatureFlagsMetadata and applies it to every Prime().
+	// Build a single PingAndWarm primer and share it with both the pool's
+	// connection factory (via WithChannelPrimer) and the direct-access
+	// compatibility checker. Keeping the (instanceName, appProfile,
+	// featureFlagsMD) tuple in one place avoids the three-arg drift between
+	// the two consumers.
+	primer := newPingAndWarmChannelPrimer(fullInstanceName, config.AppProfile, directAccessMD)
+
 	poolOpts := []BigtableChannelPoolOption{
-		WithInstanceName(fullInstanceName),
-		WithAppProfile(config.AppProfile),
 		WithMetricsReporterConfig(btopt.DefaultMetricsReporterConfig()),
 		WithMeterProvider(otelMeterProvider),
-		WithFeatureFlagsMetadata(directAccessMD),
+		WithChannelPrimer(primer),
 	}
 
 	// Pluggable Direct Access strategy: the classic channel pool factory uses
@@ -184,9 +186,7 @@ func CreateBigtableChannelPool(
 		}
 		checker := newPingAndWarmDirectAccessChecker(
 			directAccessDialer,
-			fullInstanceName,
-			config.AppProfile,
-			directAccessMD,
+			primer,
 			otelMeterProvider,
 			nil, // logger plumbed by callers once available
 		)

@@ -29,7 +29,6 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/alts"
 	"google.golang.org/grpc/credentials/oauth"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 
 	"cloud.google.com/go/bigtable/internal/directaccess"
@@ -89,29 +88,32 @@ func newDirectAccessEligibleGauge(meterProvider metric.MeterProvider, logger *lo
 // dialing once and issuing PingAndWarm + ALTS inspection. On failure it
 // kicks off an asynchronous investigation that records a more specific
 // failure reason on the direct_access/compatible metric.
+//
+// The checker reuses the same *pingAndWarmChannelPrimer that the pool's
+// connection factory uses, so the exact PingAndWarm invocation (instance
+// name, app profile, feature-flag metadata) stays in one place — both the
+// compatibility probe and any single-endpoint investigation go through it.
 type pingAndWarmDirectAccessChecker struct {
 	dialer          func() (*BigtableConn, error)
-	instanceName    string
-	appProfile      string
-	featureFlagsMD  metadata.MD
+	primer          *pingAndWarmChannelPrimer
 	daEligibleGauge metric.Int64Gauge
 	logger          *log.Logger
 }
 
 // newPingAndWarmDirectAccessChecker constructs the today-default checker.
-// A nil meterProvider produces a checker that silently skips metric reporting.
+// A nil meterProvider produces a checker that silently skips metric
+// reporting. The primer must be non-nil; the channel pool factory
+// constructs a single *pingAndWarmChannelPrimer and shares it with both the
+// pool (via WithChannelPrimer) and this checker.
 func newPingAndWarmDirectAccessChecker(
 	dialer func() (*BigtableConn, error),
-	instanceName, appProfile string,
-	featureFlagsMD metadata.MD,
+	primer *pingAndWarmChannelPrimer,
 	meterProvider metric.MeterProvider,
 	logger *log.Logger,
 ) *pingAndWarmDirectAccessChecker {
 	return &pingAndWarmDirectAccessChecker{
 		dialer:          dialer,
-		instanceName:    instanceName,
-		appProfile:      appProfile,
-		featureFlagsMD:  featureFlagsMD,
+		primer:          primer,
 		daEligibleGauge: newDirectAccessEligibleGauge(meterProvider, logger),
 		logger:          logger,
 	}
@@ -134,7 +136,7 @@ func (c *pingAndWarmDirectAccessChecker) CheckCompatibility(ctx context.Context)
 		return nil, false
 	}
 
-	err = conn.Prime(ctx, c.instanceName, c.appProfile, c.featureFlagsMD)
+	err = c.primer.Prime(ctx, conn)
 	if err != nil {
 		// PermissionDenied is expected on probes that are otherwise healthy
 		// (the bootstrap credentials may lack PingAndWarm), so fall through
@@ -328,7 +330,7 @@ func (c *pingAndWarmDirectAccessChecker) probeSingleEndpoint(ctx context.Context
 	defer cancel()
 
 	btopt.Debugf(c.logger, "bigtable_direct_access: investigation: Executing Prime() on %s...", targetEndpoint)
-	if err := btc.Prime(primeCtx, c.instanceName, c.appProfile, c.featureFlagsMD); err != nil {
+	if err := c.primer.Prime(primeCtx, btc); err != nil {
 		return fmt.Errorf("Prime() failed: %w", err)
 	}
 
