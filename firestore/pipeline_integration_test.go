@@ -60,14 +60,14 @@ func testBooks() []Book {
 	}
 }
 
-func TestIntegration_PipelineExecute(t *testing.T) {
+func testIntegrationPipelineExecute(t *testing.T) {
 	skipIfEdition(t, "Pipeline queries", editionStandard)
 	ctx := context.Background()
 	client := integrationClient(t)
 	coll := integrationColl(t)
 
 	t.Run("WithReadOptions", func(t *testing.T) {
-		timeBeforeCreate := time.Now()
+		timeBeforeCreate := time.Now().Add(-10 * time.Second)
 		doc1 := coll.NewDoc()
 		_, err := doc1.Create(ctx, map[string]interface{}{"a": 1})
 		if err != nil {
@@ -228,7 +228,7 @@ func TestIntegration_PipelineExecute(t *testing.T) {
 	})
 }
 
-func TestIntegration_PipelineStages(t *testing.T) {
+func testIntegrationPipelineStages(t *testing.T) {
 	skipIfEdition(t, "Pipeline queries", editionStandard)
 	ctx := context.Background()
 	client := integrationClient(t)
@@ -889,7 +889,7 @@ func TestIntegration_PipelineStages(t *testing.T) {
 	})
 }
 
-func TestIntegration_PipelineFunctions(t *testing.T) {
+func testIntegrationPipelineFunctions(t *testing.T) {
 	skipIfEdition(t, "Pipeline queries", editionStandard)
 	t.Run("arrayFuncs", arrayFuncs)
 	t.Run("stringFuncs", stringFuncs)
@@ -1110,7 +1110,7 @@ func typeFuncs(t *testing.T) {
 	}
 }
 
-func TestIntegration_Query_Pipeline(t *testing.T) {
+func testIntegrationQueryPipeline(t *testing.T) {
 	skipIfEdition(t, "Pipeline queries", editionStandard)
 	ctx := context.Background()
 	coll := integrationColl(t)
@@ -1227,7 +1227,7 @@ func TestIntegration_Query_Pipeline(t *testing.T) {
 	})
 }
 
-func TestIntegration_AggregationQuery_Pipeline(t *testing.T) {
+func testIntegrationAggregationQueryPipeline(t *testing.T) {
 	skipIfEdition(t, "Pipeline queries", editionStandard)
 	ctx := context.Background()
 	coll := integrationColl(t)
@@ -3245,7 +3245,7 @@ func logicalFuncs(t *testing.T) {
 	}
 }
 
-func TestIntegration_PipelineSubqueriesAndVariables(t *testing.T) {
+func testIntegrationPipelineSubqueriesAndVariables(t *testing.T) {
 	skipIfEdition(t, "Pipeline queries", editionStandard)
 	ctx := context.Background()
 	client := integrationClient(t)

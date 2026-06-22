@@ -1056,6 +1056,40 @@ func WithSearchRetrievalDepth(depth int64) SearchOption {
 	})
 }
 
+// WithSearchLimit specifies the maximum number of documents to return from the search stage.
+// The limit is applied after documents are scored and sorted.
+//
+// Experimental: Update, Delete and Search stages in pipeline queries are in public preview
+// and are subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func WithSearchLimit(limit int64) SearchOption {
+	return newFuncSearchOption(func(so map[string]any) {
+		so["limit"] = limit
+	})
+}
+
+// WithSearchOffset specifies the number of documents to skip from the beginning of the search result set.
+//
+// Experimental: Update, Delete and Search stages in pipeline queries are in public preview
+// and are subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func WithSearchOffset(offset int64) SearchOption {
+	return newFuncSearchOption(func(so map[string]any) {
+		so["offset"] = offset
+	})
+}
+
+// WithSearchLanguageCode specifies the BCP-47 language code of text in the search query, such as "en" or "sr".
+//
+// Experimental: Update, Delete and Search stages in pipeline queries are in public preview
+// and are subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func WithSearchLanguageCode(languageCode string) SearchOption {
+	return newFuncSearchOption(func(so map[string]any) {
+		so["language_code"] = languageCode
+	})
+}
+
 // Search adds a search stage to the Pipeline.
 // This must be the first stage of the pipeline.
 // A limited set of expressions are supported in the search stage.

@@ -84,6 +84,9 @@ func TestPipeline_Search(t *testing.T) {
 		WithSearchQuery("waffles"),
 		WithSearchSort(Descending(Score())),
 		WithSearchRetrievalDepth(10),
+		WithSearchLimit(5),
+		WithSearchOffset(2),
+		WithSearchLanguageCode("en"),
 	)
 
 	proto, err := p.toProto()
@@ -121,6 +124,9 @@ func TestPipeline_Search(t *testing.T) {
 		Options: map[string]*pb.Value{
 			"query":           queryExpr,
 			"retrieval_depth": {ValueType: &pb.Value_IntegerValue{IntegerValue: 10}},
+			"limit":           {ValueType: &pb.Value_IntegerValue{IntegerValue: 5}},
+			"offset":          {ValueType: &pb.Value_IntegerValue{IntegerValue: 2}},
+			"language_code":   {ValueType: &pb.Value_StringValue{StringValue: "en"}},
 			"sort": {
 				ValueType: &pb.Value_ArrayValue{
 					ArrayValue: &pb.ArrayValue{
