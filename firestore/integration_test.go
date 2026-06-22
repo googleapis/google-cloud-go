@@ -140,13 +140,12 @@ var (
 	defaultClient     *Client
 	enterpriseClients = make(map[string]*Client)
 
-	iClient          *Client
-	iColl            *CollectionRef
-	collectionIDs    = uid.NewSpace("go-integration-test", nil)
-	wantDBPath       string
-	testParams       map[string]interface{}
-	seededFirstIndex bool
-	useEmulator      bool
+	iClient       *Client
+	iColl         *CollectionRef
+	collectionIDs = uid.NewSpace("go-integration-test", nil)
+	wantDBPath    string
+	testParams    map[string]interface{}
+	useEmulator   bool
 )
 
 func createClient(projectID, databaseID string) (*Client, error) {
@@ -4164,6 +4163,10 @@ func TestIntegration_EnterpriseDB(t *testing.T) {
 			t.Run("AggregationQuery_Pipeline", testIntegrationAggregationQueryPipeline)
 			t.Run("PipelineSubqueriesAndVariables", testIntegrationPipelineSubqueriesAndVariables)
 			t.Run("PipelineSearch", testIntegrationPipelineSearch)
+			t.Run("BSONTypes", testIntegrationBSONTypes)
+			t.Run("BSONQueries", testIntegrationBSONQueries)
+			t.Run("BSONCrossTypeOrder", testIntegrationBSONCrossTypeOrder)
+			t.Run("BSONValidationRejection", testIntegrationBSONValidationRejection)
 		})
 	}
 }
