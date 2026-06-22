@@ -18,6 +18,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"net"
 	"net/http"
 	"os"
 	"strconv"
@@ -158,7 +159,11 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 
 	cleanup := func() {
 		if ownProvider {
-			provider.Shutdown(ctx)
+			// Use a background context with a timeout to guarantee metrics
+			// are flushed even if the parent context has been canceled.
+			shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+			defer cancel()
+			provider.Shutdown(shutdownCtx)
 		}
 	}
 
@@ -360,8 +365,8 @@ func computeURLTemplate(path, host string) string {
 }
 
 func stripPort(host string) string {
-	if idx := strings.Index(host, ":"); idx != -1 {
-		return host[:idx]
+	if h, _, err := net.SplitHostPort(host); err == nil {
+		return h
 	}
 	return host
 }

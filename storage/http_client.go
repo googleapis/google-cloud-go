@@ -64,7 +64,7 @@ type httpStorageClient struct {
 
 // newHTTPStorageClient initializes a new storageClient that uses the HTTP-JSON
 // Storage API.
-func newHTTPStorageClient(ctx context.Context, opts ...storageOption) (storageClient, error) {
+func newHTTPStorageClient(ctx context.Context, opts ...storageOption) (client storageClient, err error) {
 	s := initSettings(opts...)
 	o := s.clientOption
 	config := newStorageConfig(o...)
@@ -137,6 +137,14 @@ func newHTTPStorageClient(ctx context.Context, opts ...storageOption) (storageCl
 		} else {
 			log.Printf("Failed to enable metrics: %v", err)
 		}
+	}
+
+	if metricsCleanup != nil {
+		defer func() {
+			if err != nil {
+				metricsCleanup()
+			}
+		}()
 	}
 
 	// Clone the http.Client to avoid modifying the original one if it was provided by the user.

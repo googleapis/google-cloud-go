@@ -209,19 +209,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		return nil, fmt.Errorf("dialing: %w", err)
 	}
 
-	config := newStorageConfig(opts...)
-	if isOtelMetricsEnabled(&config) {
-		var project string
-		if creds != nil {
-			project, _ = creds.ProjectID(ctx)
-		}
-		if sm, _, err := initMetrics(ctx, project, &config); err == nil {
-			hc.Transport = &metricsRoundTripper{
-				underlying: hc.Transport,
-				metrics:    sm,
-			}
-		}
-	}
+
 
 	// RawService should be created with the chosen endpoint to take account of user override.
 	// Preserve other user-supplied options as well.

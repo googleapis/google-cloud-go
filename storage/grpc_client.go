@@ -154,7 +154,7 @@ func enableClientMetrics(ctx context.Context, s *settings, config storageConfig)
 
 // newGRPCStorageClient initializes a new storageClient that uses the gRPC
 // Storage API.
-func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (*grpcStorageClient, error) {
+func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (client *grpcStorageClient, err error) {
 	s := initSettings(opts...)
 	s.clientOption = append(defaultGRPCOptions(), s.clientOption...)
 	// Disable all gax-level retries in favor of retry logic in the veneer client.
@@ -195,6 +195,14 @@ func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (*grpcStor
 		} else {
 			log.Printf("Failed to enable metrics: %v", err)
 		}
+	}
+
+	if metricsCleanup != nil {
+		defer func() {
+			if err != nil {
+				metricsCleanup()
+			}
+		}()
 	}
 
 	c := &grpcStorageClient{
