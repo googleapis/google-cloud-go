@@ -102,6 +102,7 @@ func TestIntegration_RestoreTable(t *testing.T) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Minute)
 	t.Cleanup(cancel)
+	cleanupCtx := context.WithoutCancel(ctx)
 	client := env.client
 
 	sourceTableID := sourceTableSpace.New()
@@ -124,7 +125,7 @@ func TestIntegration_RestoreTable(t *testing.T) {
 		t.Fatalf("Failed to create source table: %v", err)
 	}
 	t.Cleanup(func() {
-		client.DeleteTable(ctx, &adminpb.DeleteTableRequest{Name: sourceTablePath})
+		client.DeleteTable(cleanupCtx, &adminpb.DeleteTableRequest{Name: sourceTablePath})
 	})
 
 	// 2. Create backup
@@ -145,7 +146,7 @@ func TestIntegration_RestoreTable(t *testing.T) {
 		t.Fatalf("Failed to initiate backup: %v", err)
 	}
 	t.Cleanup(func() {
-		client.DeleteBackup(ctx, &adminpb.DeleteBackupRequest{Name: backupPath})
+		client.DeleteBackup(cleanupCtx, &adminpb.DeleteBackupRequest{Name: backupPath})
 	})
 
 	_, err = opCreateBackup.Wait(ctx)
@@ -165,7 +166,7 @@ func TestIntegration_RestoreTable(t *testing.T) {
 		t.Fatalf("RestoreTable failed: %v", err)
 	}
 	t.Cleanup(func() {
-		client.DeleteTable(ctx, &adminpb.DeleteTableRequest{Name: restoredTablePath})
+		client.DeleteTable(cleanupCtx, &adminpb.DeleteTableRequest{Name: restoredTablePath})
 	})
 
 	// 4. Verify restored table exists
@@ -187,6 +188,7 @@ func TestIntegration_WaitForConsistency(t *testing.T) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	t.Cleanup(cancel)
+	cleanupCtx := context.WithoutCancel(ctx)
 	client := env.client
 
 	tableID := replTestTableSpace.New()
@@ -203,7 +205,7 @@ func TestIntegration_WaitForConsistency(t *testing.T) {
 		t.Fatalf("Failed to create table: %v", err)
 	}
 	t.Cleanup(func() {
-		client.DeleteTable(ctx, &adminpb.DeleteTableRequest{Name: tablePath})
+		client.DeleteTable(cleanupCtx, &adminpb.DeleteTableRequest{Name: tablePath})
 	})
 
 	// Wait for replication
