@@ -416,6 +416,19 @@ apply to single-shot uploads when user-provided checksum is provided.
 
 Automatic checksumming can be disabled using [Writer.DisableAutoChecksum].
 
+# Read checksumming
+
+By default, the client automatically computes and validates CRC32C checksums for reads
+when downloading an entire object, providing an additional layer of data integrity
+validation with a slight CPU overhead.
+
+For gRPC clients, read checksumming is also performed for partial reads (range requests)
+by validating the checksum of each individual data chunk returned by the server.
+
+Automatic read checksumming can be disabled using the [WithDisableReaderChecksum] option
+for a normal range reader, or the [WithDisableMRDReadChecksum] option for the multi-range
+downloader.
+
 # Parallel Uploads
 
 The parallel upload feature splits a large object into multiple parts and uploads them
