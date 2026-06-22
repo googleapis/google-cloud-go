@@ -1287,6 +1287,8 @@ libraries:
     apis:
       - path: google/spanner/v1
         go:
+          enabled_generator_features:
+            - F_export_set_google_client_info
           no_metadata: true
           no_snippets: true
       - path: google/spanner/adapter/v1
