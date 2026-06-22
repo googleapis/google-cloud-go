@@ -98,7 +98,7 @@ func assertResultIds(t *testing.T, snapshot *PipelineSnapshot, ids ...string) {
 	}
 }
 
-func TestIntegration_PipelineSearch(t *testing.T) {
+func testIntegrationPipelineSearch(t *testing.T) {
 	skipIfEdition(t, "Pipeline queries", editionStandard)
 	if useEmulator {
 		t.Skip("Search queries are not supported in the emulator.")

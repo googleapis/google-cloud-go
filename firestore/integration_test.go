@@ -66,7 +66,6 @@ func (s firestoreEdition) String() string {
 const (
 	envProjID              = "GCLOUD_TESTS_GOLANG_FIRESTORE_PROJECT_ID"
 	envPrivateKey          = "GCLOUD_TESTS_GOLANG_FIRESTORE_KEY"
-	envDatabases           = "GCLOUD_TESTS_GOLANG_FIRESTORE_DATABASES"
 	envEnterpriseDatabases = "GCLOUD_TESTS_GOLANG_FIRESTORE_ENTERPRISE_DATABASES"
 	envEmulator            = "FIRESTORE_EMULATOR_HOST"
 	indexBuilding          = "index is currently building"
@@ -76,19 +75,59 @@ const (
 )
 
 func TestMain(m *testing.M) {
+	flag.Parse()
 	testParams = make(map[string]interface{})
-	for databaseID, edition := range parseDatabases() {
-		testParams[databaseIDKey] = databaseID
-		testParams[firestoreEditionKey] = edition
-		initIntegrationTest()
-		status := m.Run()
-		cleanupIntegrationTest()
-		if status != 0 {
-			os.Exit(status)
+
+	if addr := os.Getenv(envEmulator); addr != "" {
+		useEmulator = true
+	}
+
+	testProjectID := os.Getenv(envProjID)
+	var defaultColl *CollectionRef
+	if testProjectID != "" {
+		// 1. Initialize Default Client
+		c, err := createClient(testProjectID, DefaultDatabaseID)
+		if err != nil {
+			log.Fatalf("failed to create default client: %v", err)
+		}
+		defaultClient = c
+
+		// 2. Initialize Enterprise Clients
+		if dbStr := os.Getenv(envEnterpriseDatabases); dbStr != "" {
+			for _, dbID := range strings.Split(dbStr, ",") {
+				dbID = strings.TrimSpace(dbID)
+				if dbID == "" {
+					continue
+				}
+				c, err := createClient(testProjectID, dbID)
+				if err != nil {
+					log.Fatalf("failed to create enterprise client for %s: %v", dbID, err)
+				}
+				enterpriseClients[dbID] = c
+			}
+		}
+
+		// Setup initial globals for Default Client
+		defaultColl = defaultClient.Collection(collectionIDs.New())
+		updateGlobals(defaultClient, defaultColl, editionStandard)
+	} else {
+		log.Println("Integration tests skipped. See CONTRIBUTING.md for details")
+	}
+
+	status := m.Run()
+
+	if defaultClient != nil {
+		// Clean up Default DB collection and close clients
+		if defaultColl != nil {
+			deleteCollection(context.Background(), defaultColl)
+		}
+		defaultClient.Close()
+		for _, c := range enterpriseClients {
+			c.Close()
 		}
 	}
 
-	os.Exit(0)
+	os.Exit(status)
 }
 
 func skipIfEdition(t *testing.T, featureName string, edition firestoreEdition) {
@@ -97,32 +136,10 @@ func skipIfEdition(t *testing.T, featureName string, edition firestoreEdition) {
 	}
 }
 
-func parseDatabases() map[string]firestoreEdition {
-	databases := map[string]firestoreEdition{
-		DefaultDatabaseID: editionStandard,
-	}
-
-	if os.Getenv(envEmulator) != "" {
-		return databases
-	}
-
-	databasesStr, ok := os.LookupEnv(envDatabases)
-	if ok {
-		for _, databaseID := range strings.Split(databasesStr, ",") {
-			databases[databaseID] = editionStandard
-		}
-	}
-
-	databasesStr, ok = os.LookupEnv(envEnterpriseDatabases)
-	if ok {
-		for _, databaseID := range strings.Split(databasesStr, ",") {
-			databases[databaseID] = editionEnterprise
-		}
-	}
-	return databases
-}
-
 var (
+	defaultClient     *Client
+	enterpriseClients = make(map[string]*Client)
+
 	iClient          *Client
 	iColl            *CollectionRef
 	collectionIDs    = uid.NewSpace("go-integration-test", nil)
@@ -132,30 +149,14 @@ var (
 	useEmulator      bool
 )
 
-func initIntegrationTest() {
-	databaseID := testParams[databaseIDKey].(string)
-	log.Printf("Setting up tests to run on databaseID: %q\n", databaseID)
-	flag.Parse() // needed for testing.Short()
-	if testing.Short() {
-		return
-	}
-	if addr := os.Getenv(envEmulator); addr != "" {
-		useEmulator = true
-	}
+func createClient(projectID, databaseID string) (*Client, error) {
 	ctx := context.Background()
-	testProjectID := os.Getenv(envProjID)
-	if testProjectID == "" {
-		log.Println("Integration tests skipped. See CONTRIBUTING.md for details")
-		return
-	}
 	ts := testutil.TokenSourceEnv(ctx, envPrivateKey,
 		"https://www.googleapis.com/auth/cloud-platform",
 		"https://www.googleapis.com/auth/datastore")
 	if ts == nil {
-		log.Fatal("The project key must be set. See CONTRIBUTING.md for details")
+		return nil, fmt.Errorf("token source nil: the project key must be set; see CONTRIBUTING.md for details")
 	}
-	projectPath := "projects/" + testProjectID
-	wantDBPath = projectPath + "/databases/" + databaseID
 
 	ti := &testutil.HeadersEnforcer{
 		Checkers: []*testutil.HeaderChecker{
@@ -176,17 +177,26 @@ func initIntegrationTest() {
 		},
 	}
 	copts := append(ti.CallOptions(), option.WithTokenSource(ts))
-	c, err := NewClientWithDatabase(ctx, testProjectID, databaseID, copts...)
+	c, err := NewClientWithDatabase(ctx, projectID, databaseID, copts...)
 	if err != nil {
-		log.Fatalf("NewClient: %v", err)
+		return nil, err
 	}
-	iClient = c
-	iColl = c.Collection(collectionIDs.New())
+	return c, nil
+}
 
+func updateGlobals(client *Client, coll *CollectionRef, edition firestoreEdition) {
+	iClient = client
+	iColl = coll
 	refDoc := iColl.NewDoc()
 	integrationTestMap["ref"] = refDoc
 	wantIntegrationTestMap["ref"] = refDoc
 	integrationTestStruct.Ref = refDoc
+
+	testProjectID := os.Getenv(envProjID)
+	wantDBPath = "projects/" + testProjectID + "/databases/" + client.databaseID
+
+	testParams[databaseIDKey] = client.databaseID
+	testParams[firestoreEditionKey] = edition
 }
 
 // deleteCollection recursively deletes the documents in the specified collection
@@ -375,7 +385,7 @@ var (
 	}
 )
 
-func TestIntegration_Create(t *testing.T) {
+func testIntegrationCreate(t *testing.T) {
 	ctx := context.Background()
 	doc := integrationColl(t).NewDoc()
 	emptyDoc := integrationColl(t).NewDoc()
@@ -394,7 +404,7 @@ func TestIntegration_Create(t *testing.T) {
 	codeEq(t, "Create empty doc", codes.OK, err)
 }
 
-func TestIntegration_Get(t *testing.T) {
+func testIntegrationGet(t *testing.T) {
 	ctx := context.Background()
 	doc := integrationColl(t).NewDoc()
 	emptyDoc := integrationColl(t).NewDoc()
@@ -439,7 +449,7 @@ func TestIntegration_Get(t *testing.T) {
 	}
 }
 
-func TestIntegration_GetAll(t *testing.T) {
+func testIntegrationGetAll(t *testing.T) {
 	type getAll struct{ N int }
 
 	h := testHelper{t}
@@ -559,7 +569,7 @@ func contains[T comparable](s []T, e T) bool {
 	return false
 }
 
-func TestIntegration_GetAll_WithRunOptions(t *testing.T) {
+func testIntegrationGetAllWithRunOptions(t *testing.T) {
 	if useEmulator {
 		t.Skip("Skipping. Query profiling not supported in emulator.")
 	}
@@ -613,7 +623,7 @@ func TestIntegration_GetAll_WithRunOptions(t *testing.T) {
 	}
 }
 
-func TestIntegration_Query_WithRunOptions(t *testing.T) {
+func testIntegrationQueryWithRunOptions(t *testing.T) {
 	if useEmulator {
 		t.Skip("Skipping. Query profiling not supported in emulator.")
 	}
@@ -660,7 +670,7 @@ func TestIntegration_Query_WithRunOptions(t *testing.T) {
 
 	}
 }
-func TestIntegration_Add(t *testing.T) {
+func testIntegrationAdd(t *testing.T) {
 	start := time.Now()
 	docRef, wr, err := integrationColl(t).Add(context.Background(), integrationTestMap)
 	if err != nil {
@@ -673,7 +683,7 @@ func TestIntegration_Add(t *testing.T) {
 	checkTimeBetween(t, wr.UpdateTime, start, end)
 }
 
-func TestIntegration_Set(t *testing.T) {
+func testIntegrationSet(t *testing.T) {
 	coll := integrationColl(t)
 	h := testHelper{t}
 	ctx := context.Background()
@@ -768,7 +778,7 @@ func TestIntegration_Set(t *testing.T) {
 	}
 }
 
-func TestIntegration_Delete(t *testing.T) {
+func testIntegrationDelete(t *testing.T) {
 	ctx := context.Background()
 	doc := integrationColl(t).NewDoc()
 	h := testHelper{t}
@@ -792,7 +802,7 @@ func TestIntegration_Delete(t *testing.T) {
 		er(doc.Delete(ctx, LastUpdateTime(wr.UpdateTime))))
 }
 
-func TestIntegration_Update(t *testing.T) {
+func testIntegrationUpdate(t *testing.T) {
 	ctx := context.Background()
 	doc := integrationColl(t).NewDoc()
 	t.Cleanup(func() {
@@ -843,7 +853,7 @@ func TestIntegration_Update(t *testing.T) {
 	}
 }
 
-func TestIntegration_Collections(t *testing.T) {
+func testIntegrationCollections(t *testing.T) {
 	ctx := context.Background()
 	h := testHelper{t}
 
@@ -874,7 +884,7 @@ func TestIntegration_Collections(t *testing.T) {
 	}
 }
 
-func TestIntegration_ServerTimestamp(t *testing.T) {
+func testIntegrationServerTimestamp(t *testing.T) {
 	type S struct {
 		A int
 		B time.Time
@@ -915,7 +925,7 @@ func TestIntegration_ServerTimestamp(t *testing.T) {
 	}
 }
 
-func TestIntegration_MergeServerTimestamp(t *testing.T) {
+func testIntegrationMergeServerTimestamp(t *testing.T) {
 	doc := integrationColl(t).NewDoc()
 	t.Cleanup(func() {
 		deleteDocuments([]*DocumentRef{doc})
@@ -942,7 +952,7 @@ func TestIntegration_MergeServerTimestamp(t *testing.T) {
 	}
 }
 
-func TestIntegration_MergeNestedServerTimestamp(t *testing.T) {
+func testIntegrationMergeNestedServerTimestamp(t *testing.T) {
 	doc := integrationColl(t).NewDoc()
 	t.Cleanup(func() {
 		deleteDocuments([]*DocumentRef{doc})
@@ -1001,7 +1011,7 @@ func (z isZeroerStruct) IsZero() bool {
 	return z.X == 0
 }
 
-func TestIntegration_OmitZero(t *testing.T) {
+func testIntegrationOmitZero(t *testing.T) {
 	h := testHelper{t}
 	coll := integrationColl(t)
 	doc1 := coll.NewDoc()
@@ -1094,7 +1104,7 @@ func TestIntegration_OmitZero(t *testing.T) {
 	}
 }
 
-func TestIntegration_WriteBatch(t *testing.T) {
+func testIntegrationWriteBatch(t *testing.T) {
 	ctx := context.Background()
 	b := integrationClient(t).Batch()
 	h := testHelper{t}
@@ -1130,7 +1140,7 @@ func TestIntegration_WriteBatch(t *testing.T) {
 	// TODO(jba): test verify when it is supported.
 }
 
-func TestIntegration_QueryDocuments_WhereEntity(t *testing.T) {
+func testIntegrationQueryDocumentsWhereEntity(t *testing.T) {
 	ctx := context.Background()
 	coll := integrationColl(t).NewDoc().Collection(indexedCollection)
 
@@ -1300,7 +1310,7 @@ func reverseSlice(s []map[string]interface{}) []map[string]interface{} {
 	return reversed
 }
 
-func TestIntegration_QueryDocuments(t *testing.T) {
+func testIntegrationQueryDocuments(t *testing.T) {
 	ctx := context.Background()
 	coll := integrationColl(t)
 	h := testHelper{t}
@@ -1416,7 +1426,7 @@ func TestIntegration_QueryDocuments(t *testing.T) {
 	}
 }
 
-func TestIntegration_QueryDocuments_LimitToLast_Fail(t *testing.T) {
+func testIntegrationQueryDocumentsLimitToLastFail(t *testing.T) {
 	ctx := context.Background()
 	coll := integrationColl(t)
 	q := coll.Select("q").OrderBy("q", Asc).LimitToLast(1)
@@ -1427,7 +1437,7 @@ func TestIntegration_QueryDocuments_LimitToLast_Fail(t *testing.T) {
 }
 
 // Test unary filters.
-func TestIntegration_QueryUnary(t *testing.T) {
+func testIntegrationQueryUnary(t *testing.T) {
 	ctx := context.Background()
 	coll := integrationColl(t).NewDoc().Collection(indexedCollection)
 
@@ -1474,7 +1484,7 @@ func TestIntegration_QueryUnary(t *testing.T) {
 }
 
 // Test the special DocumentID field in queries.
-func TestIntegration_QueryName(t *testing.T) {
+func testIntegrationQueryName(t *testing.T) {
 	ctx := context.Background()
 	h := testHelper{t}
 
@@ -1518,7 +1528,7 @@ func TestIntegration_QueryName(t *testing.T) {
 	checkIDs(q.EndAt(wantIDs[1]), wantIDs[:2])
 }
 
-func TestIntegration_QueryNested(t *testing.T) {
+func testIntegrationQueryNested(t *testing.T) {
 	ctx := context.Background()
 	h := testHelper{t}
 	coll1 := integrationColl(t)
@@ -1543,7 +1553,7 @@ func TestIntegration_QueryNested(t *testing.T) {
 	}
 }
 
-func TestIntegration_RunTransaction(t *testing.T) {
+func testIntegrationRunTransaction(t *testing.T) {
 	ctx := context.Background()
 	h := testHelper{t}
 
@@ -1617,7 +1627,7 @@ func TestIntegration_RunTransaction(t *testing.T) {
 	}
 }
 
-func TestIntegration_RunTransaction_WithRunOptions(t *testing.T) {
+func testIntegrationRunTransactionWithRunOptions(t *testing.T) {
 	if useEmulator {
 		t.Skip("Skipping. Query profiling not supported in emulator.")
 	}
@@ -1672,7 +1682,7 @@ func TestIntegration_RunTransaction_WithRunOptions(t *testing.T) {
 
 }
 
-func TestIntegration_TransactionGetAll(t *testing.T) {
+func testIntegrationTransactionGetAll(t *testing.T) {
 	ctx := context.Background()
 	h := testHelper{t}
 	type Player struct {
@@ -1711,7 +1721,7 @@ func TestIntegration_TransactionGetAll(t *testing.T) {
 	}
 }
 
-func TestIntegration_WatchDocument(t *testing.T) {
+func testIntegrationWatchDocument(t *testing.T) {
 	skipIfEdition(t, "Listen queries", editionEnterprise)
 	coll := integrationColl(t)
 	ctx := context.Background()
@@ -1762,7 +1772,7 @@ func TestIntegration_WatchDocument(t *testing.T) {
 	}
 }
 
-func TestIntegration_ArrayUnion_Create(t *testing.T) {
+func testIntegrationArrayUnionCreate(t *testing.T) {
 	path := "somePath"
 	data := map[string]interface{}{
 		path: ArrayUnion("a", "b"),
@@ -1791,7 +1801,7 @@ func TestIntegration_ArrayUnion_Create(t *testing.T) {
 	}
 }
 
-func TestIntegration_ArrayUnion_Update(t *testing.T) {
+func testIntegrationArrayUnionUpdate(t *testing.T) {
 	doc := integrationColl(t).NewDoc()
 	t.Cleanup(func() {
 		deleteDocuments([]*DocumentRef{doc})
@@ -1826,7 +1836,7 @@ func TestIntegration_ArrayUnion_Update(t *testing.T) {
 	}
 }
 
-func TestIntegration_ArrayUnion_Set(t *testing.T) {
+func testIntegrationArrayUnionSet(t *testing.T) {
 	coll := integrationColl(t)
 	h := testHelper{t}
 	path := "somePath"
@@ -1856,7 +1866,7 @@ func TestIntegration_ArrayUnion_Set(t *testing.T) {
 	}
 }
 
-func TestIntegration_ArrayRemove_Create(t *testing.T) {
+func testIntegrationArrayRemoveCreate(t *testing.T) {
 	doc := integrationColl(t).NewDoc()
 	t.Cleanup(func() {
 		deleteDocuments([]*DocumentRef{doc})
@@ -1884,7 +1894,7 @@ func TestIntegration_ArrayRemove_Create(t *testing.T) {
 	}
 }
 
-func TestIntegration_ArrayRemove_Update(t *testing.T) {
+func testIntegrationArrayRemoveUpdate(t *testing.T) {
 	doc := integrationColl(t).NewDoc()
 	t.Cleanup(func() {
 		deleteDocuments([]*DocumentRef{doc})
@@ -1919,7 +1929,7 @@ func TestIntegration_ArrayRemove_Update(t *testing.T) {
 	}
 }
 
-func TestIntegration_ArrayRemove_Set(t *testing.T) {
+func testIntegrationArrayRemoveSet(t *testing.T) {
 	coll := integrationColl(t)
 	h := testHelper{t}
 	path := "somePath"
@@ -1959,7 +1969,7 @@ func makeFieldTransform(transform string, value interface{}) interface{} {
 	panic(fmt.Sprintf("Invalid transform %v", transform))
 }
 
-func TestIntegration_FieldTransforms_Create(t *testing.T) {
+func testIntegrationFieldTransformsCreate(t *testing.T) {
 	for _, transform := range []string{"inc", "max", "min"} {
 		t.Run(transform, func(t *testing.T) {
 			doc := integrationColl(t).NewDoc()
@@ -1991,7 +2001,7 @@ func TestIntegration_FieldTransforms_Create(t *testing.T) {
 }
 
 // Also checks that all appropriate types are supported.
-func TestIntegration_FieldTransforms_Update(t *testing.T) {
+func testIntegrationFieldTransformsUpdate(t *testing.T) {
 	type MyInt = int // Test a custom type.
 	for _, tc := range []struct {
 		// All three should be same type.
@@ -2098,7 +2108,7 @@ func TestIntegration_FieldTransforms_Update(t *testing.T) {
 	}
 }
 
-func TestIntegration_FieldTransforms_Set(t *testing.T) {
+func testIntegrationFieldTransformsSet(t *testing.T) {
 	for _, transform := range []string{"inc", "max", "min"} {
 		t.Run(transform, func(t *testing.T) {
 			coll := integrationColl(t)
@@ -2132,7 +2142,7 @@ func TestIntegration_FieldTransforms_Set(t *testing.T) {
 
 type imap map[string]interface{}
 
-func TestIntegration_Serialize_Deserialize_WatchQuery(t *testing.T) {
+func testIntegrationSerializeDeserializeWatchQuery(t *testing.T) {
 	skipIfEdition(t, "PartitionQuery", editionEnterprise)
 	h := testHelper{t}
 	collID := collectionIDs.New()
@@ -2182,7 +2192,7 @@ func TestIntegration_Serialize_Deserialize_WatchQuery(t *testing.T) {
 	}
 }
 
-func TestIntegration_WatchQuery(t *testing.T) {
+func testIntegrationWatchQuery(t *testing.T) {
 	skipIfEdition(t, "Listen queries", editionEnterprise)
 	ctx := context.Background()
 	coll := integrationColl(t)
@@ -2270,7 +2280,7 @@ func TestIntegration_WatchQuery(t *testing.T) {
 	})
 }
 
-func TestIntegration_WatchQueryCancel(t *testing.T) {
+func testIntegrationWatchQueryCancel(t *testing.T) {
 	skipIfEdition(t, "Listen queries", editionEnterprise)
 	ctx := context.Background()
 	coll := integrationColl(t)
@@ -2290,7 +2300,7 @@ func TestIntegration_WatchQueryCancel(t *testing.T) {
 	codeEq(t, "after cancel", codes.Canceled, err)
 }
 
-func TestIntegration_MissingDocs(t *testing.T) {
+func testIntegrationMissingDocs(t *testing.T) {
 	skipIfEdition(t, "show_missing", editionEnterprise)
 	ctx := context.Background()
 	h := testHelper{t}
@@ -2327,7 +2337,7 @@ func TestIntegration_MissingDocs(t *testing.T) {
 	})
 }
 
-func TestIntegration_CollectionGroupQueries(t *testing.T) {
+func testIntegrationCollectionGroupQueries(t *testing.T) {
 	shouldBeFoundID := collectionIDs.New()
 	shouldNotBeFoundID := collectionIDs.New()
 
@@ -2501,7 +2511,7 @@ func TestDetectProjectID(t *testing.T) {
 	}
 }
 
-func TestIntegration_ColGroupRefPartitions(t *testing.T) {
+func testIntegrationColGroupRefPartitions(t *testing.T) {
 	skipIfEdition(t, "PartitionQuery", editionEnterprise)
 	h := testHelper{t}
 	client := integrationClient(t)
@@ -2551,7 +2561,7 @@ func TestIntegration_ColGroupRefPartitions(t *testing.T) {
 
 }
 
-func TestIntegration_ColGroupRefPartitionsLarge(t *testing.T) {
+func testIntegrationColGroupRefPartitionsLarge(t *testing.T) {
 	skipIfEdition(t, "PartitionQuery", editionEnterprise)
 	// Create collection with enough documents to have multiple partitions.
 	client := integrationClient(t)
@@ -2630,7 +2640,7 @@ func TestIntegration_ColGroupRefPartitionsLarge(t *testing.T) {
 	}
 }
 
-func TestIntegration_NewClientWithDatabase(t *testing.T) {
+func testIntegrationNewClientWithDatabase(t *testing.T) {
 	if testing.Short() {
 		t.Skip("Integration tests skipped in short mode")
 	}
@@ -2671,7 +2681,7 @@ func TestIntegration_NewClientWithDatabase(t *testing.T) {
 }
 
 // TestIntegration_BulkWriter_Set tests setting values and serverTimeStamp in single write.
-func TestIntegration_BulkWriter_Set(t *testing.T) {
+func testIntegrationBulkWriterSet(t *testing.T) {
 	doc := iColl.NewDoc()
 	t.Cleanup(func() {
 		deleteDocuments([]*DocumentRef{doc})
@@ -2689,7 +2699,7 @@ func TestIntegration_BulkWriter_Set(t *testing.T) {
 	bw.End()
 }
 
-func TestIntegration_BulkWriter_Create(t *testing.T) {
+func testIntegrationBulkWriterCreate(t *testing.T) {
 	c := integrationClient(t)
 	ctx := context.Background()
 
@@ -2750,7 +2760,7 @@ func TestIntegration_BulkWriter_Create(t *testing.T) {
 	}
 }
 
-func TestIntegration_BulkWriter(t *testing.T) {
+func testIntegrationBulkWriter(t *testing.T) {
 	doc := iColl.NewDoc()
 	docRefs := []*DocumentRef{doc}
 	t.Cleanup(func() {
@@ -2833,7 +2843,7 @@ func aggResultsEquals(r *testutil.R, m1, m2 AggregationResult) bool {
 	return true
 }
 
-func TestIntegration_AggregationQueries(t *testing.T) {
+func testIntegrationAggregationQueries(t *testing.T) {
 	ctx := context.Background()
 	coll := integrationColl(t).NewDoc().Collection(indexedCollection)
 	client := integrationClient(t)
@@ -3191,7 +3201,7 @@ func getCurrentEdition() firestoreEdition {
 	return testParams[firestoreEditionKey].(firestoreEdition)
 }
 
-func TestIntegration_AggregationQueries_WithRunOptions(t *testing.T) {
+func testIntegrationAggregationQueriesWithRunOptions(t *testing.T) {
 	if useEmulator {
 		t.Skip("Skipping. Query profiling not supported in emulator.")
 	}
@@ -3352,7 +3362,7 @@ func cmpExecutionStats(got *ExecutionStats, want *ExecutionStats) error {
 	return nil
 }
 
-func TestIntegration_CountAggregationQuery(t *testing.T) {
+func testIntegrationCountAggregationQuery(t *testing.T) {
 	str := uid.NewSpace("firestore-count", &uid.Options{})
 	datum := str.New()
 
@@ -3406,7 +3416,7 @@ func TestIntegration_CountAggregationQuery(t *testing.T) {
 	}
 }
 
-func TestIntegration_ClientReadTime(t *testing.T) {
+func testIntegrationClientReadTime(t *testing.T) {
 	docs := []*DocumentRef{
 		iColl.NewDoc(),
 		iColl.NewDoc(),
@@ -3459,7 +3469,7 @@ func TestIntegration_ClientReadTime(t *testing.T) {
 	}
 }
 
-func TestIntegration_FindNearest(t *testing.T) {
+func testIntegrationFindNearest(t *testing.T) {
 	collRef := integrationColl(t).NewDoc().Collection(indexedCollection)
 	queryField := "EmbeddedField64"
 	resultField := "vector_distance"
@@ -3588,7 +3598,7 @@ func TestIntegration_FindNearest(t *testing.T) {
 	}
 }
 
-func TestIntegration_TransactionReadTime(t *testing.T) {
+func testIntegrationTransactionReadTime(t *testing.T) {
 	ctx := context.Background()
 	c := integrationClient(t)
 
@@ -3655,7 +3665,7 @@ func TestIntegration_TransactionReadTime(t *testing.T) {
 	}
 }
 
-func TestIntegration_TransactionWithReadOptionsError(t *testing.T) {
+func testIntegrationTransactionWithReadOptionsError(t *testing.T) {
 	ctx := context.Background()
 	c := integrationClient(t)
 
@@ -3668,7 +3678,7 @@ func TestIntegration_TransactionWithReadOptionsError(t *testing.T) {
 	}
 }
 
-func TestIntegration_VerifyGRPCLimits(t *testing.T) {
+func testIntegrationVerifyGRPCLimits(t *testing.T) {
 	skipIfEdition(t, "16MB Documents", editionStandard)
 	t.Skip("Temporarily skipped. Not yet in production.")
 	ctx := context.Background()
@@ -3703,5 +3713,98 @@ func TestIntegration_VerifyGRPCLimits(t *testing.T) {
 	gotData := snap.Data()["payload"].([]byte)
 	if len(gotData) != size {
 		t.Errorf("Got data size %d, want %d", len(gotData), size)
+	}
+}
+
+func TestIntegration_DefaultDB(t *testing.T) {
+	if defaultClient == nil {
+		t.Skip("Default client not initialized")
+	}
+
+	t.Run("Create", testIntegrationCreate)
+	t.Run("Get", testIntegrationGet)
+	t.Run("GetAll", testIntegrationGetAll)
+	t.Run("GetAll_WithRunOptions", testIntegrationGetAllWithRunOptions)
+	t.Run("Query_WithRunOptions", testIntegrationQueryWithRunOptions)
+	t.Run("Add", testIntegrationAdd)
+	t.Run("Set", testIntegrationSet)
+	t.Run("Delete", testIntegrationDelete)
+	t.Run("Update", testIntegrationUpdate)
+	t.Run("Collections", testIntegrationCollections)
+	t.Run("ServerTimestamp", testIntegrationServerTimestamp)
+	t.Run("MergeServerTimestamp", testIntegrationMergeServerTimestamp)
+	t.Run("MergeNestedServerTimestamp", testIntegrationMergeNestedServerTimestamp)
+	t.Run("OmitZero", testIntegrationOmitZero)
+	t.Run("WriteBatch", testIntegrationWriteBatch)
+	t.Run("QueryDocuments_WhereEntity", testIntegrationQueryDocumentsWhereEntity)
+	t.Run("QueryDocuments", testIntegrationQueryDocuments)
+	t.Run("QueryDocuments_LimitToLast_Fail", testIntegrationQueryDocumentsLimitToLastFail)
+	t.Run("QueryUnary", testIntegrationQueryUnary)
+	t.Run("QueryName", testIntegrationQueryName)
+	t.Run("QueryNested", testIntegrationQueryNested)
+	t.Run("RunTransaction", testIntegrationRunTransaction)
+	t.Run("RunTransaction_WithRunOptions", testIntegrationRunTransactionWithRunOptions)
+	t.Run("TransactionGetAll", testIntegrationTransactionGetAll)
+	t.Run("WatchDocument", testIntegrationWatchDocument)
+	t.Run("ArrayUnion_Create", testIntegrationArrayUnionCreate)
+	t.Run("ArrayUnion_Update", testIntegrationArrayUnionUpdate)
+	t.Run("ArrayUnion_Set", testIntegrationArrayUnionSet)
+	t.Run("ArrayRemove_Create", testIntegrationArrayRemoveCreate)
+	t.Run("ArrayRemove_Update", testIntegrationArrayRemoveUpdate)
+	t.Run("ArrayRemove_Set", testIntegrationArrayRemoveSet)
+	t.Run("FieldTransforms_Create", testIntegrationFieldTransformsCreate)
+	t.Run("FieldTransforms_Update", testIntegrationFieldTransformsUpdate)
+	t.Run("FieldTransforms_Set", testIntegrationFieldTransformsSet)
+	t.Run("Serialize_Deserialize_WatchQuery", testIntegrationSerializeDeserializeWatchQuery)
+	t.Run("WatchQuery", testIntegrationWatchQuery)
+	t.Run("WatchQueryCancel", testIntegrationWatchQueryCancel)
+	t.Run("MissingDocs", testIntegrationMissingDocs)
+	t.Run("CollectionGroupQueries", testIntegrationCollectionGroupQueries)
+	t.Run("ColGroupRefPartitions", testIntegrationColGroupRefPartitions)
+	t.Run("ColGroupRefPartitionsLarge", testIntegrationColGroupRefPartitionsLarge)
+	t.Run("NewClientWithDatabase", testIntegrationNewClientWithDatabase)
+	t.Run("BulkWriter_Set", testIntegrationBulkWriterSet)
+	t.Run("BulkWriter_Create", testIntegrationBulkWriterCreate)
+	t.Run("BulkWriter", testIntegrationBulkWriter)
+	t.Run("AggregationQueries", testIntegrationAggregationQueries)
+	t.Run("AggregationQueries_WithRunOptions", testIntegrationAggregationQueriesWithRunOptions)
+	t.Run("CountAggregationQuery", testIntegrationCountAggregationQuery)
+	t.Run("ClientReadTime", testIntegrationClientReadTime)
+	t.Run("FindNearest", testIntegrationFindNearest)
+	t.Run("TransactionReadTime", testIntegrationTransactionReadTime)
+	t.Run("TransactionWithReadOptionsError", testIntegrationTransactionWithReadOptionsError)
+}
+
+func TestIntegration_EnterpriseDB(t *testing.T) {
+	if len(enterpriseClients) == 0 {
+		t.Skip("Enterprise clients not initialized")
+	}
+	for dbID, client := range enterpriseClients {
+		t.Run(dbID, func(t *testing.T) {
+			oldClient := iClient
+			oldColl := iColl
+			oldEdition := getCurrentEdition()
+
+			newColl := client.Collection(collectionIDs.New())
+			updateGlobals(client, newColl, editionEnterprise)
+
+			t.Cleanup(func() {
+				deleteCollection(context.Background(), newColl)
+				updateGlobals(oldClient, oldColl, oldEdition)
+			})
+
+			t.Run("Create", testIntegrationCreate)
+			t.Run("Get", testIntegrationGet)
+			t.Run("NewClientWithDatabase", testIntegrationNewClientWithDatabase)
+			t.Run("VerifyGRPCLimits", testIntegrationVerifyGRPCLimits)
+
+			t.Run("PipelineExecute", testIntegrationPipelineExecute)
+			t.Run("PipelineStages", testIntegrationPipelineStages)
+			t.Run("PipelineFunctions", testIntegrationPipelineFunctions)
+			t.Run("Query_Pipeline", testIntegrationQueryPipeline)
+			t.Run("AggregationQuery_Pipeline", testIntegrationAggregationQueryPipeline)
+			t.Run("PipelineSubqueriesAndVariables", testIntegrationPipelineSubqueriesAndVariables)
+			t.Run("PipelineSearch", testIntegrationPipelineSearch)
+		})
 	}
 }
