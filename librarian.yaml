@@ -1299,6 +1299,8 @@ libraries:
           no_snippets: true
     keep:
       - README.md
+      - admin/database/apiv1/omni_client.go
+      - admin/database/apiv1/omni_client_test.go
     skip_release: true
   - name: speech
     version: 1.35.0
