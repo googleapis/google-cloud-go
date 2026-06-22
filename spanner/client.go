@@ -51,7 +51,6 @@ import (
 
 	vkit "cloud.google.com/go/spanner/apiv1"
 	"cloud.google.com/go/spanner/internal"
-	"cloud.google.com/go/spanner/omni"
 )
 
 const (
@@ -275,16 +274,6 @@ func (gw *gmeWrapper) Num() int {
 	return int(gw.GCPMultiEndpoint.GCPConfig().GetChannelPool().GetMaxSize())
 }
 
-// InstanceType specifies the type of Spanner instance to connect to.
-type InstanceType string
-
-const (
-	// CLOUD represents a Cloud Spanner instance.
-	CLOUD InstanceType = "CLOUD"
-	// OMNI represents a Spanner Omni instance.
-	OMNI InstanceType = "OMNI"
-)
-
 // ClientConfig has configurations for the client.
 type ClientConfig struct {
 	// NumChannels is the number of gRPC channels.
@@ -385,26 +374,7 @@ type ClientConfig struct {
 	// Default: false
 	DisableNativeMetrics bool
 
-	// Type specifies the type of Spanner instance to connect to (CLOUD or OMNI).
-	// CLOUD is a no-op and for connecting to Spanner Omni it's mandatory to set Type to OMNI.
-	// If unspecified, it defaults to CLOUD.
-	Type InstanceType
-
-	// UsePlainText specifies whether to use plain text for the connection.
-	UsePlainText bool
-
-	// CaCertificateFile is the path to the CA certificate file.
-	CaCertificateFile string
-
-	// ClientCertificateFile is the path to the client certificate file.
-	ClientCertificateFile string
-
-	// ClientKeyFile is the path to the client key file.
-	ClientKeyFile string
-
-	// IsExperimentalHost is deprecated. Use Type = OMNI instead.
-	//
-	// Deprecated: Use Type = OMNI instead.
+	// Default: false
 	IsExperimentalHost bool
 
 	// ClientContext is the default context for all requests made by the client.
@@ -432,31 +402,6 @@ type ClientConfig struct {
 
 	// AutoTaggingTracerLimit specifies depth limit for stack-trace walking.
 	AutoTaggingTracerLimit int
-}
-
-// GetInstanceType returns the instance type.
-func (c ClientConfig) GetInstanceType() string {
-	return string(c.Type)
-}
-
-// GetUsePlainText returns whether plain text is used.
-func (c ClientConfig) GetUsePlainText() bool {
-	return c.UsePlainText
-}
-
-// GetCaCertificateFile returns the CA certificate file path.
-func (c ClientConfig) GetCaCertificateFile() string {
-	return c.CaCertificateFile
-}
-
-// GetClientCertificateFile returns the client certificate file path.
-func (c ClientConfig) GetClientCertificateFile() string {
-	return c.ClientCertificateFile
-}
-
-// GetClientKeyFile returns the client key file path.
-func (c ClientConfig) GetClientKeyFile() string {
-	return c.ClientKeyFile
 }
 
 type openTelemetryConfig struct {
@@ -614,18 +559,6 @@ func createFallbackConnPool(
 }
 
 func newClientWithConfig(ctx context.Context, database string, config ClientConfig, gme *grpcgcp.GCPMultiEndpoint, opts ...option.ClientOption) (c *Client, err error) {
-	if config.Type != OMNI && (config.UsePlainText || config.CaCertificateFile != "" || config.ClientCertificateFile != "" || config.ClientKeyFile != "") {
-		return nil, spannerErrorf(codes.InvalidArgument, "UsePlainText, CaCertificateFile, ClientCertificateFile, and ClientKeyFile can only be set when Type is OMNI")
-	}
-
-	if config.Type == OMNI {
-		omniOpts, err := omni.ConnectionOptions(config.UsePlainText, config.CaCertificateFile, config.ClientCertificateFile, config.ClientKeyFile)
-		if err != nil {
-			return nil, err
-		}
-		opts = append(opts, omniOpts...)
-	}
-
 	// Validate database path.
 	if err := validDatabaseName(database); err != nil {
 		return nil, err

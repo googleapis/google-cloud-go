@@ -110,7 +110,7 @@ var (
 	instanceAdmin *instance.InstanceAdminClient
 
 	dpConfig   directPathTestConfig
-	omniConfig spannerOmniTestConfig
+	exphConfig experimentalHostTestConfig
 	peerInfo   *peer.Peer
 
 	singerDBPGStatements = []string{
@@ -405,12 +405,8 @@ func init() {
 	flag.StringVar(&blackholeDpv4Cmd, "it.blackhole-dpv4-cmd", "", "Command to make LB and backend addresses blackholed over dpv4")
 	flag.StringVar(&allowDpv6Cmd, "it.allow-dpv6-cmd", "", "Command to make LB and backend addresses allowed over dpv6")
 	flag.StringVar(&allowDpv4Cmd, "it.allow-dpv4-cmd", "", "Command to make LB and backend addresses allowed over dpv4")
-	flag.StringVar(&omniConfig.endpoint, "it.omni-endpoint", "", "Spanner Omni endpoint integration test flag")
-	flag.BoolVar(&omniConfig.isPGDialect, "it.omni-pg-dialect", false, "Use PG dialect with Spanner Omni endpoint")
-	flag.BoolVar(&omniConfig.usePlainText, "it.omni-use-plaintext", false, "Use plain text for Spanner Omni connection")
-	flag.StringVar(&omniConfig.caCertificateFile, "it.omni-ca-cert", "", "Path to CA certificate file for Spanner Omni connection")
-	flag.StringVar(&omniConfig.clientCertificateFile, "it.omni-client-cert", "", "Path to client certificate file for Spanner Omni connection")
-	flag.StringVar(&omniConfig.clientKeyFile, "it.omni-client-key", "", "Path to client key file for Spanner Omni connection")
+	flag.StringVar(&exphConfig.experimentalHost, "it.experimental-host", "", "Experimental host integration test flag")
+	flag.BoolVar(&exphConfig.isPGDialect, "it.experimental-host-pg-dialect", false, "Use PG dialect with experimental host")
 }
 
 type directPathTestConfig struct {
@@ -418,27 +414,9 @@ type directPathTestConfig struct {
 	directPathIPv4Only bool
 }
 
-type spannerOmniTestConfig struct {
-	endpoint              string
-	isPGDialect           bool
-	usePlainText          bool
-	caCertificateFile     string
-	clientCertificateFile string
-	clientKeyFile         string
-}
-
-func omniConnectionConfig() ClientConfig {
-	usePlainText := omniConfig.usePlainText
-	if !usePlainText && omniConfig.caCertificateFile == "" && omniConfig.clientCertificateFile == "" && omniConfig.clientKeyFile == "" {
-		usePlainText = true
-	}
-	return ClientConfig{
-		Type:                  OMNI,
-		UsePlainText:          usePlainText,
-		CaCertificateFile:     omniConfig.caCertificateFile,
-		ClientCertificateFile: omniConfig.clientCertificateFile,
-		ClientKeyFile:         omniConfig.clientKeyFile,
-	}
+type experimentalHostTestConfig struct {
+	experimentalHost string
+	isPGDialect      bool
 }
 
 func parseInstanceName(inst string) (project, instance string, err error) {
@@ -459,7 +437,7 @@ func getInstanceConfig() string {
 }
 
 func getMultiplexEnableFlag() bool {
-	return omniConfig.endpoint != "" || os.Getenv("GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS") != "false"
+	return exphConfig.experimentalHost != "" || os.Getenv("GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS") != "false"
 }
 
 const (
@@ -476,13 +454,13 @@ func TestMain(m *testing.M) {
 			// PG tests are not supported in emulator
 			continue
 		}
-		if omniConfig.endpoint != "" {
-			// Since IT against spanner omni is ran against single server instance, we need to run tests
+		if exphConfig.experimentalHost != "" {
+			// Since IT against experimental host is ran against single server instance, we need to run tests
 			// separately for each dialect to avoid context deadlines due to resource limitations.
-			if omniConfig.isPGDialect && dialect != adminpb.DatabaseDialect_POSTGRESQL {
+			if exphConfig.isPGDialect && dialect != adminpb.DatabaseDialect_POSTGRESQL {
 				continue
 			}
-			if !omniConfig.isPGDialect && dialect != adminpb.DatabaseDialect_GOOGLE_STANDARD_SQL {
+			if !exphConfig.isPGDialect && dialect != adminpb.DatabaseDialect_GOOGLE_STANDARD_SQL {
 				continue
 			}
 		}
@@ -507,7 +485,7 @@ func initIntegrationTests() (cleanup func()) {
 		return noop
 	}
 
-	if omniConfig.endpoint != "" {
+	if exphConfig.experimentalHost != "" {
 		testProjectID = "default"
 		testInstanceID = "default"
 	}
@@ -526,9 +504,9 @@ func initIntegrationTests() (cleanup func()) {
 	}
 	var err error
 
-	if omniConfig.endpoint != "" {
-		opts = append(opts, option.WithEndpoint(omniConfig.endpoint))
-		databaseAdmin, err = database.NewDatabaseAdminClientWithConfig(ctx, omniConnectionConfig(), opts...)
+	if exphConfig.experimentalHost != "" {
+		opts = append(opts, experimentalHostOptions()...)
+		databaseAdmin, err = database.NewDatabaseAdminClient(ctx, opts...)
 	} else {
 		// Create InstanceAdmin and DatabaseAdmin clients.
 		instanceAdmin, err = instance.NewInstanceAdminClient(ctx, opts...)
@@ -540,7 +518,7 @@ func initIntegrationTests() (cleanup func()) {
 	if err != nil {
 		log.Fatalf("cannot create databaseAdmin client: %v", err)
 	}
-	if omniConfig.endpoint != "" {
+	if exphConfig.experimentalHost != "" {
 		return func() {
 			databaseAdmin.Close()
 		}
@@ -1144,8 +1122,8 @@ func deleteTestSession(ctx context.Context, t *testing.T, sessionName string) {
 
 func TestIntegration_BatchWrite(t *testing.T) {
 	skipEmulatorTest(t)
-	// BatchWrite creates regular sessions, which cannot be used with spanner omni.
-	skipSpannerOmniTest(t)
+	// BatchWrite creates regular sessions, which cannot be used with experimental host.
+	skipExperimentalHostTest(t)
 	t.Parallel()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
@@ -2090,7 +2068,7 @@ func TestIntegration_NestedTransaction(t *testing.T) {
 func TestIntegration_CreateDBRetry(t *testing.T) {
 	t.Parallel()
 	skipUnsupportedPGTest(t)
-	skipSpannerOmniTest(t)
+	skipExperimentalHostTest(t)
 
 	if databaseAdmin == nil {
 		t.Skip("Integration tests skipped")
@@ -2139,8 +2117,8 @@ func TestIntegration_CreateDBRetry(t *testing.T) {
 func TestIntegration_DbRemovalRecovery(t *testing.T) {
 	t.Parallel()
 	t.Skip("Flaky test, skipping for now (b/514205001)")
-	// tracking the failure via b/441255724 for Spanner Omni
-	skipSpannerOmniTest(t)
+	// tracking the failure via b/441255724 for experimentalHost
+	skipExperimentalHostTest(t)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
@@ -3408,7 +3386,7 @@ func TestIntegration_TransactionRunner(t *testing.T) {
 	// TODO(sakthivelmani): Enable the tests once b/422916293 is fixed
 	skipDirectPathTest(t)
 	skipEmulatorTest(t)
-	skipSpannerOmniTest(t)
+	skipExperimentalHostTest(t)
 	t.Parallel()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
@@ -3548,9 +3526,9 @@ func TestIntegration_TransactionRunner(t *testing.T) {
 
 func TestIntegration_QueryWithRoles(t *testing.T) {
 	t.Parallel()
-	// Database roles are not currently available in emulator and spanner omni
+	// Database roles are not currently available in emulator and experimentalHost
 	skipEmulatorTest(t)
-	skipSpannerOmniTest(t)
+	skipExperimentalHostTest(t)
 
 	// Set up testing environment.
 	var (
@@ -3683,9 +3661,9 @@ func TestIntegration_QueryWithRoles(t *testing.T) {
 
 func TestIntegration_ReadWithRoles(t *testing.T) {
 	t.Parallel()
-	// Database roles are not currently available in emulator and spanner omni
+	// Database roles are not currently available in emulator and experimentalHost
 	skipEmulatorTest(t)
-	skipSpannerOmniTest(t)
+	skipExperimentalHostTest(t)
 
 	// Set up testing environment.
 	var (
@@ -3817,9 +3795,9 @@ func TestIntegration_ReadWithRoles(t *testing.T) {
 
 func TestIntegration_DMLWithRoles(t *testing.T) {
 	t.Parallel()
-	// Database roles are not currently available in emulator and spanner omni
+	// Database roles are not currently available in emulator and experimentalHost
 	skipEmulatorTest(t)
-	skipSpannerOmniTest(t)
+	skipExperimentalHostTest(t)
 
 	// Set up testing environment.
 	var (
@@ -3982,9 +3960,9 @@ func TestIntegration_DMLWithRoles(t *testing.T) {
 
 func TestIntegration_MutationWithRoles(t *testing.T) {
 	t.Parallel()
-	// Database roles are not currently available in emulator and spanner omni
+	// Database roles are not currently available in emulator and experimental host
 	skipEmulatorTest(t)
-	skipSpannerOmniTest(t)
+	skipExperimentalHostTest(t)
 
 	// Set up testing environment.
 	var (
@@ -4137,9 +4115,9 @@ func TestIntegration_MutationWithRoles(t *testing.T) {
 
 func TestIntegration_ListDatabaseRoles(t *testing.T) {
 	t.Parallel()
-	// Database roles are not currently available in emulator and spanner omni
+	// Database roles are not currently available in emulator and experimental host
 	skipEmulatorTest(t)
-	skipSpannerOmniTest(t)
+	skipExperimentalHostTest(t)
 
 	// Set up testing environment.
 	var (
@@ -4225,8 +4203,8 @@ func TestIntegration_BatchQuery(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer txn.Cleanup(ctx)
-	// DataBoost is not available for spanner omni endpoints
-	dataBoostAvailable := omniConfig.endpoint == ""
+	// DataBoost is not available for experimental host endpoints
+	dataBoostAvailable := exphConfig.experimentalHost == ""
 	if partitions, err = txn.PartitionQueryWithOptions(ctx, stmt, PartitionOptions{0, 3}, QueryOptions{DataBoostEnabled: dataBoostAvailable}); err != nil {
 		t.Fatal(err)
 	}
@@ -4313,8 +4291,8 @@ func TestIntegration_BatchRead(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer txn.Cleanup(ctx)
-	// DataBoost is not available for spanner omni endpoints
-	dataBoostAvailable := omniConfig.endpoint == ""
+	// DataBoost is not available for experimental host endpoints
+	dataBoostAvailable := exphConfig.experimentalHost == ""
 	if partitions, err = txn.PartitionReadWithOptions(ctx, "test", AllKeys(), simpleDBTableColumns, PartitionOptions{0, 3}, ReadOptions{DataBoostEnabled: dataBoostAvailable}); err != nil {
 		t.Fatal(err)
 	}
@@ -5431,7 +5409,7 @@ func compareErrors(got, want error) bool {
 
 func TestIntegration_Foreign_Key_Delete_Cascade_Action(t *testing.T) {
 	skipEmulatorTest(t)
-	skipSpannerOmniTest(t)
+	skipExperimentalHostTest(t)
 	t.Parallel()
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
@@ -5718,7 +5696,7 @@ func TestIntegration_GFE_Latency(t *testing.T) {
 
 func TestIntegration_Bit_Reversed_Sequence(t *testing.T) {
 	skipEmulatorTest(t)
-	skipSpannerOmniTest(t)
+	skipExperimentalHostTest(t)
 	t.Parallel()
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
@@ -6394,14 +6372,9 @@ func createClient(ctx context.Context, dbPath string, config ClientConfig) (clie
 	if dpConfig.attemptDirectPath {
 		opts = append(opts, option.WithGRPCDialOption(grpc.WithDefaultCallOptions(grpc.Peer(peerInfo))))
 	}
-	if omniConfig.endpoint != "" {
-		opts = append(opts, option.WithEndpoint(omniConfig.endpoint))
-		omniConf := omniConnectionConfig()
-		config.Type = OMNI
-		config.UsePlainText = omniConf.UsePlainText
-		config.CaCertificateFile = omniConf.CaCertificateFile
-		config.ClientCertificateFile = omniConf.ClientCertificateFile
-		config.ClientKeyFile = omniConf.ClientKeyFile
+	if exphConfig.experimentalHost != "" {
+		opts = append(opts, experimentalHostOptions()...)
+		config.IsExperimentalHost = true
 	}
 	client, err = makeClientWithConfig(ctx, dbPath, config, serverAddress, opts...)
 	if err != nil {
@@ -6421,14 +6394,9 @@ func createClientWithRole(ctx context.Context, dbPath string, spc SessionPoolCon
 		opts = append(opts, option.WithGRPCDialOption(grpc.WithDefaultCallOptions(grpc.Peer(peerInfo))))
 	}
 	config := ClientConfig{SessionPoolConfig: spc, DatabaseRole: role}
-	if omniConfig.endpoint != "" {
-		opts = append(opts, option.WithEndpoint(omniConfig.endpoint))
-		omniConf := omniConnectionConfig()
-		config.Type = OMNI
-		config.UsePlainText = omniConf.UsePlainText
-		config.CaCertificateFile = omniConf.CaCertificateFile
-		config.ClientCertificateFile = omniConf.ClientCertificateFile
-		config.ClientKeyFile = omniConf.ClientKeyFile
+	if exphConfig.experimentalHost != "" {
+		opts = append(opts, experimentalHostOptions()...)
+		config.IsExperimentalHost = true
 	}
 	client, err = makeClientWithConfig(ctx, dbPath, config, serverAddress, opts...)
 	if err != nil {
@@ -6447,14 +6415,9 @@ func createClientForProtoColumns(ctx context.Context, dbPath string, spc Session
 		opts = append(opts, option.WithGRPCDialOption(grpc.WithDefaultCallOptions(grpc.Peer(peerInfo))))
 	}
 	config := ClientConfig{SessionPoolConfig: spc}
-	if omniConfig.endpoint != "" {
-		opts = append(opts, option.WithEndpoint(omniConfig.endpoint))
-		omniConf := omniConnectionConfig()
-		config.Type = OMNI
-		config.UsePlainText = omniConf.UsePlainText
-		config.CaCertificateFile = omniConf.CaCertificateFile
-		config.ClientCertificateFile = omniConf.ClientCertificateFile
-		config.ClientKeyFile = omniConf.ClientKeyFile
+	if exphConfig.experimentalHost != "" {
+		opts = append(opts, experimentalHostOptions()...)
+		config.IsExperimentalHost = true
 	}
 	client, err = NewClientWithConfig(ctx, dbPath, config, opts...)
 	if err != nil {
@@ -6606,9 +6569,17 @@ func skipEmulatorTest(t *testing.T) {
 	}
 }
 
-func skipSpannerOmniTest(t *testing.T) {
-	if omniConfig.endpoint != "" {
-		t.Skip("Skipping spanner omni tests.")
+func skipExperimentalHostTest(t *testing.T) {
+	if exphConfig.experimentalHost != "" {
+		t.Skip("Skipping experimental host tests.")
+	}
+}
+
+func experimentalHostOptions() []option.ClientOption {
+	return []option.ClientOption{
+		option.WithEndpoint(exphConfig.experimentalHost),
+		option.WithoutAuthentication(),
+		option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
 	}
 }
 

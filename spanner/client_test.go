@@ -317,39 +317,6 @@ func TestValidDatabaseName(t *testing.T) {
 	}
 }
 
-func TestClientConfigValidation(t *testing.T) {
-	tests := []struct {
-		name   string
-		config ClientConfig
-	}{
-		{
-			name: "invalid config - options set on CLOUD type",
-			config: ClientConfig{
-				Type:         CLOUD,
-				UsePlainText: true,
-			},
-		},
-		{
-			name: "invalid config - options set on unspecified type",
-			config: ClientConfig{
-				CaCertificateFile: "ca.pem",
-			},
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			_, err := NewClientWithConfig(context.Background(), "projects/p/instances/i/databases/d", tt.config)
-			if err == nil {
-				t.Fatalf("NewClientWithConfig() expected error, got nil")
-			}
-			if ErrCode(err) != codes.InvalidArgument || !strings.Contains(err.Error(), "can only be set when Type is OMNI") {
-				t.Errorf("NewClientWithConfig() unexpected error: %v", err)
-			}
-		})
-	}
-}
-
 func TestReadOnlyTransactionClose(t *testing.T) {
 	// Closing a ReadOnlyTransaction shouldn't panic.
 	c := &Client{}

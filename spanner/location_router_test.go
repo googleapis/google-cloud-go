@@ -241,23 +241,10 @@ func TestIsExperimentalLocationAPIEnabledForConfig(t *testing.T) {
 		}
 	})
 
-	t.Run("type OMNI enables location API by default", func(t *testing.T) {
-		if !isExperimentalLocationAPIEnabledForConfig(ClientConfig{Type: OMNI}) {
-			t.Fatal("expected type OMNI to enable location API")
-		}
-	})
-
 	t.Run("env var false overrides experimental host", func(t *testing.T) {
 		t.Setenv(experimentalLocationAPIEnvVar, "false")
 		if isExperimentalLocationAPIEnabledForConfig(ClientConfig{IsExperimentalHost: true}) {
 			t.Fatal("expected env var false to disable location API even with experimental host")
-		}
-	})
-
-	t.Run("env var false overrides type OMNI", func(t *testing.T) {
-		t.Setenv(experimentalLocationAPIEnvVar, "false")
-		if isExperimentalLocationAPIEnabledForConfig(ClientConfig{Type: OMNI}) {
-			t.Fatal("expected env var false to disable location API even with type OMNI")
 		}
 	})
 
@@ -369,19 +356,6 @@ func TestNewClient_EnablesLocationRouterForExperimentalHost(t *testing.T) {
 
 	if client.locationRouter == nil {
 		t.Fatal("expected location router to be enabled for experimental host")
-	}
-}
-
-func TestNewClient_EnablesLocationRouterForTypeOmni(t *testing.T) {
-	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
-		DisableNativeMetrics: true,
-		Type:                 OMNI,
-		UsePlainText:         true,
-	})
-	defer teardown()
-
-	if client.locationRouter == nil {
-		t.Fatal("expected location router to be enabled for type OMNI")
 	}
 }
 
