@@ -249,10 +249,17 @@ type DynamicChannelPoolConfig struct {
 	// E.g., 30 means a maximum increase of 30%.
 }
 
-// DefaultDynamicChannelPoolConfig is default settings for dynamic channel pool
+// DefaultDynamicChannelPoolConfig is default settings for dynamic channel pool.
+//
+// Enabled is false by default while the upstream gRPC-Go xDS client memory leak
+// is being addressed; scale events churn DirectPath-xDS connections often
+// enough to expose that leak as steady heap growth
+// (see https://github.com/googleapis/google-cloud-go/issues/14582). Callers
+// that want dynamic scaling can construct a DynamicChannelPoolConfig with
+// Enabled: true.
 func DefaultDynamicChannelPoolConfig() DynamicChannelPoolConfig {
 	return DynamicChannelPoolConfig{
-		Enabled:                          true, // Enabled by default
+		Enabled:                          false,
 		MinConns:                         10,
 		MaxConns:                         200,
 		AvgLoadHighThreshold:             50,
@@ -291,11 +298,17 @@ type ConnectionRecycleConfig struct {
 }
 
 // DefaultConnectionRecycleConfig returns the default configuration:
-// MaxAge: 45 minutes, Jitter: 5 minutes, RunFrequency: 1 minute, Enabled: true.
+// MaxAge: 7 days, MaxJitter: 12 hours, RunFrequency: 1 hour.
+//
+// MaxAge was raised from 45 minutes to 7 days to limit the recycle rate while
+// the upstream gRPC-Go xDS client memory leak is being addressed; the prior
+// default churned DirectPath-xDS connections frequently enough to expose that
+// leak as steady heap growth
+// (see https://github.com/googleapis/google-cloud-go/issues/14582).
 func DefaultConnectionRecycleConfig() ConnectionRecycleConfig {
 	return ConnectionRecycleConfig{
-		MaxAge:       45 * time.Minute,
-		MaxJitter:    5 * time.Minute,
-		RunFrequency: 1 * time.Minute,
+		MaxAge:       7 * 24 * time.Hour,
+		MaxJitter:    12 * time.Hour,
+		RunFrequency: 1 * time.Hour,
 	}
 }

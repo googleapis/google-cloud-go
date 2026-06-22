@@ -185,17 +185,30 @@ func (c *grpcStorageClient) NewRangeReaderReadObject(ctx context.Context, params
 	size := obj.GetSize()
 	var chunkCRC uint32
 	chunkCRCPresent := false
-	if msg.GetChecksummedData() != nil && msg.GetChecksummedData().Crc32C != nil {
+	if !params.disableCRCCheck &&
+		msg.GetChecksummedData() != nil &&
+		msg.GetChecksummedData().Crc32C != nil {
 		chunkCRCPresent = true
 		chunkCRC = *msg.GetChecksummedData().Crc32C
 	}
-	// Only support checksums when reading an entire object, not a range.
+	startOffset := params.offset
+	if params.offset < 0 {
+		startOffset = size + params.offset
+	}
+	// If caller has specified a negative start offset that's larger than the
+	// reported size, start at the beginning of the object.
+	if startOffset < 0 {
+		startOffset = 0
+	}
+
 	var (
 		wantCRC  uint32
 		checkCRC bool
 	)
 	if checksums := msg.GetObjectChecksums(); checksums != nil && checksums.Crc32C != nil {
-		if params.offset == 0 && params.length < 0 {
+		if !params.disableCRCCheck &&
+			startOffset == 0 &&
+			(params.length < 0 || (obj != nil && params.length >= size)) {
 			checkCRC = true
 		}
 		wantCRC = checksums.GetCrc32C()
@@ -227,8 +240,11 @@ func (c *grpcStorageClient) NewRangeReaderReadObject(ctx context.Context, params
 			zeroRange:       params.length == 0,
 			wantCRC:         wantCRC,
 			checkCRC:        checkCRC,
+			disableCRCCheck: params.disableCRCCheck,
 		},
 		checkCRC: checkCRC,
+		bucket:   params.bucket,
+		object:   params.object,
 	}
 
 	cr := msg.GetContentRange()
@@ -269,6 +285,7 @@ type gRPCReadObjectReader struct {
 	wantCRC         uint32 // the CRC32c value the server sent in the header
 	gotCRC          uint32 // running crc
 	gotChunkCRC     uint32 // running crc32c of chunk
+	disableCRCCheck bool
 }
 
 // Update the running CRC with the data in the slice, if CRC checking was enabled.
@@ -342,12 +359,20 @@ func (r *gRPCReadObjectReader) Read(p []byte) (int, error) {
 	// Attempt to Recv the next message on the stream.
 	// This will update r.currMsg with the decoder for the new message.
 	err := r.recv()
+	if err == io.EOF {
+		if err := r.runCRCCheck(); err != nil {
+			return 0, err
+		}
+		return 0, io.EOF
+	}
 	if err != nil {
 		return 0, err
 	}
 
 	msg := r.currMsg.msg
-	if msg.GetChecksummedData() != nil && msg.GetChecksummedData().Crc32C != nil {
+	if !r.disableCRCCheck &&
+		msg.GetChecksummedData() != nil &&
+		msg.GetChecksummedData().Crc32C != nil {
 		r.wantChunkCRC = *msg.GetChecksummedData().Crc32C
 		r.chunkCRCPresent = true
 		r.gotChunkCRC = 0
@@ -434,7 +459,9 @@ func (r *gRPCReadObjectReader) WriteTo(w io.Writer) (int64, error) {
 			return r.seen - alreadySeen, err
 		}
 		msg := r.currMsg.msg
-		if msg.ChecksummedData != nil && msg.ChecksummedData.Crc32C != nil {
+		if !r.disableCRCCheck &&
+			msg.ChecksummedData != nil &&
+			msg.ChecksummedData.Crc32C != nil {
 			r.gotChunkCRC = 0
 			r.wantChunkCRC = *msg.ChecksummedData.Crc32C
 			r.chunkCRCPresent = true
@@ -660,7 +687,7 @@ func (d *readObjectResponseDecoder) writeToAndUpdateCRC(w io.Writer, updateCRC f
 		// Write all remaining data from the current buffer
 		n, err := w.Write(b)
 		written += int64(n)
-		updateCRC(b)
+		updateCRC(b[:n])
 		if err != nil {
 			return written, err
 		}

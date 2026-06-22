@@ -48,70 +48,89 @@ var newClientHook clientHook
 
 // CallOptions contains the retry settings for each method of Client.
 type CallOptions struct {
-	ListCloudExadataInfrastructures     []gax.CallOption
-	GetCloudExadataInfrastructure       []gax.CallOption
-	CreateCloudExadataInfrastructure    []gax.CallOption
-	DeleteCloudExadataInfrastructure    []gax.CallOption
-	ListCloudVmClusters                 []gax.CallOption
-	GetCloudVmCluster                   []gax.CallOption
-	CreateCloudVmCluster                []gax.CallOption
-	DeleteCloudVmCluster                []gax.CallOption
-	ListEntitlements                    []gax.CallOption
-	ListDbServers                       []gax.CallOption
-	ListDbNodes                         []gax.CallOption
-	ListGiVersions                      []gax.CallOption
-	ListMinorVersions                   []gax.CallOption
-	ListDbSystemShapes                  []gax.CallOption
-	ListAutonomousDatabases             []gax.CallOption
-	GetAutonomousDatabase               []gax.CallOption
-	CreateAutonomousDatabase            []gax.CallOption
-	UpdateAutonomousDatabase            []gax.CallOption
-	DeleteAutonomousDatabase            []gax.CallOption
-	RestoreAutonomousDatabase           []gax.CallOption
-	GenerateAutonomousDatabaseWallet    []gax.CallOption
-	ListAutonomousDbVersions            []gax.CallOption
-	ListAutonomousDatabaseCharacterSets []gax.CallOption
-	ListAutonomousDatabaseBackups       []gax.CallOption
-	StopAutonomousDatabase              []gax.CallOption
-	StartAutonomousDatabase             []gax.CallOption
-	RestartAutonomousDatabase           []gax.CallOption
-	SwitchoverAutonomousDatabase        []gax.CallOption
-	FailoverAutonomousDatabase          []gax.CallOption
-	ListOdbNetworks                     []gax.CallOption
-	GetOdbNetwork                       []gax.CallOption
-	CreateOdbNetwork                    []gax.CallOption
-	DeleteOdbNetwork                    []gax.CallOption
-	ListOdbSubnets                      []gax.CallOption
-	GetOdbSubnet                        []gax.CallOption
-	CreateOdbSubnet                     []gax.CallOption
-	DeleteOdbSubnet                     []gax.CallOption
-	ListExadbVmClusters                 []gax.CallOption
-	GetExadbVmCluster                   []gax.CallOption
-	CreateExadbVmCluster                []gax.CallOption
-	DeleteExadbVmCluster                []gax.CallOption
-	UpdateExadbVmCluster                []gax.CallOption
-	RemoveVirtualMachineExadbVmCluster  []gax.CallOption
-	ListExascaleDbStorageVaults         []gax.CallOption
-	GetExascaleDbStorageVault           []gax.CallOption
-	CreateExascaleDbStorageVault        []gax.CallOption
-	DeleteExascaleDbStorageVault        []gax.CallOption
-	ListDbSystemInitialStorageSizes     []gax.CallOption
-	ListDatabases                       []gax.CallOption
-	GetDatabase                         []gax.CallOption
-	ListPluggableDatabases              []gax.CallOption
-	GetPluggableDatabase                []gax.CallOption
-	ListDbSystems                       []gax.CallOption
-	GetDbSystem                         []gax.CallOption
-	CreateDbSystem                      []gax.CallOption
-	DeleteDbSystem                      []gax.CallOption
-	ListDbVersions                      []gax.CallOption
-	ListDatabaseCharacterSets           []gax.CallOption
-	GetLocation                         []gax.CallOption
-	ListLocations                       []gax.CallOption
-	CancelOperation                     []gax.CallOption
-	DeleteOperation                     []gax.CallOption
-	GetOperation                        []gax.CallOption
-	ListOperations                      []gax.CallOption
+	ListCloudExadataInfrastructures      []gax.CallOption
+	GetCloudExadataInfrastructure        []gax.CallOption
+	CreateCloudExadataInfrastructure     []gax.CallOption
+	DeleteCloudExadataInfrastructure     []gax.CallOption
+	ListCloudVmClusters                  []gax.CallOption
+	GetCloudVmCluster                    []gax.CallOption
+	CreateCloudVmCluster                 []gax.CallOption
+	DeleteCloudVmCluster                 []gax.CallOption
+	ListEntitlements                     []gax.CallOption
+	ListDbServers                        []gax.CallOption
+	ListDbNodes                          []gax.CallOption
+	ListGiVersions                       []gax.CallOption
+	ListMinorVersions                    []gax.CallOption
+	ListDbSystemShapes                   []gax.CallOption
+	ListAutonomousDatabases              []gax.CallOption
+	GetAutonomousDatabase                []gax.CallOption
+	CreateAutonomousDatabase             []gax.CallOption
+	UpdateAutonomousDatabase             []gax.CallOption
+	DeleteAutonomousDatabase             []gax.CallOption
+	RestoreAutonomousDatabase            []gax.CallOption
+	GenerateAutonomousDatabaseWallet     []gax.CallOption
+	ListAutonomousDbVersions             []gax.CallOption
+	ListAutonomousDatabaseCharacterSets  []gax.CallOption
+	ListAutonomousDatabaseBackups        []gax.CallOption
+	StopAutonomousDatabase               []gax.CallOption
+	StartAutonomousDatabase              []gax.CallOption
+	RestartAutonomousDatabase            []gax.CallOption
+	SwitchoverAutonomousDatabase         []gax.CallOption
+	FailoverAutonomousDatabase           []gax.CallOption
+	ListOdbNetworks                      []gax.CallOption
+	GetOdbNetwork                        []gax.CallOption
+	CreateOdbNetwork                     []gax.CallOption
+	DeleteOdbNetwork                     []gax.CallOption
+	ListOdbSubnets                       []gax.CallOption
+	GetOdbSubnet                         []gax.CallOption
+	CreateOdbSubnet                      []gax.CallOption
+	DeleteOdbSubnet                      []gax.CallOption
+	ListExadbVmClusters                  []gax.CallOption
+	GetExadbVmCluster                    []gax.CallOption
+	CreateExadbVmCluster                 []gax.CallOption
+	DeleteExadbVmCluster                 []gax.CallOption
+	UpdateExadbVmCluster                 []gax.CallOption
+	RemoveVirtualMachineExadbVmCluster   []gax.CallOption
+	ListExascaleDbStorageVaults          []gax.CallOption
+	GetExascaleDbStorageVault            []gax.CallOption
+	CreateExascaleDbStorageVault         []gax.CallOption
+	DeleteExascaleDbStorageVault         []gax.CallOption
+	ListDbSystemInitialStorageSizes      []gax.CallOption
+	ListDatabases                        []gax.CallOption
+	GetDatabase                          []gax.CallOption
+	ListPluggableDatabases               []gax.CallOption
+	GetPluggableDatabase                 []gax.CallOption
+	ListDbSystems                        []gax.CallOption
+	GetDbSystem                          []gax.CallOption
+	CreateDbSystem                       []gax.CallOption
+	DeleteDbSystem                       []gax.CallOption
+	ListGoldengateDeployments            []gax.CallOption
+	GetGoldengateDeployment              []gax.CallOption
+	CreateGoldengateDeployment           []gax.CallOption
+	DeleteGoldengateDeployment           []gax.CallOption
+	StopGoldengateDeployment             []gax.CallOption
+	StartGoldengateDeployment            []gax.CallOption
+	ListGoldengateConnections            []gax.CallOption
+	GetGoldengateConnection              []gax.CallOption
+	CreateGoldengateConnection           []gax.CallOption
+	DeleteGoldengateConnection           []gax.CallOption
+	ListGoldengateDeploymentVersions     []gax.CallOption
+	ListGoldengateDeploymentTypes        []gax.CallOption
+	ListGoldengateDeploymentEnvironments []gax.CallOption
+	ListGoldengateConnectionTypes        []gax.CallOption
+	ListDbVersions                       []gax.CallOption
+	ListDatabaseCharacterSets            []gax.CallOption
+	ListGoldengateConnectionAssignments  []gax.CallOption
+	GetGoldengateConnectionAssignment    []gax.CallOption
+	CreateGoldengateConnectionAssignment []gax.CallOption
+	DeleteGoldengateConnectionAssignment []gax.CallOption
+	TestGoldengateConnectionAssignment   []gax.CallOption
+	GetLocation                          []gax.CallOption
+	ListLocations                        []gax.CallOption
+	CancelOperation                      []gax.CallOption
+	DeleteOperation                      []gax.CallOption
+	GetOperation                         []gax.CallOption
+	ListOperations                       []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
@@ -599,6 +618,128 @@ func defaultCallOptions() *CallOptions {
 		DeleteDbSystem: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		ListGoldengateDeployments: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetGoldengateDeployment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CreateGoldengateDeployment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteGoldengateDeployment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		StopGoldengateDeployment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		StartGoldengateDeployment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListGoldengateConnections: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetGoldengateConnection: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CreateGoldengateConnection: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteGoldengateConnection: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListGoldengateDeploymentVersions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListGoldengateDeploymentTypes: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListGoldengateDeploymentEnvironments: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListGoldengateConnectionTypes: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		ListDbVersions: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -624,6 +765,41 @@ func defaultCallOptions() *CallOptions {
 					Multiplier: 1.30,
 				})
 			}),
+		},
+		ListGoldengateConnectionAssignments: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetGoldengateConnectionAssignment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CreateGoldengateConnectionAssignment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteGoldengateConnectionAssignment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		TestGoldengateConnectionAssignment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		GetLocation:     []gax.CallOption{},
 		ListLocations:   []gax.CallOption{},
@@ -1074,6 +1250,120 @@ func defaultRESTCallOptions() *CallOptions {
 		DeleteDbSystem: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		ListGoldengateDeployments: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
+		GetGoldengateDeployment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
+		CreateGoldengateDeployment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteGoldengateDeployment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		StopGoldengateDeployment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		StartGoldengateDeployment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListGoldengateConnections: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
+		GetGoldengateConnection: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
+		CreateGoldengateConnection: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteGoldengateConnection: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListGoldengateDeploymentVersions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
+		ListGoldengateDeploymentTypes: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
+		ListGoldengateDeploymentEnvironments: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
+		ListGoldengateConnectionTypes: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
 		ListDbVersions: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -1097,6 +1387,39 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable,
 					http.StatusGatewayTimeout)
 			}),
+		},
+		ListGoldengateConnectionAssignments: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
+		GetGoldengateConnectionAssignment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
+		CreateGoldengateConnectionAssignment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteGoldengateConnectionAssignment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		TestGoldengateConnectionAssignment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		GetLocation:     []gax.CallOption{},
 		ListLocations:   []gax.CallOption{},
@@ -1193,8 +1516,35 @@ type internalClient interface {
 	CreateDbSystemOperation(name string) *CreateDbSystemOperation
 	DeleteDbSystem(context.Context, *oracledatabasepb.DeleteDbSystemRequest, ...gax.CallOption) (*DeleteDbSystemOperation, error)
 	DeleteDbSystemOperation(name string) *DeleteDbSystemOperation
+	ListGoldengateDeployments(context.Context, *oracledatabasepb.ListGoldengateDeploymentsRequest, ...gax.CallOption) *GoldengateDeploymentIterator
+	GetGoldengateDeployment(context.Context, *oracledatabasepb.GetGoldengateDeploymentRequest, ...gax.CallOption) (*oracledatabasepb.GoldengateDeployment, error)
+	CreateGoldengateDeployment(context.Context, *oracledatabasepb.CreateGoldengateDeploymentRequest, ...gax.CallOption) (*CreateGoldengateDeploymentOperation, error)
+	CreateGoldengateDeploymentOperation(name string) *CreateGoldengateDeploymentOperation
+	DeleteGoldengateDeployment(context.Context, *oracledatabasepb.DeleteGoldengateDeploymentRequest, ...gax.CallOption) (*DeleteGoldengateDeploymentOperation, error)
+	DeleteGoldengateDeploymentOperation(name string) *DeleteGoldengateDeploymentOperation
+	StopGoldengateDeployment(context.Context, *oracledatabasepb.StopGoldengateDeploymentRequest, ...gax.CallOption) (*StopGoldengateDeploymentOperation, error)
+	StopGoldengateDeploymentOperation(name string) *StopGoldengateDeploymentOperation
+	StartGoldengateDeployment(context.Context, *oracledatabasepb.StartGoldengateDeploymentRequest, ...gax.CallOption) (*StartGoldengateDeploymentOperation, error)
+	StartGoldengateDeploymentOperation(name string) *StartGoldengateDeploymentOperation
+	ListGoldengateConnections(context.Context, *oracledatabasepb.ListGoldengateConnectionsRequest, ...gax.CallOption) *GoldengateConnectionIterator
+	GetGoldengateConnection(context.Context, *oracledatabasepb.GetGoldengateConnectionRequest, ...gax.CallOption) (*oracledatabasepb.GoldengateConnection, error)
+	CreateGoldengateConnection(context.Context, *oracledatabasepb.CreateGoldengateConnectionRequest, ...gax.CallOption) (*CreateGoldengateConnectionOperation, error)
+	CreateGoldengateConnectionOperation(name string) *CreateGoldengateConnectionOperation
+	DeleteGoldengateConnection(context.Context, *oracledatabasepb.DeleteGoldengateConnectionRequest, ...gax.CallOption) (*DeleteGoldengateConnectionOperation, error)
+	DeleteGoldengateConnectionOperation(name string) *DeleteGoldengateConnectionOperation
+	ListGoldengateDeploymentVersions(context.Context, *oracledatabasepb.ListGoldengateDeploymentVersionsRequest, ...gax.CallOption) *GoldengateDeploymentVersionIterator
+	ListGoldengateDeploymentTypes(context.Context, *oracledatabasepb.ListGoldengateDeploymentTypesRequest, ...gax.CallOption) *GoldengateDeploymentTypeIterator
+	ListGoldengateDeploymentEnvironments(context.Context, *oracledatabasepb.ListGoldengateDeploymentEnvironmentsRequest, ...gax.CallOption) *GoldengateDeploymentEnvironmentIterator
+	ListGoldengateConnectionTypes(context.Context, *oracledatabasepb.ListGoldengateConnectionTypesRequest, ...gax.CallOption) *GoldengateConnectionTypeIterator
 	ListDbVersions(context.Context, *oracledatabasepb.ListDbVersionsRequest, ...gax.CallOption) *DbVersionIterator
 	ListDatabaseCharacterSets(context.Context, *oracledatabasepb.ListDatabaseCharacterSetsRequest, ...gax.CallOption) *DatabaseCharacterSetIterator
+	ListGoldengateConnectionAssignments(context.Context, *oracledatabasepb.ListGoldengateConnectionAssignmentsRequest, ...gax.CallOption) *GoldengateConnectionAssignmentIterator
+	GetGoldengateConnectionAssignment(context.Context, *oracledatabasepb.GetGoldengateConnectionAssignmentRequest, ...gax.CallOption) (*oracledatabasepb.GoldengateConnectionAssignment, error)
+	CreateGoldengateConnectionAssignment(context.Context, *oracledatabasepb.CreateGoldengateConnectionAssignmentRequest, ...gax.CallOption) (*CreateGoldengateConnectionAssignmentOperation, error)
+	CreateGoldengateConnectionAssignmentOperation(name string) *CreateGoldengateConnectionAssignmentOperation
+	DeleteGoldengateConnectionAssignment(context.Context, *oracledatabasepb.DeleteGoldengateConnectionAssignmentRequest, ...gax.CallOption) (*DeleteGoldengateConnectionAssignmentOperation, error)
+	DeleteGoldengateConnectionAssignmentOperation(name string) *DeleteGoldengateConnectionAssignmentOperation
+	TestGoldengateConnectionAssignment(context.Context, *oracledatabasepb.TestGoldengateConnectionAssignmentRequest, ...gax.CallOption) (*oracledatabasepb.TestGoldengateConnectionAssignmentResponse, error)
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
@@ -1683,6 +2033,112 @@ func (c *Client) DeleteDbSystemOperation(name string) *DeleteDbSystemOperation {
 	return c.internalClient.DeleteDbSystemOperation(name)
 }
 
+// ListGoldengateDeployments lists all the GoldengateDeployments for the given project and location.
+func (c *Client) ListGoldengateDeployments(ctx context.Context, req *oracledatabasepb.ListGoldengateDeploymentsRequest, opts ...gax.CallOption) *GoldengateDeploymentIterator {
+	return c.internalClient.ListGoldengateDeployments(ctx, req, opts...)
+}
+
+// GetGoldengateDeployment gets details of a single GoldengateDeployment.
+func (c *Client) GetGoldengateDeployment(ctx context.Context, req *oracledatabasepb.GetGoldengateDeploymentRequest, opts ...gax.CallOption) (*oracledatabasepb.GoldengateDeployment, error) {
+	return c.internalClient.GetGoldengateDeployment(ctx, req, opts...)
+}
+
+// CreateGoldengateDeployment creates a new GoldengateDeployment in a given project and location.
+func (c *Client) CreateGoldengateDeployment(ctx context.Context, req *oracledatabasepb.CreateGoldengateDeploymentRequest, opts ...gax.CallOption) (*CreateGoldengateDeploymentOperation, error) {
+	return c.internalClient.CreateGoldengateDeployment(ctx, req, opts...)
+}
+
+// CreateGoldengateDeploymentOperation returns a new CreateGoldengateDeploymentOperation from a given name.
+// The name must be that of a previously created CreateGoldengateDeploymentOperation, possibly from a different process.
+func (c *Client) CreateGoldengateDeploymentOperation(name string) *CreateGoldengateDeploymentOperation {
+	return c.internalClient.CreateGoldengateDeploymentOperation(name)
+}
+
+// DeleteGoldengateDeployment deletes a single GoldengateDeployment.
+func (c *Client) DeleteGoldengateDeployment(ctx context.Context, req *oracledatabasepb.DeleteGoldengateDeploymentRequest, opts ...gax.CallOption) (*DeleteGoldengateDeploymentOperation, error) {
+	return c.internalClient.DeleteGoldengateDeployment(ctx, req, opts...)
+}
+
+// DeleteGoldengateDeploymentOperation returns a new DeleteGoldengateDeploymentOperation from a given name.
+// The name must be that of a previously created DeleteGoldengateDeploymentOperation, possibly from a different process.
+func (c *Client) DeleteGoldengateDeploymentOperation(name string) *DeleteGoldengateDeploymentOperation {
+	return c.internalClient.DeleteGoldengateDeploymentOperation(name)
+}
+
+// StopGoldengateDeployment stops a single GoldengateDeployment.
+func (c *Client) StopGoldengateDeployment(ctx context.Context, req *oracledatabasepb.StopGoldengateDeploymentRequest, opts ...gax.CallOption) (*StopGoldengateDeploymentOperation, error) {
+	return c.internalClient.StopGoldengateDeployment(ctx, req, opts...)
+}
+
+// StopGoldengateDeploymentOperation returns a new StopGoldengateDeploymentOperation from a given name.
+// The name must be that of a previously created StopGoldengateDeploymentOperation, possibly from a different process.
+func (c *Client) StopGoldengateDeploymentOperation(name string) *StopGoldengateDeploymentOperation {
+	return c.internalClient.StopGoldengateDeploymentOperation(name)
+}
+
+// StartGoldengateDeployment starts a single GoldengateDeployment.
+func (c *Client) StartGoldengateDeployment(ctx context.Context, req *oracledatabasepb.StartGoldengateDeploymentRequest, opts ...gax.CallOption) (*StartGoldengateDeploymentOperation, error) {
+	return c.internalClient.StartGoldengateDeployment(ctx, req, opts...)
+}
+
+// StartGoldengateDeploymentOperation returns a new StartGoldengateDeploymentOperation from a given name.
+// The name must be that of a previously created StartGoldengateDeploymentOperation, possibly from a different process.
+func (c *Client) StartGoldengateDeploymentOperation(name string) *StartGoldengateDeploymentOperation {
+	return c.internalClient.StartGoldengateDeploymentOperation(name)
+}
+
+// ListGoldengateConnections lists all the GoldengateConnections for the given project and location.
+func (c *Client) ListGoldengateConnections(ctx context.Context, req *oracledatabasepb.ListGoldengateConnectionsRequest, opts ...gax.CallOption) *GoldengateConnectionIterator {
+	return c.internalClient.ListGoldengateConnections(ctx, req, opts...)
+}
+
+// GetGoldengateConnection gets details of a single GoldengateConnection.
+func (c *Client) GetGoldengateConnection(ctx context.Context, req *oracledatabasepb.GetGoldengateConnectionRequest, opts ...gax.CallOption) (*oracledatabasepb.GoldengateConnection, error) {
+	return c.internalClient.GetGoldengateConnection(ctx, req, opts...)
+}
+
+// CreateGoldengateConnection creates a new GoldengateConnection in a given project and location.
+func (c *Client) CreateGoldengateConnection(ctx context.Context, req *oracledatabasepb.CreateGoldengateConnectionRequest, opts ...gax.CallOption) (*CreateGoldengateConnectionOperation, error) {
+	return c.internalClient.CreateGoldengateConnection(ctx, req, opts...)
+}
+
+// CreateGoldengateConnectionOperation returns a new CreateGoldengateConnectionOperation from a given name.
+// The name must be that of a previously created CreateGoldengateConnectionOperation, possibly from a different process.
+func (c *Client) CreateGoldengateConnectionOperation(name string) *CreateGoldengateConnectionOperation {
+	return c.internalClient.CreateGoldengateConnectionOperation(name)
+}
+
+// DeleteGoldengateConnection deletes a single GoldengateConnection.
+func (c *Client) DeleteGoldengateConnection(ctx context.Context, req *oracledatabasepb.DeleteGoldengateConnectionRequest, opts ...gax.CallOption) (*DeleteGoldengateConnectionOperation, error) {
+	return c.internalClient.DeleteGoldengateConnection(ctx, req, opts...)
+}
+
+// DeleteGoldengateConnectionOperation returns a new DeleteGoldengateConnectionOperation from a given name.
+// The name must be that of a previously created DeleteGoldengateConnectionOperation, possibly from a different process.
+func (c *Client) DeleteGoldengateConnectionOperation(name string) *DeleteGoldengateConnectionOperation {
+	return c.internalClient.DeleteGoldengateConnectionOperation(name)
+}
+
+// ListGoldengateDeploymentVersions lists GoldengateDeploymentVersions in a given project and location.
+func (c *Client) ListGoldengateDeploymentVersions(ctx context.Context, req *oracledatabasepb.ListGoldengateDeploymentVersionsRequest, opts ...gax.CallOption) *GoldengateDeploymentVersionIterator {
+	return c.internalClient.ListGoldengateDeploymentVersions(ctx, req, opts...)
+}
+
+// ListGoldengateDeploymentTypes lists GoldenGateDeploymentTypes in a given project and location.
+func (c *Client) ListGoldengateDeploymentTypes(ctx context.Context, req *oracledatabasepb.ListGoldengateDeploymentTypesRequest, opts ...gax.CallOption) *GoldengateDeploymentTypeIterator {
+	return c.internalClient.ListGoldengateDeploymentTypes(ctx, req, opts...)
+}
+
+// ListGoldengateDeploymentEnvironments lists GoldengateDeploymentEnvironments in a given project and location.
+func (c *Client) ListGoldengateDeploymentEnvironments(ctx context.Context, req *oracledatabasepb.ListGoldengateDeploymentEnvironmentsRequest, opts ...gax.CallOption) *GoldengateDeploymentEnvironmentIterator {
+	return c.internalClient.ListGoldengateDeploymentEnvironments(ctx, req, opts...)
+}
+
+// ListGoldengateConnectionTypes lists GoldengateConnectionTypes in a given project and location.
+func (c *Client) ListGoldengateConnectionTypes(ctx context.Context, req *oracledatabasepb.ListGoldengateConnectionTypesRequest, opts ...gax.CallOption) *GoldengateConnectionTypeIterator {
+	return c.internalClient.ListGoldengateConnectionTypes(ctx, req, opts...)
+}
+
 // ListDbVersions list DbVersions for the given project and location.
 func (c *Client) ListDbVersions(ctx context.Context, req *oracledatabasepb.ListDbVersionsRequest, opts ...gax.CallOption) *DbVersionIterator {
 	return c.internalClient.ListDbVersions(ctx, req, opts...)
@@ -1693,12 +2149,65 @@ func (c *Client) ListDatabaseCharacterSets(ctx context.Context, req *oracledatab
 	return c.internalClient.ListDatabaseCharacterSets(ctx, req, opts...)
 }
 
+// ListGoldengateConnectionAssignments lists GoldengateConnectionAssignments in a given project and location.
+func (c *Client) ListGoldengateConnectionAssignments(ctx context.Context, req *oracledatabasepb.ListGoldengateConnectionAssignmentsRequest, opts ...gax.CallOption) *GoldengateConnectionAssignmentIterator {
+	return c.internalClient.ListGoldengateConnectionAssignments(ctx, req, opts...)
+}
+
+// GetGoldengateConnectionAssignment gets details of a single GoldengateConnectionAssignment.
+func (c *Client) GetGoldengateConnectionAssignment(ctx context.Context, req *oracledatabasepb.GetGoldengateConnectionAssignmentRequest, opts ...gax.CallOption) (*oracledatabasepb.GoldengateConnectionAssignment, error) {
+	return c.internalClient.GetGoldengateConnectionAssignment(ctx, req, opts...)
+}
+
+// CreateGoldengateConnectionAssignment creates a new GoldengateConnectionAssignment in a given project and
+// location.
+func (c *Client) CreateGoldengateConnectionAssignment(ctx context.Context, req *oracledatabasepb.CreateGoldengateConnectionAssignmentRequest, opts ...gax.CallOption) (*CreateGoldengateConnectionAssignmentOperation, error) {
+	return c.internalClient.CreateGoldengateConnectionAssignment(ctx, req, opts...)
+}
+
+// CreateGoldengateConnectionAssignmentOperation returns a new CreateGoldengateConnectionAssignmentOperation from a given name.
+// The name must be that of a previously created CreateGoldengateConnectionAssignmentOperation, possibly from a different process.
+func (c *Client) CreateGoldengateConnectionAssignmentOperation(name string) *CreateGoldengateConnectionAssignmentOperation {
+	return c.internalClient.CreateGoldengateConnectionAssignmentOperation(name)
+}
+
+// DeleteGoldengateConnectionAssignment deletes a single GoldengateConnectionAssignment.
+func (c *Client) DeleteGoldengateConnectionAssignment(ctx context.Context, req *oracledatabasepb.DeleteGoldengateConnectionAssignmentRequest, opts ...gax.CallOption) (*DeleteGoldengateConnectionAssignmentOperation, error) {
+	return c.internalClient.DeleteGoldengateConnectionAssignment(ctx, req, opts...)
+}
+
+// DeleteGoldengateConnectionAssignmentOperation returns a new DeleteGoldengateConnectionAssignmentOperation from a given name.
+// The name must be that of a previously created DeleteGoldengateConnectionAssignmentOperation, possibly from a different process.
+func (c *Client) DeleteGoldengateConnectionAssignmentOperation(name string) *DeleteGoldengateConnectionAssignmentOperation {
+	return c.internalClient.DeleteGoldengateConnectionAssignmentOperation(name)
+}
+
+// TestGoldengateConnectionAssignment tests a single GoldengateConnectionAssignment.
+func (c *Client) TestGoldengateConnectionAssignment(ctx context.Context, req *oracledatabasepb.TestGoldengateConnectionAssignmentRequest, opts ...gax.CallOption) (*oracledatabasepb.TestGoldengateConnectionAssignmentResponse, error) {
+	return c.internalClient.TestGoldengateConnectionAssignment(ctx, req, opts...)
+}
+
 // GetLocation gets information about a location.
 func (c *Client) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	return c.internalClient.GetLocation(ctx, req, opts...)
 }
 
 // ListLocations lists information about the supported locations for this service.
+//
+// This method lists locations based on the resource scope provided in
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)][google.cloud.location.ListLocationsRequest.name (at http://google.cloud.location.ListLocationsRequest.name)] field: *
+// Global locations: If name is empty, the method lists the
+// public locations available to all projects. * Project-specific
+// locations: If name follows the format
+// projects/{project}, the method lists locations visible to that
+// specific project. This includes public, private, or other
+// project-specific locations enabled for the project.
+//
+// For gRPC and client library implementations, the resource name is
+// passed as the name field. For direct service calls, the resource
+// name is
+// incorporated into the request path based on the specific service
+// implementation and version.
 func (c *Client) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	return c.internalClient.ListLocations(ctx, req, opts...)
 }
@@ -1858,8 +2367,27 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.GetDbSystem = append(client.CallOptions.GetDbSystem, gax.WithClientMetrics(metrics))
 		client.CallOptions.CreateDbSystem = append(client.CallOptions.CreateDbSystem, gax.WithClientMetrics(metrics))
 		client.CallOptions.DeleteDbSystem = append(client.CallOptions.DeleteDbSystem, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListGoldengateDeployments = append(client.CallOptions.ListGoldengateDeployments, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetGoldengateDeployment = append(client.CallOptions.GetGoldengateDeployment, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateGoldengateDeployment = append(client.CallOptions.CreateGoldengateDeployment, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteGoldengateDeployment = append(client.CallOptions.DeleteGoldengateDeployment, gax.WithClientMetrics(metrics))
+		client.CallOptions.StopGoldengateDeployment = append(client.CallOptions.StopGoldengateDeployment, gax.WithClientMetrics(metrics))
+		client.CallOptions.StartGoldengateDeployment = append(client.CallOptions.StartGoldengateDeployment, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListGoldengateConnections = append(client.CallOptions.ListGoldengateConnections, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetGoldengateConnection = append(client.CallOptions.GetGoldengateConnection, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateGoldengateConnection = append(client.CallOptions.CreateGoldengateConnection, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteGoldengateConnection = append(client.CallOptions.DeleteGoldengateConnection, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListGoldengateDeploymentVersions = append(client.CallOptions.ListGoldengateDeploymentVersions, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListGoldengateDeploymentTypes = append(client.CallOptions.ListGoldengateDeploymentTypes, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListGoldengateDeploymentEnvironments = append(client.CallOptions.ListGoldengateDeploymentEnvironments, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListGoldengateConnectionTypes = append(client.CallOptions.ListGoldengateConnectionTypes, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListDbVersions = append(client.CallOptions.ListDbVersions, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListDatabaseCharacterSets = append(client.CallOptions.ListDatabaseCharacterSets, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListGoldengateConnectionAssignments = append(client.CallOptions.ListGoldengateConnectionAssignments, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetGoldengateConnectionAssignment = append(client.CallOptions.GetGoldengateConnectionAssignment, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateGoldengateConnectionAssignment = append(client.CallOptions.CreateGoldengateConnectionAssignment, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteGoldengateConnectionAssignment = append(client.CallOptions.DeleteGoldengateConnectionAssignment, gax.WithClientMetrics(metrics))
+		client.CallOptions.TestGoldengateConnectionAssignment = append(client.CallOptions.TestGoldengateConnectionAssignment, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
 		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
@@ -2028,8 +2556,27 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.GetDbSystem = append(callOpts.GetDbSystem, gax.WithClientMetrics(metrics))
 		callOpts.CreateDbSystem = append(callOpts.CreateDbSystem, gax.WithClientMetrics(metrics))
 		callOpts.DeleteDbSystem = append(callOpts.DeleteDbSystem, gax.WithClientMetrics(metrics))
+		callOpts.ListGoldengateDeployments = append(callOpts.ListGoldengateDeployments, gax.WithClientMetrics(metrics))
+		callOpts.GetGoldengateDeployment = append(callOpts.GetGoldengateDeployment, gax.WithClientMetrics(metrics))
+		callOpts.CreateGoldengateDeployment = append(callOpts.CreateGoldengateDeployment, gax.WithClientMetrics(metrics))
+		callOpts.DeleteGoldengateDeployment = append(callOpts.DeleteGoldengateDeployment, gax.WithClientMetrics(metrics))
+		callOpts.StopGoldengateDeployment = append(callOpts.StopGoldengateDeployment, gax.WithClientMetrics(metrics))
+		callOpts.StartGoldengateDeployment = append(callOpts.StartGoldengateDeployment, gax.WithClientMetrics(metrics))
+		callOpts.ListGoldengateConnections = append(callOpts.ListGoldengateConnections, gax.WithClientMetrics(metrics))
+		callOpts.GetGoldengateConnection = append(callOpts.GetGoldengateConnection, gax.WithClientMetrics(metrics))
+		callOpts.CreateGoldengateConnection = append(callOpts.CreateGoldengateConnection, gax.WithClientMetrics(metrics))
+		callOpts.DeleteGoldengateConnection = append(callOpts.DeleteGoldengateConnection, gax.WithClientMetrics(metrics))
+		callOpts.ListGoldengateDeploymentVersions = append(callOpts.ListGoldengateDeploymentVersions, gax.WithClientMetrics(metrics))
+		callOpts.ListGoldengateDeploymentTypes = append(callOpts.ListGoldengateDeploymentTypes, gax.WithClientMetrics(metrics))
+		callOpts.ListGoldengateDeploymentEnvironments = append(callOpts.ListGoldengateDeploymentEnvironments, gax.WithClientMetrics(metrics))
+		callOpts.ListGoldengateConnectionTypes = append(callOpts.ListGoldengateConnectionTypes, gax.WithClientMetrics(metrics))
 		callOpts.ListDbVersions = append(callOpts.ListDbVersions, gax.WithClientMetrics(metrics))
 		callOpts.ListDatabaseCharacterSets = append(callOpts.ListDatabaseCharacterSets, gax.WithClientMetrics(metrics))
+		callOpts.ListGoldengateConnectionAssignments = append(callOpts.ListGoldengateConnectionAssignments, gax.WithClientMetrics(metrics))
+		callOpts.GetGoldengateConnectionAssignment = append(callOpts.GetGoldengateConnectionAssignment, gax.WithClientMetrics(metrics))
+		callOpts.CreateGoldengateConnectionAssignment = append(callOpts.CreateGoldengateConnectionAssignment, gax.WithClientMetrics(metrics))
+		callOpts.DeleteGoldengateConnectionAssignment = append(callOpts.DeleteGoldengateConnectionAssignment, gax.WithClientMetrics(metrics))
+		callOpts.TestGoldengateConnectionAssignment = append(callOpts.TestGoldengateConnectionAssignment, gax.WithClientMetrics(metrics))
 		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientMetrics(metrics))
 		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientMetrics(metrics))
 		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientMetrics(metrics))
@@ -4036,6 +4583,522 @@ func (c *gRPCClient) DeleteDbSystem(ctx context.Context, req *oracledatabasepb.D
 	}, nil
 }
 
+func (c *gRPCClient) ListGoldengateDeployments(ctx context.Context, req *oracledatabasepb.ListGoldengateDeploymentsRequest, opts ...gax.CallOption) *GoldengateDeploymentIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/ListGoldengateDeployments")
+	}
+	opts = append((*c.CallOptions).ListGoldengateDeployments[0:len((*c.CallOptions).ListGoldengateDeployments):len((*c.CallOptions).ListGoldengateDeployments)], opts...)
+	it := &GoldengateDeploymentIterator{}
+	req = proto.CloneOf(req)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.GoldengateDeployment, string, error) {
+		resp := &oracledatabasepb.ListGoldengateDeploymentsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListGoldengateDeployments, req, settings.GRPC, c.logger, "ListGoldengateDeployments")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetGoldengateDeployments(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) GetGoldengateDeployment(ctx context.Context, req *oracledatabasepb.GetGoldengateDeploymentRequest, opts ...gax.CallOption) (*oracledatabasepb.GoldengateDeployment, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/GetGoldengateDeployment")
+	}
+	opts = append((*c.CallOptions).GetGoldengateDeployment[0:len((*c.CallOptions).GetGoldengateDeployment):len((*c.CallOptions).GetGoldengateDeployment)], opts...)
+	var resp *oracledatabasepb.GoldengateDeployment
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetGoldengateDeployment, req, settings.GRPC, c.logger, "GetGoldengateDeployment")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) CreateGoldengateDeployment(ctx context.Context, req *oracledatabasepb.CreateGoldengateDeploymentRequest, opts ...gax.CallOption) (*CreateGoldengateDeploymentOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/CreateGoldengateDeployment")
+	}
+	opts = append((*c.CallOptions).CreateGoldengateDeployment[0:len((*c.CallOptions).CreateGoldengateDeployment):len((*c.CallOptions).CreateGoldengateDeployment)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.CreateGoldengateDeployment, req, settings.GRPC, c.logger, "CreateGoldengateDeployment")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CreateGoldengateDeploymentOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) DeleteGoldengateDeployment(ctx context.Context, req *oracledatabasepb.DeleteGoldengateDeploymentRequest, opts ...gax.CallOption) (*DeleteGoldengateDeploymentOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/DeleteGoldengateDeployment")
+	}
+	opts = append((*c.CallOptions).DeleteGoldengateDeployment[0:len((*c.CallOptions).DeleteGoldengateDeployment):len((*c.CallOptions).DeleteGoldengateDeployment)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.DeleteGoldengateDeployment, req, settings.GRPC, c.logger, "DeleteGoldengateDeployment")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeleteGoldengateDeploymentOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) StopGoldengateDeployment(ctx context.Context, req *oracledatabasepb.StopGoldengateDeploymentRequest, opts ...gax.CallOption) (*StopGoldengateDeploymentOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/StopGoldengateDeployment")
+	}
+	opts = append((*c.CallOptions).StopGoldengateDeployment[0:len((*c.CallOptions).StopGoldengateDeployment):len((*c.CallOptions).StopGoldengateDeployment)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.StopGoldengateDeployment, req, settings.GRPC, c.logger, "StopGoldengateDeployment")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &StopGoldengateDeploymentOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) StartGoldengateDeployment(ctx context.Context, req *oracledatabasepb.StartGoldengateDeploymentRequest, opts ...gax.CallOption) (*StartGoldengateDeploymentOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/StartGoldengateDeployment")
+	}
+	opts = append((*c.CallOptions).StartGoldengateDeployment[0:len((*c.CallOptions).StartGoldengateDeployment):len((*c.CallOptions).StartGoldengateDeployment)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.StartGoldengateDeployment, req, settings.GRPC, c.logger, "StartGoldengateDeployment")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &StartGoldengateDeploymentOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) ListGoldengateConnections(ctx context.Context, req *oracledatabasepb.ListGoldengateConnectionsRequest, opts ...gax.CallOption) *GoldengateConnectionIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/ListGoldengateConnections")
+	}
+	opts = append((*c.CallOptions).ListGoldengateConnections[0:len((*c.CallOptions).ListGoldengateConnections):len((*c.CallOptions).ListGoldengateConnections)], opts...)
+	it := &GoldengateConnectionIterator{}
+	req = proto.CloneOf(req)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.GoldengateConnection, string, error) {
+		resp := &oracledatabasepb.ListGoldengateConnectionsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListGoldengateConnections, req, settings.GRPC, c.logger, "ListGoldengateConnections")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetGoldengateConnections(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) GetGoldengateConnection(ctx context.Context, req *oracledatabasepb.GetGoldengateConnectionRequest, opts ...gax.CallOption) (*oracledatabasepb.GoldengateConnection, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/GetGoldengateConnection")
+	}
+	opts = append((*c.CallOptions).GetGoldengateConnection[0:len((*c.CallOptions).GetGoldengateConnection):len((*c.CallOptions).GetGoldengateConnection)], opts...)
+	var resp *oracledatabasepb.GoldengateConnection
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetGoldengateConnection, req, settings.GRPC, c.logger, "GetGoldengateConnection")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) CreateGoldengateConnection(ctx context.Context, req *oracledatabasepb.CreateGoldengateConnectionRequest, opts ...gax.CallOption) (*CreateGoldengateConnectionOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/CreateGoldengateConnection")
+	}
+	opts = append((*c.CallOptions).CreateGoldengateConnection[0:len((*c.CallOptions).CreateGoldengateConnection):len((*c.CallOptions).CreateGoldengateConnection)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.CreateGoldengateConnection, req, settings.GRPC, c.logger, "CreateGoldengateConnection")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CreateGoldengateConnectionOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) DeleteGoldengateConnection(ctx context.Context, req *oracledatabasepb.DeleteGoldengateConnectionRequest, opts ...gax.CallOption) (*DeleteGoldengateConnectionOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/DeleteGoldengateConnection")
+	}
+	opts = append((*c.CallOptions).DeleteGoldengateConnection[0:len((*c.CallOptions).DeleteGoldengateConnection):len((*c.CallOptions).DeleteGoldengateConnection)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.DeleteGoldengateConnection, req, settings.GRPC, c.logger, "DeleteGoldengateConnection")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeleteGoldengateConnectionOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) ListGoldengateDeploymentVersions(ctx context.Context, req *oracledatabasepb.ListGoldengateDeploymentVersionsRequest, opts ...gax.CallOption) *GoldengateDeploymentVersionIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/ListGoldengateDeploymentVersions")
+	}
+	opts = append((*c.CallOptions).ListGoldengateDeploymentVersions[0:len((*c.CallOptions).ListGoldengateDeploymentVersions):len((*c.CallOptions).ListGoldengateDeploymentVersions)], opts...)
+	it := &GoldengateDeploymentVersionIterator{}
+	req = proto.CloneOf(req)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.GoldengateDeploymentVersion, string, error) {
+		resp := &oracledatabasepb.ListGoldengateDeploymentVersionsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListGoldengateDeploymentVersions, req, settings.GRPC, c.logger, "ListGoldengateDeploymentVersions")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetGoldengateDeploymentVersions(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) ListGoldengateDeploymentTypes(ctx context.Context, req *oracledatabasepb.ListGoldengateDeploymentTypesRequest, opts ...gax.CallOption) *GoldengateDeploymentTypeIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/ListGoldengateDeploymentTypes")
+	}
+	opts = append((*c.CallOptions).ListGoldengateDeploymentTypes[0:len((*c.CallOptions).ListGoldengateDeploymentTypes):len((*c.CallOptions).ListGoldengateDeploymentTypes)], opts...)
+	it := &GoldengateDeploymentTypeIterator{}
+	req = proto.CloneOf(req)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.GoldengateDeploymentType, string, error) {
+		resp := &oracledatabasepb.ListGoldengateDeploymentTypesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListGoldengateDeploymentTypes, req, settings.GRPC, c.logger, "ListGoldengateDeploymentTypes")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetGoldengateDeploymentTypes(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) ListGoldengateDeploymentEnvironments(ctx context.Context, req *oracledatabasepb.ListGoldengateDeploymentEnvironmentsRequest, opts ...gax.CallOption) *GoldengateDeploymentEnvironmentIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/ListGoldengateDeploymentEnvironments")
+	}
+	opts = append((*c.CallOptions).ListGoldengateDeploymentEnvironments[0:len((*c.CallOptions).ListGoldengateDeploymentEnvironments):len((*c.CallOptions).ListGoldengateDeploymentEnvironments)], opts...)
+	it := &GoldengateDeploymentEnvironmentIterator{}
+	req = proto.CloneOf(req)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.GoldengateDeploymentEnvironment, string, error) {
+		resp := &oracledatabasepb.ListGoldengateDeploymentEnvironmentsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListGoldengateDeploymentEnvironments, req, settings.GRPC, c.logger, "ListGoldengateDeploymentEnvironments")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetGoldengateDeploymentEnvironments(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) ListGoldengateConnectionTypes(ctx context.Context, req *oracledatabasepb.ListGoldengateConnectionTypesRequest, opts ...gax.CallOption) *GoldengateConnectionTypeIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/ListGoldengateConnectionTypes")
+	}
+	opts = append((*c.CallOptions).ListGoldengateConnectionTypes[0:len((*c.CallOptions).ListGoldengateConnectionTypes):len((*c.CallOptions).ListGoldengateConnectionTypes)], opts...)
+	it := &GoldengateConnectionTypeIterator{}
+	req = proto.CloneOf(req)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.GoldengateConnectionType, string, error) {
+		resp := &oracledatabasepb.ListGoldengateConnectionTypesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListGoldengateConnectionTypes, req, settings.GRPC, c.logger, "ListGoldengateConnectionTypes")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetGoldengateConnectionTypes(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
 func (c *gRPCClient) ListDbVersions(ctx context.Context, req *oracledatabasepb.ListDbVersionsRequest, opts ...gax.CallOption) *DbVersionIterator {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
@@ -4138,6 +5201,158 @@ func (c *gRPCClient) ListDatabaseCharacterSets(ctx context.Context, req *oracled
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+func (c *gRPCClient) ListGoldengateConnectionAssignments(ctx context.Context, req *oracledatabasepb.ListGoldengateConnectionAssignmentsRequest, opts ...gax.CallOption) *GoldengateConnectionAssignmentIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/ListGoldengateConnectionAssignments")
+	}
+	opts = append((*c.CallOptions).ListGoldengateConnectionAssignments[0:len((*c.CallOptions).ListGoldengateConnectionAssignments):len((*c.CallOptions).ListGoldengateConnectionAssignments)], opts...)
+	it := &GoldengateConnectionAssignmentIterator{}
+	req = proto.CloneOf(req)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.GoldengateConnectionAssignment, string, error) {
+		resp := &oracledatabasepb.ListGoldengateConnectionAssignmentsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListGoldengateConnectionAssignments, req, settings.GRPC, c.logger, "ListGoldengateConnectionAssignments")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetGoldengateConnectionAssignments(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) GetGoldengateConnectionAssignment(ctx context.Context, req *oracledatabasepb.GetGoldengateConnectionAssignmentRequest, opts ...gax.CallOption) (*oracledatabasepb.GoldengateConnectionAssignment, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/GetGoldengateConnectionAssignment")
+	}
+	opts = append((*c.CallOptions).GetGoldengateConnectionAssignment[0:len((*c.CallOptions).GetGoldengateConnectionAssignment):len((*c.CallOptions).GetGoldengateConnectionAssignment)], opts...)
+	var resp *oracledatabasepb.GoldengateConnectionAssignment
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetGoldengateConnectionAssignment, req, settings.GRPC, c.logger, "GetGoldengateConnectionAssignment")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) CreateGoldengateConnectionAssignment(ctx context.Context, req *oracledatabasepb.CreateGoldengateConnectionAssignmentRequest, opts ...gax.CallOption) (*CreateGoldengateConnectionAssignmentOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/CreateGoldengateConnectionAssignment")
+	}
+	opts = append((*c.CallOptions).CreateGoldengateConnectionAssignment[0:len((*c.CallOptions).CreateGoldengateConnectionAssignment):len((*c.CallOptions).CreateGoldengateConnectionAssignment)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.CreateGoldengateConnectionAssignment, req, settings.GRPC, c.logger, "CreateGoldengateConnectionAssignment")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CreateGoldengateConnectionAssignmentOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) DeleteGoldengateConnectionAssignment(ctx context.Context, req *oracledatabasepb.DeleteGoldengateConnectionAssignmentRequest, opts ...gax.CallOption) (*DeleteGoldengateConnectionAssignmentOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/DeleteGoldengateConnectionAssignment")
+	}
+	opts = append((*c.CallOptions).DeleteGoldengateConnectionAssignment[0:len((*c.CallOptions).DeleteGoldengateConnectionAssignment):len((*c.CallOptions).DeleteGoldengateConnectionAssignment)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.DeleteGoldengateConnectionAssignment, req, settings.GRPC, c.logger, "DeleteGoldengateConnectionAssignment")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeleteGoldengateConnectionAssignmentOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) TestGoldengateConnectionAssignment(ctx context.Context, req *oracledatabasepb.TestGoldengateConnectionAssignmentRequest, opts ...gax.CallOption) (*oracledatabasepb.TestGoldengateConnectionAssignmentResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/TestGoldengateConnectionAssignment")
+	}
+	opts = append((*c.CallOptions).TestGoldengateConnectionAssignment[0:len((*c.CallOptions).TestGoldengateConnectionAssignment):len((*c.CallOptions).TestGoldengateConnectionAssignment)], opts...)
+	var resp *oracledatabasepb.TestGoldengateConnectionAssignmentResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.TestGoldengateConnectionAssignment, req, settings.GRPC, c.logger, "TestGoldengateConnectionAssignment")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (c *gRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
@@ -8271,6 +9486,1012 @@ func (c *restClient) DeleteDbSystem(ctx context.Context, req *oracledatabasepb.D
 	}, nil
 }
 
+// ListGoldengateDeployments lists all the GoldengateDeployments for the given project and location.
+func (c *restClient) ListGoldengateDeployments(ctx context.Context, req *oracledatabasepb.ListGoldengateDeploymentsRequest, opts ...gax.CallOption) *GoldengateDeploymentIterator {
+	it := &GoldengateDeploymentIterator{}
+	req = proto.CloneOf(req)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.GoldengateDeployment, string, error) {
+		resp := &oracledatabasepb.ListGoldengateDeploymentsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/goldengateDeployments", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListGoldengateDeployments")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetGoldengateDeployments(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetGoldengateDeployment gets details of a single GoldengateDeployment.
+func (c *restClient) GetGoldengateDeployment(ctx context.Context, req *oracledatabasepb.GetGoldengateDeploymentRequest, opts ...gax.CallOption) (*oracledatabasepb.GoldengateDeployment, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/GetGoldengateDeployment")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/goldengateDeployments/*}")
+	}
+	opts = append((*c.CallOptions).GetGoldengateDeployment[0:len((*c.CallOptions).GetGoldengateDeployment):len((*c.CallOptions).GetGoldengateDeployment)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &oracledatabasepb.GoldengateDeployment{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetGoldengateDeployment")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CreateGoldengateDeployment creates a new GoldengateDeployment in a given project and location.
+func (c *restClient) CreateGoldengateDeployment(ctx context.Context, req *oracledatabasepb.CreateGoldengateDeploymentRequest, opts ...gax.CallOption) (*CreateGoldengateDeploymentOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetGoldengateDeployment()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/goldengateDeployments", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("goldengateDeploymentId", fmt.Sprintf("%v", req.GetGoldengateDeploymentId()))
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/CreateGoldengateDeployment")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/goldengateDeployments")
+	}
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateGoldengateDeployment")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &CreateGoldengateDeploymentOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// DeleteGoldengateDeployment deletes a single GoldengateDeployment.
+func (c *restClient) DeleteGoldengateDeployment(ctx context.Context, req *oracledatabasepb.DeleteGoldengateDeploymentRequest, opts ...gax.CallOption) (*DeleteGoldengateDeploymentOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/DeleteGoldengateDeployment")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/goldengateDeployments/*}")
+	}
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteGoldengateDeployment")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &DeleteGoldengateDeploymentOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// StopGoldengateDeployment stops a single GoldengateDeployment.
+func (c *restClient) StopGoldengateDeployment(ctx context.Context, req *oracledatabasepb.StopGoldengateDeploymentRequest, opts ...gax.CallOption) (*StopGoldengateDeploymentOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:stop", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/StopGoldengateDeployment")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/goldengateDeployments/*}:stop")
+	}
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "StopGoldengateDeployment")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &StopGoldengateDeploymentOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// StartGoldengateDeployment starts a single GoldengateDeployment.
+func (c *restClient) StartGoldengateDeployment(ctx context.Context, req *oracledatabasepb.StartGoldengateDeploymentRequest, opts ...gax.CallOption) (*StartGoldengateDeploymentOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:start", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/StartGoldengateDeployment")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/goldengateDeployments/*}:start")
+	}
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "StartGoldengateDeployment")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &StartGoldengateDeploymentOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// ListGoldengateConnections lists all the GoldengateConnections for the given project and location.
+func (c *restClient) ListGoldengateConnections(ctx context.Context, req *oracledatabasepb.ListGoldengateConnectionsRequest, opts ...gax.CallOption) *GoldengateConnectionIterator {
+	it := &GoldengateConnectionIterator{}
+	req = proto.CloneOf(req)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.GoldengateConnection, string, error) {
+		resp := &oracledatabasepb.ListGoldengateConnectionsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/goldengateConnections", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListGoldengateConnections")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetGoldengateConnections(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetGoldengateConnection gets details of a single GoldengateConnection.
+func (c *restClient) GetGoldengateConnection(ctx context.Context, req *oracledatabasepb.GetGoldengateConnectionRequest, opts ...gax.CallOption) (*oracledatabasepb.GoldengateConnection, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/GetGoldengateConnection")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/goldengateConnections/*}")
+	}
+	opts = append((*c.CallOptions).GetGoldengateConnection[0:len((*c.CallOptions).GetGoldengateConnection):len((*c.CallOptions).GetGoldengateConnection)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &oracledatabasepb.GoldengateConnection{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetGoldengateConnection")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CreateGoldengateConnection creates a new GoldengateConnection in a given project and location.
+func (c *restClient) CreateGoldengateConnection(ctx context.Context, req *oracledatabasepb.CreateGoldengateConnectionRequest, opts ...gax.CallOption) (*CreateGoldengateConnectionOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetGoldengateConnection()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/goldengateConnections", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("goldengateConnectionId", fmt.Sprintf("%v", req.GetGoldengateConnectionId()))
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/CreateGoldengateConnection")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/goldengateConnections")
+	}
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateGoldengateConnection")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &CreateGoldengateConnectionOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// DeleteGoldengateConnection deletes a single GoldengateConnection.
+func (c *restClient) DeleteGoldengateConnection(ctx context.Context, req *oracledatabasepb.DeleteGoldengateConnectionRequest, opts ...gax.CallOption) (*DeleteGoldengateConnectionOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/DeleteGoldengateConnection")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/goldengateConnections/*}")
+	}
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteGoldengateConnection")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &DeleteGoldengateConnectionOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// ListGoldengateDeploymentVersions lists GoldengateDeploymentVersions in a given project and location.
+func (c *restClient) ListGoldengateDeploymentVersions(ctx context.Context, req *oracledatabasepb.ListGoldengateDeploymentVersionsRequest, opts ...gax.CallOption) *GoldengateDeploymentVersionIterator {
+	it := &GoldengateDeploymentVersionIterator{}
+	req = proto.CloneOf(req)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.GoldengateDeploymentVersion, string, error) {
+		resp := &oracledatabasepb.ListGoldengateDeploymentVersionsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/goldengateDeploymentVersions", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListGoldengateDeploymentVersions")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetGoldengateDeploymentVersions(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// ListGoldengateDeploymentTypes lists GoldenGateDeploymentTypes in a given project and location.
+func (c *restClient) ListGoldengateDeploymentTypes(ctx context.Context, req *oracledatabasepb.ListGoldengateDeploymentTypesRequest, opts ...gax.CallOption) *GoldengateDeploymentTypeIterator {
+	it := &GoldengateDeploymentTypeIterator{}
+	req = proto.CloneOf(req)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.GoldengateDeploymentType, string, error) {
+		resp := &oracledatabasepb.ListGoldengateDeploymentTypesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/goldengateDeploymentTypes", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListGoldengateDeploymentTypes")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetGoldengateDeploymentTypes(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// ListGoldengateDeploymentEnvironments lists GoldengateDeploymentEnvironments in a given project and location.
+func (c *restClient) ListGoldengateDeploymentEnvironments(ctx context.Context, req *oracledatabasepb.ListGoldengateDeploymentEnvironmentsRequest, opts ...gax.CallOption) *GoldengateDeploymentEnvironmentIterator {
+	it := &GoldengateDeploymentEnvironmentIterator{}
+	req = proto.CloneOf(req)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.GoldengateDeploymentEnvironment, string, error) {
+		resp := &oracledatabasepb.ListGoldengateDeploymentEnvironmentsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/goldengateDeploymentEnvironments", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListGoldengateDeploymentEnvironments")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetGoldengateDeploymentEnvironments(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// ListGoldengateConnectionTypes lists GoldengateConnectionTypes in a given project and location.
+func (c *restClient) ListGoldengateConnectionTypes(ctx context.Context, req *oracledatabasepb.ListGoldengateConnectionTypesRequest, opts ...gax.CallOption) *GoldengateConnectionTypeIterator {
+	it := &GoldengateConnectionTypeIterator{}
+	req = proto.CloneOf(req)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.GoldengateConnectionType, string, error) {
+		resp := &oracledatabasepb.ListGoldengateConnectionTypesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/goldengateConnectionTypes", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListGoldengateConnectionTypes")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetGoldengateConnectionTypes(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
 // ListDbVersions list DbVersions for the given project and location.
 func (c *restClient) ListDbVersions(ctx context.Context, req *oracledatabasepb.ListDbVersionsRequest, opts ...gax.CallOption) *DbVersionIterator {
 	it := &DbVersionIterator{}
@@ -8433,6 +10654,345 @@ func (c *restClient) ListDatabaseCharacterSets(ctx context.Context, req *oracled
 	return it
 }
 
+// ListGoldengateConnectionAssignments lists GoldengateConnectionAssignments in a given project and location.
+func (c *restClient) ListGoldengateConnectionAssignments(ctx context.Context, req *oracledatabasepb.ListGoldengateConnectionAssignmentsRequest, opts ...gax.CallOption) *GoldengateConnectionAssignmentIterator {
+	it := &GoldengateConnectionAssignmentIterator{}
+	req = proto.CloneOf(req)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*oracledatabasepb.GoldengateConnectionAssignment, string, error) {
+		resp := &oracledatabasepb.ListGoldengateConnectionAssignmentsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/goldengateConnectionAssignments", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListGoldengateConnectionAssignments")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetGoldengateConnectionAssignments(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetGoldengateConnectionAssignment gets details of a single GoldengateConnectionAssignment.
+func (c *restClient) GetGoldengateConnectionAssignment(ctx context.Context, req *oracledatabasepb.GetGoldengateConnectionAssignmentRequest, opts ...gax.CallOption) (*oracledatabasepb.GoldengateConnectionAssignment, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/GetGoldengateConnectionAssignment")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/goldengateConnectionAssignments/*}")
+	}
+	opts = append((*c.CallOptions).GetGoldengateConnectionAssignment[0:len((*c.CallOptions).GetGoldengateConnectionAssignment):len((*c.CallOptions).GetGoldengateConnectionAssignment)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &oracledatabasepb.GoldengateConnectionAssignment{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetGoldengateConnectionAssignment")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CreateGoldengateConnectionAssignment creates a new GoldengateConnectionAssignment in a given project and
+// location.
+func (c *restClient) CreateGoldengateConnectionAssignment(ctx context.Context, req *oracledatabasepb.CreateGoldengateConnectionAssignmentRequest, opts ...gax.CallOption) (*CreateGoldengateConnectionAssignmentOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetGoldengateConnectionAssignment()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/goldengateConnectionAssignments", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("goldengateConnectionAssignmentId", fmt.Sprintf("%v", req.GetGoldengateConnectionAssignmentId()))
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/CreateGoldengateConnectionAssignment")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/goldengateConnectionAssignments")
+	}
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateGoldengateConnectionAssignment")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &CreateGoldengateConnectionAssignmentOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// DeleteGoldengateConnectionAssignment deletes a single GoldengateConnectionAssignment.
+func (c *restClient) DeleteGoldengateConnectionAssignment(ctx context.Context, req *oracledatabasepb.DeleteGoldengateConnectionAssignmentRequest, opts ...gax.CallOption) (*DeleteGoldengateConnectionAssignmentOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/DeleteGoldengateConnectionAssignment")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/goldengateConnectionAssignments/*}")
+	}
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteGoldengateConnectionAssignment")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &DeleteGoldengateConnectionAssignmentOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// TestGoldengateConnectionAssignment tests a single GoldengateConnectionAssignment.
+func (c *restClient) TestGoldengateConnectionAssignment(ctx context.Context, req *oracledatabasepb.TestGoldengateConnectionAssignmentRequest, opts ...gax.CallOption) (*oracledatabasepb.TestGoldengateConnectionAssignmentResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:test", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/TestGoldengateConnectionAssignment")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/goldengateConnectionAssignments/*}:test")
+	}
+	opts = append((*c.CallOptions).TestGoldengateConnectionAssignment[0:len((*c.CallOptions).TestGoldengateConnectionAssignment):len((*c.CallOptions).TestGoldengateConnectionAssignment)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &oracledatabasepb.TestGoldengateConnectionAssignmentResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "TestGoldengateConnectionAssignment")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
 // GetLocation gets information about a location.
 func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -8488,6 +11048,21 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 }
 
 // ListLocations lists information about the supported locations for this service.
+//
+// This method lists locations based on the resource scope provided in
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)][google.cloud.location.ListLocationsRequest.name (at http://google.cloud.location.ListLocationsRequest.name)] field: *
+// Global locations: If name is empty, the method lists the
+// public locations available to all projects. * Project-specific
+// locations: If name follows the format
+// projects/{project}, the method lists locations visible to that
+// specific project. This includes public, private, or other
+// project-specific locations enabled for the project.
+//
+// For gRPC and client library implementations, the resource name is
+// passed as the name field. For direct service calls, the resource
+// name is
+// incorporated into the request path based on the specific service
+// implementation and version.
 func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
 	req = proto.CloneOf(req)
@@ -8898,6 +11473,60 @@ func (c *restClient) CreateExascaleDbStorageVaultOperation(name string) *CreateE
 	}
 }
 
+// CreateGoldengateConnectionOperation returns a new CreateGoldengateConnectionOperation from a given name.
+// The name must be that of a previously created CreateGoldengateConnectionOperation, possibly from a different process.
+func (c *gRPCClient) CreateGoldengateConnectionOperation(name string) *CreateGoldengateConnectionOperation {
+	return &CreateGoldengateConnectionOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// CreateGoldengateConnectionOperation returns a new CreateGoldengateConnectionOperation from a given name.
+// The name must be that of a previously created CreateGoldengateConnectionOperation, possibly from a different process.
+func (c *restClient) CreateGoldengateConnectionOperation(name string) *CreateGoldengateConnectionOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &CreateGoldengateConnectionOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// CreateGoldengateConnectionAssignmentOperation returns a new CreateGoldengateConnectionAssignmentOperation from a given name.
+// The name must be that of a previously created CreateGoldengateConnectionAssignmentOperation, possibly from a different process.
+func (c *gRPCClient) CreateGoldengateConnectionAssignmentOperation(name string) *CreateGoldengateConnectionAssignmentOperation {
+	return &CreateGoldengateConnectionAssignmentOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// CreateGoldengateConnectionAssignmentOperation returns a new CreateGoldengateConnectionAssignmentOperation from a given name.
+// The name must be that of a previously created CreateGoldengateConnectionAssignmentOperation, possibly from a different process.
+func (c *restClient) CreateGoldengateConnectionAssignmentOperation(name string) *CreateGoldengateConnectionAssignmentOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &CreateGoldengateConnectionAssignmentOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// CreateGoldengateDeploymentOperation returns a new CreateGoldengateDeploymentOperation from a given name.
+// The name must be that of a previously created CreateGoldengateDeploymentOperation, possibly from a different process.
+func (c *gRPCClient) CreateGoldengateDeploymentOperation(name string) *CreateGoldengateDeploymentOperation {
+	return &CreateGoldengateDeploymentOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// CreateGoldengateDeploymentOperation returns a new CreateGoldengateDeploymentOperation from a given name.
+// The name must be that of a previously created CreateGoldengateDeploymentOperation, possibly from a different process.
+func (c *restClient) CreateGoldengateDeploymentOperation(name string) *CreateGoldengateDeploymentOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &CreateGoldengateDeploymentOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // CreateOdbNetworkOperation returns a new CreateOdbNetworkOperation from a given name.
 // The name must be that of a previously created CreateOdbNetworkOperation, possibly from a different process.
 func (c *gRPCClient) CreateOdbNetworkOperation(name string) *CreateOdbNetworkOperation {
@@ -9042,6 +11671,60 @@ func (c *restClient) DeleteExascaleDbStorageVaultOperation(name string) *DeleteE
 	}
 }
 
+// DeleteGoldengateConnectionOperation returns a new DeleteGoldengateConnectionOperation from a given name.
+// The name must be that of a previously created DeleteGoldengateConnectionOperation, possibly from a different process.
+func (c *gRPCClient) DeleteGoldengateConnectionOperation(name string) *DeleteGoldengateConnectionOperation {
+	return &DeleteGoldengateConnectionOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// DeleteGoldengateConnectionOperation returns a new DeleteGoldengateConnectionOperation from a given name.
+// The name must be that of a previously created DeleteGoldengateConnectionOperation, possibly from a different process.
+func (c *restClient) DeleteGoldengateConnectionOperation(name string) *DeleteGoldengateConnectionOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &DeleteGoldengateConnectionOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// DeleteGoldengateConnectionAssignmentOperation returns a new DeleteGoldengateConnectionAssignmentOperation from a given name.
+// The name must be that of a previously created DeleteGoldengateConnectionAssignmentOperation, possibly from a different process.
+func (c *gRPCClient) DeleteGoldengateConnectionAssignmentOperation(name string) *DeleteGoldengateConnectionAssignmentOperation {
+	return &DeleteGoldengateConnectionAssignmentOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// DeleteGoldengateConnectionAssignmentOperation returns a new DeleteGoldengateConnectionAssignmentOperation from a given name.
+// The name must be that of a previously created DeleteGoldengateConnectionAssignmentOperation, possibly from a different process.
+func (c *restClient) DeleteGoldengateConnectionAssignmentOperation(name string) *DeleteGoldengateConnectionAssignmentOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &DeleteGoldengateConnectionAssignmentOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// DeleteGoldengateDeploymentOperation returns a new DeleteGoldengateDeploymentOperation from a given name.
+// The name must be that of a previously created DeleteGoldengateDeploymentOperation, possibly from a different process.
+func (c *gRPCClient) DeleteGoldengateDeploymentOperation(name string) *DeleteGoldengateDeploymentOperation {
+	return &DeleteGoldengateDeploymentOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// DeleteGoldengateDeploymentOperation returns a new DeleteGoldengateDeploymentOperation from a given name.
+// The name must be that of a previously created DeleteGoldengateDeploymentOperation, possibly from a different process.
+func (c *restClient) DeleteGoldengateDeploymentOperation(name string) *DeleteGoldengateDeploymentOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &DeleteGoldengateDeploymentOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // DeleteOdbNetworkOperation returns a new DeleteOdbNetworkOperation from a given name.
 // The name must be that of a previously created DeleteOdbNetworkOperation, possibly from a different process.
 func (c *gRPCClient) DeleteOdbNetworkOperation(name string) *DeleteOdbNetworkOperation {
@@ -9168,6 +11851,24 @@ func (c *restClient) StartAutonomousDatabaseOperation(name string) *StartAutonom
 	}
 }
 
+// StartGoldengateDeploymentOperation returns a new StartGoldengateDeploymentOperation from a given name.
+// The name must be that of a previously created StartGoldengateDeploymentOperation, possibly from a different process.
+func (c *gRPCClient) StartGoldengateDeploymentOperation(name string) *StartGoldengateDeploymentOperation {
+	return &StartGoldengateDeploymentOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// StartGoldengateDeploymentOperation returns a new StartGoldengateDeploymentOperation from a given name.
+// The name must be that of a previously created StartGoldengateDeploymentOperation, possibly from a different process.
+func (c *restClient) StartGoldengateDeploymentOperation(name string) *StartGoldengateDeploymentOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &StartGoldengateDeploymentOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // StopAutonomousDatabaseOperation returns a new StopAutonomousDatabaseOperation from a given name.
 // The name must be that of a previously created StopAutonomousDatabaseOperation, possibly from a different process.
 func (c *gRPCClient) StopAutonomousDatabaseOperation(name string) *StopAutonomousDatabaseOperation {
@@ -9181,6 +11882,24 @@ func (c *gRPCClient) StopAutonomousDatabaseOperation(name string) *StopAutonomou
 func (c *restClient) StopAutonomousDatabaseOperation(name string) *StopAutonomousDatabaseOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &StopAutonomousDatabaseOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// StopGoldengateDeploymentOperation returns a new StopGoldengateDeploymentOperation from a given name.
+// The name must be that of a previously created StopGoldengateDeploymentOperation, possibly from a different process.
+func (c *gRPCClient) StopGoldengateDeploymentOperation(name string) *StopGoldengateDeploymentOperation {
+	return &StopGoldengateDeploymentOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// StopGoldengateDeploymentOperation returns a new StopGoldengateDeploymentOperation from a given name.
+// The name must be that of a previously created StopGoldengateDeploymentOperation, possibly from a different process.
+func (c *restClient) StopGoldengateDeploymentOperation(name string) *StopGoldengateDeploymentOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &StopGoldengateDeploymentOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}

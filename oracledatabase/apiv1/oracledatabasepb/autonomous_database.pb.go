@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -525,6 +525,8 @@ const (
 	AutonomousDatabaseProperties_ADG AutonomousDatabaseProperties_LocalDisasterRecoveryType = 1
 	// Backup based recovery.
 	AutonomousDatabaseProperties_BACKUP_BASED AutonomousDatabaseProperties_LocalDisasterRecoveryType = 2
+	// Local disaster recovery is not available.
+	AutonomousDatabaseProperties_NOT_AVAILABLE AutonomousDatabaseProperties_LocalDisasterRecoveryType = 3
 )
 
 // Enum value maps for AutonomousDatabaseProperties_LocalDisasterRecoveryType.
@@ -533,11 +535,13 @@ var (
 		0: "LOCAL_DISASTER_RECOVERY_TYPE_UNSPECIFIED",
 		1: "ADG",
 		2: "BACKUP_BASED",
+		3: "NOT_AVAILABLE",
 	}
 	AutonomousDatabaseProperties_LocalDisasterRecoveryType_value = map[string]int32{
 		"LOCAL_DISASTER_RECOVERY_TYPE_UNSPECIFIED": 0,
-		"ADG":          1,
-		"BACKUP_BASED": 2,
+		"ADG":           1,
+		"BACKUP_BASED":  2,
+		"NOT_AVAILABLE": 3,
 	}
 )
 
@@ -1376,40 +1380,49 @@ type AutonomousDatabase struct {
 	// format:
 	// projects/{project}/locations/{region}/autonomousDatabases/{autonomous_database}
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// Optional. The name of the Autonomous Database. The database name must be
-	// unique in the project. The name must begin with a letter and can contain a
-	// maximum of 30 alphanumeric characters.
+	// Optional. Immutable. The name of the Autonomous Database. The database name
+	// must be unique in the project. The name must begin with a letter and can
+	// contain a maximum of 30 alphanumeric characters.
 	Database string `protobuf:"bytes,2,opt,name=database,proto3" json:"database,omitempty"`
-	// Optional. The display name for the Autonomous Database. The name does not
-	// have to be unique within your project.
+	// Optional. Immutable. The display name for the Autonomous Database. The name
+	// does not have to be unique within your project.
 	DisplayName string `protobuf:"bytes,3,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
 	// Output only. The ID of the subscription entitlement associated with the
 	// Autonomous Database.
 	EntitlementId string `protobuf:"bytes,5,opt,name=entitlement_id,json=entitlementId,proto3" json:"entitlement_id,omitempty"`
-	// Optional. The password for the default ADMIN user.
+	// Optional. Immutable. The password for the default ADMIN user.
+	// Note: Only one of `admin_password_secret_version` or `admin_password` can
+	// be populated.
 	AdminPassword string `protobuf:"bytes,6,opt,name=admin_password,json=adminPassword,proto3" json:"admin_password,omitempty"`
+	// Optional. Immutable. The resource name of a secret version in Secret
+	// Manager which contains the database admin user's password. Format:
+	// projects/{project}/secrets/{secret}/versions/{version}. Note: Only one of
+	// `admin_password_secret_version` or `admin_password` can be populated.
+	AdminPasswordSecretVersion string `protobuf:"bytes,18,opt,name=admin_password_secret_version,json=adminPasswordSecretVersion,proto3" json:"admin_password_secret_version,omitempty"`
 	// Optional. The properties of the Autonomous Database.
 	Properties *AutonomousDatabaseProperties `protobuf:"bytes,7,opt,name=properties,proto3" json:"properties,omitempty"`
 	// Optional. The labels or tags associated with the Autonomous Database.
 	Labels map[string]string `protobuf:"bytes,8,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	// Optional. The name of the VPC network used by the Autonomous Database in
-	// the following format: projects/{project}/global/networks/{network}
+	// Optional. Immutable. The name of the VPC network used by the Autonomous
+	// Database in the following format:
+	// projects/{project}/global/networks/{network}
 	Network string `protobuf:"bytes,9,opt,name=network,proto3" json:"network,omitempty"`
-	// Optional. The subnet CIDR range for the Autonomous Database.
+	// Optional. Immutable. The subnet CIDR range for the Autonomous Database.
 	Cidr string `protobuf:"bytes,10,opt,name=cidr,proto3" json:"cidr,omitempty"`
-	// Optional. The name of the OdbNetwork associated with the Autonomous
-	// Database. Format:
+	// Optional. Immutable. The name of the OdbNetwork associated with the
+	// Autonomous Database. Format:
 	// projects/{project}/locations/{location}/odbNetworks/{odb_network} It is
 	// optional but if specified, this should match the parent ODBNetwork of the
 	// OdbSubnet.
 	OdbNetwork string `protobuf:"bytes,16,opt,name=odb_network,json=odbNetwork,proto3" json:"odb_network,omitempty"`
-	// Optional. The name of the OdbSubnet associated with the Autonomous
-	// Database. Format:
+	// Optional. Immutable. The name of the OdbSubnet associated with the
+	// Autonomous Database. Format:
 	// projects/{project}/locations/{location}/odbNetworks/{odb_network}/odbSubnets/{odb_subnet}
 	OdbSubnet string `protobuf:"bytes,17,opt,name=odb_subnet,json=odbSubnet,proto3" json:"odb_subnet,omitempty"`
-	// Optional. The source Autonomous Database configuration for the standby
-	// Autonomous Database. The source Autonomous Database is configured while
-	// creating the Peer Autonomous Database and can't be updated after creation.
+	// Optional. Immutable. The source Autonomous Database configuration for the
+	// standby Autonomous Database. The source Autonomous Database is configured
+	// while creating the Peer Autonomous Database and can't be updated after
+	// creation.
 	SourceConfig *SourceConfig `protobuf:"bytes,11,opt,name=source_config,json=sourceConfig,proto3" json:"source_config,omitempty"`
 	// Output only. The peer Autonomous Database names of the given Autonomous
 	// Database.
@@ -1484,6 +1497,13 @@ func (x *AutonomousDatabase) GetEntitlementId() string {
 func (x *AutonomousDatabase) GetAdminPassword() string {
 	if x != nil {
 		return x.AdminPassword
+	}
+	return ""
+}
+
+func (x *AutonomousDatabase) GetAdminPasswordSecretVersion() string {
+	if x != nil {
+		return x.AdminPasswordSecretVersion
 	}
 	return ""
 }
@@ -1621,52 +1641,60 @@ type AutonomousDatabaseProperties struct {
 	// Output only. OCID of the Autonomous Database.
 	// https://docs.oracle.com/en-us/iaas/Content/General/Concepts/identifiers.htm#Oracle
 	Ocid string `protobuf:"bytes,1,opt,name=ocid,proto3" json:"ocid,omitempty"`
-	// Optional. The number of compute servers for the Autonomous Database.
+	// Optional. Immutable. The number of compute servers for the Autonomous
+	// Database.
 	ComputeCount float32 `protobuf:"fixed32,2,opt,name=compute_count,json=computeCount,proto3" json:"compute_count,omitempty"`
-	// Optional. The number of CPU cores to be made available to the database.
+	// Optional. Immutable. The number of CPU cores to be made available to the
+	// database.
 	CpuCoreCount int32 `protobuf:"varint,3,opt,name=cpu_core_count,json=cpuCoreCount,proto3" json:"cpu_core_count,omitempty"`
-	// Optional. The size of the data stored in the database, in terabytes.
+	// Optional. Immutable. The size of the data stored in the database, in
+	// terabytes.
 	DataStorageSizeTb int32 `protobuf:"varint,4,opt,name=data_storage_size_tb,json=dataStorageSizeTb,proto3" json:"data_storage_size_tb,omitempty"`
-	// Optional. The size of the data stored in the database, in gigabytes.
+	// Optional. Immutable. The size of the data stored in the database, in
+	// gigabytes.
 	DataStorageSizeGb int32 `protobuf:"varint,63,opt,name=data_storage_size_gb,json=dataStorageSizeGb,proto3" json:"data_storage_size_gb,omitempty"`
-	// Required. The workload type of the Autonomous Database.
+	// Required. Immutable. The workload type of the Autonomous Database.
 	DbWorkload DBWorkload `protobuf:"varint,5,opt,name=db_workload,json=dbWorkload,proto3,enum=google.cloud.oracledatabase.v1.DBWorkload" json:"db_workload,omitempty"`
-	// Optional. The edition of the Autonomous Databases.
+	// Optional. Immutable. The edition of the Autonomous Databases.
 	DbEdition AutonomousDatabaseProperties_DatabaseEdition `protobuf:"varint,6,opt,name=db_edition,json=dbEdition,proto3,enum=google.cloud.oracledatabase.v1.AutonomousDatabaseProperties_DatabaseEdition" json:"db_edition,omitempty"`
-	// Optional. The character set for the Autonomous Database. The default is
-	// AL32UTF8.
+	// Optional. Immutable. The character set for the Autonomous Database. The
+	// default is AL32UTF8.
 	CharacterSet string `protobuf:"bytes,8,opt,name=character_set,json=characterSet,proto3" json:"character_set,omitempty"`
-	// Optional. The national character set for the Autonomous Database. The
-	// default is AL16UTF16.
+	// Optional. Immutable. The national character set for the Autonomous
+	// Database. The default is AL16UTF16.
 	NCharacterSet string `protobuf:"bytes,9,opt,name=n_character_set,json=nCharacterSet,proto3" json:"n_character_set,omitempty"`
-	// Optional. The private endpoint IP address for the Autonomous Database.
+	// Optional. Immutable. The private endpoint IP address for the Autonomous
+	// Database.
 	PrivateEndpointIp string `protobuf:"bytes,10,opt,name=private_endpoint_ip,json=privateEndpointIp,proto3" json:"private_endpoint_ip,omitempty"`
-	// Optional. The private endpoint label for the Autonomous Database.
+	// Optional. Immutable. The private endpoint label for the Autonomous
+	// Database.
 	PrivateEndpointLabel string `protobuf:"bytes,11,opt,name=private_endpoint_label,json=privateEndpointLabel,proto3" json:"private_endpoint_label,omitempty"`
-	// Optional. The Oracle Database version for the Autonomous Database.
+	// Optional. Immutable. The Oracle Database version for the Autonomous
+	// Database.
 	DbVersion string `protobuf:"bytes,12,opt,name=db_version,json=dbVersion,proto3" json:"db_version,omitempty"`
-	// Optional. This field indicates if auto scaling is enabled for the
-	// Autonomous Database CPU core count.
+	// Optional. Immutable. This field indicates if auto scaling is enabled for
+	// the Autonomous Database CPU core count.
 	IsAutoScalingEnabled bool `protobuf:"varint,14,opt,name=is_auto_scaling_enabled,json=isAutoScalingEnabled,proto3" json:"is_auto_scaling_enabled,omitempty"`
-	// Optional. This field indicates if auto scaling is enabled for the
-	// Autonomous Database storage.
+	// Optional. Immutable. This field indicates if auto scaling is enabled for
+	// the Autonomous Database storage.
 	IsStorageAutoScalingEnabled bool `protobuf:"varint,15,opt,name=is_storage_auto_scaling_enabled,json=isStorageAutoScalingEnabled,proto3" json:"is_storage_auto_scaling_enabled,omitempty"`
-	// Required. The license type used for the Autonomous Database.
+	// Required. Immutable. The license type used for the Autonomous Database.
 	LicenseType AutonomousDatabaseProperties_LicenseType `protobuf:"varint,16,opt,name=license_type,json=licenseType,proto3,enum=google.cloud.oracledatabase.v1.AutonomousDatabaseProperties_LicenseType" json:"license_type,omitempty"`
-	// Optional. The list of customer contacts.
+	// Optional. Immutable. The list of customer contacts.
 	CustomerContacts []*CustomerContact `protobuf:"bytes,17,rep,name=customer_contacts,json=customerContacts,proto3" json:"customer_contacts,omitempty"`
-	// Optional. The ID of the Oracle Cloud Infrastructure vault secret.
+	// Optional. Immutable. The ID of the Oracle Cloud Infrastructure vault
+	// secret.
 	SecretId string `protobuf:"bytes,18,opt,name=secret_id,json=secretId,proto3" json:"secret_id,omitempty"`
-	// Optional. The ID of the Oracle Cloud Infrastructure vault.
+	// Optional. Immutable. The ID of the Oracle Cloud Infrastructure vault.
 	VaultId string `protobuf:"bytes,19,opt,name=vault_id,json=vaultId,proto3" json:"vault_id,omitempty"`
-	// Optional. The maintenance schedule of the Autonomous Database.
+	// Optional. Immutable. The maintenance schedule of the Autonomous Database.
 	MaintenanceScheduleType AutonomousDatabaseProperties_MaintenanceScheduleType `protobuf:"varint,20,opt,name=maintenance_schedule_type,json=maintenanceScheduleType,proto3,enum=google.cloud.oracledatabase.v1.AutonomousDatabaseProperties_MaintenanceScheduleType" json:"maintenance_schedule_type,omitempty"`
-	// Optional. This field specifies if the Autonomous Database requires mTLS
-	// connections.
+	// Optional. Immutable. This field specifies if the Autonomous Database
+	// requires mTLS connections.
 	MtlsConnectionRequired bool `protobuf:"varint,34,opt,name=mtls_connection_required,json=mtlsConnectionRequired,proto3" json:"mtls_connection_required,omitempty"`
-	// Optional. The retention period for the Autonomous Database. This field is
-	// specified in days, can range from 1 day to 60 days, and has a default value
-	// of 60 days.
+	// Optional. Immutable. The retention period for the Autonomous Database. This
+	// field is specified in days, can range from 1 day to 60 days, and has a
+	// default value of 60 days.
 	BackupRetentionPeriodDays int32 `protobuf:"varint,57,opt,name=backup_retention_period_days,json=backupRetentionPeriodDays,proto3" json:"backup_retention_period_days,omitempty"`
 	// Output only. The amount of storage currently being used for user and system
 	// data, in terabytes.
@@ -1706,11 +1734,18 @@ type AutonomousDatabaseProperties struct {
 	// Output only. The memory assigned to in-memory tables in an Autonomous
 	// Database.
 	MemoryTableGbs int32 `protobuf:"varint,32,opt,name=memory_table_gbs,json=memoryTableGbs,proto3" json:"memory_table_gbs,omitempty"`
-	// Output only. This field indicates whether the Autonomous Database has local
-	// (in-region) Data Guard enabled.
+	// Output only. Deprecated: Please use `local_data_guard_enabled` instead.
+	// This field indicates whether the Autonomous Database has local (in-region)
+	// Data Guard enabled.
+	//
+	// Deprecated: Marked as deprecated in google/cloud/oracledatabase/v1/autonomous_database.proto.
 	IsLocalDataGuardEnabled bool `protobuf:"varint,33,opt,name=is_local_data_guard_enabled,json=isLocalDataGuardEnabled,proto3" json:"is_local_data_guard_enabled,omitempty"`
-	// Output only. This field indicates the maximum data loss limit for an
-	// Autonomous Database, in seconds.
+	// Output only. Deprecated: Please use
+	// `local_adg_auto_failover_max_data_loss_limit_duration` instead.
+	// This field indicates the maximum data loss limit for an Autonomous
+	// Database, in seconds.
+	//
+	// Deprecated: Marked as deprecated in google/cloud/oracledatabase/v1/autonomous_database.proto.
 	LocalAdgAutoFailoverMaxDataLossLimit int32 `protobuf:"varint,35,opt,name=local_adg_auto_failover_max_data_loss_limit,json=localAdgAutoFailoverMaxDataLossLimit,proto3" json:"local_adg_auto_failover_max_data_loss_limit,omitempty"`
 	// Output only. The details of the Autonomous Data Guard standby database.
 	LocalStandbyDb *AutonomousDatabaseStandbySummary `protobuf:"bytes,36,opt,name=local_standby_db,json=localStandbyDb,proto3" json:"local_standby_db,omitempty"`
@@ -1772,7 +1807,8 @@ type AutonomousDatabaseProperties struct {
 	MaintenanceBeginTime *timestamppb.Timestamp `protobuf:"bytes,65,opt,name=maintenance_begin_time,json=maintenanceBeginTime,proto3" json:"maintenance_begin_time,omitempty"`
 	// Output only. The date and time when maintenance will end.
 	MaintenanceEndTime *timestamppb.Timestamp `protobuf:"bytes,66,opt,name=maintenance_end_time,json=maintenanceEndTime,proto3" json:"maintenance_end_time,omitempty"`
-	// Optional. The list of allowlisted IP addresses for the Autonomous Database.
+	// Optional. Immutable. The list of allowlisted IP addresses for the
+	// Autonomous Database.
 	AllowlistedIps []string `protobuf:"bytes,67,rep,name=allowlisted_ips,json=allowlistedIps,proto3" json:"allowlisted_ips,omitempty"`
 	// Optional. The encryption key used to encrypt the Autonomous Database.
 	// Updating this field will add a new entry in the
@@ -1784,8 +1820,15 @@ type AutonomousDatabaseProperties struct {
 	// Output only. An Oracle-managed Google Cloud service account on which
 	// customers can grant roles to access resources in the customer project.
 	ServiceAgentEmail string `protobuf:"bytes,70,opt,name=service_agent_email,json=serviceAgentEmail,proto3" json:"service_agent_email,omitempty"`
-	unknownFields     protoimpl.UnknownFields
-	sizeCache         protoimpl.SizeCache
+	// Optional. Indicates whether the Autonomous Database has a local (in-region)
+	// standby database. Not applicable to cross-region Data Guard or dedicated
+	// Exadata infrastructure.
+	LocalDataGuardEnabled *bool `protobuf:"varint,71,opt,name=local_data_guard_enabled,json=localDataGuardEnabled,proto3,oneof" json:"local_data_guard_enabled,omitempty"`
+	// Optional. This field indicates the maximum data loss limit for an
+	// Autonomous Database, in seconds.
+	LocalAdgAutoFailoverMaxDataLossLimitDuration *int32 `protobuf:"varint,72,opt,name=local_adg_auto_failover_max_data_loss_limit_duration,json=localAdgAutoFailoverMaxDataLossLimitDuration,proto3,oneof" json:"local_adg_auto_failover_max_data_loss_limit_duration,omitempty"`
+	unknownFields                                protoimpl.UnknownFields
+	sizeCache                                    protoimpl.SizeCache
 }
 
 func (x *AutonomousDatabaseProperties) Reset() {
@@ -2049,6 +2092,7 @@ func (x *AutonomousDatabaseProperties) GetMemoryTableGbs() int32 {
 	return 0
 }
 
+// Deprecated: Marked as deprecated in google/cloud/oracledatabase/v1/autonomous_database.proto.
 func (x *AutonomousDatabaseProperties) GetIsLocalDataGuardEnabled() bool {
 	if x != nil {
 		return x.IsLocalDataGuardEnabled
@@ -2056,6 +2100,7 @@ func (x *AutonomousDatabaseProperties) GetIsLocalDataGuardEnabled() bool {
 	return false
 }
 
+// Deprecated: Marked as deprecated in google/cloud/oracledatabase/v1/autonomous_database.proto.
 func (x *AutonomousDatabaseProperties) GetLocalAdgAutoFailoverMaxDataLossLimit() int32 {
 	if x != nil {
 		return x.LocalAdgAutoFailoverMaxDataLossLimit
@@ -2257,6 +2302,20 @@ func (x *AutonomousDatabaseProperties) GetServiceAgentEmail() string {
 		return x.ServiceAgentEmail
 	}
 	return ""
+}
+
+func (x *AutonomousDatabaseProperties) GetLocalDataGuardEnabled() bool {
+	if x != nil && x.LocalDataGuardEnabled != nil {
+		return *x.LocalDataGuardEnabled
+	}
+	return false
+}
+
+func (x *AutonomousDatabaseProperties) GetLocalAdgAutoFailoverMaxDataLossLimitDuration() int32 {
+	if x != nil && x.LocalAdgAutoFailoverMaxDataLossLimitDuration != nil {
+		return *x.LocalAdgAutoFailoverMaxDataLossLimitDuration
+	}
+	return 0
 }
 
 // The history of the encryption keys used to encrypt the Autonomous Database.
@@ -2990,29 +3049,30 @@ var File_google_cloud_oracledatabase_v1_autonomous_database_proto protoreflect.F
 
 const file_google_cloud_oracledatabase_v1_autonomous_database_proto_rawDesc = "" +
 	"\n" +
-	"8google/cloud/oracledatabase/v1/autonomous_database.proto\x12\x1egoogle.cloud.oracledatabase.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a+google/cloud/oracledatabase/v1/common.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1bgoogle/type/dayofweek.proto\x1a\x1bgoogle/type/timeofday.proto\"\x8a\n" +
-	"\n" +
+	"8google/cloud/oracledatabase/v1/autonomous_database.proto\x12\x1egoogle.cloud.oracledatabase.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a+google/cloud/oracledatabase/v1/common.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1bgoogle/type/dayofweek.proto\x1a\x1bgoogle/type/timeofday.proto\"\x9c\v\n" +
 	"\x12AutonomousDatabase\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x1f\n" +
-	"\bdatabase\x18\x02 \x01(\tB\x03\xe0A\x01R\bdatabase\x12&\n" +
-	"\fdisplay_name\x18\x03 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12*\n" +
-	"\x0eentitlement_id\x18\x05 \x01(\tB\x03\xe0A\x03R\rentitlementId\x12*\n" +
-	"\x0eadmin_password\x18\x06 \x01(\tB\x03\xe0A\x01R\radminPassword\x12a\n" +
+	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\"\n" +
+	"\bdatabase\x18\x02 \x01(\tB\x06\xe0A\x01\xe0A\x05R\bdatabase\x12)\n" +
+	"\fdisplay_name\x18\x03 \x01(\tB\x06\xe0A\x01\xe0A\x05R\vdisplayName\x12*\n" +
+	"\x0eentitlement_id\x18\x05 \x01(\tB\x03\xe0A\x03R\rentitlementId\x12-\n" +
+	"\x0eadmin_password\x18\x06 \x01(\tB\x06\xe0A\x01\xe0A\x05R\radminPassword\x12x\n" +
+	"\x1dadmin_password_secret_version\x18\x12 \x01(\tB5\xe0A\x01\xe0A\x05\xfaA,\n" +
+	"*secretmanager.googleapis.com/SecretVersionR\x1aadminPasswordSecretVersion\x12a\n" +
 	"\n" +
 	"properties\x18\a \x01(\v2<.google.cloud.oracledatabase.v1.AutonomousDatabasePropertiesB\x03\xe0A\x01R\n" +
 	"properties\x12[\n" +
-	"\x06labels\x18\b \x03(\v2>.google.cloud.oracledatabase.v1.AutonomousDatabase.LabelsEntryB\x03\xe0A\x01R\x06labels\x12@\n" +
-	"\anetwork\x18\t \x01(\tB&\xe0A\x01\xfaA \n" +
-	"\x1ecompute.googleapis.com/NetworkR\anetwork\x12\x17\n" +
+	"\x06labels\x18\b \x03(\v2>.google.cloud.oracledatabase.v1.AutonomousDatabase.LabelsEntryB\x03\xe0A\x01R\x06labels\x12C\n" +
+	"\anetwork\x18\t \x01(\tB)\xe0A\x01\xe0A\x05\xfaA \n" +
+	"\x1ecompute.googleapis.com/NetworkR\anetwork\x12\x1a\n" +
 	"\x04cidr\x18\n" +
-	" \x01(\tB\x03\xe0A\x01R\x04cidr\x12Q\n" +
-	"\vodb_network\x18\x10 \x01(\tB0\xe0A\x01\xfaA*\n" +
+	" \x01(\tB\x06\xe0A\x01\xe0A\x05R\x04cidr\x12T\n" +
+	"\vodb_network\x18\x10 \x01(\tB3\xe0A\x01\xe0A\x05\xfaA*\n" +
 	"(oracledatabase.googleapis.com/OdbNetworkR\n" +
-	"odbNetwork\x12N\n" +
+	"odbNetwork\x12Q\n" +
 	"\n" +
-	"odb_subnet\x18\x11 \x01(\tB/\xe0A\x01\xfaA)\n" +
-	"'oracledatabase.googleapis.com/OdbSubnetR\todbSubnet\x12V\n" +
-	"\rsource_config\x18\v \x01(\v2,.google.cloud.oracledatabase.v1.SourceConfigB\x03\xe0A\x01R\fsourceConfig\x12t\n" +
+	"odb_subnet\x18\x11 \x01(\tB2\xe0A\x01\xe0A\x05\xfaA)\n" +
+	"'oracledatabase.googleapis.com/OdbSubnetR\todbSubnet\x12Y\n" +
+	"\rsource_config\x18\v \x01(\v2,.google.cloud.oracledatabase.v1.SourceConfigB\x06\xe0A\x01\xe0A\x05R\fsourceConfig\x12t\n" +
 	"\x19peer_autonomous_databases\x18\f \x03(\tB8\xe0A\x03\xfaA2\n" +
 	"0oracledatabase.googleapis.com/AutonomousDatabaseR\x17peerAutonomousDatabases\x12@\n" +
 	"\vcreate_time\x18\r \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
@@ -3026,33 +3086,33 @@ const file_google_cloud_oracledatabase_v1_autonomous_database_proto_rawDesc = ""
 	"\fSourceConfig\x12i\n" +
 	"\x13autonomous_database\x18\x01 \x01(\tB8\xe0A\x01\xfaA2\n" +
 	"0oracledatabase.googleapis.com/AutonomousDatabaseR\x12autonomousDatabase\x12V\n" +
-	"%automatic_backups_replication_enabled\x18\x02 \x01(\bB\x03\xe0A\x01R\"automaticBackupsReplicationEnabled\"\xa01\n" +
+	"%automatic_backups_replication_enabled\x18\x02 \x01(\bB\x03\xe0A\x01R\"automaticBackupsReplicationEnabled\"\x854\n" +
 	"\x1cAutonomousDatabaseProperties\x12\x17\n" +
-	"\x04ocid\x18\x01 \x01(\tB\x03\xe0A\x03R\x04ocid\x12(\n" +
-	"\rcompute_count\x18\x02 \x01(\x02B\x03\xe0A\x01R\fcomputeCount\x12)\n" +
-	"\x0ecpu_core_count\x18\x03 \x01(\x05B\x03\xe0A\x01R\fcpuCoreCount\x124\n" +
-	"\x14data_storage_size_tb\x18\x04 \x01(\x05B\x03\xe0A\x01R\x11dataStorageSizeTb\x124\n" +
-	"\x14data_storage_size_gb\x18? \x01(\x05B\x03\xe0A\x01R\x11dataStorageSizeGb\x12P\n" +
-	"\vdb_workload\x18\x05 \x01(\x0e2*.google.cloud.oracledatabase.v1.DBWorkloadB\x03\xe0A\x02R\n" +
-	"dbWorkload\x12p\n" +
+	"\x04ocid\x18\x01 \x01(\tB\x03\xe0A\x03R\x04ocid\x12+\n" +
+	"\rcompute_count\x18\x02 \x01(\x02B\x06\xe0A\x01\xe0A\x05R\fcomputeCount\x12,\n" +
+	"\x0ecpu_core_count\x18\x03 \x01(\x05B\x06\xe0A\x01\xe0A\x05R\fcpuCoreCount\x127\n" +
+	"\x14data_storage_size_tb\x18\x04 \x01(\x05B\x06\xe0A\x01\xe0A\x05R\x11dataStorageSizeTb\x127\n" +
+	"\x14data_storage_size_gb\x18? \x01(\x05B\x06\xe0A\x01\xe0A\x05R\x11dataStorageSizeGb\x12S\n" +
+	"\vdb_workload\x18\x05 \x01(\x0e2*.google.cloud.oracledatabase.v1.DBWorkloadB\x06\xe0A\x02\xe0A\x05R\n" +
+	"dbWorkload\x12s\n" +
 	"\n" +
-	"db_edition\x18\x06 \x01(\x0e2L.google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.DatabaseEditionB\x03\xe0A\x01R\tdbEdition\x12(\n" +
-	"\rcharacter_set\x18\b \x01(\tB\x03\xe0A\x01R\fcharacterSet\x12+\n" +
-	"\x0fn_character_set\x18\t \x01(\tB\x03\xe0A\x01R\rnCharacterSet\x123\n" +
+	"db_edition\x18\x06 \x01(\x0e2L.google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.DatabaseEditionB\x06\xe0A\x01\xe0A\x05R\tdbEdition\x12+\n" +
+	"\rcharacter_set\x18\b \x01(\tB\x06\xe0A\x01\xe0A\x05R\fcharacterSet\x12.\n" +
+	"\x0fn_character_set\x18\t \x01(\tB\x06\xe0A\x01\xe0A\x05R\rnCharacterSet\x126\n" +
 	"\x13private_endpoint_ip\x18\n" +
-	" \x01(\tB\x03\xe0A\x01R\x11privateEndpointIp\x129\n" +
-	"\x16private_endpoint_label\x18\v \x01(\tB\x03\xe0A\x01R\x14privateEndpointLabel\x12\"\n" +
+	" \x01(\tB\x06\xe0A\x01\xe0A\x05R\x11privateEndpointIp\x12<\n" +
+	"\x16private_endpoint_label\x18\v \x01(\tB\x06\xe0A\x01\xe0A\x05R\x14privateEndpointLabel\x12%\n" +
 	"\n" +
-	"db_version\x18\f \x01(\tB\x03\xe0A\x01R\tdbVersion\x12:\n" +
-	"\x17is_auto_scaling_enabled\x18\x0e \x01(\bB\x03\xe0A\x01R\x14isAutoScalingEnabled\x12I\n" +
-	"\x1fis_storage_auto_scaling_enabled\x18\x0f \x01(\bB\x03\xe0A\x01R\x1bisStorageAutoScalingEnabled\x12p\n" +
-	"\flicense_type\x18\x10 \x01(\x0e2H.google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.LicenseTypeB\x03\xe0A\x02R\vlicenseType\x12a\n" +
-	"\x11customer_contacts\x18\x11 \x03(\v2/.google.cloud.oracledatabase.v1.CustomerContactB\x03\xe0A\x01R\x10customerContacts\x12 \n" +
-	"\tsecret_id\x18\x12 \x01(\tB\x03\xe0A\x01R\bsecretId\x12\x1e\n" +
-	"\bvault_id\x18\x13 \x01(\tB\x03\xe0A\x01R\avaultId\x12\x95\x01\n" +
-	"\x19maintenance_schedule_type\x18\x14 \x01(\x0e2T.google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.MaintenanceScheduleTypeB\x03\xe0A\x01R\x17maintenanceScheduleType\x12=\n" +
-	"\x18mtls_connection_required\x18\" \x01(\bB\x03\xe0A\x01R\x16mtlsConnectionRequired\x12D\n" +
-	"\x1cbackup_retention_period_days\x189 \x01(\x05B\x03\xe0A\x01R\x19backupRetentionPeriodDays\x12J\n" +
+	"db_version\x18\f \x01(\tB\x06\xe0A\x01\xe0A\x05R\tdbVersion\x12=\n" +
+	"\x17is_auto_scaling_enabled\x18\x0e \x01(\bB\x06\xe0A\x01\xe0A\x05R\x14isAutoScalingEnabled\x12L\n" +
+	"\x1fis_storage_auto_scaling_enabled\x18\x0f \x01(\bB\x06\xe0A\x01\xe0A\x05R\x1bisStorageAutoScalingEnabled\x12s\n" +
+	"\flicense_type\x18\x10 \x01(\x0e2H.google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.LicenseTypeB\x06\xe0A\x02\xe0A\x05R\vlicenseType\x12d\n" +
+	"\x11customer_contacts\x18\x11 \x03(\v2/.google.cloud.oracledatabase.v1.CustomerContactB\x06\xe0A\x01\xe0A\x05R\x10customerContacts\x12#\n" +
+	"\tsecret_id\x18\x12 \x01(\tB\x06\xe0A\x01\xe0A\x05R\bsecretId\x12!\n" +
+	"\bvault_id\x18\x13 \x01(\tB\x06\xe0A\x01\xe0A\x05R\avaultId\x12\x98\x01\n" +
+	"\x19maintenance_schedule_type\x18\x14 \x01(\x0e2T.google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.MaintenanceScheduleTypeB\x06\xe0A\x01\xe0A\x05R\x17maintenanceScheduleType\x12@\n" +
+	"\x18mtls_connection_required\x18\" \x01(\bB\x06\xe0A\x01\xe0A\x05R\x16mtlsConnectionRequired\x12G\n" +
+	"\x1cbackup_retention_period_days\x189 \x01(\x05B\x06\xe0A\x01\xe0A\x05R\x19backupRetentionPeriodDays\x12J\n" +
 	" actual_used_data_storage_size_tb\x18\x15 \x01(\x01B\x03\xe0A\x03R\x1bactualUsedDataStorageSizeTb\x12>\n" +
 	"\x19allocated_storage_size_tb\x18\x16 \x01(\x01B\x03\xe0A\x03R\x16allocatedStorageSizeTb\x12^\n" +
 	"\fapex_details\x18\x17 \x01(\v26.google.cloud.oracledatabase.v1.AutonomousDatabaseApexB\x03\xe0A\x03R\vapexDetails\x12P\n" +
@@ -3064,9 +3124,9 @@ const file_google_cloud_oracledatabase_v1_autonomous_database_proto_rawDesc = ""
 	"\x12connection_strings\x18\x1d \x01(\v2C.google.cloud.oracledatabase.v1.AutonomousDatabaseConnectionStringsB\x03\xe0A\x03R\x11connectionStrings\x12n\n" +
 	"\x0fconnection_urls\x18\x1e \x01(\v2@.google.cloud.oracledatabase.v1.AutonomousDatabaseConnectionUrlsB\x03\xe0A\x03R\x0econnectionUrls\x12a\n" +
 	"\x1dfailed_data_recovery_duration\x18\x1f \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x03R\x1afailedDataRecoveryDuration\x12-\n" +
-	"\x10memory_table_gbs\x18  \x01(\x05B\x03\xe0A\x03R\x0ememoryTableGbs\x12A\n" +
-	"\x1bis_local_data_guard_enabled\x18! \x01(\bB\x03\xe0A\x03R\x17isLocalDataGuardEnabled\x12^\n" +
-	"+local_adg_auto_failover_max_data_loss_limit\x18# \x01(\x05B\x03\xe0A\x03R$localAdgAutoFailoverMaxDataLossLimit\x12o\n" +
+	"\x10memory_table_gbs\x18  \x01(\x05B\x03\xe0A\x03R\x0ememoryTableGbs\x12C\n" +
+	"\x1bis_local_data_guard_enabled\x18! \x01(\bB\x05\xe0A\x03\x18\x01R\x17isLocalDataGuardEnabled\x12`\n" +
+	"+local_adg_auto_failover_max_data_loss_limit\x18# \x01(\x05B\x05\xe0A\x03\x18\x01R$localAdgAutoFailoverMaxDataLossLimit\x12o\n" +
 	"\x10local_standby_db\x18$ \x01(\v2@.google.cloud.oracledatabase.v1.AutonomousDatabaseStandbySummaryB\x03\xe0A\x03R\x0elocalStandbyDb\x12N\n" +
 	"\"memory_per_oracle_compute_unit_gbs\x18% \x01(\x05B\x03\xe0A\x03R\x1dmemoryPerOracleComputeUnitGbs\x12\x9c\x01\n" +
 	"\x1clocal_disaster_recovery_type\x18& \x01(\x0e2V.google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.LocalDisasterRecoveryTypeB\x03\xe0A\x03R\x19localDisasterRecoveryType\x12w\n" +
@@ -3090,11 +3150,13 @@ const file_google_cloud_oracledatabase_v1_autonomous_database_proto_rawDesc = ""
 	"\x1cdata_guard_role_changed_time\x18= \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x18dataGuardRoleChangedTime\x12m\n" +
 	"#disaster_recovery_role_changed_time\x18> \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x1fdisasterRecoveryRoleChangedTime\x12U\n" +
 	"\x16maintenance_begin_time\x18A \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x14maintenanceBeginTime\x12Q\n" +
-	"\x14maintenance_end_time\x18B \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x12maintenanceEndTime\x12,\n" +
-	"\x0fallowlisted_ips\x18C \x03(\tB\x03\xe0A\x01R\x0eallowlistedIps\x12Y\n" +
+	"\x14maintenance_end_time\x18B \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x12maintenanceEndTime\x12/\n" +
+	"\x0fallowlisted_ips\x18C \x03(\tB\x06\xe0A\x01\xe0A\x05R\x0eallowlistedIps\x12Y\n" +
 	"\x0eencryption_key\x18D \x01(\v2-.google.cloud.oracledatabase.v1.EncryptionKeyB\x03\xe0A\x01R\rencryptionKey\x12\x83\x01\n" +
 	"\x1eencryption_key_history_entries\x18E \x03(\v29.google.cloud.oracledatabase.v1.EncryptionKeyHistoryEntryB\x03\xe0A\x03R\x1bencryptionKeyHistoryEntries\x123\n" +
-	"\x13service_agent_email\x18F \x01(\tB\x03\xe0A\x03R\x11serviceAgentEmail\"a\n" +
+	"\x13service_agent_email\x18F \x01(\tB\x03\xe0A\x03R\x11serviceAgentEmail\x12A\n" +
+	"\x18local_data_guard_enabled\x18G \x01(\bB\x03\xe0A\x01H\x01R\x15localDataGuardEnabled\x88\x01\x01\x12t\n" +
+	"4local_adg_auto_failover_max_data_loss_limit_duration\x18H \x01(\x05B\x03\xe0A\x01H\x02R,localAdgAutoFailoverMaxDataLossLimitDuration\x88\x01\x01\"a\n" +
 	"\x0fDatabaseEdition\x12 \n" +
 	"\x1cDATABASE_EDITION_UNSPECIFIED\x10\x00\x12\x14\n" +
 	"\x10STANDARD_EDITION\x10\x01\x12\x16\n" +
@@ -3106,11 +3168,12 @@ const file_google_cloud_oracledatabase_v1_autonomous_database_proto_rawDesc = ""
 	"\x17MaintenanceScheduleType\x12)\n" +
 	"%MAINTENANCE_SCHEDULE_TYPE_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05EARLY\x10\x01\x12\v\n" +
-	"\aREGULAR\x10\x02\"d\n" +
+	"\aREGULAR\x10\x02\"w\n" +
 	"\x19LocalDisasterRecoveryType\x12,\n" +
 	"(LOCAL_DISASTER_RECOVERY_TYPE_UNSPECIFIED\x10\x00\x12\a\n" +
 	"\x03ADG\x10\x01\x12\x10\n" +
-	"\fBACKUP_BASED\x10\x02\"\x84\x01\n" +
+	"\fBACKUP_BASED\x10\x02\x12\x11\n" +
+	"\rNOT_AVAILABLE\x10\x03\"\x84\x01\n" +
 	"\rDataSafeState\x12\x1f\n" +
 	"\x1bDATA_SAFE_STATE_UNSPECIFIED\x10\x00\x12\x0f\n" +
 	"\vREGISTERING\x10\x01\x12\x0e\n" +
@@ -3155,7 +3218,9 @@ const file_google_cloud_oracledatabase_v1_autonomous_database_proto_rawDesc = ""
 	"\x10DISABLED_STANDBY\x10\x03\x12\x0f\n" +
 	"\vBACKUP_COPY\x10\x04\x12\x14\n" +
 	"\x10SNAPSHOT_STANDBY\x10\x05B#\n" +
-	"!_are_primary_allowlisted_ips_used\"\xc0\x01\n" +
+	"!_are_primary_allowlisted_ips_usedB\x1b\n" +
+	"\x19_local_data_guard_enabledB7\n" +
+	"5_local_adg_auto_failover_max_data_loss_limit_duration\"\xc0\x01\n" +
 	"\x19EncryptionKeyHistoryEntry\x12Y\n" +
 	"\x0eencryption_key\x18\x01 \x01(\v2-.google.cloud.oracledatabase.v1.EncryptionKeyB\x03\xe0A\x03R\rencryptionKey\x12H\n" +
 	"\x0factivation_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x0eactivationTime\"\xfa\x01\n" +

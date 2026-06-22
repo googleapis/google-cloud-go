@@ -68,6 +68,9 @@ const (
 	EvaluationService_DeleteScheduledEvaluationRun_FullMethodName = "/google.cloud.ces.v1beta.EvaluationService/DeleteScheduledEvaluationRun"
 	EvaluationService_TestPersonaVoice_FullMethodName             = "/google.cloud.ces.v1beta.EvaluationService/TestPersonaVoice"
 	EvaluationService_ExportEvaluations_FullMethodName            = "/google.cloud.ces.v1beta.EvaluationService/ExportEvaluations"
+	EvaluationService_ExportEvaluationRuns_FullMethodName         = "/google.cloud.ces.v1beta.EvaluationService/ExportEvaluationRuns"
+	EvaluationService_ExportEvaluationResults_FullMethodName      = "/google.cloud.ces.v1beta.EvaluationService/ExportEvaluationResults"
+	EvaluationService_RunEvaluationResultMetrics_FullMethodName   = "/google.cloud.ces.v1beta.EvaluationService/RunEvaluationResultMetrics"
 )
 
 // EvaluationServiceClient is the client API for EvaluationService service.
@@ -141,6 +144,12 @@ type EvaluationServiceClient interface {
 	TestPersonaVoice(ctx context.Context, in *TestPersonaVoiceRequest, opts ...grpc.CallOption) (*TestPersonaVoiceResponse, error)
 	// Exports evaluations.
 	ExportEvaluations(ctx context.Context, in *ExportEvaluationsRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Exports evaluations runs.
+	ExportEvaluationRuns(ctx context.Context, in *ExportEvaluationRunsRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Exports evaluations results.
+	ExportEvaluationResults(ctx context.Context, in *ExportEvaluationResultsRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Runs metrics on an existing evaluation result.
+	RunEvaluationResultMetrics(ctx context.Context, in *RunEvaluationResultMetricsRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
 
 type evaluationServiceClient struct {
@@ -439,6 +448,33 @@ func (c *evaluationServiceClient) ExportEvaluations(ctx context.Context, in *Exp
 	return out, nil
 }
 
+func (c *evaluationServiceClient) ExportEvaluationRuns(ctx context.Context, in *ExportEvaluationRunsRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, EvaluationService_ExportEvaluationRuns_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *evaluationServiceClient) ExportEvaluationResults(ctx context.Context, in *ExportEvaluationResultsRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, EvaluationService_ExportEvaluationResults_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *evaluationServiceClient) RunEvaluationResultMetrics(ctx context.Context, in *RunEvaluationResultMetricsRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, EvaluationService_RunEvaluationResultMetrics_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // EvaluationServiceServer is the server API for EvaluationService service.
 // All implementations should embed UnimplementedEvaluationServiceServer
 // for forward compatibility
@@ -510,6 +546,12 @@ type EvaluationServiceServer interface {
 	TestPersonaVoice(context.Context, *TestPersonaVoiceRequest) (*TestPersonaVoiceResponse, error)
 	// Exports evaluations.
 	ExportEvaluations(context.Context, *ExportEvaluationsRequest) (*longrunningpb.Operation, error)
+	// Exports evaluations runs.
+	ExportEvaluationRuns(context.Context, *ExportEvaluationRunsRequest) (*longrunningpb.Operation, error)
+	// Exports evaluations results.
+	ExportEvaluationResults(context.Context, *ExportEvaluationResultsRequest) (*longrunningpb.Operation, error)
+	// Runs metrics on an existing evaluation result.
+	RunEvaluationResultMetrics(context.Context, *RunEvaluationResultMetricsRequest) (*longrunningpb.Operation, error)
 }
 
 // UnimplementedEvaluationServiceServer should be embedded to have forward compatible implementations.
@@ -611,6 +653,15 @@ func (UnimplementedEvaluationServiceServer) TestPersonaVoice(context.Context, *T
 }
 func (UnimplementedEvaluationServiceServer) ExportEvaluations(context.Context, *ExportEvaluationsRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ExportEvaluations not implemented")
+}
+func (UnimplementedEvaluationServiceServer) ExportEvaluationRuns(context.Context, *ExportEvaluationRunsRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ExportEvaluationRuns not implemented")
+}
+func (UnimplementedEvaluationServiceServer) ExportEvaluationResults(context.Context, *ExportEvaluationResultsRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ExportEvaluationResults not implemented")
+}
+func (UnimplementedEvaluationServiceServer) RunEvaluationResultMetrics(context.Context, *RunEvaluationResultMetricsRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RunEvaluationResultMetrics not implemented")
 }
 
 // UnsafeEvaluationServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -1200,6 +1251,60 @@ func _EvaluationService_ExportEvaluations_Handler(srv interface{}, ctx context.C
 	return interceptor(ctx, in, info, handler)
 }
 
+func _EvaluationService_ExportEvaluationRuns_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ExportEvaluationRunsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(EvaluationServiceServer).ExportEvaluationRuns(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: EvaluationService_ExportEvaluationRuns_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(EvaluationServiceServer).ExportEvaluationRuns(ctx, req.(*ExportEvaluationRunsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _EvaluationService_ExportEvaluationResults_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ExportEvaluationResultsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(EvaluationServiceServer).ExportEvaluationResults(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: EvaluationService_ExportEvaluationResults_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(EvaluationServiceServer).ExportEvaluationResults(ctx, req.(*ExportEvaluationResultsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _EvaluationService_RunEvaluationResultMetrics_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RunEvaluationResultMetricsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(EvaluationServiceServer).RunEvaluationResultMetrics(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: EvaluationService_RunEvaluationResultMetrics_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(EvaluationServiceServer).RunEvaluationResultMetrics(ctx, req.(*RunEvaluationResultMetricsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // EvaluationService_ServiceDesc is the grpc.ServiceDesc for EvaluationService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -1334,6 +1439,18 @@ var EvaluationService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ExportEvaluations",
 			Handler:    _EvaluationService_ExportEvaluations_Handler,
+		},
+		{
+			MethodName: "ExportEvaluationRuns",
+			Handler:    _EvaluationService_ExportEvaluationRuns_Handler,
+		},
+		{
+			MethodName: "ExportEvaluationResults",
+			Handler:    _EvaluationService_ExportEvaluationResults_Handler,
+		},
+		{
+			MethodName: "RunEvaluationResultMetrics",
+			Handler:    _EvaluationService_RunEvaluationResultMetrics_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

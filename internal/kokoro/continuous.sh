@@ -36,7 +36,7 @@ export GCLOUD_TESTS_GOLANG_DATASTORE_DATABASES=database-01
 export GCLOUD_TESTS_GOLANG_FIRESTORE_PROJECT_ID=gcloud-golang-firestore-tests
 # TODO(codyoss): Update this
 export GCLOUD_TESTS_GOLANG_FIRESTORE_KEY=$KOKORO_KEYSTORE_DIR/72523_go_firestore_integration_service_account
-export GCLOUD_TESTS_GOLANG_FIRESTORE_DATABASES=database-02
+export GCLOUD_TESTS_GOLANG_FIRESTORE_ENTERPRISE_DATABASES=database-enterprise-01
 # TODO(codyoss): Update this
 export GCLOUD_TESTS_API_KEY=$(cat $KOKORO_KEYSTORE_DIR/72523_go_gcloud_tests_api_key)
 export GCLOUD_TESTS_GOLANG_KEYRING=projects/dulcet-port-762/locations/us/keyRings/go-integration-test
@@ -111,6 +111,10 @@ runDirectoryTests() {
   fi
   if [[ $PWD == *"bigquery/benchmarks" ]]; then
     # bigquery/benchmarks: build constraints exclude all Go files
+    return
+  fi
+  if [[ "$PWD/" == *"/examples/"* && "$PWD/" != *"/internal/examples/"* ]]; then
+    # examples: build constraints exclude all Go files
     return
   fi
   if { [[ $PWD == *"/internal/"* ]] ||

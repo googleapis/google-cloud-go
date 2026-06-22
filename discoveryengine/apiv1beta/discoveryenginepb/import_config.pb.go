@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -44,7 +44,7 @@ const (
 // The type of values in a Bigtable column or column family.
 // The values are expected to be encoded using
 // [HBase
-// Bytes.toBytes](https://hbase.apache.org/apidocs/org/apache/hadoop/hbase/util/Bytes.html)
+// Bytes.toBytes](https://hbase.apache.org/1.4/apidocs/org/apache/hadoop/hbase/util/Bytes.html)
 // function when the encoding value is set to `BINARY`.
 type BigtableOptions_Type int32
 
@@ -182,6 +182,9 @@ const (
 	ImportDocumentsRequest_INCREMENTAL ImportDocumentsRequest_ReconciliationMode = 1
 	// Calculates diff and replaces the entire document dataset. Existing
 	// documents may be deleted if they are not present in the source location.
+	// When using this mode, there won't be any downtime on the dataset
+	// targeted. Any document that should remain unchanged or that should be
+	// updated will continue serving while the operation is running.
 	ImportDocumentsRequest_FULL ImportDocumentsRequest_ReconciliationMode = 2
 )
 
@@ -692,8 +695,18 @@ type FhirStoreSource struct {
 	// types](https://cloud.google.com/generative-ai-app-builder/docs/fhir-schema-reference#resource-level-specification).
 	// Default to all supported FHIR resource types if empty.
 	ResourceTypes []string `protobuf:"bytes,3,rep,name=resource_types,json=resourceTypes,proto3" json:"resource_types,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	// Optional. Whether to update the DataStore schema to the latest predefined
+	// schema.
+	//
+	// If true, the DataStore schema will be updated to include any FHIR fields
+	// or resource types that have been added since the last import and
+	// corresponding FHIR resources will be imported from the FHIR store.
+	//
+	// Note this field cannot be used in conjunction with `resource_types`. It
+	// should be used after initial import.
+	UpdateFromLatestPredefinedSchema bool `protobuf:"varint,4,opt,name=update_from_latest_predefined_schema,json=updateFromLatestPredefinedSchema,proto3" json:"update_from_latest_predefined_schema,omitempty"`
+	unknownFields                    protoimpl.UnknownFields
+	sizeCache                        protoimpl.SizeCache
 }
 
 func (x *FhirStoreSource) Reset() {
@@ -745,6 +758,13 @@ func (x *FhirStoreSource) GetResourceTypes() []string {
 		return x.ResourceTypes
 	}
 	return nil
+}
+
+func (x *FhirStoreSource) GetUpdateFromLatestPredefinedSchema() bool {
+	if x != nil {
+		return x.UpdateFromLatestPredefinedSchema
+	}
+	return false
 }
 
 // Cloud SQL source import data from.
@@ -1314,8 +1334,8 @@ type ImportUserEventsMetadata struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Operation create time.
 	CreateTime *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
-	// Operation last update time. If the operation is done, this is also the
-	// finish time.
+	// Output only. Operation last update time. If the operation is done, this is
+	// also the finish time.
 	UpdateTime *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
 	// Count of entries that were processed successfully.
 	SuccessCount int64 `protobuf:"varint,3,opt,name=success_count,json=successCount,proto3" json:"success_count,omitempty"`
@@ -1555,11 +1575,16 @@ type ImportDocumentsRequest struct {
 	// must be `custom` or `csv`. Otherwise, an INVALID_ARGUMENT error is thrown.
 	// * [SpannerSource][google.cloud.discoveryengine.v1beta.SpannerSource].
 	// * [CloudSqlSource][google.cloud.discoveryengine.v1beta.CloudSqlSource].
-	// * [FirestoreSource][google.cloud.discoveryengine.v1beta.FirestoreSource].
 	// * [BigtableSource][google.cloud.discoveryengine.v1beta.BigtableSource].
-	IdField       string `protobuf:"bytes,9,opt,name=id_field,json=idField,proto3" json:"id_field,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	IdField string `protobuf:"bytes,9,opt,name=id_field,json=idField,proto3" json:"id_field,omitempty"`
+	// Optional. Whether to force refresh the unstructured content of the
+	// documents.
+	//
+	// If set to `true`, the content part of the documents will be refreshed
+	// regardless of the update status of the referencing content.
+	ForceRefreshContent bool `protobuf:"varint,16,opt,name=force_refresh_content,json=forceRefreshContent,proto3" json:"force_refresh_content,omitempty"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
 }
 
 func (x *ImportDocumentsRequest) Reset() {
@@ -1720,6 +1745,13 @@ func (x *ImportDocumentsRequest) GetIdField() string {
 		return x.IdField
 	}
 	return ""
+}
+
+func (x *ImportDocumentsRequest) GetForceRefreshContent() bool {
+	if x != nil {
+		return x.ForceRefreshContent
+	}
+	return false
 }
 
 type isImportDocumentsRequest_Source interface {
@@ -3102,13 +3134,14 @@ const file_google_cloud_discoveryengine_v1beta_import_config_proto_rawDesc = "" 
 	"\vinstance_id\x18\x02 \x01(\tB\x03\xe0A\x02R\n" +
 	"instanceId\x12\x1e\n" +
 	"\btable_id\x18\x03 \x01(\tB\x03\xe0A\x02R\atableId\x12d\n" +
-	"\x10bigtable_options\x18\x04 \x01(\v24.google.cloud.discoveryengine.v1beta.BigtableOptionsB\x03\xe0A\x02R\x0fbigtableOptions\"\xac\x01\n" +
+	"\x10bigtable_options\x18\x04 \x01(\v24.google.cloud.discoveryengine.v1beta.BigtableOptionsB\x03\xe0A\x02R\x0fbigtableOptions\"\x81\x02\n" +
 	"\x0fFhirStoreSource\x12J\n" +
 	"\n" +
 	"fhir_store\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
 	"#healthcare.googleapis.com/FhirStoreR\tfhirStore\x12&\n" +
 	"\x0fgcs_staging_dir\x18\x02 \x01(\tR\rgcsStagingDir\x12%\n" +
-	"\x0eresource_types\x18\x03 \x03(\tR\rresourceTypes\"\xdd\x01\n" +
+	"\x0eresource_types\x18\x03 \x03(\tR\rresourceTypes\x12S\n" +
+	"$update_from_latest_predefined_schema\x18\x04 \x01(\bB\x03\xe0A\x01R updateFromLatestPredefinedSchema\"\xdd\x01\n" +
 	"\x0eCloudSqlSource\x12\x1d\n" +
 	"\n" +
 	"project_id\x18\x01 \x01(\tR\tprojectId\x12$\n" +
@@ -3157,11 +3190,11 @@ const file_google_cloud_discoveryengine_v1beta_import_config_proto_rawDesc = "" 
 	"\rerror_samples\x18\x01 \x03(\v2\x12.google.rpc.StatusR\ferrorSamples\x12Y\n" +
 	"\ferror_config\x18\x02 \x01(\v26.google.cloud.discoveryengine.v1beta.ImportErrorConfigR\verrorConfig\x12.\n" +
 	"\x13joined_events_count\x18\x03 \x01(\x03R\x11joinedEventsCount\x122\n" +
-	"\x15unjoined_events_count\x18\x04 \x01(\x03R\x13unjoinedEventsCount\"\xde\x01\n" +
+	"\x15unjoined_events_count\x18\x04 \x01(\x03R\x13unjoinedEventsCount\"\xe3\x01\n" +
 	"\x18ImportUserEventsMetadata\x12;\n" +
 	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
-	"createTime\x12;\n" +
-	"\vupdate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
+	"createTime\x12@\n" +
+	"\vupdate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
 	"updateTime\x12#\n" +
 	"\rsuccess_count\x18\x03 \x01(\x03R\fsuccessCount\x12#\n" +
 	"\rfailure_count\x18\x04 \x01(\x03R\ffailureCount\"\xfe\x01\n" +
@@ -3173,7 +3206,7 @@ const file_google_cloud_discoveryengine_v1beta_import_config_proto_rawDesc = "" 
 	"\rsuccess_count\x18\x03 \x01(\x03R\fsuccessCount\x12#\n" +
 	"\rfailure_count\x18\x04 \x01(\x03R\ffailureCount\x12\x1f\n" +
 	"\vtotal_count\x18\x05 \x01(\x03R\n" +
-	"totalCount\"\xe6\v\n" +
+	"totalCount\"\x9f\f\n" +
 	"\x16ImportDocumentsRequest\x12o\n" +
 	"\rinline_source\x18\x02 \x01(\v2H.google.cloud.discoveryengine.v1beta.ImportDocumentsRequest.InlineSourceH\x00R\finlineSource\x12O\n" +
 	"\n" +
@@ -3193,7 +3226,8 @@ const file_google_cloud_discoveryengine_v1beta_import_config_proto_rawDesc = "" 
 	"\vupdate_mask\x18\a \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
 	"updateMask\x12*\n" +
 	"\x11auto_generate_ids\x18\b \x01(\bR\x0fautoGenerateIds\x12\x19\n" +
-	"\bid_field\x18\t \x01(\tR\aidField\x1a`\n" +
+	"\bid_field\x18\t \x01(\tR\aidField\x127\n" +
+	"\x15force_refresh_content\x18\x10 \x01(\bB\x03\xe0A\x01R\x13forceRefreshContent\x1a`\n" +
 	"\fInlineSource\x12P\n" +
 	"\tdocuments\x18\x01 \x03(\v2-.google.cloud.discoveryengine.v1beta.DocumentB\x03\xe0A\x02R\tdocuments\"T\n" +
 	"\x12ReconciliationMode\x12#\n" +

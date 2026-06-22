@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -436,9 +436,9 @@ type CloudVmClusterProperties struct {
 	DiagnosticsDataCollectionOptions *DataCollectionOptions `protobuf:"bytes,19,opt,name=diagnostics_data_collection_options,json=diagnosticsDataCollectionOptions,proto3" json:"diagnostics_data_collection_options,omitempty"`
 	// Output only. State of the cluster.
 	State CloudVmClusterProperties_State `protobuf:"varint,20,opt,name=state,proto3,enum=google.cloud.oracledatabase.v1.CloudVmClusterProperties_State" json:"state,omitempty"`
-	// Output only. SCAN listener port - TCP
+	// Optional. SCAN listener port - TCP
 	ScanListenerPortTcp int32 `protobuf:"varint,21,opt,name=scan_listener_port_tcp,json=scanListenerPortTcp,proto3" json:"scan_listener_port_tcp,omitempty"`
-	// Output only. SCAN listener port - TLS
+	// Optional. SCAN listener port - TLS
 	ScanListenerPortTcpSsl int32 `protobuf:"varint,22,opt,name=scan_listener_port_tcp_ssl,json=scanListenerPortTcpSsl,proto3" json:"scan_listener_port_tcp_ssl,omitempty"`
 	// Output only. Parent DNS domain where SCAN DNS and hosts names are
 	// qualified. ex: ocispdelegated.ocisp10jvnet.oraclevcn.com
@@ -859,8 +859,8 @@ const file_google_cloud_oracledatabase_v1_vm_cluster_proto_rawDesc = "" +
 	"\x0fhostname_prefix\x18\x10 \x01(\tB\x03\xe0A\x01R\x0ehostnamePrefix\x12\x89\x01\n" +
 	"#diagnostics_data_collection_options\x18\x13 \x01(\v25.google.cloud.oracledatabase.v1.DataCollectionOptionsB\x03\xe0A\x01R diagnosticsDataCollectionOptions\x12Y\n" +
 	"\x05state\x18\x14 \x01(\x0e2>.google.cloud.oracledatabase.v1.CloudVmClusterProperties.StateB\x03\xe0A\x03R\x05state\x128\n" +
-	"\x16scan_listener_port_tcp\x18\x15 \x01(\x05B\x03\xe0A\x03R\x13scanListenerPortTcp\x12?\n" +
-	"\x1ascan_listener_port_tcp_ssl\x18\x16 \x01(\x05B\x03\xe0A\x03R\x16scanListenerPortTcpSsl\x12\x1b\n" +
+	"\x16scan_listener_port_tcp\x18\x15 \x01(\x05B\x03\xe0A\x01R\x13scanListenerPortTcp\x12?\n" +
+	"\x1ascan_listener_port_tcp_ssl\x18\x16 \x01(\x05B\x03\xe0A\x01R\x16scanListenerPortTcpSsl\x12\x1b\n" +
 	"\x06domain\x18\x17 \x01(\tB\x03\xe0A\x03R\x06domain\x12\x1e\n" +
 	"\bscan_dns\x18\x18 \x01(\tB\x03\xe0A\x03R\ascanDns\x12\x1f\n" +
 	"\bhostname\x18\x19 \x01(\tB\x03\xe0A\x03R\bhostname\x12)\n" +

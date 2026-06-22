@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -783,7 +783,7 @@ var File_google_cloud_oracledatabase_v1_exadata_infra_proto protoreflect.FileDes
 
 const file_google_cloud_oracledatabase_v1_exadata_infra_proto_rawDesc = "" +
 	"\n" +
-	"2google/cloud/oracledatabase/v1/exadata_infra.proto\x12\x1egoogle.cloud.oracledatabase.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a+google/cloud/oracledatabase/v1/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1bgoogle/type/dayofweek.proto\x1a\x17google/type/month.proto\"\xe1\x05\n" +
+	"2google/cloud/oracledatabase/v1/exadata_infra.proto\x12\x1egoogle.cloud.oracledatabase.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a+google/cloud/oracledatabase/v1/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1bgoogle/type/dayofweek.proto\x1a\x17google/type/month.proto\"\xe1\x05\n" +
 	"\x1aCloudExadataInfrastructure\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12&\n" +
 	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12+\n" +

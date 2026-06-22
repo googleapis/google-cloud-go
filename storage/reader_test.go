@@ -20,7 +20,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"hash/crc32"
 	"io"
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -596,4 +598,257 @@ func multiReaderTest(ctx context.Context, t *testing.T, test func(*testing.T, *C
 			test(t, client)
 		})
 	}
+}
+
+type mockReadCloserExtraBytes struct {
+	content []byte
+	pos     int
+}
+
+func (m *mockReadCloserExtraBytes) Read(p []byte) (n int, err error) {
+	if m.pos >= len(m.content) {
+		return 0, io.EOF
+	}
+	n = copy(p, m.content[m.pos:])
+	m.pos += n
+	return n, nil
+}
+
+func (m *mockReadCloserExtraBytes) Close() error {
+	return nil
+}
+
+func TestReaderExtraBytesLogging(t *testing.T) {
+	var logOutput bytes.Buffer
+	old := log.Writer()
+	log.SetOutput(&logOutput)
+	defer log.SetOutput(old)
+
+	m := &mockReadCloserExtraBytes{content: []byte("hello world!")} // 12 bytes
+
+	r := &Reader{
+		reader: m,
+		remain: 5, // We pretend we only requested 5 bytes.
+		bucket: "my-bucket",
+		object: "my-object",
+	}
+
+	buf := make([]byte, 100)
+	n, err := r.Read(buf)
+	if err != nil && err != io.EOF {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if n != 12 {
+		t.Fatalf("expected 12 bytes read, got %d", n)
+	}
+
+	// Logging should not have occurred yet during reads.
+	if logOutput.Len() > 0 {
+		t.Errorf("expected no logging during reads, but got: %q", logOutput.String())
+	}
+
+	// Remain() should be 0 because we have fully read our requested range (and more).
+	if rem := r.Remain(); rem != 0 {
+		t.Errorf("expected Remain() to be 0, got %d", rem)
+	}
+
+	// Close should trigger the log.
+	if err := r.Close(); err != nil {
+		t.Fatalf("unexpected error on Close(): %v", err)
+	}
+
+	logStr := logOutput.String()
+	expectedLog := fmt.Sprintf("storage: received 7 more bytes than requested from GCS for bucket %q, object %q", r.bucket, r.object)
+	if !strings.Contains(logStr, expectedLog) {
+		t.Errorf("expected log output to contain %q, but got %q", expectedLog, logStr)
+	}
+}
+
+func TestReaderWriteToExtraBytesLogging(t *testing.T) {
+	var logOutput bytes.Buffer
+	old := log.Writer()
+	log.SetOutput(&logOutput)
+	defer log.SetOutput(old)
+
+	m := &mockReadCloserExtraBytes{content: []byte("hello world!")} // 12 bytes
+
+	r := &Reader{
+		reader: m,
+		remain: 5, // We pretend we only requested 5 bytes.
+		bucket: "my-bucket",
+		object: "my-object",
+	}
+
+	var dst bytes.Buffer
+	n, err := r.WriteTo(&dst)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if n != 12 {
+		t.Fatalf("expected 12 bytes copied, got %d", n)
+	}
+
+	// Logging should not have occurred yet during writes.
+	if logOutput.Len() > 0 {
+		t.Errorf("expected no logging during WriteTo, but got: %q", logOutput.String())
+	}
+
+	// Remain() should be 0 because we have fully read our requested range (and more).
+	if rem := r.Remain(); rem != 0 {
+		t.Errorf("expected Remain() to be 0, got %d", rem)
+	}
+
+	// Close should trigger the log.
+	if err := r.Close(); err != nil {
+		t.Fatalf("unexpected error on Close(): %v", err)
+	}
+
+	logStr := logOutput.String()
+	expectedLog := fmt.Sprintf("storage: received 7 more bytes than requested from GCS for bucket %q, object %q", r.bucket, r.object)
+	if !strings.Contains(logStr, expectedLog) {
+		t.Errorf("expected log output to contain %q, but got %q", expectedLog, logStr)
+	}
+}
+
+func TestHTTPReaderDisableChecksum(t *testing.T) {
+	bucketName := "my-bucket"
+	objectName := "test"
+	downloadObjectXMLurl := fmt.Sprintf("/%s/%s", bucketName, objectName)
+	downloadObjectJSONurl := fmt.Sprintf("/b/%s/o/%s?alt=media&prettyPrint=false&projection=full", bucketName, objectName)
+
+	original := []byte("hello world")
+	// GCS server mock
+	mockGCS := httptest.NewUnstartedServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.URL.String() {
+		case downloadObjectXMLurl, downloadObjectJSONurl:
+			w.Header().Set("Content-Type", "text/plain")
+			w.Header().Set("Etag", `"c50e3e41c9bc9df34e84c94ce073f928"`)
+			w.Header().Set("X-Goog-Generation", "1587012235914578")
+			w.Header().Set("X-Goog-MetaGeneration", "2")
+			w.Header().Set("vary", "Accept-Encoding")
+			w.Header().Set("x-goog-stored-content-length", strconv.Itoa(len(original)))
+			// Wrong CRC32c checksum here.
+			w.Header().Set("x-goog-hash", "crc32c=badcrc==")
+			w.Header().Set("x-goog-storage-class", "STANDARD")
+			w.Write(original)
+		default:
+			fmt.Fprintf(w, "unrecognized URL %s", r.URL)
+		}
+	}))
+	mockGCS.EnableHTTP2 = true
+	mockGCS.StartTLS()
+	defer mockGCS.Close()
+
+	ctx := context.Background()
+	hc := mockGCS.Client()
+	ux, _ := url.Parse(mockGCS.URL)
+	hc.Transport.(*http.Transport).TLSClientConfig.InsecureSkipVerify = true
+	wrt := &alwaysToTargetURLRoundTripper{
+		destURL: ux,
+		hc:      hc,
+	}
+	whc := &http.Client{Transport: wrt}
+
+	multiReaderTest(ctx, t, func(t *testing.T, c *Client) {
+		obj := c.Bucket(bucketName).Object(objectName)
+
+		// 1. Without disabling checksum, it should fail with a CRC error.
+		rd, err := obj.NewReader(ctx)
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer rd.Close()
+		_, err = io.ReadAll(rd)
+		if err == nil {
+			t.Fatal("expected CRC error, got nil")
+		}
+		if !strings.Contains(err.Error(), "storage: bad CRC on read") {
+			t.Fatalf("expected bad CRC error, got: %v", err)
+		}
+
+		// 2. With disabling checksum, it should succeed.
+		rd2, err := obj.NewReader(ctx, WithDisableReaderChecksum())
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer rd2.Close()
+		got, err := io.ReadAll(rd2)
+		if err != nil {
+			t.Fatalf("expected no error with checksum disabled, got: %v", err)
+		}
+		if !bytes.Equal(got, original) {
+			t.Fatalf("content mismatch: got %q, want %q", got, original)
+		}
+	}, option.WithEndpoint(mockGCS.URL), option.WithoutAuthentication(), option.WithHTTPClient(whc))
+}
+
+func TestHTTPReaderMidStreamRetryCRC(t *testing.T) {
+	ctx := context.Background()
+	hc, close := newTestServer(handleRangeRead)
+	defer close()
+
+	originalData := []byte("0123456789")
+	wantCRC := crc32.Checksum(originalData, crc32cTable)
+
+	internalErr := http2Error("blah blah INTERNAL_ERROR")
+
+	multiReaderTest(ctx, t, func(t *testing.T, c *Client) {
+		obj := c.Bucket("b").Object("o")
+		r, err := obj.NewRangeReader(ctx, 0, -1)
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer r.Close()
+
+		// Mock the HTTP reader to simulate a mid-stream retry.
+		// The first body yields 5 bytes and then returns a retryable error in the same call.
+		// The second body yields the remaining 5 bytes and EOF.
+		firstBody := fakeReadCloser{
+			data:   originalData,
+			counts: []int{5},
+			err:    internalErr,
+		}
+		secondBody := fakeReadCloser{
+			data:   originalData[5:],
+			counts: []int{5},
+			err:    io.EOF,
+		}
+
+		b := 0
+		r.checkCRC = true
+		r.reader = &httpReader{
+			body:     &firstBody,
+			checkCRC: true,
+			wantCRC:  wantCRC,
+			reopen: func(seen int64) (*http.Response, error) {
+				if seen != 5 {
+					t.Errorf("expected seen offset 5, got %d", seen)
+				}
+				b++
+				return &http.Response{Body: &secondBody}, nil
+			},
+		}
+
+		// Read all data. Since the buffer size we pass to Read is larger than the data,
+		// the first read will attempt to read the entire data, retrieve 5 bytes and error,
+		// and then trigger reopen.
+		buf := make([]byte, 1024)
+		var gotb []byte
+		for {
+			n, err := r.Read(buf)
+			gotb = append(gotb, buf[:n]...)
+			if err == io.EOF {
+				break
+			}
+			if err != nil {
+				t.Fatalf("expected no read error, got: %v", err)
+			}
+		}
+
+		if got := string(gotb); got != string(originalData) {
+			t.Errorf("got data %q, want %q", got, originalData)
+		}
+	}, option.WithHTTPClient(hc))
 }

@@ -1604,7 +1604,8 @@ func (t *ReadWriteTransaction) acquire(ctx context.Context) (*sessionHandle, *sp
 					Begin: &sppb.TransactionOptions{
 						Mode: &sppb.TransactionOptions_ReadWrite_{
 							ReadWrite: &sppb.TransactionOptions_ReadWrite{
-								ReadLockMode: t.txOpts.ReadLockMode,
+								ReadLockMode:                            t.txOpts.ReadLockMode,
+								MultiplexedSessionPreviousTransactionId: t.previousTx,
 							},
 						},
 						ExcludeTxnFromChangeStreams: t.txOpts.ExcludeTxnFromChangeStreams,

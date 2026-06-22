@@ -1,0 +1,2490 @@
+{
+  "include-component-in-tag": true,
+  "packages": {
+    "accessapproval": {
+      "component": "accessapproval",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.accessapproval.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "accesscontextmanager": {
+      "component": "accesscontextmanager",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.identity.accesscontextmanager.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "advisorynotifications": {
+      "component": "advisorynotifications",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.advisorynotifications.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "agentregistry": {
+      "component": "agentregistry",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.agentregistry.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "ai": {
+      "component": "ai",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/generativelanguage/apiv1/snippet_metadata.google.ai.generativelanguage.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/generativelanguage/apiv1alpha/snippet_metadata.google.ai.generativelanguage.v1alpha.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/generativelanguage/apiv1beta/snippet_metadata.google.ai.generativelanguage.v1beta.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/generativelanguage/apiv1beta2/snippet_metadata.google.ai.generativelanguage.v1beta2.json",
+          "type": "json"
+        }
+      ]
+    },
+    "aiplatform": {
+      "component": "aiplatform"
+    },
+    "alloydb": {
+      "component": "alloydb",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.alloydb.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1alpha/snippet_metadata.google.cloud.alloydb.v1alpha.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1beta/snippet_metadata.google.cloud.alloydb.v1beta.json",
+          "type": "json"
+        }
+      ]
+    },
+    "analytics": {
+      "component": "analytics",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/admin/apiv1alpha/snippet_metadata.google.analytics.admin.v1alpha.json",
+          "type": "json"
+        }
+      ]
+    },
+    "apigateway": {
+      "component": "apigateway",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.apigateway.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "apigeeconnect": {
+      "component": "apigeeconnect",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.apigeeconnect.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "apigeeregistry": {
+      "component": "apigeeregistry",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.apigeeregistry.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "apihub": {
+      "component": "apihub",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.apihub.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "apikeys": {
+      "component": "apikeys",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv2/snippet_metadata.google.api.apikeys.v2.json",
+          "type": "json"
+        }
+      ]
+    },
+    "apiregistry": {
+      "component": "apiregistry",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.apiregistry.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1beta/snippet_metadata.google.cloud.apiregistry.v1beta.json",
+          "type": "json"
+        }
+      ]
+    },
+    "appengine": {
+      "component": "appengine",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.appengine.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "apphub": {
+      "component": "apphub",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.apphub.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "appoptimize": {
+      "component": "appoptimize",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1beta/snippet_metadata.google.cloud.appoptimize.v1beta.json",
+          "type": "json"
+        }
+      ]
+    },
+    "apps": {
+      "component": "apps",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/events/subscriptions/apiv1/snippet_metadata.google.apps.events.subscriptions.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/events/subscriptions/apiv1beta/snippet_metadata.google.apps.events.subscriptions.v1beta.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/meet/apiv2/snippet_metadata.google.apps.meet.v2.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/meet/apiv2beta/snippet_metadata.google.apps.meet.v2beta.json",
+          "type": "json"
+        }
+      ]
+    },
+    "area120": {
+      "component": "area120",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/tables/apiv1alpha1/snippet_metadata.google.area120.tables.v1alpha1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "artifactregistry": {
+      "component": "artifactregistry",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.devtools.artifactregistry.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1beta2/snippet_metadata.google.devtools.artifactregistry.v1beta2.json",
+          "type": "json"
+        }
+      ]
+    },
+    "asset": {
+      "component": "asset",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.asset.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1p2beta1/snippet_metadata.google.cloud.asset.v1p2beta1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1p5beta1/snippet_metadata.google.cloud.asset.v1p5beta1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "assuredworkloads": {
+      "component": "assuredworkloads",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.assuredworkloads.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1beta1/snippet_metadata.google.cloud.assuredworkloads.v1beta1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "auditmanager": {
+      "component": "auditmanager",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.auditmanager.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "automl": {
+      "component": "automl",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.automl.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1beta1/snippet_metadata.google.cloud.automl.v1beta1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "backstory": {
+      "component": "backstory"
+    },
+    "backupdr": {
+      "component": "backupdr",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.backupdr.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "baremetalsolution": {
+      "component": "baremetalsolution",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv2/snippet_metadata.google.cloud.baremetalsolution.v2.json",
+          "type": "json"
+        }
+      ]
+    },
+    "batch": {
+      "component": "batch",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.batch.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "beyondcorp": {
+      "component": "beyondcorp",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/appconnections/apiv1/snippet_metadata.google.cloud.beyondcorp.appconnections.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/appconnectors/apiv1/snippet_metadata.google.cloud.beyondcorp.appconnectors.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/appgateways/apiv1/snippet_metadata.google.cloud.beyondcorp.appgateways.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/clientconnectorservices/apiv1/snippet_metadata.google.cloud.beyondcorp.clientconnectorservices.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/clientgateways/apiv1/snippet_metadata.google.cloud.beyondcorp.clientgateways.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "biglake": {
+      "component": "biglake",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.biglake.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/hive/apiv1beta/snippet_metadata.google.cloud.biglake.hive.v1beta.json",
+          "type": "json"
+        }
+      ]
+    },
+    "billing": {
+      "component": "billing",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.billing.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/budgets/apiv1/snippet_metadata.google.cloud.billing.budgets.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/budgets/apiv1beta1/snippet_metadata.google.cloud.billing.budgets.v1beta1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "binaryauthorization": {
+      "component": "binaryauthorization",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.binaryauthorization.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1beta1/snippet_metadata.google.cloud.binaryauthorization.v1beta1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "capacityplanner": {
+      "component": "capacityplanner",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1beta/snippet_metadata.google.cloud.capacityplanner.v1beta.json",
+          "type": "json"
+        }
+      ]
+    },
+    "certificatemanager": {
+      "component": "certificatemanager",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.certificatemanager.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "ces": {
+      "component": "ces",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.ces.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1beta/snippet_metadata.google.cloud.ces.v1beta.json",
+          "type": "json"
+        }
+      ]
+    },
+    "channel": {
+      "component": "channel",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.channel.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "chat": {
+      "component": "chat",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.chat.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "chronicle": {
+      "component": "chronicle",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.chronicle.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "cloudbuild": {
+      "component": "cloudbuild",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/v2/snippet_metadata.google.devtools.cloudbuild.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv2/snippet_metadata.google.devtools.cloudbuild.v2.json",
+          "type": "json"
+        }
+      ]
+    },
+    "cloudcontrolspartner": {
+      "component": "cloudcontrolspartner",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.cloudcontrolspartner.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1beta/snippet_metadata.google.cloud.cloudcontrolspartner.v1beta.json",
+          "type": "json"
+        }
+      ]
+    },
+    "clouddms": {
+      "component": "clouddms",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.clouddms.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "cloudprofiler": {
+      "component": "cloudprofiler",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv2/snippet_metadata.google.devtools.cloudprofiler.v2.json",
+          "type": "json"
+        }
+      ]
+    },
+    "cloudquotas": {
+      "component": "cloudquotas",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.api.cloudquotas.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1beta/snippet_metadata.google.api.cloudquotas.v1beta.json",
+          "type": "json"
+        }
+      ]
+    },
+    "cloudsecuritycompliance": {
+      "component": "cloudsecuritycompliance",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.cloudsecuritycompliance.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "cloudtasks": {
+      "component": "cloudtasks",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv2/snippet_metadata.google.cloud.tasks.v2.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv2beta2/snippet_metadata.google.cloud.tasks.v2beta2.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv2beta3/snippet_metadata.google.cloud.tasks.v2beta3.json",
+          "type": "json"
+        }
+      ]
+    },
+    "commerce": {
+      "component": "commerce",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/consumer/procurement/apiv1/snippet_metadata.google.cloud.commerce.consumer.procurement.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "compute": {
+      "component": "compute",
+      "exclude-paths": [
+        "compute/metadata"
+      ],
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.compute.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1beta/snippet_metadata.google.cloud.compute.v1beta.json",
+          "type": "json"
+        }
+      ]
+    },
+    "confidentialcomputing": {
+      "component": "confidentialcomputing",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.confidentialcomputing.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1alpha1/snippet_metadata.google.cloud.confidentialcomputing.v1alpha1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "config": {
+      "component": "config",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.config.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "configdelivery": {
+      "component": "configdelivery",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.configdelivery.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1beta/snippet_metadata.google.cloud.configdelivery.v1beta.json",
+          "type": "json"
+        }
+      ]
+    },
+    "contactcenterinsights": {
+      "component": "contactcenterinsights",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.contactcenterinsights.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "container": {
+      "component": "container",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.container.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "containeranalysis": {
+      "component": "containeranalysis",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1beta1/snippet_metadata.google.devtools.containeranalysis.v1beta1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "datacatalog": {
+      "component": "datacatalog",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.datacatalog.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1beta1/snippet_metadata.google.cloud.datacatalog.v1beta1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/lineage/apiv1/snippet_metadata.google.cloud.datacatalog.lineage.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/lineage/configmanagement/apiv1/snippet_metadata.google.cloud.datacatalog.lineage.configmanagement.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "dataflow": {
+      "component": "dataflow",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1beta3/snippet_metadata.google.dataflow.v1beta3.json",
+          "type": "json"
+        }
+      ]
+    },
+    "dataform": {
+      "component": "dataform",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.dataform.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1beta1/snippet_metadata.google.cloud.dataform.v1beta1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "datafusion": {
+      "component": "datafusion",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.datafusion.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "datalabeling": {
+      "component": "datalabeling",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1beta1/snippet_metadata.google.cloud.datalabeling.v1beta1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "datamanager": {
+      "component": "datamanager",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.ads.datamanager.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "dataplex": {
+      "component": "dataplex",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.dataplex.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "dataproc": {
+      "component": "dataproc",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.dataproc.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "dataqna": {
+      "component": "dataqna",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1alpha/snippet_metadata.google.cloud.dataqna.v1alpha.json",
+          "type": "json"
+        }
+      ]
+    },
+    "datastream": {
+      "component": "datastream",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.datastream.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1alpha1/snippet_metadata.google.cloud.datastream.v1alpha1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "deploy": {
+      "component": "deploy",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.deploy.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "developerconnect": {
+      "component": "developerconnect",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.developerconnect.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "devicestreaming": {
+      "component": "devicestreaming",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.devicestreaming.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "dialogflow": {
+      "component": "dialogflow",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv2/snippet_metadata.google.cloud.dialogflow.v2.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv2beta1/snippet_metadata.google.cloud.dialogflow.v2beta1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/cx/apiv3/snippet_metadata.google.cloud.dialogflow.cx.v3.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/cx/apiv3beta1/snippet_metadata.google.cloud.dialogflow.cx.v3beta1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "discoveryengine": {
+      "component": "discoveryengine",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.discoveryengine.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1alpha/snippet_metadata.google.cloud.discoveryengine.v1alpha.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1beta/snippet_metadata.google.cloud.discoveryengine.v1beta.json",
+          "type": "json"
+        }
+      ]
+    },
+    "dlp": {
+      "component": "dlp",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv2/snippet_metadata.google.privacy.dlp.v2.json",
+          "type": "json"
+        }
+      ]
+    },
+    "documentai": {
+      "component": "documentai",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.documentai.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1beta3/snippet_metadata.google.cloud.documentai.v1beta3.json",
+          "type": "json"
+        }
+      ]
+    },
+    "domains": {
+      "component": "domains",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1beta1/snippet_metadata.google.cloud.domains.v1beta1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "edgecontainer": {
+      "component": "edgecontainer",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.edgecontainer.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "edgenetwork": {
+      "component": "edgenetwork",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.edgenetwork.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "errorreporting": {
+      "component": "errorreporting",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1beta1/snippet_metadata.google.devtools.clouderrorreporting.v1beta1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "essentialcontacts": {
+      "component": "essentialcontacts",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.essentialcontacts.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "eventarc": {
+      "component": "eventarc",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.eventarc.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/publishing/apiv1/snippet_metadata.google.cloud.eventarc.publishing.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "filestore": {
+      "component": "filestore",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.filestore.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "financialservices": {
+      "component": "financialservices",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.financialservices.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "functions": {
+      "component": "functions",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.functions.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv2/snippet_metadata.google.cloud.functions.v2.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv2beta/snippet_metadata.google.cloud.functions.v2beta.json",
+          "type": "json"
+        }
+      ]
+    },
+    "geminidataanalytics": {
+      "component": "geminidataanalytics",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.geminidataanalytics.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1beta/snippet_metadata.google.cloud.geminidataanalytics.v1beta.json",
+          "type": "json"
+        }
+      ]
+    },
+    "gkebackup": {
+      "component": "gkebackup",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.gkebackup.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "gkeconnect": {
+      "component": "gkeconnect",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/gateway/apiv1/snippet_metadata.google.cloud.gkeconnect.gateway.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/gateway/apiv1beta1/snippet_metadata.google.cloud.gkeconnect.gateway.v1beta1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "gkehub": {
+      "component": "gkehub",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1beta1/snippet_metadata.google.cloud.gkehub.v1beta1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "gkemulticloud": {
+      "component": "gkemulticloud",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.gkemulticloud.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "gkerecommender": {
+      "component": "gkerecommender",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.gkerecommender.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "grafeas": {
+      "component": "grafeas"
+    },
+    "gsuiteaddons": {
+      "component": "gsuiteaddons",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.gsuiteaddons.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "hypercomputecluster": {
+      "component": "hypercomputecluster",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.hypercomputecluster.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1beta/snippet_metadata.google.cloud.hypercomputecluster.v1beta.json",
+          "type": "json"
+        }
+      ]
+    },
+    "iam": {
+      "component": "iam",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.iam.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv2/snippet_metadata.google.iam.v2.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv3/snippet_metadata.google.iam.v3.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv3beta/snippet_metadata.google.iam.v3beta.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/credentials/apiv1/snippet_metadata.google.iam.credentials.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "iap": {
+      "component": "iap",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.iap.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "identitytoolkit": {
+      "component": "identitytoolkit",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv2/snippet_metadata.google.cloud.identitytoolkit.v2.json",
+          "type": "json"
+        }
+      ]
+    },
+    "ids": {
+      "component": "ids",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.ids.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "iot": {
+      "component": "iot",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.iot.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "kms": {
+      "component": "kms",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.kms.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/inventory/apiv1/snippet_metadata.google.cloud.kms.inventory.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "language": {
+      "component": "language",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.language.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1beta2/snippet_metadata.google.cloud.language.v1beta2.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv2/snippet_metadata.google.cloud.language.v2.json",
+          "type": "json"
+        }
+      ]
+    },
+    "licensemanager": {
+      "component": "licensemanager",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.licensemanager.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "lifesciences": {
+      "component": "lifesciences",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv2beta/snippet_metadata.google.cloud.lifesciences.v2beta.json",
+          "type": "json"
+        }
+      ]
+    },
+    "locationfinder": {
+      "component": "locationfinder",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.locationfinder.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "logging": {
+      "component": "logging",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv2/snippet_metadata.google.logging.v2.json",
+          "type": "json"
+        }
+      ]
+    },
+    "longrunning": {
+      "component": "longrunning",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/autogen/snippet_metadata.google.longrunning.json",
+          "type": "json"
+        }
+      ]
+    },
+    "lustre": {
+      "component": "lustre",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.lustre.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "maintenance": {
+      "component": "maintenance",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/api/apiv1/snippet_metadata.google.cloud.maintenance.api.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/api/apiv1beta/snippet_metadata.google.cloud.maintenance.api.v1beta.json",
+          "type": "json"
+        }
+      ]
+    },
+    "managedidentities": {
+      "component": "managedidentities",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.managedidentities.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "managedkafka": {
+      "component": "managedkafka",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.managedkafka.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/schemaregistry/apiv1/snippet_metadata.google.cloud.managedkafka.schemaregistry.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "maps": {
+      "component": "maps",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/addressvalidation/apiv1/snippet_metadata.google.maps.addressvalidation.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/areainsights/apiv1/snippet_metadata.google.maps.areainsights.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/fleetengine/apiv1/snippet_metadata.maps.fleetengine.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/geocode/apiv4/snippet_metadata.google.maps.geocode.v4.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/places/apiv1/snippet_metadata.google.maps.places.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/routeoptimization/apiv1/snippet_metadata.google.maps.routeoptimization.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/routing/apiv2/snippet_metadata.google.maps.routing.v2.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/solar/apiv1/snippet_metadata.google.maps.solar.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "mediatranslation": {
+      "component": "mediatranslation",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1beta1/snippet_metadata.google.cloud.mediatranslation.v1beta1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "memcache": {
+      "component": "memcache",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.memcache.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1beta2/snippet_metadata.google.cloud.memcache.v1beta2.json",
+          "type": "json"
+        }
+      ]
+    },
+    "memorystore": {
+      "component": "memorystore",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.memorystore.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1beta/snippet_metadata.google.cloud.memorystore.v1beta.json",
+          "type": "json"
+        }
+      ]
+    },
+    "metastore": {
+      "component": "metastore",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.metastore.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1alpha/snippet_metadata.google.cloud.metastore.v1alpha.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1beta/snippet_metadata.google.cloud.metastore.v1beta.json",
+          "type": "json"
+        }
+      ]
+    },
+    "migrationcenter": {
+      "component": "migrationcenter",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.migrationcenter.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "modelarmor": {
+      "component": "modelarmor",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.modelarmor.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1beta/snippet_metadata.google.cloud.modelarmor.v1beta.json",
+          "type": "json"
+        }
+      ]
+    },
+    "monitoring": {
+      "component": "monitoring",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv3/v2/snippet_metadata.google.monitoring.v3.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/dashboard/apiv1/snippet_metadata.google.monitoring.dashboard.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/metricsscope/apiv1/snippet_metadata.google.monitoring.metricsscope.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "netapp": {
+      "component": "netapp",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.netapp.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "networkconnectivity": {
+      "component": "networkconnectivity",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.networkconnectivity.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1alpha1/snippet_metadata.google.cloud.networkconnectivity.v1alpha1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1beta/snippet_metadata.google.cloud.networkconnectivity.v1beta.json",
+          "type": "json"
+        }
+      ]
+    },
+    "networkmanagement": {
+      "component": "networkmanagement",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.networkmanagement.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "networksecurity": {
+      "component": "networksecurity",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.networksecurity.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1beta1/snippet_metadata.google.cloud.networksecurity.v1beta1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "networkservices": {
+      "component": "networkservices",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.networkservices.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "notebooks": {
+      "component": "notebooks",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.notebooks.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1beta1/snippet_metadata.google.cloud.notebooks.v1beta1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv2/snippet_metadata.google.cloud.notebooks.v2.json",
+          "type": "json"
+        }
+      ]
+    },
+    "optimization": {
+      "component": "optimization",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.optimization.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "oracledatabase": {
+      "component": "oracledatabase",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.oracledatabase.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "orchestration": {
+      "component": "orchestration",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/airflow/service/apiv1/snippet_metadata.google.cloud.orchestration.airflow.service.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "orgpolicy": {
+      "component": "orgpolicy",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv2/snippet_metadata.google.cloud.orgpolicy.v2.json",
+          "type": "json"
+        }
+      ]
+    },
+    "osconfig": {
+      "component": "osconfig",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/agentendpoint/apiv1/snippet_metadata.google.cloud.osconfig.agentendpoint.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/agentendpoint/apiv1beta/snippet_metadata.google.cloud.osconfig.agentendpoint.v1beta.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.osconfig.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1alpha/snippet_metadata.google.cloud.osconfig.v1alpha.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1beta/snippet_metadata.google.cloud.osconfig.v1beta.json",
+          "type": "json"
+        }
+      ]
+    },
+    "oslogin": {
+      "component": "oslogin",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.oslogin.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1beta/snippet_metadata.google.cloud.oslogin.v1beta.json",
+          "type": "json"
+        }
+      ]
+    },
+    "parallelstore": {
+      "component": "parallelstore",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.parallelstore.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1beta/snippet_metadata.google.cloud.parallelstore.v1beta.json",
+          "type": "json"
+        }
+      ]
+    },
+    "parametermanager": {
+      "component": "parametermanager",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.parametermanager.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "phishingprotection": {
+      "component": "phishingprotection",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1beta1/snippet_metadata.google.cloud.phishingprotection.v1beta1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "policysimulator": {
+      "component": "policysimulator",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.policysimulator.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "policytroubleshooter": {
+      "component": "policytroubleshooter",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.policytroubleshooter.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/iam/apiv3/snippet_metadata.google.cloud.policytroubleshooter.iam.v3.json",
+          "type": "json"
+        }
+      ]
+    },
+    "privatecatalog": {
+      "component": "privatecatalog",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1beta1/snippet_metadata.google.cloud.privatecatalog.v1beta1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "privilegedaccessmanager": {
+      "component": "privilegedaccessmanager",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.privilegedaccessmanager.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "profiler": {
+      "component": "profiler"
+    },
+    "rapidmigrationassessment": {
+      "component": "rapidmigrationassessment",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.rapidmigrationassessment.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "recaptchaenterprise": {
+      "component": "recaptchaenterprise",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.recaptchaenterprise.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1beta1/snippet_metadata.google.cloud.recaptchaenterprise.v1beta1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "recommendationengine": {
+      "component": "recommendationengine",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1beta1/snippet_metadata.google.cloud.recommendationengine.v1beta1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "recommender": {
+      "component": "recommender",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.recommender.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1beta1/snippet_metadata.google.cloud.recommender.v1beta1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "redis": {
+      "component": "redis",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.redis.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1beta1/snippet_metadata.google.cloud.redis.v1beta1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/cluster/apiv1/snippet_metadata.google.cloud.redis.cluster.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "resourcemanager": {
+      "component": "resourcemanager",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv2/snippet_metadata.google.cloud.resourcemanager.v2.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv3/snippet_metadata.google.cloud.resourcemanager.v3.json",
+          "type": "json"
+        }
+      ]
+    },
+    "retail": {
+      "component": "retail",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv2/snippet_metadata.google.cloud.retail.v2.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv2alpha/snippet_metadata.google.cloud.retail.v2alpha.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv2beta/snippet_metadata.google.cloud.retail.v2beta.json",
+          "type": "json"
+        }
+      ]
+    },
+    "run": {
+      "component": "run",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv2/snippet_metadata.google.cloud.run.v2.json",
+          "type": "json"
+        }
+      ]
+    },
+    "saasplatform": {
+      "component": "saasplatform",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/saasservicemgmt/apiv1beta1/snippet_metadata.google.cloud.saasplatform.saasservicemgmt.v1beta1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "scheduler": {
+      "component": "scheduler",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.scheduler.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1beta1/snippet_metadata.google.cloud.scheduler.v1beta1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "secretmanager": {
+      "component": "secretmanager",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.secretmanager.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1beta2/snippet_metadata.google.cloud.secretmanager.v1beta2.json",
+          "type": "json"
+        }
+      ]
+    },
+    "securesourcemanager": {
+      "component": "securesourcemanager",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.securesourcemanager.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "security": {
+      "component": "security",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/privateca/apiv1/snippet_metadata.google.cloud.security.privateca.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/publicca/apiv1/snippet_metadata.google.cloud.security.publicca.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/publicca/apiv1beta1/snippet_metadata.google.cloud.security.publicca.v1beta1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "securitycenter": {
+      "component": "securitycenter",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.securitycenter.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1beta1/snippet_metadata.google.cloud.securitycenter.v1beta1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1p1beta1/snippet_metadata.google.cloud.securitycenter.v1p1beta1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv2/snippet_metadata.google.cloud.securitycenter.v2.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/settings/apiv1beta1/snippet_metadata.google.cloud.securitycenter.settings.v1beta1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "securitycentermanagement": {
+      "component": "securitycentermanagement",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.securitycentermanagement.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "securityposture": {
+      "component": "securityposture",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.securityposture.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "servicecontrol": {
+      "component": "servicecontrol",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.api.servicecontrol.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "servicedirectory": {
+      "component": "servicedirectory",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.servicedirectory.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1beta1/snippet_metadata.google.cloud.servicedirectory.v1beta1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "servicehealth": {
+      "component": "servicehealth",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.servicehealth.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "servicemanagement": {
+      "component": "servicemanagement",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.api.servicemanagement.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "serviceusage": {
+      "component": "serviceusage",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.api.serviceusage.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "shell": {
+      "component": "shell",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.shell.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "shopping": {
+      "component": "shopping",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/css/apiv1/snippet_metadata.google.shopping.css.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/merchant/accounts/apiv1/snippet_metadata.google.shopping.merchant.accounts.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/merchant/accounts/apiv1beta/snippet_metadata.google.shopping.merchant.accounts.v1beta.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/merchant/conversions/apiv1/snippet_metadata.google.shopping.merchant.conversions.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/merchant/conversions/apiv1beta/snippet_metadata.google.shopping.merchant.conversions.v1beta.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/merchant/datasources/apiv1/snippet_metadata.google.shopping.merchant.datasources.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/merchant/datasources/apiv1beta/snippet_metadata.google.shopping.merchant.datasources.v1beta.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/merchant/inventories/apiv1/snippet_metadata.google.shopping.merchant.inventories.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/merchant/inventories/apiv1beta/snippet_metadata.google.shopping.merchant.inventories.v1beta.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/merchant/issueresolution/apiv1/snippet_metadata.google.shopping.merchant.issueresolution.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/merchant/issueresolution/apiv1beta/snippet_metadata.google.shopping.merchant.issueresolution.v1beta.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/merchant/lfp/apiv1/snippet_metadata.google.shopping.merchant.lfp.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/merchant/lfp/apiv1beta/snippet_metadata.google.shopping.merchant.lfp.v1beta.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/merchant/notifications/apiv1/snippet_metadata.google.shopping.merchant.notifications.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/merchant/notifications/apiv1beta/snippet_metadata.google.shopping.merchant.notifications.v1beta.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/merchant/ordertracking/apiv1/snippet_metadata.google.shopping.merchant.ordertracking.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/merchant/ordertracking/apiv1beta/snippet_metadata.google.shopping.merchant.ordertracking.v1beta.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/merchant/products/apiv1/snippet_metadata.google.shopping.merchant.products.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/merchant/products/apiv1beta/snippet_metadata.google.shopping.merchant.products.v1beta.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/merchant/productstudio/apiv1alpha/snippet_metadata.google.shopping.merchant.productstudio.v1alpha.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/merchant/promotions/apiv1/snippet_metadata.google.shopping.merchant.promotions.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/merchant/promotions/apiv1beta/snippet_metadata.google.shopping.merchant.promotions.v1beta.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/merchant/quota/apiv1/snippet_metadata.google.shopping.merchant.quota.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/merchant/quota/apiv1beta/snippet_metadata.google.shopping.merchant.quota.v1beta.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/merchant/reports/apiv1/snippet_metadata.google.shopping.merchant.reports.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/merchant/reports/apiv1beta/snippet_metadata.google.shopping.merchant.reports.v1beta.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/merchant/reviews/apiv1beta/snippet_metadata.google.shopping.merchant.reviews.v1beta.json",
+          "type": "json"
+        }
+      ]
+    },
+    "speech": {
+      "component": "speech",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.speech.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1p1beta1/snippet_metadata.google.cloud.speech.v1p1beta1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv2/snippet_metadata.google.cloud.speech.v2.json",
+          "type": "json"
+        }
+      ]
+    },
+    "storagebatchoperations": {
+      "component": "storagebatchoperations",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.storagebatchoperations.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "storageinsights": {
+      "component": "storageinsights",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.storageinsights.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "storagetransfer": {
+      "component": "storagetransfer",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.storagetransfer.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "streetview": {
+      "component": "streetview",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/publish/apiv1/snippet_metadata.google.streetview.publish.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "support": {
+      "component": "support",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv2/snippet_metadata.google.cloud.support.v2.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv2beta/snippet_metadata.google.cloud.support.v2beta.json",
+          "type": "json"
+        }
+      ]
+    },
+    "talent": {
+      "component": "talent",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv4/snippet_metadata.google.cloud.talent.v4.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv4beta1/snippet_metadata.google.cloud.talent.v4beta1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "telcoautomation": {
+      "component": "telcoautomation",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.telcoautomation.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "texttospeech": {
+      "component": "texttospeech",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.texttospeech.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "tpu": {
+      "component": "tpu",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.tpu.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "trace": {
+      "component": "trace",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.devtools.cloudtrace.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv2/snippet_metadata.google.devtools.cloudtrace.v2.json",
+          "type": "json"
+        }
+      ]
+    },
+    "translate": {
+      "component": "translate",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv3/snippet_metadata.google.cloud.translation.v3.json",
+          "type": "json"
+        }
+      ]
+    },
+    "vectorsearch": {
+      "component": "vectorsearch",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.vectorsearch.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1beta/snippet_metadata.google.cloud.vectorsearch.v1beta.json",
+          "type": "json"
+        }
+      ]
+    },
+    "video": {
+      "component": "video",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/livestream/apiv1/snippet_metadata.google.cloud.video.livestream.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/stitcher/apiv1/snippet_metadata.google.cloud.video.stitcher.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/transcoder/apiv1/snippet_metadata.google.cloud.video.transcoder.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "videointelligence": {
+      "component": "videointelligence",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.videointelligence.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1beta2/snippet_metadata.google.cloud.videointelligence.v1beta2.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1p3beta1/snippet_metadata.google.cloud.videointelligence.v1p3beta1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "vision": {
+      "component": "vision",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.vision.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1p1beta1/snippet_metadata.google.cloud.vision.v1p1beta1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "visionai": {
+      "component": "visionai",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.visionai.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "vmmigration": {
+      "component": "vmmigration",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.vmmigration.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "vmwareengine": {
+      "component": "vmwareengine",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.vmwareengine.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "vpcaccess": {
+      "component": "vpcaccess",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.vpcaccess.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "webrisk": {
+      "component": "webrisk",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.webrisk.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1beta1/snippet_metadata.google.cloud.webrisk.v1beta1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "websecurityscanner": {
+      "component": "websecurityscanner",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.websecurityscanner.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "workflows": {
+      "component": "workflows",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.workflows.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1beta/snippet_metadata.google.cloud.workflows.v1beta.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/executions/apiv1/snippet_metadata.google.cloud.workflows.executions.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/executions/apiv1beta/snippet_metadata.google.cloud.workflows.executions.v1beta.json",
+          "type": "json"
+        }
+      ]
+    },
+    "workloadmanager": {
+      "component": "workloadmanager",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.workloadmanager.v1.json",
+          "type": "json"
+        }
+      ]
+    },
+    "workstations": {
+      "component": "workstations",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.workstations.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1beta/snippet_metadata.google.cloud.workstations.v1beta.json",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  "plugins": [
+    "sentence-case"
+  ],
+  "release-type": "go-librarian",
+  "tag-separator": "/"
+}

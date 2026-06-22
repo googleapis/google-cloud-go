@@ -95,6 +95,57 @@ func (Context_SchemaRelationship_Source) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_geminidataanalytics_v1beta_context_proto_rawDescGZIP(), []int{0, 0, 0}
 }
 
+// Allowed models for the agent/conversation.
+type ConversationOptions_Model int32
+
+const (
+	// No model specified. The model may be set on the chat request, or the
+	// default model will be used.
+	ConversationOptions_MODEL_UNSPECIFIED ConversationOptions_Model = 0
+	// Use the most up-to-date non-preview model. This may constrain certain
+	// request level settings.
+	ConversationOptions_LATEST_GA_MODEL ConversationOptions_Model = 1
+)
+
+// Enum value maps for ConversationOptions_Model.
+var (
+	ConversationOptions_Model_name = map[int32]string{
+		0: "MODEL_UNSPECIFIED",
+		1: "LATEST_GA_MODEL",
+	}
+	ConversationOptions_Model_value = map[string]int32{
+		"MODEL_UNSPECIFIED": 0,
+		"LATEST_GA_MODEL":   1,
+	}
+)
+
+func (x ConversationOptions_Model) Enum() *ConversationOptions_Model {
+	p := new(ConversationOptions_Model)
+	*p = x
+	return p
+}
+
+func (x ConversationOptions_Model) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (ConversationOptions_Model) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_geminidataanalytics_v1beta_context_proto_enumTypes[1].Descriptor()
+}
+
+func (ConversationOptions_Model) Type() protoreflect.EnumType {
+	return &file_google_cloud_geminidataanalytics_v1beta_context_proto_enumTypes[1]
+}
+
+func (x ConversationOptions_Model) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use ConversationOptions_Model.Descriptor instead.
+func (ConversationOptions_Model) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_geminidataanalytics_v1beta_context_proto_rawDescGZIP(), []int{11, 0}
+}
+
 // A collection of context to apply to this conversation
 type Context struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -111,19 +162,23 @@ type Context struct {
 	Options *ConversationOptions `protobuf:"bytes,3,opt,name=options,proto3" json:"options,omitempty"`
 	// Optional. A list of example queries, providing examples of relevant and
 	// commonly used SQL queries and their corresponding natural language queries
-	// optionally present. Currently only used for BigQuery data sources.
+	// optionally present. Currently only used for BigQuery data sources and
+	// databases (alloydb, cloudsql, spanner) data sources.
 	ExampleQueries []*ExampleQuery `protobuf:"bytes,5,rep,name=example_queries,json=exampleQueries,proto3" json:"example_queries,omitempty"`
 	// Optional. A list of golden queries, providing examples of relevant and
 	// commonly used Looker queries and their corresponding natural language
-	// queries optionally present.
+	// queries optionally present. Only supported for Looker data sources.
 	LookerGoldenQueries []*LookerGoldenQuery `protobuf:"bytes,11,rep,name=looker_golden_queries,json=lookerGoldenQueries,proto3" json:"looker_golden_queries,omitempty"`
 	// Optional. Term definitions (currently, only user authored)
+	// Not supported for databases (alloydb, cloudsql, spanner) data sources.
 	GlossaryTerms []*GlossaryTerm `protobuf:"bytes,8,rep,name=glossary_terms,json=glossaryTerms,proto3" json:"glossary_terms,omitempty"`
 	// Optional. Relationships between table schema, including referencing and
 	// referenced columns.
 	SchemaRelationships []*Context_SchemaRelationship `protobuf:"bytes,9,rep,name=schema_relationships,json=schemaRelationships,proto3" json:"schema_relationships,omitempty"`
-	unknownFields       protoimpl.UnknownFields
-	sizeCache           protoimpl.SizeCache
+	// Optional. A collection of user functions to be included in context.
+	UserFunctions *UserFunctions `protobuf:"bytes,10,opt,name=user_functions,json=userFunctions,proto3" json:"user_functions,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *Context) Reset() {
@@ -205,6 +260,179 @@ func (x *Context) GetSchemaRelationships() []*Context_SchemaRelationship {
 	return nil
 }
 
+func (x *Context) GetUserFunctions() *UserFunctions {
+	if x != nil {
+		return x.UserFunctions
+	}
+	return nil
+}
+
+// A collection of user functions to be included in context.
+type UserFunctions struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// A list of BigQuery routines to include in the context.
+	BqRoutines    []*BigQueryRoutine `protobuf:"bytes,1,rep,name=bq_routines,json=bqRoutines,proto3" json:"bq_routines,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UserFunctions) Reset() {
+	*x = UserFunctions{}
+	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UserFunctions) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UserFunctions) ProtoMessage() {}
+
+func (x *UserFunctions) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UserFunctions.ProtoReflect.Descriptor instead.
+func (*UserFunctions) Descriptor() ([]byte, []int) {
+	return file_google_cloud_geminidataanalytics_v1beta_context_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *UserFunctions) GetBqRoutines() []*BigQueryRoutine {
+	if x != nil {
+		return x.BqRoutines
+	}
+	return nil
+}
+
+// A reference to a BigQuery routine.
+type BigQueryRoutine struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The reference to the BigQuery routine.
+	RoutineReference *BigQueryRoutineReference `protobuf:"bytes,1,opt,name=routine_reference,json=routineReference,proto3" json:"routine_reference,omitempty"`
+	// User override or addition to description, to tell the agent when to use the
+	// UDF.
+	Description   string `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *BigQueryRoutine) Reset() {
+	*x = BigQueryRoutine{}
+	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BigQueryRoutine) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BigQueryRoutine) ProtoMessage() {}
+
+func (x *BigQueryRoutine) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BigQueryRoutine.ProtoReflect.Descriptor instead.
+func (*BigQueryRoutine) Descriptor() ([]byte, []int) {
+	return file_google_cloud_geminidataanalytics_v1beta_context_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *BigQueryRoutine) GetRoutineReference() *BigQueryRoutineReference {
+	if x != nil {
+		return x.RoutineReference
+	}
+	return nil
+}
+
+func (x *BigQueryRoutine) GetDescription() string {
+	if x != nil {
+		return x.Description
+	}
+	return ""
+}
+
+// A reference to a BigQuery routine.
+type BigQueryRoutineReference struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The project ID of the routine.
+	ProjectId string `protobuf:"bytes,1,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
+	// The dataset ID of the routine.
+	DatasetId string `protobuf:"bytes,2,opt,name=dataset_id,json=datasetId,proto3" json:"dataset_id,omitempty"`
+	// The routine ID of the routine.
+	RoutineId     string `protobuf:"bytes,3,opt,name=routine_id,json=routineId,proto3" json:"routine_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *BigQueryRoutineReference) Reset() {
+	*x = BigQueryRoutineReference{}
+	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BigQueryRoutineReference) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BigQueryRoutineReference) ProtoMessage() {}
+
+func (x *BigQueryRoutineReference) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BigQueryRoutineReference.ProtoReflect.Descriptor instead.
+func (*BigQueryRoutineReference) Descriptor() ([]byte, []int) {
+	return file_google_cloud_geminidataanalytics_v1beta_context_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *BigQueryRoutineReference) GetProjectId() string {
+	if x != nil {
+		return x.ProjectId
+	}
+	return ""
+}
+
+func (x *BigQueryRoutineReference) GetDatasetId() string {
+	if x != nil {
+		return x.DatasetId
+	}
+	return ""
+}
+
+func (x *BigQueryRoutineReference) GetRoutineId() string {
+	if x != nil {
+		return x.RoutineId
+	}
+	return ""
+}
+
 // Example of relevant and commonly used SQL query and its corresponding natural
 // language queries optionally present. Currently only used for BigQuery data
 // sources.
@@ -220,13 +448,18 @@ type ExampleQuery struct {
 	// Optional. A natural language question that a user might ask.
 	// For example: "How many orders were placed last month?"
 	NaturalLanguageQuestion string `protobuf:"bytes,1,opt,name=natural_language_question,json=naturalLanguageQuestion,proto3" json:"natural_language_question,omitempty"`
-	unknownFields           protoimpl.UnknownFields
-	sizeCache               protoimpl.SizeCache
+	// Optional. The list of query parameters.
+	// Example: The parameterized SQL query
+	// "SELECT * FROM my_table WHERE id = @id" can be matched with any value of
+	// id.
+	Parameters    []*QueryParameter `protobuf:"bytes,3,rep,name=parameters,proto3" json:"parameters,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *ExampleQuery) Reset() {
 	*x = ExampleQuery{}
-	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[1]
+	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -238,7 +471,7 @@ func (x *ExampleQuery) String() string {
 func (*ExampleQuery) ProtoMessage() {}
 
 func (x *ExampleQuery) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[1]
+	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -251,7 +484,7 @@ func (x *ExampleQuery) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExampleQuery.ProtoReflect.Descriptor instead.
 func (*ExampleQuery) Descriptor() ([]byte, []int) {
-	return file_google_cloud_geminidataanalytics_v1beta_context_proto_rawDescGZIP(), []int{1}
+	return file_google_cloud_geminidataanalytics_v1beta_context_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *ExampleQuery) GetQuery() isExampleQuery_Query {
@@ -277,6 +510,13 @@ func (x *ExampleQuery) GetNaturalLanguageQuestion() string {
 	return ""
 }
 
+func (x *ExampleQuery) GetParameters() []*QueryParameter {
+	if x != nil {
+		return x.Parameters
+	}
+	return nil
+}
+
 type isExampleQuery_Query interface {
 	isExampleQuery_Query()
 }
@@ -289,6 +529,190 @@ type ExampleQuery_SqlQuery struct {
 }
 
 func (*ExampleQuery_SqlQuery) isExampleQuery_Query() {}
+
+// A query parameter message represents a parameter that can be used to
+// parameterize a SQL query.
+type QueryParameter struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The name of the parameter reference in the SQL query.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Optional. The description of the parameter that can be used by LLM to
+	// extract the parameter value from the user question.
+	Description string `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
+	// Required. The data type of the parameter, e.g. "STRING", "INT64", "DATE",
+	// etc. For valid values, see the [BigQuery
+	// documentation](https://cloud.google.com/bigquery/docs/reference/standard-sql/data-types).
+	// This will be used to populate
+	// google.cloud.bigquery.v2.QueryParameterType.type.
+	DataType      string `protobuf:"bytes,3,opt,name=data_type,json=dataType,proto3" json:"data_type,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *QueryParameter) Reset() {
+	*x = QueryParameter{}
+	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *QueryParameter) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*QueryParameter) ProtoMessage() {}
+
+func (x *QueryParameter) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use QueryParameter.ProtoReflect.Descriptor instead.
+func (*QueryParameter) Descriptor() ([]byte, []int) {
+	return file_google_cloud_geminidataanalytics_v1beta_context_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *QueryParameter) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *QueryParameter) GetDescription() string {
+	if x != nil {
+		return x.Description
+	}
+	return ""
+}
+
+func (x *QueryParameter) GetDataType() string {
+	if x != nil {
+		return x.DataType
+	}
+	return ""
+}
+
+// A matched query message represents the agent having matched one of the
+// example queries supplied in context as being applicable to the current
+// question. It will also contain additional info during the matching process.
+type MatchedQuery struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The query that was matched based on an example query.
+	ExampleQuery *ExampleQuery `protobuf:"bytes,1,opt,name=example_query,json=exampleQuery,proto3" json:"example_query,omitempty"`
+	// The extracted values for the query parameters.
+	QueryParameterValues []*QueryParameterValues `protobuf:"bytes,2,rep,name=query_parameter_values,json=queryParameterValues,proto3" json:"query_parameter_values,omitempty"`
+	unknownFields        protoimpl.UnknownFields
+	sizeCache            protoimpl.SizeCache
+}
+
+func (x *MatchedQuery) Reset() {
+	*x = MatchedQuery{}
+	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *MatchedQuery) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MatchedQuery) ProtoMessage() {}
+
+func (x *MatchedQuery) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MatchedQuery.ProtoReflect.Descriptor instead.
+func (*MatchedQuery) Descriptor() ([]byte, []int) {
+	return file_google_cloud_geminidataanalytics_v1beta_context_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *MatchedQuery) GetExampleQuery() *ExampleQuery {
+	if x != nil {
+		return x.ExampleQuery
+	}
+	return nil
+}
+
+func (x *MatchedQuery) GetQueryParameterValues() []*QueryParameterValues {
+	if x != nil {
+		return x.QueryParameterValues
+	}
+	return nil
+}
+
+// A query parameter values message represents the values for the query
+// parameters that were extracted from the user question by LLM, based on the
+// example query.
+type QueryParameterValues struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The name of the parameter.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Required. The value of the parameter.
+	Value         string `protobuf:"bytes,2,opt,name=value,proto3" json:"value,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *QueryParameterValues) Reset() {
+	*x = QueryParameterValues{}
+	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *QueryParameterValues) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*QueryParameterValues) ProtoMessage() {}
+
+func (x *QueryParameterValues) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use QueryParameterValues.ProtoReflect.Descriptor instead.
+func (*QueryParameterValues) Descriptor() ([]byte, []int) {
+	return file_google_cloud_geminidataanalytics_v1beta_context_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *QueryParameterValues) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *QueryParameterValues) GetValue() string {
+	if x != nil {
+		return x.Value
+	}
+	return ""
+}
 
 // A golden query for Looker, including natural language questions and a
 // corresponding Looker Query. Analogous to ExampleQuery.
@@ -305,7 +729,7 @@ type LookerGoldenQuery struct {
 
 func (x *LookerGoldenQuery) Reset() {
 	*x = LookerGoldenQuery{}
-	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[2]
+	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -317,7 +741,7 @@ func (x *LookerGoldenQuery) String() string {
 func (*LookerGoldenQuery) ProtoMessage() {}
 
 func (x *LookerGoldenQuery) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[2]
+	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -330,7 +754,7 @@ func (x *LookerGoldenQuery) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LookerGoldenQuery.ProtoReflect.Descriptor instead.
 func (*LookerGoldenQuery) Descriptor() ([]byte, []int) {
-	return file_google_cloud_geminidataanalytics_v1beta_context_proto_rawDescGZIP(), []int{2}
+	return file_google_cloud_geminidataanalytics_v1beta_context_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *LookerGoldenQuery) GetNaturalLanguageQuestions() []string {
@@ -363,14 +787,22 @@ type LookerQuery struct {
 	// Optional. The sorts to apply to the explore.
 	Sorts []string `protobuf:"bytes,5,rep,name=sorts,proto3" json:"sorts,omitempty"`
 	// Optional. Limit in the query.
-	Limit         *string `protobuf:"bytes,6,opt,name=limit,proto3,oneof" json:"limit,omitempty"`
+	Limit *string `protobuf:"bytes,6,opt,name=limit,proto3,oneof" json:"limit,omitempty"`
+	// Optional. The primary identifier for the query resource in Looker, used for
+	// API operations. Maps to `id` (or `slug`) in the Looker API `Query`
+	// resource.
+	QueryId *string `protobuf:"bytes,10,opt,name=query_id,json=queryId,proto3,oneof" json:"query_id,omitempty"`
+	// Optional. The short alphanumeric identifier for the query, used for share
+	// links and Explore URLs (e.g., in the `qid` parameter). Maps to `client_id`
+	// in the Looker API `Query` resource.
+	ClientId      *string `protobuf:"bytes,11,opt,name=client_id,json=clientId,proto3,oneof" json:"client_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *LookerQuery) Reset() {
 	*x = LookerQuery{}
-	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[3]
+	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -382,7 +814,7 @@ func (x *LookerQuery) String() string {
 func (*LookerQuery) ProtoMessage() {}
 
 func (x *LookerQuery) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[3]
+	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -395,7 +827,7 @@ func (x *LookerQuery) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LookerQuery.ProtoReflect.Descriptor instead.
 func (*LookerQuery) Descriptor() ([]byte, []int) {
-	return file_google_cloud_geminidataanalytics_v1beta_context_proto_rawDescGZIP(), []int{3}
+	return file_google_cloud_geminidataanalytics_v1beta_context_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *LookerQuery) GetModel() string {
@@ -440,6 +872,20 @@ func (x *LookerQuery) GetLimit() string {
 	return ""
 }
 
+func (x *LookerQuery) GetQueryId() string {
+	if x != nil && x.QueryId != nil {
+		return *x.QueryId
+	}
+	return ""
+}
+
+func (x *LookerQuery) GetClientId() string {
+	if x != nil && x.ClientId != nil {
+		return *x.ClientId
+	}
+	return ""
+}
+
 // Definition of a term within a specific domain.
 type GlossaryTerm struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -459,7 +905,7 @@ type GlossaryTerm struct {
 
 func (x *GlossaryTerm) Reset() {
 	*x = GlossaryTerm{}
-	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[4]
+	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -471,7 +917,7 @@ func (x *GlossaryTerm) String() string {
 func (*GlossaryTerm) ProtoMessage() {}
 
 func (x *GlossaryTerm) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[4]
+	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -484,7 +930,7 @@ func (x *GlossaryTerm) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GlossaryTerm.ProtoReflect.Descriptor instead.
 func (*GlossaryTerm) Descriptor() ([]byte, []int) {
-	return file_google_cloud_geminidataanalytics_v1beta_context_proto_rawDescGZIP(), []int{4}
+	return file_google_cloud_geminidataanalytics_v1beta_context_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *GlossaryTerm) GetDisplayName() string {
@@ -516,14 +962,16 @@ type ConversationOptions struct {
 	// Optional. Options for analysis.
 	Analysis *AnalysisOptions `protobuf:"bytes,2,opt,name=analysis,proto3" json:"analysis,omitempty"`
 	// Optional. Options for datasources.
-	Datasource    *DatasourceOptions `protobuf:"bytes,3,opt,name=datasource,proto3" json:"datasource,omitempty"`
+	Datasource *DatasourceOptions `protobuf:"bytes,3,opt,name=datasource,proto3" json:"datasource,omitempty"`
+	// Optional. The model to use for the agent loop.
+	Model         *ConversationOptions_Model `protobuf:"varint,6,opt,name=model,proto3,enum=google.cloud.geminidataanalytics.v1beta.ConversationOptions_Model,oneof" json:"model,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *ConversationOptions) Reset() {
 	*x = ConversationOptions{}
-	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[5]
+	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -535,7 +983,7 @@ func (x *ConversationOptions) String() string {
 func (*ConversationOptions) ProtoMessage() {}
 
 func (x *ConversationOptions) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[5]
+	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -548,7 +996,7 @@ func (x *ConversationOptions) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConversationOptions.ProtoReflect.Descriptor instead.
 func (*ConversationOptions) Descriptor() ([]byte, []int) {
-	return file_google_cloud_geminidataanalytics_v1beta_context_proto_rawDescGZIP(), []int{5}
+	return file_google_cloud_geminidataanalytics_v1beta_context_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *ConversationOptions) GetChart() *ChartOptions {
@@ -572,6 +1020,13 @@ func (x *ConversationOptions) GetDatasource() *DatasourceOptions {
 	return nil
 }
 
+func (x *ConversationOptions) GetModel() ConversationOptions_Model {
+	if x != nil && x.Model != nil {
+		return *x.Model
+	}
+	return ConversationOptions_MODEL_UNSPECIFIED
+}
+
 // Options for datasources configurations.
 type DatasourceOptions struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -586,7 +1041,7 @@ type DatasourceOptions struct {
 
 func (x *DatasourceOptions) Reset() {
 	*x = DatasourceOptions{}
-	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[6]
+	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -598,7 +1053,7 @@ func (x *DatasourceOptions) String() string {
 func (*DatasourceOptions) ProtoMessage() {}
 
 func (x *DatasourceOptions) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[6]
+	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -611,7 +1066,7 @@ func (x *DatasourceOptions) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DatasourceOptions.ProtoReflect.Descriptor instead.
 func (*DatasourceOptions) Descriptor() ([]byte, []int) {
-	return file_google_cloud_geminidataanalytics_v1beta_context_proto_rawDescGZIP(), []int{6}
+	return file_google_cloud_geminidataanalytics_v1beta_context_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *DatasourceOptions) GetBigQueryMaxBilledBytes() *wrapperspb.Int64Value {
@@ -633,7 +1088,7 @@ type ChartOptions struct {
 
 func (x *ChartOptions) Reset() {
 	*x = ChartOptions{}
-	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[7]
+	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -645,7 +1100,7 @@ func (x *ChartOptions) String() string {
 func (*ChartOptions) ProtoMessage() {}
 
 func (x *ChartOptions) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[7]
+	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -658,7 +1113,7 @@ func (x *ChartOptions) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ChartOptions.ProtoReflect.Descriptor instead.
 func (*ChartOptions) Descriptor() ([]byte, []int) {
-	return file_google_cloud_geminidataanalytics_v1beta_context_proto_rawDescGZIP(), []int{7}
+	return file_google_cloud_geminidataanalytics_v1beta_context_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *ChartOptions) GetImage() *ChartOptions_ImageOptions {
@@ -679,7 +1134,7 @@ type AnalysisOptions struct {
 
 func (x *AnalysisOptions) Reset() {
 	*x = AnalysisOptions{}
-	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[8]
+	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -691,7 +1146,7 @@ func (x *AnalysisOptions) String() string {
 func (*AnalysisOptions) ProtoMessage() {}
 
 func (x *AnalysisOptions) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[8]
+	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -704,7 +1159,7 @@ func (x *AnalysisOptions) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AnalysisOptions.ProtoReflect.Descriptor instead.
 func (*AnalysisOptions) Descriptor() ([]byte, []int) {
-	return file_google_cloud_geminidataanalytics_v1beta_context_proto_rawDescGZIP(), []int{8}
+	return file_google_cloud_geminidataanalytics_v1beta_context_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *AnalysisOptions) GetPython() *AnalysisOptions_Python {
@@ -713,6 +1168,254 @@ func (x *AnalysisOptions) GetPython() *AnalysisOptions_Python {
 	}
 	return nil
 }
+
+// Source attributions for content.
+type Citation struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Output only. List of the sources being cited.
+	Sources []*CitationSource `protobuf:"bytes,1,rep,name=sources,proto3" json:"sources,omitempty"`
+	// Output only. List of the anchors of the citations.
+	Anchors       []*CitationAnchor `protobuf:"bytes,2,rep,name=anchors,proto3" json:"anchors,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Citation) Reset() {
+	*x = Citation{}
+	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[15]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Citation) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Citation) ProtoMessage() {}
+
+func (x *Citation) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[15]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Citation.ProtoReflect.Descriptor instead.
+func (*Citation) Descriptor() ([]byte, []int) {
+	return file_google_cloud_geminidataanalytics_v1beta_context_proto_rawDescGZIP(), []int{15}
+}
+
+func (x *Citation) GetSources() []*CitationSource {
+	if x != nil {
+		return x.Sources
+	}
+	return nil
+}
+
+func (x *Citation) GetAnchors() []*CitationAnchor {
+	if x != nil {
+		return x.Anchors
+	}
+	return nil
+}
+
+// The source of the citation.
+type CitationSource struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The source of the citation, which can be one of the supported types.
+	//
+	// Types that are valid to be assigned to SourceType:
+	//
+	//	*CitationSource_Uri
+	//	*CitationSource_ExampleQuery
+	//	*CitationSource_GlossaryTerm
+	SourceType isCitationSource_SourceType `protobuf_oneof:"source_type"`
+	// Output only. Unique identifier of the source. This ID is service-generated
+	// and is unique within the scope of a single `Citation` message.
+	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	// Output only. The title of the source.
+	Title         string `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CitationSource) Reset() {
+	*x = CitationSource{}
+	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[16]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CitationSource) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CitationSource) ProtoMessage() {}
+
+func (x *CitationSource) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[16]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CitationSource.ProtoReflect.Descriptor instead.
+func (*CitationSource) Descriptor() ([]byte, []int) {
+	return file_google_cloud_geminidataanalytics_v1beta_context_proto_rawDescGZIP(), []int{16}
+}
+
+func (x *CitationSource) GetSourceType() isCitationSource_SourceType {
+	if x != nil {
+		return x.SourceType
+	}
+	return nil
+}
+
+func (x *CitationSource) GetUri() string {
+	if x != nil {
+		if x, ok := x.SourceType.(*CitationSource_Uri); ok {
+			return x.Uri
+		}
+	}
+	return ""
+}
+
+func (x *CitationSource) GetExampleQuery() *ExampleQuery {
+	if x != nil {
+		if x, ok := x.SourceType.(*CitationSource_ExampleQuery); ok {
+			return x.ExampleQuery
+		}
+	}
+	return nil
+}
+
+func (x *CitationSource) GetGlossaryTerm() *GlossaryTerm {
+	if x != nil {
+		if x, ok := x.SourceType.(*CitationSource_GlossaryTerm); ok {
+			return x.GlossaryTerm
+		}
+	}
+	return nil
+}
+
+func (x *CitationSource) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *CitationSource) GetTitle() string {
+	if x != nil {
+		return x.Title
+	}
+	return ""
+}
+
+type isCitationSource_SourceType interface {
+	isCitationSource_SourceType()
+}
+
+type CitationSource_Uri struct {
+	// Output only. The uri used as the source, such as a web grounding URL.
+	Uri string `protobuf:"bytes,3,opt,name=uri,proto3,oneof"`
+}
+
+type CitationSource_ExampleQuery struct {
+	// Output only. The example query used as the source.
+	ExampleQuery *ExampleQuery `protobuf:"bytes,4,opt,name=example_query,json=exampleQuery,proto3,oneof"`
+}
+
+type CitationSource_GlossaryTerm struct {
+	// Output only. The glossary term used as the source.
+	GlossaryTerm *GlossaryTerm `protobuf:"bytes,5,opt,name=glossary_term,json=glossaryTerm,proto3,oneof"`
+}
+
+func (*CitationSource_Uri) isCitationSource_SourceType() {}
+
+func (*CitationSource_ExampleQuery) isCitationSource_SourceType() {}
+
+func (*CitationSource_GlossaryTerm) isCitationSource_SourceType() {}
+
+// The anchor of the citation.
+type CitationAnchor struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The anchor of the citation, which can be one of the supported types.
+	//
+	// Types that are valid to be assigned to AnchorType:
+	//
+	//	*CitationAnchor_TextMessageAnchor
+	AnchorType    isCitationAnchor_AnchorType `protobuf_oneof:"anchor_type"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CitationAnchor) Reset() {
+	*x = CitationAnchor{}
+	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[17]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CitationAnchor) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CitationAnchor) ProtoMessage() {}
+
+func (x *CitationAnchor) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[17]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CitationAnchor.ProtoReflect.Descriptor instead.
+func (*CitationAnchor) Descriptor() ([]byte, []int) {
+	return file_google_cloud_geminidataanalytics_v1beta_context_proto_rawDescGZIP(), []int{17}
+}
+
+func (x *CitationAnchor) GetAnchorType() isCitationAnchor_AnchorType {
+	if x != nil {
+		return x.AnchorType
+	}
+	return nil
+}
+
+func (x *CitationAnchor) GetTextMessageAnchor() *CitationAnchor_TextMessageCitationAnchor {
+	if x != nil {
+		if x, ok := x.AnchorType.(*CitationAnchor_TextMessageAnchor); ok {
+			return x.TextMessageAnchor
+		}
+	}
+	return nil
+}
+
+type isCitationAnchor_AnchorType interface {
+	isCitationAnchor_AnchorType()
+}
+
+type CitationAnchor_TextMessageAnchor struct {
+	// Output only. Only set if the citation is for a TextMessage.
+	TextMessageAnchor *CitationAnchor_TextMessageCitationAnchor `protobuf:"bytes,1,opt,name=text_message_anchor,json=textMessageAnchor,proto3,oneof"`
+}
+
+func (*CitationAnchor_TextMessageAnchor) isCitationAnchor_AnchorType() {}
 
 // The relationship between two tables, including referencing and referenced
 // columns. This is a derived context retrieved from Dataplex Dataset
@@ -729,9 +1432,9 @@ type Context_SchemaRelationship struct {
 	// Each field at index i in this list must correspond to a field at the same
 	// index in the `left_schema_paths` list.
 	RightSchemaPaths *Context_SchemaRelationship_SchemaPaths `protobuf:"bytes,2,opt,name=right_schema_paths,json=rightSchemaPaths,proto3" json:"right_schema_paths,omitempty"`
-	// Sources which generated the schema relation edge.
+	// Optional. Sources which generated the schema relation edge.
 	Sources []Context_SchemaRelationship_Source `protobuf:"varint,3,rep,packed,name=sources,proto3,enum=google.cloud.geminidataanalytics.v1beta.Context_SchemaRelationship_Source" json:"sources,omitempty"`
-	// A confidence score for the suggested relationship.
+	// Optional. A confidence score for the suggested relationship.
 	// Manually added edges have the highest confidence score.
 	ConfidenceScore float32 `protobuf:"fixed32,4,opt,name=confidence_score,json=confidenceScore,proto3" json:"confidence_score,omitempty"`
 	unknownFields   protoimpl.UnknownFields
@@ -740,7 +1443,7 @@ type Context_SchemaRelationship struct {
 
 func (x *Context_SchemaRelationship) Reset() {
 	*x = Context_SchemaRelationship{}
-	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[9]
+	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -752,7 +1455,7 @@ func (x *Context_SchemaRelationship) String() string {
 func (*Context_SchemaRelationship) ProtoMessage() {}
 
 func (x *Context_SchemaRelationship) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[9]
+	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -811,7 +1514,7 @@ type Context_SchemaRelationship_SchemaPaths struct {
 
 func (x *Context_SchemaRelationship_SchemaPaths) Reset() {
 	*x = Context_SchemaRelationship_SchemaPaths{}
-	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[10]
+	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -823,7 +1526,7 @@ func (x *Context_SchemaRelationship_SchemaPaths) String() string {
 func (*Context_SchemaRelationship_SchemaPaths) ProtoMessage() {}
 
 func (x *Context_SchemaRelationship_SchemaPaths) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[10]
+	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -858,15 +1561,17 @@ type LookerQuery_Filter struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. The field to filter on.
 	Field string `protobuf:"bytes,1,opt,name=field,proto3" json:"field,omitempty"`
-	// Required. The value for the field to filter on.
-	Value         string `protobuf:"bytes,2,opt,name=value,proto3" json:"value,omitempty"`
+	// Optional. The value for the field to filter on.
+	// Optional so we can preserve the default value as an empty
+	// string, important to get a valid and working Looker Explore url.
+	Value         *string `protobuf:"bytes,2,opt,name=value,proto3,oneof" json:"value,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *LookerQuery_Filter) Reset() {
 	*x = LookerQuery_Filter{}
-	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[11]
+	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -878,7 +1583,7 @@ func (x *LookerQuery_Filter) String() string {
 func (*LookerQuery_Filter) ProtoMessage() {}
 
 func (x *LookerQuery_Filter) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[11]
+	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -891,7 +1596,7 @@ func (x *LookerQuery_Filter) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LookerQuery_Filter.ProtoReflect.Descriptor instead.
 func (*LookerQuery_Filter) Descriptor() ([]byte, []int) {
-	return file_google_cloud_geminidataanalytics_v1beta_context_proto_rawDescGZIP(), []int{3, 0}
+	return file_google_cloud_geminidataanalytics_v1beta_context_proto_rawDescGZIP(), []int{9, 0}
 }
 
 func (x *LookerQuery_Filter) GetField() string {
@@ -902,8 +1607,8 @@ func (x *LookerQuery_Filter) GetField() string {
 }
 
 func (x *LookerQuery_Filter) GetValue() string {
-	if x != nil {
-		return x.Value
+	if x != nil && x.Value != nil {
+		return *x.Value
 	}
 	return ""
 }
@@ -924,7 +1629,7 @@ type ChartOptions_ImageOptions struct {
 
 func (x *ChartOptions_ImageOptions) Reset() {
 	*x = ChartOptions_ImageOptions{}
-	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[12]
+	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -936,7 +1641,7 @@ func (x *ChartOptions_ImageOptions) String() string {
 func (*ChartOptions_ImageOptions) ProtoMessage() {}
 
 func (x *ChartOptions_ImageOptions) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[12]
+	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -949,7 +1654,7 @@ func (x *ChartOptions_ImageOptions) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ChartOptions_ImageOptions.ProtoReflect.Descriptor instead.
 func (*ChartOptions_ImageOptions) Descriptor() ([]byte, []int) {
-	return file_google_cloud_geminidataanalytics_v1beta_context_proto_rawDescGZIP(), []int{7, 0}
+	return file_google_cloud_geminidataanalytics_v1beta_context_proto_rawDescGZIP(), []int{13, 0}
 }
 
 func (x *ChartOptions_ImageOptions) GetKind() isChartOptions_ImageOptions_Kind {
@@ -1004,7 +1709,7 @@ type ChartOptions_ImageOptions_NoImage struct {
 
 func (x *ChartOptions_ImageOptions_NoImage) Reset() {
 	*x = ChartOptions_ImageOptions_NoImage{}
-	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[13]
+	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1016,7 +1721,7 @@ func (x *ChartOptions_ImageOptions_NoImage) String() string {
 func (*ChartOptions_ImageOptions_NoImage) ProtoMessage() {}
 
 func (x *ChartOptions_ImageOptions_NoImage) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[13]
+	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1029,7 +1734,7 @@ func (x *ChartOptions_ImageOptions_NoImage) ProtoReflect() protoreflect.Message 
 
 // Deprecated: Use ChartOptions_ImageOptions_NoImage.ProtoReflect.Descriptor instead.
 func (*ChartOptions_ImageOptions_NoImage) Descriptor() ([]byte, []int) {
-	return file_google_cloud_geminidataanalytics_v1beta_context_proto_rawDescGZIP(), []int{7, 0, 0}
+	return file_google_cloud_geminidataanalytics_v1beta_context_proto_rawDescGZIP(), []int{13, 0, 0}
 }
 
 // SVG options.
@@ -1041,7 +1746,7 @@ type ChartOptions_ImageOptions_SvgOptions struct {
 
 func (x *ChartOptions_ImageOptions_SvgOptions) Reset() {
 	*x = ChartOptions_ImageOptions_SvgOptions{}
-	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[14]
+	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1053,7 +1758,7 @@ func (x *ChartOptions_ImageOptions_SvgOptions) String() string {
 func (*ChartOptions_ImageOptions_SvgOptions) ProtoMessage() {}
 
 func (x *ChartOptions_ImageOptions_SvgOptions) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[14]
+	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1066,7 +1771,7 @@ func (x *ChartOptions_ImageOptions_SvgOptions) ProtoReflect() protoreflect.Messa
 
 // Deprecated: Use ChartOptions_ImageOptions_SvgOptions.ProtoReflect.Descriptor instead.
 func (*ChartOptions_ImageOptions_SvgOptions) Descriptor() ([]byte, []int) {
-	return file_google_cloud_geminidataanalytics_v1beta_context_proto_rawDescGZIP(), []int{7, 0, 1}
+	return file_google_cloud_geminidataanalytics_v1beta_context_proto_rawDescGZIP(), []int{13, 0, 1}
 }
 
 // Options for Python analysis.
@@ -1081,7 +1786,7 @@ type AnalysisOptions_Python struct {
 
 func (x *AnalysisOptions_Python) Reset() {
 	*x = AnalysisOptions_Python{}
-	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[15]
+	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1093,7 +1798,7 @@ func (x *AnalysisOptions_Python) String() string {
 func (*AnalysisOptions_Python) ProtoMessage() {}
 
 func (x *AnalysisOptions_Python) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[15]
+	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1106,7 +1811,7 @@ func (x *AnalysisOptions_Python) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AnalysisOptions_Python.ProtoReflect.Descriptor instead.
 func (*AnalysisOptions_Python) Descriptor() ([]byte, []int) {
-	return file_google_cloud_geminidataanalytics_v1beta_context_proto_rawDescGZIP(), []int{8, 0}
+	return file_google_cloud_geminidataanalytics_v1beta_context_proto_rawDescGZIP(), []int{14, 0}
 }
 
 func (x *AnalysisOptions_Python) GetEnabled() bool {
@@ -1116,12 +1821,91 @@ func (x *AnalysisOptions_Python) GetEnabled() bool {
 	return false
 }
 
+// Citation anchor within a TextMessage.
+type CitationAnchor_TextMessageCitationAnchor struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Output only. The 0-based index of the part within the TextMessage.parts
+	// field.
+	PartIndex int32 `protobuf:"varint,1,opt,name=part_index,json=partIndex,proto3" json:"part_index,omitempty"`
+	// Output only. The offset, measured in UTF-8 bytes, within the part string
+	// where the citation begins (inclusive). Example: For the text "Hello,
+	// world" where "world" is cited, the start offset bytes (inclusive) is 7
+	// and the end offset bytes (exclusive) is 12.
+	StartOffsetBytes int32 `protobuf:"varint,2,opt,name=start_offset_bytes,json=startOffsetBytes,proto3" json:"start_offset_bytes,omitempty"`
+	// Output only. The offset, measured in UTF-8 bytes, within the part string
+	// where the citation ends (exclusive). Example: For the text "Hello, world"
+	// where "world" is cited, the start offset bytes (inclusive) is 7 and the
+	// end offset bytes (exclusive) is 12.
+	EndOffsetBytes int32 `protobuf:"varint,3,opt,name=end_offset_bytes,json=endOffsetBytes,proto3" json:"end_offset_bytes,omitempty"`
+	// Output only. The ids of the sources that are cited.
+	SourceIds     []string `protobuf:"bytes,4,rep,name=source_ids,json=sourceIds,proto3" json:"source_ids,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CitationAnchor_TextMessageCitationAnchor) Reset() {
+	*x = CitationAnchor_TextMessageCitationAnchor{}
+	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[25]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CitationAnchor_TextMessageCitationAnchor) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CitationAnchor_TextMessageCitationAnchor) ProtoMessage() {}
+
+func (x *CitationAnchor_TextMessageCitationAnchor) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[25]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CitationAnchor_TextMessageCitationAnchor.ProtoReflect.Descriptor instead.
+func (*CitationAnchor_TextMessageCitationAnchor) Descriptor() ([]byte, []int) {
+	return file_google_cloud_geminidataanalytics_v1beta_context_proto_rawDescGZIP(), []int{17, 0}
+}
+
+func (x *CitationAnchor_TextMessageCitationAnchor) GetPartIndex() int32 {
+	if x != nil {
+		return x.PartIndex
+	}
+	return 0
+}
+
+func (x *CitationAnchor_TextMessageCitationAnchor) GetStartOffsetBytes() int32 {
+	if x != nil {
+		return x.StartOffsetBytes
+	}
+	return 0
+}
+
+func (x *CitationAnchor_TextMessageCitationAnchor) GetEndOffsetBytes() int32 {
+	if x != nil {
+		return x.EndOffsetBytes
+	}
+	return 0
+}
+
+func (x *CitationAnchor_TextMessageCitationAnchor) GetSourceIds() []string {
+	if x != nil {
+		return x.SourceIds
+	}
+	return nil
+}
+
 var File_google_cloud_geminidataanalytics_v1beta_context_proto protoreflect.FileDescriptor
 
 const file_google_cloud_geminidataanalytics_v1beta_context_proto_rawDesc = "" +
 	"\n" +
-	"5google/cloud/geminidataanalytics/v1beta/context.proto\x12'google.cloud.geminidataanalytics.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a8google/cloud/geminidataanalytics/v1beta/datasource.proto\x1a\x1egoogle/protobuf/wrappers.proto\"\xa2\n" +
-	"\n" +
+	"5google/cloud/geminidataanalytics/v1beta/context.proto\x12'google.cloud.geminidataanalytics.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a8google/cloud/geminidataanalytics/v1beta/datasource.proto\x1a\x1egoogle/protobuf/wrappers.proto\"\x90\v\n" +
 	"\aContext\x122\n" +
 	"\x12system_instruction\x18\x01 \x01(\tB\x03\xe0A\x01R\x11systemInstruction\x12w\n" +
 	"\x15datasource_references\x18\a \x01(\v2=.google.cloud.geminidataanalytics.v1beta.DatasourceReferencesB\x03\xe0A\x02R\x14datasourceReferences\x12[\n" +
@@ -1129,12 +1913,14 @@ const file_google_cloud_geminidataanalytics_v1beta_context_proto_rawDesc = "" +
 	"\x0fexample_queries\x18\x05 \x03(\v25.google.cloud.geminidataanalytics.v1beta.ExampleQueryB\x03\xe0A\x01R\x0eexampleQueries\x12s\n" +
 	"\x15looker_golden_queries\x18\v \x03(\v2:.google.cloud.geminidataanalytics.v1beta.LookerGoldenQueryB\x03\xe0A\x01R\x13lookerGoldenQueries\x12a\n" +
 	"\x0eglossary_terms\x18\b \x03(\v25.google.cloud.geminidataanalytics.v1beta.GlossaryTermB\x03\xe0A\x01R\rglossaryTerms\x12{\n" +
-	"\x14schema_relationships\x18\t \x03(\v2C.google.cloud.geminidataanalytics.v1beta.Context.SchemaRelationshipB\x03\xe0A\x01R\x13schemaRelationships\x1a\xd2\x04\n" +
+	"\x14schema_relationships\x18\t \x03(\v2C.google.cloud.geminidataanalytics.v1beta.Context.SchemaRelationshipB\x03\xe0A\x01R\x13schemaRelationships\x12b\n" +
+	"\x0euser_functions\x18\n" +
+	" \x01(\v26.google.cloud.geminidataanalytics.v1beta.UserFunctionsB\x03\xe0A\x01R\ruserFunctions\x1a\xdc\x04\n" +
 	"\x12SchemaRelationship\x12{\n" +
 	"\x11left_schema_paths\x18\x01 \x01(\v2O.google.cloud.geminidataanalytics.v1beta.Context.SchemaRelationship.SchemaPathsR\x0fleftSchemaPaths\x12}\n" +
-	"\x12right_schema_paths\x18\x02 \x01(\v2O.google.cloud.geminidataanalytics.v1beta.Context.SchemaRelationship.SchemaPathsR\x10rightSchemaPaths\x12d\n" +
-	"\asources\x18\x03 \x03(\x0e2J.google.cloud.geminidataanalytics.v1beta.Context.SchemaRelationship.SourceR\asources\x12)\n" +
-	"\x10confidence_score\x18\x04 \x01(\x02R\x0fconfidenceScore\x1a@\n" +
+	"\x12right_schema_paths\x18\x02 \x01(\v2O.google.cloud.geminidataanalytics.v1beta.Context.SchemaRelationship.SchemaPathsR\x10rightSchemaPaths\x12i\n" +
+	"\asources\x18\x03 \x03(\x0e2J.google.cloud.geminidataanalytics.v1beta.Context.SchemaRelationship.SourceB\x03\xe0A\x01R\asources\x12.\n" +
+	"\x10confidence_score\x18\x04 \x01(\x02B\x03\xe0A\x01R\x0fconfidenceScore\x1a@\n" +
 	"\vSchemaPaths\x12\x1b\n" +
 	"\ttable_fqn\x18\x01 \x01(\tR\btableFqn\x12\x14\n" +
 	"\x05paths\x18\x02 \x03(\tR\x05paths\"m\n" +
@@ -1142,35 +1928,73 @@ const file_google_cloud_geminidataanalytics_v1beta_context_proto_rawDesc = "" +
 	"\x12SOURCE_UNSPECIFIED\x10\x00\x12\x18\n" +
 	"\x14BIGQUERY_JOB_HISTORY\x10\x01\x12\x11\n" +
 	"\rLLM_SUGGESTED\x10\x02\x12\x1e\n" +
-	"\x1aBIGQUERY_TABLE_CONSTRAINTS\x10\x03\"|\n" +
+	"\x1aBIGQUERY_TABLE_CONSTRAINTS\x10\x03\"j\n" +
+	"\rUserFunctions\x12Y\n" +
+	"\vbq_routines\x18\x01 \x03(\v28.google.cloud.geminidataanalytics.v1beta.BigQueryRoutineR\n" +
+	"bqRoutines\"\xa3\x01\n" +
+	"\x0fBigQueryRoutine\x12n\n" +
+	"\x11routine_reference\x18\x01 \x01(\v2A.google.cloud.geminidataanalytics.v1beta.BigQueryRoutineReferenceR\x10routineReference\x12 \n" +
+	"\vdescription\x18\x02 \x01(\tR\vdescription\"w\n" +
+	"\x18BigQueryRoutineReference\x12\x1d\n" +
+	"\n" +
+	"project_id\x18\x01 \x01(\tR\tprojectId\x12\x1d\n" +
+	"\n" +
+	"dataset_id\x18\x02 \x01(\tR\tdatasetId\x12\x1d\n" +
+	"\n" +
+	"routine_id\x18\x03 \x01(\tR\troutineId\"\xda\x01\n" +
 	"\fExampleQuery\x12\"\n" +
 	"\tsql_query\x18e \x01(\tB\x03\xe0A\x01H\x00R\bsqlQuery\x12?\n" +
-	"\x19natural_language_question\x18\x01 \x01(\tB\x03\xe0A\x01R\x17naturalLanguageQuestionB\a\n" +
-	"\x05query\"\xb4\x01\n" +
+	"\x19natural_language_question\x18\x01 \x01(\tB\x03\xe0A\x01R\x17naturalLanguageQuestion\x12\\\n" +
+	"\n" +
+	"parameters\x18\x03 \x03(\v27.google.cloud.geminidataanalytics.v1beta.QueryParameterB\x03\xe0A\x01R\n" +
+	"parametersB\a\n" +
+	"\x05query\"r\n" +
+	"\x0eQueryParameter\x12\x17\n" +
+	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12%\n" +
+	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x01R\vdescription\x12 \n" +
+	"\tdata_type\x18\x03 \x01(\tB\x03\xe0A\x02R\bdataType\"\xdf\x01\n" +
+	"\fMatchedQuery\x12Z\n" +
+	"\rexample_query\x18\x01 \x01(\v25.google.cloud.geminidataanalytics.v1beta.ExampleQueryR\fexampleQuery\x12s\n" +
+	"\x16query_parameter_values\x18\x02 \x03(\v2=.google.cloud.geminidataanalytics.v1beta.QueryParameterValuesR\x14queryParameterValues\"J\n" +
+	"\x14QueryParameterValues\x12\x17\n" +
+	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12\x19\n" +
+	"\x05value\x18\x02 \x01(\tB\x03\xe0A\x02R\x05value\"\xb4\x01\n" +
 	"\x11LookerGoldenQuery\x12A\n" +
 	"\x1anatural_language_questions\x18\x04 \x03(\tB\x03\xe0A\x01R\x18naturalLanguageQuestions\x12\\\n" +
-	"\flooker_query\x18\x05 \x01(\v24.google.cloud.geminidataanalytics.v1beta.LookerQueryB\x03\xe0A\x01R\vlookerQuery\"\xc5\x02\n" +
+	"\flooker_query\x18\x05 \x01(\v24.google.cloud.geminidataanalytics.v1beta.LookerQueryB\x03\xe0A\x01R\vlookerQuery\"\xbb\x03\n" +
 	"\vLookerQuery\x12\x19\n" +
 	"\x05model\x18\x01 \x01(\tB\x03\xe0A\x02R\x05model\x12\x1d\n" +
 	"\aexplore\x18\x02 \x01(\tB\x03\xe0A\x02R\aexplore\x12\x1b\n" +
 	"\x06fields\x18\x03 \x03(\tB\x03\xe0A\x01R\x06fields\x12Z\n" +
 	"\afilters\x18\x04 \x03(\v2;.google.cloud.geminidataanalytics.v1beta.LookerQuery.FilterB\x03\xe0A\x01R\afilters\x12\x19\n" +
 	"\x05sorts\x18\x05 \x03(\tB\x03\xe0A\x01R\x05sorts\x12\x1e\n" +
-	"\x05limit\x18\x06 \x01(\tB\x03\xe0A\x01H\x00R\x05limit\x88\x01\x01\x1a>\n" +
+	"\x05limit\x18\x06 \x01(\tB\x03\xe0A\x01H\x00R\x05limit\x88\x01\x01\x12#\n" +
+	"\bquery_id\x18\n" +
+	" \x01(\tB\x03\xe0A\x01H\x01R\aqueryId\x88\x01\x01\x12%\n" +
+	"\tclient_id\x18\v \x01(\tB\x03\xe0A\x01H\x02R\bclientId\x88\x01\x01\x1aM\n" +
 	"\x06Filter\x12\x19\n" +
-	"\x05field\x18\x01 \x01(\tB\x03\xe0A\x02R\x05field\x12\x19\n" +
-	"\x05value\x18\x02 \x01(\tB\x03\xe0A\x02R\x05valueB\b\n" +
-	"\x06_limit\"z\n" +
+	"\x05field\x18\x01 \x01(\tB\x03\xe0A\x02R\x05field\x12\x1e\n" +
+	"\x05value\x18\x02 \x01(\tB\x03\xe0A\x01H\x00R\x05value\x88\x01\x01B\b\n" +
+	"\x06_valueB\b\n" +
+	"\x06_limitB\v\n" +
+	"\t_query_idB\f\n" +
+	"\n" +
+	"_client_id\"z\n" +
 	"\fGlossaryTerm\x12&\n" +
 	"\fdisplay_name\x18\x01 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12%\n" +
 	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x02R\vdescription\x12\x1b\n" +
-	"\x06labels\x18\x03 \x03(\tB\x03\xe0A\x01R\x06labels\"\xa3\x02\n" +
+	"\x06labels\x18\x03 \x03(\tB\x03\xe0A\x01R\x06labels\"\xc6\x03\n" +
 	"\x13ConversationOptions\x12P\n" +
 	"\x05chart\x18\x01 \x01(\v25.google.cloud.geminidataanalytics.v1beta.ChartOptionsB\x03\xe0A\x01R\x05chart\x12Y\n" +
 	"\banalysis\x18\x02 \x01(\v28.google.cloud.geminidataanalytics.v1beta.AnalysisOptionsB\x03\xe0A\x01R\banalysis\x12_\n" +
 	"\n" +
 	"datasource\x18\x03 \x01(\v2:.google.cloud.geminidataanalytics.v1beta.DatasourceOptionsB\x03\xe0A\x01R\n" +
-	"datasource\"q\n" +
+	"datasource\x12b\n" +
+	"\x05model\x18\x06 \x01(\x0e2B.google.cloud.geminidataanalytics.v1beta.ConversationOptions.ModelB\x03\xe0A\x01H\x00R\x05model\x88\x01\x01\"3\n" +
+	"\x05Model\x12\x15\n" +
+	"\x11MODEL_UNSPECIFIED\x10\x00\x12\x13\n" +
+	"\x0fLATEST_GA_MODEL\x10\x01B\b\n" +
+	"\x06_model\"q\n" +
 	"\x11DatasourceOptions\x12\\\n" +
 	"\x1abig_query_max_billed_bytes\x18\x01 \x01(\v2\x1b.google.protobuf.Int64ValueB\x03\xe0A\x01R\x16bigQueryMaxBilledBytes\"\xeb\x02\n" +
 	"\fChartOptions\x12]\n" +
@@ -1185,7 +2009,27 @@ const file_google_cloud_geminidataanalytics_v1beta_context_proto_rawDesc = "" +
 	"\x0fAnalysisOptions\x12\\\n" +
 	"\x06python\x18\x01 \x01(\v2?.google.cloud.geminidataanalytics.v1beta.AnalysisOptions.PythonB\x03\xe0A\x01R\x06python\x1a'\n" +
 	"\x06Python\x12\x1d\n" +
-	"\aenabled\x18\x01 \x01(\bB\x03\xe0A\x01R\aenabledB\x9d\x02\n" +
+	"\aenabled\x18\x01 \x01(\bB\x03\xe0A\x01R\aenabled\"\xba\x01\n" +
+	"\bCitation\x12V\n" +
+	"\asources\x18\x01 \x03(\v27.google.cloud.geminidataanalytics.v1beta.CitationSourceB\x03\xe0A\x03R\asources\x12V\n" +
+	"\aanchors\x18\x02 \x03(\v27.google.cloud.geminidataanalytics.v1beta.CitationAnchorB\x03\xe0A\x03R\aanchors\"\xae\x02\n" +
+	"\x0eCitationSource\x12\x17\n" +
+	"\x03uri\x18\x03 \x01(\tB\x03\xe0A\x03H\x00R\x03uri\x12a\n" +
+	"\rexample_query\x18\x04 \x01(\v25.google.cloud.geminidataanalytics.v1beta.ExampleQueryB\x03\xe0A\x03H\x00R\fexampleQuery\x12a\n" +
+	"\rglossary_term\x18\x05 \x01(\v25.google.cloud.geminidataanalytics.v1beta.GlossaryTermB\x03\xe0A\x03H\x00R\fglossaryTerm\x12\x13\n" +
+	"\x02id\x18\x01 \x01(\tB\x03\xe0A\x03R\x02id\x12\x19\n" +
+	"\x05title\x18\x02 \x01(\tB\x03\xe0A\x03R\x05titleB\r\n" +
+	"\vsource_type\"\xf2\x02\n" +
+	"\x0eCitationAnchor\x12\x88\x01\n" +
+	"\x13text_message_anchor\x18\x01 \x01(\v2Q.google.cloud.geminidataanalytics.v1beta.CitationAnchor.TextMessageCitationAnchorB\x03\xe0A\x03H\x00R\x11textMessageAnchor\x1a\xc5\x01\n" +
+	"\x19TextMessageCitationAnchor\x12\"\n" +
+	"\n" +
+	"part_index\x18\x01 \x01(\x05B\x03\xe0A\x03R\tpartIndex\x121\n" +
+	"\x12start_offset_bytes\x18\x02 \x01(\x05B\x03\xe0A\x03R\x10startOffsetBytes\x12-\n" +
+	"\x10end_offset_bytes\x18\x03 \x01(\x05B\x03\xe0A\x03R\x0eendOffsetBytes\x12\"\n" +
+	"\n" +
+	"source_ids\x18\x04 \x03(\tB\x03\xe0A\x03R\tsourceIdsB\r\n" +
+	"\vanchor_typeB\x9d\x02\n" +
 	"+com.google.cloud.geminidataanalytics.v1betaB\fContextProtoP\x01Z]cloud.google.com/go/geminidataanalytics/apiv1beta/geminidataanalyticspb;geminidataanalyticspb\xaa\x02'Google.Cloud.GeminiDataAnalytics.V1Beta\xca\x02'Google\\Cloud\\GeminiDataAnalytics\\V1beta\xea\x02*Google::Cloud::GeminiDataAnalytics::V1betab\x06proto3"
 
 var (
@@ -1200,54 +2044,77 @@ func file_google_cloud_geminidataanalytics_v1beta_context_proto_rawDescGZIP() []
 	return file_google_cloud_geminidataanalytics_v1beta_context_proto_rawDescData
 }
 
-var file_google_cloud_geminidataanalytics_v1beta_context_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes = make([]protoimpl.MessageInfo, 16)
+var file_google_cloud_geminidataanalytics_v1beta_context_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
+var file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes = make([]protoimpl.MessageInfo, 26)
 var file_google_cloud_geminidataanalytics_v1beta_context_proto_goTypes = []any{
-	(Context_SchemaRelationship_Source)(0),         // 0: google.cloud.geminidataanalytics.v1beta.Context.SchemaRelationship.Source
-	(*Context)(nil),                                // 1: google.cloud.geminidataanalytics.v1beta.Context
-	(*ExampleQuery)(nil),                           // 2: google.cloud.geminidataanalytics.v1beta.ExampleQuery
-	(*LookerGoldenQuery)(nil),                      // 3: google.cloud.geminidataanalytics.v1beta.LookerGoldenQuery
-	(*LookerQuery)(nil),                            // 4: google.cloud.geminidataanalytics.v1beta.LookerQuery
-	(*GlossaryTerm)(nil),                           // 5: google.cloud.geminidataanalytics.v1beta.GlossaryTerm
-	(*ConversationOptions)(nil),                    // 6: google.cloud.geminidataanalytics.v1beta.ConversationOptions
-	(*DatasourceOptions)(nil),                      // 7: google.cloud.geminidataanalytics.v1beta.DatasourceOptions
-	(*ChartOptions)(nil),                           // 8: google.cloud.geminidataanalytics.v1beta.ChartOptions
-	(*AnalysisOptions)(nil),                        // 9: google.cloud.geminidataanalytics.v1beta.AnalysisOptions
-	(*Context_SchemaRelationship)(nil),             // 10: google.cloud.geminidataanalytics.v1beta.Context.SchemaRelationship
-	(*Context_SchemaRelationship_SchemaPaths)(nil), // 11: google.cloud.geminidataanalytics.v1beta.Context.SchemaRelationship.SchemaPaths
-	(*LookerQuery_Filter)(nil),                     // 12: google.cloud.geminidataanalytics.v1beta.LookerQuery.Filter
-	(*ChartOptions_ImageOptions)(nil),              // 13: google.cloud.geminidataanalytics.v1beta.ChartOptions.ImageOptions
-	(*ChartOptions_ImageOptions_NoImage)(nil),      // 14: google.cloud.geminidataanalytics.v1beta.ChartOptions.ImageOptions.NoImage
-	(*ChartOptions_ImageOptions_SvgOptions)(nil),   // 15: google.cloud.geminidataanalytics.v1beta.ChartOptions.ImageOptions.SvgOptions
-	(*AnalysisOptions_Python)(nil),                 // 16: google.cloud.geminidataanalytics.v1beta.AnalysisOptions.Python
-	(*DatasourceReferences)(nil),                   // 17: google.cloud.geminidataanalytics.v1beta.DatasourceReferences
-	(*wrapperspb.Int64Value)(nil),                  // 18: google.protobuf.Int64Value
+	(Context_SchemaRelationship_Source)(0),           // 0: google.cloud.geminidataanalytics.v1beta.Context.SchemaRelationship.Source
+	(ConversationOptions_Model)(0),                   // 1: google.cloud.geminidataanalytics.v1beta.ConversationOptions.Model
+	(*Context)(nil),                                  // 2: google.cloud.geminidataanalytics.v1beta.Context
+	(*UserFunctions)(nil),                            // 3: google.cloud.geminidataanalytics.v1beta.UserFunctions
+	(*BigQueryRoutine)(nil),                          // 4: google.cloud.geminidataanalytics.v1beta.BigQueryRoutine
+	(*BigQueryRoutineReference)(nil),                 // 5: google.cloud.geminidataanalytics.v1beta.BigQueryRoutineReference
+	(*ExampleQuery)(nil),                             // 6: google.cloud.geminidataanalytics.v1beta.ExampleQuery
+	(*QueryParameter)(nil),                           // 7: google.cloud.geminidataanalytics.v1beta.QueryParameter
+	(*MatchedQuery)(nil),                             // 8: google.cloud.geminidataanalytics.v1beta.MatchedQuery
+	(*QueryParameterValues)(nil),                     // 9: google.cloud.geminidataanalytics.v1beta.QueryParameterValues
+	(*LookerGoldenQuery)(nil),                        // 10: google.cloud.geminidataanalytics.v1beta.LookerGoldenQuery
+	(*LookerQuery)(nil),                              // 11: google.cloud.geminidataanalytics.v1beta.LookerQuery
+	(*GlossaryTerm)(nil),                             // 12: google.cloud.geminidataanalytics.v1beta.GlossaryTerm
+	(*ConversationOptions)(nil),                      // 13: google.cloud.geminidataanalytics.v1beta.ConversationOptions
+	(*DatasourceOptions)(nil),                        // 14: google.cloud.geminidataanalytics.v1beta.DatasourceOptions
+	(*ChartOptions)(nil),                             // 15: google.cloud.geminidataanalytics.v1beta.ChartOptions
+	(*AnalysisOptions)(nil),                          // 16: google.cloud.geminidataanalytics.v1beta.AnalysisOptions
+	(*Citation)(nil),                                 // 17: google.cloud.geminidataanalytics.v1beta.Citation
+	(*CitationSource)(nil),                           // 18: google.cloud.geminidataanalytics.v1beta.CitationSource
+	(*CitationAnchor)(nil),                           // 19: google.cloud.geminidataanalytics.v1beta.CitationAnchor
+	(*Context_SchemaRelationship)(nil),               // 20: google.cloud.geminidataanalytics.v1beta.Context.SchemaRelationship
+	(*Context_SchemaRelationship_SchemaPaths)(nil),   // 21: google.cloud.geminidataanalytics.v1beta.Context.SchemaRelationship.SchemaPaths
+	(*LookerQuery_Filter)(nil),                       // 22: google.cloud.geminidataanalytics.v1beta.LookerQuery.Filter
+	(*ChartOptions_ImageOptions)(nil),                // 23: google.cloud.geminidataanalytics.v1beta.ChartOptions.ImageOptions
+	(*ChartOptions_ImageOptions_NoImage)(nil),        // 24: google.cloud.geminidataanalytics.v1beta.ChartOptions.ImageOptions.NoImage
+	(*ChartOptions_ImageOptions_SvgOptions)(nil),     // 25: google.cloud.geminidataanalytics.v1beta.ChartOptions.ImageOptions.SvgOptions
+	(*AnalysisOptions_Python)(nil),                   // 26: google.cloud.geminidataanalytics.v1beta.AnalysisOptions.Python
+	(*CitationAnchor_TextMessageCitationAnchor)(nil), // 27: google.cloud.geminidataanalytics.v1beta.CitationAnchor.TextMessageCitationAnchor
+	(*DatasourceReferences)(nil),                     // 28: google.cloud.geminidataanalytics.v1beta.DatasourceReferences
+	(*wrapperspb.Int64Value)(nil),                    // 29: google.protobuf.Int64Value
 }
 var file_google_cloud_geminidataanalytics_v1beta_context_proto_depIdxs = []int32{
-	17, // 0: google.cloud.geminidataanalytics.v1beta.Context.datasource_references:type_name -> google.cloud.geminidataanalytics.v1beta.DatasourceReferences
-	6,  // 1: google.cloud.geminidataanalytics.v1beta.Context.options:type_name -> google.cloud.geminidataanalytics.v1beta.ConversationOptions
-	2,  // 2: google.cloud.geminidataanalytics.v1beta.Context.example_queries:type_name -> google.cloud.geminidataanalytics.v1beta.ExampleQuery
-	3,  // 3: google.cloud.geminidataanalytics.v1beta.Context.looker_golden_queries:type_name -> google.cloud.geminidataanalytics.v1beta.LookerGoldenQuery
-	5,  // 4: google.cloud.geminidataanalytics.v1beta.Context.glossary_terms:type_name -> google.cloud.geminidataanalytics.v1beta.GlossaryTerm
-	10, // 5: google.cloud.geminidataanalytics.v1beta.Context.schema_relationships:type_name -> google.cloud.geminidataanalytics.v1beta.Context.SchemaRelationship
-	4,  // 6: google.cloud.geminidataanalytics.v1beta.LookerGoldenQuery.looker_query:type_name -> google.cloud.geminidataanalytics.v1beta.LookerQuery
-	12, // 7: google.cloud.geminidataanalytics.v1beta.LookerQuery.filters:type_name -> google.cloud.geminidataanalytics.v1beta.LookerQuery.Filter
-	8,  // 8: google.cloud.geminidataanalytics.v1beta.ConversationOptions.chart:type_name -> google.cloud.geminidataanalytics.v1beta.ChartOptions
-	9,  // 9: google.cloud.geminidataanalytics.v1beta.ConversationOptions.analysis:type_name -> google.cloud.geminidataanalytics.v1beta.AnalysisOptions
-	7,  // 10: google.cloud.geminidataanalytics.v1beta.ConversationOptions.datasource:type_name -> google.cloud.geminidataanalytics.v1beta.DatasourceOptions
-	18, // 11: google.cloud.geminidataanalytics.v1beta.DatasourceOptions.big_query_max_billed_bytes:type_name -> google.protobuf.Int64Value
-	13, // 12: google.cloud.geminidataanalytics.v1beta.ChartOptions.image:type_name -> google.cloud.geminidataanalytics.v1beta.ChartOptions.ImageOptions
-	16, // 13: google.cloud.geminidataanalytics.v1beta.AnalysisOptions.python:type_name -> google.cloud.geminidataanalytics.v1beta.AnalysisOptions.Python
-	11, // 14: google.cloud.geminidataanalytics.v1beta.Context.SchemaRelationship.left_schema_paths:type_name -> google.cloud.geminidataanalytics.v1beta.Context.SchemaRelationship.SchemaPaths
-	11, // 15: google.cloud.geminidataanalytics.v1beta.Context.SchemaRelationship.right_schema_paths:type_name -> google.cloud.geminidataanalytics.v1beta.Context.SchemaRelationship.SchemaPaths
-	0,  // 16: google.cloud.geminidataanalytics.v1beta.Context.SchemaRelationship.sources:type_name -> google.cloud.geminidataanalytics.v1beta.Context.SchemaRelationship.Source
-	14, // 17: google.cloud.geminidataanalytics.v1beta.ChartOptions.ImageOptions.no_image:type_name -> google.cloud.geminidataanalytics.v1beta.ChartOptions.ImageOptions.NoImage
-	15, // 18: google.cloud.geminidataanalytics.v1beta.ChartOptions.ImageOptions.svg:type_name -> google.cloud.geminidataanalytics.v1beta.ChartOptions.ImageOptions.SvgOptions
-	19, // [19:19] is the sub-list for method output_type
-	19, // [19:19] is the sub-list for method input_type
-	19, // [19:19] is the sub-list for extension type_name
-	19, // [19:19] is the sub-list for extension extendee
-	0,  // [0:19] is the sub-list for field type_name
+	28, // 0: google.cloud.geminidataanalytics.v1beta.Context.datasource_references:type_name -> google.cloud.geminidataanalytics.v1beta.DatasourceReferences
+	13, // 1: google.cloud.geminidataanalytics.v1beta.Context.options:type_name -> google.cloud.geminidataanalytics.v1beta.ConversationOptions
+	6,  // 2: google.cloud.geminidataanalytics.v1beta.Context.example_queries:type_name -> google.cloud.geminidataanalytics.v1beta.ExampleQuery
+	10, // 3: google.cloud.geminidataanalytics.v1beta.Context.looker_golden_queries:type_name -> google.cloud.geminidataanalytics.v1beta.LookerGoldenQuery
+	12, // 4: google.cloud.geminidataanalytics.v1beta.Context.glossary_terms:type_name -> google.cloud.geminidataanalytics.v1beta.GlossaryTerm
+	20, // 5: google.cloud.geminidataanalytics.v1beta.Context.schema_relationships:type_name -> google.cloud.geminidataanalytics.v1beta.Context.SchemaRelationship
+	3,  // 6: google.cloud.geminidataanalytics.v1beta.Context.user_functions:type_name -> google.cloud.geminidataanalytics.v1beta.UserFunctions
+	4,  // 7: google.cloud.geminidataanalytics.v1beta.UserFunctions.bq_routines:type_name -> google.cloud.geminidataanalytics.v1beta.BigQueryRoutine
+	5,  // 8: google.cloud.geminidataanalytics.v1beta.BigQueryRoutine.routine_reference:type_name -> google.cloud.geminidataanalytics.v1beta.BigQueryRoutineReference
+	7,  // 9: google.cloud.geminidataanalytics.v1beta.ExampleQuery.parameters:type_name -> google.cloud.geminidataanalytics.v1beta.QueryParameter
+	6,  // 10: google.cloud.geminidataanalytics.v1beta.MatchedQuery.example_query:type_name -> google.cloud.geminidataanalytics.v1beta.ExampleQuery
+	9,  // 11: google.cloud.geminidataanalytics.v1beta.MatchedQuery.query_parameter_values:type_name -> google.cloud.geminidataanalytics.v1beta.QueryParameterValues
+	11, // 12: google.cloud.geminidataanalytics.v1beta.LookerGoldenQuery.looker_query:type_name -> google.cloud.geminidataanalytics.v1beta.LookerQuery
+	22, // 13: google.cloud.geminidataanalytics.v1beta.LookerQuery.filters:type_name -> google.cloud.geminidataanalytics.v1beta.LookerQuery.Filter
+	15, // 14: google.cloud.geminidataanalytics.v1beta.ConversationOptions.chart:type_name -> google.cloud.geminidataanalytics.v1beta.ChartOptions
+	16, // 15: google.cloud.geminidataanalytics.v1beta.ConversationOptions.analysis:type_name -> google.cloud.geminidataanalytics.v1beta.AnalysisOptions
+	14, // 16: google.cloud.geminidataanalytics.v1beta.ConversationOptions.datasource:type_name -> google.cloud.geminidataanalytics.v1beta.DatasourceOptions
+	1,  // 17: google.cloud.geminidataanalytics.v1beta.ConversationOptions.model:type_name -> google.cloud.geminidataanalytics.v1beta.ConversationOptions.Model
+	29, // 18: google.cloud.geminidataanalytics.v1beta.DatasourceOptions.big_query_max_billed_bytes:type_name -> google.protobuf.Int64Value
+	23, // 19: google.cloud.geminidataanalytics.v1beta.ChartOptions.image:type_name -> google.cloud.geminidataanalytics.v1beta.ChartOptions.ImageOptions
+	26, // 20: google.cloud.geminidataanalytics.v1beta.AnalysisOptions.python:type_name -> google.cloud.geminidataanalytics.v1beta.AnalysisOptions.Python
+	18, // 21: google.cloud.geminidataanalytics.v1beta.Citation.sources:type_name -> google.cloud.geminidataanalytics.v1beta.CitationSource
+	19, // 22: google.cloud.geminidataanalytics.v1beta.Citation.anchors:type_name -> google.cloud.geminidataanalytics.v1beta.CitationAnchor
+	6,  // 23: google.cloud.geminidataanalytics.v1beta.CitationSource.example_query:type_name -> google.cloud.geminidataanalytics.v1beta.ExampleQuery
+	12, // 24: google.cloud.geminidataanalytics.v1beta.CitationSource.glossary_term:type_name -> google.cloud.geminidataanalytics.v1beta.GlossaryTerm
+	27, // 25: google.cloud.geminidataanalytics.v1beta.CitationAnchor.text_message_anchor:type_name -> google.cloud.geminidataanalytics.v1beta.CitationAnchor.TextMessageCitationAnchor
+	21, // 26: google.cloud.geminidataanalytics.v1beta.Context.SchemaRelationship.left_schema_paths:type_name -> google.cloud.geminidataanalytics.v1beta.Context.SchemaRelationship.SchemaPaths
+	21, // 27: google.cloud.geminidataanalytics.v1beta.Context.SchemaRelationship.right_schema_paths:type_name -> google.cloud.geminidataanalytics.v1beta.Context.SchemaRelationship.SchemaPaths
+	0,  // 28: google.cloud.geminidataanalytics.v1beta.Context.SchemaRelationship.sources:type_name -> google.cloud.geminidataanalytics.v1beta.Context.SchemaRelationship.Source
+	24, // 29: google.cloud.geminidataanalytics.v1beta.ChartOptions.ImageOptions.no_image:type_name -> google.cloud.geminidataanalytics.v1beta.ChartOptions.ImageOptions.NoImage
+	25, // 30: google.cloud.geminidataanalytics.v1beta.ChartOptions.ImageOptions.svg:type_name -> google.cloud.geminidataanalytics.v1beta.ChartOptions.ImageOptions.SvgOptions
+	31, // [31:31] is the sub-list for method output_type
+	31, // [31:31] is the sub-list for method input_type
+	31, // [31:31] is the sub-list for extension type_name
+	31, // [31:31] is the sub-list for extension extendee
+	0,  // [0:31] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_geminidataanalytics_v1beta_context_proto_init() }
@@ -1256,11 +2123,21 @@ func file_google_cloud_geminidataanalytics_v1beta_context_proto_init() {
 		return
 	}
 	file_google_cloud_geminidataanalytics_v1beta_datasource_proto_init()
-	file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[1].OneofWrappers = []any{
+	file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[4].OneofWrappers = []any{
 		(*ExampleQuery_SqlQuery)(nil),
 	}
-	file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[3].OneofWrappers = []any{}
-	file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[12].OneofWrappers = []any{
+	file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[9].OneofWrappers = []any{}
+	file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[11].OneofWrappers = []any{}
+	file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[16].OneofWrappers = []any{
+		(*CitationSource_Uri)(nil),
+		(*CitationSource_ExampleQuery)(nil),
+		(*CitationSource_GlossaryTerm)(nil),
+	}
+	file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[17].OneofWrappers = []any{
+		(*CitationAnchor_TextMessageAnchor)(nil),
+	}
+	file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[20].OneofWrappers = []any{}
+	file_google_cloud_geminidataanalytics_v1beta_context_proto_msgTypes[21].OneofWrappers = []any{
 		(*ChartOptions_ImageOptions_NoImage_)(nil),
 		(*ChartOptions_ImageOptions_Svg)(nil),
 	}
@@ -1269,8 +2146,8 @@ func file_google_cloud_geminidataanalytics_v1beta_context_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_geminidataanalytics_v1beta_context_proto_rawDesc), len(file_google_cloud_geminidataanalytics_v1beta_context_proto_rawDesc)),
-			NumEnums:      1,
-			NumMessages:   16,
+			NumEnums:      2,
+			NumMessages:   26,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

@@ -65,6 +65,9 @@ type BigtableClient interface {
 	// delimit contiguous sections of the table of approximately equal size,
 	// which can be used to break up the data for distributed tasks like
 	// mapreduces.
+	//
+	// If a `row_range` is provided in the request, the returned samples will be
+	// restricted to the specified range.
 	SampleRowKeys(ctx context.Context, in *SampleRowKeysRequest, opts ...grpc.CallOption) (Bigtable_SampleRowKeysClient, error)
 	// Mutates a row atomically. Cells already present in the row are left
 	// unchanged unless explicitly changed by `mutation`.
@@ -477,6 +480,9 @@ type BigtableServer interface {
 	// delimit contiguous sections of the table of approximately equal size,
 	// which can be used to break up the data for distributed tasks like
 	// mapreduces.
+	//
+	// If a `row_range` is provided in the request, the returned samples will be
+	// restricted to the specified range.
 	SampleRowKeys(*SampleRowKeysRequest, Bigtable_SampleRowKeysServer) error
 	// Mutates a row atomically. Cells already present in the row are left
 	// unchanged unless explicitly changed by `mutation`.

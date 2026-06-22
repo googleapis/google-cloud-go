@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -1531,9 +1531,7 @@ type RecrawlUrisRequest struct {
 	// [TargetSite][google.cloud.discoveryengine.v1beta.TargetSite] in
 	// `site_search_engine`.
 	Uris []string `protobuf:"bytes,2,rep,name=uris,proto3" json:"uris,omitempty"`
-	// Optional. Full resource name of the [SiteCredential][], such as
-	// `projects/*/locations/*/collections/*/dataStores/*/siteSearchEngine/siteCredentials/*`.
-	// Only set to crawl private URIs.
+	// Optional. Credential id to use for crawling.
 	SiteCredential string `protobuf:"bytes,5,opt,name=site_credential,json=siteCredential,proto3" json:"site_credential,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
@@ -1663,6 +1661,10 @@ type RecrawlUrisMetadata struct {
 	InvalidUris []string `protobuf:"bytes,3,rep,name=invalid_uris,json=invalidUris,proto3" json:"invalid_uris,omitempty"`
 	// Total number of unique URIs in the request that have invalid format.
 	InvalidUrisCount int32 `protobuf:"varint,8,opt,name=invalid_uris_count,json=invalidUrisCount,proto3" json:"invalid_uris_count,omitempty"`
+	// URIs that have no index meta tag. Sample limited to 1000.
+	NoindexUris []string `protobuf:"bytes,11,rep,name=noindex_uris,json=noindexUris,proto3" json:"noindex_uris,omitempty"`
+	// Total number of URIs that have no index meta tag.
+	NoindexUrisCount int32 `protobuf:"varint,12,opt,name=noindex_uris_count,json=noindexUrisCount,proto3" json:"noindex_uris_count,omitempty"`
 	// Unique URIs in the request that don't match any TargetSite in the
 	// DataStore, only match TargetSites that haven't been fully indexed, or match
 	// a TargetSite with type EXCLUDE. Sample limited to 1000.
@@ -1736,6 +1738,20 @@ func (x *RecrawlUrisMetadata) GetInvalidUris() []string {
 func (x *RecrawlUrisMetadata) GetInvalidUrisCount() int32 {
 	if x != nil {
 		return x.InvalidUrisCount
+	}
+	return 0
+}
+
+func (x *RecrawlUrisMetadata) GetNoindexUris() []string {
+	if x != nil {
+		return x.NoindexUris
+	}
+	return nil
+}
+
+func (x *RecrawlUrisMetadata) GetNoindexUrisCount() int32 {
+	if x != nil {
+		return x.NoindexUrisCount
 	}
 	return 0
 }
@@ -2479,14 +2495,16 @@ const file_google_cloud_discoveryengine_v1beta_site_search_engine_service_proto_
 	"\x17CORPUS_TYPE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aDESKTOP\x10\x01\x12\n" +
 	"\n" +
-	"\x06MOBILE\x10\x02\"\x99\x04\n" +
+	"\x06MOBILE\x10\x02\"\xea\x04\n" +
 	"\x13RecrawlUrisMetadata\x12;\n" +
 	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"createTime\x12;\n" +
 	"\vupdate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"updateTime\x12!\n" +
 	"\finvalid_uris\x18\x03 \x03(\tR\vinvalidUris\x12,\n" +
-	"\x12invalid_uris_count\x18\b \x01(\x05R\x10invalidUrisCount\x12B\n" +
+	"\x12invalid_uris_count\x18\b \x01(\x05R\x10invalidUrisCount\x12!\n" +
+	"\fnoindex_uris\x18\v \x03(\tR\vnoindexUris\x12,\n" +
+	"\x12noindex_uris_count\x18\f \x01(\x05R\x10noindexUrisCount\x12B\n" +
 	"\x1euris_not_matching_target_sites\x18\t \x03(\tR\x1aurisNotMatchingTargetSites\x12M\n" +
 	"$uris_not_matching_target_sites_count\x18\n" +
 	" \x01(\x05R\x1furisNotMatchingTargetSitesCount\x12(\n" +
@@ -2513,7 +2531,7 @@ const file_google_cloud_discoveryengine_v1beta_site_search_engine_service_proto_
 	"\ftarget_sites\x18\x01 \x03(\v2/.google.cloud.discoveryengine.v1beta.TargetSiteR\vtargetSites\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12\x1d\n" +
 	"\n" +
-	"total_size\x18\x03 \x01(\x05R\ttotalSize2\xb00\n" +
+	"total_size\x18\x03 \x01(\x05R\ttotalSize2\x962\n" +
 	"\x17SiteSearchEngineService\x12\xb8\x02\n" +
 	"\x13GetSiteSearchEngine\x12?.google.cloud.discoveryengine.v1beta.GetSiteSearchEngineRequest\x1a5.google.cloud.discoveryengine.v1beta.SiteSearchEngine\"\xa8\x01\xdaA\x04name\x82\xd3\xe4\x93\x02\x9a\x01ZS\x12Q/v1beta/{name=projects/*/locations/*/collections/*/dataStores/*/siteSearchEngine}\x12C/v1beta/{name=projects/*/locations/*/dataStores/*/siteSearchEngine}\x12\xcf\x03\n" +
 	"\x10CreateTargetSite\x12<.google.cloud.discoveryengine.v1beta.CreateTargetSiteRequest\x1a\x1d.google.longrunning.Operation\"\xdd\x02\xcaAn\n" +
@@ -2529,8 +2547,8 @@ const file_google_cloud_discoveryengine_v1beta_site_search_engine_service_proto_
 	"\rCreateSitemap\x129.google.cloud.discoveryengine.v1beta.CreateSitemapRequest\x1a\x1d.google.longrunning.Operation\"\xc5\x02\xcaAh\n" +
 	"+google.cloud.discoveryengine.v1beta.Sitemap\x129google.cloud.discoveryengine.v1beta.CreateSitemapMetadata\xdaA\x0eparent,sitemap\x82\xd3\xe4\x93\x02\xc2\x01:\asitemapZg:\asitemap\"\\/v1beta/{parent=projects/*/locations/*/collections/*/dataStores/*/siteSearchEngine}/sitemaps\"N/v1beta/{parent=projects/*/locations/*/dataStores/*/siteSearchEngine}/sitemaps\x12\xff\x02\n" +
 	"\rDeleteSitemap\x129.google.cloud.discoveryengine.v1beta.DeleteSitemapRequest\x1a\x1d.google.longrunning.Operation\"\x93\x02\xcaAR\n" +
-	"\x15google.protobuf.Empty\x129google.cloud.discoveryengine.v1beta.DeleteSitemapMetadata\xdaA\x04name\x82\xd3\xe4\x93\x02\xb0\x01Z^*\\/v1beta/{name=projects/*/locations/*/collections/*/dataStores/*/siteSearchEngine/sitemaps/*}*N/v1beta/{name=projects/*/locations/*/dataStores/*/siteSearchEngine/sitemaps/*}\x12\xed\x01\n" +
-	"\rFetchSitemaps\x129.google.cloud.discoveryengine.v1beta.FetchSitemapsRequest\x1a:.google.cloud.discoveryengine.v1beta.FetchSitemapsResponse\"e\xdaA\x06parent\x82\xd3\xe4\x93\x02V\x12T/v1beta/{parent=projects/*/locations/*/dataStores/*/siteSearchEngine}/sitemaps:fetch\x12\x87\x04\n" +
+	"\x15google.protobuf.Empty\x129google.cloud.discoveryengine.v1beta.DeleteSitemapMetadata\xdaA\x04name\x82\xd3\xe4\x93\x02\xb0\x01Z^*\\/v1beta/{name=projects/*/locations/*/collections/*/dataStores/*/siteSearchEngine/sitemaps/*}*N/v1beta/{name=projects/*/locations/*/dataStores/*/siteSearchEngine/sitemaps/*}\x12\xd5\x02\n" +
+	"\rFetchSitemaps\x129.google.cloud.discoveryengine.v1beta.FetchSitemapsRequest\x1a:.google.cloud.discoveryengine.v1beta.FetchSitemapsResponse\"\xcc\x01\xdaA\x06parent\x82\xd3\xe4\x93\x02\xbc\x01Zd\x12b/v1beta/{parent=projects/*/locations/*/collections/*/dataStores/*/siteSearchEngine}/sitemaps:fetch\x12T/v1beta/{parent=projects/*/locations/*/dataStores/*/siteSearchEngine}/sitemaps:fetch\x12\x87\x04\n" +
 	"\x18EnableAdvancedSiteSearch\x12D.google.cloud.discoveryengine.v1beta.EnableAdvancedSiteSearchRequest\x1a\x1d.google.longrunning.Operation\"\x85\x03\xcaA\x8c\x01\n" +
 	"Dgoogle.cloud.discoveryengine.v1beta.EnableAdvancedSiteSearchResponse\x12Dgoogle.cloud.discoveryengine.v1beta.EnableAdvancedSiteSearchMetadata\x82\xd3\xe4\x93\x02\xee\x01:\x01*Z}:\x01*\"x/v1beta/{site_search_engine=projects/*/locations/*/collections/*/dataStores/*/siteSearchEngine}:enableAdvancedSiteSearch\"j/v1beta/{site_search_engine=projects/*/locations/*/dataStores/*/siteSearchEngine}:enableAdvancedSiteSearch\x12\x8d\x04\n" +
 	"\x19DisableAdvancedSiteSearch\x12E.google.cloud.discoveryengine.v1beta.DisableAdvancedSiteSearchRequest\x1a\x1d.google.longrunning.Operation\"\x89\x03\xcaA\x8e\x01\n" +
@@ -2539,7 +2557,7 @@ const file_google_cloud_discoveryengine_v1beta_site_search_engine_service_proto_
 	"7google.cloud.discoveryengine.v1beta.RecrawlUrisResponse\x127google.cloud.discoveryengine.v1beta.RecrawlUrisMetadata\x82\xd3\xe4\x93\x02\xd4\x01:\x01*Zp:\x01*\"k/v1beta/{site_search_engine=projects/*/locations/*/collections/*/dataStores/*/siteSearchEngine}:recrawlUris\"]/v1beta/{site_search_engine=projects/*/locations/*/dataStores/*/siteSearchEngine}:recrawlUris\x12\xff\x02\n" +
 	"\x16BatchVerifyTargetSites\x12B.google.cloud.discoveryengine.v1beta.BatchVerifyTargetSitesRequest\x1a\x1d.google.longrunning.Operation\"\x81\x02\xcaA\x88\x01\n" +
 	"Bgoogle.cloud.discoveryengine.v1beta.BatchVerifyTargetSitesResponse\x12Bgoogle.cloud.discoveryengine.v1beta.BatchVerifyTargetSitesMetadata\x82\xd3\xe4\x93\x02o:\x01*\"j/v1beta/{parent=projects/*/locations/*/collections/*/dataStores/*/siteSearchEngine}:batchVerifyTargetSites\x12\xbe\x02\n" +
-	"\x1dFetchDomainVerificationStatus\x12I.google.cloud.discoveryengine.v1beta.FetchDomainVerificationStatusRequest\x1aJ.google.cloud.discoveryengine.v1beta.FetchDomainVerificationStatusResponse\"\x85\x01\x82\xd3\xe4\x93\x02\x7f\x12}/v1beta/{site_search_engine=projects/*/locations/*/collections/*/dataStores/*/siteSearchEngine}:fetchDomainVerificationStatus\x1aR\xcaA\x1ediscoveryengine.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\xa3\x02\n" +
+	"\x1dFetchDomainVerificationStatus\x12I.google.cloud.discoveryengine.v1beta.FetchDomainVerificationStatusRequest\x1aJ.google.cloud.discoveryengine.v1beta.FetchDomainVerificationStatusResponse\"\x85\x01\x82\xd3\xe4\x93\x02\x7f\x12}/v1beta/{site_search_engine=projects/*/locations/*/collections/*/dataStores/*/siteSearchEngine}:fetchDomainVerificationStatus\x1a\xcf\x01\xcaA\x1ediscoveryengine.googleapis.com\xd2A\xaa\x01https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/discoveryengine.readwrite,https://www.googleapis.com/auth/discoveryengine.serving.readwriteB\xa3\x02\n" +
 	"'com.google.cloud.discoveryengine.v1betaB\x1cSiteSearchEngineServiceProtoP\x01ZQcloud.google.com/go/discoveryengine/apiv1beta/discoveryenginepb;discoveryenginepb\xa2\x02\x0fDISCOVERYENGINE\xaa\x02#Google.Cloud.DiscoveryEngine.V1Beta\xca\x02#Google\\Cloud\\DiscoveryEngine\\V1beta\xea\x02&Google::Cloud::DiscoveryEngine::V1betab\x06proto3"
 
 var (

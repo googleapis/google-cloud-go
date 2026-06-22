@@ -230,9 +230,14 @@ type ExecuteToolResponse struct {
 	// then whole "response" is treated as tool execution result.
 	Response *structpb.Struct `protobuf:"bytes,2,opt,name=response,proto3" json:"response,omitempty"`
 	// The variable values at the end of the tool execution.
-	Variables     *structpb.Struct `protobuf:"bytes,4,opt,name=variables,proto3" json:"variables,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	Variables *structpb.Struct `protobuf:"bytes,4,opt,name=variables,proto3" json:"variables,omitempty"`
+	// Citations that provide the source information for the tool's execution.
+	Citations *Citations `protobuf:"bytes,5,opt,name=citations,proto3" json:"citations,omitempty"`
+	// The suggestions returned from Google Search as a result of invoking the
+	// Google Search Tool during the tool execution.
+	GoogleSearchSuggestions *GoogleSearchSuggestions `protobuf:"bytes,6,opt,name=google_search_suggestions,json=googleSearchSuggestions,proto3" json:"google_search_suggestions,omitempty"`
+	unknownFields           protoimpl.UnknownFields
+	sizeCache               protoimpl.SizeCache
 }
 
 func (x *ExecuteToolResponse) Reset() {
@@ -300,6 +305,20 @@ func (x *ExecuteToolResponse) GetResponse() *structpb.Struct {
 func (x *ExecuteToolResponse) GetVariables() *structpb.Struct {
 	if x != nil {
 		return x.Variables
+	}
+	return nil
+}
+
+func (x *ExecuteToolResponse) GetCitations() *Citations {
+	if x != nil {
+		return x.Citations
+	}
+	return nil
+}
+
+func (x *ExecuteToolResponse) GetGoogleSearchSuggestions() *GoogleSearchSuggestions {
+	if x != nil {
+		return x.GoogleSearchSuggestions
 	}
 	return nil
 }
@@ -543,9 +562,13 @@ type RetrieveToolsRequest struct {
 	Toolset string `protobuf:"bytes,1,opt,name=toolset,proto3" json:"toolset,omitempty"`
 	// Optional. The identifiers of the tools to retrieve from the toolset.
 	// If empty, all tools in the toolset will be returned.
-	ToolIds       []string `protobuf:"bytes,3,rep,name=tool_ids,json=toolIds,proto3" json:"tool_ids,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	ToolIds []string `protobuf:"bytes,3,rep,name=tool_ids,json=toolIds,proto3" json:"tool_ids,omitempty"`
+	// Optional. If true, the returned tools will contain raw descriptions and
+	// schemas directly from the server, bypassing any stored persistence
+	// configurations (overrides/snapshots).
+	BypassPersistenceConfig bool `protobuf:"varint,4,opt,name=bypass_persistence_config,json=bypassPersistenceConfig,proto3" json:"bypass_persistence_config,omitempty"`
+	unknownFields           protoimpl.UnknownFields
+	sizeCache               protoimpl.SizeCache
 }
 
 func (x *RetrieveToolsRequest) Reset() {
@@ -590,6 +613,13 @@ func (x *RetrieveToolsRequest) GetToolIds() []string {
 		return x.ToolIds
 	}
 	return nil
+}
+
+func (x *RetrieveToolsRequest) GetBypassPersistenceConfig() bool {
+	if x != nil {
+		return x.BypassPersistenceConfig
+	}
+	return false
 }
 
 // Response message for
@@ -643,7 +673,7 @@ var File_google_cloud_ces_v1beta_tool_service_proto protoreflect.FileDescriptor
 
 const file_google_cloud_ces_v1beta_tool_service_proto_rawDesc = "" +
 	"\n" +
-	"*google/cloud/ces/v1beta/tool_service.proto\x12\x17google.cloud.ces.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a$google/cloud/ces/v1beta/schema.proto\x1a-google/cloud/ces/v1beta/session_service.proto\x1a\"google/cloud/ces/v1beta/tool.proto\x1a*google/cloud/ces/v1beta/toolset_tool.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xf5\x03\n" +
+	"*google/cloud/ces/v1beta/tool_service.proto\x12\x17google.cloud.ces.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a$google/cloud/ces/v1beta/schema.proto\x1a0google/cloud/ces/v1beta/search_suggestions.proto\x1a-google/cloud/ces/v1beta/session_service.proto\x1a\"google/cloud/ces/v1beta/tool.proto\x1a*google/cloud/ces/v1beta/toolset_tool.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xf5\x03\n" +
 	"\x12ExecuteToolRequest\x125\n" +
 	"\x04tool\x18\x01 \x01(\tB\x1f\xe0A\x01\xfaA\x19\n" +
 	"\x17ces.googleapis.com/ToolH\x00R\x04tool\x12N\n" +
@@ -656,13 +686,15 @@ const file_google_cloud_ces_v1beta_tool_service_proto_rawDesc = "" +
 	"\vmock_config\x18\a \x01(\v2#.google.cloud.ces.v1beta.MockConfigB\x03\xe0A\x01R\n" +
 	"mockConfigB\x11\n" +
 	"\x0ftool_identifierB\x18\n" +
-	"\x16tool_execution_context\"\x93\x02\n" +
+	"\x16tool_execution_context\"\xc3\x03\n" +
 	"\x13ExecuteToolResponse\x122\n" +
 	"\x04tool\x18\x01 \x01(\tB\x1c\xfaA\x19\n" +
 	"\x17ces.googleapis.com/ToolH\x00R\x04tool\x12I\n" +
 	"\ftoolset_tool\x18\x03 \x01(\v2$.google.cloud.ces.v1beta.ToolsetToolH\x00R\vtoolsetTool\x123\n" +
 	"\bresponse\x18\x02 \x01(\v2\x17.google.protobuf.StructR\bresponse\x125\n" +
-	"\tvariables\x18\x04 \x01(\v2\x17.google.protobuf.StructR\tvariablesB\x11\n" +
+	"\tvariables\x18\x04 \x01(\v2\x17.google.protobuf.StructR\tvariables\x12@\n" +
+	"\tcitations\x18\x05 \x01(\v2\".google.cloud.ces.v1beta.CitationsR\tcitations\x12l\n" +
+	"\x19google_search_suggestions\x18\x06 \x01(\v20.google.cloud.ces.v1beta.GoogleSearchSuggestionsR\x17googleSearchSuggestionsB\x11\n" +
 	"\x0ftool_identifier\"\xed\x01\n" +
 	"\x19RetrieveToolSchemaRequest\x125\n" +
 	"\x04tool\x18\x01 \x01(\tB\x1f\xe0A\x01\xfaA\x19\n" +
@@ -677,11 +709,12 @@ const file_google_cloud_ces_v1beta_tool_service_proto_rawDesc = "" +
 	"\ftoolset_tool\x18\x02 \x01(\v2$.google.cloud.ces.v1beta.ToolsetToolH\x00R\vtoolsetTool\x12B\n" +
 	"\finput_schema\x18\x03 \x01(\v2\x1f.google.cloud.ces.v1beta.SchemaR\vinputSchema\x12D\n" +
 	"\routput_schema\x18\x04 \x01(\v2\x1f.google.cloud.ces.v1beta.SchemaR\foutputSchemaB\x11\n" +
-	"\x0ftool_identifier\"t\n" +
+	"\x0ftool_identifier\"\xb5\x01\n" +
 	"\x14RetrieveToolsRequest\x12<\n" +
 	"\atoolset\x18\x01 \x01(\tB\"\xe0A\x02\xfaA\x1c\n" +
 	"\x1aces.googleapis.com/ToolsetR\atoolset\x12\x1e\n" +
-	"\btool_ids\x18\x03 \x03(\tB\x03\xe0A\x01R\atoolIds\"L\n" +
+	"\btool_ids\x18\x03 \x03(\tB\x03\xe0A\x01R\atoolIds\x12?\n" +
+	"\x19bypass_persistence_config\x18\x04 \x01(\bB\x03\xe0A\x01R\x17bypassPersistenceConfig\"L\n" +
 	"\x15RetrieveToolsResponse\x123\n" +
 	"\x05tools\x18\x01 \x03(\v2\x1d.google.cloud.ces.v1beta.ToolR\x05tools2\xbf\x05\n" +
 	"\vToolService\x12\xaf\x01\n" +
@@ -713,8 +746,10 @@ var file_google_cloud_ces_v1beta_tool_service_proto_goTypes = []any{
 	(*ToolsetTool)(nil),                // 6: google.cloud.ces.v1beta.ToolsetTool
 	(*structpb.Struct)(nil),            // 7: google.protobuf.Struct
 	(*MockConfig)(nil),                 // 8: google.cloud.ces.v1beta.MockConfig
-	(*Schema)(nil),                     // 9: google.cloud.ces.v1beta.Schema
-	(*Tool)(nil),                       // 10: google.cloud.ces.v1beta.Tool
+	(*Citations)(nil),                  // 9: google.cloud.ces.v1beta.Citations
+	(*GoogleSearchSuggestions)(nil),    // 10: google.cloud.ces.v1beta.GoogleSearchSuggestions
+	(*Schema)(nil),                     // 11: google.cloud.ces.v1beta.Schema
+	(*Tool)(nil),                       // 12: google.cloud.ces.v1beta.Tool
 }
 var file_google_cloud_ces_v1beta_tool_service_proto_depIdxs = []int32{
 	6,  // 0: google.cloud.ces.v1beta.ExecuteToolRequest.toolset_tool:type_name -> google.cloud.ces.v1beta.ToolsetTool
@@ -725,22 +760,24 @@ var file_google_cloud_ces_v1beta_tool_service_proto_depIdxs = []int32{
 	6,  // 5: google.cloud.ces.v1beta.ExecuteToolResponse.toolset_tool:type_name -> google.cloud.ces.v1beta.ToolsetTool
 	7,  // 6: google.cloud.ces.v1beta.ExecuteToolResponse.response:type_name -> google.protobuf.Struct
 	7,  // 7: google.cloud.ces.v1beta.ExecuteToolResponse.variables:type_name -> google.protobuf.Struct
-	6,  // 8: google.cloud.ces.v1beta.RetrieveToolSchemaRequest.toolset_tool:type_name -> google.cloud.ces.v1beta.ToolsetTool
-	6,  // 9: google.cloud.ces.v1beta.RetrieveToolSchemaResponse.toolset_tool:type_name -> google.cloud.ces.v1beta.ToolsetTool
-	9,  // 10: google.cloud.ces.v1beta.RetrieveToolSchemaResponse.input_schema:type_name -> google.cloud.ces.v1beta.Schema
-	9,  // 11: google.cloud.ces.v1beta.RetrieveToolSchemaResponse.output_schema:type_name -> google.cloud.ces.v1beta.Schema
-	10, // 12: google.cloud.ces.v1beta.RetrieveToolsResponse.tools:type_name -> google.cloud.ces.v1beta.Tool
-	0,  // 13: google.cloud.ces.v1beta.ToolService.ExecuteTool:input_type -> google.cloud.ces.v1beta.ExecuteToolRequest
-	2,  // 14: google.cloud.ces.v1beta.ToolService.RetrieveToolSchema:input_type -> google.cloud.ces.v1beta.RetrieveToolSchemaRequest
-	4,  // 15: google.cloud.ces.v1beta.ToolService.RetrieveTools:input_type -> google.cloud.ces.v1beta.RetrieveToolsRequest
-	1,  // 16: google.cloud.ces.v1beta.ToolService.ExecuteTool:output_type -> google.cloud.ces.v1beta.ExecuteToolResponse
-	3,  // 17: google.cloud.ces.v1beta.ToolService.RetrieveToolSchema:output_type -> google.cloud.ces.v1beta.RetrieveToolSchemaResponse
-	5,  // 18: google.cloud.ces.v1beta.ToolService.RetrieveTools:output_type -> google.cloud.ces.v1beta.RetrieveToolsResponse
-	16, // [16:19] is the sub-list for method output_type
-	13, // [13:16] is the sub-list for method input_type
-	13, // [13:13] is the sub-list for extension type_name
-	13, // [13:13] is the sub-list for extension extendee
-	0,  // [0:13] is the sub-list for field type_name
+	9,  // 8: google.cloud.ces.v1beta.ExecuteToolResponse.citations:type_name -> google.cloud.ces.v1beta.Citations
+	10, // 9: google.cloud.ces.v1beta.ExecuteToolResponse.google_search_suggestions:type_name -> google.cloud.ces.v1beta.GoogleSearchSuggestions
+	6,  // 10: google.cloud.ces.v1beta.RetrieveToolSchemaRequest.toolset_tool:type_name -> google.cloud.ces.v1beta.ToolsetTool
+	6,  // 11: google.cloud.ces.v1beta.RetrieveToolSchemaResponse.toolset_tool:type_name -> google.cloud.ces.v1beta.ToolsetTool
+	11, // 12: google.cloud.ces.v1beta.RetrieveToolSchemaResponse.input_schema:type_name -> google.cloud.ces.v1beta.Schema
+	11, // 13: google.cloud.ces.v1beta.RetrieveToolSchemaResponse.output_schema:type_name -> google.cloud.ces.v1beta.Schema
+	12, // 14: google.cloud.ces.v1beta.RetrieveToolsResponse.tools:type_name -> google.cloud.ces.v1beta.Tool
+	0,  // 15: google.cloud.ces.v1beta.ToolService.ExecuteTool:input_type -> google.cloud.ces.v1beta.ExecuteToolRequest
+	2,  // 16: google.cloud.ces.v1beta.ToolService.RetrieveToolSchema:input_type -> google.cloud.ces.v1beta.RetrieveToolSchemaRequest
+	4,  // 17: google.cloud.ces.v1beta.ToolService.RetrieveTools:input_type -> google.cloud.ces.v1beta.RetrieveToolsRequest
+	1,  // 18: google.cloud.ces.v1beta.ToolService.ExecuteTool:output_type -> google.cloud.ces.v1beta.ExecuteToolResponse
+	3,  // 19: google.cloud.ces.v1beta.ToolService.RetrieveToolSchema:output_type -> google.cloud.ces.v1beta.RetrieveToolSchemaResponse
+	5,  // 20: google.cloud.ces.v1beta.ToolService.RetrieveTools:output_type -> google.cloud.ces.v1beta.RetrieveToolsResponse
+	18, // [18:21] is the sub-list for method output_type
+	15, // [15:18] is the sub-list for method input_type
+	15, // [15:15] is the sub-list for extension type_name
+	15, // [15:15] is the sub-list for extension extendee
+	0,  // [0:15] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_ces_v1beta_tool_service_proto_init() }
@@ -749,6 +786,7 @@ func file_google_cloud_ces_v1beta_tool_service_proto_init() {
 		return
 	}
 	file_google_cloud_ces_v1beta_schema_proto_init()
+	file_google_cloud_ces_v1beta_search_suggestions_proto_init()
 	file_google_cloud_ces_v1beta_session_service_proto_init()
 	file_google_cloud_ces_v1beta_tool_proto_init()
 	file_google_cloud_ces_v1beta_toolset_tool_proto_init()
