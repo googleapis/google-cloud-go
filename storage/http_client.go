@@ -54,6 +54,8 @@ type httpStorageClient struct {
 	settings                   *settings
 	config                     *storageConfig
 	dynamicReadReqStallTimeout *bucketDelayManager
+	metrics                    *clientMetrics
+	metricsCleanup             func()
 
 	// configFeatureAttributes tracks client-level features that are enabled for this
 	// client instance.
@@ -122,18 +124,42 @@ func newHTTPStorageClient(ctx context.Context, opts ...storageOption) (storageCl
 		return nil, fmt.Errorf("dialing: %w", err)
 	}
 
+	var clientMetrics *clientMetrics
+	var metricsCleanup func()
+	if isOtelMetricsEnabled(&config) {
+		var project string
+		if creds != nil {
+			project, _ = creds.ProjectID(ctx)
+		}
+		if sm, cleanup, err := initMetrics(ctx, project, &config); err == nil {
+			clientMetrics = sm
+			metricsCleanup = cleanup
+		} else {
+			log.Printf("Failed to enable metrics: %v", err)
+		}
+	}
+
 	// Clone the http.Client to avoid modifying the original one if it was provided by the user.
 	hcClone := *hc
 	c := &httpStorageClient{
-		creds:    creds,
-		hc:       &hcClone,
-		settings: s,
-		config:   &config,
+		creds:             creds,
+		hc:                &hcClone,
+		settings:          s,
+		config:            &config,
+		metrics:           clientMetrics,
+		metricsCleanup:    metricsCleanup,
 	}
 
-	// Wrap transport to inject tracking headers.
+	// Wrap transport to inject tracking headers and metrics.
+	transport := hc.Transport
+	if clientMetrics != nil {
+		transport = &metricsRoundTripper{
+			underlying: transport,
+			metrics:    clientMetrics,
+		}
+	}
 	hcClone.Transport = &trackingTransport{
-		base:     hc.Transport,
+		base:     transport,
 		features: c.configFeatureAttributes,
 	}
 
@@ -172,6 +198,9 @@ func newHTTPStorageClient(ctx context.Context, opts ...storageOption) (storageCl
 
 func (c *httpStorageClient) Close() error {
 	c.hc.CloseIdleConnections()
+	if c.metricsCleanup != nil {
+		c.metricsCleanup()
+	}
 	return nil
 }
 

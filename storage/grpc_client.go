@@ -124,6 +124,8 @@ type grpcStorageClient struct {
 	settings *settings
 	config   *storageConfig
 	dpDiag   string
+	metrics        *clientMetrics
+	metricsCleanup func()
 
 	// configFeatureAttributes tracks client-level features that are enabled for this
 	// client instance.
@@ -172,9 +174,34 @@ func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (*grpcStor
 			log.Printf("Failed to enable client metrics: %v", err)
 		}
 	}
+
+	var clientMetrics *clientMetrics
+	var metricsCleanup func()
+	if isOtelMetricsEnabled(&config) {
+		var project string
+		c, err := transport.Creds(ctx, s.clientOption...)
+		if err == nil {
+			project = c.ProjectID
+		}
+		if sm, cleanup, err := initMetrics(ctx, project, &config); err == nil {
+			clientMetrics = sm
+			metricsCleanup = cleanup
+
+			unaryInt, streamInt := metricsInterceptors(sm)
+			s.clientOption = append(s.clientOption,
+				option.WithGRPCDialOption(grpc.WithChainUnaryInterceptor(unaryInt)),
+				option.WithGRPCDialOption(grpc.WithChainStreamInterceptor(streamInt)),
+			)
+		} else {
+			log.Printf("Failed to enable metrics: %v", err)
+		}
+	}
+
 	c := &grpcStorageClient{
-		settings: s,
-		config:   &config,
+		settings:          s,
+		config:            &config,
+		metrics:           clientMetrics,
+		metricsCleanup:    metricsCleanup,
 	}
 	// Add routing interceptors to inject headers.
 	ui, si := c.routingInterceptors()
@@ -274,6 +301,9 @@ func (c *grpcStorageClient) prepareDirectPathMetadata(ctx context.Context, targe
 func (c *grpcStorageClient) Close() error {
 	if c.settings.metricsContext != nil {
 		c.settings.metricsContext.close()
+	}
+	if c.metricsCleanup != nil {
+		c.metricsCleanup()
 	}
 	return c.raw.Close()
 }
