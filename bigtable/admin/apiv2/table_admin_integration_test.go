@@ -22,6 +22,7 @@ import (
 	"time"
 
 	adminpb "cloud.google.com/go/bigtable/admin/apiv2/adminpb"
+	"cloud.google.com/go/internal/uid"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -36,6 +37,13 @@ type testEnv struct {
 	instance string
 	cluster  string
 }
+
+var (
+	sourceTableSpace   = uid.NewSpace("it-src-table", &uid.Options{Short: true})
+	backupSpace        = uid.NewSpace("it-backup", &uid.Options{Short: true})
+	restoredTableSpace = uid.NewSpace("it-restored-table", &uid.Options{Short: true})
+	replTestTableSpace = uid.NewSpace("it-repl-table", &uid.Options{Short: true})
+)
 
 func setupIntegration(t *testing.T) *testEnv {
 	t.Helper()
@@ -86,18 +94,20 @@ func setupIntegration(t *testing.T) *testEnv {
 }
 
 func TestIntegration_RestoreTable(t *testing.T) {
+	t.Parallel()
 	env := setupIntegration(t)
 	if os.Getenv("BIGTABLE_EMULATOR_HOST") == "" && env.cluster == "" {
 		t.Skip("Missing GCLOUD_TESTS_BIGTABLE_CLUSTER for non-emulator run")
 	}
 
-	ctx := context.Background()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Minute)
+	t.Cleanup(cancel)
+	cleanupCtx := context.WithoutCancel(ctx)
 	client := env.client
 
-	suffix := time.Now().Format("20060102-150405")
-	sourceTableID := fmt.Sprintf("src-table-%s", suffix)
-	backupID := fmt.Sprintf("backup-%s", suffix)
-	restoredTableID := fmt.Sprintf("restored-table-%s", suffix)
+	sourceTableID := sourceTableSpace.New()
+	backupID := backupSpace.New()
+	restoredTableID := restoredTableSpace.New()
 
 	instancePath := fmt.Sprintf("projects/%s/instances/%s", env.project, env.instance)
 	sourceTablePath := fmt.Sprintf("%s/tables/%s", instancePath, sourceTableID)
@@ -115,7 +125,7 @@ func TestIntegration_RestoreTable(t *testing.T) {
 		t.Fatalf("Failed to create source table: %v", err)
 	}
 	t.Cleanup(func() {
-		client.DeleteTable(ctx, &adminpb.DeleteTableRequest{Name: sourceTablePath})
+		client.DeleteTable(cleanupCtx, &adminpb.DeleteTableRequest{Name: sourceTablePath})
 	})
 
 	// 2. Create backup
@@ -136,7 +146,7 @@ func TestIntegration_RestoreTable(t *testing.T) {
 		t.Fatalf("Failed to initiate backup: %v", err)
 	}
 	t.Cleanup(func() {
-		client.DeleteBackup(ctx, &adminpb.DeleteBackupRequest{Name: backupPath})
+		client.DeleteBackup(cleanupCtx, &adminpb.DeleteBackupRequest{Name: backupPath})
 	})
 
 	_, err = opCreateBackup.Wait(ctx)
@@ -156,7 +166,7 @@ func TestIntegration_RestoreTable(t *testing.T) {
 		t.Fatalf("RestoreTable failed: %v", err)
 	}
 	t.Cleanup(func() {
-		client.DeleteTable(ctx, &adminpb.DeleteTableRequest{Name: restoredTablePath})
+		client.DeleteTable(cleanupCtx, &adminpb.DeleteTableRequest{Name: restoredTablePath})
 	})
 
 	// 4. Verify restored table exists
@@ -173,13 +183,15 @@ func TestIntegration_RestoreTable(t *testing.T) {
 }
 
 func TestIntegration_WaitForConsistency(t *testing.T) {
+	t.Parallel()
 	env := setupIntegration(t)
 
-	ctx := context.Background()
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	t.Cleanup(cancel)
+	cleanupCtx := context.WithoutCancel(ctx)
 	client := env.client
 
-	suffix := time.Now().Format("20060102-150405")
-	tableID := fmt.Sprintf("repl-test-table-%s", suffix)
+	tableID := replTestTableSpace.New()
 	instancePath := fmt.Sprintf("projects/%s/instances/%s", env.project, env.instance)
 	tablePath := fmt.Sprintf("%s/tables/%s", instancePath, tableID)
 
@@ -193,7 +205,7 @@ func TestIntegration_WaitForConsistency(t *testing.T) {
 		t.Fatalf("Failed to create table: %v", err)
 	}
 	t.Cleanup(func() {
-		client.DeleteTable(ctx, &adminpb.DeleteTableRequest{Name: tablePath})
+		client.DeleteTable(cleanupCtx, &adminpb.DeleteTableRequest{Name: tablePath})
 	})
 
 	// Wait for replication
