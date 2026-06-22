@@ -2099,7 +2099,7 @@ func TestReadObjectWrongChecksumWholeObjectSizeEmulated(t *testing.T) {
 					if err != nil {
 						t.Fatalf("NewGRPCClient: %v", err)
 					}
-
+					defer client.Close()
 					var (
 						contents = randomBytes9MiB
 						prefix   = time.Now().Nanosecond()
@@ -2136,7 +2136,7 @@ func TestReadObjectWrongChecksumWholeObjectSizeEmulated(t *testing.T) {
 					if err != nil {
 						t.Fatalf("NewRangeReader: %v", err)
 					}
-
+					defer r.Close()
 					if disableChecksum {
 						buf := new(bytes.Buffer)
 						_, err = io.Copy(buf, r)
@@ -2180,6 +2180,7 @@ func TestReadObjectWrongChecksumUnfinalizedWholeObjectSizeEmulated(t *testing.T)
 	if err != nil {
 		t.Fatalf("NewGRPCClient: %v", err)
 	}
+	defer client.Close()
 
 	var (
 		contents = randomBytes9MiB

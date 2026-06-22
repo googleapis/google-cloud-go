@@ -1405,6 +1405,7 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 		length = size
 	}
 	remain := length - startOffset
+
 	var chunkCRC uint32
 	var chunkCRCPresent bool
 	if ranges := msg.GetObjectDataRanges(); len(ranges) > 0 {

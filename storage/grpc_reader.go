@@ -195,6 +195,8 @@ func (c *grpcStorageClient) NewRangeReaderReadObject(ctx context.Context, params
 	if params.offset < 0 {
 		startOffset = size + params.offset
 	}
+	// If caller has specified a negative start offset that's larger than the
+	// reported size, start at the beginning of the object.
 	if startOffset < 0 {
 		startOffset = 0
 	}
