@@ -26,8 +26,8 @@ import (
 	"sync/atomic"
 	"time"
 
-	mexporter "github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/metric"
 	"cloud.google.com/go/storage/internal"
+	mexporter "github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/metric"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
 	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
@@ -159,9 +159,7 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 
 	cleanup := func() {
 		if ownProvider {
-			// Use a background context with a timeout to guarantee metrics
-			// are flushed even if the parent context has been canceled.
-			shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+			shutdownCtx, cancel := context.WithTimeout(context.WithoutCancel(ctx), 5*time.Second)
 			defer cancel()
 			provider.Shutdown(shutdownCtx)
 		}

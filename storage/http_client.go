@@ -150,12 +150,12 @@ func newHTTPStorageClient(ctx context.Context, opts ...storageOption) (client st
 	// Clone the http.Client to avoid modifying the original one if it was provided by the user.
 	hcClone := *hc
 	c := &httpStorageClient{
-		creds:             creds,
-		hc:                &hcClone,
-		settings:          s,
-		config:            &config,
-		metrics:           clientMetrics,
-		metricsCleanup:    metricsCleanup,
+		creds:          creds,
+		hc:             &hcClone,
+		settings:       s,
+		config:         &config,
+		metrics:        clientMetrics,
+		metricsCleanup: metricsCleanup,
 	}
 
 	// Wrap transport to inject tracking headers and metrics.

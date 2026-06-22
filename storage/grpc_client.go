@@ -120,10 +120,10 @@ func defaultGRPCOptions() []option.ClientOption {
 // grpcStorageClient is the gRPC API implementation of the transport-agnostic
 // storageClient interface.
 type grpcStorageClient struct {
-	raw      *gapic.Client
-	settings *settings
-	config   *storageConfig
-	dpDiag   string
+	raw            *gapic.Client
+	settings       *settings
+	config         *storageConfig
+	dpDiag         string
 	metrics        *clientMetrics
 	metricsCleanup func()
 
@@ -206,10 +206,10 @@ func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (client *g
 	}
 
 	c := &grpcStorageClient{
-		settings:          s,
-		config:            &config,
-		metrics:           clientMetrics,
-		metricsCleanup:    metricsCleanup,
+		settings:       s,
+		config:         &config,
+		metrics:        clientMetrics,
+		metricsCleanup: metricsCleanup,
 	}
 	// Add routing interceptors to inject headers.
 	ui, si := c.routingInterceptors()

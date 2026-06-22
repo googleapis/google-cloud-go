@@ -209,8 +209,6 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		return nil, fmt.Errorf("dialing: %w", err)
 	}
 
-
-
 	// RawService should be created with the chosen endpoint to take account of user override.
 	// Preserve other user-supplied options as well.
 	opts = append(opts, option.WithEndpoint(ep), option.WithHTTPClient(hc))
