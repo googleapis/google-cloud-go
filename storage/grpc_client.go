@@ -1372,21 +1372,6 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 		params.length = obj.Size - params.offset
 	}
 
-	// Only support checksums when reading an entire object, not a range.
-	var (
-		wantCRC  uint32
-		checkCRC bool
-	)
-	if checksums := obj.GetChecksums(); checksums != nil && checksums.Crc32C != nil {
-		if !params.disableCRCCheck &&
-			params.offset == 0 &&
-			(params.length < 0 ||
-				finalized && params.length >= size) {
-			checkCRC = true
-		}
-		wantCRC = checksums.GetCrc32C()
-	}
-
 	startOffset := params.offset
 	if params.offset < 0 {
 		startOffset = size + params.offset
@@ -1395,6 +1380,20 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 	// reported size, start at the beginning of the object.
 	if startOffset < 0 {
 		startOffset = 0
+	}
+	// Only support checksums when reading an entire object, not a range.
+	var (
+		wantCRC  uint32
+		checkCRC bool
+	)
+	if checksums := obj.GetChecksums(); checksums != nil && checksums.Crc32C != nil {
+		if !params.disableCRCCheck &&
+			startOffset == 0 &&
+			(params.length < 0 ||
+				finalized && params.length >= size) {
+			checkCRC = true
+		}
+		wantCRC = checksums.GetCrc32C()
 	}
 
 	// The remaining bytes are the lesser of the requested range and all bytes
