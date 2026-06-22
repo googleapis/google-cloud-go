@@ -716,6 +716,7 @@ libraries:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
             - F_ordered_routing_headers
+            - F_export_set_google_client_info
           no_snippets: true
       - path: google/firestore/admin/v1
         go:
@@ -724,6 +725,7 @@ libraries:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
             - F_ordered_routing_headers
+            - F_export_set_google_client_info
           import_path: firestore/apiv1/admin
           no_snippets: true
     keep:
