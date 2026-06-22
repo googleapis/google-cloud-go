@@ -29,6 +29,7 @@ import (
 	"io"
 	"math/big"
 	"net/http"
+	"strings"
 	"testing"
 	"time"
 
@@ -330,6 +331,8 @@ func TestValidateES256MalformedSignature(t *testing.T) {
 			}
 			if _, err := v.Validate(context.Background(), idToken, testAudience); err == nil {
 				t.Fatal("Validate(...) = nil, want error for malformed ES256 signature")
+			} else if !strings.Contains(err.Error(), "ES256 signature should be") {
+				t.Fatalf("Validate(...) = %v, want error about ES256 signature length", err)
 			}
 		})
 	}
