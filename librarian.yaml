@@ -62,14 +62,23 @@ libraries:
     version: 1.0.0
     apis:
       - path: google/ai/generativelanguage/v1
+        go:
+          enabled_generator_features:
+            - F_export_set_google_client_info
       - path: google/ai/generativelanguage/v1beta2
       - path: google/ai/generativelanguage/v1beta
+        go:
+          enabled_generator_features:
+            - F_export_set_google_client_info
       - path: google/ai/generativelanguage/v1alpha
   - name: aiplatform
     version: 1.125.0
     apis:
       - path: google/cloud/aiplatform/v1
       - path: google/cloud/aiplatform/v1beta1
+        go:
+          enabled_generator_features:
+            - F_export_set_google_client_info
     skip_generate: true
   - name: alloydb
     version: 1.27.0
