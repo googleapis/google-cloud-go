@@ -37,21 +37,20 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-// clientMetrics contains the OpenTelemetry metric instruments to record standard client-side metrics.
+// clientMetrics contains the OpenTelemetry metric instruments to record client-side metrics.
 type clientMetrics struct {
 	provider                  *sdkmetric.MeterProvider
 	rpcClientCallDuration     metric.Float64Histogram
 	httpClientRequestDuration metric.Float64Histogram
 }
 
-// clientMetricFormatter formats standard OTel metric names to a format suitable for GCM,
-// writing them under the custom.googleapis.com domain (e.g. custom.googleapis.com/rpc/client/call/duration).
+// clientMetricFormatter formats standard OTel metric names to a format suitable for GCM.
 func clientMetricFormatter(m metricdata.Metrics) string {
 	return "custom.googleapis.com/" + strings.ReplaceAll(string(m.Name), ".", "/")
 }
 
-// isOtelMetricsEnabled checks if Otel metrics are enabled either via client option or environment variable.
-// The environment variable GCP_STORAGE_GO_ENABLE_OTEL_METRICS takes precedence and overrides the client option if set.
+// isOtelMetricsEnabled checks if Otel metrics are enabled.
+// The environment variable GCP_STORAGE_GO_ENABLE_OTEL_METRICS takes precedence.
 func isOtelMetricsEnabled(config *storageConfig) bool {
 	if valStr, present := os.LookupEnv("GCP_STORAGE_GO_ENABLE_OTEL_METRICS"); present {
 		v, err := strconv.ParseBool(valStr)
@@ -62,7 +61,7 @@ func isOtelMetricsEnabled(config *storageConfig) bool {
 	return config.enableOtelMetrics
 }
 
-// newMetricsGCMExporter creates a Google Cloud Monitoring exporter for client metrics.
+// newMetricsGCMExporter creates a Google Cloud Monitoring exporter.
 func newMetricsGCMExporter(ctx context.Context, projectID string) (sdkmetric.Exporter, error) {
 	exporter, err := mexporter.New(
 		mexporter.WithProjectID(projectID),
@@ -70,13 +69,12 @@ func newMetricsGCMExporter(ctx context.Context, projectID string) (sdkmetric.Exp
 		mexporter.WithCreateServiceTimeSeries(),
 	)
 	if err != nil {
-		return nil, fmt.Errorf("storage: creating GCM metrics exporter: %w", err)
+		return nil, fmt.Errorf("storage: creating GCM exporter: %w", err)
 	}
 	return exporter, nil
 }
 
-// initMetrics initializes metrics instruments, creating a meter provider and registering
-// either the user-supplied exporter/provider or a default GCM exporter.
+// initMetrics initializes clientMetrics with a meter provider and registered exporter.
 func initMetrics(ctx context.Context, projectID string, config *storageConfig) (*clientMetrics, func(), error) {
 	var provider *sdkmetric.MeterProvider
 	var ownProvider bool
@@ -102,8 +100,7 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 
 		reader := sdkmetric.NewPeriodicReader(&exporterLogSuppressor{Exporter: exporter}, sdkmetric.WithInterval(interval))
 
-		// Common static attributes are defined as Resource Attributes on the provider
-		// as per the GCP Client-side Metrics specification, completely avoiding hot-path allocations.
+		// Static common attributes are defined as Resource Attributes.
 		res, err := resource.New(ctx,
 			resource.WithAttributes(
 				attribute.String("gcp.client.version", internal.Version),
@@ -168,6 +165,96 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 	return cm, cleanup, nil
 }
 
+// grpcCodeToString maps a gRPC status code to its screaming-snake-case protocol name.
+func grpcCodeToString(code codes.Code) string {
+	switch code {
+	case codes.OK:
+		return "OK"
+	case codes.Canceled:
+		return "CANCELLED"
+	case codes.Unknown:
+		return "UNKNOWN"
+	case codes.InvalidArgument:
+		return "INVALID_ARGUMENT"
+	case codes.DeadlineExceeded:
+		return "DEADLINE_EXCEEDED"
+	case codes.NotFound:
+		return "NOT_FOUND"
+	case codes.AlreadyExists:
+		return "ALREADY_EXISTS"
+	case codes.PermissionDenied:
+		return "PERMISSION_DENIED"
+	case codes.ResourceExhausted:
+		return "RESOURCE_EXHAUSTED"
+	case codes.FailedPrecondition:
+		return "FAILED_PRECONDITION"
+	case codes.Aborted:
+		return "ABORTED"
+	case codes.OutOfRange:
+		return "OUT_OF_RANGE"
+	case codes.Unimplemented:
+		return "UNIMPLEMENTED"
+	case codes.Internal:
+		return "INTERNAL"
+	case codes.Unavailable:
+		return "UNAVAILABLE"
+	case codes.DataLoss:
+		return "DATA_LOSS"
+	case codes.Unauthenticated:
+		return "UNAUTHENTICATED"
+	default:
+		return "UNKNOWN"
+	}
+}
+
+// computeErrorType maps the request result to the standard error.type values.
+func computeErrorType(err error, isHTTP bool, statusCode int64) string {
+	if err == nil {
+		if isHTTP && statusCode >= 400 {
+			return strconv.FormatInt(statusCode, 10)
+		}
+		return "OK"
+	}
+
+	if err == io.EOF {
+		return "OK"
+	}
+
+	errStr := strings.ToLower(err.Error())
+
+	if err == context.Canceled || strings.Contains(errStr, "context canceled") {
+		return "CANCELLED"
+	}
+
+	if err == context.DeadlineExceeded || strings.Contains(errStr, "deadline exceeded") || strings.Contains(errStr, "timeout") {
+		return "TIMEOUT"
+	}
+
+	if strings.Contains(errStr, "checksum") || strings.Contains(errStr, "mismatch") {
+		return "CHECKSUM_MISMATCH"
+	}
+
+	if strings.Contains(errStr, "auth") || strings.Contains(errStr, "credentials") || strings.Contains(errStr, "token") || strings.Contains(errStr, "key") {
+		return "AUTHENTICATION_ERROR"
+	}
+
+	if strings.Contains(errStr, "connection refused") || strings.Contains(errStr, "dial tcp") || strings.Contains(errStr, "no such host") || strings.Contains(errStr, "broken pipe") || strings.Contains(errStr, "connection reset") || strings.Contains(errStr, "eof") {
+		return "CONNECTIVITY"
+	}
+
+	if !isHTTP {
+		if st, ok := status.FromError(err); ok && st.Code() != codes.OK {
+			return grpcCodeToString(st.Code())
+		}
+	}
+
+	if isHTTP && statusCode >= 400 {
+		return strconv.FormatInt(statusCode, 10)
+	}
+
+	return "UNKNOWN"
+}
+
 func (cm *clientMetrics) recordRPC(ctx context.Context, method, target string, duration float64, err error) {
 	statusCode := int64(codes.OK)
 	if err != nil && err != io.EOF {
@@ -184,8 +271,8 @@ func (cm *clientMetrics) recordRPC(ctx context.Context, method, target string, d
 		}
 	}
 
-	// Dynamic metric-specific attributes are allocated here; static common attributes
-	// are automatically merged by the OTel SDK at the provider level.
+	errorType := computeErrorType(err, false, statusCode)
+
 	attrs := []attribute.KeyValue{
 		attribute.String("rpc.system", "grpc"),
 		attribute.String("rpc.system.name", "grpc"),
@@ -195,6 +282,7 @@ func (cm *clientMetrics) recordRPC(ctx context.Context, method, target string, d
 		attribute.Int64("rpc.grpc.status_code", statusCode),
 		attribute.Int64("rpc.response.status_code", statusCode),
 		attribute.String("server.address", stripPort(target)),
+		attribute.String("error.type", errorType),
 	}
 
 	cm.rpcClientCallDuration.Record(ctx, duration, metric.WithAttributes(attrs...))
@@ -207,9 +295,8 @@ func (cm *clientMetrics) recordHTTP(ctx context.Context, req *http.Request, resp
 	}
 
 	urlTemplate := computeURLTemplate(req.URL.Path, req.URL.Host)
+	errorType := computeErrorType(err, true, statusCode)
 
-	// Dynamic metric-specific attributes are allocated here; static common attributes
-	// are automatically merged by the OTel SDK at the provider level.
 	attrs := []attribute.KeyValue{
 		attribute.String("rpc.system", "http"),
 		attribute.String("rpc.system.name", "http"),
@@ -219,6 +306,7 @@ func (cm *clientMetrics) recordHTTP(ctx context.Context, req *http.Request, resp
 		attribute.Int64("http.response.status_code", statusCode),
 		attribute.Int64("rpc.response.status_code", statusCode),
 		attribute.String("server.address", stripPort(req.URL.Host)),
+		attribute.String("error.type", errorType),
 	}
 
 	cm.httpClientRequestDuration.Record(ctx, duration, metric.WithAttributes(attrs...))
@@ -226,7 +314,7 @@ func (cm *clientMetrics) recordHTTP(ctx context.Context, req *http.Request, resp
 
 // computeURLTemplate extracts a parameterized template path for a given GCS HTTP request URL path.
 func computeURLTemplate(path, host string) string {
-	// 1. Check for XML host-style: {bucket}.storage.googleapis.com
+	// Check for XML host-style: {bucket}.storage.googleapis.com.
 	if strings.HasSuffix(host, ".storage.googleapis.com") && host != "storage.googleapis.com" {
 		if path == "/" || path == "" {
 			return "/"
@@ -234,9 +322,8 @@ func computeURLTemplate(path, host string) string {
 		return "/{object}"
 	}
 
-	// 2. Check for XML path-style or JSON API
+	// Check for XML path-style or JSON API.
 	if !strings.HasPrefix(path, "/storage/") && !strings.HasPrefix(path, "/upload/") && !strings.HasPrefix(path, "/batch") {
-		// XML path-style: /{bucket}/{object} or /{bucket}
 		p := strings.TrimPrefix(path, "/")
 		parts := strings.SplitN(p, "/", 2)
 		if len(parts) == 1 {
@@ -248,12 +335,12 @@ func computeURLTemplate(path, host string) string {
 		return "/{bucket}/{object}"
 	}
 
-	// 3. JSON API: /storage/v1/b/bucket-name/o/object-name etc.
+	// JSON API: /storage/v1/b/bucket-name/o/object-name etc.
 	bIdx := strings.Index(path, "/b/")
 	if bIdx == -1 {
 		return path
 	}
-	prefix := path[:bIdx+3] // "/storage/v1/b/" or "/upload/storage/v1/b/"
+	prefix := path[:bIdx+3]
 	rest := path[bIdx+3:]
 
 	parts := strings.SplitN(rest, "/", 2)
@@ -279,8 +366,7 @@ func stripPort(host string) string {
 	return host
 }
 
-// metricsRoundTripper is an http.RoundTripper that wraps an underlying transport
-// to record standard HTTP client metrics.
+// metricsRoundTripper is an http.RoundTripper that wraps an underlying transport.
 type metricsRoundTripper struct {
 	underlying http.RoundTripper
 	metrics    *clientMetrics
@@ -340,7 +426,7 @@ func (w *wrappedResponseBody) record(err error) {
 	}
 }
 
-// metricsInterceptors returns gRPC client interceptors to record standard RPC client metrics.
+// metricsInterceptors returns gRPC client interceptors.
 func metricsInterceptors(cm *clientMetrics) (grpc.UnaryClientInterceptor, grpc.StreamClientInterceptor) {
 	unary := func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
 		startTime := time.Now()
