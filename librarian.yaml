@@ -76,9 +76,6 @@ libraries:
     apis:
       - path: google/cloud/aiplatform/v1
       - path: google/cloud/aiplatform/v1beta1
-        go:
-          enabled_generator_features:
-            - F_export_set_google_client_info
     skip_generate: true
   - name: alloydb
     version: 1.27.0
