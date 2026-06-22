@@ -2,6 +2,13 @@
 
 
 
+## [1.30.0](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v1.29.0...discoveryengine/v1.30.0) (2026-06-22)
+
+
+### Features
+
+* Update API sources and regenerate ([#20007](https://github.com/googleapis/google-cloud-go/issues/20007)) ([4d633c8](https://github.com/googleapis/google-cloud-go/commit/4d633c893dd35be48ca353da133e7d483151cd3e))
+
 ## [1.29.0](https://github.com/googleapis/google-cloud-go/releases/tag/discoveryengine%2Fv1.29.0) (2026-05-07)
 
 ### Features
