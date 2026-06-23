@@ -524,6 +524,17 @@ $ gcloud firestore indexes composite create \
     --field-config=field-path=weight,order=ascending \
     --field-config=field-path=volume,order=ascending
 
+# For TestIntegration_EnterpriseDB (Pipeline Search Index)
+$ gcloud alpha firestore indexes composite create \
+    --database=your-databaseID-1 --project=$GCLOUD_TESTS_GOLANG_FIRESTORE_PROJECT_ID \
+    --collection-group=TextSearchIntegrationTests --query-scope=COLLECTION \
+    --density=sparse-any \
+    --field-config=field-path=location,search-config=GEO_POINT \
+    --field-config=field-path=menu,search-config=TEXT_TOKENIZED_MATCH_GLOBALLY \
+    --field-config=field-path=description,search-config=TEXT_TOKENIZED_MATCH_GLOBALLY \
+    --field-config=field-path=name,search-config=TEXT_TOKENIZED_MATCH_GLOBALLY \
+    --search-index-options=text-language=und,text-language-override-field-path=language
+
 # For TestIntegration_FindNearest (Vector Index)
 $ gcloud alpha firestore indexes composite create \
     --database=your-databaseID-1 --project=$GCLOUD_TESTS_GOLANG_FIRESTORE_PROJECT_ID \
