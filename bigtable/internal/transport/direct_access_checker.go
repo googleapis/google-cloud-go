@@ -45,8 +45,9 @@ const xdsCdsURITemplate = "xdstp://traffic-director-c2p.xds.googleapis.com/envoy
 // for direct-access connections once compatibility is confirmed.
 //
 // Implementations differ in HOW compatibility is determined:
-//   - pingAndWarmDirectAccessChecker probes via a PingAndWarm call at startup
-//     (today's only behavior, used by the classic channel pool factory).
+//   - directAccessChecker probes via the configured ChannelPrimer at startup
+//     (today's only behavior, used by the classic channel pool factory; with
+//     pingAndWarmChannelPrimer wired in, the probe is a PingAndWarm call).
 //   - A future GetClientConfiguration-based checker (for session-based pools)
 //     will derive compatibility from a server-driven configuration response
 //     surfaced by ClientConfigurationManager.
@@ -84,34 +85,34 @@ func newDirectAccessEligibleGauge(meterProvider metric.MeterProvider, logger *lo
 	return gauge
 }
 
-// pingAndWarmDirectAccessChecker probes Direct Access compatibility by
-// dialing once and issuing PingAndWarm + ALTS inspection. On failure it
+// directAccessChecker probes Direct Access compatibility by dialing once and
+// running the configured ChannelPrimer + an ALTS inspection. On failure it
 // kicks off an asynchronous investigation that records a more specific
 // failure reason on the direct_access/compatible metric.
 //
 // The checker reuses the same ChannelPrimer that the pool's connection
-// factory uses, so the exact PingAndWarm invocation (instance name, app
-// profile, feature-flag metadata) stays in one place — both the
-// compatibility probe and any single-endpoint investigation go through it.
-type pingAndWarmDirectAccessChecker struct {
+// factory uses, so the exact priming invocation stays in one place — both
+// the compatibility probe and any single-endpoint investigation go through
+// it.
+type directAccessChecker struct {
 	dialer          func() (*BigtableConn, error)
 	primer          ChannelPrimer
 	daEligibleGauge metric.Int64Gauge
 	logger          *log.Logger
 }
 
-// newPingAndWarmDirectAccessChecker constructs the today-default checker.
-// A nil meterProvider produces a checker that silently skips metric
-// reporting. The primer must be non-nil; the channel pool factory
-// constructs a single ChannelPrimer and shares it with both the pool (via
-// WithChannelPrimer) and this checker.
-func newPingAndWarmDirectAccessChecker(
+// newDirectAccessChecker constructs the today-default checker. A nil
+// meterProvider produces a checker that silently skips metric reporting.
+// The primer must be non-nil; the channel pool factory constructs a single
+// ChannelPrimer and shares it with both the pool (via WithChannelPrimer)
+// and this checker.
+func newDirectAccessChecker(
 	dialer func() (*BigtableConn, error),
 	primer ChannelPrimer,
 	meterProvider metric.MeterProvider,
 	logger *log.Logger,
-) *pingAndWarmDirectAccessChecker {
-	return &pingAndWarmDirectAccessChecker{
+) *directAccessChecker {
+	return &directAccessChecker{
 		dialer:          dialer,
 		primer:          primer,
 		daEligibleGauge: newDirectAccessEligibleGauge(meterProvider, logger),
@@ -120,7 +121,7 @@ func newPingAndWarmDirectAccessChecker(
 }
 
 // Dialer returns the configured direct-access dialer.
-func (c *pingAndWarmDirectAccessChecker) Dialer() func() (*BigtableConn, error) {
+func (c *directAccessChecker) Dialer() func() (*BigtableConn, error) {
 	return c.dialer
 }
 
@@ -129,7 +130,7 @@ func (c *pingAndWarmDirectAccessChecker) Dialer() func() (*BigtableConn, error) 
 // returned so the pool can adopt it as its first connection (saving one
 // redial). On incompatible: any probe connection is closed and an async
 // investigation begins to report a specific failure reason.
-func (c *pingAndWarmDirectAccessChecker) CheckCompatibility(ctx context.Context) (*BigtableConn, bool) {
+func (c *directAccessChecker) CheckCompatibility(ctx context.Context) (*BigtableConn, bool) {
 	conn, err := c.dialer()
 	if err != nil {
 		btopt.Debugf(c.logger, "bigtable_direct_access: dial failed: %v", err)
@@ -161,7 +162,7 @@ func (c *pingAndWarmDirectAccessChecker) CheckCompatibility(ctx context.Context)
 }
 
 // reportSuccess records a direct_access/compatible=1 reading.
-func (c *pingAndWarmDirectAccessChecker) reportSuccess(ctx context.Context, ipPreference string) {
+func (c *directAccessChecker) reportSuccess(ctx context.Context, ipPreference string) {
 	if c.daEligibleGauge == nil {
 		return
 	}
@@ -173,7 +174,7 @@ func (c *pingAndWarmDirectAccessChecker) reportSuccess(ctx context.Context, ipPr
 
 // reportFailure records a direct_access/compatible=0 reading with the given
 // reason tag (e.g. "manually_disabled", "metadata_unreachable").
-func (c *pingAndWarmDirectAccessChecker) reportFailure(reason string) {
+func (c *directAccessChecker) reportFailure(reason string) {
 	if c.daEligibleGauge == nil {
 		return
 	}
@@ -187,7 +188,7 @@ func (c *pingAndWarmDirectAccessChecker) reportFailure(reason string) {
 // to determine why Direct Access was not usable, and reports the specific
 // reason to the metric. It walks the GCE-environment preconditions in order
 // of cheapness — short-circuits as soon as a failing precondition is found.
-func (c *pingAndWarmDirectAccessChecker) investigateFailure(originalErr error) {
+func (c *directAccessChecker) investigateFailure(originalErr error) {
 	if err := directaccess.IsRunningOnGCP(); err != nil {
 		btopt.Debugf(c.logger, "bigtable_direct_access: investigation: %v. Original error: %v", err, originalErr)
 		c.reportFailure("not_in_gcp")
@@ -296,7 +297,7 @@ func (c *pingAndWarmDirectAccessChecker) investigateFailure(originalErr error) {
 // probeSingleEndpoint attempts an ALTS-authenticated Prime() request directly
 // against a specific xDS endpoint, isolating whether the failure was at the
 // load-balancer level vs the endpoint itself.
-func (c *pingAndWarmDirectAccessChecker) probeSingleEndpoint(ctx context.Context, targetEndpoint string) error {
+func (c *directAccessChecker) probeSingleEndpoint(ctx context.Context, targetEndpoint string) error {
 	btopt.Debugf(c.logger, "bigtable_direct_access: investigation: Creating ALTS channel to %s...", targetEndpoint)
 
 	altsCreds := alts.NewClientCreds(alts.DefaultClientOptions())
