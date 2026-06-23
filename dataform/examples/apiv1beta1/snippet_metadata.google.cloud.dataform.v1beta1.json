@@ -659,6 +659,52 @@
           "fullName": "google.cloud.dataform.v1beta1.Client",
           "shortName": "Client"
         },
+        "fullName": "google.cloud.dataform.v1beta1.Client.DeleteFolderTree",
+        "method": {
+          "fullName": "google.cloud.dataform.v1beta1.Dataform.DeleteFolderTree",
+          "service": {
+            "fullName": "google.cloud.dataform.v1beta1.Dataform",
+            "shortName": "Dataform"
+          },
+          "shortName": "DeleteFolderTree"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "dataformpb.DeleteFolderTreeRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "DeleteFolderTreeOperation",
+        "shortName": "DeleteFolderTree"
+      },
+      "description": "DeleteFolderTree deletes a Folder with its contents (Folders, Repositories, Workspaces,\nReleaseConfigs, and WorkflowConfigs).",
+      "file": "Client/DeleteFolderTree/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "dataform_v1beta1_generated_Dataform_DeleteFolderTree_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "dataform DeleteFolderTree Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.dataform.v1beta1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.dataform.v1beta1.Client.DeleteOperation",
         "method": {
           "fullName": "google.longrunning.Operations.DeleteOperation",
@@ -794,6 +840,52 @@
           "fullName": "google.cloud.dataform.v1beta1.Client",
           "shortName": "Client"
         },
+        "fullName": "google.cloud.dataform.v1beta1.Client.DeleteRepositoryLongRunning",
+        "method": {
+          "fullName": "google.cloud.dataform.v1beta1.Dataform.DeleteRepositoryLongRunning",
+          "service": {
+            "fullName": "google.cloud.dataform.v1beta1.Dataform",
+            "shortName": "Dataform"
+          },
+          "shortName": "DeleteRepositoryLongRunning"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "dataformpb.DeleteRepositoryLongRunningRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "DeleteRepositoryLongRunningOperation",
+        "shortName": "DeleteRepositoryLongRunning"
+      },
+      "description": "DeleteRepositoryLongRunning deletes a single repository asynchronously.",
+      "file": "Client/DeleteRepositoryLongRunning/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "dataform_v1beta1_generated_Dataform_DeleteRepositoryLongRunning_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "dataform DeleteRepositoryLongRunning Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.dataform.v1beta1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.dataform.v1beta1.Client.DeleteTeamFolder",
         "method": {
           "fullName": "google.cloud.dataform.v1beta1.Dataform.DeleteTeamFolder",
@@ -832,6 +924,52 @@
         }
       ],
       "title": "dataform DeleteTeamFolder Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.dataform.v1beta1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.dataform.v1beta1.Client.DeleteTeamFolderTree",
+        "method": {
+          "fullName": "google.cloud.dataform.v1beta1.Dataform.DeleteTeamFolderTree",
+          "service": {
+            "fullName": "google.cloud.dataform.v1beta1.Dataform",
+            "shortName": "Dataform"
+          },
+          "shortName": "DeleteTeamFolderTree"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "dataformpb.DeleteTeamFolderTreeRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "DeleteTeamFolderTreeOperation",
+        "shortName": "DeleteTeamFolderTree"
+      },
+      "description": "DeleteTeamFolderTree deletes a TeamFolder with its contents (Folders, Repositories, Workspaces,\nReleaseConfigs, and WorkflowConfigs).",
+      "file": "Client/DeleteTeamFolderTree/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "dataform_v1beta1_generated_Dataform_DeleteTeamFolderTree_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "dataform DeleteTeamFolderTree Sample"
     },
     {
       "clientMethod": {
@@ -1874,7 +2012,7 @@
         "resultType": "LocationIterator",
         "shortName": "ListLocations"
       },
-      "description": "ListLocations lists information about the supported locations for this service.\nThis method can be called in two ways: \n\n*   **List all public locations: ** Use the path `GET /v1/locations`.\n*   **List project-visible locations: ** Use the path\n`GET /v1/projects/{project_id}/locations`. This may include public\nlocations as well as private or other locations specifically visible\nto the project.",
+      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name][google.cloud.location.ListLocationsRequest.name] field: *\n**Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
       "file": "Client/ListLocations/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",

@@ -46,16 +46,20 @@ type QuotedMessageMetadata_QuoteType int32
 const (
 	// Reserved. This value is unused.
 	QuotedMessageMetadata_QUOTE_TYPE_UNSPECIFIED QuotedMessageMetadata_QuoteType = 0
-	// If quote_type is `REPLY`, you can do the following:
+	// When `quote_type` is `REPLY`, you can do the following:
 	//
 	// * If you're replying in a thread, you can quote another message in that
 	// thread.
 	//
 	// * If you're creating a root message, you can quote another root message
 	// in that space.
-	//
-	// You can't quote a message reply from a different thread.
 	QuotedMessageMetadata_REPLY QuotedMessageMetadata_QuoteType = 1
+	// When `quote_type` is `FORWARD`, you can quote a:
+	//
+	// * Message from a different space.
+	//
+	// * Message reply from a different thread in the same space.
+	QuotedMessageMetadata_FORWARD QuotedMessageMetadata_QuoteType = 2
 )
 
 // Enum value maps for QuotedMessageMetadata_QuoteType.
@@ -63,10 +67,12 @@ var (
 	QuotedMessageMetadata_QuoteType_name = map[int32]string{
 		0: "QUOTE_TYPE_UNSPECIFIED",
 		1: "REPLY",
+		2: "FORWARD",
 	}
 	QuotedMessageMetadata_QuoteType_value = map[string]int32{
 		"QUOTE_TYPE_UNSPECIFIED": 0,
 		"REPLY":                  1,
+		"FORWARD":                2,
 	}
 )
 
@@ -755,10 +761,6 @@ func (x *AttachedGif) GetUri() string {
 }
 
 // Information about a message that another message quotes.
-//
-// When you create a message, you can quote messages within the same
-// thread, or quote a root message to create a new root message.
-// However, you can't quote a message reply from a different thread.
 //
 // When you update a message, you can't add or replace the
 // `quotedMessageMetadata` field, but you can remove it.
@@ -2188,7 +2190,7 @@ const file_google_chat_v1_message_proto_rawDesc = "" +
 	"\x11accessory_widgets\x18, \x03(\v2\x1f.google.chat.v1.AccessoryWidgetB\x03\xe0A\x01R\x10accessoryWidgets:C\xeaA@\n" +
 	"\x1bchat.googleapis.com/Message\x12!spaces/{space}/messages/{message}\"$\n" +
 	"\vAttachedGif\x12\x15\n" +
-	"\x03uri\x18\x01 \x01(\tB\x03\xe0A\x03R\x03uri\"\xe3\x04\n" +
+	"\x03uri\x18\x01 \x01(\tB\x03\xe0A\x03R\x03uri\"\xf0\x04\n" +
 	"\x15QuotedMessageMetadata\x127\n" +
 	"\x04name\x18\x01 \x01(\tB#\xe0A\x02\xfaA\x1d\n" +
 	"\x1bchat.googleapis.com/MessageR\x04name\x12I\n" +
@@ -2196,10 +2198,11 @@ const file_google_chat_v1_message_proto_rawDesc = "" +
 	"\n" +
 	"quote_type\x18\x04 \x01(\x0e2/.google.chat.v1.QuotedMessageMetadata.QuoteTypeB\x03\xe0A\x01R\tquoteType\x12b\n" +
 	"\x17quoted_message_snapshot\x18\x05 \x01(\v2%.google.chat.v1.QuotedMessageSnapshotB\x03\xe0A\x03R\x15quotedMessageSnapshot\x12U\n" +
-	"\x12forwarded_metadata\x18\x06 \x01(\v2!.google.chat.v1.ForwardedMetadataB\x03\xe0A\x03R\x11forwardedMetadata\"2\n" +
+	"\x12forwarded_metadata\x18\x06 \x01(\v2!.google.chat.v1.ForwardedMetadataB\x03\xe0A\x03R\x11forwardedMetadata\"?\n" +
 	"\tQuoteType\x12\x1a\n" +
 	"\x16QUOTE_TYPE_UNSPECIFIED\x10\x00\x12\t\n" +
-	"\x05REPLY\x10\x01:\x81\x01\xeaA~\n" +
+	"\x05REPLY\x10\x01\x12\v\n" +
+	"\aFORWARD\x10\x02:\x81\x01\xeaA~\n" +
 	")chat.googleapis.com/QuotedMessageMetadata\x12Qspaces/{space}/messages/{message}/quotedMessageMetadata/{quoted_message_metadata}\"\xff\x01\n" +
 	"\x15QuotedMessageSnapshot\x12\x1b\n" +
 	"\x06sender\x18\x01 \x01(\tB\x03\xe0A\x03R\x06sender\x12\x17\n" +

@@ -401,7 +401,9 @@ const (
 	// Uncompressed 16-bit signed little-endian samples (Linear PCM).
 	// Audio content returned as LINEAR16 also contains a WAV header.
 	OutputAudioEncoding_OUTPUT_AUDIO_ENCODING_LINEAR_16 OutputAudioEncoding = 1
-	// MP3 audio at 32kbps.
+	// MP3 audio at 64kbps.
+	//
+	// Deprecated: Marked as deprecated in google/cloud/dialogflow/v2/audio_config.proto.
 	OutputAudioEncoding_OUTPUT_AUDIO_ENCODING_MP3 OutputAudioEncoding = 2
 	// MP3 audio at 64kbps.
 	OutputAudioEncoding_OUTPUT_AUDIO_ENCODING_MP3_64_KBPS OutputAudioEncoding = 4
@@ -1506,11 +1508,11 @@ const file_google_cloud_dialogflow_v2_audio_config_proto_rawDesc = "" +
 	"\x1dSSML_VOICE_GENDER_UNSPECIFIED\x10\x00\x12\x1a\n" +
 	"\x16SSML_VOICE_GENDER_MALE\x10\x01\x12\x1c\n" +
 	"\x18SSML_VOICE_GENDER_FEMALE\x10\x02\x12\x1d\n" +
-	"\x19SSML_VOICE_GENDER_NEUTRAL\x10\x03*\x8c\x02\n" +
+	"\x19SSML_VOICE_GENDER_NEUTRAL\x10\x03*\x90\x02\n" +
 	"\x13OutputAudioEncoding\x12%\n" +
 	"!OUTPUT_AUDIO_ENCODING_UNSPECIFIED\x10\x00\x12#\n" +
-	"\x1fOUTPUT_AUDIO_ENCODING_LINEAR_16\x10\x01\x12\x1d\n" +
-	"\x19OUTPUT_AUDIO_ENCODING_MP3\x10\x02\x12%\n" +
+	"\x1fOUTPUT_AUDIO_ENCODING_LINEAR_16\x10\x01\x12!\n" +
+	"\x19OUTPUT_AUDIO_ENCODING_MP3\x10\x02\x1a\x02\b\x01\x12%\n" +
 	"!OUTPUT_AUDIO_ENCODING_MP3_64_KBPS\x10\x04\x12\"\n" +
 	"\x1eOUTPUT_AUDIO_ENCODING_OGG_OPUS\x10\x03\x12\x1f\n" +
 	"\x1bOUTPUT_AUDIO_ENCODING_MULAW\x10\x05\x12\x1e\n" +

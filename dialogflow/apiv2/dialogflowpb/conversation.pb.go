@@ -508,6 +508,10 @@ const (
 	SearchKnowledgeAnswer_GENERATIVE SearchKnowledgeAnswer_AnswerType = 2
 	// The answer is from intent matching.
 	SearchKnowledgeAnswer_INTENT SearchKnowledgeAnswer_AnswerType = 3
+	// The answer is from Playbook.
+	SearchKnowledgeAnswer_PLAYBOOK SearchKnowledgeAnswer_AnswerType = 4
+	// The answer is from event.
+	SearchKnowledgeAnswer_EVENT SearchKnowledgeAnswer_AnswerType = 5
 )
 
 // Enum value maps for SearchKnowledgeAnswer_AnswerType.
@@ -517,12 +521,16 @@ var (
 		1: "FAQ",
 		2: "GENERATIVE",
 		3: "INTENT",
+		4: "PLAYBOOK",
+		5: "EVENT",
 	}
 	SearchKnowledgeAnswer_AnswerType_value = map[string]int32{
 		"ANSWER_TYPE_UNSPECIFIED": 0,
 		"FAQ":                     1,
 		"GENERATIVE":              2,
 		"INTENT":                  3,
+		"PLAYBOOK":                4,
+		"EVENT":                   5,
 	}
 )
 
@@ -3813,7 +3821,7 @@ const file_google_cloud_dialogflow_v2_conversation_proto_rawDesc = "" +
 	"\x17SearchKnowledgeResponse\x12K\n" +
 	"\aanswers\x18\x02 \x03(\v21.google.cloud.dialogflow.v2.SearchKnowledgeAnswerR\aanswers\x12'\n" +
 	"\x0frewritten_query\x18\x03 \x01(\tR\x0erewrittenQuery\x12s\n" +
-	"\x1bsearch_knowledge_debug_info\x18\x04 \x01(\v24.google.cloud.dialogflow.v2.SearchKnowledgeDebugInfoR\x18searchKnowledgeDebugInfo\"\x9f\x04\n" +
+	"\x1bsearch_knowledge_debug_info\x18\x04 \x01(\v24.google.cloud.dialogflow.v2.SearchKnowledgeDebugInfoR\x18searchKnowledgeDebugInfo\"\xb8\x04\n" +
 	"\x15SearchKnowledgeAnswer\x12\x16\n" +
 	"\x06answer\x18\x01 \x01(\tR\x06answer\x12]\n" +
 	"\vanswer_type\x18\x02 \x01(\x0e2<.google.cloud.dialogflow.v2.SearchKnowledgeAnswer.AnswerTypeR\n" +
@@ -3825,7 +3833,7 @@ const file_google_cloud_dialogflow_v2_conversation_proto_rawDesc = "" +
 	"\x05title\x18\x01 \x01(\tR\x05title\x12\x10\n" +
 	"\x03uri\x18\x02 \x01(\tR\x03uri\x12\x18\n" +
 	"\asnippet\x18\x03 \x01(\tR\asnippet\x123\n" +
-	"\bmetadata\x18\x05 \x01(\v2\x17.google.protobuf.StructR\bmetadata\"N\n" +
+	"\bmetadata\x18\x05 \x01(\v2\x17.google.protobuf.StructR\bmetadata\"g\n" +
 	"\n" +
 	"AnswerType\x12\x1b\n" +
 	"\x17ANSWER_TYPE_UNSPECIFIED\x10\x00\x12\a\n" +
@@ -3833,7 +3841,9 @@ const file_google_cloud_dialogflow_v2_conversation_proto_rawDesc = "" +
 	"\n" +
 	"GENERATIVE\x10\x02\x12\n" +
 	"\n" +
-	"\x06INTENT\x10\x03\"\x98\x02\n" +
+	"\x06INTENT\x10\x03\x12\f\n" +
+	"\bPLAYBOOK\x10\x04\x12\t\n" +
+	"\x05EVENT\x10\x05\"\x98\x02\n" +
 	"\x1aGenerateSuggestionsRequest\x12R\n" +
 	"\fconversation\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
 	"&dialogflow.googleapis.com/ConversationR\fconversation\x12P\n" +

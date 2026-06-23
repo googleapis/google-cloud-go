@@ -4496,6 +4496,234 @@
     {
       "clientMethod": {
         "client": {
+          "fullName": "google.cloud.chronicle.v1.RuleExecutionErrorClient",
+          "shortName": "RuleExecutionErrorClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.RuleExecutionErrorClient.CancelOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "CancelOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.CancelOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "CancelOperation"
+      },
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "RuleExecutionErrorClient/CancelOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_RuleExecutionErrorService_CancelOperation_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle CancelOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.RuleExecutionErrorClient",
+          "shortName": "RuleExecutionErrorClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.RuleExecutionErrorClient.DeleteOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "DeleteOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.DeleteOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteOperation"
+      },
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "RuleExecutionErrorClient/DeleteOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_RuleExecutionErrorService_DeleteOperation_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle DeleteOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.RuleExecutionErrorClient",
+          "shortName": "RuleExecutionErrorClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.RuleExecutionErrorClient.GetOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "GetOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.GetOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "shortName": "GetOperation"
+      },
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "RuleExecutionErrorClient/GetOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_RuleExecutionErrorService_GetOperation_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle GetOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.RuleExecutionErrorClient",
+          "shortName": "RuleExecutionErrorClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.RuleExecutionErrorClient.ListOperations",
+        "method": {
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "ListOperations"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.ListOperationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "shortName": "ListOperations"
+      },
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "RuleExecutionErrorClient/ListOperations/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_RuleExecutionErrorService_ListOperations_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle ListOperations Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.RuleExecutionErrorClient",
+          "shortName": "RuleExecutionErrorClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.RuleExecutionErrorClient.ListRuleExecutionErrors",
+        "method": {
+          "fullName": "google.cloud.chronicle.v1.RuleExecutionErrorService.ListRuleExecutionErrors",
+          "service": {
+            "fullName": "google.cloud.chronicle.v1.RuleExecutionErrorService",
+            "shortName": "RuleExecutionErrorService"
+          },
+          "shortName": "ListRuleExecutionErrors"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chroniclepb.ListRuleExecutionErrorsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "RuleExecutionErrorIterator",
+        "shortName": "ListRuleExecutionErrors"
+      },
+      "description": "ListRuleExecutionErrors lists rule execution errors.",
+      "file": "RuleExecutionErrorClient/ListRuleExecutionErrors/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_RuleExecutionErrorService_ListRuleExecutionErrors_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle ListRuleExecutionErrors Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
           "fullName": "google.cloud.chronicle.v1.RuleClient",
           "shortName": "RuleClient"
         },

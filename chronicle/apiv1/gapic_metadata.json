@@ -1125,6 +1125,70 @@
         }
       }
     },
+    "RuleExecutionErrorService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "RuleExecutionErrorClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListRuleExecutionErrors": {
+              "methods": [
+                "ListRuleExecutionErrors"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "RuleExecutionErrorClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListRuleExecutionErrors": {
+              "methods": [
+                "ListRuleExecutionErrors"
+              ]
+            }
+          }
+        }
+      }
+    },
     "RuleService": {
       "clients": {
         "grpc": {

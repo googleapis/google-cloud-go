@@ -18,6 +18,8 @@
 // - protoc             v6.33.2
 // source: google/devtools/cloudbuild/v1/cloudbuild.proto
 
+// LINT: LEGACY_NAMES
+
 package cloudbuildpb
 
 import (

@@ -617,6 +617,11 @@ type Endpoint struct {
 	// A [GKE Pod](https://cloud.google.com/kubernetes-engine/docs/concepts/pod)
 	// URI.
 	GkePod string `protobuf:"bytes,21,opt,name=gke_pod,json=gkePod,proto3" json:"gke_pod,omitempty"`
+	// A [DMS Private
+	// Connection](https://docs.cloud.google.com/database-migration/docs/reference/rest/v1/projects.locations.privateConnections)
+	// name format:
+	// projects/{project}/locations/{location}/privateConnections/{privateConnection}.
+	DmsPrivateConnection string `protobuf:"bytes,22,opt,name=dms_private_connection,json=dmsPrivateConnection,proto3" json:"dms_private_connection,omitempty"`
 	// A [Cloud Function](https://cloud.google.com/functions). Applicable only to
 	// source endpoint.
 	CloudFunction *Endpoint_CloudFunctionEndpoint `protobuf:"bytes,10,opt,name=cloud_function,json=cloudFunction,proto3" json:"cloud_function,omitempty"`
@@ -628,6 +633,12 @@ type Endpoint struct {
 	// [revision](https://cloud.google.com/run/docs/reference/rest/v1/namespaces.revisions/get)
 	// Applicable only to source endpoint.
 	CloudRunRevision *Endpoint_CloudRunRevisionEndpoint `protobuf:"bytes,12,opt,name=cloud_run_revision,json=cloudRunRevision,proto3" json:"cloud_run_revision,omitempty"`
+	// A [Cloud Run](https://cloud.google.com/run)
+	// [job](https://docs.cloud.google.com/run/docs/reference/rest/v2/projects.locations.jobs#Job)
+	// URI.
+	// Applicable only to source endpoint.
+	// The format is: projects/{project}/locations/{location}/jobs/{job}
+	CloudRunJob string `protobuf:"bytes,24,opt,name=cloud_run_job,json=cloudRunJob,proto3" json:"cloud_run_job,omitempty"`
 	// A VPC network URI. For source endpoints, used according to the
 	// `network_type`. For destination endpoints, used only when the source is an
 	// external IP address endpoint, and the destination is an internal IP address
@@ -764,6 +775,13 @@ func (x *Endpoint) GetGkePod() string {
 	return ""
 }
 
+func (x *Endpoint) GetDmsPrivateConnection() string {
+	if x != nil {
+		return x.DmsPrivateConnection
+	}
+	return ""
+}
+
 func (x *Endpoint) GetCloudFunction() *Endpoint_CloudFunctionEndpoint {
 	if x != nil {
 		return x.CloudFunction
@@ -783,6 +801,13 @@ func (x *Endpoint) GetCloudRunRevision() *Endpoint_CloudRunRevisionEndpoint {
 		return x.CloudRunRevision
 	}
 	return nil
+}
+
+func (x *Endpoint) GetCloudRunJob() string {
+	if x != nil {
+		return x.CloudRunJob
+	}
+	return ""
 }
 
 func (x *Endpoint) GetNetwork() string {
@@ -1454,7 +1479,7 @@ const file_google_cloud_networkmanagement_v1_connectivity_test_proto_rawDesc = "
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:t\xeaAq\n" +
-	"1networkmanagement.googleapis.com/ConnectivityTest\x12<projects/{project}/locations/global/connectivityTests/{test}\"\xb2\f\n" +
+	"1networkmanagement.googleapis.com/ConnectivityTest\x12<projects/{project}/locations/global/connectivityTests/{test}\"\x8c\r\n" +
 	"\bEndpoint\x12\x1d\n" +
 	"\n" +
 	"ip_address\x18\x01 \x01(\tR\tipAddress\x12\x12\n" +
@@ -1469,11 +1494,13 @@ const file_google_cloud_networkmanagement_v1_connectivity_test_proto_rawDesc = "
 	"\x12cloud_sql_instance\x18\b \x01(\tR\x10cloudSqlInstance\x12%\n" +
 	"\x0eredis_instance\x18\x11 \x01(\tR\rredisInstance\x12#\n" +
 	"\rredis_cluster\x18\x12 \x01(\tR\fredisCluster\x12\x17\n" +
-	"\agke_pod\x18\x15 \x01(\tR\x06gkePod\x12h\n" +
+	"\agke_pod\x18\x15 \x01(\tR\x06gkePod\x124\n" +
+	"\x16dms_private_connection\x18\x16 \x01(\tR\x14dmsPrivateConnection\x12h\n" +
 	"\x0ecloud_function\x18\n" +
 	" \x01(\v2A.google.cloud.networkmanagement.v1.Endpoint.CloudFunctionEndpointR\rcloudFunction\x12r\n" +
 	"\x12app_engine_version\x18\v \x01(\v2D.google.cloud.networkmanagement.v1.Endpoint.AppEngineVersionEndpointR\x10appEngineVersion\x12r\n" +
-	"\x12cloud_run_revision\x18\f \x01(\v2D.google.cloud.networkmanagement.v1.Endpoint.CloudRunRevisionEndpointR\x10cloudRunRevision\x12\x18\n" +
+	"\x12cloud_run_revision\x18\f \x01(\v2D.google.cloud.networkmanagement.v1.Endpoint.CloudRunRevisionEndpointR\x10cloudRunRevision\x12\"\n" +
+	"\rcloud_run_job\x18\x18 \x01(\tR\vcloudRunJob\x12\x18\n" +
 	"\anetwork\x18\x04 \x01(\tR\anetwork\x12Z\n" +
 	"\fnetwork_type\x18\x05 \x01(\x0e27.google.cloud.networkmanagement.v1.Endpoint.NetworkTypeR\vnetworkType\x12\x1d\n" +
 	"\n" +

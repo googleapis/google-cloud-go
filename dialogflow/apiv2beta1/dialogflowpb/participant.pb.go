@@ -682,8 +682,8 @@ type Participant struct {
 	//
 	//  2. If you set this field in
 	//     [AnalyzeContent][google.cloud.dialogflow.v2beta1.AnalyzeContentRequest.obfuscated_external_user_id]
-	//     or
-	//     [StreamingAnalyzeContent][google.cloud.dialogflow.v2beta1.StreamingAnalyzeContentRequest.obfuscated_external_user_id],
+	//     or [StreamingAnalyzeContent]
+	//     [google.cloud.dialogflow.v2beta1.StreamingAnalyzeContentRequest.obfuscated_external_user_id],
 	//     Dialogflow will update
 	//     [Participant.obfuscated_external_user_id][google.cloud.dialogflow.v2beta1.Participant.obfuscated_external_user_id].
 	//
@@ -694,6 +694,11 @@ type Participant struct {
 	// Dialogflow also uses this user id for Agent Assist suggestion
 	// personalization. For example, Dialogflow can use it to provide personalized
 	// smart reply suggestions for this user.
+	//
+	// Additionally, to link an escalated Virtual Agent conversation
+	// with its corresponding Agent Assist conversation for analytics, this field
+	// in Agent Assist conversations should be populated to indicate the user id
+	// of the `END_USER` participant in the escalated conversation.
 	//
 	// Note:
 	//
@@ -2689,8 +2694,11 @@ func (*StreamingAnalyzeContentRequest_InputEvent) isStreamingAnalyzeContentReque
 //
 //  1. If the input was set to streaming audio, the first one or more messages
 //     contain `recognition_result`. Each `recognition_result` represents a more
-//     complete transcript of what the user said. The last `recognition_result`
-//     has `is_final` set to `true`.
+//     complete transcript of what the user said. When a user speaks multiple
+//     sentences, the API will emit multiple messages where `is_final = true`.
+//     Each time the system detects a distinct pause or completed thought, it
+//     locks in that segment, marks it `is_final = true`, and then immediately
+//     starts a new recognition cycle for the next sentence on the same stream.
 //
 //  2. In virtual agent stage: if `enable_partial_automated_agent_reply` is
 //     true, the following N (currently 1 <= N <= 4) messages
@@ -4883,9 +4891,13 @@ type SuggestKnowledgeAssistResponse struct {
 	// to compile the suggestion. It may be smaller than the
 	// [SuggestKnowledgeAssistRequest.context_size][google.cloud.dialogflow.v2beta1.SuggestKnowledgeAssistRequest.context_size]
 	// field in the request if there are fewer messages in the conversation.
-	ContextSize   int32 `protobuf:"varint,3,opt,name=context_size,json=contextSize,proto3" json:"context_size,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	ContextSize int32 `protobuf:"varint,3,opt,name=context_size,json=contextSize,proto3" json:"context_size,omitempty"`
+	// Optional. The list of additional suggested queries based on the context.
+	// This is used for the cases when we want to generate multiple queries
+	// for a single request.
+	AdditionalSuggestedQueryResults []*KnowledgeAssistAnswer_AdditionalSuggestedQueryResult `protobuf:"bytes,4,rep,name=additional_suggested_query_results,json=additionalSuggestedQueryResults,proto3" json:"additional_suggested_query_results,omitempty"`
+	unknownFields                   protoimpl.UnknownFields
+	sizeCache                       protoimpl.SizeCache
 }
 
 func (x *SuggestKnowledgeAssistResponse) Reset() {
@@ -4937,6 +4949,13 @@ func (x *SuggestKnowledgeAssistResponse) GetContextSize() int32 {
 		return x.ContextSize
 	}
 	return 0
+}
+
+func (x *SuggestKnowledgeAssistResponse) GetAdditionalSuggestedQueryResults() []*KnowledgeAssistAnswer_AdditionalSuggestedQueryResult {
+	if x != nil {
+		return x.AdditionalSuggestedQueryResults
+	}
+	return nil
 }
 
 // Debug information related to ingested context reference.
@@ -5066,8 +5085,12 @@ type KnowledgeAssistDebugInfo struct {
 	IngestedContextReferenceDebugInfo *IngestedContextReferenceDebugInfo `protobuf:"bytes,5,opt,name=ingested_context_reference_debug_info,json=ingestedContextReferenceDebugInfo,proto3" json:"ingested_context_reference_debug_info,omitempty"`
 	// The latency of the service.
 	ServiceLatency *ServiceLatency `protobuf:"bytes,6,opt,name=service_latency,json=serviceLatency,proto3" json:"service_latency,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	// Token usage metadata for query generation.
+	QueryGenerationDebugInfo *KnowledgeAssistDebugInfo_QueryGenerationDebugInfo `protobuf:"bytes,7,opt,name=query_generation_debug_info,json=queryGenerationDebugInfo,proto3" json:"query_generation_debug_info,omitempty"`
+	// Debug information from CES runtime API.
+	CesDebugInfo  *structpb.Struct `protobuf:"bytes,8,opt,name=ces_debug_info,json=cesDebugInfo,proto3" json:"ces_debug_info,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *KnowledgeAssistDebugInfo) Reset() {
@@ -5138,6 +5161,20 @@ func (x *KnowledgeAssistDebugInfo) GetIngestedContextReferenceDebugInfo() *Inges
 func (x *KnowledgeAssistDebugInfo) GetServiceLatency() *ServiceLatency {
 	if x != nil {
 		return x.ServiceLatency
+	}
+	return nil
+}
+
+func (x *KnowledgeAssistDebugInfo) GetQueryGenerationDebugInfo() *KnowledgeAssistDebugInfo_QueryGenerationDebugInfo {
+	if x != nil {
+		return x.QueryGenerationDebugInfo
+	}
+	return nil
+}
+
+func (x *KnowledgeAssistDebugInfo) GetCesDebugInfo() *structpb.Struct {
+	if x != nil {
+		return x.CesDebugInfo
 	}
 	return nil
 }
@@ -5320,6 +5357,7 @@ type BidiStreamingAnalyzeContentResponse struct {
 	//	*BidiStreamingAnalyzeContentResponse_BargeInSignal_
 	//	*BidiStreamingAnalyzeContentResponse_AnalyzeContentResponse
 	//	*BidiStreamingAnalyzeContentResponse_TurnComplete_
+	//	*BidiStreamingAnalyzeContentResponse_ToolCalls_
 	Response      isBidiStreamingAnalyzeContentResponse_Response `protobuf_oneof:"response"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -5398,6 +5436,15 @@ func (x *BidiStreamingAnalyzeContentResponse) GetTurnComplete() *BidiStreamingAn
 	return nil
 }
 
+func (x *BidiStreamingAnalyzeContentResponse) GetToolCalls() *BidiStreamingAnalyzeContentResponse_ToolCalls {
+	if x != nil {
+		if x, ok := x.Response.(*BidiStreamingAnalyzeContentResponse_ToolCalls_); ok {
+			return x.ToolCalls
+		}
+	}
+	return nil
+}
+
 type isBidiStreamingAnalyzeContentResponse_Response interface {
 	isBidiStreamingAnalyzeContentResponse_Response()
 }
@@ -5423,6 +5470,11 @@ type BidiStreamingAnalyzeContentResponse_TurnComplete_ struct {
 	TurnComplete *BidiStreamingAnalyzeContentResponse_TurnComplete `protobuf:"bytes,4,opt,name=turn_complete,json=turnComplete,proto3,oneof"`
 }
 
+type BidiStreamingAnalyzeContentResponse_ToolCalls_ struct {
+	// The tool calls from the server.
+	ToolCalls *BidiStreamingAnalyzeContentResponse_ToolCalls `protobuf:"bytes,5,opt,name=tool_calls,json=toolCalls,proto3,oneof"`
+}
+
 func (*BidiStreamingAnalyzeContentResponse_RecognitionResult) isBidiStreamingAnalyzeContentResponse_Response() {
 }
 
@@ -5433,6 +5485,9 @@ func (*BidiStreamingAnalyzeContentResponse_AnalyzeContentResponse) isBidiStreami
 }
 
 func (*BidiStreamingAnalyzeContentResponse_TurnComplete_) isBidiStreamingAnalyzeContentResponse_Response() {
+}
+
+func (*BidiStreamingAnalyzeContentResponse_ToolCalls_) isBidiStreamingAnalyzeContentResponse_Response() {
 }
 
 // A GeneratorSuggestion answer.
@@ -6394,18 +6449,84 @@ func (x *KnowledgeAssistDebugInfo_KnowledgeAssistBehavior) GetAppendedSearchCont
 	return 0
 }
 
+// Token usage metadata for query generation.
+type KnowledgeAssistDebugInfo_QueryGenerationDebugInfo struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The total number of tokens in the prompt.
+	PromptTokenCount int32 `protobuf:"varint,1,opt,name=prompt_token_count,json=promptTokenCount,proto3" json:"prompt_token_count,omitempty"`
+	// The total number of tokens in the generated candidates.
+	CandidatesTokenCount int32 `protobuf:"varint,2,opt,name=candidates_token_count,json=candidatesTokenCount,proto3" json:"candidates_token_count,omitempty"`
+	// The total number of tokens for the entire request.
+	TotalTokenCount int32 `protobuf:"varint,3,opt,name=total_token_count,json=totalTokenCount,proto3" json:"total_token_count,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *KnowledgeAssistDebugInfo_QueryGenerationDebugInfo) Reset() {
+	*x = KnowledgeAssistDebugInfo_QueryGenerationDebugInfo{}
+	mi := &file_google_cloud_dialogflow_v2beta1_participant_proto_msgTypes[68]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *KnowledgeAssistDebugInfo_QueryGenerationDebugInfo) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*KnowledgeAssistDebugInfo_QueryGenerationDebugInfo) ProtoMessage() {}
+
+func (x *KnowledgeAssistDebugInfo_QueryGenerationDebugInfo) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_dialogflow_v2beta1_participant_proto_msgTypes[68]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use KnowledgeAssistDebugInfo_QueryGenerationDebugInfo.ProtoReflect.Descriptor instead.
+func (*KnowledgeAssistDebugInfo_QueryGenerationDebugInfo) Descriptor() ([]byte, []int) {
+	return file_google_cloud_dialogflow_v2beta1_participant_proto_rawDescGZIP(), []int{46, 1}
+}
+
+func (x *KnowledgeAssistDebugInfo_QueryGenerationDebugInfo) GetPromptTokenCount() int32 {
+	if x != nil {
+		return x.PromptTokenCount
+	}
+	return 0
+}
+
+func (x *KnowledgeAssistDebugInfo_QueryGenerationDebugInfo) GetCandidatesTokenCount() int32 {
+	if x != nil {
+		return x.CandidatesTokenCount
+	}
+	return 0
+}
+
+func (x *KnowledgeAssistDebugInfo_QueryGenerationDebugInfo) GetTotalTokenCount() int32 {
+	if x != nil {
+		return x.TotalTokenCount
+	}
+	return 0
+}
+
 // Represents a suggested query.
 type KnowledgeAssistAnswer_SuggestedQuery struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Suggested query text.
-	QueryText     string `protobuf:"bytes,1,opt,name=query_text,json=queryText,proto3" json:"query_text,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	QueryText string `protobuf:"bytes,1,opt,name=query_text,json=queryText,proto3" json:"query_text,omitempty"`
+	// Optional. The search contexts for the query.
+	SearchContexts []*KnowledgeAssistAnswer_SuggestedQuery_SearchContext `protobuf:"bytes,4,rep,name=search_contexts,json=searchContexts,proto3" json:"search_contexts,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *KnowledgeAssistAnswer_SuggestedQuery) Reset() {
 	*x = KnowledgeAssistAnswer_SuggestedQuery{}
-	mi := &file_google_cloud_dialogflow_v2beta1_participant_proto_msgTypes[68]
+	mi := &file_google_cloud_dialogflow_v2beta1_participant_proto_msgTypes[69]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6417,7 +6538,7 @@ func (x *KnowledgeAssistAnswer_SuggestedQuery) String() string {
 func (*KnowledgeAssistAnswer_SuggestedQuery) ProtoMessage() {}
 
 func (x *KnowledgeAssistAnswer_SuggestedQuery) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dialogflow_v2beta1_participant_proto_msgTypes[68]
+	mi := &file_google_cloud_dialogflow_v2beta1_participant_proto_msgTypes[69]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6440,6 +6561,70 @@ func (x *KnowledgeAssistAnswer_SuggestedQuery) GetQueryText() string {
 	return ""
 }
 
+func (x *KnowledgeAssistAnswer_SuggestedQuery) GetSearchContexts() []*KnowledgeAssistAnswer_SuggestedQuery_SearchContext {
+	if x != nil {
+		return x.SearchContexts
+	}
+	return nil
+}
+
+// Represents a single suggested query result.
+type KnowledgeAssistAnswer_AdditionalSuggestedQueryResult struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Output only. The suggested query based on the context.
+	SuggestedQuery *KnowledgeAssistAnswer_SuggestedQuery `protobuf:"bytes,1,opt,name=suggested_query,json=suggestedQuery,proto3" json:"suggested_query,omitempty"`
+	// Output only. The name of the answer record.
+	// Format: `projects/<Project ID>/locations/<Location
+	// ID>/answerRecords/<Answer Record ID>`
+	AnswerRecord  string `protobuf:"bytes,5,opt,name=answer_record,json=answerRecord,proto3" json:"answer_record,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *KnowledgeAssistAnswer_AdditionalSuggestedQueryResult) Reset() {
+	*x = KnowledgeAssistAnswer_AdditionalSuggestedQueryResult{}
+	mi := &file_google_cloud_dialogflow_v2beta1_participant_proto_msgTypes[70]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *KnowledgeAssistAnswer_AdditionalSuggestedQueryResult) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*KnowledgeAssistAnswer_AdditionalSuggestedQueryResult) ProtoMessage() {}
+
+func (x *KnowledgeAssistAnswer_AdditionalSuggestedQueryResult) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_dialogflow_v2beta1_participant_proto_msgTypes[70]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use KnowledgeAssistAnswer_AdditionalSuggestedQueryResult.ProtoReflect.Descriptor instead.
+func (*KnowledgeAssistAnswer_AdditionalSuggestedQueryResult) Descriptor() ([]byte, []int) {
+	return file_google_cloud_dialogflow_v2beta1_participant_proto_rawDescGZIP(), []int{47, 1}
+}
+
+func (x *KnowledgeAssistAnswer_AdditionalSuggestedQueryResult) GetSuggestedQuery() *KnowledgeAssistAnswer_SuggestedQuery {
+	if x != nil {
+		return x.SuggestedQuery
+	}
+	return nil
+}
+
+func (x *KnowledgeAssistAnswer_AdditionalSuggestedQueryResult) GetAnswerRecord() string {
+	if x != nil {
+		return x.AnswerRecord
+	}
+	return ""
+}
+
 // Represents an answer from Knowledge. Currently supports FAQ and Generative
 // answers.
 type KnowledgeAssistAnswer_KnowledgeAnswer struct {
@@ -6452,6 +6637,8 @@ type KnowledgeAssistAnswer_KnowledgeAnswer struct {
 	//
 	//	*KnowledgeAssistAnswer_KnowledgeAnswer_FaqSource_
 	//	*KnowledgeAssistAnswer_KnowledgeAnswer_GenerativeSource_
+	//	*KnowledgeAssistAnswer_KnowledgeAnswer_PlaybookSource
+	//	*KnowledgeAssistAnswer_KnowledgeAnswer_EventSource_
 	Source        isKnowledgeAssistAnswer_KnowledgeAnswer_Source `protobuf_oneof:"source"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -6459,7 +6646,7 @@ type KnowledgeAssistAnswer_KnowledgeAnswer struct {
 
 func (x *KnowledgeAssistAnswer_KnowledgeAnswer) Reset() {
 	*x = KnowledgeAssistAnswer_KnowledgeAnswer{}
-	mi := &file_google_cloud_dialogflow_v2beta1_participant_proto_msgTypes[69]
+	mi := &file_google_cloud_dialogflow_v2beta1_participant_proto_msgTypes[71]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6471,7 +6658,7 @@ func (x *KnowledgeAssistAnswer_KnowledgeAnswer) String() string {
 func (*KnowledgeAssistAnswer_KnowledgeAnswer) ProtoMessage() {}
 
 func (x *KnowledgeAssistAnswer_KnowledgeAnswer) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dialogflow_v2beta1_participant_proto_msgTypes[69]
+	mi := &file_google_cloud_dialogflow_v2beta1_participant_proto_msgTypes[71]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6484,7 +6671,7 @@ func (x *KnowledgeAssistAnswer_KnowledgeAnswer) ProtoReflect() protoreflect.Mess
 
 // Deprecated: Use KnowledgeAssistAnswer_KnowledgeAnswer.ProtoReflect.Descriptor instead.
 func (*KnowledgeAssistAnswer_KnowledgeAnswer) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dialogflow_v2beta1_participant_proto_rawDescGZIP(), []int{47, 1}
+	return file_google_cloud_dialogflow_v2beta1_participant_proto_rawDescGZIP(), []int{47, 2}
 }
 
 func (x *KnowledgeAssistAnswer_KnowledgeAnswer) GetAnswerText() string {
@@ -6519,6 +6706,24 @@ func (x *KnowledgeAssistAnswer_KnowledgeAnswer) GetGenerativeSource() *Knowledge
 	return nil
 }
 
+func (x *KnowledgeAssistAnswer_KnowledgeAnswer) GetPlaybookSource() *KnowledgeAssistAnswer_KnowledgeAnswer_GenerativeSource {
+	if x != nil {
+		if x, ok := x.Source.(*KnowledgeAssistAnswer_KnowledgeAnswer_PlaybookSource); ok {
+			return x.PlaybookSource
+		}
+	}
+	return nil
+}
+
+func (x *KnowledgeAssistAnswer_KnowledgeAnswer) GetEventSource() *KnowledgeAssistAnswer_KnowledgeAnswer_EventSource {
+	if x != nil {
+		if x, ok := x.Source.(*KnowledgeAssistAnswer_KnowledgeAnswer_EventSource_); ok {
+			return x.EventSource
+		}
+	}
+	return nil
+}
+
 type isKnowledgeAssistAnswer_KnowledgeAnswer_Source interface {
 	isKnowledgeAssistAnswer_KnowledgeAnswer_Source()
 }
@@ -6533,10 +6738,88 @@ type KnowledgeAssistAnswer_KnowledgeAnswer_GenerativeSource_ struct {
 	GenerativeSource *KnowledgeAssistAnswer_KnowledgeAnswer_GenerativeSource `protobuf:"bytes,4,opt,name=generative_source,json=generativeSource,proto3,oneof"`
 }
 
+type KnowledgeAssistAnswer_KnowledgeAnswer_PlaybookSource struct {
+	// Populated if the prediction was from Playbook.
+	PlaybookSource *KnowledgeAssistAnswer_KnowledgeAnswer_GenerativeSource `protobuf:"bytes,7,opt,name=playbook_source,json=playbookSource,proto3,oneof"`
+}
+
+type KnowledgeAssistAnswer_KnowledgeAnswer_EventSource_ struct {
+	// Populated if the prediction was from an event.
+	EventSource *KnowledgeAssistAnswer_KnowledgeAnswer_EventSource `protobuf:"bytes,8,opt,name=event_source,json=eventSource,proto3,oneof"`
+}
+
 func (*KnowledgeAssistAnswer_KnowledgeAnswer_FaqSource_) isKnowledgeAssistAnswer_KnowledgeAnswer_Source() {
 }
 
 func (*KnowledgeAssistAnswer_KnowledgeAnswer_GenerativeSource_) isKnowledgeAssistAnswer_KnowledgeAnswer_Source() {
+}
+
+func (*KnowledgeAssistAnswer_KnowledgeAnswer_PlaybookSource) isKnowledgeAssistAnswer_KnowledgeAnswer_Source() {
+}
+
+func (*KnowledgeAssistAnswer_KnowledgeAnswer_EventSource_) isKnowledgeAssistAnswer_KnowledgeAnswer_Source() {
+}
+
+// Search context is information useful for knowledge search that helps
+// enrich the query.
+// Example:
+//
+//	search_context {
+//	  key: "application name"
+//	  value: "DesignApp"
+//	}
+type KnowledgeAssistAnswer_SuggestedQuery_SearchContext struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. The key of the search context, e.g. "application name".
+	Key string `protobuf:"bytes,1,opt,name=key,proto3" json:"key,omitempty"`
+	// Optional. The value of the search context, e.g. "DesignApp".
+	Value         string `protobuf:"bytes,2,opt,name=value,proto3" json:"value,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *KnowledgeAssistAnswer_SuggestedQuery_SearchContext) Reset() {
+	*x = KnowledgeAssistAnswer_SuggestedQuery_SearchContext{}
+	mi := &file_google_cloud_dialogflow_v2beta1_participant_proto_msgTypes[72]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *KnowledgeAssistAnswer_SuggestedQuery_SearchContext) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*KnowledgeAssistAnswer_SuggestedQuery_SearchContext) ProtoMessage() {}
+
+func (x *KnowledgeAssistAnswer_SuggestedQuery_SearchContext) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_dialogflow_v2beta1_participant_proto_msgTypes[72]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use KnowledgeAssistAnswer_SuggestedQuery_SearchContext.ProtoReflect.Descriptor instead.
+func (*KnowledgeAssistAnswer_SuggestedQuery_SearchContext) Descriptor() ([]byte, []int) {
+	return file_google_cloud_dialogflow_v2beta1_participant_proto_rawDescGZIP(), []int{47, 0, 0}
+}
+
+func (x *KnowledgeAssistAnswer_SuggestedQuery_SearchContext) GetKey() string {
+	if x != nil {
+		return x.Key
+	}
+	return ""
+}
+
+func (x *KnowledgeAssistAnswer_SuggestedQuery_SearchContext) GetValue() string {
+	if x != nil {
+		return x.Value
+	}
+	return ""
 }
 
 // Details about source of FAQ answer.
@@ -6550,7 +6833,7 @@ type KnowledgeAssistAnswer_KnowledgeAnswer_FaqSource struct {
 
 func (x *KnowledgeAssistAnswer_KnowledgeAnswer_FaqSource) Reset() {
 	*x = KnowledgeAssistAnswer_KnowledgeAnswer_FaqSource{}
-	mi := &file_google_cloud_dialogflow_v2beta1_participant_proto_msgTypes[70]
+	mi := &file_google_cloud_dialogflow_v2beta1_participant_proto_msgTypes[73]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6562,7 +6845,7 @@ func (x *KnowledgeAssistAnswer_KnowledgeAnswer_FaqSource) String() string {
 func (*KnowledgeAssistAnswer_KnowledgeAnswer_FaqSource) ProtoMessage() {}
 
 func (x *KnowledgeAssistAnswer_KnowledgeAnswer_FaqSource) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dialogflow_v2beta1_participant_proto_msgTypes[70]
+	mi := &file_google_cloud_dialogflow_v2beta1_participant_proto_msgTypes[73]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6575,7 +6858,7 @@ func (x *KnowledgeAssistAnswer_KnowledgeAnswer_FaqSource) ProtoReflect() protore
 
 // Deprecated: Use KnowledgeAssistAnswer_KnowledgeAnswer_FaqSource.ProtoReflect.Descriptor instead.
 func (*KnowledgeAssistAnswer_KnowledgeAnswer_FaqSource) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dialogflow_v2beta1_participant_proto_rawDescGZIP(), []int{47, 1, 0}
+	return file_google_cloud_dialogflow_v2beta1_participant_proto_rawDescGZIP(), []int{47, 2, 0}
 }
 
 func (x *KnowledgeAssistAnswer_KnowledgeAnswer_FaqSource) GetQuestion() string {
@@ -6597,7 +6880,7 @@ type KnowledgeAssistAnswer_KnowledgeAnswer_GenerativeSource struct {
 
 func (x *KnowledgeAssistAnswer_KnowledgeAnswer_GenerativeSource) Reset() {
 	*x = KnowledgeAssistAnswer_KnowledgeAnswer_GenerativeSource{}
-	mi := &file_google_cloud_dialogflow_v2beta1_participant_proto_msgTypes[71]
+	mi := &file_google_cloud_dialogflow_v2beta1_participant_proto_msgTypes[74]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6609,7 +6892,7 @@ func (x *KnowledgeAssistAnswer_KnowledgeAnswer_GenerativeSource) String() string
 func (*KnowledgeAssistAnswer_KnowledgeAnswer_GenerativeSource) ProtoMessage() {}
 
 func (x *KnowledgeAssistAnswer_KnowledgeAnswer_GenerativeSource) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dialogflow_v2beta1_participant_proto_msgTypes[71]
+	mi := &file_google_cloud_dialogflow_v2beta1_participant_proto_msgTypes[74]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6622,10 +6905,65 @@ func (x *KnowledgeAssistAnswer_KnowledgeAnswer_GenerativeSource) ProtoReflect() 
 
 // Deprecated: Use KnowledgeAssistAnswer_KnowledgeAnswer_GenerativeSource.ProtoReflect.Descriptor instead.
 func (*KnowledgeAssistAnswer_KnowledgeAnswer_GenerativeSource) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dialogflow_v2beta1_participant_proto_rawDescGZIP(), []int{47, 1, 1}
+	return file_google_cloud_dialogflow_v2beta1_participant_proto_rawDescGZIP(), []int{47, 2, 1}
 }
 
 func (x *KnowledgeAssistAnswer_KnowledgeAnswer_GenerativeSource) GetSnippets() []*KnowledgeAssistAnswer_KnowledgeAnswer_GenerativeSource_Snippet {
+	if x != nil {
+		return x.Snippets
+	}
+	return nil
+}
+
+// Details about source of Event answer.
+type KnowledgeAssistAnswer_KnowledgeAnswer_EventSource struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Name of the triggered event.
+	Event string `protobuf:"bytes,1,opt,name=event,proto3" json:"event,omitempty"`
+	// Sources used in event fulfillment.
+	Snippets      *KnowledgeAssistAnswer_KnowledgeAnswer_GenerativeSource `protobuf:"bytes,2,opt,name=snippets,proto3" json:"snippets,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *KnowledgeAssistAnswer_KnowledgeAnswer_EventSource) Reset() {
+	*x = KnowledgeAssistAnswer_KnowledgeAnswer_EventSource{}
+	mi := &file_google_cloud_dialogflow_v2beta1_participant_proto_msgTypes[75]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *KnowledgeAssistAnswer_KnowledgeAnswer_EventSource) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*KnowledgeAssistAnswer_KnowledgeAnswer_EventSource) ProtoMessage() {}
+
+func (x *KnowledgeAssistAnswer_KnowledgeAnswer_EventSource) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_dialogflow_v2beta1_participant_proto_msgTypes[75]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use KnowledgeAssistAnswer_KnowledgeAnswer_EventSource.ProtoReflect.Descriptor instead.
+func (*KnowledgeAssistAnswer_KnowledgeAnswer_EventSource) Descriptor() ([]byte, []int) {
+	return file_google_cloud_dialogflow_v2beta1_participant_proto_rawDescGZIP(), []int{47, 2, 2}
+}
+
+func (x *KnowledgeAssistAnswer_KnowledgeAnswer_EventSource) GetEvent() string {
+	if x != nil {
+		return x.Event
+	}
+	return ""
+}
+
+func (x *KnowledgeAssistAnswer_KnowledgeAnswer_EventSource) GetSnippets() *KnowledgeAssistAnswer_KnowledgeAnswer_GenerativeSource {
 	if x != nil {
 		return x.Snippets
 	}
@@ -6649,7 +6987,7 @@ type KnowledgeAssistAnswer_KnowledgeAnswer_GenerativeSource_Snippet struct {
 
 func (x *KnowledgeAssistAnswer_KnowledgeAnswer_GenerativeSource_Snippet) Reset() {
 	*x = KnowledgeAssistAnswer_KnowledgeAnswer_GenerativeSource_Snippet{}
-	mi := &file_google_cloud_dialogflow_v2beta1_participant_proto_msgTypes[72]
+	mi := &file_google_cloud_dialogflow_v2beta1_participant_proto_msgTypes[76]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6661,7 +6999,7 @@ func (x *KnowledgeAssistAnswer_KnowledgeAnswer_GenerativeSource_Snippet) String(
 func (*KnowledgeAssistAnswer_KnowledgeAnswer_GenerativeSource_Snippet) ProtoMessage() {}
 
 func (x *KnowledgeAssistAnswer_KnowledgeAnswer_GenerativeSource_Snippet) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dialogflow_v2beta1_participant_proto_msgTypes[72]
+	mi := &file_google_cloud_dialogflow_v2beta1_participant_proto_msgTypes[76]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6674,7 +7012,7 @@ func (x *KnowledgeAssistAnswer_KnowledgeAnswer_GenerativeSource_Snippet) ProtoRe
 
 // Deprecated: Use KnowledgeAssistAnswer_KnowledgeAnswer_GenerativeSource_Snippet.ProtoReflect.Descriptor instead.
 func (*KnowledgeAssistAnswer_KnowledgeAnswer_GenerativeSource_Snippet) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dialogflow_v2beta1_participant_proto_rawDescGZIP(), []int{47, 1, 1, 0}
+	return file_google_cloud_dialogflow_v2beta1_participant_proto_rawDescGZIP(), []int{47, 2, 1, 0}
 }
 
 func (x *KnowledgeAssistAnswer_KnowledgeAnswer_GenerativeSource_Snippet) GetUri() string {
@@ -6728,7 +7066,7 @@ type BidiStreamingAnalyzeContentRequest_Config struct {
 
 func (x *BidiStreamingAnalyzeContentRequest_Config) Reset() {
 	*x = BidiStreamingAnalyzeContentRequest_Config{}
-	mi := &file_google_cloud_dialogflow_v2beta1_participant_proto_msgTypes[73]
+	mi := &file_google_cloud_dialogflow_v2beta1_participant_proto_msgTypes[77]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6740,7 +7078,7 @@ func (x *BidiStreamingAnalyzeContentRequest_Config) String() string {
 func (*BidiStreamingAnalyzeContentRequest_Config) ProtoMessage() {}
 
 func (x *BidiStreamingAnalyzeContentRequest_Config) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dialogflow_v2beta1_participant_proto_msgTypes[73]
+	mi := &file_google_cloud_dialogflow_v2beta1_participant_proto_msgTypes[77]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6818,13 +7156,15 @@ type BidiStreamingAnalyzeContentRequest_TurnInput struct {
 	MainContent isBidiStreamingAnalyzeContentRequest_TurnInput_MainContent `protobuf_oneof:"main_content"`
 	// Optional. Parameters to be passed to the virtual agent.
 	VirtualAgentParameters *structpb.Struct `protobuf:"bytes,4,opt,name=virtual_agent_parameters,json=virtualAgentParameters,proto3" json:"virtual_agent_parameters,omitempty"`
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
+	// Optional. The tool responses from the client.
+	ToolResponses *BidiStreamingAnalyzeContentRequest_TurnInput_ToolResponses `protobuf:"bytes,5,opt,name=tool_responses,json=toolResponses,proto3" json:"tool_responses,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *BidiStreamingAnalyzeContentRequest_TurnInput) Reset() {
 	*x = BidiStreamingAnalyzeContentRequest_TurnInput{}
-	mi := &file_google_cloud_dialogflow_v2beta1_participant_proto_msgTypes[74]
+	mi := &file_google_cloud_dialogflow_v2beta1_participant_proto_msgTypes[78]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6836,7 +7176,7 @@ func (x *BidiStreamingAnalyzeContentRequest_TurnInput) String() string {
 func (*BidiStreamingAnalyzeContentRequest_TurnInput) ProtoMessage() {}
 
 func (x *BidiStreamingAnalyzeContentRequest_TurnInput) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dialogflow_v2beta1_participant_proto_msgTypes[74]
+	mi := &file_google_cloud_dialogflow_v2beta1_participant_proto_msgTypes[78]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6893,6 +7233,13 @@ func (x *BidiStreamingAnalyzeContentRequest_TurnInput) GetVirtualAgentParameters
 	return nil
 }
 
+func (x *BidiStreamingAnalyzeContentRequest_TurnInput) GetToolResponses() *BidiStreamingAnalyzeContentRequest_TurnInput_ToolResponses {
+	if x != nil {
+		return x.ToolResponses
+	}
+	return nil
+}
+
 type isBidiStreamingAnalyzeContentRequest_TurnInput_MainContent interface {
 	isBidiStreamingAnalyzeContentRequest_TurnInput_MainContent()
 }
@@ -6942,7 +7289,7 @@ type BidiStreamingAnalyzeContentRequest_Input struct {
 
 func (x *BidiStreamingAnalyzeContentRequest_Input) Reset() {
 	*x = BidiStreamingAnalyzeContentRequest_Input{}
-	mi := &file_google_cloud_dialogflow_v2beta1_participant_proto_msgTypes[75]
+	mi := &file_google_cloud_dialogflow_v2beta1_participant_proto_msgTypes[79]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6954,7 +7301,7 @@ func (x *BidiStreamingAnalyzeContentRequest_Input) String() string {
 func (*BidiStreamingAnalyzeContentRequest_Input) ProtoMessage() {}
 
 func (x *BidiStreamingAnalyzeContentRequest_Input) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dialogflow_v2beta1_participant_proto_msgTypes[75]
+	mi := &file_google_cloud_dialogflow_v2beta1_participant_proto_msgTypes[79]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7057,7 +7404,7 @@ type BidiStreamingAnalyzeContentRequest_Config_VoiceSessionConfig struct {
 
 func (x *BidiStreamingAnalyzeContentRequest_Config_VoiceSessionConfig) Reset() {
 	*x = BidiStreamingAnalyzeContentRequest_Config_VoiceSessionConfig{}
-	mi := &file_google_cloud_dialogflow_v2beta1_participant_proto_msgTypes[76]
+	mi := &file_google_cloud_dialogflow_v2beta1_participant_proto_msgTypes[80]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7069,7 +7416,7 @@ func (x *BidiStreamingAnalyzeContentRequest_Config_VoiceSessionConfig) String() 
 func (*BidiStreamingAnalyzeContentRequest_Config_VoiceSessionConfig) ProtoMessage() {}
 
 func (x *BidiStreamingAnalyzeContentRequest_Config_VoiceSessionConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dialogflow_v2beta1_participant_proto_msgTypes[76]
+	mi := &file_google_cloud_dialogflow_v2beta1_participant_proto_msgTypes[80]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7127,6 +7474,116 @@ func (x *BidiStreamingAnalyzeContentRequest_Config_VoiceSessionConfig) GetEnable
 	return false
 }
 
+// The execution result of a specific tool from the client.
+type BidiStreamingAnalyzeContentRequest_TurnInput_ToolResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The matching ID of the tool call the response is for.
+	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	// Required. The identifier of the tool that got executed.
+	Tool string `protobuf:"bytes,2,opt,name=tool,proto3" json:"tool,omitempty"`
+	// Optional. The tool execution result in JSON object format.
+	Response      *structpb.Struct `protobuf:"bytes,3,opt,name=response,proto3" json:"response,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *BidiStreamingAnalyzeContentRequest_TurnInput_ToolResponse) Reset() {
+	*x = BidiStreamingAnalyzeContentRequest_TurnInput_ToolResponse{}
+	mi := &file_google_cloud_dialogflow_v2beta1_participant_proto_msgTypes[81]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BidiStreamingAnalyzeContentRequest_TurnInput_ToolResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BidiStreamingAnalyzeContentRequest_TurnInput_ToolResponse) ProtoMessage() {}
+
+func (x *BidiStreamingAnalyzeContentRequest_TurnInput_ToolResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_dialogflow_v2beta1_participant_proto_msgTypes[81]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BidiStreamingAnalyzeContentRequest_TurnInput_ToolResponse.ProtoReflect.Descriptor instead.
+func (*BidiStreamingAnalyzeContentRequest_TurnInput_ToolResponse) Descriptor() ([]byte, []int) {
+	return file_google_cloud_dialogflow_v2beta1_participant_proto_rawDescGZIP(), []int{48, 1, 0}
+}
+
+func (x *BidiStreamingAnalyzeContentRequest_TurnInput_ToolResponse) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *BidiStreamingAnalyzeContentRequest_TurnInput_ToolResponse) GetTool() string {
+	if x != nil {
+		return x.Tool
+	}
+	return ""
+}
+
+func (x *BidiStreamingAnalyzeContentRequest_TurnInput_ToolResponse) GetResponse() *structpb.Struct {
+	if x != nil {
+		return x.Response
+	}
+	return nil
+}
+
+// The tool responses from the client.
+type BidiStreamingAnalyzeContentRequest_TurnInput_ToolResponses struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. The list of tool responses.
+	ToolResponses []*BidiStreamingAnalyzeContentRequest_TurnInput_ToolResponse `protobuf:"bytes,1,rep,name=tool_responses,json=toolResponses,proto3" json:"tool_responses,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *BidiStreamingAnalyzeContentRequest_TurnInput_ToolResponses) Reset() {
+	*x = BidiStreamingAnalyzeContentRequest_TurnInput_ToolResponses{}
+	mi := &file_google_cloud_dialogflow_v2beta1_participant_proto_msgTypes[82]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BidiStreamingAnalyzeContentRequest_TurnInput_ToolResponses) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BidiStreamingAnalyzeContentRequest_TurnInput_ToolResponses) ProtoMessage() {}
+
+func (x *BidiStreamingAnalyzeContentRequest_TurnInput_ToolResponses) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_dialogflow_v2beta1_participant_proto_msgTypes[82]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BidiStreamingAnalyzeContentRequest_TurnInput_ToolResponses.ProtoReflect.Descriptor instead.
+func (*BidiStreamingAnalyzeContentRequest_TurnInput_ToolResponses) Descriptor() ([]byte, []int) {
+	return file_google_cloud_dialogflow_v2beta1_participant_proto_rawDescGZIP(), []int{48, 1, 1}
+}
+
+func (x *BidiStreamingAnalyzeContentRequest_TurnInput_ToolResponses) GetToolResponses() []*BidiStreamingAnalyzeContentRequest_TurnInput_ToolResponse {
+	if x != nil {
+		return x.ToolResponses
+	}
+	return nil
+}
+
 // Indicate the user barge-in has been detected.
 type BidiStreamingAnalyzeContentResponse_BargeInSignal struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
@@ -7136,7 +7593,7 @@ type BidiStreamingAnalyzeContentResponse_BargeInSignal struct {
 
 func (x *BidiStreamingAnalyzeContentResponse_BargeInSignal) Reset() {
 	*x = BidiStreamingAnalyzeContentResponse_BargeInSignal{}
-	mi := &file_google_cloud_dialogflow_v2beta1_participant_proto_msgTypes[77]
+	mi := &file_google_cloud_dialogflow_v2beta1_participant_proto_msgTypes[83]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7148,7 +7605,7 @@ func (x *BidiStreamingAnalyzeContentResponse_BargeInSignal) String() string {
 func (*BidiStreamingAnalyzeContentResponse_BargeInSignal) ProtoMessage() {}
 
 func (x *BidiStreamingAnalyzeContentResponse_BargeInSignal) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dialogflow_v2beta1_participant_proto_msgTypes[77]
+	mi := &file_google_cloud_dialogflow_v2beta1_participant_proto_msgTypes[83]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7173,7 +7630,7 @@ type BidiStreamingAnalyzeContentResponse_TurnComplete struct {
 
 func (x *BidiStreamingAnalyzeContentResponse_TurnComplete) Reset() {
 	*x = BidiStreamingAnalyzeContentResponse_TurnComplete{}
-	mi := &file_google_cloud_dialogflow_v2beta1_participant_proto_msgTypes[78]
+	mi := &file_google_cloud_dialogflow_v2beta1_participant_proto_msgTypes[84]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7185,7 +7642,7 @@ func (x *BidiStreamingAnalyzeContentResponse_TurnComplete) String() string {
 func (*BidiStreamingAnalyzeContentResponse_TurnComplete) ProtoMessage() {}
 
 func (x *BidiStreamingAnalyzeContentResponse_TurnComplete) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dialogflow_v2beta1_participant_proto_msgTypes[78]
+	mi := &file_google_cloud_dialogflow_v2beta1_participant_proto_msgTypes[84]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7199,6 +7656,116 @@ func (x *BidiStreamingAnalyzeContentResponse_TurnComplete) ProtoReflect() protor
 // Deprecated: Use BidiStreamingAnalyzeContentResponse_TurnComplete.ProtoReflect.Descriptor instead.
 func (*BidiStreamingAnalyzeContentResponse_TurnComplete) Descriptor() ([]byte, []int) {
 	return file_google_cloud_dialogflow_v2beta1_participant_proto_rawDescGZIP(), []int{49, 1}
+}
+
+// Request for the client to execute the specified tool.
+type BidiStreamingAnalyzeContentResponse_ToolCall struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The unique identifier of the tool call.
+	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	// The identifier of the tool to execute.
+	Tool string `protobuf:"bytes,2,opt,name=tool,proto3" json:"tool,omitempty"`
+	// The input parameters and values for the tool in JSON object format.
+	Args          *structpb.Struct `protobuf:"bytes,3,opt,name=args,proto3" json:"args,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *BidiStreamingAnalyzeContentResponse_ToolCall) Reset() {
+	*x = BidiStreamingAnalyzeContentResponse_ToolCall{}
+	mi := &file_google_cloud_dialogflow_v2beta1_participant_proto_msgTypes[85]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BidiStreamingAnalyzeContentResponse_ToolCall) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BidiStreamingAnalyzeContentResponse_ToolCall) ProtoMessage() {}
+
+func (x *BidiStreamingAnalyzeContentResponse_ToolCall) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_dialogflow_v2beta1_participant_proto_msgTypes[85]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BidiStreamingAnalyzeContentResponse_ToolCall.ProtoReflect.Descriptor instead.
+func (*BidiStreamingAnalyzeContentResponse_ToolCall) Descriptor() ([]byte, []int) {
+	return file_google_cloud_dialogflow_v2beta1_participant_proto_rawDescGZIP(), []int{49, 2}
+}
+
+func (x *BidiStreamingAnalyzeContentResponse_ToolCall) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *BidiStreamingAnalyzeContentResponse_ToolCall) GetTool() string {
+	if x != nil {
+		return x.Tool
+	}
+	return ""
+}
+
+func (x *BidiStreamingAnalyzeContentResponse_ToolCall) GetArgs() *structpb.Struct {
+	if x != nil {
+		return x.Args
+	}
+	return nil
+}
+
+// The tool calls from the server.
+type BidiStreamingAnalyzeContentResponse_ToolCalls struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The list of tool calls.
+	ToolCalls     []*BidiStreamingAnalyzeContentResponse_ToolCall `protobuf:"bytes,1,rep,name=tool_calls,json=toolCalls,proto3" json:"tool_calls,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *BidiStreamingAnalyzeContentResponse_ToolCalls) Reset() {
+	*x = BidiStreamingAnalyzeContentResponse_ToolCalls{}
+	mi := &file_google_cloud_dialogflow_v2beta1_participant_proto_msgTypes[86]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BidiStreamingAnalyzeContentResponse_ToolCalls) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BidiStreamingAnalyzeContentResponse_ToolCalls) ProtoMessage() {}
+
+func (x *BidiStreamingAnalyzeContentResponse_ToolCalls) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_dialogflow_v2beta1_participant_proto_msgTypes[86]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BidiStreamingAnalyzeContentResponse_ToolCalls.ProtoReflect.Descriptor instead.
+func (*BidiStreamingAnalyzeContentResponse_ToolCalls) Descriptor() ([]byte, []int) {
+	return file_google_cloud_dialogflow_v2beta1_participant_proto_rawDescGZIP(), []int{49, 3}
+}
+
+func (x *BidiStreamingAnalyzeContentResponse_ToolCalls) GetToolCalls() []*BidiStreamingAnalyzeContentResponse_ToolCall {
+	if x != nil {
+		return x.ToolCalls
+	}
+	return nil
 }
 
 var File_google_cloud_dialogflow_v2beta1_participant_proto protoreflect.FileDescriptor
@@ -7588,11 +8155,12 @@ const file_google_cloud_dialogflow_v2beta1_participant_proto_rawDesc = "" +
 	"\x0elatest_message\x18\x02 \x01(\tB)\xe0A\x01\xfaA#\n" +
 	"!dialogflow.googleapis.com/MessageR\rlatestMessage\x12&\n" +
 	"\fcontext_size\x18\x03 \x01(\x05B\x03\xe0A\x01R\vcontextSize\x12=\n" +
-	"\x18previous_suggested_query\x18\x04 \x01(\tB\x03\xe0A\x01R\x16previousSuggestedQuery\"\xdf\x01\n" +
+	"\x18previous_suggested_query\x18\x04 \x01(\tB\x03\xe0A\x01R\x16previousSuggestedQuery\"\x89\x03\n" +
 	"\x1eSuggestKnowledgeAssistResponse\x12s\n" +
 	"\x17knowledge_assist_answer\x18\x01 \x01(\v26.google.cloud.dialogflow.v2beta1.KnowledgeAssistAnswerB\x03\xe0A\x03R\x15knowledgeAssistAnswer\x12%\n" +
 	"\x0elatest_message\x18\x02 \x01(\tR\rlatestMessage\x12!\n" +
-	"\fcontext_size\x18\x03 \x01(\x05R\vcontextSize\"\xae\x06\n" +
+	"\fcontext_size\x18\x03 \x01(\x05R\vcontextSize\x12\xa7\x01\n" +
+	"\"additional_suggested_query_results\x18\x04 \x03(\v2U.google.cloud.dialogflow.v2beta1.KnowledgeAssistAnswer.AdditionalSuggestedQueryResultB\x03\xe0A\x01R\x1fadditionalSuggestedQueryResults\"\xae\x06\n" +
 	"!IngestedContextReferenceDebugInfo\x126\n" +
 	"\x17project_not_allowlisted\x18\x01 \x01(\bR\x15projectNotAllowlisted\x12>\n" +
 	"\x1bcontext_reference_retrieved\x18\x02 \x01(\bR\x19contextReferenceRetrieved\x12\xa2\x01\n" +
@@ -7616,14 +8184,16 @@ const file_google_cloud_dialogflow_v2beta1_participant_proto_rawDesc = "" +
 	"latency_ms\x18\x02 \x01(\x02R\tlatencyMs\x129\n" +
 	"\n" +
 	"start_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\tstartTime\x12?\n" +
-	"\rcomplete_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\fcompleteTime\"\x9e\x15\n" +
+	"\rcomplete_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\fcompleteTime\"\x9e\x18\n" +
 	"\x18KnowledgeAssistDebugInfo\x12\x9d\x01\n" +
 	"\x1fquery_generation_failure_reason\x18\x01 \x01(\x0e2V.google.cloud.dialogflow.v2beta1.KnowledgeAssistDebugInfo.QueryGenerationFailureReasonR\x1cqueryGenerationFailureReason\x12\xa9\x01\n" +
 	"#query_categorization_failure_reason\x18\x02 \x01(\x0e2Z.google.cloud.dialogflow.v2beta1.KnowledgeAssistDebugInfo.QueryCategorizationFailureReasonR queryCategorizationFailureReason\x12t\n" +
 	"\x19datastore_response_reason\x18\x03 \x01(\x0e28.google.cloud.dialogflow.v2beta1.DatastoreResponseReasonR\x17datastoreResponseReason\x12\x8d\x01\n" +
 	"\x19knowledge_assist_behavior\x18\x04 \x01(\v2Q.google.cloud.dialogflow.v2beta1.KnowledgeAssistDebugInfo.KnowledgeAssistBehaviorR\x17knowledgeAssistBehavior\x12\x94\x01\n" +
 	"%ingested_context_reference_debug_info\x18\x05 \x01(\v2B.google.cloud.dialogflow.v2beta1.IngestedContextReferenceDebugInfoR!ingestedContextReferenceDebugInfo\x12X\n" +
-	"\x0fservice_latency\x18\x06 \x01(\v2/.google.cloud.dialogflow.v2beta1.ServiceLatencyR\x0eserviceLatency\x1a\x9d\t\n" +
+	"\x0fservice_latency\x18\x06 \x01(\v2/.google.cloud.dialogflow.v2beta1.ServiceLatencyR\x0eserviceLatency\x12\x91\x01\n" +
+	"\x1bquery_generation_debug_info\x18\a \x01(\v2R.google.cloud.dialogflow.v2beta1.KnowledgeAssistDebugInfo.QueryGenerationDebugInfoR\x18queryGenerationDebugInfo\x12=\n" +
+	"\x0eces_debug_info\x18\b \x01(\v2\x17.google.protobuf.StructR\fcesDebugInfo\x1a\x9d\t\n" +
 	"\x17KnowledgeAssistBehavior\x12A\n" +
 	"\x1danswer_generation_rewriter_on\x18\x01 \x01(\bR\x1aanswerGenerationRewriterOn\x12;\n" +
 	"\x1aend_user_metadata_included\x18\x02 \x01(\bR\x17endUserMetadataIncluded\x12*\n" +
@@ -7642,7 +8212,11 @@ const file_google_cloud_dialogflow_v2beta1_participant_proto_rawDesc = "" +
 	"\x1equery_contained_search_context\x18\x0f \x01(\bR\x1bqueryContainedSearchContext\x12R\n" +
 	"&invalid_items_query_suggestion_skipped\x18\x10 \x01(\bR\"invalidItemsQuerySuggestionSkipped\x12L\n" +
 	"#primary_query_redacted_and_replaced\x18\x11 \x01(\bR\x1fprimaryQueryRedactedAndReplaced\x12A\n" +
-	"\x1dappended_search_context_count\x18\x12 \x01(\x05R\x1aappendedSearchContextCount\"\xcf\x03\n" +
+	"\x1dappended_search_context_count\x18\x12 \x01(\x05R\x1aappendedSearchContextCount\x1a\xaa\x01\n" +
+	"\x18QueryGenerationDebugInfo\x12,\n" +
+	"\x12prompt_token_count\x18\x01 \x01(\x05R\x10promptTokenCount\x124\n" +
+	"\x16candidates_token_count\x18\x02 \x01(\x05R\x14candidatesTokenCount\x12*\n" +
+	"\x11total_token_count\x18\x03 \x01(\x05R\x0ftotalTokenCount\"\xcf\x03\n" +
 	"\x1cQueryGenerationFailureReason\x12/\n" +
 	"+QUERY_GENERATION_FAILURE_REASON_UNSPECIFIED\x10\x00\x12!\n" +
 	"\x1dQUERY_GENERATION_OUT_OF_QUOTA\x10\x01\x12\x1b\n" +
@@ -7660,21 +8234,31 @@ const file_google_cloud_dialogflow_v2beta1_participant_proto_rawDesc = "" +
 	"/QUERY_CATEGORIZATION_FAILURE_REASON_UNSPECIFIED\x10\x00\x12'\n" +
 	"#QUERY_CATEGORIZATION_INVALID_CONFIG\x10\x01\x12)\n" +
 	"%QUERY_CATEGORIZATION_RESULT_NOT_FOUND\x10\x02\x12\x1f\n" +
-	"\x1bQUERY_CATEGORIZATION_FAILED\x10\x03\"\xc7\b\n" +
+	"\x1bQUERY_CATEGORIZATION_FAILED\x10\x03\"\x95\x0f\n" +
 	"\x15KnowledgeAssistAnswer\x12n\n" +
 	"\x0fsuggested_query\x18\x01 \x01(\v2E.google.cloud.dialogflow.v2beta1.KnowledgeAssistAnswer.SuggestedQueryR\x0esuggestedQuery\x12|\n" +
 	"\x16suggested_query_answer\x18\x02 \x01(\v2F.google.cloud.dialogflow.v2beta1.KnowledgeAssistAnswer.KnowledgeAnswerR\x14suggestedQueryAnswer\x12#\n" +
 	"\ranswer_record\x18\x03 \x01(\tR\fanswerRecord\x12x\n" +
-	"\x1bknowledge_assist_debug_info\x18\a \x01(\v29.google.cloud.dialogflow.v2beta1.KnowledgeAssistDebugInfoR\x18knowledgeAssistDebugInfo\x1a/\n" +
+	"\x1bknowledge_assist_debug_info\x18\a \x01(\v29.google.cloud.dialogflow.v2beta1.KnowledgeAssistDebugInfoR\x18knowledgeAssistDebugInfo\x1a\xf6\x01\n" +
 	"\x0eSuggestedQuery\x12\x1d\n" +
 	"\n" +
-	"query_text\x18\x01 \x01(\tR\tqueryText\x1a\xef\x04\n" +
+	"query_text\x18\x01 \x01(\tR\tqueryText\x12\x81\x01\n" +
+	"\x0fsearch_contexts\x18\x04 \x03(\v2S.google.cloud.dialogflow.v2beta1.KnowledgeAssistAnswer.SuggestedQuery.SearchContextB\x03\xe0A\x01R\x0esearchContexts\x1aA\n" +
+	"\rSearchContext\x12\x15\n" +
+	"\x03key\x18\x01 \x01(\tB\x03\xe0A\x01R\x03key\x12\x19\n" +
+	"\x05value\x18\x02 \x01(\tB\x03\xe0A\x01R\x05value\x1a\xea\x01\n" +
+	"\x1eAdditionalSuggestedQueryResult\x12s\n" +
+	"\x0fsuggested_query\x18\x01 \x01(\v2E.google.cloud.dialogflow.v2beta1.KnowledgeAssistAnswer.SuggestedQueryB\x03\xe0A\x03R\x0esuggestedQuery\x12S\n" +
+	"\ranswer_record\x18\x05 \x01(\tB.\xe0A\x03\xfaA(\n" +
+	"&dialogflow.googleapis.com/AnswerRecordR\fanswerRecord\x1a\x88\b\n" +
 	"\x0fKnowledgeAnswer\x12\x1f\n" +
 	"\vanswer_text\x18\x01 \x01(\tR\n" +
 	"answerText\x12q\n" +
 	"\n" +
 	"faq_source\x18\x03 \x01(\v2P.google.cloud.dialogflow.v2beta1.KnowledgeAssistAnswer.KnowledgeAnswer.FaqSourceH\x00R\tfaqSource\x12\x86\x01\n" +
-	"\x11generative_source\x18\x04 \x01(\v2W.google.cloud.dialogflow.v2beta1.KnowledgeAssistAnswer.KnowledgeAnswer.GenerativeSourceH\x00R\x10generativeSource\x1a'\n" +
+	"\x11generative_source\x18\x04 \x01(\v2W.google.cloud.dialogflow.v2beta1.KnowledgeAssistAnswer.KnowledgeAnswer.GenerativeSourceH\x00R\x10generativeSource\x12\x82\x01\n" +
+	"\x0fplaybook_source\x18\a \x01(\v2W.google.cloud.dialogflow.v2beta1.KnowledgeAssistAnswer.KnowledgeAnswer.GenerativeSourceH\x00R\x0eplaybookSource\x12w\n" +
+	"\fevent_source\x18\b \x01(\v2R.google.cloud.dialogflow.v2beta1.KnowledgeAssistAnswer.KnowledgeAnswer.EventSourceH\x00R\veventSource\x1a'\n" +
 	"\tFaqSource\x12\x1a\n" +
 	"\bquestion\x18\x02 \x01(\tR\bquestion\x1a\x8b\x02\n" +
 	"\x10GenerativeSource\x12{\n" +
@@ -7683,8 +8267,11 @@ const file_google_cloud_dialogflow_v2beta1_participant_proto_rawDesc = "" +
 	"\x03uri\x18\x02 \x01(\tR\x03uri\x12\x12\n" +
 	"\x04text\x18\x03 \x01(\tR\x04text\x12\x14\n" +
 	"\x05title\x18\x04 \x01(\tR\x05title\x123\n" +
-	"\bmetadata\x18\x05 \x01(\v2\x17.google.protobuf.StructR\bmetadataB\b\n" +
-	"\x06source\"\x9f\r\n" +
+	"\bmetadata\x18\x05 \x01(\v2\x17.google.protobuf.StructR\bmetadata\x1a\x98\x01\n" +
+	"\vEventSource\x12\x14\n" +
+	"\x05event\x18\x01 \x01(\tR\x05event\x12s\n" +
+	"\bsnippets\x18\x02 \x01(\v2W.google.cloud.dialogflow.v2beta1.KnowledgeAssistAnswer.KnowledgeAnswer.GenerativeSourceR\bsnippetsB\b\n" +
+	"\x06source\"\xbc\x10\n" +
 	"\"BidiStreamingAnalyzeContentRequest\x12d\n" +
 	"\x06config\x18\x01 \x01(\v2J.google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentRequest.ConfigH\x00R\x06config\x12a\n" +
 	"\x05input\x18\x02 \x01(\v2I.google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentRequest.InputH\x00R\x05input\x1a\xe3\a\n" +
@@ -7701,27 +8288,43 @@ const file_google_cloud_dialogflow_v2beta1_participant_proto_rawDesc = "" +
 	"\x1eoutput_audio_sample_rate_hertz\x18\x04 \x01(\x05B\x03\xe0A\x02R\x1aoutputAudioSampleRateHertz\x12H\n" +
 	"\x1eenable_cx_proactive_processing\x18\x05 \x01(\bB\x03\xe0A\x01R\x1benableCxProactiveProcessing\x12C\n" +
 	"\x1benable_streaming_synthesize\x18\x17 \x01(\bB\x03\xe0A\x01R\x19enableStreamingSynthesizeB\b\n" +
-	"\x06config\x1a\xe2\x01\n" +
+	"\x06config\x1a\xff\x04\n" +
 	"\tTurnInput\x12\x14\n" +
 	"\x04text\x18\x01 \x01(\tH\x00R\x04text\x12?\n" +
 	"\x06intent\x18\x02 \x01(\tB%\xfaA\"\n" +
 	" dialogflow.googleapis.com/IntentH\x00R\x06intent\x12\x16\n" +
 	"\x05event\x18\x03 \x01(\tH\x00R\x05event\x12V\n" +
-	"\x18virtual_agent_parameters\x18\x04 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\x16virtualAgentParametersB\x0e\n" +
+	"\x18virtual_agent_parameters\x18\x04 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\x16virtualAgentParameters\x12\x87\x01\n" +
+	"\x0etool_responses\x18\x05 \x01(\v2[.google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentRequest.TurnInput.ToolResponsesB\x03\xe0A\x01R\rtoolResponses\x1av\n" +
+	"\fToolResponse\x12\x13\n" +
+	"\x02id\x18\x01 \x01(\tB\x03\xe0A\x02R\x02id\x12\x17\n" +
+	"\x04tool\x18\x02 \x01(\tB\x03\xe0A\x02R\x04tool\x128\n" +
+	"\bresponse\x18\x03 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\bresponse\x1a\x98\x01\n" +
+	"\rToolResponses\x12\x86\x01\n" +
+	"\x0etool_responses\x18\x01 \x03(\v2Z.google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentRequest.TurnInput.ToolResponseB\x03\xe0A\x01R\rtoolResponsesB\x0e\n" +
 	"\fmain_content\x1a\xd9\x01\n" +
 	"\x05Input\x12\x16\n" +
 	"\x05audio\x18\x01 \x01(\fH\x00R\x05audio\x12J\n" +
 	"\x04dtmf\x18\x02 \x01(\v24.google.cloud.dialogflow.v2beta1.TelephonyDtmfEventsH\x00R\x04dtmf\x12c\n" +
 	"\x04turn\x18\x03 \x01(\v2M.google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentRequest.TurnInputH\x00R\x04turnB\a\n" +
 	"\x05inputB\t\n" +
-	"\arequest\"\xad\x04\n" +
+	"\arequest\"\xf6\x06\n" +
 	"#BidiStreamingAnalyzeContentResponse\x12l\n" +
 	"\x12recognition_result\x18\x01 \x01(\v2;.google.cloud.dialogflow.v2beta1.StreamingRecognitionResultH\x00R\x11recognitionResult\x12|\n" +
 	"\x0fbarge_in_signal\x18\x02 \x01(\v2R.google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentResponse.BargeInSignalH\x00R\rbargeInSignal\x12s\n" +
 	"\x18analyze_content_response\x18\x03 \x01(\v27.google.cloud.dialogflow.v2beta1.AnalyzeContentResponseH\x00R\x16analyzeContentResponse\x12x\n" +
-	"\rturn_complete\x18\x04 \x01(\v2Q.google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentResponse.TurnCompleteH\x00R\fturnComplete\x1a\x0f\n" +
+	"\rturn_complete\x18\x04 \x01(\v2Q.google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentResponse.TurnCompleteH\x00R\fturnComplete\x12o\n" +
+	"\n" +
+	"tool_calls\x18\x05 \x01(\v2N.google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentResponse.ToolCallsH\x00R\ttoolCalls\x1a\x0f\n" +
 	"\rBargeInSignal\x1a\x0e\n" +
-	"\fTurnCompleteB\n" +
+	"\fTurnComplete\x1a[\n" +
+	"\bToolCall\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
+	"\x04tool\x18\x02 \x01(\tR\x04tool\x12+\n" +
+	"\x04args\x18\x03 \x01(\v2\x17.google.protobuf.StructR\x04args\x1ay\n" +
+	"\tToolCalls\x12l\n" +
+	"\n" +
+	"tool_calls\x18\x01 \x03(\v2M.google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentResponse.ToolCallR\ttoolCallsB\n" +
 	"\n" +
 	"\bresponse*\xd6\x02\n" +
 	"\x17DatastoreResponseReason\x12)\n" +
@@ -7764,7 +8367,7 @@ func file_google_cloud_dialogflow_v2beta1_participant_proto_rawDescGZIP() []byte
 }
 
 var file_google_cloud_dialogflow_v2beta1_participant_proto_enumTypes = make([]protoimpl.EnumInfo, 9)
-var file_google_cloud_dialogflow_v2beta1_participant_proto_msgTypes = make([]protoimpl.MessageInfo, 79)
+var file_google_cloud_dialogflow_v2beta1_participant_proto_msgTypes = make([]protoimpl.MessageInfo, 87)
 var file_google_cloud_dialogflow_v2beta1_participant_proto_goTypes = []any{
 	(DatastoreResponseReason)(0),                     // 0: google.cloud.dialogflow.v2beta1.DatastoreResponseReason
 	(Participant_Role)(0),                            // 1: google.cloud.dialogflow.v2beta1.Participant.Role
@@ -7843,36 +8446,44 @@ var file_google_cloud_dialogflow_v2beta1_participant_proto_goTypes = []any{
 	(*IngestedContextReferenceDebugInfo_IngestedParameterDebugInfo)(nil),   // 74: google.cloud.dialogflow.v2beta1.IngestedContextReferenceDebugInfo.IngestedParameterDebugInfo
 	(*ServiceLatency_InternalServiceLatency)(nil),                          // 75: google.cloud.dialogflow.v2beta1.ServiceLatency.InternalServiceLatency
 	(*KnowledgeAssistDebugInfo_KnowledgeAssistBehavior)(nil),               // 76: google.cloud.dialogflow.v2beta1.KnowledgeAssistDebugInfo.KnowledgeAssistBehavior
-	(*KnowledgeAssistAnswer_SuggestedQuery)(nil),                           // 77: google.cloud.dialogflow.v2beta1.KnowledgeAssistAnswer.SuggestedQuery
-	(*KnowledgeAssistAnswer_KnowledgeAnswer)(nil),                          // 78: google.cloud.dialogflow.v2beta1.KnowledgeAssistAnswer.KnowledgeAnswer
-	(*KnowledgeAssistAnswer_KnowledgeAnswer_FaqSource)(nil),                // 79: google.cloud.dialogflow.v2beta1.KnowledgeAssistAnswer.KnowledgeAnswer.FaqSource
-	(*KnowledgeAssistAnswer_KnowledgeAnswer_GenerativeSource)(nil),         // 80: google.cloud.dialogflow.v2beta1.KnowledgeAssistAnswer.KnowledgeAnswer.GenerativeSource
-	(*KnowledgeAssistAnswer_KnowledgeAnswer_GenerativeSource_Snippet)(nil), // 81: google.cloud.dialogflow.v2beta1.KnowledgeAssistAnswer.KnowledgeAnswer.GenerativeSource.Snippet
-	(*BidiStreamingAnalyzeContentRequest_Config)(nil),                      // 82: google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentRequest.Config
-	(*BidiStreamingAnalyzeContentRequest_TurnInput)(nil),                   // 83: google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentRequest.TurnInput
-	(*BidiStreamingAnalyzeContentRequest_Input)(nil),                       // 84: google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentRequest.Input
-	(*BidiStreamingAnalyzeContentRequest_Config_VoiceSessionConfig)(nil),   // 85: google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentRequest.Config.VoiceSessionConfig
-	(*BidiStreamingAnalyzeContentResponse_BargeInSignal)(nil),              // 86: google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentResponse.BargeInSignal
-	(*BidiStreamingAnalyzeContentResponse_TurnComplete)(nil),               // 87: google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentResponse.TurnComplete
-	(*timestamppb.Timestamp)(nil),                                          // 88: google.protobuf.Timestamp
-	(*SentimentAnalysisResult)(nil),                                        // 89: google.cloud.dialogflow.v2beta1.SentimentAnalysisResult
-	(*fieldmaskpb.FieldMask)(nil),                                          // 90: google.protobuf.FieldMask
-	(*InputAudioConfig)(nil),                                               // 91: google.cloud.dialogflow.v2beta1.InputAudioConfig
-	(*OutputAudioConfig)(nil),                                              // 92: google.cloud.dialogflow.v2beta1.OutputAudioConfig
-	(*DetectIntentResponse)(nil),                                           // 93: google.cloud.dialogflow.v2beta1.DetectIntentResponse
-	(*structpb.Struct)(nil),                                                // 94: google.protobuf.Struct
-	(*TextInput)(nil),                                                      // 95: google.cloud.dialogflow.v2beta1.TextInput
-	(*EventInput)(nil),                                                     // 96: google.cloud.dialogflow.v2beta1.EventInput
-	(*QueryParameters)(nil),                                                // 97: google.cloud.dialogflow.v2beta1.QueryParameters
-	(*TelephonyDtmfEvents)(nil),                                            // 98: google.cloud.dialogflow.v2beta1.TelephonyDtmfEvents
-	(*StreamingRecognitionResult)(nil),                                     // 99: google.cloud.dialogflow.v2beta1.StreamingRecognitionResult
-	(*CloudConversationDebuggingInfo)(nil),                                 // 100: google.cloud.dialogflow.v2beta1.CloudConversationDebuggingInfo
-	(*structpb.Value)(nil),                                                 // 101: google.protobuf.Value
-	(*QueryResult)(nil),                                                    // 102: google.cloud.dialogflow.v2beta1.QueryResult
-	(*status.Status)(nil),                                                  // 103: google.rpc.Status
-	(*GeneratorSuggestion)(nil),                                            // 104: google.cloud.dialogflow.v2beta1.GeneratorSuggestion
-	(AudioEncoding)(0),                                                     // 105: google.cloud.dialogflow.v2beta1.AudioEncoding
-	(OutputAudioEncoding)(0),                                               // 106: google.cloud.dialogflow.v2beta1.OutputAudioEncoding
+	(*KnowledgeAssistDebugInfo_QueryGenerationDebugInfo)(nil),              // 77: google.cloud.dialogflow.v2beta1.KnowledgeAssistDebugInfo.QueryGenerationDebugInfo
+	(*KnowledgeAssistAnswer_SuggestedQuery)(nil),                           // 78: google.cloud.dialogflow.v2beta1.KnowledgeAssistAnswer.SuggestedQuery
+	(*KnowledgeAssistAnswer_AdditionalSuggestedQueryResult)(nil),           // 79: google.cloud.dialogflow.v2beta1.KnowledgeAssistAnswer.AdditionalSuggestedQueryResult
+	(*KnowledgeAssistAnswer_KnowledgeAnswer)(nil),                          // 80: google.cloud.dialogflow.v2beta1.KnowledgeAssistAnswer.KnowledgeAnswer
+	(*KnowledgeAssistAnswer_SuggestedQuery_SearchContext)(nil),             // 81: google.cloud.dialogflow.v2beta1.KnowledgeAssistAnswer.SuggestedQuery.SearchContext
+	(*KnowledgeAssistAnswer_KnowledgeAnswer_FaqSource)(nil),                // 82: google.cloud.dialogflow.v2beta1.KnowledgeAssistAnswer.KnowledgeAnswer.FaqSource
+	(*KnowledgeAssistAnswer_KnowledgeAnswer_GenerativeSource)(nil),         // 83: google.cloud.dialogflow.v2beta1.KnowledgeAssistAnswer.KnowledgeAnswer.GenerativeSource
+	(*KnowledgeAssistAnswer_KnowledgeAnswer_EventSource)(nil),              // 84: google.cloud.dialogflow.v2beta1.KnowledgeAssistAnswer.KnowledgeAnswer.EventSource
+	(*KnowledgeAssistAnswer_KnowledgeAnswer_GenerativeSource_Snippet)(nil), // 85: google.cloud.dialogflow.v2beta1.KnowledgeAssistAnswer.KnowledgeAnswer.GenerativeSource.Snippet
+	(*BidiStreamingAnalyzeContentRequest_Config)(nil),                      // 86: google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentRequest.Config
+	(*BidiStreamingAnalyzeContentRequest_TurnInput)(nil),                   // 87: google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentRequest.TurnInput
+	(*BidiStreamingAnalyzeContentRequest_Input)(nil),                       // 88: google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentRequest.Input
+	(*BidiStreamingAnalyzeContentRequest_Config_VoiceSessionConfig)(nil),   // 89: google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentRequest.Config.VoiceSessionConfig
+	(*BidiStreamingAnalyzeContentRequest_TurnInput_ToolResponse)(nil),      // 90: google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentRequest.TurnInput.ToolResponse
+	(*BidiStreamingAnalyzeContentRequest_TurnInput_ToolResponses)(nil),     // 91: google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentRequest.TurnInput.ToolResponses
+	(*BidiStreamingAnalyzeContentResponse_BargeInSignal)(nil),              // 92: google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentResponse.BargeInSignal
+	(*BidiStreamingAnalyzeContentResponse_TurnComplete)(nil),               // 93: google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentResponse.TurnComplete
+	(*BidiStreamingAnalyzeContentResponse_ToolCall)(nil),                   // 94: google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentResponse.ToolCall
+	(*BidiStreamingAnalyzeContentResponse_ToolCalls)(nil),                  // 95: google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentResponse.ToolCalls
+	(*timestamppb.Timestamp)(nil),                                          // 96: google.protobuf.Timestamp
+	(*SentimentAnalysisResult)(nil),                                        // 97: google.cloud.dialogflow.v2beta1.SentimentAnalysisResult
+	(*fieldmaskpb.FieldMask)(nil),                                          // 98: google.protobuf.FieldMask
+	(*InputAudioConfig)(nil),                                               // 99: google.cloud.dialogflow.v2beta1.InputAudioConfig
+	(*OutputAudioConfig)(nil),                                              // 100: google.cloud.dialogflow.v2beta1.OutputAudioConfig
+	(*DetectIntentResponse)(nil),                                           // 101: google.cloud.dialogflow.v2beta1.DetectIntentResponse
+	(*structpb.Struct)(nil),                                                // 102: google.protobuf.Struct
+	(*TextInput)(nil),                                                      // 103: google.cloud.dialogflow.v2beta1.TextInput
+	(*EventInput)(nil),                                                     // 104: google.cloud.dialogflow.v2beta1.EventInput
+	(*QueryParameters)(nil),                                                // 105: google.cloud.dialogflow.v2beta1.QueryParameters
+	(*TelephonyDtmfEvents)(nil),                                            // 106: google.cloud.dialogflow.v2beta1.TelephonyDtmfEvents
+	(*StreamingRecognitionResult)(nil),                                     // 107: google.cloud.dialogflow.v2beta1.StreamingRecognitionResult
+	(*CloudConversationDebuggingInfo)(nil),                                 // 108: google.cloud.dialogflow.v2beta1.CloudConversationDebuggingInfo
+	(*structpb.Value)(nil),                                                 // 109: google.protobuf.Value
+	(*QueryResult)(nil),                                                    // 110: google.cloud.dialogflow.v2beta1.QueryResult
+	(*status.Status)(nil),                                                  // 111: google.rpc.Status
+	(*GeneratorSuggestion)(nil),                                            // 112: google.cloud.dialogflow.v2beta1.GeneratorSuggestion
+	(AudioEncoding)(0),                                                     // 113: google.cloud.dialogflow.v2beta1.AudioEncoding
+	(OutputAudioEncoding)(0),                                               // 114: google.cloud.dialogflow.v2beta1.OutputAudioEncoding
 }
 var file_google_cloud_dialogflow_v2beta1_participant_proto_depIdxs = []int32{
 	1,   // 0: google.cloud.dialogflow.v2beta1.Participant.role:type_name -> google.cloud.dialogflow.v2beta1.Participant.Role
@@ -7880,66 +8491,66 @@ var file_google_cloud_dialogflow_v2beta1_participant_proto_depIdxs = []int32{
 	2,   // 2: google.cloud.dialogflow.v2beta1.Participant.agent_desktop_source:type_name -> google.cloud.dialogflow.v2beta1.Participant.AgentDesktopSource
 	50,  // 3: google.cloud.dialogflow.v2beta1.Message.response_messages:type_name -> google.cloud.dialogflow.v2beta1.ResponseMessage
 	1,   // 4: google.cloud.dialogflow.v2beta1.Message.participant_role:type_name -> google.cloud.dialogflow.v2beta1.Participant.Role
-	88,  // 5: google.cloud.dialogflow.v2beta1.Message.create_time:type_name -> google.protobuf.Timestamp
-	88,  // 6: google.cloud.dialogflow.v2beta1.Message.send_time:type_name -> google.protobuf.Timestamp
+	96,  // 5: google.cloud.dialogflow.v2beta1.Message.create_time:type_name -> google.protobuf.Timestamp
+	96,  // 6: google.cloud.dialogflow.v2beta1.Message.send_time:type_name -> google.protobuf.Timestamp
 	30,  // 7: google.cloud.dialogflow.v2beta1.Message.message_annotation:type_name -> google.cloud.dialogflow.v2beta1.MessageAnnotation
-	89,  // 8: google.cloud.dialogflow.v2beta1.Message.sentiment_analysis:type_name -> google.cloud.dialogflow.v2beta1.SentimentAnalysisResult
+	97,  // 8: google.cloud.dialogflow.v2beta1.Message.sentiment_analysis:type_name -> google.cloud.dialogflow.v2beta1.SentimentAnalysisResult
 	9,   // 9: google.cloud.dialogflow.v2beta1.CreateParticipantRequest.participant:type_name -> google.cloud.dialogflow.v2beta1.Participant
 	9,   // 10: google.cloud.dialogflow.v2beta1.ListParticipantsResponse.participants:type_name -> google.cloud.dialogflow.v2beta1.Participant
 	9,   // 11: google.cloud.dialogflow.v2beta1.UpdateParticipantRequest.participant:type_name -> google.cloud.dialogflow.v2beta1.Participant
-	90,  // 12: google.cloud.dialogflow.v2beta1.UpdateParticipantRequest.update_mask:type_name -> google.protobuf.FieldMask
-	91,  // 13: google.cloud.dialogflow.v2beta1.AudioInput.config:type_name -> google.cloud.dialogflow.v2beta1.InputAudioConfig
-	92,  // 14: google.cloud.dialogflow.v2beta1.OutputAudio.config:type_name -> google.cloud.dialogflow.v2beta1.OutputAudioConfig
-	93,  // 15: google.cloud.dialogflow.v2beta1.AutomatedAgentReply.detect_intent_response:type_name -> google.cloud.dialogflow.v2beta1.DetectIntentResponse
+	98,  // 12: google.cloud.dialogflow.v2beta1.UpdateParticipantRequest.update_mask:type_name -> google.protobuf.FieldMask
+	99,  // 13: google.cloud.dialogflow.v2beta1.AudioInput.config:type_name -> google.cloud.dialogflow.v2beta1.InputAudioConfig
+	100, // 14: google.cloud.dialogflow.v2beta1.OutputAudio.config:type_name -> google.cloud.dialogflow.v2beta1.OutputAudioConfig
+	101, // 15: google.cloud.dialogflow.v2beta1.AutomatedAgentReply.detect_intent_response:type_name -> google.cloud.dialogflow.v2beta1.DetectIntentResponse
 	50,  // 16: google.cloud.dialogflow.v2beta1.AutomatedAgentReply.response_messages:type_name -> google.cloud.dialogflow.v2beta1.ResponseMessage
-	94,  // 17: google.cloud.dialogflow.v2beta1.AutomatedAgentReply.parameters:type_name -> google.protobuf.Struct
-	94,  // 18: google.cloud.dialogflow.v2beta1.AutomatedAgentReply.cx_session_parameters:type_name -> google.protobuf.Struct
+	102, // 17: google.cloud.dialogflow.v2beta1.AutomatedAgentReply.parameters:type_name -> google.protobuf.Struct
+	102, // 18: google.cloud.dialogflow.v2beta1.AutomatedAgentReply.cx_session_parameters:type_name -> google.protobuf.Struct
 	3,   // 19: google.cloud.dialogflow.v2beta1.AutomatedAgentReply.automated_agent_reply_type:type_name -> google.cloud.dialogflow.v2beta1.AutomatedAgentReply.AutomatedAgentReplyType
-	95,  // 20: google.cloud.dialogflow.v2beta1.SuggestionInput.text_override:type_name -> google.cloud.dialogflow.v2beta1.TextInput
-	94,  // 21: google.cloud.dialogflow.v2beta1.SuggestionInput.parameters:type_name -> google.protobuf.Struct
+	103, // 20: google.cloud.dialogflow.v2beta1.SuggestionInput.text_override:type_name -> google.cloud.dialogflow.v2beta1.TextInput
+	102, // 21: google.cloud.dialogflow.v2beta1.SuggestionInput.parameters:type_name -> google.protobuf.Struct
 	4,   // 22: google.cloud.dialogflow.v2beta1.SuggestionInput.action:type_name -> google.cloud.dialogflow.v2beta1.SuggestionInput.Action
 	20,  // 23: google.cloud.dialogflow.v2beta1.SuggestionInput.intent_input:type_name -> google.cloud.dialogflow.v2beta1.IntentInput
-	88,  // 24: google.cloud.dialogflow.v2beta1.SuggestionInput.send_time:type_name -> google.protobuf.Timestamp
+	96,  // 24: google.cloud.dialogflow.v2beta1.SuggestionInput.send_time:type_name -> google.protobuf.Timestamp
 	5,   // 25: google.cloud.dialogflow.v2beta1.SuggestionFeature.type:type_name -> google.cloud.dialogflow.v2beta1.SuggestionFeature.Type
 	60,  // 26: google.cloud.dialogflow.v2beta1.AssistQueryParameters.documents_metadata_filters:type_name -> google.cloud.dialogflow.v2beta1.AssistQueryParameters.DocumentsMetadataFiltersEntry
-	95,  // 27: google.cloud.dialogflow.v2beta1.AnalyzeContentRequest.text_input:type_name -> google.cloud.dialogflow.v2beta1.TextInput
+	103, // 27: google.cloud.dialogflow.v2beta1.AnalyzeContentRequest.text_input:type_name -> google.cloud.dialogflow.v2beta1.TextInput
 	16,  // 28: google.cloud.dialogflow.v2beta1.AnalyzeContentRequest.audio_input:type_name -> google.cloud.dialogflow.v2beta1.AudioInput
-	96,  // 29: google.cloud.dialogflow.v2beta1.AnalyzeContentRequest.event_input:type_name -> google.cloud.dialogflow.v2beta1.EventInput
+	104, // 29: google.cloud.dialogflow.v2beta1.AnalyzeContentRequest.event_input:type_name -> google.cloud.dialogflow.v2beta1.EventInput
 	19,  // 30: google.cloud.dialogflow.v2beta1.AnalyzeContentRequest.suggestion_input:type_name -> google.cloud.dialogflow.v2beta1.SuggestionInput
 	20,  // 31: google.cloud.dialogflow.v2beta1.AnalyzeContentRequest.intent_input:type_name -> google.cloud.dialogflow.v2beta1.IntentInput
-	92,  // 32: google.cloud.dialogflow.v2beta1.AnalyzeContentRequest.reply_audio_config:type_name -> google.cloud.dialogflow.v2beta1.OutputAudioConfig
-	97,  // 33: google.cloud.dialogflow.v2beta1.AnalyzeContentRequest.query_params:type_name -> google.cloud.dialogflow.v2beta1.QueryParameters
+	100, // 32: google.cloud.dialogflow.v2beta1.AnalyzeContentRequest.reply_audio_config:type_name -> google.cloud.dialogflow.v2beta1.OutputAudioConfig
+	105, // 33: google.cloud.dialogflow.v2beta1.AnalyzeContentRequest.query_params:type_name -> google.cloud.dialogflow.v2beta1.QueryParameters
 	22,  // 34: google.cloud.dialogflow.v2beta1.AnalyzeContentRequest.assist_query_params:type_name -> google.cloud.dialogflow.v2beta1.AssistQueryParameters
-	94,  // 35: google.cloud.dialogflow.v2beta1.AnalyzeContentRequest.cx_parameters:type_name -> google.protobuf.Struct
-	88,  // 36: google.cloud.dialogflow.v2beta1.AnalyzeContentRequest.message_send_time:type_name -> google.protobuf.Timestamp
+	102, // 35: google.cloud.dialogflow.v2beta1.AnalyzeContentRequest.cx_parameters:type_name -> google.protobuf.Struct
+	96,  // 36: google.cloud.dialogflow.v2beta1.AnalyzeContentRequest.message_send_time:type_name -> google.protobuf.Timestamp
 	17,  // 37: google.cloud.dialogflow.v2beta1.AnalyzeContentResponse.reply_audio:type_name -> google.cloud.dialogflow.v2beta1.OutputAudio
 	18,  // 38: google.cloud.dialogflow.v2beta1.AnalyzeContentResponse.automated_agent_reply:type_name -> google.cloud.dialogflow.v2beta1.AutomatedAgentReply
 	10,  // 39: google.cloud.dialogflow.v2beta1.AnalyzeContentResponse.message:type_name -> google.cloud.dialogflow.v2beta1.Message
 	36,  // 40: google.cloud.dialogflow.v2beta1.AnalyzeContentResponse.human_agent_suggestion_results:type_name -> google.cloud.dialogflow.v2beta1.SuggestionResult
 	36,  // 41: google.cloud.dialogflow.v2beta1.AnalyzeContentResponse.end_user_suggestion_results:type_name -> google.cloud.dialogflow.v2beta1.SuggestionResult
 	24,  // 42: google.cloud.dialogflow.v2beta1.AnalyzeContentResponse.dtmf_parameters:type_name -> google.cloud.dialogflow.v2beta1.DtmfParameters
-	91,  // 43: google.cloud.dialogflow.v2beta1.StreamingAnalyzeContentRequest.audio_config:type_name -> google.cloud.dialogflow.v2beta1.InputAudioConfig
+	99,  // 43: google.cloud.dialogflow.v2beta1.StreamingAnalyzeContentRequest.audio_config:type_name -> google.cloud.dialogflow.v2beta1.InputAudioConfig
 	26,  // 44: google.cloud.dialogflow.v2beta1.StreamingAnalyzeContentRequest.text_config:type_name -> google.cloud.dialogflow.v2beta1.InputTextConfig
-	92,  // 45: google.cloud.dialogflow.v2beta1.StreamingAnalyzeContentRequest.reply_audio_config:type_name -> google.cloud.dialogflow.v2beta1.OutputAudioConfig
-	98,  // 46: google.cloud.dialogflow.v2beta1.StreamingAnalyzeContentRequest.input_dtmf:type_name -> google.cloud.dialogflow.v2beta1.TelephonyDtmfEvents
-	97,  // 47: google.cloud.dialogflow.v2beta1.StreamingAnalyzeContentRequest.query_params:type_name -> google.cloud.dialogflow.v2beta1.QueryParameters
+	100, // 45: google.cloud.dialogflow.v2beta1.StreamingAnalyzeContentRequest.reply_audio_config:type_name -> google.cloud.dialogflow.v2beta1.OutputAudioConfig
+	106, // 46: google.cloud.dialogflow.v2beta1.StreamingAnalyzeContentRequest.input_dtmf:type_name -> google.cloud.dialogflow.v2beta1.TelephonyDtmfEvents
+	105, // 47: google.cloud.dialogflow.v2beta1.StreamingAnalyzeContentRequest.query_params:type_name -> google.cloud.dialogflow.v2beta1.QueryParameters
 	22,  // 48: google.cloud.dialogflow.v2beta1.StreamingAnalyzeContentRequest.assist_query_params:type_name -> google.cloud.dialogflow.v2beta1.AssistQueryParameters
-	94,  // 49: google.cloud.dialogflow.v2beta1.StreamingAnalyzeContentRequest.cx_parameters:type_name -> google.protobuf.Struct
-	99,  // 50: google.cloud.dialogflow.v2beta1.StreamingAnalyzeContentResponse.recognition_result:type_name -> google.cloud.dialogflow.v2beta1.StreamingRecognitionResult
+	102, // 49: google.cloud.dialogflow.v2beta1.StreamingAnalyzeContentRequest.cx_parameters:type_name -> google.protobuf.Struct
+	107, // 50: google.cloud.dialogflow.v2beta1.StreamingAnalyzeContentResponse.recognition_result:type_name -> google.cloud.dialogflow.v2beta1.StreamingRecognitionResult
 	17,  // 51: google.cloud.dialogflow.v2beta1.StreamingAnalyzeContentResponse.reply_audio:type_name -> google.cloud.dialogflow.v2beta1.OutputAudio
 	18,  // 52: google.cloud.dialogflow.v2beta1.StreamingAnalyzeContentResponse.automated_agent_reply:type_name -> google.cloud.dialogflow.v2beta1.AutomatedAgentReply
 	10,  // 53: google.cloud.dialogflow.v2beta1.StreamingAnalyzeContentResponse.message:type_name -> google.cloud.dialogflow.v2beta1.Message
 	36,  // 54: google.cloud.dialogflow.v2beta1.StreamingAnalyzeContentResponse.human_agent_suggestion_results:type_name -> google.cloud.dialogflow.v2beta1.SuggestionResult
 	36,  // 55: google.cloud.dialogflow.v2beta1.StreamingAnalyzeContentResponse.end_user_suggestion_results:type_name -> google.cloud.dialogflow.v2beta1.SuggestionResult
 	24,  // 56: google.cloud.dialogflow.v2beta1.StreamingAnalyzeContentResponse.dtmf_parameters:type_name -> google.cloud.dialogflow.v2beta1.DtmfParameters
-	100, // 57: google.cloud.dialogflow.v2beta1.StreamingAnalyzeContentResponse.debugging_info:type_name -> google.cloud.dialogflow.v2beta1.CloudConversationDebuggingInfo
-	101, // 58: google.cloud.dialogflow.v2beta1.AnnotatedMessagePart.formatted_value:type_name -> google.protobuf.Value
+	108, // 57: google.cloud.dialogflow.v2beta1.StreamingAnalyzeContentResponse.debugging_info:type_name -> google.cloud.dialogflow.v2beta1.CloudConversationDebuggingInfo
+	109, // 58: google.cloud.dialogflow.v2beta1.AnnotatedMessagePart.formatted_value:type_name -> google.protobuf.Value
 	29,  // 59: google.cloud.dialogflow.v2beta1.MessageAnnotation.parts:type_name -> google.cloud.dialogflow.v2beta1.AnnotatedMessagePart
 	61,  // 60: google.cloud.dialogflow.v2beta1.ArticleAnswer.metadata:type_name -> google.cloud.dialogflow.v2beta1.ArticleAnswer.MetadataEntry
 	62,  // 61: google.cloud.dialogflow.v2beta1.FaqAnswer.metadata:type_name -> google.cloud.dialogflow.v2beta1.FaqAnswer.MetadataEntry
-	102, // 62: google.cloud.dialogflow.v2beta1.DialogflowAssistAnswer.query_result:type_name -> google.cloud.dialogflow.v2beta1.QueryResult
+	110, // 62: google.cloud.dialogflow.v2beta1.DialogflowAssistAnswer.query_result:type_name -> google.cloud.dialogflow.v2beta1.QueryResult
 	34,  // 63: google.cloud.dialogflow.v2beta1.DialogflowAssistAnswer.intent_suggestion:type_name -> google.cloud.dialogflow.v2beta1.IntentSuggestion
-	103, // 64: google.cloud.dialogflow.v2beta1.SuggestionResult.error:type_name -> google.rpc.Status
+	111, // 64: google.cloud.dialogflow.v2beta1.SuggestionResult.error:type_name -> google.rpc.Status
 	38,  // 65: google.cloud.dialogflow.v2beta1.SuggestionResult.suggest_articles_response:type_name -> google.cloud.dialogflow.v2beta1.SuggestArticlesResponse
 	52,  // 66: google.cloud.dialogflow.v2beta1.SuggestionResult.suggest_knowledge_assist_response:type_name -> google.cloud.dialogflow.v2beta1.SuggestKnowledgeAssistResponse
 	40,  // 67: google.cloud.dialogflow.v2beta1.SuggestionResult.suggest_faq_answers_response:type_name -> google.cloud.dialogflow.v2beta1.SuggestFaqAnswersResponse
@@ -7951,90 +8562,104 @@ var file_google_cloud_dialogflow_v2beta1_participant_proto_depIdxs = []int32{
 	31,  // 73: google.cloud.dialogflow.v2beta1.SuggestArticlesResponse.article_answers:type_name -> google.cloud.dialogflow.v2beta1.ArticleAnswer
 	22,  // 74: google.cloud.dialogflow.v2beta1.SuggestFaqAnswersRequest.assist_query_params:type_name -> google.cloud.dialogflow.v2beta1.AssistQueryParameters
 	32,  // 75: google.cloud.dialogflow.v2beta1.SuggestFaqAnswersResponse.faq_answers:type_name -> google.cloud.dialogflow.v2beta1.FaqAnswer
-	95,  // 76: google.cloud.dialogflow.v2beta1.SuggestSmartRepliesRequest.current_text_input:type_name -> google.cloud.dialogflow.v2beta1.TextInput
+	103, // 76: google.cloud.dialogflow.v2beta1.SuggestSmartRepliesRequest.current_text_input:type_name -> google.cloud.dialogflow.v2beta1.TextInput
 	33,  // 77: google.cloud.dialogflow.v2beta1.SuggestSmartRepliesResponse.smart_reply_answers:type_name -> google.cloud.dialogflow.v2beta1.SmartReplyAnswer
 	63,  // 78: google.cloud.dialogflow.v2beta1.GenerateSuggestionsResponse.generator_suggestion_answers:type_name -> google.cloud.dialogflow.v2beta1.GenerateSuggestionsResponse.GeneratorSuggestionAnswer
 	35,  // 79: google.cloud.dialogflow.v2beta1.SuggestDialogflowAssistsResponse.dialogflow_assist_answers:type_name -> google.cloud.dialogflow.v2beta1.DialogflowAssistAnswer
 	64,  // 80: google.cloud.dialogflow.v2beta1.Suggestion.articles:type_name -> google.cloud.dialogflow.v2beta1.Suggestion.Article
 	65,  // 81: google.cloud.dialogflow.v2beta1.Suggestion.faq_answers:type_name -> google.cloud.dialogflow.v2beta1.Suggestion.FaqAnswer
-	88,  // 82: google.cloud.dialogflow.v2beta1.Suggestion.create_time:type_name -> google.protobuf.Timestamp
+	96,  // 82: google.cloud.dialogflow.v2beta1.Suggestion.create_time:type_name -> google.protobuf.Timestamp
 	45,  // 83: google.cloud.dialogflow.v2beta1.ListSuggestionsResponse.suggestions:type_name -> google.cloud.dialogflow.v2beta1.Suggestion
 	45,  // 84: google.cloud.dialogflow.v2beta1.CompileSuggestionResponse.suggestion:type_name -> google.cloud.dialogflow.v2beta1.Suggestion
 	68,  // 85: google.cloud.dialogflow.v2beta1.ResponseMessage.text:type_name -> google.cloud.dialogflow.v2beta1.ResponseMessage.Text
-	94,  // 86: google.cloud.dialogflow.v2beta1.ResponseMessage.payload:type_name -> google.protobuf.Struct
+	102, // 86: google.cloud.dialogflow.v2beta1.ResponseMessage.payload:type_name -> google.protobuf.Struct
 	69,  // 87: google.cloud.dialogflow.v2beta1.ResponseMessage.live_agent_handoff:type_name -> google.cloud.dialogflow.v2beta1.ResponseMessage.LiveAgentHandoff
 	70,  // 88: google.cloud.dialogflow.v2beta1.ResponseMessage.end_interaction:type_name -> google.cloud.dialogflow.v2beta1.ResponseMessage.EndInteraction
 	71,  // 89: google.cloud.dialogflow.v2beta1.ResponseMessage.mixed_audio:type_name -> google.cloud.dialogflow.v2beta1.ResponseMessage.MixedAudio
 	72,  // 90: google.cloud.dialogflow.v2beta1.ResponseMessage.telephony_transfer_call:type_name -> google.cloud.dialogflow.v2beta1.ResponseMessage.TelephonyTransferCall
 	56,  // 91: google.cloud.dialogflow.v2beta1.SuggestKnowledgeAssistResponse.knowledge_assist_answer:type_name -> google.cloud.dialogflow.v2beta1.KnowledgeAssistAnswer
-	74,  // 92: google.cloud.dialogflow.v2beta1.IngestedContextReferenceDebugInfo.ingested_parameters_debug_info:type_name -> google.cloud.dialogflow.v2beta1.IngestedContextReferenceDebugInfo.IngestedParameterDebugInfo
-	75,  // 93: google.cloud.dialogflow.v2beta1.ServiceLatency.internal_service_latencies:type_name -> google.cloud.dialogflow.v2beta1.ServiceLatency.InternalServiceLatency
-	7,   // 94: google.cloud.dialogflow.v2beta1.KnowledgeAssistDebugInfo.query_generation_failure_reason:type_name -> google.cloud.dialogflow.v2beta1.KnowledgeAssistDebugInfo.QueryGenerationFailureReason
-	8,   // 95: google.cloud.dialogflow.v2beta1.KnowledgeAssistDebugInfo.query_categorization_failure_reason:type_name -> google.cloud.dialogflow.v2beta1.KnowledgeAssistDebugInfo.QueryCategorizationFailureReason
-	0,   // 96: google.cloud.dialogflow.v2beta1.KnowledgeAssistDebugInfo.datastore_response_reason:type_name -> google.cloud.dialogflow.v2beta1.DatastoreResponseReason
-	76,  // 97: google.cloud.dialogflow.v2beta1.KnowledgeAssistDebugInfo.knowledge_assist_behavior:type_name -> google.cloud.dialogflow.v2beta1.KnowledgeAssistDebugInfo.KnowledgeAssistBehavior
-	53,  // 98: google.cloud.dialogflow.v2beta1.KnowledgeAssistDebugInfo.ingested_context_reference_debug_info:type_name -> google.cloud.dialogflow.v2beta1.IngestedContextReferenceDebugInfo
-	54,  // 99: google.cloud.dialogflow.v2beta1.KnowledgeAssistDebugInfo.service_latency:type_name -> google.cloud.dialogflow.v2beta1.ServiceLatency
-	77,  // 100: google.cloud.dialogflow.v2beta1.KnowledgeAssistAnswer.suggested_query:type_name -> google.cloud.dialogflow.v2beta1.KnowledgeAssistAnswer.SuggestedQuery
-	78,  // 101: google.cloud.dialogflow.v2beta1.KnowledgeAssistAnswer.suggested_query_answer:type_name -> google.cloud.dialogflow.v2beta1.KnowledgeAssistAnswer.KnowledgeAnswer
-	55,  // 102: google.cloud.dialogflow.v2beta1.KnowledgeAssistAnswer.knowledge_assist_debug_info:type_name -> google.cloud.dialogflow.v2beta1.KnowledgeAssistDebugInfo
-	82,  // 103: google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentRequest.config:type_name -> google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentRequest.Config
-	84,  // 104: google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentRequest.input:type_name -> google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentRequest.Input
-	99,  // 105: google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentResponse.recognition_result:type_name -> google.cloud.dialogflow.v2beta1.StreamingRecognitionResult
-	86,  // 106: google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentResponse.barge_in_signal:type_name -> google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentResponse.BargeInSignal
-	25,  // 107: google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentResponse.analyze_content_response:type_name -> google.cloud.dialogflow.v2beta1.AnalyzeContentResponse
-	87,  // 108: google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentResponse.turn_complete:type_name -> google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentResponse.TurnComplete
-	104, // 109: google.cloud.dialogflow.v2beta1.GenerateSuggestionsResponse.GeneratorSuggestionAnswer.generator_suggestion:type_name -> google.cloud.dialogflow.v2beta1.GeneratorSuggestion
-	66,  // 110: google.cloud.dialogflow.v2beta1.Suggestion.Article.metadata:type_name -> google.cloud.dialogflow.v2beta1.Suggestion.Article.MetadataEntry
-	67,  // 111: google.cloud.dialogflow.v2beta1.Suggestion.FaqAnswer.metadata:type_name -> google.cloud.dialogflow.v2beta1.Suggestion.FaqAnswer.MetadataEntry
-	94,  // 112: google.cloud.dialogflow.v2beta1.ResponseMessage.LiveAgentHandoff.metadata:type_name -> google.protobuf.Struct
-	73,  // 113: google.cloud.dialogflow.v2beta1.ResponseMessage.MixedAudio.segments:type_name -> google.cloud.dialogflow.v2beta1.ResponseMessage.MixedAudio.Segment
-	6,   // 114: google.cloud.dialogflow.v2beta1.IngestedContextReferenceDebugInfo.IngestedParameterDebugInfo.ingestion_status:type_name -> google.cloud.dialogflow.v2beta1.IngestedContextReferenceDebugInfo.IngestedParameterDebugInfo.IngestionStatus
-	88,  // 115: google.cloud.dialogflow.v2beta1.ServiceLatency.InternalServiceLatency.start_time:type_name -> google.protobuf.Timestamp
-	88,  // 116: google.cloud.dialogflow.v2beta1.ServiceLatency.InternalServiceLatency.complete_time:type_name -> google.protobuf.Timestamp
-	79,  // 117: google.cloud.dialogflow.v2beta1.KnowledgeAssistAnswer.KnowledgeAnswer.faq_source:type_name -> google.cloud.dialogflow.v2beta1.KnowledgeAssistAnswer.KnowledgeAnswer.FaqSource
-	80,  // 118: google.cloud.dialogflow.v2beta1.KnowledgeAssistAnswer.KnowledgeAnswer.generative_source:type_name -> google.cloud.dialogflow.v2beta1.KnowledgeAssistAnswer.KnowledgeAnswer.GenerativeSource
-	81,  // 119: google.cloud.dialogflow.v2beta1.KnowledgeAssistAnswer.KnowledgeAnswer.GenerativeSource.snippets:type_name -> google.cloud.dialogflow.v2beta1.KnowledgeAssistAnswer.KnowledgeAnswer.GenerativeSource.Snippet
-	94,  // 120: google.cloud.dialogflow.v2beta1.KnowledgeAssistAnswer.KnowledgeAnswer.GenerativeSource.Snippet.metadata:type_name -> google.protobuf.Struct
-	85,  // 121: google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentRequest.Config.voice_session_config:type_name -> google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentRequest.Config.VoiceSessionConfig
-	94,  // 122: google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentRequest.Config.initial_virtual_agent_parameters:type_name -> google.protobuf.Struct
-	97,  // 123: google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentRequest.Config.initial_virtual_agent_query_params:type_name -> google.cloud.dialogflow.v2beta1.QueryParameters
-	94,  // 124: google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentRequest.TurnInput.virtual_agent_parameters:type_name -> google.protobuf.Struct
-	98,  // 125: google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentRequest.Input.dtmf:type_name -> google.cloud.dialogflow.v2beta1.TelephonyDtmfEvents
-	83,  // 126: google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentRequest.Input.turn:type_name -> google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentRequest.TurnInput
-	105, // 127: google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentRequest.Config.VoiceSessionConfig.input_audio_encoding:type_name -> google.cloud.dialogflow.v2beta1.AudioEncoding
-	106, // 128: google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentRequest.Config.VoiceSessionConfig.output_audio_encoding:type_name -> google.cloud.dialogflow.v2beta1.OutputAudioEncoding
-	11,  // 129: google.cloud.dialogflow.v2beta1.Participants.CreateParticipant:input_type -> google.cloud.dialogflow.v2beta1.CreateParticipantRequest
-	12,  // 130: google.cloud.dialogflow.v2beta1.Participants.GetParticipant:input_type -> google.cloud.dialogflow.v2beta1.GetParticipantRequest
-	13,  // 131: google.cloud.dialogflow.v2beta1.Participants.ListParticipants:input_type -> google.cloud.dialogflow.v2beta1.ListParticipantsRequest
-	15,  // 132: google.cloud.dialogflow.v2beta1.Participants.UpdateParticipant:input_type -> google.cloud.dialogflow.v2beta1.UpdateParticipantRequest
-	23,  // 133: google.cloud.dialogflow.v2beta1.Participants.AnalyzeContent:input_type -> google.cloud.dialogflow.v2beta1.AnalyzeContentRequest
-	27,  // 134: google.cloud.dialogflow.v2beta1.Participants.StreamingAnalyzeContent:input_type -> google.cloud.dialogflow.v2beta1.StreamingAnalyzeContentRequest
-	57,  // 135: google.cloud.dialogflow.v2beta1.Participants.BidiStreamingAnalyzeContent:input_type -> google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentRequest
-	37,  // 136: google.cloud.dialogflow.v2beta1.Participants.SuggestArticles:input_type -> google.cloud.dialogflow.v2beta1.SuggestArticlesRequest
-	39,  // 137: google.cloud.dialogflow.v2beta1.Participants.SuggestFaqAnswers:input_type -> google.cloud.dialogflow.v2beta1.SuggestFaqAnswersRequest
-	41,  // 138: google.cloud.dialogflow.v2beta1.Participants.SuggestSmartReplies:input_type -> google.cloud.dialogflow.v2beta1.SuggestSmartRepliesRequest
-	51,  // 139: google.cloud.dialogflow.v2beta1.Participants.SuggestKnowledgeAssist:input_type -> google.cloud.dialogflow.v2beta1.SuggestKnowledgeAssistRequest
-	46,  // 140: google.cloud.dialogflow.v2beta1.Participants.ListSuggestions:input_type -> google.cloud.dialogflow.v2beta1.ListSuggestionsRequest
-	48,  // 141: google.cloud.dialogflow.v2beta1.Participants.CompileSuggestion:input_type -> google.cloud.dialogflow.v2beta1.CompileSuggestionRequest
-	9,   // 142: google.cloud.dialogflow.v2beta1.Participants.CreateParticipant:output_type -> google.cloud.dialogflow.v2beta1.Participant
-	9,   // 143: google.cloud.dialogflow.v2beta1.Participants.GetParticipant:output_type -> google.cloud.dialogflow.v2beta1.Participant
-	14,  // 144: google.cloud.dialogflow.v2beta1.Participants.ListParticipants:output_type -> google.cloud.dialogflow.v2beta1.ListParticipantsResponse
-	9,   // 145: google.cloud.dialogflow.v2beta1.Participants.UpdateParticipant:output_type -> google.cloud.dialogflow.v2beta1.Participant
-	25,  // 146: google.cloud.dialogflow.v2beta1.Participants.AnalyzeContent:output_type -> google.cloud.dialogflow.v2beta1.AnalyzeContentResponse
-	28,  // 147: google.cloud.dialogflow.v2beta1.Participants.StreamingAnalyzeContent:output_type -> google.cloud.dialogflow.v2beta1.StreamingAnalyzeContentResponse
-	58,  // 148: google.cloud.dialogflow.v2beta1.Participants.BidiStreamingAnalyzeContent:output_type -> google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentResponse
-	38,  // 149: google.cloud.dialogflow.v2beta1.Participants.SuggestArticles:output_type -> google.cloud.dialogflow.v2beta1.SuggestArticlesResponse
-	40,  // 150: google.cloud.dialogflow.v2beta1.Participants.SuggestFaqAnswers:output_type -> google.cloud.dialogflow.v2beta1.SuggestFaqAnswersResponse
-	42,  // 151: google.cloud.dialogflow.v2beta1.Participants.SuggestSmartReplies:output_type -> google.cloud.dialogflow.v2beta1.SuggestSmartRepliesResponse
-	52,  // 152: google.cloud.dialogflow.v2beta1.Participants.SuggestKnowledgeAssist:output_type -> google.cloud.dialogflow.v2beta1.SuggestKnowledgeAssistResponse
-	47,  // 153: google.cloud.dialogflow.v2beta1.Participants.ListSuggestions:output_type -> google.cloud.dialogflow.v2beta1.ListSuggestionsResponse
-	49,  // 154: google.cloud.dialogflow.v2beta1.Participants.CompileSuggestion:output_type -> google.cloud.dialogflow.v2beta1.CompileSuggestionResponse
-	142, // [142:155] is the sub-list for method output_type
-	129, // [129:142] is the sub-list for method input_type
-	129, // [129:129] is the sub-list for extension type_name
-	129, // [129:129] is the sub-list for extension extendee
-	0,   // [0:129] is the sub-list for field type_name
+	79,  // 92: google.cloud.dialogflow.v2beta1.SuggestKnowledgeAssistResponse.additional_suggested_query_results:type_name -> google.cloud.dialogflow.v2beta1.KnowledgeAssistAnswer.AdditionalSuggestedQueryResult
+	74,  // 93: google.cloud.dialogflow.v2beta1.IngestedContextReferenceDebugInfo.ingested_parameters_debug_info:type_name -> google.cloud.dialogflow.v2beta1.IngestedContextReferenceDebugInfo.IngestedParameterDebugInfo
+	75,  // 94: google.cloud.dialogflow.v2beta1.ServiceLatency.internal_service_latencies:type_name -> google.cloud.dialogflow.v2beta1.ServiceLatency.InternalServiceLatency
+	7,   // 95: google.cloud.dialogflow.v2beta1.KnowledgeAssistDebugInfo.query_generation_failure_reason:type_name -> google.cloud.dialogflow.v2beta1.KnowledgeAssistDebugInfo.QueryGenerationFailureReason
+	8,   // 96: google.cloud.dialogflow.v2beta1.KnowledgeAssistDebugInfo.query_categorization_failure_reason:type_name -> google.cloud.dialogflow.v2beta1.KnowledgeAssistDebugInfo.QueryCategorizationFailureReason
+	0,   // 97: google.cloud.dialogflow.v2beta1.KnowledgeAssistDebugInfo.datastore_response_reason:type_name -> google.cloud.dialogflow.v2beta1.DatastoreResponseReason
+	76,  // 98: google.cloud.dialogflow.v2beta1.KnowledgeAssistDebugInfo.knowledge_assist_behavior:type_name -> google.cloud.dialogflow.v2beta1.KnowledgeAssistDebugInfo.KnowledgeAssistBehavior
+	53,  // 99: google.cloud.dialogflow.v2beta1.KnowledgeAssistDebugInfo.ingested_context_reference_debug_info:type_name -> google.cloud.dialogflow.v2beta1.IngestedContextReferenceDebugInfo
+	54,  // 100: google.cloud.dialogflow.v2beta1.KnowledgeAssistDebugInfo.service_latency:type_name -> google.cloud.dialogflow.v2beta1.ServiceLatency
+	77,  // 101: google.cloud.dialogflow.v2beta1.KnowledgeAssistDebugInfo.query_generation_debug_info:type_name -> google.cloud.dialogflow.v2beta1.KnowledgeAssistDebugInfo.QueryGenerationDebugInfo
+	102, // 102: google.cloud.dialogflow.v2beta1.KnowledgeAssistDebugInfo.ces_debug_info:type_name -> google.protobuf.Struct
+	78,  // 103: google.cloud.dialogflow.v2beta1.KnowledgeAssistAnswer.suggested_query:type_name -> google.cloud.dialogflow.v2beta1.KnowledgeAssistAnswer.SuggestedQuery
+	80,  // 104: google.cloud.dialogflow.v2beta1.KnowledgeAssistAnswer.suggested_query_answer:type_name -> google.cloud.dialogflow.v2beta1.KnowledgeAssistAnswer.KnowledgeAnswer
+	55,  // 105: google.cloud.dialogflow.v2beta1.KnowledgeAssistAnswer.knowledge_assist_debug_info:type_name -> google.cloud.dialogflow.v2beta1.KnowledgeAssistDebugInfo
+	86,  // 106: google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentRequest.config:type_name -> google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentRequest.Config
+	88,  // 107: google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentRequest.input:type_name -> google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentRequest.Input
+	107, // 108: google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentResponse.recognition_result:type_name -> google.cloud.dialogflow.v2beta1.StreamingRecognitionResult
+	92,  // 109: google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentResponse.barge_in_signal:type_name -> google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentResponse.BargeInSignal
+	25,  // 110: google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentResponse.analyze_content_response:type_name -> google.cloud.dialogflow.v2beta1.AnalyzeContentResponse
+	93,  // 111: google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentResponse.turn_complete:type_name -> google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentResponse.TurnComplete
+	95,  // 112: google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentResponse.tool_calls:type_name -> google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentResponse.ToolCalls
+	112, // 113: google.cloud.dialogflow.v2beta1.GenerateSuggestionsResponse.GeneratorSuggestionAnswer.generator_suggestion:type_name -> google.cloud.dialogflow.v2beta1.GeneratorSuggestion
+	66,  // 114: google.cloud.dialogflow.v2beta1.Suggestion.Article.metadata:type_name -> google.cloud.dialogflow.v2beta1.Suggestion.Article.MetadataEntry
+	67,  // 115: google.cloud.dialogflow.v2beta1.Suggestion.FaqAnswer.metadata:type_name -> google.cloud.dialogflow.v2beta1.Suggestion.FaqAnswer.MetadataEntry
+	102, // 116: google.cloud.dialogflow.v2beta1.ResponseMessage.LiveAgentHandoff.metadata:type_name -> google.protobuf.Struct
+	73,  // 117: google.cloud.dialogflow.v2beta1.ResponseMessage.MixedAudio.segments:type_name -> google.cloud.dialogflow.v2beta1.ResponseMessage.MixedAudio.Segment
+	6,   // 118: google.cloud.dialogflow.v2beta1.IngestedContextReferenceDebugInfo.IngestedParameterDebugInfo.ingestion_status:type_name -> google.cloud.dialogflow.v2beta1.IngestedContextReferenceDebugInfo.IngestedParameterDebugInfo.IngestionStatus
+	96,  // 119: google.cloud.dialogflow.v2beta1.ServiceLatency.InternalServiceLatency.start_time:type_name -> google.protobuf.Timestamp
+	96,  // 120: google.cloud.dialogflow.v2beta1.ServiceLatency.InternalServiceLatency.complete_time:type_name -> google.protobuf.Timestamp
+	81,  // 121: google.cloud.dialogflow.v2beta1.KnowledgeAssistAnswer.SuggestedQuery.search_contexts:type_name -> google.cloud.dialogflow.v2beta1.KnowledgeAssistAnswer.SuggestedQuery.SearchContext
+	78,  // 122: google.cloud.dialogflow.v2beta1.KnowledgeAssistAnswer.AdditionalSuggestedQueryResult.suggested_query:type_name -> google.cloud.dialogflow.v2beta1.KnowledgeAssistAnswer.SuggestedQuery
+	82,  // 123: google.cloud.dialogflow.v2beta1.KnowledgeAssistAnswer.KnowledgeAnswer.faq_source:type_name -> google.cloud.dialogflow.v2beta1.KnowledgeAssistAnswer.KnowledgeAnswer.FaqSource
+	83,  // 124: google.cloud.dialogflow.v2beta1.KnowledgeAssistAnswer.KnowledgeAnswer.generative_source:type_name -> google.cloud.dialogflow.v2beta1.KnowledgeAssistAnswer.KnowledgeAnswer.GenerativeSource
+	83,  // 125: google.cloud.dialogflow.v2beta1.KnowledgeAssistAnswer.KnowledgeAnswer.playbook_source:type_name -> google.cloud.dialogflow.v2beta1.KnowledgeAssistAnswer.KnowledgeAnswer.GenerativeSource
+	84,  // 126: google.cloud.dialogflow.v2beta1.KnowledgeAssistAnswer.KnowledgeAnswer.event_source:type_name -> google.cloud.dialogflow.v2beta1.KnowledgeAssistAnswer.KnowledgeAnswer.EventSource
+	85,  // 127: google.cloud.dialogflow.v2beta1.KnowledgeAssistAnswer.KnowledgeAnswer.GenerativeSource.snippets:type_name -> google.cloud.dialogflow.v2beta1.KnowledgeAssistAnswer.KnowledgeAnswer.GenerativeSource.Snippet
+	83,  // 128: google.cloud.dialogflow.v2beta1.KnowledgeAssistAnswer.KnowledgeAnswer.EventSource.snippets:type_name -> google.cloud.dialogflow.v2beta1.KnowledgeAssistAnswer.KnowledgeAnswer.GenerativeSource
+	102, // 129: google.cloud.dialogflow.v2beta1.KnowledgeAssistAnswer.KnowledgeAnswer.GenerativeSource.Snippet.metadata:type_name -> google.protobuf.Struct
+	89,  // 130: google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentRequest.Config.voice_session_config:type_name -> google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentRequest.Config.VoiceSessionConfig
+	102, // 131: google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentRequest.Config.initial_virtual_agent_parameters:type_name -> google.protobuf.Struct
+	105, // 132: google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentRequest.Config.initial_virtual_agent_query_params:type_name -> google.cloud.dialogflow.v2beta1.QueryParameters
+	102, // 133: google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentRequest.TurnInput.virtual_agent_parameters:type_name -> google.protobuf.Struct
+	91,  // 134: google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentRequest.TurnInput.tool_responses:type_name -> google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentRequest.TurnInput.ToolResponses
+	106, // 135: google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentRequest.Input.dtmf:type_name -> google.cloud.dialogflow.v2beta1.TelephonyDtmfEvents
+	87,  // 136: google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentRequest.Input.turn:type_name -> google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentRequest.TurnInput
+	113, // 137: google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentRequest.Config.VoiceSessionConfig.input_audio_encoding:type_name -> google.cloud.dialogflow.v2beta1.AudioEncoding
+	114, // 138: google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentRequest.Config.VoiceSessionConfig.output_audio_encoding:type_name -> google.cloud.dialogflow.v2beta1.OutputAudioEncoding
+	102, // 139: google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentRequest.TurnInput.ToolResponse.response:type_name -> google.protobuf.Struct
+	90,  // 140: google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentRequest.TurnInput.ToolResponses.tool_responses:type_name -> google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentRequest.TurnInput.ToolResponse
+	102, // 141: google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentResponse.ToolCall.args:type_name -> google.protobuf.Struct
+	94,  // 142: google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentResponse.ToolCalls.tool_calls:type_name -> google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentResponse.ToolCall
+	11,  // 143: google.cloud.dialogflow.v2beta1.Participants.CreateParticipant:input_type -> google.cloud.dialogflow.v2beta1.CreateParticipantRequest
+	12,  // 144: google.cloud.dialogflow.v2beta1.Participants.GetParticipant:input_type -> google.cloud.dialogflow.v2beta1.GetParticipantRequest
+	13,  // 145: google.cloud.dialogflow.v2beta1.Participants.ListParticipants:input_type -> google.cloud.dialogflow.v2beta1.ListParticipantsRequest
+	15,  // 146: google.cloud.dialogflow.v2beta1.Participants.UpdateParticipant:input_type -> google.cloud.dialogflow.v2beta1.UpdateParticipantRequest
+	23,  // 147: google.cloud.dialogflow.v2beta1.Participants.AnalyzeContent:input_type -> google.cloud.dialogflow.v2beta1.AnalyzeContentRequest
+	27,  // 148: google.cloud.dialogflow.v2beta1.Participants.StreamingAnalyzeContent:input_type -> google.cloud.dialogflow.v2beta1.StreamingAnalyzeContentRequest
+	57,  // 149: google.cloud.dialogflow.v2beta1.Participants.BidiStreamingAnalyzeContent:input_type -> google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentRequest
+	37,  // 150: google.cloud.dialogflow.v2beta1.Participants.SuggestArticles:input_type -> google.cloud.dialogflow.v2beta1.SuggestArticlesRequest
+	39,  // 151: google.cloud.dialogflow.v2beta1.Participants.SuggestFaqAnswers:input_type -> google.cloud.dialogflow.v2beta1.SuggestFaqAnswersRequest
+	41,  // 152: google.cloud.dialogflow.v2beta1.Participants.SuggestSmartReplies:input_type -> google.cloud.dialogflow.v2beta1.SuggestSmartRepliesRequest
+	51,  // 153: google.cloud.dialogflow.v2beta1.Participants.SuggestKnowledgeAssist:input_type -> google.cloud.dialogflow.v2beta1.SuggestKnowledgeAssistRequest
+	46,  // 154: google.cloud.dialogflow.v2beta1.Participants.ListSuggestions:input_type -> google.cloud.dialogflow.v2beta1.ListSuggestionsRequest
+	48,  // 155: google.cloud.dialogflow.v2beta1.Participants.CompileSuggestion:input_type -> google.cloud.dialogflow.v2beta1.CompileSuggestionRequest
+	9,   // 156: google.cloud.dialogflow.v2beta1.Participants.CreateParticipant:output_type -> google.cloud.dialogflow.v2beta1.Participant
+	9,   // 157: google.cloud.dialogflow.v2beta1.Participants.GetParticipant:output_type -> google.cloud.dialogflow.v2beta1.Participant
+	14,  // 158: google.cloud.dialogflow.v2beta1.Participants.ListParticipants:output_type -> google.cloud.dialogflow.v2beta1.ListParticipantsResponse
+	9,   // 159: google.cloud.dialogflow.v2beta1.Participants.UpdateParticipant:output_type -> google.cloud.dialogflow.v2beta1.Participant
+	25,  // 160: google.cloud.dialogflow.v2beta1.Participants.AnalyzeContent:output_type -> google.cloud.dialogflow.v2beta1.AnalyzeContentResponse
+	28,  // 161: google.cloud.dialogflow.v2beta1.Participants.StreamingAnalyzeContent:output_type -> google.cloud.dialogflow.v2beta1.StreamingAnalyzeContentResponse
+	58,  // 162: google.cloud.dialogflow.v2beta1.Participants.BidiStreamingAnalyzeContent:output_type -> google.cloud.dialogflow.v2beta1.BidiStreamingAnalyzeContentResponse
+	38,  // 163: google.cloud.dialogflow.v2beta1.Participants.SuggestArticles:output_type -> google.cloud.dialogflow.v2beta1.SuggestArticlesResponse
+	40,  // 164: google.cloud.dialogflow.v2beta1.Participants.SuggestFaqAnswers:output_type -> google.cloud.dialogflow.v2beta1.SuggestFaqAnswersResponse
+	42,  // 165: google.cloud.dialogflow.v2beta1.Participants.SuggestSmartReplies:output_type -> google.cloud.dialogflow.v2beta1.SuggestSmartRepliesResponse
+	52,  // 166: google.cloud.dialogflow.v2beta1.Participants.SuggestKnowledgeAssist:output_type -> google.cloud.dialogflow.v2beta1.SuggestKnowledgeAssistResponse
+	47,  // 167: google.cloud.dialogflow.v2beta1.Participants.ListSuggestions:output_type -> google.cloud.dialogflow.v2beta1.ListSuggestionsResponse
+	49,  // 168: google.cloud.dialogflow.v2beta1.Participants.CompileSuggestion:output_type -> google.cloud.dialogflow.v2beta1.CompileSuggestionResponse
+	156, // [156:169] is the sub-list for method output_type
+	143, // [143:156] is the sub-list for method input_type
+	143, // [143:143] is the sub-list for extension type_name
+	143, // [143:143] is the sub-list for extension extendee
+	0,   // [0:143] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_dialogflow_v2beta1_participant_proto_init() }
@@ -8100,6 +8725,7 @@ func file_google_cloud_dialogflow_v2beta1_participant_proto_init() {
 		(*BidiStreamingAnalyzeContentResponse_BargeInSignal_)(nil),
 		(*BidiStreamingAnalyzeContentResponse_AnalyzeContentResponse)(nil),
 		(*BidiStreamingAnalyzeContentResponse_TurnComplete_)(nil),
+		(*BidiStreamingAnalyzeContentResponse_ToolCalls_)(nil),
 	}
 	file_google_cloud_dialogflow_v2beta1_participant_proto_msgTypes[63].OneofWrappers = []any{
 		(*ResponseMessage_TelephonyTransferCall_PhoneNumber)(nil),
@@ -8109,19 +8735,21 @@ func file_google_cloud_dialogflow_v2beta1_participant_proto_init() {
 		(*ResponseMessage_MixedAudio_Segment_Audio)(nil),
 		(*ResponseMessage_MixedAudio_Segment_Uri)(nil),
 	}
-	file_google_cloud_dialogflow_v2beta1_participant_proto_msgTypes[69].OneofWrappers = []any{
+	file_google_cloud_dialogflow_v2beta1_participant_proto_msgTypes[71].OneofWrappers = []any{
 		(*KnowledgeAssistAnswer_KnowledgeAnswer_FaqSource_)(nil),
 		(*KnowledgeAssistAnswer_KnowledgeAnswer_GenerativeSource_)(nil),
+		(*KnowledgeAssistAnswer_KnowledgeAnswer_PlaybookSource)(nil),
+		(*KnowledgeAssistAnswer_KnowledgeAnswer_EventSource_)(nil),
 	}
-	file_google_cloud_dialogflow_v2beta1_participant_proto_msgTypes[73].OneofWrappers = []any{
+	file_google_cloud_dialogflow_v2beta1_participant_proto_msgTypes[77].OneofWrappers = []any{
 		(*BidiStreamingAnalyzeContentRequest_Config_VoiceSessionConfig_)(nil),
 	}
-	file_google_cloud_dialogflow_v2beta1_participant_proto_msgTypes[74].OneofWrappers = []any{
+	file_google_cloud_dialogflow_v2beta1_participant_proto_msgTypes[78].OneofWrappers = []any{
 		(*BidiStreamingAnalyzeContentRequest_TurnInput_Text)(nil),
 		(*BidiStreamingAnalyzeContentRequest_TurnInput_Intent)(nil),
 		(*BidiStreamingAnalyzeContentRequest_TurnInput_Event)(nil),
 	}
-	file_google_cloud_dialogflow_v2beta1_participant_proto_msgTypes[75].OneofWrappers = []any{
+	file_google_cloud_dialogflow_v2beta1_participant_proto_msgTypes[79].OneofWrappers = []any{
 		(*BidiStreamingAnalyzeContentRequest_Input_Audio)(nil),
 		(*BidiStreamingAnalyzeContentRequest_Input_Dtmf)(nil),
 		(*BidiStreamingAnalyzeContentRequest_Input_Turn)(nil),
@@ -8132,7 +8760,7 @@ func file_google_cloud_dialogflow_v2beta1_participant_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_dialogflow_v2beta1_participant_proto_rawDesc), len(file_google_cloud_dialogflow_v2beta1_participant_proto_rawDesc)),
 			NumEnums:      9,
-			NumMessages:   79,
+			NumMessages:   87,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
