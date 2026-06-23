@@ -51,6 +51,7 @@ type Client struct {
 	executeQueryRetryOption gax.CallOption
 	featureFlagsMD          metadata.MD // Pre-computed feature flags metadata to be sent with each request.
 	mPool                   btransport.ManagedChannelPool
+	configManager           *btransport.ClientConfigurationManager
 }
 
 // ClientConfig has configurations for the client.
@@ -76,6 +77,11 @@ type ClientConfig struct {
 
 	// DisableDirectAccess disables direct access by default.
 	DisableDirectAccess bool
+
+	// EnableSession starts the ClientConfigurationManager, which polls the
+	// service for client configuration. Off by default; future session-pool
+	// work will key off the configuration it surfaces.
+	EnableSession bool
 }
 
 // MetricsProvider is a wrapper for built in metrics meter provider
@@ -206,7 +212,7 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 		return nil, err
 	}
 
-	return &Client{
+	c := &Client{
 		connPool:                mPool.Pool,
 		client:                  btpb.NewBigtableClient(mPool.Pool),
 		project:                 project,
@@ -218,11 +224,29 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 		executeQueryRetryOption: executeQueryRetryOption,
 		featureFlagsMD:          directAccessMD,
 		mPool:                   mPool,
-	}, nil
+	}
+
+	if config.EnableSession {
+		configMD := metadata.Join(metadata.Pairs(
+			resourcePrefixHeader, c.fullInstanceName(),
+			requestParamsHeader, c.reqParamsHeaderValInstance(),
+		), c.featureFlagsMD)
+		c.configManager = btransport.NewClientConfigurationManager(c.client, c.fullInstanceName(), config.AppProfile, configMD, nil)
+		c.configManager.Start(ctx)
+	}
+
+	return c, nil
 }
 
 // Close closes the Client.
+//
+// Shutdown order: stop the configuration manager first so it cannot fire
+// listeners against state that is about to be torn down, then flush metrics,
+// then close the underlying channel pool.
 func (c *Client) Close() error {
+	if c.configManager != nil {
+		c.configManager.Close()
+	}
 	if c.metricsTracerFactory != nil {
 		c.metricsTracerFactory.shutdown()
 	}
