@@ -41,6 +41,12 @@ const MinPollingInterval = 1 * time.Minute
 // durations.
 const maxBackoffSeconds = 30
 
+// pollDeadline is the per-RPC timeout applied to every GetClientConfiguration
+// attempt — both the eager initial poll spawned by Start() and each periodic
+// poll spawned by pollingLoop(). Kept short so a stuck control-plane request
+// can't pin a polling slot for the full polling interval.
+const pollDeadline = 5 * time.Second
+
 // clientConfig holds configuration for the client.
 type clientConfig struct {
 	Polling          pollingConfig
@@ -55,14 +61,29 @@ func (c clientConfig) Clone() clientConfig {
 }
 
 type pollingConfig struct {
-	PollingInterval  time.Duration
+	// PollingInterval is the wall-clock period between successive
+	// GetClientConfiguration polls. Floored at MinPollingInterval.
+	PollingInterval time.Duration
+	// ValidityDuration is how long a successfully-polled configuration
+	// remains in effect before, on a failed poll, the manager falls back to
+	// the default config. Capped at 100 years to avoid time.Duration overflow.
 	ValidityDuration time.Duration
+	// MaxRPCRetryCount is the number of additional GetClientConfiguration
+	// retries (beyond the first attempt) before a single poll() call gives
+	// up. Each retry is preceded by randomized exponential backoff capped at
+	// maxBackoffSeconds.
 	MaxRPCRetryCount int
 }
 
 type sessionConfig struct {
+	// SessionLoad is the server-driven fraction of requests to route through
+	// the session pool vs. the classic channel pool. 0.0 = all-classic,
+	// 1.0 = all-session.
 	SessionLoad float64
+	// ChannelPool configures the session pool's underlying channel pool.
 	ChannelPool channelPoolConfig
+	// SessionPool configures the session pool itself (size, churn budget,
+	// load balancing).
 	SessionPool sessionPoolConfig
 }
 
@@ -84,23 +105,52 @@ const (
 )
 
 type channelPoolConfig struct {
-	MinServerCount             int
-	MaxServerCount             int
-	PerServerSessionCount      int
-	Mode                       channelPoolMode
-	DirectAccessCheckInterval  time.Duration
+	// MinServerCount is the lower bound on the number of subchannels the
+	// session pool's channel pool is allowed to shrink to.
+	MinServerCount int
+	// MaxServerCount is the upper bound on the number of subchannels the
+	// session pool's channel pool is allowed to grow to.
+	MaxServerCount int
+	// PerServerSessionCount is the target number of sessions hosted on each
+	// subchannel; the session pool uses it to derive how many subchannels to
+	// keep open for a given session count.
+	PerServerSessionCount int
+	// Mode is the Direct Access decision the server wants the client to
+	// honor. See the channelPoolMode constants.
+	Mode channelPoolMode
+	// DirectAccessCheckInterval is how often clientConfigDirectAccessChecker
+	// re-evaluates whether to adopt a direct-access connection.
+	DirectAccessCheckInterval time.Duration
+	// DirectAccessErrorThreshold is the failure-rate threshold above which
+	// modeDirectAccessWithFallback gives up on Direct Access and falls back
+	// to Cloud Path.
 	DirectAccessErrorThreshold float32
 }
 
 type sessionPoolConfig struct {
-	Headroom                           float32
-	MinSessionCount                    int
-	MaxSessionCount                    int
-	NewSessionCreationBudget           int
-	NewSessionCreationPenalty          time.Duration
+	// Headroom is the fraction of spare capacity the session pool keeps
+	// above current demand (e.g., 0.5 = pool is sized to 1.5x demand).
+	Headroom float32
+	// MinSessionCount is the lower bound on the pool size; the pool will
+	// not shrink below this count even if demand drops.
+	MinSessionCount int
+	// MaxSessionCount is the upper bound on the pool size; the pool will
+	// not grow above this count even if demand spikes.
+	MaxSessionCount int
+	// NewSessionCreationBudget caps how many concurrent CreateSession RPCs
+	// the pool will have in flight; further requests queue behind the budget.
+	NewSessionCreationBudget int
+	// NewSessionCreationPenalty is the cool-down a CreateSession failure
+	// imposes on its target subchannel before the pool will retry it.
+	NewSessionCreationPenalty time.Duration
+	// ConsecutiveSessionFailureThreshold is how many back-to-back vRPC
+	// failures on a session before the pool retires it.
 	ConsecutiveSessionFailureThreshold int
-	NewSessionQueueLength              int
-	LoadBalancing                      loadBalancingOptions
+	// NewSessionQueueLength caps the depth of the queue of pending
+	// CreateSession requests waiting on NewSessionCreationBudget.
+	NewSessionQueueLength int
+	// LoadBalancing selects how the pool picks a session for a vRPC.
+	LoadBalancing loadBalancingOptions
 }
 
 type loadBalancingStrategy int
@@ -115,11 +165,23 @@ const (
 )
 
 type loadBalancingOptions struct {
-	Strategy         loadBalancingStrategy
+	// Strategy is the picking algorithm — see the StrategyXxx constants.
+	Strategy loadBalancingStrategy
+	// RandomSubsetSize, when non-zero, restricts strategies like
+	// StrategyLeastInFlight or StrategyPeakEwma to scoring only this many
+	// randomly-sampled sessions per pick instead of the whole pool, to
+	// bound per-pick cost on large pools.
 	RandomSubsetSize int
 }
 
 // configListener is a callback function for configuration changes.
+//
+// seq is the manager's monotonically-increasing configuration sequence
+// number (m.configSeq) at the moment of the fire. It is bumped each time
+// the polled configuration genuinely changes and on the validity-window
+// fallback to default. Listeners can rely on it to detect and discard
+// out-of-order deliveries — monotonicListener wraps every registered
+// listener with exactly that check.
 type configListener func(newConfig clientConfig, seq int64)
 
 // ClientConfigurationManager manages the dynamic client configuration for Bigtable.
@@ -155,39 +217,6 @@ type ClientConfigurationManager struct {
 	nextListenerID int
 }
 
-var defaultClientConfig = clientConfig{
-	Polling: pollingConfig{
-		PollingInterval:  300 * time.Second,
-		ValidityDuration: 100 * 365 * 24 * time.Hour, // Safe representation of 10,000 years.
-		MaxRPCRetryCount: 5,
-	},
-	Session: sessionConfig{
-		SessionLoad: 0,
-		ChannelPool: channelPoolConfig{
-			MinServerCount:             2,
-			MaxServerCount:             25,
-			PerServerSessionCount:      10,
-			Mode:                       modeDirectAccessWithFallback,
-			DirectAccessCheckInterval:  60 * time.Second,
-			DirectAccessErrorThreshold: 0.8,
-		},
-		SessionPool: sessionPoolConfig{
-			Headroom:                           0.5,
-			MinSessionCount:                    5,
-			MaxSessionCount:                    400,
-			NewSessionCreationBudget:           50,
-			NewSessionCreationPenalty:          60 * time.Second,
-			ConsecutiveSessionFailureThreshold: 10,
-			NewSessionQueueLength:              10,
-			LoadBalancing: loadBalancingOptions{
-				Strategy:         StrategyLeastInFlight,
-				RandomSubsetSize: 0,
-			},
-		},
-	},
-	HasSessionConfig: true,
-}
-
 // NewClientConfigurationManager creates a new ClientConfigurationManager.
 func NewClientConfigurationManager(
 	client bigtablepb.BigtableClient,
@@ -219,7 +248,7 @@ func (m *ClientConfigurationManager) Start(ctx context.Context) {
 	m.pollsWG.Add(1)
 	go func() {
 		defer m.pollsWG.Done()
-		pollCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
+		pollCtx, cancel := context.WithTimeout(ctx, pollDeadline)
 		defer cancel()
 		m.poll(pollCtx)
 	}()
@@ -413,11 +442,10 @@ func (m *ClientConfigurationManager) pollingLoop(parentCtx context.Context) {
 		case <-ctx.Done():
 			return
 		case <-time.After(interval):
-			// Poll with a 5-second timeout per RPC attempt. Track it with
-			// pollsWG so Close() can wait for in-flight polls (and their
-			// listener callbacks) to finish before returning.
+			// Track each poll with pollsWG so Close() can wait for in-flight
+			// polls (and their listener callbacks) to finish before returning.
 			m.pollsWG.Add(1)
-			pollCtx, pollCancel := context.WithTimeout(ctx, 5*time.Second)
+			pollCtx, pollCancel := context.WithTimeout(ctx, pollDeadline)
 			m.poll(pollCtx)
 			pollCancel()
 			m.pollsWG.Done()
@@ -455,13 +483,11 @@ func (m *ClientConfigurationManager) poll(ctx context.Context) {
 		}
 		btopt.Debugf(m.logger, "bigtable: GetClientConfiguration RPC attempt %d failed in %v: %v", i, rpcDuration, err)
 		if i < maxRetries {
-			// Cap the shift so 1<<i can't overflow on absurd MaxRPCRetryCount
-			// values, and bound the wait so prolonged outages don't stretch a
-			// single retry into hours.
-			backoffLimit := 1 << i
-			if backoffLimit <= 0 || backoffLimit > maxBackoffSeconds {
-				backoffLimit = maxBackoffSeconds
-			}
+			// Cap the shift width so 1<<i can't overflow on absurd
+			// MaxRPCRetryCount values, then cap the wait at
+			// maxBackoffSeconds so prolonged outages don't stretch a single
+			// retry into hours.
+			backoffLimit := min(1<<min(i, 30), maxBackoffSeconds)
 			delay := time.Duration(rand.Intn(backoffLimit)) * time.Second
 			select {
 			case <-ctx.Done():
