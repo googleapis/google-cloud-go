@@ -179,9 +179,9 @@ type loadBalancingOptions struct {
 // seq is the manager's monotonically-increasing configuration sequence
 // number (m.configSeq) at the moment of the fire. It is bumped each time
 // the polled configuration genuinely changes and on the validity-window
-// fallback to default. Listeners can rely on it to detect and discard
-// out-of-order deliveries — monotonicListener wraps every registered
-// listener with exactly that check.
+// fallback to default. addListener and poll() both serialize their fires
+// through m.mu, so a listener observes seq values in strictly increasing
+// order and no explicit listener-side guard is required.
 type configListener func(newConfig clientConfig, seq int64)
 
 // ClientConfigurationManager manages the dynamic client configuration for Bigtable.
@@ -301,54 +301,37 @@ func (m *ClientConfigurationManager) getConfig() clientConfig {
 
 // addListener adds a listener for configuration changes.
 //
-// The returned listener is wrapped to enforce monotonic delivery: a poll
-// that completes between m.mu.Unlock() below and the registration-time
-// fire could otherwise notify with seq=N+1 before this call's seq=N fire
-// lands, leaving the listener stuck on the stale config. The atomic
-// lastSeq guard drops any reordered older delivery.
+// The registration-time fire happens under m.mu, so it is serialized
+// with poll()'s fan-out: poll() cannot snapshot the listener map (and
+// therefore cannot fire this listener with a newer seq) while we are
+// delivering the initial (cfg, seq) here. That guarantees the listener
+// observes seq values in strictly increasing order without any per-
+// listener wrapping.
+//
+// As a consequence, the listener callback runs under m.mu. Listeners
+// must not call back into the manager (e.g. getConfig, or any other
+// method that takes m.mu) from within the callback or they will
+// deadlock. The wrappers AddSessionPoolListener / AddSessionLoadListener
+// and their downstream consumers stay self-contained, so the invariant
+// holds today.
 func (m *ClientConfigurationManager) addListener(listener configListener) func() {
-	wrapped := monotonicListener(listener)
-
 	m.mu.Lock()
+	defer m.mu.Unlock()
+
 	id := m.nextListenerID
 	m.nextListenerID++
 	if m.listeners == nil {
 		m.listeners = make(map[int]configListener)
 	}
-	m.listeners[id] = wrapped
-
-	cfg := m.currentConfig.Clone()
-	seq := m.configSeq
-	m.mu.Unlock()
+	m.listeners[id] = listener
 
 	btopt.Debugf(m.logger, "bigtable: adding configuration listener (id: %d)", id)
-	wrapped(cfg, seq)
+	listener(m.currentConfig.Clone(), m.configSeq)
 
 	return func() {
 		m.mu.Lock()
 		delete(m.listeners, id)
 		m.mu.Unlock()
-	}
-}
-
-// monotonicListener wraps a configListener so concurrent deliveries with
-// out-of-order sequence numbers (the addListener register-then-fire window
-// is racy with poll()'s notification fan-out) collapse to the highest seq
-// observed so far.
-func monotonicListener(inner configListener) configListener {
-	var lastSeq atomic.Int64
-	lastSeq.Store(-1)
-	return func(cfg clientConfig, seq int64) {
-		for {
-			current := lastSeq.Load()
-			if seq <= current {
-				return
-			}
-			if lastSeq.CompareAndSwap(current, seq) {
-				inner(cfg, seq)
-				return
-			}
-		}
 	}
 }
 
