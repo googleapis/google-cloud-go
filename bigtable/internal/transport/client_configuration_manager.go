@@ -187,8 +187,6 @@ type configListener func(newConfig clientConfig, seq int64)
 // ClientConfigurationManager manages the dynamic client configuration for Bigtable.
 // It periodically polls for client configuration updates via GetClientConfiguration RPCs.
 type ClientConfigurationManager struct {
-	// done is closed when the manager is closed to signal the background polling goroutine to exit.
-	done          chan struct{}
 	client        bigtablepb.BigtableClient
 	instanceName  string
 	appProfileID  string
@@ -196,12 +194,17 @@ type ClientConfigurationManager struct {
 	defaultConfig clientConfig
 	logger        *log.Logger
 
-	// closeOnce ensures Close()'s teardown logic runs exactly once, so a second
-	// Close() call cannot panic by re-closing m.done.
-	closeOnce sync.Once
-	// closed is set to true at the very start of Close()'s teardown, BEFORE
-	// m.done is closed. poll() consults it via isClosed() to suppress listener
-	// invocations against pools that may already be tearing down.
+	// ctx scopes the polling loop and every per-poll RPC. Start() derives it
+	// from its parent ctx; Close() invokes cancel to wake pollingLoop and
+	// abort any in-flight poll(). cancel is initialized to a no-op so a
+	// Close-before-Start call is safe.
+	ctx    context.Context
+	cancel context.CancelFunc
+	// closed is flipped true by the first Close() via CompareAndSwap, which
+	// both makes Close idempotent and arms the read-side gate consulted by
+	// poll() before listener fan-out. pollsWG.Wait() guarantees poll() has
+	// returned before Close() returns, but not that listeners haven't already
+	// fired in the interim — closed closes that window.
 	closed atomic.Bool
 	// pollsWG tracks in-flight poll() invocations spawned by Start() and
 	// pollingLoop(). Close() waits on it so callers can rely on no listener
@@ -225,10 +228,7 @@ func NewClientConfigurationManager(
 	md metadata.MD,
 	logger *log.Logger,
 ) *ClientConfigurationManager {
-	done := make(chan struct{})
-
 	return &ClientConfigurationManager{
-		done:          done,
 		client:        client,
 		instanceName:  instanceName,
 		appProfileID:  appProfileID,
@@ -238,45 +238,52 @@ func NewClientConfigurationManager(
 		validUntil:    time.Now().Add(time.Hour * 24 * 365 * 100), //  default far in future
 		listeners:     make(map[int]configListener),
 		logger:        logger,
+		// No-op until Start() wires the real cancel; makes Close-before-Start safe.
+		cancel: func() {},
 	}
 }
 
-// Start begins the polling process.
+// Start begins the polling process. The passed-in ctx is the parent for the
+// manager's own lifetime ctx — cancelling it (or calling Close) tears down
+// the polling loop and any in-flight poll RPC.
 func (m *ClientConfigurationManager) Start(ctx context.Context) {
 	btopt.Debugf(m.logger, "bigtable: starting client configuration manager for instance %q, app profile %q", m.instanceName, m.appProfileID)
-	// We need a context for the initial poll.
+	m.ctx, m.cancel = context.WithCancel(ctx)
+
+	// Eager initial poll, scoped to m.ctx so Close()'s cancel reaches it too.
 	m.pollsWG.Add(1)
 	go func() {
 		defer m.pollsWG.Done()
-		pollCtx, cancel := context.WithTimeout(ctx, pollDeadline)
+		pollCtx, cancel := context.WithTimeout(m.ctx, pollDeadline)
 		defer cancel()
 		m.poll(pollCtx)
 	}()
 
 	// Start background polling
-	go m.pollingLoop(ctx)
+	go m.pollingLoop()
 }
 
 // Close stops the polling process.
 //
-// Close is safe to call multiple times; only the first call performs teardown.
-// It also waits for any in-flight poll() invocations spawned by Start() and
-// pollingLoop() to return before it itself returns. Combined with the closed
-// gate that poll() consults before firing listeners, this guarantees no
-// listener callbacks fire after Close() returns — so SessionPools registered
-// via AddSessionPoolListener can be Close'd immediately after this returns
+// Close is safe to call multiple times; only the first call performs teardown
+// (the CompareAndSwap on m.closed is the idempotency gate). It also waits for
+// any in-flight poll() invocations spawned by Start() and pollingLoop() to
+// return before it itself returns. Combined with the closed gate that poll()
+// consults before firing listeners, this guarantees no listener callbacks
+// fire after Close() returns — so SessionPools registered via
+// AddSessionPoolListener can be Close'd immediately after this returns
 // without racing against a late configuration callback.
 func (m *ClientConfigurationManager) Close() {
-	m.closeOnce.Do(func() {
-		btopt.Debugf(m.logger, "bigtable: closing client configuration manager")
-		// Set closed BEFORE closing m.done so any poll() that observes the
-		// done channel after this point also observes closed == true.
-		m.closed.Store(true)
-		close(m.done)
-		// Wait for in-flight polls (including their listener callbacks, which
-		// are short-circuited by isClosed()) to finish before returning.
-		m.pollsWG.Wait()
-	})
+	// CAS makes Close idempotent; it also arms the read-side gate inside
+	// poll() before we cancel and start waiting.
+	if !m.closed.CompareAndSwap(false, true) {
+		return
+	}
+	btopt.Debugf(m.logger, "bigtable: closing client configuration manager")
+	m.cancel()
+	// Wait for in-flight polls (including their listener callbacks, which
+	// are short-circuited by isClosed()) to finish before returning.
+	m.pollsWG.Wait()
 }
 
 // isClosed reports whether Close() has begun teardown. poll() consults this
@@ -416,18 +423,7 @@ func (m *ClientConfigurationManager) AddSessionLoadListener(listener func(load f
 
 // pollingLoop continuously polls the Bigtable control plane at the configured interval.
 // It enforces a minimum interval (MinPollingInterval) to protect the control plane from DDoSes.
-func (m *ClientConfigurationManager) pollingLoop(parentCtx context.Context) {
-	ctx, cancel := context.WithCancel(parentCtx)
-	defer cancel()
-
-	go func() {
-		select {
-		case <-m.done:
-			cancel()
-		case <-ctx.Done():
-		}
-	}()
-
+func (m *ClientConfigurationManager) pollingLoop() {
 	for {
 		m.mu.RLock()
 		cfg := m.currentConfig
@@ -439,13 +435,13 @@ func (m *ClientConfigurationManager) pollingLoop(parentCtx context.Context) {
 		}
 
 		select {
-		case <-ctx.Done():
+		case <-m.ctx.Done():
 			return
 		case <-time.After(interval):
 			// Track each poll with pollsWG so Close() can wait for in-flight
 			// polls (and their listener callbacks) to finish before returning.
 			m.pollsWG.Add(1)
-			pollCtx, pollCancel := context.WithTimeout(ctx, pollDeadline)
+			pollCtx, pollCancel := context.WithTimeout(m.ctx, pollDeadline)
 			m.poll(pollCtx)
 			pollCancel()
 			m.pollsWG.Done()
