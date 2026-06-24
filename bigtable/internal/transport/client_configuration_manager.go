@@ -449,25 +449,26 @@ func (m *ClientConfigurationManager) pollingLoop() {
 	}
 }
 
-// poll queries the GetClientConfiguration API and triggers registered listeners with the new configuration.
-// If the poll fails and the previous configuration's validity has expired, it falls back to the default config.
-func (m *ClientConfigurationManager) poll(ctx context.Context) {
-	btopt.Debugf(m.logger, "bigtable: polling client configuration...")
+// fetchClientConfiguration issues GetClientConfiguration with randomized
+// exponential backoff between attempts (per the current config's
+// MaxRPCRetryCount; backoff capped at maxBackoffSeconds). It returns the
+// server's response on the first successful attempt, or the last RPC error
+// after exhausting retries. If ctx is cancelled mid-backoff it returns
+// ctx.Err() immediately so the caller can distinguish a shutdown from a
+// real RPC failure and skip any fallback-to-default work.
+func (m *ClientConfigurationManager) fetchClientConfiguration(ctx context.Context) (*bigtablepb.ClientConfiguration, error) {
 	req := &bigtablepb.GetClientConfigurationRequest{
 		InstanceName: m.instanceName,
 		AppProfileId: m.appProfileID,
 	}
-
 	ctx = metadata.NewOutgoingContext(ctx, m.metadata)
-
-	var resp *bigtablepb.ClientConfiguration
-	var err error
 
 	m.mu.RLock()
 	maxRetries := m.currentConfig.Polling.MaxRPCRetryCount
 	m.mu.RUnlock()
 
-	// Retry with randomized exponential backoff using seconds
+	var resp *bigtablepb.ClientConfiguration
+	var err error
 	for i := 0; i <= maxRetries; i++ {
 		var header, trailer metadata.MD
 		rpcStart := time.Now()
@@ -475,22 +476,36 @@ func (m *ClientConfigurationManager) poll(ctx context.Context) {
 		rpcDuration := time.Since(rpcStart)
 		if err == nil {
 			btopt.Debugf(m.logger, "bigtable: GetClientConfiguration RPC attempt %d completed successfully in %v", i, rpcDuration)
-			break
+			return resp, nil
 		}
 		btopt.Debugf(m.logger, "bigtable: GetClientConfiguration RPC attempt %d failed in %v: %v", i, rpcDuration, err)
-		if i < maxRetries {
-			// Cap the shift width so 1<<i can't overflow on absurd
-			// MaxRPCRetryCount values, then cap the wait at
-			// maxBackoffSeconds so prolonged outages don't stretch a single
-			// retry into hours.
-			backoffLimit := min(1<<min(i, 30), maxBackoffSeconds)
-			delay := time.Duration(rand.Intn(backoffLimit)) * time.Second
-			select {
-			case <-ctx.Done():
-				return
-			case <-time.After(delay):
-			}
+		if i == maxRetries {
+			break
 		}
+		// Cap the shift width so 1<<i can't overflow on absurd
+		// MaxRPCRetryCount values, then cap the wait at maxBackoffSeconds
+		// so prolonged outages don't stretch a single retry into hours.
+		backoffLimit := min(1<<min(i, 30), maxBackoffSeconds)
+		delay := time.Duration(rand.Intn(backoffLimit)) * time.Second
+		select {
+		case <-ctx.Done():
+			return nil, ctx.Err()
+		case <-time.After(delay):
+		}
+	}
+	return nil, err
+}
+
+// poll queries the GetClientConfiguration API and triggers registered listeners with the new configuration.
+// If the poll fails and the previous configuration's validity has expired, it falls back to the default config.
+func (m *ClientConfigurationManager) poll(ctx context.Context) {
+	btopt.Debugf(m.logger, "bigtable: polling client configuration...")
+	resp, err := m.fetchClientConfiguration(ctx)
+
+	// Caller cancelled (typically Close()). Don't trigger fallback-to-default
+	// or fire any listeners — pools they target are about to be torn down.
+	if ctx.Err() != nil {
+		return
 	}
 
 	if err != nil {
