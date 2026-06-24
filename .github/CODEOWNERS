@@ -30,5 +30,5 @@
 # a single owner.  This allows multiple teams to interact with librarian operations that cause
 # changes to librarian state.
 /.librarian/state.yaml
-# We mark the release please individual manifest unowned as well to allow teams to release the individal modules without secondary approvals.
+# We mark the release please individual manifest unowned as well to allow teams to release the individual modules without secondary approvals.
 /.release-please-individual-manifest.json
