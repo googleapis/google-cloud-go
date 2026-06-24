@@ -31,4 +31,4 @@
 # changes to librarian state.
 /.librarian/state.yaml
 # We mark the release please individual manifest unowned as well to allow teams to release the individal modules without secondary approvals.
-/..release-please-individual-manifest.json
+/.release-please-individual-manifest.json
