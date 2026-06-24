@@ -31,6 +31,7 @@ import (
 	pb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/apierror"
+	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/protoadapt"
@@ -42,8 +43,10 @@ var ErrNoMetadata = errors.New("operation contains no metadata")
 
 // Operation represents the result of an API call that may not be ready yet.
 type Operation struct {
-	c     operationsClient
-	proto *pb.Operation
+	c               operationsClient
+	proto           *pb.Operation
+	opName          string
+	initSpanContext trace.SpanContext
 }
 
 type operationsClient interface {
@@ -52,15 +55,33 @@ type operationsClient interface {
 	DeleteOperation(context.Context, *pb.DeleteOperationRequest, ...gax.CallOption) error
 }
 
-// InternalNewOperation is for use by the google Cloud Libraries only.
+// InternalNewOperation is for use by the Google Cloud Libraries only.
 //
 // InternalNewOperation returns an long-running operation, abstracting the raw pb.Operation.
-// The conn parameter refers to a server that proto was received from.
 func InternalNewOperation(inner *autogen.OperationsClient, proto *pb.Operation) *Operation {
+	return InternalNewOperationWithMetadata(inner, proto, "")
+}
+
+// InternalNewOperationWithMetadata is for use by the Google Cloud Libraries only.
+//
+// InternalNewOperationWithMetadata returns a long-running operation, abstracting the raw pb.Operation,
+// and storing the service-specific operation metadata/type name for tracing.
+//
+// InternalNewOperationWithMetadata is an EXPERIMENTAL API and may be changed or removed in the future.
+func InternalNewOperationWithMetadata(inner *autogen.OperationsClient, proto *pb.Operation, opName string) *Operation {
 	return &Operation{
-		c:     inner,
-		proto: proto,
+		c:      inner,
+		proto:  proto,
+		opName: opName,
 	}
+}
+
+// SetParentSpanContext sets the parent/initiating span context for the operation,
+// which is used to create a Span Link from the LRO Wait span.
+//
+// SetParentSpanContext is an EXPERIMENTAL API and may be changed or removed in the future.
+func (op *Operation) SetParentSpanContext(sc trace.SpanContext) {
+	op.initSpanContext = sc
 }
 
 // Name returns the name of the long-running operation.

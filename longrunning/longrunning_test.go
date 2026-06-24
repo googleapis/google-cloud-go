@@ -26,6 +26,7 @@ import (
 	pb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/apierror"
+	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	rpcstatus "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
@@ -223,5 +224,19 @@ func TestDeleteReturnsError(t *testing.T) {
 	}
 	if got, want := op.Delete(context.Background()), s.errDelete; got != want {
 		t.Errorf("cancel, got error %s, want %s", got, want)
+	}
+}
+
+func TestInternalNewOperationWithMetadata(t *testing.T) {
+	opName := "test-operation"
+	op := InternalNewOperationWithMetadata(nil, &pb.Operation{Name: "foo"}, opName)
+	if op.opName != opName {
+		t.Errorf("expected opName to be %q, got %q", opName, op.opName)
+	}
+
+	sc := trace.SpanContext{}
+	op.SetParentSpanContext(sc)
+	if !op.initSpanContext.Equal(sc) {
+		t.Error("expected initSpanContext to match the set SpanContext")
 	}
 }
