@@ -51,12 +51,14 @@ type CallOptions struct {
 	CreateTeamFolder                   []gax.CallOption
 	UpdateTeamFolder                   []gax.CallOption
 	DeleteTeamFolder                   []gax.CallOption
+	DeleteTeamFolderTree               []gax.CallOption
 	QueryTeamFolderContents            []gax.CallOption
 	SearchTeamFolders                  []gax.CallOption
 	GetFolder                          []gax.CallOption
 	CreateFolder                       []gax.CallOption
 	UpdateFolder                       []gax.CallOption
 	DeleteFolder                       []gax.CallOption
+	DeleteFolderTree                   []gax.CallOption
 	QueryFolderContents                []gax.CallOption
 	QueryUserRootContents              []gax.CallOption
 	MoveFolder                         []gax.CallOption
@@ -65,6 +67,7 @@ type CallOptions struct {
 	CreateRepository                   []gax.CallOption
 	UpdateRepository                   []gax.CallOption
 	DeleteRepository                   []gax.CallOption
+	DeleteRepositoryLongRunning        []gax.CallOption
 	MoveRepository                     []gax.CallOption
 	CommitRepositoryChanges            []gax.CallOption
 	ReadRepositoryFile                 []gax.CallOption
@@ -147,12 +150,14 @@ func defaultCallOptions() *CallOptions {
 		CreateTeamFolder:                   []gax.CallOption{},
 		UpdateTeamFolder:                   []gax.CallOption{},
 		DeleteTeamFolder:                   []gax.CallOption{},
+		DeleteTeamFolderTree:               []gax.CallOption{},
 		QueryTeamFolderContents:            []gax.CallOption{},
 		SearchTeamFolders:                  []gax.CallOption{},
 		GetFolder:                          []gax.CallOption{},
 		CreateFolder:                       []gax.CallOption{},
 		UpdateFolder:                       []gax.CallOption{},
 		DeleteFolder:                       []gax.CallOption{},
+		DeleteFolderTree:                   []gax.CallOption{},
 		QueryFolderContents:                []gax.CallOption{},
 		QueryUserRootContents:              []gax.CallOption{},
 		MoveFolder:                         []gax.CallOption{},
@@ -161,6 +166,7 @@ func defaultCallOptions() *CallOptions {
 		CreateRepository:                   []gax.CallOption{},
 		UpdateRepository:                   []gax.CallOption{},
 		DeleteRepository:                   []gax.CallOption{},
+		DeleteRepositoryLongRunning:        []gax.CallOption{},
 		MoveRepository:                     []gax.CallOption{},
 		CommitRepositoryChanges:            []gax.CallOption{},
 		ReadRepositoryFile:                 []gax.CallOption{},
@@ -229,12 +235,14 @@ func defaultRESTCallOptions() *CallOptions {
 		CreateTeamFolder:                   []gax.CallOption{},
 		UpdateTeamFolder:                   []gax.CallOption{},
 		DeleteTeamFolder:                   []gax.CallOption{},
+		DeleteTeamFolderTree:               []gax.CallOption{},
 		QueryTeamFolderContents:            []gax.CallOption{},
 		SearchTeamFolders:                  []gax.CallOption{},
 		GetFolder:                          []gax.CallOption{},
 		CreateFolder:                       []gax.CallOption{},
 		UpdateFolder:                       []gax.CallOption{},
 		DeleteFolder:                       []gax.CallOption{},
+		DeleteFolderTree:                   []gax.CallOption{},
 		QueryFolderContents:                []gax.CallOption{},
 		QueryUserRootContents:              []gax.CallOption{},
 		MoveFolder:                         []gax.CallOption{},
@@ -243,6 +251,7 @@ func defaultRESTCallOptions() *CallOptions {
 		CreateRepository:                   []gax.CallOption{},
 		UpdateRepository:                   []gax.CallOption{},
 		DeleteRepository:                   []gax.CallOption{},
+		DeleteRepositoryLongRunning:        []gax.CallOption{},
 		MoveRepository:                     []gax.CallOption{},
 		CommitRepositoryChanges:            []gax.CallOption{},
 		ReadRepositoryFile:                 []gax.CallOption{},
@@ -314,12 +323,16 @@ type internalClient interface {
 	CreateTeamFolder(context.Context, *dataformpb.CreateTeamFolderRequest, ...gax.CallOption) (*dataformpb.TeamFolder, error)
 	UpdateTeamFolder(context.Context, *dataformpb.UpdateTeamFolderRequest, ...gax.CallOption) (*dataformpb.TeamFolder, error)
 	DeleteTeamFolder(context.Context, *dataformpb.DeleteTeamFolderRequest, ...gax.CallOption) error
+	DeleteTeamFolderTree(context.Context, *dataformpb.DeleteTeamFolderTreeRequest, ...gax.CallOption) (*DeleteTeamFolderTreeOperation, error)
+	DeleteTeamFolderTreeOperation(name string) *DeleteTeamFolderTreeOperation
 	QueryTeamFolderContents(context.Context, *dataformpb.QueryTeamFolderContentsRequest, ...gax.CallOption) *QueryTeamFolderContentsResponse_TeamFolderContentsEntryIterator
 	SearchTeamFolders(context.Context, *dataformpb.SearchTeamFoldersRequest, ...gax.CallOption) *SearchTeamFoldersResponse_TeamFolderSearchResultIterator
 	GetFolder(context.Context, *dataformpb.GetFolderRequest, ...gax.CallOption) (*dataformpb.Folder, error)
 	CreateFolder(context.Context, *dataformpb.CreateFolderRequest, ...gax.CallOption) (*dataformpb.Folder, error)
 	UpdateFolder(context.Context, *dataformpb.UpdateFolderRequest, ...gax.CallOption) (*dataformpb.Folder, error)
 	DeleteFolder(context.Context, *dataformpb.DeleteFolderRequest, ...gax.CallOption) error
+	DeleteFolderTree(context.Context, *dataformpb.DeleteFolderTreeRequest, ...gax.CallOption) (*DeleteFolderTreeOperation, error)
+	DeleteFolderTreeOperation(name string) *DeleteFolderTreeOperation
 	QueryFolderContents(context.Context, *dataformpb.QueryFolderContentsRequest, ...gax.CallOption) *QueryFolderContentsResponse_FolderContentsEntryIterator
 	QueryUserRootContents(context.Context, *dataformpb.QueryUserRootContentsRequest, ...gax.CallOption) *QueryUserRootContentsResponse_RootContentsEntryIterator
 	MoveFolder(context.Context, *dataformpb.MoveFolderRequest, ...gax.CallOption) (*MoveFolderOperation, error)
@@ -329,6 +342,8 @@ type internalClient interface {
 	CreateRepository(context.Context, *dataformpb.CreateRepositoryRequest, ...gax.CallOption) (*dataformpb.Repository, error)
 	UpdateRepository(context.Context, *dataformpb.UpdateRepositoryRequest, ...gax.CallOption) (*dataformpb.Repository, error)
 	DeleteRepository(context.Context, *dataformpb.DeleteRepositoryRequest, ...gax.CallOption) error
+	DeleteRepositoryLongRunning(context.Context, *dataformpb.DeleteRepositoryLongRunningRequest, ...gax.CallOption) (*DeleteRepositoryLongRunningOperation, error)
+	DeleteRepositoryLongRunningOperation(name string) *DeleteRepositoryLongRunningOperation
 	MoveRepository(context.Context, *dataformpb.MoveRepositoryRequest, ...gax.CallOption) (*MoveRepositoryOperation, error)
 	MoveRepositoryOperation(name string) *MoveRepositoryOperation
 	CommitRepositoryChanges(context.Context, *dataformpb.CommitRepositoryChangesRequest, ...gax.CallOption) (*dataformpb.CommitRepositoryChangesResponse, error)
@@ -452,6 +467,18 @@ func (c *Client) DeleteTeamFolder(ctx context.Context, req *dataformpb.DeleteTea
 	return c.internalClient.DeleteTeamFolder(ctx, req, opts...)
 }
 
+// DeleteTeamFolderTree deletes a TeamFolder with its contents (Folders, Repositories, Workspaces,
+// ReleaseConfigs, and WorkflowConfigs).
+func (c *Client) DeleteTeamFolderTree(ctx context.Context, req *dataformpb.DeleteTeamFolderTreeRequest, opts ...gax.CallOption) (*DeleteTeamFolderTreeOperation, error) {
+	return c.internalClient.DeleteTeamFolderTree(ctx, req, opts...)
+}
+
+// DeleteTeamFolderTreeOperation returns a new DeleteTeamFolderTreeOperation from a given name.
+// The name must be that of a previously created DeleteTeamFolderTreeOperation, possibly from a different process.
+func (c *Client) DeleteTeamFolderTreeOperation(name string) *DeleteTeamFolderTreeOperation {
+	return c.internalClient.DeleteTeamFolderTreeOperation(name)
+}
+
 // QueryTeamFolderContents returns the contents of a given TeamFolder.
 func (c *Client) QueryTeamFolderContents(ctx context.Context, req *dataformpb.QueryTeamFolderContentsRequest, opts ...gax.CallOption) *QueryTeamFolderContentsResponse_TeamFolderContentsEntryIterator {
 	return c.internalClient.QueryTeamFolderContents(ctx, req, opts...)
@@ -481,6 +508,18 @@ func (c *Client) UpdateFolder(ctx context.Context, req *dataformpb.UpdateFolderR
 // DeleteFolder deletes a single Folder.
 func (c *Client) DeleteFolder(ctx context.Context, req *dataformpb.DeleteFolderRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteFolder(ctx, req, opts...)
+}
+
+// DeleteFolderTree deletes a Folder with its contents (Folders, Repositories, Workspaces,
+// ReleaseConfigs, and WorkflowConfigs).
+func (c *Client) DeleteFolderTree(ctx context.Context, req *dataformpb.DeleteFolderTreeRequest, opts ...gax.CallOption) (*DeleteFolderTreeOperation, error) {
+	return c.internalClient.DeleteFolderTree(ctx, req, opts...)
+}
+
+// DeleteFolderTreeOperation returns a new DeleteFolderTreeOperation from a given name.
+// The name must be that of a previously created DeleteFolderTreeOperation, possibly from a different process.
+func (c *Client) DeleteFolderTreeOperation(name string) *DeleteFolderTreeOperation {
+	return c.internalClient.DeleteFolderTreeOperation(name)
 }
 
 // QueryFolderContents returns the contents of a given Folder.
@@ -537,6 +576,17 @@ func (c *Client) UpdateRepository(ctx context.Context, req *dataformpb.UpdateRep
 // DeleteRepository deletes a single Repository.
 func (c *Client) DeleteRepository(ctx context.Context, req *dataformpb.DeleteRepositoryRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteRepository(ctx, req, opts...)
+}
+
+// DeleteRepositoryLongRunning deletes a single repository asynchronously.
+func (c *Client) DeleteRepositoryLongRunning(ctx context.Context, req *dataformpb.DeleteRepositoryLongRunningRequest, opts ...gax.CallOption) (*DeleteRepositoryLongRunningOperation, error) {
+	return c.internalClient.DeleteRepositoryLongRunning(ctx, req, opts...)
+}
+
+// DeleteRepositoryLongRunningOperation returns a new DeleteRepositoryLongRunningOperation from a given name.
+// The name must be that of a previously created DeleteRepositoryLongRunningOperation, possibly from a different process.
+func (c *Client) DeleteRepositoryLongRunningOperation(name string) *DeleteRepositoryLongRunningOperation {
+	return c.internalClient.DeleteRepositoryLongRunningOperation(name)
 }
 
 // MoveRepository moves a Repository to a new location.
@@ -847,14 +897,21 @@ func (c *Client) GetLocation(ctx context.Context, req *locationpb.GetLocationReq
 }
 
 // ListLocations lists information about the supported locations for this service.
-// This method can be called in two ways:
 //
-//	List all public locations: Use the path GET /v1/locations.
+// This method lists locations based on the resource scope provided in
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)][google.cloud.location.ListLocationsRequest.name (at http://google.cloud.location.ListLocationsRequest.name)] field: *
+// Global locations: If name is empty, the method lists the
+// public locations available to all projects. * Project-specific
+// locations: If name follows the format
+// projects/{project}, the method lists locations visible to that
+// specific project. This includes public, private, or other
+// project-specific locations enabled for the project.
 //
-//	List project-visible locations: Use the path
-//	GET /v1/projects/{project_id}/locations. This may include public
-//	locations as well as private or other locations specifically visible
-//	to the project.
+// For gRPC and client library implementations, the resource name is
+// passed as the name field. For direct service calls, the resource
+// name is
+// incorporated into the request path based on the specific service
+// implementation and version.
 func (c *Client) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	return c.internalClient.ListLocations(ctx, req, opts...)
 }
@@ -963,12 +1020,14 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.CreateTeamFolder = append(client.CallOptions.CreateTeamFolder, gax.WithClientMetrics(metrics))
 		client.CallOptions.UpdateTeamFolder = append(client.CallOptions.UpdateTeamFolder, gax.WithClientMetrics(metrics))
 		client.CallOptions.DeleteTeamFolder = append(client.CallOptions.DeleteTeamFolder, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteTeamFolderTree = append(client.CallOptions.DeleteTeamFolderTree, gax.WithClientMetrics(metrics))
 		client.CallOptions.QueryTeamFolderContents = append(client.CallOptions.QueryTeamFolderContents, gax.WithClientMetrics(metrics))
 		client.CallOptions.SearchTeamFolders = append(client.CallOptions.SearchTeamFolders, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetFolder = append(client.CallOptions.GetFolder, gax.WithClientMetrics(metrics))
 		client.CallOptions.CreateFolder = append(client.CallOptions.CreateFolder, gax.WithClientMetrics(metrics))
 		client.CallOptions.UpdateFolder = append(client.CallOptions.UpdateFolder, gax.WithClientMetrics(metrics))
 		client.CallOptions.DeleteFolder = append(client.CallOptions.DeleteFolder, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteFolderTree = append(client.CallOptions.DeleteFolderTree, gax.WithClientMetrics(metrics))
 		client.CallOptions.QueryFolderContents = append(client.CallOptions.QueryFolderContents, gax.WithClientMetrics(metrics))
 		client.CallOptions.QueryUserRootContents = append(client.CallOptions.QueryUserRootContents, gax.WithClientMetrics(metrics))
 		client.CallOptions.MoveFolder = append(client.CallOptions.MoveFolder, gax.WithClientMetrics(metrics))
@@ -977,6 +1036,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.CreateRepository = append(client.CallOptions.CreateRepository, gax.WithClientMetrics(metrics))
 		client.CallOptions.UpdateRepository = append(client.CallOptions.UpdateRepository, gax.WithClientMetrics(metrics))
 		client.CallOptions.DeleteRepository = append(client.CallOptions.DeleteRepository, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteRepositoryLongRunning = append(client.CallOptions.DeleteRepositoryLongRunning, gax.WithClientMetrics(metrics))
 		client.CallOptions.MoveRepository = append(client.CallOptions.MoveRepository, gax.WithClientMetrics(metrics))
 		client.CallOptions.CommitRepositoryChanges = append(client.CallOptions.CommitRepositoryChanges, gax.WithClientMetrics(metrics))
 		client.CallOptions.ReadRepositoryFile = append(client.CallOptions.ReadRepositoryFile, gax.WithClientMetrics(metrics))
@@ -1147,12 +1207,14 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.CreateTeamFolder = append(callOpts.CreateTeamFolder, gax.WithClientMetrics(metrics))
 		callOpts.UpdateTeamFolder = append(callOpts.UpdateTeamFolder, gax.WithClientMetrics(metrics))
 		callOpts.DeleteTeamFolder = append(callOpts.DeleteTeamFolder, gax.WithClientMetrics(metrics))
+		callOpts.DeleteTeamFolderTree = append(callOpts.DeleteTeamFolderTree, gax.WithClientMetrics(metrics))
 		callOpts.QueryTeamFolderContents = append(callOpts.QueryTeamFolderContents, gax.WithClientMetrics(metrics))
 		callOpts.SearchTeamFolders = append(callOpts.SearchTeamFolders, gax.WithClientMetrics(metrics))
 		callOpts.GetFolder = append(callOpts.GetFolder, gax.WithClientMetrics(metrics))
 		callOpts.CreateFolder = append(callOpts.CreateFolder, gax.WithClientMetrics(metrics))
 		callOpts.UpdateFolder = append(callOpts.UpdateFolder, gax.WithClientMetrics(metrics))
 		callOpts.DeleteFolder = append(callOpts.DeleteFolder, gax.WithClientMetrics(metrics))
+		callOpts.DeleteFolderTree = append(callOpts.DeleteFolderTree, gax.WithClientMetrics(metrics))
 		callOpts.QueryFolderContents = append(callOpts.QueryFolderContents, gax.WithClientMetrics(metrics))
 		callOpts.QueryUserRootContents = append(callOpts.QueryUserRootContents, gax.WithClientMetrics(metrics))
 		callOpts.MoveFolder = append(callOpts.MoveFolder, gax.WithClientMetrics(metrics))
@@ -1161,6 +1223,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.CreateRepository = append(callOpts.CreateRepository, gax.WithClientMetrics(metrics))
 		callOpts.UpdateRepository = append(callOpts.UpdateRepository, gax.WithClientMetrics(metrics))
 		callOpts.DeleteRepository = append(callOpts.DeleteRepository, gax.WithClientMetrics(metrics))
+		callOpts.DeleteRepositoryLongRunning = append(callOpts.DeleteRepositoryLongRunning, gax.WithClientMetrics(metrics))
 		callOpts.MoveRepository = append(callOpts.MoveRepository, gax.WithClientMetrics(metrics))
 		callOpts.CommitRepositoryChanges = append(callOpts.CommitRepositoryChanges, gax.WithClientMetrics(metrics))
 		callOpts.ReadRepositoryFile = append(callOpts.ReadRepositoryFile, gax.WithClientMetrics(metrics))
@@ -1361,6 +1424,32 @@ func (c *gRPCClient) DeleteTeamFolder(ctx context.Context, req *dataformpb.Delet
 	return err
 }
 
+func (c *gRPCClient) DeleteTeamFolderTree(ctx context.Context, req *dataformpb.DeleteTeamFolderTreeRequest, opts ...gax.CallOption) (*DeleteTeamFolderTreeOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1beta1.Dataform/DeleteTeamFolderTree")
+	}
+	opts = append((*c.CallOptions).DeleteTeamFolderTree[0:len((*c.CallOptions).DeleteTeamFolderTree):len((*c.CallOptions).DeleteTeamFolderTree)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.DeleteTeamFolderTree, req, settings.GRPC, c.logger, "DeleteTeamFolderTree")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeleteTeamFolderTreeOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
 func (c *gRPCClient) QueryTeamFolderContents(ctx context.Context, req *dataformpb.QueryTeamFolderContentsRequest, opts ...gax.CallOption) *QueryTeamFolderContentsResponse_TeamFolderContentsEntryIterator {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "team_folder", url.QueryEscape(req.GetTeamFolder()))}
 
@@ -1552,6 +1641,32 @@ func (c *gRPCClient) DeleteFolder(ctx context.Context, req *dataformpb.DeleteFol
 		return err
 	}, opts...)
 	return err
+}
+
+func (c *gRPCClient) DeleteFolderTree(ctx context.Context, req *dataformpb.DeleteFolderTreeRequest, opts ...gax.CallOption) (*DeleteFolderTreeOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1beta1.Dataform/DeleteFolderTree")
+	}
+	opts = append((*c.CallOptions).DeleteFolderTree[0:len((*c.CallOptions).DeleteFolderTree):len((*c.CallOptions).DeleteFolderTree)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.DeleteFolderTree, req, settings.GRPC, c.logger, "DeleteFolderTree")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeleteFolderTreeOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
 }
 
 func (c *gRPCClient) QueryFolderContents(ctx context.Context, req *dataformpb.QueryFolderContentsRequest, opts ...gax.CallOption) *QueryFolderContentsResponse_FolderContentsEntryIterator {
@@ -1823,6 +1938,32 @@ func (c *gRPCClient) DeleteRepository(ctx context.Context, req *dataformpb.Delet
 		return err
 	}, opts...)
 	return err
+}
+
+func (c *gRPCClient) DeleteRepositoryLongRunning(ctx context.Context, req *dataformpb.DeleteRepositoryLongRunningRequest, opts ...gax.CallOption) (*DeleteRepositoryLongRunningOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1beta1.Dataform/DeleteRepositoryLongRunning")
+	}
+	opts = append((*c.CallOptions).DeleteRepositoryLongRunning[0:len((*c.CallOptions).DeleteRepositoryLongRunning):len((*c.CallOptions).DeleteRepositoryLongRunning)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.DeleteRepositoryLongRunning, req, settings.GRPC, c.logger, "DeleteRepositoryLongRunning")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeleteRepositoryLongRunningOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
 }
 
 func (c *gRPCClient) MoveRepository(ctx context.Context, req *dataformpb.MoveRepositoryRequest, opts ...gax.CallOption) (*MoveRepositoryOperation, error) {
@@ -3790,6 +3931,73 @@ func (c *restClient) DeleteTeamFolder(ctx context.Context, req *dataformpb.Delet
 	}, opts...)
 }
 
+// DeleteTeamFolderTree deletes a TeamFolder with its contents (Folders, Repositories, Workspaces,
+// ReleaseConfigs, and WorkflowConfigs).
+func (c *restClient) DeleteTeamFolderTree(ctx context.Context, req *dataformpb.DeleteTeamFolderTreeRequest, opts ...gax.CallOption) (*DeleteTeamFolderTreeOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:deleteTree", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1beta1.Dataform/DeleteTeamFolderTree")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/teamFolders/*}:deleteTree")
+	}
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "DeleteTeamFolderTree")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
+	return &DeleteTeamFolderTreeOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
 // QueryTeamFolderContents returns the contents of a given TeamFolder.
 func (c *restClient) QueryTeamFolderContents(ctx context.Context, req *dataformpb.QueryTeamFolderContentsRequest, opts ...gax.CallOption) *QueryTeamFolderContentsResponse_TeamFolderContentsEntryIterator {
 	it := &QueryTeamFolderContentsResponse_TeamFolderContentsEntryIterator{}
@@ -4191,6 +4399,73 @@ func (c *restClient) DeleteFolder(ctx context.Context, req *dataformpb.DeleteFol
 		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteFolder")
 		return err
 	}, opts...)
+}
+
+// DeleteFolderTree deletes a Folder with its contents (Folders, Repositories, Workspaces,
+// ReleaseConfigs, and WorkflowConfigs).
+func (c *restClient) DeleteFolderTree(ctx context.Context, req *dataformpb.DeleteFolderTreeRequest, opts ...gax.CallOption) (*DeleteFolderTreeOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:deleteTree", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1beta1.Dataform/DeleteFolderTree")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/folders/*}:deleteTree")
+	}
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "DeleteFolderTree")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
+	return &DeleteFolderTreeOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
 }
 
 // QueryFolderContents returns the contents of a given Folder.
@@ -4754,6 +5029,72 @@ func (c *restClient) DeleteRepository(ctx context.Context, req *dataformpb.Delet
 		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteRepository")
 		return err
 	}, opts...)
+}
+
+// DeleteRepositoryLongRunning deletes a single repository asynchronously.
+func (c *restClient) DeleteRepositoryLongRunning(ctx context.Context, req *dataformpb.DeleteRepositoryLongRunningRequest, opts ...gax.CallOption) (*DeleteRepositoryLongRunningOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:deleteLongRunning", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1beta1.Dataform/DeleteRepositoryLongRunning")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/repositories/*}:deleteLongRunning")
+	}
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "DeleteRepositoryLongRunning")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
+	return &DeleteRepositoryLongRunningOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
 }
 
 // MoveRepository moves a Repository to a new location.
@@ -5995,6 +6336,9 @@ func (c *restClient) QueryDirectoryContents(ctx context.Context, req *dataformpb
 		}
 		if req.GetPath() != "" {
 			params.Add("path", fmt.Sprintf("%v", req.GetPath()))
+		}
+		if req.GetView() != 0 {
+			params.Add("view", fmt.Sprintf("%v", req.GetView()))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -8252,14 +8596,21 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 }
 
 // ListLocations lists information about the supported locations for this service.
-// This method can be called in two ways:
 //
-//	List all public locations: Use the path GET /v1/locations.
+// This method lists locations based on the resource scope provided in
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)][google.cloud.location.ListLocationsRequest.name (at http://google.cloud.location.ListLocationsRequest.name)] field: *
+// Global locations: If name is empty, the method lists the
+// public locations available to all projects. * Project-specific
+// locations: If name follows the format
+// projects/{project}, the method lists locations visible to that
+// specific project. This includes public, private, or other
+// project-specific locations enabled for the project.
 //
-//	List project-visible locations: Use the path
-//	GET /v1/projects/{project_id}/locations. This may include public
-//	locations as well as private or other locations specifically visible
-//	to the project.
+// For gRPC and client library implementations, the resource name is
+// passed as the name field. For direct service calls, the resource
+// name is
+// incorporated into the request path based on the specific service
+// implementation and version.
 func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
 	req = proto.CloneOf(req)
@@ -8560,6 +8911,60 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+// DeleteFolderTreeOperation returns a new DeleteFolderTreeOperation from a given name.
+// The name must be that of a previously created DeleteFolderTreeOperation, possibly from a different process.
+func (c *gRPCClient) DeleteFolderTreeOperation(name string) *DeleteFolderTreeOperation {
+	return &DeleteFolderTreeOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// DeleteFolderTreeOperation returns a new DeleteFolderTreeOperation from a given name.
+// The name must be that of a previously created DeleteFolderTreeOperation, possibly from a different process.
+func (c *restClient) DeleteFolderTreeOperation(name string) *DeleteFolderTreeOperation {
+	override := fmt.Sprintf("/v1beta1/%s", name)
+	return &DeleteFolderTreeOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// DeleteRepositoryLongRunningOperation returns a new DeleteRepositoryLongRunningOperation from a given name.
+// The name must be that of a previously created DeleteRepositoryLongRunningOperation, possibly from a different process.
+func (c *gRPCClient) DeleteRepositoryLongRunningOperation(name string) *DeleteRepositoryLongRunningOperation {
+	return &DeleteRepositoryLongRunningOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// DeleteRepositoryLongRunningOperation returns a new DeleteRepositoryLongRunningOperation from a given name.
+// The name must be that of a previously created DeleteRepositoryLongRunningOperation, possibly from a different process.
+func (c *restClient) DeleteRepositoryLongRunningOperation(name string) *DeleteRepositoryLongRunningOperation {
+	override := fmt.Sprintf("/v1beta1/%s", name)
+	return &DeleteRepositoryLongRunningOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// DeleteTeamFolderTreeOperation returns a new DeleteTeamFolderTreeOperation from a given name.
+// The name must be that of a previously created DeleteTeamFolderTreeOperation, possibly from a different process.
+func (c *gRPCClient) DeleteTeamFolderTreeOperation(name string) *DeleteTeamFolderTreeOperation {
+	return &DeleteTeamFolderTreeOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// DeleteTeamFolderTreeOperation returns a new DeleteTeamFolderTreeOperation from a given name.
+// The name must be that of a previously created DeleteTeamFolderTreeOperation, possibly from a different process.
+func (c *restClient) DeleteTeamFolderTreeOperation(name string) *DeleteTeamFolderTreeOperation {
+	override := fmt.Sprintf("/v1beta1/%s", name)
+	return &DeleteTeamFolderTreeOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
 }
 
 // MoveFolderOperation returns a new MoveFolderOperation from a given name.

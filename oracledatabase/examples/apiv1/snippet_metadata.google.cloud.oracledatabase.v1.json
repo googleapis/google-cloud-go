@@ -62,6 +62,52 @@
           "fullName": "google.cloud.oracledatabase.v1.Client",
           "shortName": "Client"
         },
+        "fullName": "google.cloud.oracledatabase.v1.Client.ConfigureExascaleCloudExadataInfrastructure",
+        "method": {
+          "fullName": "google.cloud.oracledatabase.v1.OracleDatabase.ConfigureExascaleCloudExadataInfrastructure",
+          "service": {
+            "fullName": "google.cloud.oracledatabase.v1.OracleDatabase",
+            "shortName": "OracleDatabase"
+          },
+          "shortName": "ConfigureExascaleCloudExadataInfrastructure"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "oracledatabasepb.ConfigureExascaleCloudExadataInfrastructureRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "ConfigureExascaleCloudExadataInfrastructureOperation",
+        "shortName": "ConfigureExascaleCloudExadataInfrastructure"
+      },
+      "description": "ConfigureExascaleCloudExadataInfrastructure configures Exascale for a single Exadata Infrastructure.",
+      "file": "Client/ConfigureExascaleCloudExadataInfrastructure/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "oracledatabase_v1_generated_OracleDatabase_ConfigureExascaleCloudExadataInfrastructure_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "oracledatabase ConfigureExascaleCloudExadataInfrastructure Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.oracledatabase.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.oracledatabase.v1.Client.CreateAutonomousDatabase",
         "method": {
           "fullName": "google.cloud.oracledatabase.v1.OracleDatabase.CreateAutonomousDatabase",

@@ -176,7 +176,7 @@ type AgentGateway struct {
 	// Optional. A list of Agent registries containing the agents, MCP servers and
 	// tools governed by the Agent Gateway. Note: Currently limited to
 	// project-scoped registries Must be of format
-	// `//agentregistry.googleapis.com/projects/{project}/locations/{location}/
+	// `//agentregistry.googleapis.com/projects/{project}/locations/{location}/`
 	Registries []string `protobuf:"bytes,13,rep,name=registries,proto3" json:"registries,omitempty"`
 	// Optional. Network configuration for the AgentGateway.
 	NetworkConfig *AgentGateway_NetworkConfig `protobuf:"bytes,10,opt,name=network_config,json=networkConfig,proto3" json:"network_config,omitempty"`

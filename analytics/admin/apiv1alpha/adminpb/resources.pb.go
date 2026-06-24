@@ -2826,7 +2826,10 @@ type PropertySummary struct {
 	// Note: The Property-Moving UI can be used to change the parent.
 	// Format: accounts/{account}, properties/{property}
 	// Example: "accounts/100", "properties/200"
-	Parent        string `protobuf:"bytes,4,opt,name=parent,proto3" json:"parent,omitempty"`
+	Parent string `protobuf:"bytes,4,opt,name=parent,proto3" json:"parent,omitempty"`
+	// If true, then the user has a Google Analytics role that permits them to
+	// edit the property.
+	CanEdit       bool `protobuf:"varint,5,opt,name=can_edit,json=canEdit,proto3" json:"can_edit,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2887,6 +2890,13 @@ func (x *PropertySummary) GetParent() string {
 		return x.Parent
 	}
 	return ""
+}
+
+func (x *PropertySummary) GetCanEdit() bool {
+	if x != nil {
+		return x.CanEdit
+	}
+	return false
 }
 
 // A secret value used for sending hits to Measurement Protocol.
@@ -6713,13 +6723,14 @@ const file_google_analytics_admin_v1alpha_resources_proto_rawDesc = "" +
 	"%analyticsadmin.googleapis.com/AccountR\aaccount\x12!\n" +
 	"\fdisplay_name\x18\x03 \x01(\tR\vdisplayName\x12^\n" +
 	"\x12property_summaries\x18\x04 \x03(\v2/.google.analytics.admin.v1alpha.PropertySummaryR\x11propertySummaries:w\xeaAt\n" +
-	",analyticsadmin.googleapis.com/AccountSummary\x12\"accountSummaries/{account_summary}*\x10accountSummaries2\x0eaccountSummary\"\xe8\x01\n" +
+	",analyticsadmin.googleapis.com/AccountSummary\x12\"accountSummaries/{account_summary}*\x10accountSummaries2\x0eaccountSummary\"\x83\x02\n" +
 	"\x0fPropertySummary\x12G\n" +
 	"\bproperty\x18\x01 \x01(\tB+\xfaA(\n" +
 	"&analyticsadmin.googleapis.com/PropertyR\bproperty\x12!\n" +
 	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12Q\n" +
 	"\rproperty_type\x18\x03 \x01(\x0e2,.google.analytics.admin.v1alpha.PropertyTypeR\fpropertyType\x12\x16\n" +
-	"\x06parent\x18\x04 \x01(\tR\x06parent\"\xe5\x02\n" +
+	"\x06parent\x18\x04 \x01(\tR\x06parent\x12\x19\n" +
+	"\bcan_edit\x18\x05 \x01(\bR\acanEdit\"\xe5\x02\n" +
 	"\x19MeasurementProtocolSecret\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12&\n" +
 	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12&\n" +

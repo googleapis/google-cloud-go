@@ -88,6 +88,12 @@ func (it *RuleDeploymentIterator) All() iter.Seq2[*chroniclepb.RuleDeployment, e
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *RuleExecutionErrorIterator) All() iter.Seq2[*chroniclepb.RuleExecutionError, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *RuleIterator) All() iter.Seq2[*chroniclepb.Rule, error] {
 	return iterator.RangeAdapter(it.Next)
 }

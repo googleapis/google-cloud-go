@@ -48,89 +48,90 @@ var newClientHook clientHook
 
 // CallOptions contains the retry settings for each method of Client.
 type CallOptions struct {
-	ListCloudExadataInfrastructures      []gax.CallOption
-	GetCloudExadataInfrastructure        []gax.CallOption
-	CreateCloudExadataInfrastructure     []gax.CallOption
-	DeleteCloudExadataInfrastructure     []gax.CallOption
-	ListCloudVmClusters                  []gax.CallOption
-	GetCloudVmCluster                    []gax.CallOption
-	CreateCloudVmCluster                 []gax.CallOption
-	DeleteCloudVmCluster                 []gax.CallOption
-	ListEntitlements                     []gax.CallOption
-	ListDbServers                        []gax.CallOption
-	ListDbNodes                          []gax.CallOption
-	ListGiVersions                       []gax.CallOption
-	ListMinorVersions                    []gax.CallOption
-	ListDbSystemShapes                   []gax.CallOption
-	ListAutonomousDatabases              []gax.CallOption
-	GetAutonomousDatabase                []gax.CallOption
-	CreateAutonomousDatabase             []gax.CallOption
-	UpdateAutonomousDatabase             []gax.CallOption
-	DeleteAutonomousDatabase             []gax.CallOption
-	RestoreAutonomousDatabase            []gax.CallOption
-	GenerateAutonomousDatabaseWallet     []gax.CallOption
-	ListAutonomousDbVersions             []gax.CallOption
-	ListAutonomousDatabaseCharacterSets  []gax.CallOption
-	ListAutonomousDatabaseBackups        []gax.CallOption
-	StopAutonomousDatabase               []gax.CallOption
-	StartAutonomousDatabase              []gax.CallOption
-	RestartAutonomousDatabase            []gax.CallOption
-	SwitchoverAutonomousDatabase         []gax.CallOption
-	FailoverAutonomousDatabase           []gax.CallOption
-	ListOdbNetworks                      []gax.CallOption
-	GetOdbNetwork                        []gax.CallOption
-	CreateOdbNetwork                     []gax.CallOption
-	DeleteOdbNetwork                     []gax.CallOption
-	ListOdbSubnets                       []gax.CallOption
-	GetOdbSubnet                         []gax.CallOption
-	CreateOdbSubnet                      []gax.CallOption
-	DeleteOdbSubnet                      []gax.CallOption
-	ListExadbVmClusters                  []gax.CallOption
-	GetExadbVmCluster                    []gax.CallOption
-	CreateExadbVmCluster                 []gax.CallOption
-	DeleteExadbVmCluster                 []gax.CallOption
-	UpdateExadbVmCluster                 []gax.CallOption
-	RemoveVirtualMachineExadbVmCluster   []gax.CallOption
-	ListExascaleDbStorageVaults          []gax.CallOption
-	GetExascaleDbStorageVault            []gax.CallOption
-	CreateExascaleDbStorageVault         []gax.CallOption
-	DeleteExascaleDbStorageVault         []gax.CallOption
-	ListDbSystemInitialStorageSizes      []gax.CallOption
-	ListDatabases                        []gax.CallOption
-	GetDatabase                          []gax.CallOption
-	ListPluggableDatabases               []gax.CallOption
-	GetPluggableDatabase                 []gax.CallOption
-	ListDbSystems                        []gax.CallOption
-	GetDbSystem                          []gax.CallOption
-	CreateDbSystem                       []gax.CallOption
-	DeleteDbSystem                       []gax.CallOption
-	ListGoldengateDeployments            []gax.CallOption
-	GetGoldengateDeployment              []gax.CallOption
-	CreateGoldengateDeployment           []gax.CallOption
-	DeleteGoldengateDeployment           []gax.CallOption
-	StopGoldengateDeployment             []gax.CallOption
-	StartGoldengateDeployment            []gax.CallOption
-	ListGoldengateConnections            []gax.CallOption
-	GetGoldengateConnection              []gax.CallOption
-	CreateGoldengateConnection           []gax.CallOption
-	DeleteGoldengateConnection           []gax.CallOption
-	ListGoldengateDeploymentVersions     []gax.CallOption
-	ListGoldengateDeploymentTypes        []gax.CallOption
-	ListGoldengateDeploymentEnvironments []gax.CallOption
-	ListGoldengateConnectionTypes        []gax.CallOption
-	ListDbVersions                       []gax.CallOption
-	ListDatabaseCharacterSets            []gax.CallOption
-	ListGoldengateConnectionAssignments  []gax.CallOption
-	GetGoldengateConnectionAssignment    []gax.CallOption
-	CreateGoldengateConnectionAssignment []gax.CallOption
-	DeleteGoldengateConnectionAssignment []gax.CallOption
-	TestGoldengateConnectionAssignment   []gax.CallOption
-	GetLocation                          []gax.CallOption
-	ListLocations                        []gax.CallOption
-	CancelOperation                      []gax.CallOption
-	DeleteOperation                      []gax.CallOption
-	GetOperation                         []gax.CallOption
-	ListOperations                       []gax.CallOption
+	ListCloudExadataInfrastructures             []gax.CallOption
+	GetCloudExadataInfrastructure               []gax.CallOption
+	CreateCloudExadataInfrastructure            []gax.CallOption
+	DeleteCloudExadataInfrastructure            []gax.CallOption
+	ConfigureExascaleCloudExadataInfrastructure []gax.CallOption
+	ListCloudVmClusters                         []gax.CallOption
+	GetCloudVmCluster                           []gax.CallOption
+	CreateCloudVmCluster                        []gax.CallOption
+	DeleteCloudVmCluster                        []gax.CallOption
+	ListEntitlements                            []gax.CallOption
+	ListDbServers                               []gax.CallOption
+	ListDbNodes                                 []gax.CallOption
+	ListGiVersions                              []gax.CallOption
+	ListMinorVersions                           []gax.CallOption
+	ListDbSystemShapes                          []gax.CallOption
+	ListAutonomousDatabases                     []gax.CallOption
+	GetAutonomousDatabase                       []gax.CallOption
+	CreateAutonomousDatabase                    []gax.CallOption
+	UpdateAutonomousDatabase                    []gax.CallOption
+	DeleteAutonomousDatabase                    []gax.CallOption
+	RestoreAutonomousDatabase                   []gax.CallOption
+	GenerateAutonomousDatabaseWallet            []gax.CallOption
+	ListAutonomousDbVersions                    []gax.CallOption
+	ListAutonomousDatabaseCharacterSets         []gax.CallOption
+	ListAutonomousDatabaseBackups               []gax.CallOption
+	StopAutonomousDatabase                      []gax.CallOption
+	StartAutonomousDatabase                     []gax.CallOption
+	RestartAutonomousDatabase                   []gax.CallOption
+	SwitchoverAutonomousDatabase                []gax.CallOption
+	FailoverAutonomousDatabase                  []gax.CallOption
+	ListOdbNetworks                             []gax.CallOption
+	GetOdbNetwork                               []gax.CallOption
+	CreateOdbNetwork                            []gax.CallOption
+	DeleteOdbNetwork                            []gax.CallOption
+	ListOdbSubnets                              []gax.CallOption
+	GetOdbSubnet                                []gax.CallOption
+	CreateOdbSubnet                             []gax.CallOption
+	DeleteOdbSubnet                             []gax.CallOption
+	ListExadbVmClusters                         []gax.CallOption
+	GetExadbVmCluster                           []gax.CallOption
+	CreateExadbVmCluster                        []gax.CallOption
+	DeleteExadbVmCluster                        []gax.CallOption
+	UpdateExadbVmCluster                        []gax.CallOption
+	RemoveVirtualMachineExadbVmCluster          []gax.CallOption
+	ListExascaleDbStorageVaults                 []gax.CallOption
+	GetExascaleDbStorageVault                   []gax.CallOption
+	CreateExascaleDbStorageVault                []gax.CallOption
+	DeleteExascaleDbStorageVault                []gax.CallOption
+	ListDbSystemInitialStorageSizes             []gax.CallOption
+	ListDatabases                               []gax.CallOption
+	GetDatabase                                 []gax.CallOption
+	ListPluggableDatabases                      []gax.CallOption
+	GetPluggableDatabase                        []gax.CallOption
+	ListDbSystems                               []gax.CallOption
+	GetDbSystem                                 []gax.CallOption
+	CreateDbSystem                              []gax.CallOption
+	DeleteDbSystem                              []gax.CallOption
+	ListGoldengateDeployments                   []gax.CallOption
+	GetGoldengateDeployment                     []gax.CallOption
+	CreateGoldengateDeployment                  []gax.CallOption
+	DeleteGoldengateDeployment                  []gax.CallOption
+	StopGoldengateDeployment                    []gax.CallOption
+	StartGoldengateDeployment                   []gax.CallOption
+	ListGoldengateConnections                   []gax.CallOption
+	GetGoldengateConnection                     []gax.CallOption
+	CreateGoldengateConnection                  []gax.CallOption
+	DeleteGoldengateConnection                  []gax.CallOption
+	ListGoldengateDeploymentVersions            []gax.CallOption
+	ListGoldengateDeploymentTypes               []gax.CallOption
+	ListGoldengateDeploymentEnvironments        []gax.CallOption
+	ListGoldengateConnectionTypes               []gax.CallOption
+	ListDbVersions                              []gax.CallOption
+	ListDatabaseCharacterSets                   []gax.CallOption
+	ListGoldengateConnectionAssignments         []gax.CallOption
+	GetGoldengateConnectionAssignment           []gax.CallOption
+	CreateGoldengateConnectionAssignment        []gax.CallOption
+	DeleteGoldengateConnectionAssignment        []gax.CallOption
+	TestGoldengateConnectionAssignment          []gax.CallOption
+	GetLocation                                 []gax.CallOption
+	ListLocations                               []gax.CallOption
+	CancelOperation                             []gax.CallOption
+	DeleteOperation                             []gax.CallOption
+	GetOperation                                []gax.CallOption
+	ListOperations                              []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
@@ -180,6 +181,9 @@ func defaultCallOptions() *CallOptions {
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		DeleteCloudExadataInfrastructure: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ConfigureExascaleCloudExadataInfrastructure: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		ListCloudVmClusters: []gax.CallOption{
@@ -842,6 +846,9 @@ func defaultRESTCallOptions() *CallOptions {
 		DeleteCloudExadataInfrastructure: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		ConfigureExascaleCloudExadataInfrastructure: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		ListCloudVmClusters: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -1441,6 +1448,8 @@ type internalClient interface {
 	CreateCloudExadataInfrastructureOperation(name string) *CreateCloudExadataInfrastructureOperation
 	DeleteCloudExadataInfrastructure(context.Context, *oracledatabasepb.DeleteCloudExadataInfrastructureRequest, ...gax.CallOption) (*DeleteCloudExadataInfrastructureOperation, error)
 	DeleteCloudExadataInfrastructureOperation(name string) *DeleteCloudExadataInfrastructureOperation
+	ConfigureExascaleCloudExadataInfrastructure(context.Context, *oracledatabasepb.ConfigureExascaleCloudExadataInfrastructureRequest, ...gax.CallOption) (*ConfigureExascaleCloudExadataInfrastructureOperation, error)
+	ConfigureExascaleCloudExadataInfrastructureOperation(name string) *ConfigureExascaleCloudExadataInfrastructureOperation
 	ListCloudVmClusters(context.Context, *oracledatabasepb.ListCloudVmClustersRequest, ...gax.CallOption) *CloudVmClusterIterator
 	GetCloudVmCluster(context.Context, *oracledatabasepb.GetCloudVmClusterRequest, ...gax.CallOption) (*oracledatabasepb.CloudVmCluster, error)
 	CreateCloudVmCluster(context.Context, *oracledatabasepb.CreateCloudVmClusterRequest, ...gax.CallOption) (*CreateCloudVmClusterOperation, error)
@@ -1623,6 +1632,17 @@ func (c *Client) DeleteCloudExadataInfrastructure(ctx context.Context, req *orac
 // The name must be that of a previously created DeleteCloudExadataInfrastructureOperation, possibly from a different process.
 func (c *Client) DeleteCloudExadataInfrastructureOperation(name string) *DeleteCloudExadataInfrastructureOperation {
 	return c.internalClient.DeleteCloudExadataInfrastructureOperation(name)
+}
+
+// ConfigureExascaleCloudExadataInfrastructure configures Exascale for a single Exadata Infrastructure.
+func (c *Client) ConfigureExascaleCloudExadataInfrastructure(ctx context.Context, req *oracledatabasepb.ConfigureExascaleCloudExadataInfrastructureRequest, opts ...gax.CallOption) (*ConfigureExascaleCloudExadataInfrastructureOperation, error) {
+	return c.internalClient.ConfigureExascaleCloudExadataInfrastructure(ctx, req, opts...)
+}
+
+// ConfigureExascaleCloudExadataInfrastructureOperation returns a new ConfigureExascaleCloudExadataInfrastructureOperation from a given name.
+// The name must be that of a previously created ConfigureExascaleCloudExadataInfrastructureOperation, possibly from a different process.
+func (c *Client) ConfigureExascaleCloudExadataInfrastructureOperation(name string) *ConfigureExascaleCloudExadataInfrastructureOperation {
+	return c.internalClient.ConfigureExascaleCloudExadataInfrastructureOperation(name)
 }
 
 // ListCloudVmClusters lists the VM Clusters in a given project and location.
@@ -2315,6 +2335,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.GetCloudExadataInfrastructure = append(client.CallOptions.GetCloudExadataInfrastructure, gax.WithClientMetrics(metrics))
 		client.CallOptions.CreateCloudExadataInfrastructure = append(client.CallOptions.CreateCloudExadataInfrastructure, gax.WithClientMetrics(metrics))
 		client.CallOptions.DeleteCloudExadataInfrastructure = append(client.CallOptions.DeleteCloudExadataInfrastructure, gax.WithClientMetrics(metrics))
+		client.CallOptions.ConfigureExascaleCloudExadataInfrastructure = append(client.CallOptions.ConfigureExascaleCloudExadataInfrastructure, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListCloudVmClusters = append(client.CallOptions.ListCloudVmClusters, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetCloudVmCluster = append(client.CallOptions.GetCloudVmCluster, gax.WithClientMetrics(metrics))
 		client.CallOptions.CreateCloudVmCluster = append(client.CallOptions.CreateCloudVmCluster, gax.WithClientMetrics(metrics))
@@ -2504,6 +2525,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.GetCloudExadataInfrastructure = append(callOpts.GetCloudExadataInfrastructure, gax.WithClientMetrics(metrics))
 		callOpts.CreateCloudExadataInfrastructure = append(callOpts.CreateCloudExadataInfrastructure, gax.WithClientMetrics(metrics))
 		callOpts.DeleteCloudExadataInfrastructure = append(callOpts.DeleteCloudExadataInfrastructure, gax.WithClientMetrics(metrics))
+		callOpts.ConfigureExascaleCloudExadataInfrastructure = append(callOpts.ConfigureExascaleCloudExadataInfrastructure, gax.WithClientMetrics(metrics))
 		callOpts.ListCloudVmClusters = append(callOpts.ListCloudVmClusters, gax.WithClientMetrics(metrics))
 		callOpts.GetCloudVmCluster = append(callOpts.GetCloudVmCluster, gax.WithClientMetrics(metrics))
 		callOpts.CreateCloudVmCluster = append(callOpts.CreateCloudVmCluster, gax.WithClientMetrics(metrics))
@@ -2759,6 +2781,32 @@ func (c *gRPCClient) DeleteCloudExadataInfrastructure(ctx context.Context, req *
 		return nil, err
 	}
 	return &DeleteCloudExadataInfrastructureOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) ConfigureExascaleCloudExadataInfrastructure(ctx context.Context, req *oracledatabasepb.ConfigureExascaleCloudExadataInfrastructureRequest, opts ...gax.CallOption) (*ConfigureExascaleCloudExadataInfrastructureOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/ConfigureExascaleCloudExadataInfrastructure")
+	}
+	opts = append((*c.CallOptions).ConfigureExascaleCloudExadataInfrastructure[0:len((*c.CallOptions).ConfigureExascaleCloudExadataInfrastructure):len((*c.CallOptions).ConfigureExascaleCloudExadataInfrastructure)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.ConfigureExascaleCloudExadataInfrastructure, req, settings.GRPC, c.logger, "ConfigureExascaleCloudExadataInfrastructure")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &ConfigureExascaleCloudExadataInfrastructureOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
@@ -5802,6 +5850,72 @@ func (c *restClient) DeleteCloudExadataInfrastructure(ctx context.Context, req *
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
 	return &DeleteCloudExadataInfrastructureOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// ConfigureExascaleCloudExadataInfrastructure configures Exascale for a single Exadata Infrastructure.
+func (c *restClient) ConfigureExascaleCloudExadataInfrastructure(ctx context.Context, req *oracledatabasepb.ConfigureExascaleCloudExadataInfrastructureRequest, opts ...gax.CallOption) (*ConfigureExascaleCloudExadataInfrastructureOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:configureExascale", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/ConfigureExascaleCloudExadataInfrastructure")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/cloudExadataInfrastructures/*}:configureExascale")
+	}
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ConfigureExascaleCloudExadataInfrastructure")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &ConfigureExascaleCloudExadataInfrastructureOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
@@ -11363,6 +11477,24 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+// ConfigureExascaleCloudExadataInfrastructureOperation returns a new ConfigureExascaleCloudExadataInfrastructureOperation from a given name.
+// The name must be that of a previously created ConfigureExascaleCloudExadataInfrastructureOperation, possibly from a different process.
+func (c *gRPCClient) ConfigureExascaleCloudExadataInfrastructureOperation(name string) *ConfigureExascaleCloudExadataInfrastructureOperation {
+	return &ConfigureExascaleCloudExadataInfrastructureOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// ConfigureExascaleCloudExadataInfrastructureOperation returns a new ConfigureExascaleCloudExadataInfrastructureOperation from a given name.
+// The name must be that of a previously created ConfigureExascaleCloudExadataInfrastructureOperation, possibly from a different process.
+func (c *restClient) ConfigureExascaleCloudExadataInfrastructureOperation(name string) *ConfigureExascaleCloudExadataInfrastructureOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &ConfigureExascaleCloudExadataInfrastructureOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
 }
 
 // CreateAutonomousDatabaseOperation returns a new CreateAutonomousDatabaseOperation from a given name.

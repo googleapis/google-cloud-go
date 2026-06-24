@@ -189,6 +189,7 @@ const (
 	AnalyticsAdminService_UpdateSubpropertySyncConfig_FullMethodName                  = "/google.analytics.admin.v1alpha.AnalyticsAdminService/UpdateSubpropertySyncConfig"
 	AnalyticsAdminService_GetSubpropertySyncConfig_FullMethodName                     = "/google.analytics.admin.v1alpha.AnalyticsAdminService/GetSubpropertySyncConfig"
 	AnalyticsAdminService_GetReportingIdentitySettings_FullMethodName                 = "/google.analytics.admin.v1alpha.AnalyticsAdminService/GetReportingIdentitySettings"
+	AnalyticsAdminService_UpdateReportingIdentitySettings_FullMethodName              = "/google.analytics.admin.v1alpha.AnalyticsAdminService/UpdateReportingIdentitySettings"
 	AnalyticsAdminService_GetUserProvidedDataSettings_FullMethodName                  = "/google.analytics.admin.v1alpha.AnalyticsAdminService/GetUserProvidedDataSettings"
 )
 
@@ -613,6 +614,8 @@ type AnalyticsAdminServiceClient interface {
 	GetSubpropertySyncConfig(ctx context.Context, in *GetSubpropertySyncConfigRequest, opts ...grpc.CallOption) (*SubpropertySyncConfig, error)
 	// Returns the reporting identity settings for this property.
 	GetReportingIdentitySettings(ctx context.Context, in *GetReportingIdentitySettingsRequest, opts ...grpc.CallOption) (*ReportingIdentitySettings, error)
+	// Updates the reporting identity settings for this property.
+	UpdateReportingIdentitySettings(ctx context.Context, in *UpdateReportingIdentitySettingsRequest, opts ...grpc.CallOption) (*ReportingIdentitySettings, error)
 	// Looks up settings related to user-provided data for a property.
 	GetUserProvidedDataSettings(ctx context.Context, in *GetUserProvidedDataSettingsRequest, opts ...grpc.CallOption) (*UserProvidedDataSettings, error)
 }
@@ -2016,6 +2019,15 @@ func (c *analyticsAdminServiceClient) GetReportingIdentitySettings(ctx context.C
 	return out, nil
 }
 
+func (c *analyticsAdminServiceClient) UpdateReportingIdentitySettings(ctx context.Context, in *UpdateReportingIdentitySettingsRequest, opts ...grpc.CallOption) (*ReportingIdentitySettings, error) {
+	out := new(ReportingIdentitySettings)
+	err := c.cc.Invoke(ctx, AnalyticsAdminService_UpdateReportingIdentitySettings_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *analyticsAdminServiceClient) GetUserProvidedDataSettings(ctx context.Context, in *GetUserProvidedDataSettingsRequest, opts ...grpc.CallOption) (*UserProvidedDataSettings, error) {
 	out := new(UserProvidedDataSettings)
 	err := c.cc.Invoke(ctx, AnalyticsAdminService_GetUserProvidedDataSettings_FullMethodName, in, out, opts...)
@@ -2446,6 +2458,8 @@ type AnalyticsAdminServiceServer interface {
 	GetSubpropertySyncConfig(context.Context, *GetSubpropertySyncConfigRequest) (*SubpropertySyncConfig, error)
 	// Returns the reporting identity settings for this property.
 	GetReportingIdentitySettings(context.Context, *GetReportingIdentitySettingsRequest) (*ReportingIdentitySettings, error)
+	// Updates the reporting identity settings for this property.
+	UpdateReportingIdentitySettings(context.Context, *UpdateReportingIdentitySettingsRequest) (*ReportingIdentitySettings, error)
 	// Looks up settings related to user-provided data for a property.
 	GetUserProvidedDataSettings(context.Context, *GetUserProvidedDataSettingsRequest) (*UserProvidedDataSettings, error)
 }
@@ -2915,6 +2929,9 @@ func (UnimplementedAnalyticsAdminServiceServer) GetSubpropertySyncConfig(context
 }
 func (UnimplementedAnalyticsAdminServiceServer) GetReportingIdentitySettings(context.Context, *GetReportingIdentitySettingsRequest) (*ReportingIdentitySettings, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetReportingIdentitySettings not implemented")
+}
+func (UnimplementedAnalyticsAdminServiceServer) UpdateReportingIdentitySettings(context.Context, *UpdateReportingIdentitySettingsRequest) (*ReportingIdentitySettings, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateReportingIdentitySettings not implemented")
 }
 func (UnimplementedAnalyticsAdminServiceServer) GetUserProvidedDataSettings(context.Context, *GetUserProvidedDataSettingsRequest) (*UserProvidedDataSettings, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUserProvidedDataSettings not implemented")
@@ -5703,6 +5720,24 @@ func _AnalyticsAdminService_GetReportingIdentitySettings_Handler(srv interface{}
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AnalyticsAdminService_UpdateReportingIdentitySettings_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateReportingIdentitySettingsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AnalyticsAdminServiceServer).UpdateReportingIdentitySettings(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AnalyticsAdminService_UpdateReportingIdentitySettings_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AnalyticsAdminServiceServer).UpdateReportingIdentitySettings(ctx, req.(*UpdateReportingIdentitySettingsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _AnalyticsAdminService_GetUserProvidedDataSettings_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetUserProvidedDataSettingsRequest)
 	if err := dec(in); err != nil {
@@ -6343,6 +6378,10 @@ var AnalyticsAdminService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetReportingIdentitySettings",
 			Handler:    _AnalyticsAdminService_GetReportingIdentitySettings_Handler,
+		},
+		{
+			MethodName: "UpdateReportingIdentitySettings",
+			Handler:    _AnalyticsAdminService_UpdateReportingIdentitySettings_Handler,
 		},
 		{
 			MethodName: "GetUserProvidedDataSettings",

@@ -35,83 +35,84 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	OracleDatabase_ListCloudExadataInfrastructures_FullMethodName      = "/google.cloud.oracledatabase.v1.OracleDatabase/ListCloudExadataInfrastructures"
-	OracleDatabase_GetCloudExadataInfrastructure_FullMethodName        = "/google.cloud.oracledatabase.v1.OracleDatabase/GetCloudExadataInfrastructure"
-	OracleDatabase_CreateCloudExadataInfrastructure_FullMethodName     = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateCloudExadataInfrastructure"
-	OracleDatabase_DeleteCloudExadataInfrastructure_FullMethodName     = "/google.cloud.oracledatabase.v1.OracleDatabase/DeleteCloudExadataInfrastructure"
-	OracleDatabase_ListCloudVmClusters_FullMethodName                  = "/google.cloud.oracledatabase.v1.OracleDatabase/ListCloudVmClusters"
-	OracleDatabase_GetCloudVmCluster_FullMethodName                    = "/google.cloud.oracledatabase.v1.OracleDatabase/GetCloudVmCluster"
-	OracleDatabase_CreateCloudVmCluster_FullMethodName                 = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateCloudVmCluster"
-	OracleDatabase_DeleteCloudVmCluster_FullMethodName                 = "/google.cloud.oracledatabase.v1.OracleDatabase/DeleteCloudVmCluster"
-	OracleDatabase_ListEntitlements_FullMethodName                     = "/google.cloud.oracledatabase.v1.OracleDatabase/ListEntitlements"
-	OracleDatabase_ListDbServers_FullMethodName                        = "/google.cloud.oracledatabase.v1.OracleDatabase/ListDbServers"
-	OracleDatabase_ListDbNodes_FullMethodName                          = "/google.cloud.oracledatabase.v1.OracleDatabase/ListDbNodes"
-	OracleDatabase_ListGiVersions_FullMethodName                       = "/google.cloud.oracledatabase.v1.OracleDatabase/ListGiVersions"
-	OracleDatabase_ListMinorVersions_FullMethodName                    = "/google.cloud.oracledatabase.v1.OracleDatabase/ListMinorVersions"
-	OracleDatabase_ListDbSystemShapes_FullMethodName                   = "/google.cloud.oracledatabase.v1.OracleDatabase/ListDbSystemShapes"
-	OracleDatabase_ListAutonomousDatabases_FullMethodName              = "/google.cloud.oracledatabase.v1.OracleDatabase/ListAutonomousDatabases"
-	OracleDatabase_GetAutonomousDatabase_FullMethodName                = "/google.cloud.oracledatabase.v1.OracleDatabase/GetAutonomousDatabase"
-	OracleDatabase_CreateAutonomousDatabase_FullMethodName             = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateAutonomousDatabase"
-	OracleDatabase_UpdateAutonomousDatabase_FullMethodName             = "/google.cloud.oracledatabase.v1.OracleDatabase/UpdateAutonomousDatabase"
-	OracleDatabase_DeleteAutonomousDatabase_FullMethodName             = "/google.cloud.oracledatabase.v1.OracleDatabase/DeleteAutonomousDatabase"
-	OracleDatabase_RestoreAutonomousDatabase_FullMethodName            = "/google.cloud.oracledatabase.v1.OracleDatabase/RestoreAutonomousDatabase"
-	OracleDatabase_GenerateAutonomousDatabaseWallet_FullMethodName     = "/google.cloud.oracledatabase.v1.OracleDatabase/GenerateAutonomousDatabaseWallet"
-	OracleDatabase_ListAutonomousDbVersions_FullMethodName             = "/google.cloud.oracledatabase.v1.OracleDatabase/ListAutonomousDbVersions"
-	OracleDatabase_ListAutonomousDatabaseCharacterSets_FullMethodName  = "/google.cloud.oracledatabase.v1.OracleDatabase/ListAutonomousDatabaseCharacterSets"
-	OracleDatabase_ListAutonomousDatabaseBackups_FullMethodName        = "/google.cloud.oracledatabase.v1.OracleDatabase/ListAutonomousDatabaseBackups"
-	OracleDatabase_StopAutonomousDatabase_FullMethodName               = "/google.cloud.oracledatabase.v1.OracleDatabase/StopAutonomousDatabase"
-	OracleDatabase_StartAutonomousDatabase_FullMethodName              = "/google.cloud.oracledatabase.v1.OracleDatabase/StartAutonomousDatabase"
-	OracleDatabase_RestartAutonomousDatabase_FullMethodName            = "/google.cloud.oracledatabase.v1.OracleDatabase/RestartAutonomousDatabase"
-	OracleDatabase_SwitchoverAutonomousDatabase_FullMethodName         = "/google.cloud.oracledatabase.v1.OracleDatabase/SwitchoverAutonomousDatabase"
-	OracleDatabase_FailoverAutonomousDatabase_FullMethodName           = "/google.cloud.oracledatabase.v1.OracleDatabase/FailoverAutonomousDatabase"
-	OracleDatabase_ListOdbNetworks_FullMethodName                      = "/google.cloud.oracledatabase.v1.OracleDatabase/ListOdbNetworks"
-	OracleDatabase_GetOdbNetwork_FullMethodName                        = "/google.cloud.oracledatabase.v1.OracleDatabase/GetOdbNetwork"
-	OracleDatabase_CreateOdbNetwork_FullMethodName                     = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateOdbNetwork"
-	OracleDatabase_DeleteOdbNetwork_FullMethodName                     = "/google.cloud.oracledatabase.v1.OracleDatabase/DeleteOdbNetwork"
-	OracleDatabase_ListOdbSubnets_FullMethodName                       = "/google.cloud.oracledatabase.v1.OracleDatabase/ListOdbSubnets"
-	OracleDatabase_GetOdbSubnet_FullMethodName                         = "/google.cloud.oracledatabase.v1.OracleDatabase/GetOdbSubnet"
-	OracleDatabase_CreateOdbSubnet_FullMethodName                      = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateOdbSubnet"
-	OracleDatabase_DeleteOdbSubnet_FullMethodName                      = "/google.cloud.oracledatabase.v1.OracleDatabase/DeleteOdbSubnet"
-	OracleDatabase_ListExadbVmClusters_FullMethodName                  = "/google.cloud.oracledatabase.v1.OracleDatabase/ListExadbVmClusters"
-	OracleDatabase_GetExadbVmCluster_FullMethodName                    = "/google.cloud.oracledatabase.v1.OracleDatabase/GetExadbVmCluster"
-	OracleDatabase_CreateExadbVmCluster_FullMethodName                 = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateExadbVmCluster"
-	OracleDatabase_DeleteExadbVmCluster_FullMethodName                 = "/google.cloud.oracledatabase.v1.OracleDatabase/DeleteExadbVmCluster"
-	OracleDatabase_UpdateExadbVmCluster_FullMethodName                 = "/google.cloud.oracledatabase.v1.OracleDatabase/UpdateExadbVmCluster"
-	OracleDatabase_RemoveVirtualMachineExadbVmCluster_FullMethodName   = "/google.cloud.oracledatabase.v1.OracleDatabase/RemoveVirtualMachineExadbVmCluster"
-	OracleDatabase_ListExascaleDbStorageVaults_FullMethodName          = "/google.cloud.oracledatabase.v1.OracleDatabase/ListExascaleDbStorageVaults"
-	OracleDatabase_GetExascaleDbStorageVault_FullMethodName            = "/google.cloud.oracledatabase.v1.OracleDatabase/GetExascaleDbStorageVault"
-	OracleDatabase_CreateExascaleDbStorageVault_FullMethodName         = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateExascaleDbStorageVault"
-	OracleDatabase_DeleteExascaleDbStorageVault_FullMethodName         = "/google.cloud.oracledatabase.v1.OracleDatabase/DeleteExascaleDbStorageVault"
-	OracleDatabase_ListDbSystemInitialStorageSizes_FullMethodName      = "/google.cloud.oracledatabase.v1.OracleDatabase/ListDbSystemInitialStorageSizes"
-	OracleDatabase_ListDatabases_FullMethodName                        = "/google.cloud.oracledatabase.v1.OracleDatabase/ListDatabases"
-	OracleDatabase_GetDatabase_FullMethodName                          = "/google.cloud.oracledatabase.v1.OracleDatabase/GetDatabase"
-	OracleDatabase_ListPluggableDatabases_FullMethodName               = "/google.cloud.oracledatabase.v1.OracleDatabase/ListPluggableDatabases"
-	OracleDatabase_GetPluggableDatabase_FullMethodName                 = "/google.cloud.oracledatabase.v1.OracleDatabase/GetPluggableDatabase"
-	OracleDatabase_ListDbSystems_FullMethodName                        = "/google.cloud.oracledatabase.v1.OracleDatabase/ListDbSystems"
-	OracleDatabase_GetDbSystem_FullMethodName                          = "/google.cloud.oracledatabase.v1.OracleDatabase/GetDbSystem"
-	OracleDatabase_CreateDbSystem_FullMethodName                       = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateDbSystem"
-	OracleDatabase_DeleteDbSystem_FullMethodName                       = "/google.cloud.oracledatabase.v1.OracleDatabase/DeleteDbSystem"
-	OracleDatabase_ListGoldengateDeployments_FullMethodName            = "/google.cloud.oracledatabase.v1.OracleDatabase/ListGoldengateDeployments"
-	OracleDatabase_GetGoldengateDeployment_FullMethodName              = "/google.cloud.oracledatabase.v1.OracleDatabase/GetGoldengateDeployment"
-	OracleDatabase_CreateGoldengateDeployment_FullMethodName           = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateGoldengateDeployment"
-	OracleDatabase_DeleteGoldengateDeployment_FullMethodName           = "/google.cloud.oracledatabase.v1.OracleDatabase/DeleteGoldengateDeployment"
-	OracleDatabase_StopGoldengateDeployment_FullMethodName             = "/google.cloud.oracledatabase.v1.OracleDatabase/StopGoldengateDeployment"
-	OracleDatabase_StartGoldengateDeployment_FullMethodName            = "/google.cloud.oracledatabase.v1.OracleDatabase/StartGoldengateDeployment"
-	OracleDatabase_ListGoldengateConnections_FullMethodName            = "/google.cloud.oracledatabase.v1.OracleDatabase/ListGoldengateConnections"
-	OracleDatabase_GetGoldengateConnection_FullMethodName              = "/google.cloud.oracledatabase.v1.OracleDatabase/GetGoldengateConnection"
-	OracleDatabase_CreateGoldengateConnection_FullMethodName           = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateGoldengateConnection"
-	OracleDatabase_DeleteGoldengateConnection_FullMethodName           = "/google.cloud.oracledatabase.v1.OracleDatabase/DeleteGoldengateConnection"
-	OracleDatabase_ListGoldengateDeploymentVersions_FullMethodName     = "/google.cloud.oracledatabase.v1.OracleDatabase/ListGoldengateDeploymentVersions"
-	OracleDatabase_ListGoldengateDeploymentTypes_FullMethodName        = "/google.cloud.oracledatabase.v1.OracleDatabase/ListGoldengateDeploymentTypes"
-	OracleDatabase_ListGoldengateDeploymentEnvironments_FullMethodName = "/google.cloud.oracledatabase.v1.OracleDatabase/ListGoldengateDeploymentEnvironments"
-	OracleDatabase_ListGoldengateConnectionTypes_FullMethodName        = "/google.cloud.oracledatabase.v1.OracleDatabase/ListGoldengateConnectionTypes"
-	OracleDatabase_ListDbVersions_FullMethodName                       = "/google.cloud.oracledatabase.v1.OracleDatabase/ListDbVersions"
-	OracleDatabase_ListDatabaseCharacterSets_FullMethodName            = "/google.cloud.oracledatabase.v1.OracleDatabase/ListDatabaseCharacterSets"
-	OracleDatabase_ListGoldengateConnectionAssignments_FullMethodName  = "/google.cloud.oracledatabase.v1.OracleDatabase/ListGoldengateConnectionAssignments"
-	OracleDatabase_GetGoldengateConnectionAssignment_FullMethodName    = "/google.cloud.oracledatabase.v1.OracleDatabase/GetGoldengateConnectionAssignment"
-	OracleDatabase_CreateGoldengateConnectionAssignment_FullMethodName = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateGoldengateConnectionAssignment"
-	OracleDatabase_DeleteGoldengateConnectionAssignment_FullMethodName = "/google.cloud.oracledatabase.v1.OracleDatabase/DeleteGoldengateConnectionAssignment"
-	OracleDatabase_TestGoldengateConnectionAssignment_FullMethodName   = "/google.cloud.oracledatabase.v1.OracleDatabase/TestGoldengateConnectionAssignment"
+	OracleDatabase_ListCloudExadataInfrastructures_FullMethodName             = "/google.cloud.oracledatabase.v1.OracleDatabase/ListCloudExadataInfrastructures"
+	OracleDatabase_GetCloudExadataInfrastructure_FullMethodName               = "/google.cloud.oracledatabase.v1.OracleDatabase/GetCloudExadataInfrastructure"
+	OracleDatabase_CreateCloudExadataInfrastructure_FullMethodName            = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateCloudExadataInfrastructure"
+	OracleDatabase_DeleteCloudExadataInfrastructure_FullMethodName            = "/google.cloud.oracledatabase.v1.OracleDatabase/DeleteCloudExadataInfrastructure"
+	OracleDatabase_ConfigureExascaleCloudExadataInfrastructure_FullMethodName = "/google.cloud.oracledatabase.v1.OracleDatabase/ConfigureExascaleCloudExadataInfrastructure"
+	OracleDatabase_ListCloudVmClusters_FullMethodName                         = "/google.cloud.oracledatabase.v1.OracleDatabase/ListCloudVmClusters"
+	OracleDatabase_GetCloudVmCluster_FullMethodName                           = "/google.cloud.oracledatabase.v1.OracleDatabase/GetCloudVmCluster"
+	OracleDatabase_CreateCloudVmCluster_FullMethodName                        = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateCloudVmCluster"
+	OracleDatabase_DeleteCloudVmCluster_FullMethodName                        = "/google.cloud.oracledatabase.v1.OracleDatabase/DeleteCloudVmCluster"
+	OracleDatabase_ListEntitlements_FullMethodName                            = "/google.cloud.oracledatabase.v1.OracleDatabase/ListEntitlements"
+	OracleDatabase_ListDbServers_FullMethodName                               = "/google.cloud.oracledatabase.v1.OracleDatabase/ListDbServers"
+	OracleDatabase_ListDbNodes_FullMethodName                                 = "/google.cloud.oracledatabase.v1.OracleDatabase/ListDbNodes"
+	OracleDatabase_ListGiVersions_FullMethodName                              = "/google.cloud.oracledatabase.v1.OracleDatabase/ListGiVersions"
+	OracleDatabase_ListMinorVersions_FullMethodName                           = "/google.cloud.oracledatabase.v1.OracleDatabase/ListMinorVersions"
+	OracleDatabase_ListDbSystemShapes_FullMethodName                          = "/google.cloud.oracledatabase.v1.OracleDatabase/ListDbSystemShapes"
+	OracleDatabase_ListAutonomousDatabases_FullMethodName                     = "/google.cloud.oracledatabase.v1.OracleDatabase/ListAutonomousDatabases"
+	OracleDatabase_GetAutonomousDatabase_FullMethodName                       = "/google.cloud.oracledatabase.v1.OracleDatabase/GetAutonomousDatabase"
+	OracleDatabase_CreateAutonomousDatabase_FullMethodName                    = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateAutonomousDatabase"
+	OracleDatabase_UpdateAutonomousDatabase_FullMethodName                    = "/google.cloud.oracledatabase.v1.OracleDatabase/UpdateAutonomousDatabase"
+	OracleDatabase_DeleteAutonomousDatabase_FullMethodName                    = "/google.cloud.oracledatabase.v1.OracleDatabase/DeleteAutonomousDatabase"
+	OracleDatabase_RestoreAutonomousDatabase_FullMethodName                   = "/google.cloud.oracledatabase.v1.OracleDatabase/RestoreAutonomousDatabase"
+	OracleDatabase_GenerateAutonomousDatabaseWallet_FullMethodName            = "/google.cloud.oracledatabase.v1.OracleDatabase/GenerateAutonomousDatabaseWallet"
+	OracleDatabase_ListAutonomousDbVersions_FullMethodName                    = "/google.cloud.oracledatabase.v1.OracleDatabase/ListAutonomousDbVersions"
+	OracleDatabase_ListAutonomousDatabaseCharacterSets_FullMethodName         = "/google.cloud.oracledatabase.v1.OracleDatabase/ListAutonomousDatabaseCharacterSets"
+	OracleDatabase_ListAutonomousDatabaseBackups_FullMethodName               = "/google.cloud.oracledatabase.v1.OracleDatabase/ListAutonomousDatabaseBackups"
+	OracleDatabase_StopAutonomousDatabase_FullMethodName                      = "/google.cloud.oracledatabase.v1.OracleDatabase/StopAutonomousDatabase"
+	OracleDatabase_StartAutonomousDatabase_FullMethodName                     = "/google.cloud.oracledatabase.v1.OracleDatabase/StartAutonomousDatabase"
+	OracleDatabase_RestartAutonomousDatabase_FullMethodName                   = "/google.cloud.oracledatabase.v1.OracleDatabase/RestartAutonomousDatabase"
+	OracleDatabase_SwitchoverAutonomousDatabase_FullMethodName                = "/google.cloud.oracledatabase.v1.OracleDatabase/SwitchoverAutonomousDatabase"
+	OracleDatabase_FailoverAutonomousDatabase_FullMethodName                  = "/google.cloud.oracledatabase.v1.OracleDatabase/FailoverAutonomousDatabase"
+	OracleDatabase_ListOdbNetworks_FullMethodName                             = "/google.cloud.oracledatabase.v1.OracleDatabase/ListOdbNetworks"
+	OracleDatabase_GetOdbNetwork_FullMethodName                               = "/google.cloud.oracledatabase.v1.OracleDatabase/GetOdbNetwork"
+	OracleDatabase_CreateOdbNetwork_FullMethodName                            = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateOdbNetwork"
+	OracleDatabase_DeleteOdbNetwork_FullMethodName                            = "/google.cloud.oracledatabase.v1.OracleDatabase/DeleteOdbNetwork"
+	OracleDatabase_ListOdbSubnets_FullMethodName                              = "/google.cloud.oracledatabase.v1.OracleDatabase/ListOdbSubnets"
+	OracleDatabase_GetOdbSubnet_FullMethodName                                = "/google.cloud.oracledatabase.v1.OracleDatabase/GetOdbSubnet"
+	OracleDatabase_CreateOdbSubnet_FullMethodName                             = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateOdbSubnet"
+	OracleDatabase_DeleteOdbSubnet_FullMethodName                             = "/google.cloud.oracledatabase.v1.OracleDatabase/DeleteOdbSubnet"
+	OracleDatabase_ListExadbVmClusters_FullMethodName                         = "/google.cloud.oracledatabase.v1.OracleDatabase/ListExadbVmClusters"
+	OracleDatabase_GetExadbVmCluster_FullMethodName                           = "/google.cloud.oracledatabase.v1.OracleDatabase/GetExadbVmCluster"
+	OracleDatabase_CreateExadbVmCluster_FullMethodName                        = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateExadbVmCluster"
+	OracleDatabase_DeleteExadbVmCluster_FullMethodName                        = "/google.cloud.oracledatabase.v1.OracleDatabase/DeleteExadbVmCluster"
+	OracleDatabase_UpdateExadbVmCluster_FullMethodName                        = "/google.cloud.oracledatabase.v1.OracleDatabase/UpdateExadbVmCluster"
+	OracleDatabase_RemoveVirtualMachineExadbVmCluster_FullMethodName          = "/google.cloud.oracledatabase.v1.OracleDatabase/RemoveVirtualMachineExadbVmCluster"
+	OracleDatabase_ListExascaleDbStorageVaults_FullMethodName                 = "/google.cloud.oracledatabase.v1.OracleDatabase/ListExascaleDbStorageVaults"
+	OracleDatabase_GetExascaleDbStorageVault_FullMethodName                   = "/google.cloud.oracledatabase.v1.OracleDatabase/GetExascaleDbStorageVault"
+	OracleDatabase_CreateExascaleDbStorageVault_FullMethodName                = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateExascaleDbStorageVault"
+	OracleDatabase_DeleteExascaleDbStorageVault_FullMethodName                = "/google.cloud.oracledatabase.v1.OracleDatabase/DeleteExascaleDbStorageVault"
+	OracleDatabase_ListDbSystemInitialStorageSizes_FullMethodName             = "/google.cloud.oracledatabase.v1.OracleDatabase/ListDbSystemInitialStorageSizes"
+	OracleDatabase_ListDatabases_FullMethodName                               = "/google.cloud.oracledatabase.v1.OracleDatabase/ListDatabases"
+	OracleDatabase_GetDatabase_FullMethodName                                 = "/google.cloud.oracledatabase.v1.OracleDatabase/GetDatabase"
+	OracleDatabase_ListPluggableDatabases_FullMethodName                      = "/google.cloud.oracledatabase.v1.OracleDatabase/ListPluggableDatabases"
+	OracleDatabase_GetPluggableDatabase_FullMethodName                        = "/google.cloud.oracledatabase.v1.OracleDatabase/GetPluggableDatabase"
+	OracleDatabase_ListDbSystems_FullMethodName                               = "/google.cloud.oracledatabase.v1.OracleDatabase/ListDbSystems"
+	OracleDatabase_GetDbSystem_FullMethodName                                 = "/google.cloud.oracledatabase.v1.OracleDatabase/GetDbSystem"
+	OracleDatabase_CreateDbSystem_FullMethodName                              = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateDbSystem"
+	OracleDatabase_DeleteDbSystem_FullMethodName                              = "/google.cloud.oracledatabase.v1.OracleDatabase/DeleteDbSystem"
+	OracleDatabase_ListGoldengateDeployments_FullMethodName                   = "/google.cloud.oracledatabase.v1.OracleDatabase/ListGoldengateDeployments"
+	OracleDatabase_GetGoldengateDeployment_FullMethodName                     = "/google.cloud.oracledatabase.v1.OracleDatabase/GetGoldengateDeployment"
+	OracleDatabase_CreateGoldengateDeployment_FullMethodName                  = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateGoldengateDeployment"
+	OracleDatabase_DeleteGoldengateDeployment_FullMethodName                  = "/google.cloud.oracledatabase.v1.OracleDatabase/DeleteGoldengateDeployment"
+	OracleDatabase_StopGoldengateDeployment_FullMethodName                    = "/google.cloud.oracledatabase.v1.OracleDatabase/StopGoldengateDeployment"
+	OracleDatabase_StartGoldengateDeployment_FullMethodName                   = "/google.cloud.oracledatabase.v1.OracleDatabase/StartGoldengateDeployment"
+	OracleDatabase_ListGoldengateConnections_FullMethodName                   = "/google.cloud.oracledatabase.v1.OracleDatabase/ListGoldengateConnections"
+	OracleDatabase_GetGoldengateConnection_FullMethodName                     = "/google.cloud.oracledatabase.v1.OracleDatabase/GetGoldengateConnection"
+	OracleDatabase_CreateGoldengateConnection_FullMethodName                  = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateGoldengateConnection"
+	OracleDatabase_DeleteGoldengateConnection_FullMethodName                  = "/google.cloud.oracledatabase.v1.OracleDatabase/DeleteGoldengateConnection"
+	OracleDatabase_ListGoldengateDeploymentVersions_FullMethodName            = "/google.cloud.oracledatabase.v1.OracleDatabase/ListGoldengateDeploymentVersions"
+	OracleDatabase_ListGoldengateDeploymentTypes_FullMethodName               = "/google.cloud.oracledatabase.v1.OracleDatabase/ListGoldengateDeploymentTypes"
+	OracleDatabase_ListGoldengateDeploymentEnvironments_FullMethodName        = "/google.cloud.oracledatabase.v1.OracleDatabase/ListGoldengateDeploymentEnvironments"
+	OracleDatabase_ListGoldengateConnectionTypes_FullMethodName               = "/google.cloud.oracledatabase.v1.OracleDatabase/ListGoldengateConnectionTypes"
+	OracleDatabase_ListDbVersions_FullMethodName                              = "/google.cloud.oracledatabase.v1.OracleDatabase/ListDbVersions"
+	OracleDatabase_ListDatabaseCharacterSets_FullMethodName                   = "/google.cloud.oracledatabase.v1.OracleDatabase/ListDatabaseCharacterSets"
+	OracleDatabase_ListGoldengateConnectionAssignments_FullMethodName         = "/google.cloud.oracledatabase.v1.OracleDatabase/ListGoldengateConnectionAssignments"
+	OracleDatabase_GetGoldengateConnectionAssignment_FullMethodName           = "/google.cloud.oracledatabase.v1.OracleDatabase/GetGoldengateConnectionAssignment"
+	OracleDatabase_CreateGoldengateConnectionAssignment_FullMethodName        = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateGoldengateConnectionAssignment"
+	OracleDatabase_DeleteGoldengateConnectionAssignment_FullMethodName        = "/google.cloud.oracledatabase.v1.OracleDatabase/DeleteGoldengateConnectionAssignment"
+	OracleDatabase_TestGoldengateConnectionAssignment_FullMethodName          = "/google.cloud.oracledatabase.v1.OracleDatabase/TestGoldengateConnectionAssignment"
 )
 
 // OracleDatabaseClient is the client API for OracleDatabase service.
@@ -126,6 +127,8 @@ type OracleDatabaseClient interface {
 	CreateCloudExadataInfrastructure(ctx context.Context, in *CreateCloudExadataInfrastructureRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes a single Exadata Infrastructure.
 	DeleteCloudExadataInfrastructure(ctx context.Context, in *DeleteCloudExadataInfrastructureRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Configures Exascale for a single Exadata Infrastructure.
+	ConfigureExascaleCloudExadataInfrastructure(ctx context.Context, in *ConfigureExascaleCloudExadataInfrastructureRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Lists the VM Clusters in a given project and location.
 	ListCloudVmClusters(ctx context.Context, in *ListCloudVmClustersRequest, opts ...grpc.CallOption) (*ListCloudVmClustersResponse, error)
 	// Gets details of a single VM Cluster.
@@ -323,6 +326,15 @@ func (c *oracleDatabaseClient) CreateCloudExadataInfrastructure(ctx context.Cont
 func (c *oracleDatabaseClient) DeleteCloudExadataInfrastructure(ctx context.Context, in *DeleteCloudExadataInfrastructureRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
 	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, OracleDatabase_DeleteCloudExadataInfrastructure_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *oracleDatabaseClient) ConfigureExascaleCloudExadataInfrastructure(ctx context.Context, in *ConfigureExascaleCloudExadataInfrastructureRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, OracleDatabase_ConfigureExascaleCloudExadataInfrastructure_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -998,6 +1010,8 @@ type OracleDatabaseServer interface {
 	CreateCloudExadataInfrastructure(context.Context, *CreateCloudExadataInfrastructureRequest) (*longrunningpb.Operation, error)
 	// Deletes a single Exadata Infrastructure.
 	DeleteCloudExadataInfrastructure(context.Context, *DeleteCloudExadataInfrastructureRequest) (*longrunningpb.Operation, error)
+	// Configures Exascale for a single Exadata Infrastructure.
+	ConfigureExascaleCloudExadataInfrastructure(context.Context, *ConfigureExascaleCloudExadataInfrastructureRequest) (*longrunningpb.Operation, error)
 	// Lists the VM Clusters in a given project and location.
 	ListCloudVmClusters(context.Context, *ListCloudVmClustersRequest) (*ListCloudVmClustersResponse, error)
 	// Gets details of a single VM Cluster.
@@ -1172,6 +1186,9 @@ func (UnimplementedOracleDatabaseServer) CreateCloudExadataInfrastructure(contex
 }
 func (UnimplementedOracleDatabaseServer) DeleteCloudExadataInfrastructure(context.Context, *DeleteCloudExadataInfrastructureRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteCloudExadataInfrastructure not implemented")
+}
+func (UnimplementedOracleDatabaseServer) ConfigureExascaleCloudExadataInfrastructure(context.Context, *ConfigureExascaleCloudExadataInfrastructureRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ConfigureExascaleCloudExadataInfrastructure not implemented")
 }
 func (UnimplementedOracleDatabaseServer) ListCloudVmClusters(context.Context, *ListCloudVmClustersRequest) (*ListCloudVmClustersResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListCloudVmClusters not implemented")
@@ -1472,6 +1489,24 @@ func _OracleDatabase_DeleteCloudExadataInfrastructure_Handler(srv interface{}, c
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(OracleDatabaseServer).DeleteCloudExadataInfrastructure(ctx, req.(*DeleteCloudExadataInfrastructureRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _OracleDatabase_ConfigureExascaleCloudExadataInfrastructure_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ConfigureExascaleCloudExadataInfrastructureRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OracleDatabaseServer).ConfigureExascaleCloudExadataInfrastructure(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OracleDatabase_ConfigureExascaleCloudExadataInfrastructure_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OracleDatabaseServer).ConfigureExascaleCloudExadataInfrastructure(ctx, req.(*ConfigureExascaleCloudExadataInfrastructureRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -2812,6 +2847,10 @@ var OracleDatabase_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteCloudExadataInfrastructure",
 			Handler:    _OracleDatabase_DeleteCloudExadataInfrastructure_Handler,
+		},
+		{
+			MethodName: "ConfigureExascaleCloudExadataInfrastructure",
+			Handler:    _OracleDatabase_ConfigureExascaleCloudExadataInfrastructure_Handler,
 		},
 		{
 			MethodName: "ListCloudVmClusters",

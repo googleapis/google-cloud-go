@@ -6936,6 +6936,52 @@
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient",
           "shortName": "AnalyticsAdminClient"
         },
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.UpdateReportingIdentitySettings",
+        "method": {
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateReportingIdentitySettings",
+          "service": {
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService",
+            "shortName": "AnalyticsAdminService"
+          },
+          "shortName": "UpdateReportingIdentitySettings"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "adminpb.UpdateReportingIdentitySettingsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*adminpb.ReportingIdentitySettings",
+        "shortName": "UpdateReportingIdentitySettings"
+      },
+      "description": "UpdateReportingIdentitySettings updates the reporting identity settings for this property.",
+      "file": "AnalyticsAdminClient/UpdateReportingIdentitySettings/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_UpdateReportingIdentitySettings_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "analyticsadmin UpdateReportingIdentitySettings Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient",
+          "shortName": "AnalyticsAdminClient"
+        },
         "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.UpdateSKAdNetworkConversionValueSchema",
         "method": {
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateSKAdNetworkConversionValueSchema",

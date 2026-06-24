@@ -914,7 +914,11 @@ type DeleteCollectionRequest struct {
 	//
 	// The request ID must be a valid UUID with the exception that zero UUID is
 	// not supported (00000000-0000-0000-0000-000000000000).
-	RequestId     string `protobuf:"bytes,2,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
+	RequestId string `protobuf:"bytes,2,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
+	// Optional. If set to true, any Indexes and DataObjects from this Collection
+	// will also be deleted. (Otherwise, the request will only work if the
+	// Collection has no Indexes and DataObjects.)
+	Force         bool `protobuf:"varint,3,opt,name=force,proto3" json:"force,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -961,6 +965,13 @@ func (x *DeleteCollectionRequest) GetRequestId() string {
 		return x.RequestId
 	}
 	return ""
+}
+
+func (x *DeleteCollectionRequest) GetForce() bool {
+	if x != nil {
+		return x.Force
+	}
+	return false
 }
 
 // Message describing Index object
@@ -1913,7 +1924,15 @@ type ExportDataObjectsRequest struct {
 	// Required. The resource name of the Collection from which we want to export
 	// Data Objects. Format:
 	// `projects/{project}/locations/{location}/collections/{collection}`.
-	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Optional. Restricts which top-level Data Object fields appear in each
+	// exported JSONL record. If unset, every field is exported (the existing
+	// behavior). The primary use case is excluding the per-object `etag` so
+	// that the exported records can be imported into a Collection in a
+	// different region without optimistic-concurrency conflicts.
+	//
+	// Allowed field names are `id`, `data`, `vectors`, `etag`.
+	FieldFilter   *ExportDataObjectsRequest_FieldFilter `protobuf:"bytes,3,opt,name=field_filter,json=fieldFilter,proto3" json:"field_filter,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1969,6 +1988,13 @@ func (x *ExportDataObjectsRequest) GetName() string {
 		return x.Name
 	}
 	return ""
+}
+
+func (x *ExportDataObjectsRequest) GetFieldFilter() *ExportDataObjectsRequest_FieldFilter {
+	if x != nil {
+		return x.FieldFilter
+	}
+	return nil
 }
 
 type isExportDataObjectsRequest_Destination interface {
@@ -2299,6 +2325,146 @@ func (x *ExportDataObjectsRequest_GcsExportDestination) GetFormat() ExportDataOb
 	return ExportDataObjectsRequest_GcsExportDestination_FORMAT_UNSPECIFIED
 }
 
+// Selects which top-level Data Object fields are emitted at export time.
+type ExportDataObjectsRequest_FieldFilter struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Exactly one of `included_fields` or `excluded_fields` must be set.
+	//
+	// Types that are valid to be assigned to Selector:
+	//
+	//	*ExportDataObjectsRequest_FieldFilter_IncludedFields
+	//	*ExportDataObjectsRequest_FieldFilter_ExcludedFields
+	Selector      isExportDataObjectsRequest_FieldFilter_Selector `protobuf_oneof:"selector"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ExportDataObjectsRequest_FieldFilter) Reset() {
+	*x = ExportDataObjectsRequest_FieldFilter{}
+	mi := &file_google_cloud_vectorsearch_v1beta_vectorsearch_service_proto_msgTypes[31]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ExportDataObjectsRequest_FieldFilter) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ExportDataObjectsRequest_FieldFilter) ProtoMessage() {}
+
+func (x *ExportDataObjectsRequest_FieldFilter) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_vectorsearch_v1beta_vectorsearch_service_proto_msgTypes[31]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ExportDataObjectsRequest_FieldFilter.ProtoReflect.Descriptor instead.
+func (*ExportDataObjectsRequest_FieldFilter) Descriptor() ([]byte, []int) {
+	return file_google_cloud_vectorsearch_v1beta_vectorsearch_service_proto_rawDescGZIP(), []int{21, 1}
+}
+
+func (x *ExportDataObjectsRequest_FieldFilter) GetSelector() isExportDataObjectsRequest_FieldFilter_Selector {
+	if x != nil {
+		return x.Selector
+	}
+	return nil
+}
+
+func (x *ExportDataObjectsRequest_FieldFilter) GetIncludedFields() *ExportDataObjectsRequest_FieldFilter_FieldList {
+	if x != nil {
+		if x, ok := x.Selector.(*ExportDataObjectsRequest_FieldFilter_IncludedFields); ok {
+			return x.IncludedFields
+		}
+	}
+	return nil
+}
+
+func (x *ExportDataObjectsRequest_FieldFilter) GetExcludedFields() *ExportDataObjectsRequest_FieldFilter_FieldList {
+	if x != nil {
+		if x, ok := x.Selector.(*ExportDataObjectsRequest_FieldFilter_ExcludedFields); ok {
+			return x.ExcludedFields
+		}
+	}
+	return nil
+}
+
+type isExportDataObjectsRequest_FieldFilter_Selector interface {
+	isExportDataObjectsRequest_FieldFilter_Selector()
+}
+
+type ExportDataObjectsRequest_FieldFilter_IncludedFields struct {
+	// Optional. Only these top-level fields will appear in each exported
+	// record.
+	IncludedFields *ExportDataObjectsRequest_FieldFilter_FieldList `protobuf:"bytes,1,opt,name=included_fields,json=includedFields,proto3,oneof"`
+}
+
+type ExportDataObjectsRequest_FieldFilter_ExcludedFields struct {
+	// Optional. Every top-level field except these will appear in each
+	// exported record.
+	ExcludedFields *ExportDataObjectsRequest_FieldFilter_FieldList `protobuf:"bytes,2,opt,name=excluded_fields,json=excludedFields,proto3,oneof"`
+}
+
+func (*ExportDataObjectsRequest_FieldFilter_IncludedFields) isExportDataObjectsRequest_FieldFilter_Selector() {
+}
+
+func (*ExportDataObjectsRequest_FieldFilter_ExcludedFields) isExportDataObjectsRequest_FieldFilter_Selector() {
+}
+
+// Wrapper for a repeated string. Wrapping in a message lets the
+// surrounding `oneof` distinguish "field set to an empty list" (which is
+// rejected as INVALID_ARGUMENT) from "field not set".
+type ExportDataObjectsRequest_FieldFilter_FieldList struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The list of top-level Data Object JSON field names. Allowed
+	// values are `id`, `data`, `vectors`, `etag`.
+	Fields        []string `protobuf:"bytes,1,rep,name=fields,proto3" json:"fields,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ExportDataObjectsRequest_FieldFilter_FieldList) Reset() {
+	*x = ExportDataObjectsRequest_FieldFilter_FieldList{}
+	mi := &file_google_cloud_vectorsearch_v1beta_vectorsearch_service_proto_msgTypes[32]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ExportDataObjectsRequest_FieldFilter_FieldList) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ExportDataObjectsRequest_FieldFilter_FieldList) ProtoMessage() {}
+
+func (x *ExportDataObjectsRequest_FieldFilter_FieldList) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_vectorsearch_v1beta_vectorsearch_service_proto_msgTypes[32]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ExportDataObjectsRequest_FieldFilter_FieldList.ProtoReflect.Descriptor instead.
+func (*ExportDataObjectsRequest_FieldFilter_FieldList) Descriptor() ([]byte, []int) {
+	return file_google_cloud_vectorsearch_v1beta_vectorsearch_service_proto_rawDescGZIP(), []int{21, 1, 0}
+}
+
+func (x *ExportDataObjectsRequest_FieldFilter_FieldList) GetFields() []string {
+	if x != nil {
+		return x.Fields
+	}
+	return nil
+}
+
 // Specification for autoscaling.
 type DedicatedInfrastructure_AutoscalingSpec struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -2318,7 +2484,7 @@ type DedicatedInfrastructure_AutoscalingSpec struct {
 
 func (x *DedicatedInfrastructure_AutoscalingSpec) Reset() {
 	*x = DedicatedInfrastructure_AutoscalingSpec{}
-	mi := &file_google_cloud_vectorsearch_v1beta_vectorsearch_service_proto_msgTypes[31]
+	mi := &file_google_cloud_vectorsearch_v1beta_vectorsearch_service_proto_msgTypes[33]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2330,7 +2496,7 @@ func (x *DedicatedInfrastructure_AutoscalingSpec) String() string {
 func (*DedicatedInfrastructure_AutoscalingSpec) ProtoMessage() {}
 
 func (x *DedicatedInfrastructure_AutoscalingSpec) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_vectorsearch_v1beta_vectorsearch_service_proto_msgTypes[31]
+	mi := &file_google_cloud_vectorsearch_v1beta_vectorsearch_service_proto_msgTypes[33]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2428,12 +2594,13 @@ const file_google_cloud_vectorsearch_v1beta_vectorsearch_service_proto_rawDesc =
 	"collection\x18\x02 \x01(\v2,.google.cloud.vectorsearch.v1beta.CollectionB\x03\xe0A\x02R\n" +
 	"collection\x12*\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x89\x01\n" +
+	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xa4\x01\n" +
 	"\x17DeleteCollectionRequest\x12B\n" +
 	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
 	"&vectorsearch.googleapis.com/CollectionR\x04name\x12*\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xd8\a\n" +
+	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12\x19\n" +
+	"\x05force\x18\x03 \x01(\bB\x03\xe0A\x01R\x05force\"\xd8\a\n" +
 	"\x05Index\x12{\n" +
 	"\x18dedicated_infrastructure\x18\v \x01(\v29.google.cloud.vectorsearch.v1beta.DedicatedInfrastructureB\x03\xe0A\x01H\x00R\x17dedicatedInfrastructure\x12Y\n" +
 	"\vdense_scann\x18\f \x01(\v21.google.cloud.vectorsearch.v1beta.DenseScannIndexB\x03\xe0A\x01H\x01R\n" +
@@ -2520,11 +2687,12 @@ const file_google_cloud_vectorsearch_v1beta_vectorsearch_service_proto_rawDesc =
 	"\rsuccess_count\x18\x03 \x01(\x03B\x03\xe0A\x03R\fsuccessCount\x12(\n" +
 	"\rfailure_count\x18\x04 \x01(\x03B\x03\xe0A\x03R\ffailureCount\"G\n" +
 	"\x19ImportDataObjectsResponse\x12*\n" +
-	"\x06status\x18\x01 \x01(\v2\x12.google.rpc.StatusR\x06status\"\xd6\x03\n" +
+	"\x06status\x18\x01 \x01(\v2\x12.google.rpc.StatusR\x06status\"\x92\a\n" +
 	"\x18ExportDataObjectsRequest\x12z\n" +
 	"\x0fgcs_destination\x18\x02 \x01(\v2O.google.cloud.vectorsearch.v1beta.ExportDataObjectsRequest.GcsExportDestinationH\x00R\x0egcsDestination\x12B\n" +
 	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&vectorsearch.googleapis.com/CollectionR\x04name\x1a\xea\x01\n" +
+	"&vectorsearch.googleapis.com/CollectionR\x04name\x12n\n" +
+	"\ffield_filter\x18\x03 \x01(\v2F.google.cloud.vectorsearch.v1beta.ExportDataObjectsRequest.FieldFilterB\x03\xe0A\x01R\vfieldFilter\x1a\xea\x01\n" +
 	"\x14GcsExportDestination\x12\"\n" +
 	"\n" +
 	"export_uri\x18\x01 \x01(\tB\x03\xe0A\x02R\texportUri\x12s\n" +
@@ -2532,7 +2700,14 @@ const file_google_cloud_vectorsearch_v1beta_vectorsearch_service_proto_rawDesc =
 	"\x06Format\x12\x16\n" +
 	"\x12FORMAT_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\x04JSON\x10\x01\x1a\x02\b\x01\x12\t\n" +
-	"\x05JSONL\x10\x02B\r\n" +
+	"\x05JSONL\x10\x02\x1a\xc9\x02\n" +
+	"\vFieldFilter\x12\x80\x01\n" +
+	"\x0fincluded_fields\x18\x01 \x01(\v2P.google.cloud.vectorsearch.v1beta.ExportDataObjectsRequest.FieldFilter.FieldListB\x03\xe0A\x01H\x00R\x0eincludedFields\x12\x80\x01\n" +
+	"\x0fexcluded_fields\x18\x02 \x01(\v2P.google.cloud.vectorsearch.v1beta.ExportDataObjectsRequest.FieldFilter.FieldListB\x03\xe0A\x01H\x00R\x0eexcludedFields\x1a(\n" +
+	"\tFieldList\x12\x1b\n" +
+	"\x06fields\x18\x01 \x03(\tB\x03\xe0A\x02R\x06fieldsB\n" +
+	"\n" +
+	"\bselectorB\r\n" +
 	"\vdestination\"\x9f\x01\n" +
 	"\x19ExportDataObjectsMetadata\x12@\n" +
 	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
@@ -2597,7 +2772,7 @@ func file_google_cloud_vectorsearch_v1beta_vectorsearch_service_proto_rawDescGZI
 }
 
 var file_google_cloud_vectorsearch_v1beta_vectorsearch_service_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_google_cloud_vectorsearch_v1beta_vectorsearch_service_proto_msgTypes = make([]protoimpl.MessageInfo, 32)
+var file_google_cloud_vectorsearch_v1beta_vectorsearch_service_proto_msgTypes = make([]protoimpl.MessageInfo, 34)
 var file_google_cloud_vectorsearch_v1beta_vectorsearch_service_proto_goTypes = []any{
 	(ExportDataObjectsRequest_GcsExportDestination_Format)(0), // 0: google.cloud.vectorsearch.v1beta.ExportDataObjectsRequest.GcsExportDestination.Format
 	(DedicatedInfrastructure_Mode)(0),                         // 1: google.cloud.vectorsearch.v1beta.DedicatedInfrastructure.Mode
@@ -2633,84 +2808,89 @@ var file_google_cloud_vectorsearch_v1beta_vectorsearch_service_proto_goTypes = [
 	nil,                                                       // 31: google.cloud.vectorsearch.v1beta.Index.LabelsEntry
 	(*ImportDataObjectsRequest_GcsImportConfig)(nil),          // 32: google.cloud.vectorsearch.v1beta.ImportDataObjectsRequest.GcsImportConfig
 	(*ExportDataObjectsRequest_GcsExportDestination)(nil),     // 33: google.cloud.vectorsearch.v1beta.ExportDataObjectsRequest.GcsExportDestination
-	(*DedicatedInfrastructure_AutoscalingSpec)(nil),           // 34: google.cloud.vectorsearch.v1beta.DedicatedInfrastructure.AutoscalingSpec
-	(*timestamppb.Timestamp)(nil),                             // 35: google.protobuf.Timestamp
-	(*structpb.Struct)(nil),                                   // 36: google.protobuf.Struct
-	(*EncryptionSpec)(nil),                                    // 37: google.cloud.vectorsearch.v1beta.EncryptionSpec
-	(*VertexEmbeddingConfig)(nil),                             // 38: google.cloud.vectorsearch.v1beta.VertexEmbeddingConfig
-	(*fieldmaskpb.FieldMask)(nil),                             // 39: google.protobuf.FieldMask
-	(DistanceMetric)(0),                                       // 40: google.cloud.vectorsearch.v1beta.DistanceMetric
-	(*status.Status)(nil),                                     // 41: google.rpc.Status
-	(*longrunningpb.Operation)(nil),                           // 42: google.longrunning.Operation
+	(*ExportDataObjectsRequest_FieldFilter)(nil),              // 34: google.cloud.vectorsearch.v1beta.ExportDataObjectsRequest.FieldFilter
+	(*ExportDataObjectsRequest_FieldFilter_FieldList)(nil),    // 35: google.cloud.vectorsearch.v1beta.ExportDataObjectsRequest.FieldFilter.FieldList
+	(*DedicatedInfrastructure_AutoscalingSpec)(nil),           // 36: google.cloud.vectorsearch.v1beta.DedicatedInfrastructure.AutoscalingSpec
+	(*timestamppb.Timestamp)(nil),                             // 37: google.protobuf.Timestamp
+	(*structpb.Struct)(nil),                                   // 38: google.protobuf.Struct
+	(*EncryptionSpec)(nil),                                    // 39: google.cloud.vectorsearch.v1beta.EncryptionSpec
+	(*VertexEmbeddingConfig)(nil),                             // 40: google.cloud.vectorsearch.v1beta.VertexEmbeddingConfig
+	(*fieldmaskpb.FieldMask)(nil),                             // 41: google.protobuf.FieldMask
+	(DistanceMetric)(0),                                       // 42: google.cloud.vectorsearch.v1beta.DistanceMetric
+	(*status.Status)(nil),                                     // 43: google.rpc.Status
+	(*longrunningpb.Operation)(nil),                           // 44: google.longrunning.Operation
 }
 var file_google_cloud_vectorsearch_v1beta_vectorsearch_service_proto_depIdxs = []int32{
-	35, // 0: google.cloud.vectorsearch.v1beta.Collection.create_time:type_name -> google.protobuf.Timestamp
-	35, // 1: google.cloud.vectorsearch.v1beta.Collection.update_time:type_name -> google.protobuf.Timestamp
+	37, // 0: google.cloud.vectorsearch.v1beta.Collection.create_time:type_name -> google.protobuf.Timestamp
+	37, // 1: google.cloud.vectorsearch.v1beta.Collection.update_time:type_name -> google.protobuf.Timestamp
 	29, // 2: google.cloud.vectorsearch.v1beta.Collection.labels:type_name -> google.cloud.vectorsearch.v1beta.Collection.LabelsEntry
-	36, // 3: google.cloud.vectorsearch.v1beta.Collection.schema:type_name -> google.protobuf.Struct
+	38, // 3: google.cloud.vectorsearch.v1beta.Collection.schema:type_name -> google.protobuf.Struct
 	30, // 4: google.cloud.vectorsearch.v1beta.Collection.vector_schema:type_name -> google.cloud.vectorsearch.v1beta.Collection.VectorSchemaEntry
-	36, // 5: google.cloud.vectorsearch.v1beta.Collection.data_schema:type_name -> google.protobuf.Struct
-	37, // 6: google.cloud.vectorsearch.v1beta.Collection.encryption_spec:type_name -> google.cloud.vectorsearch.v1beta.EncryptionSpec
+	38, // 5: google.cloud.vectorsearch.v1beta.Collection.data_schema:type_name -> google.protobuf.Struct
+	39, // 6: google.cloud.vectorsearch.v1beta.Collection.encryption_spec:type_name -> google.cloud.vectorsearch.v1beta.EncryptionSpec
 	5,  // 7: google.cloud.vectorsearch.v1beta.VectorField.dense_vector:type_name -> google.cloud.vectorsearch.v1beta.DenseVectorField
 	6,  // 8: google.cloud.vectorsearch.v1beta.VectorField.sparse_vector:type_name -> google.cloud.vectorsearch.v1beta.SparseVectorField
-	38, // 9: google.cloud.vectorsearch.v1beta.DenseVectorField.vertex_embedding_config:type_name -> google.cloud.vectorsearch.v1beta.VertexEmbeddingConfig
+	40, // 9: google.cloud.vectorsearch.v1beta.DenseVectorField.vertex_embedding_config:type_name -> google.cloud.vectorsearch.v1beta.VertexEmbeddingConfig
 	3,  // 10: google.cloud.vectorsearch.v1beta.ListCollectionsResponse.collections:type_name -> google.cloud.vectorsearch.v1beta.Collection
 	3,  // 11: google.cloud.vectorsearch.v1beta.CreateCollectionRequest.collection:type_name -> google.cloud.vectorsearch.v1beta.Collection
-	39, // 12: google.cloud.vectorsearch.v1beta.UpdateCollectionRequest.update_mask:type_name -> google.protobuf.FieldMask
+	41, // 12: google.cloud.vectorsearch.v1beta.UpdateCollectionRequest.update_mask:type_name -> google.protobuf.FieldMask
 	3,  // 13: google.cloud.vectorsearch.v1beta.UpdateCollectionRequest.collection:type_name -> google.cloud.vectorsearch.v1beta.Collection
 	27, // 14: google.cloud.vectorsearch.v1beta.Index.dedicated_infrastructure:type_name -> google.cloud.vectorsearch.v1beta.DedicatedInfrastructure
 	28, // 15: google.cloud.vectorsearch.v1beta.Index.dense_scann:type_name -> google.cloud.vectorsearch.v1beta.DenseScannIndex
 	31, // 16: google.cloud.vectorsearch.v1beta.Index.labels:type_name -> google.cloud.vectorsearch.v1beta.Index.LabelsEntry
-	35, // 17: google.cloud.vectorsearch.v1beta.Index.create_time:type_name -> google.protobuf.Timestamp
-	35, // 18: google.cloud.vectorsearch.v1beta.Index.update_time:type_name -> google.protobuf.Timestamp
-	40, // 19: google.cloud.vectorsearch.v1beta.Index.distance_metric:type_name -> google.cloud.vectorsearch.v1beta.DistanceMetric
+	37, // 17: google.cloud.vectorsearch.v1beta.Index.create_time:type_name -> google.protobuf.Timestamp
+	37, // 18: google.cloud.vectorsearch.v1beta.Index.update_time:type_name -> google.protobuf.Timestamp
+	42, // 19: google.cloud.vectorsearch.v1beta.Index.distance_metric:type_name -> google.cloud.vectorsearch.v1beta.DistanceMetric
 	13, // 20: google.cloud.vectorsearch.v1beta.CreateIndexRequest.index:type_name -> google.cloud.vectorsearch.v1beta.Index
 	13, // 21: google.cloud.vectorsearch.v1beta.UpdateIndexRequest.index:type_name -> google.cloud.vectorsearch.v1beta.Index
-	39, // 22: google.cloud.vectorsearch.v1beta.UpdateIndexRequest.update_mask:type_name -> google.protobuf.FieldMask
+	41, // 22: google.cloud.vectorsearch.v1beta.UpdateIndexRequest.update_mask:type_name -> google.protobuf.FieldMask
 	13, // 23: google.cloud.vectorsearch.v1beta.ListIndexesResponse.indexes:type_name -> google.cloud.vectorsearch.v1beta.Index
-	35, // 24: google.cloud.vectorsearch.v1beta.OperationMetadata.create_time:type_name -> google.protobuf.Timestamp
-	35, // 25: google.cloud.vectorsearch.v1beta.OperationMetadata.end_time:type_name -> google.protobuf.Timestamp
+	37, // 24: google.cloud.vectorsearch.v1beta.OperationMetadata.create_time:type_name -> google.protobuf.Timestamp
+	37, // 25: google.cloud.vectorsearch.v1beta.OperationMetadata.end_time:type_name -> google.protobuf.Timestamp
 	32, // 26: google.cloud.vectorsearch.v1beta.ImportDataObjectsRequest.gcs_import:type_name -> google.cloud.vectorsearch.v1beta.ImportDataObjectsRequest.GcsImportConfig
-	35, // 27: google.cloud.vectorsearch.v1beta.ImportDataObjectsMetadata.create_time:type_name -> google.protobuf.Timestamp
-	35, // 28: google.cloud.vectorsearch.v1beta.ImportDataObjectsMetadata.update_time:type_name -> google.protobuf.Timestamp
-	41, // 29: google.cloud.vectorsearch.v1beta.ImportDataObjectsResponse.status:type_name -> google.rpc.Status
+	37, // 27: google.cloud.vectorsearch.v1beta.ImportDataObjectsMetadata.create_time:type_name -> google.protobuf.Timestamp
+	37, // 28: google.cloud.vectorsearch.v1beta.ImportDataObjectsMetadata.update_time:type_name -> google.protobuf.Timestamp
+	43, // 29: google.cloud.vectorsearch.v1beta.ImportDataObjectsResponse.status:type_name -> google.rpc.Status
 	33, // 30: google.cloud.vectorsearch.v1beta.ExportDataObjectsRequest.gcs_destination:type_name -> google.cloud.vectorsearch.v1beta.ExportDataObjectsRequest.GcsExportDestination
-	35, // 31: google.cloud.vectorsearch.v1beta.ExportDataObjectsMetadata.create_time:type_name -> google.protobuf.Timestamp
-	35, // 32: google.cloud.vectorsearch.v1beta.ExportDataObjectsMetadata.finish_time:type_name -> google.protobuf.Timestamp
-	1,  // 33: google.cloud.vectorsearch.v1beta.DedicatedInfrastructure.mode:type_name -> google.cloud.vectorsearch.v1beta.DedicatedInfrastructure.Mode
-	34, // 34: google.cloud.vectorsearch.v1beta.DedicatedInfrastructure.autoscaling_spec:type_name -> google.cloud.vectorsearch.v1beta.DedicatedInfrastructure.AutoscalingSpec
-	2,  // 35: google.cloud.vectorsearch.v1beta.DenseScannIndex.feature_norm_type:type_name -> google.cloud.vectorsearch.v1beta.DenseScannIndex.FeatureNormType
-	4,  // 36: google.cloud.vectorsearch.v1beta.Collection.VectorSchemaEntry.value:type_name -> google.cloud.vectorsearch.v1beta.VectorField
-	0,  // 37: google.cloud.vectorsearch.v1beta.ExportDataObjectsRequest.GcsExportDestination.format:type_name -> google.cloud.vectorsearch.v1beta.ExportDataObjectsRequest.GcsExportDestination.Format
-	7,  // 38: google.cloud.vectorsearch.v1beta.VectorSearchService.ListCollections:input_type -> google.cloud.vectorsearch.v1beta.ListCollectionsRequest
-	9,  // 39: google.cloud.vectorsearch.v1beta.VectorSearchService.GetCollection:input_type -> google.cloud.vectorsearch.v1beta.GetCollectionRequest
-	10, // 40: google.cloud.vectorsearch.v1beta.VectorSearchService.CreateCollection:input_type -> google.cloud.vectorsearch.v1beta.CreateCollectionRequest
-	11, // 41: google.cloud.vectorsearch.v1beta.VectorSearchService.UpdateCollection:input_type -> google.cloud.vectorsearch.v1beta.UpdateCollectionRequest
-	12, // 42: google.cloud.vectorsearch.v1beta.VectorSearchService.DeleteCollection:input_type -> google.cloud.vectorsearch.v1beta.DeleteCollectionRequest
-	17, // 43: google.cloud.vectorsearch.v1beta.VectorSearchService.ListIndexes:input_type -> google.cloud.vectorsearch.v1beta.ListIndexesRequest
-	19, // 44: google.cloud.vectorsearch.v1beta.VectorSearchService.GetIndex:input_type -> google.cloud.vectorsearch.v1beta.GetIndexRequest
-	14, // 45: google.cloud.vectorsearch.v1beta.VectorSearchService.CreateIndex:input_type -> google.cloud.vectorsearch.v1beta.CreateIndexRequest
-	15, // 46: google.cloud.vectorsearch.v1beta.VectorSearchService.UpdateIndex:input_type -> google.cloud.vectorsearch.v1beta.UpdateIndexRequest
-	16, // 47: google.cloud.vectorsearch.v1beta.VectorSearchService.DeleteIndex:input_type -> google.cloud.vectorsearch.v1beta.DeleteIndexRequest
-	21, // 48: google.cloud.vectorsearch.v1beta.VectorSearchService.ImportDataObjects:input_type -> google.cloud.vectorsearch.v1beta.ImportDataObjectsRequest
-	24, // 49: google.cloud.vectorsearch.v1beta.VectorSearchService.ExportDataObjects:input_type -> google.cloud.vectorsearch.v1beta.ExportDataObjectsRequest
-	8,  // 50: google.cloud.vectorsearch.v1beta.VectorSearchService.ListCollections:output_type -> google.cloud.vectorsearch.v1beta.ListCollectionsResponse
-	3,  // 51: google.cloud.vectorsearch.v1beta.VectorSearchService.GetCollection:output_type -> google.cloud.vectorsearch.v1beta.Collection
-	42, // 52: google.cloud.vectorsearch.v1beta.VectorSearchService.CreateCollection:output_type -> google.longrunning.Operation
-	42, // 53: google.cloud.vectorsearch.v1beta.VectorSearchService.UpdateCollection:output_type -> google.longrunning.Operation
-	42, // 54: google.cloud.vectorsearch.v1beta.VectorSearchService.DeleteCollection:output_type -> google.longrunning.Operation
-	18, // 55: google.cloud.vectorsearch.v1beta.VectorSearchService.ListIndexes:output_type -> google.cloud.vectorsearch.v1beta.ListIndexesResponse
-	13, // 56: google.cloud.vectorsearch.v1beta.VectorSearchService.GetIndex:output_type -> google.cloud.vectorsearch.v1beta.Index
-	42, // 57: google.cloud.vectorsearch.v1beta.VectorSearchService.CreateIndex:output_type -> google.longrunning.Operation
-	42, // 58: google.cloud.vectorsearch.v1beta.VectorSearchService.UpdateIndex:output_type -> google.longrunning.Operation
-	42, // 59: google.cloud.vectorsearch.v1beta.VectorSearchService.DeleteIndex:output_type -> google.longrunning.Operation
-	42, // 60: google.cloud.vectorsearch.v1beta.VectorSearchService.ImportDataObjects:output_type -> google.longrunning.Operation
-	42, // 61: google.cloud.vectorsearch.v1beta.VectorSearchService.ExportDataObjects:output_type -> google.longrunning.Operation
-	50, // [50:62] is the sub-list for method output_type
-	38, // [38:50] is the sub-list for method input_type
-	38, // [38:38] is the sub-list for extension type_name
-	38, // [38:38] is the sub-list for extension extendee
-	0,  // [0:38] is the sub-list for field type_name
+	34, // 31: google.cloud.vectorsearch.v1beta.ExportDataObjectsRequest.field_filter:type_name -> google.cloud.vectorsearch.v1beta.ExportDataObjectsRequest.FieldFilter
+	37, // 32: google.cloud.vectorsearch.v1beta.ExportDataObjectsMetadata.create_time:type_name -> google.protobuf.Timestamp
+	37, // 33: google.cloud.vectorsearch.v1beta.ExportDataObjectsMetadata.finish_time:type_name -> google.protobuf.Timestamp
+	1,  // 34: google.cloud.vectorsearch.v1beta.DedicatedInfrastructure.mode:type_name -> google.cloud.vectorsearch.v1beta.DedicatedInfrastructure.Mode
+	36, // 35: google.cloud.vectorsearch.v1beta.DedicatedInfrastructure.autoscaling_spec:type_name -> google.cloud.vectorsearch.v1beta.DedicatedInfrastructure.AutoscalingSpec
+	2,  // 36: google.cloud.vectorsearch.v1beta.DenseScannIndex.feature_norm_type:type_name -> google.cloud.vectorsearch.v1beta.DenseScannIndex.FeatureNormType
+	4,  // 37: google.cloud.vectorsearch.v1beta.Collection.VectorSchemaEntry.value:type_name -> google.cloud.vectorsearch.v1beta.VectorField
+	0,  // 38: google.cloud.vectorsearch.v1beta.ExportDataObjectsRequest.GcsExportDestination.format:type_name -> google.cloud.vectorsearch.v1beta.ExportDataObjectsRequest.GcsExportDestination.Format
+	35, // 39: google.cloud.vectorsearch.v1beta.ExportDataObjectsRequest.FieldFilter.included_fields:type_name -> google.cloud.vectorsearch.v1beta.ExportDataObjectsRequest.FieldFilter.FieldList
+	35, // 40: google.cloud.vectorsearch.v1beta.ExportDataObjectsRequest.FieldFilter.excluded_fields:type_name -> google.cloud.vectorsearch.v1beta.ExportDataObjectsRequest.FieldFilter.FieldList
+	7,  // 41: google.cloud.vectorsearch.v1beta.VectorSearchService.ListCollections:input_type -> google.cloud.vectorsearch.v1beta.ListCollectionsRequest
+	9,  // 42: google.cloud.vectorsearch.v1beta.VectorSearchService.GetCollection:input_type -> google.cloud.vectorsearch.v1beta.GetCollectionRequest
+	10, // 43: google.cloud.vectorsearch.v1beta.VectorSearchService.CreateCollection:input_type -> google.cloud.vectorsearch.v1beta.CreateCollectionRequest
+	11, // 44: google.cloud.vectorsearch.v1beta.VectorSearchService.UpdateCollection:input_type -> google.cloud.vectorsearch.v1beta.UpdateCollectionRequest
+	12, // 45: google.cloud.vectorsearch.v1beta.VectorSearchService.DeleteCollection:input_type -> google.cloud.vectorsearch.v1beta.DeleteCollectionRequest
+	17, // 46: google.cloud.vectorsearch.v1beta.VectorSearchService.ListIndexes:input_type -> google.cloud.vectorsearch.v1beta.ListIndexesRequest
+	19, // 47: google.cloud.vectorsearch.v1beta.VectorSearchService.GetIndex:input_type -> google.cloud.vectorsearch.v1beta.GetIndexRequest
+	14, // 48: google.cloud.vectorsearch.v1beta.VectorSearchService.CreateIndex:input_type -> google.cloud.vectorsearch.v1beta.CreateIndexRequest
+	15, // 49: google.cloud.vectorsearch.v1beta.VectorSearchService.UpdateIndex:input_type -> google.cloud.vectorsearch.v1beta.UpdateIndexRequest
+	16, // 50: google.cloud.vectorsearch.v1beta.VectorSearchService.DeleteIndex:input_type -> google.cloud.vectorsearch.v1beta.DeleteIndexRequest
+	21, // 51: google.cloud.vectorsearch.v1beta.VectorSearchService.ImportDataObjects:input_type -> google.cloud.vectorsearch.v1beta.ImportDataObjectsRequest
+	24, // 52: google.cloud.vectorsearch.v1beta.VectorSearchService.ExportDataObjects:input_type -> google.cloud.vectorsearch.v1beta.ExportDataObjectsRequest
+	8,  // 53: google.cloud.vectorsearch.v1beta.VectorSearchService.ListCollections:output_type -> google.cloud.vectorsearch.v1beta.ListCollectionsResponse
+	3,  // 54: google.cloud.vectorsearch.v1beta.VectorSearchService.GetCollection:output_type -> google.cloud.vectorsearch.v1beta.Collection
+	44, // 55: google.cloud.vectorsearch.v1beta.VectorSearchService.CreateCollection:output_type -> google.longrunning.Operation
+	44, // 56: google.cloud.vectorsearch.v1beta.VectorSearchService.UpdateCollection:output_type -> google.longrunning.Operation
+	44, // 57: google.cloud.vectorsearch.v1beta.VectorSearchService.DeleteCollection:output_type -> google.longrunning.Operation
+	18, // 58: google.cloud.vectorsearch.v1beta.VectorSearchService.ListIndexes:output_type -> google.cloud.vectorsearch.v1beta.ListIndexesResponse
+	13, // 59: google.cloud.vectorsearch.v1beta.VectorSearchService.GetIndex:output_type -> google.cloud.vectorsearch.v1beta.Index
+	44, // 60: google.cloud.vectorsearch.v1beta.VectorSearchService.CreateIndex:output_type -> google.longrunning.Operation
+	44, // 61: google.cloud.vectorsearch.v1beta.VectorSearchService.UpdateIndex:output_type -> google.longrunning.Operation
+	44, // 62: google.cloud.vectorsearch.v1beta.VectorSearchService.DeleteIndex:output_type -> google.longrunning.Operation
+	44, // 63: google.cloud.vectorsearch.v1beta.VectorSearchService.ImportDataObjects:output_type -> google.longrunning.Operation
+	44, // 64: google.cloud.vectorsearch.v1beta.VectorSearchService.ExportDataObjects:output_type -> google.longrunning.Operation
+	53, // [53:65] is the sub-list for method output_type
+	41, // [41:53] is the sub-list for method input_type
+	41, // [41:41] is the sub-list for extension type_name
+	41, // [41:41] is the sub-list for extension extendee
+	0,  // [0:41] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_vectorsearch_v1beta_vectorsearch_service_proto_init() }
@@ -2736,13 +2916,17 @@ func file_google_cloud_vectorsearch_v1beta_vectorsearch_service_proto_init() {
 		(*ExportDataObjectsRequest_GcsDestination)(nil),
 	}
 	file_google_cloud_vectorsearch_v1beta_vectorsearch_service_proto_msgTypes[24].OneofWrappers = []any{}
+	file_google_cloud_vectorsearch_v1beta_vectorsearch_service_proto_msgTypes[31].OneofWrappers = []any{
+		(*ExportDataObjectsRequest_FieldFilter_IncludedFields)(nil),
+		(*ExportDataObjectsRequest_FieldFilter_ExcludedFields)(nil),
+	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_vectorsearch_v1beta_vectorsearch_service_proto_rawDesc), len(file_google_cloud_vectorsearch_v1beta_vectorsearch_service_proto_rawDesc)),
 			NumEnums:      3,
-			NumMessages:   32,
+			NumMessages:   34,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
