@@ -1518,3 +1518,43 @@ func TestTelemetryTransport_ImplicitPort(t *testing.T) {
 		})
 	}
 }
+
+func TestOtelAttributeTransport_Metrics(t *testing.T) {
+	gax.TestOnlyResetIsFeatureEnabled()
+	defer gax.TestOnlyResetIsFeatureEnabled()
+	t.Setenv("GOOGLE_SDK_GO_EXPERIMENTAL_METRICS", "true")
+
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusTeapot) // 418
+	}))
+	defer server.Close()
+
+	client, err := NewClient(&Options{
+		DisableAuthentication: true,
+		Endpoint:              server.URL,
+	})
+	if err != nil {
+		t.Fatalf("NewClient() = %v, want nil", err)
+	}
+
+	ctx := context.Background()
+	data := &gax.TransportTelemetryData{}
+	ctx = gax.InjectTransportTelemetry(ctx, data)
+
+	req, err := http.NewRequestWithContext(ctx, "GET", server.URL, nil)
+	if err != nil {
+		t.Fatalf("http.NewRequest() = %v, want nil", err)
+	}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		t.Fatalf("client.Do() = %v, want nil", err)
+	}
+	if resp != nil && resp.Body != nil {
+		resp.Body.Close()
+	}
+
+	if data.HTTPStatusCode() != http.StatusTeapot {
+		t.Errorf("data.HTTPStatusCode() = %d, want %d", data.HTTPStatusCode(), http.StatusTeapot)
+	}
+}
