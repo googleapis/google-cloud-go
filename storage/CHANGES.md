@@ -13,6 +13,7 @@
 * **storage:** Support deleteSourceObjects option in object compose ([#14704](https://github.com/googleapis/google-cloud-go/issues/14704)) ([0d2d680](https://github.com/googleapis/google-cloud-go/commit/0d2d68046cae33909028c0c116c4743f72cc00f5))
 * Update API sources and regenerate ([#14701](https://github.com/googleapis/google-cloud-go/issues/14701)) ([a9b7921](https://github.com/googleapis/google-cloud-go/commit/a9b7921551e9c1535496731da53e880e9e364efa))
 
+## [1.62.3](https://github.com/googleapis/google-cloud-go/releases/tag/storage%2Fv1.62.3) (2026-06-03)
 
 ### Bug Fixes
 
