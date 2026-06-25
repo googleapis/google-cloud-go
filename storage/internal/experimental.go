@@ -49,6 +49,6 @@ var (
 	WithDirectConnectivityEnforced any // func() option.ClientOption
 
 	// WithOtelMetrics is a function which is implemented by the storage package.
-	// It enables client-side OpenTelemetry metrics: rpc.client.call.duration and http.client.request.duration.
+	// It enables client-side OpenTelemetry metrics.
 	WithOtelMetrics any // func() option.ClientOption
 )

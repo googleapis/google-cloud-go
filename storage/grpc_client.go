@@ -183,11 +183,11 @@ func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (client *g
 		if err == nil {
 			project = c.ProjectID
 		}
-		if sm, cleanup, err := initMetrics(ctx, project, &config); err == nil {
-			clientMetrics = sm
+		if cm, cleanup, err := initMetrics(ctx, project, &config); err == nil {
+			clientMetrics = cm
 			metricsCleanup = cleanup
 
-			unaryInt, streamInt := metricsInterceptors(sm)
+			unaryInt, streamInt := metricsInterceptors(cm)
 			s.clientOption = append(s.clientOption,
 				option.WithGRPCDialOption(grpc.WithChainUnaryInterceptor(unaryInt)),
 				option.WithGRPCDialOption(grpc.WithChainStreamInterceptor(streamInt)),

@@ -31,6 +31,22 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+func TestFormatMetricWithPrefix(t *testing.T) {
+	s := metricdata.Metrics{Name: "metric.name"}
+	for _, tc := range []struct {
+		prefix string
+		want   string
+	}{
+		{prefix: metricPrefix, want: "storage.googleapis.com/client/metric/name"},
+		{prefix: customMetricPrefix, want: "custom.googleapis.com/metric/name"},
+	} {
+		got := formatMetricWithPrefix(s, tc.prefix)
+		if got != tc.want {
+			t.Errorf("formatMetricWithPrefix(s, %q) = %q, want %q", tc.prefix, got, tc.want)
+		}
+	}
+}
+
 func TestIsOtelMetricsEnabled(t *testing.T) {
 	// Test config option only (env var not set).
 	cfg := storageConfig{enableOtelMetrics: true}
@@ -180,7 +196,7 @@ func TestHTTPMetricsRecording(t *testing.T) {
 		meterProvider:     provider,
 	}
 
-	sm, _, err := initMetrics(ctx, "project-id", &cfg)
+	cm, _, err := initMetrics(ctx, "project-id", &cfg)
 	if err != nil {
 		t.Fatalf("initMetrics: %v", err)
 	}
@@ -194,8 +210,8 @@ func TestHTTPMetricsRecording(t *testing.T) {
 
 	client := &http.Client{
 		Transport: &metricsRoundTripper{
-			underlying: http.DefaultTransport,
-			metrics:    sm,
+			base:    http.DefaultTransport,
+			metrics: cm,
 		},
 	}
 
@@ -246,8 +262,8 @@ func TestHTTPMetricsRecording(t *testing.T) {
 					attrMap[string(kv.Key)] = kv.Value.Emit()
 				}
 
-				if attrMap["rpc.system"] != "http" {
-					t.Errorf("expected rpc.system http, got %q", attrMap["rpc.system"])
+				if attrMap["rpc.system.name"] != "http" {
+					t.Errorf("expected rpc.system.name http, got %q", attrMap["rpc.system.name"])
 				}
 				if attrMap["http.request.method"] != "GET" {
 					t.Errorf("expected GET, got %q", attrMap["http.request.method"])
@@ -290,13 +306,13 @@ func TestGRPCMetricsRecording(t *testing.T) {
 		meterProvider:     provider,
 	}
 
-	sm, _, err := initMetrics(ctx, "project-id", &cfg)
+	cm, _, err := initMetrics(ctx, "project-id", &cfg)
 	if err != nil {
 		t.Fatalf("initMetrics: %v", err)
 	}
 
 	// 1. Test Unary call.
-	unaryInt, streamInt := metricsInterceptors(sm)
+	unaryInt, streamInt := metricsInterceptors(cm)
 
 	invoker := func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, opts ...grpc.CallOption) error {
 		return status.Error(codes.NotFound, "not found")
@@ -307,12 +323,16 @@ func TestGRPCMetricsRecording(t *testing.T) {
 		t.Errorf("unexpected unary error: %v", err)
 	}
 
-	// 2. Test Stream call.
+	// 2. Test Server-Streaming call (ReadObject).
 	streamer := func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, opts ...grpc.CallOption) (grpc.ClientStream, error) {
 		return &mockClientStream{recvErr: io.EOF}, nil
 	}
 
-	clientStream, err := streamInt(ctx, nil, nil, "/google.storage.v2.Storage/ReadObject", streamer)
+	descRead := &grpc.StreamDesc{
+		ServerStreams: true,
+		ClientStreams: false,
+	}
+	clientStream, err := streamInt(ctx, descRead, nil, "/google.storage.v2.Storage/ReadObject", streamer)
 	if err != nil {
 		t.Fatalf("streamInt: %v", err)
 	}
@@ -322,13 +342,32 @@ func TestGRPCMetricsRecording(t *testing.T) {
 		t.Errorf("expected io.EOF, got %v", err)
 	}
 
+	// 3. Test Client-Streaming call (WriteObject).
+	streamerWrite := func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, opts ...grpc.CallOption) (grpc.ClientStream, error) {
+		return &mockClientStream{recvErr: nil}, nil
+	}
+
+	descWrite := &grpc.StreamDesc{
+		ServerStreams: false,
+		ClientStreams: true,
+	}
+	clientStreamWrite, err := streamInt(ctx, descWrite, nil, "/google.storage.v2.Storage/WriteObject", streamerWrite)
+	if err != nil {
+		t.Fatalf("streamInt: %v", err)
+	}
+
+	// Trigger stream termination by successfully receiving response (returns nil).
+	if err := clientStreamWrite.RecvMsg(nil); err != nil {
+		t.Errorf("expected nil error, got %v", err)
+	}
+
 	// Collect metrics.
 	var rm metricdata.ResourceMetrics
 	if err := mr.Collect(ctx, &rm); err != nil {
 		t.Fatalf("Collect: %v", err)
 	}
 
-	var unaryDp, streamDp *metricdata.HistogramDataPoint[float64]
+	var unaryDp, streamDp, writeDp *metricdata.HistogramDataPoint[float64]
 
 	for _, sm := range rm.ScopeMetrics {
 		for _, m := range sm.Metrics {
@@ -347,6 +386,8 @@ func TestGRPCMetricsRecording(t *testing.T) {
 						unaryDp = &dpCopy
 					} else if attrs["rpc.method"] == "ReadObject" {
 						streamDp = &dpCopy
+					} else if attrs["rpc.method"] == "WriteObject" {
+						writeDp = &dpCopy
 					}
 				}
 			}
@@ -360,8 +401,8 @@ func TestGRPCMetricsRecording(t *testing.T) {
 		for _, kv := range unaryDp.Attributes.ToSlice() {
 			attrs[string(kv.Key)] = kv.Value.Emit()
 		}
-		if attrs["rpc.system"] != "grpc" {
-			t.Errorf("expected rpc.system grpc, got %q", attrs["rpc.system"])
+		if attrs["rpc.system.name"] != "grpc" {
+			t.Errorf("expected rpc.system.name grpc, got %q", attrs["rpc.system.name"])
 		}
 		if attrs["rpc.service"] != "google.storage.v2.Storage" {
 			t.Errorf("expected rpc.service, got %q", attrs["rpc.service"])
@@ -375,19 +416,40 @@ func TestGRPCMetricsRecording(t *testing.T) {
 	}
 
 	if streamDp == nil {
-		t.Errorf("streaming metric not recorded")
+		t.Errorf("streaming metric (ReadObject) not recorded")
 	} else {
 		attrs := make(map[string]string)
 		for _, kv := range streamDp.Attributes.ToSlice() {
 			attrs[string(kv.Key)] = kv.Value.Emit()
 		}
-		if attrs["rpc.system"] != "grpc" {
-			t.Errorf("expected rpc.system grpc, got %q", attrs["rpc.system"])
+		if attrs["rpc.system.name"] != "grpc" {
+			t.Errorf("expected rpc.system.name grpc, got %q", attrs["rpc.system.name"])
 		}
 		if attrs["rpc.service"] != "google.storage.v2.Storage" {
 			t.Errorf("expected rpc.service, got %q", attrs["rpc.service"])
 		}
 		if attrs["rpc.grpc.status_code"] != "0" { // codes.OK is 0 (io.EOF maps to OK).
+			t.Errorf("expected status_code 0, got %q", attrs["rpc.grpc.status_code"])
+		}
+		if attrs["error.type"] != "OK" {
+			t.Errorf("expected error.type OK, got %q", attrs["error.type"])
+		}
+	}
+
+	if writeDp == nil {
+		t.Errorf("streaming metric (WriteObject) not recorded")
+	} else {
+		attrs := make(map[string]string)
+		for _, kv := range writeDp.Attributes.ToSlice() {
+			attrs[string(kv.Key)] = kv.Value.Emit()
+		}
+		if attrs["rpc.system.name"] != "grpc" {
+			t.Errorf("expected rpc.system.name grpc, got %q", attrs["rpc.system.name"])
+		}
+		if attrs["rpc.service"] != "google.storage.v2.Storage" {
+			t.Errorf("expected rpc.service, got %q", attrs["rpc.service"])
+		}
+		if attrs["rpc.grpc.status_code"] != "0" { // codes.OK is 0.
 			t.Errorf("expected status_code 0, got %q", attrs["rpc.grpc.status_code"])
 		}
 		if attrs["error.type"] != "OK" {

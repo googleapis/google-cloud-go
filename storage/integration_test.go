@@ -60,6 +60,7 @@ import (
 	"github.com/googleapis/gax-go/v2/apierror"
 	"go.opentelemetry.io/contrib/detectors/gcp"
 	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/sdk/metric"
 	"go.opentelemetry.io/otel/sdk/metric/metricdata"
 	"go.opentelemetry.io/otel/sdk/resource"
@@ -1275,8 +1276,20 @@ func TestIntegration_OtelMetricsEnablement(t *testing.T) {
 
 	for _, transportType := range []string{"http", "grpc"} {
 		t.Run(transportType, func(t *testing.T) {
+			res, err := resource.New(ctx,
+				resource.WithAttributes(
+					attribute.String("gcp.client.service", "storage"),
+					attribute.String("gcp.client.repo", "googleapis/google-cloud-go"),
+				),
+			)
+			if err != nil {
+				t.Fatalf("resource.New: %v", err)
+			}
 			mr := metric.NewManualReader()
-			provider := metric.NewMeterProvider(metric.WithReader(mr))
+			provider := metric.NewMeterProvider(
+				metric.WithReader(mr),
+				metric.WithResource(res),
+			)
 			defer provider.Shutdown(ctx)
 
 			var client *Client
@@ -1301,7 +1314,7 @@ func TestIntegration_OtelMetricsEnablement(t *testing.T) {
 			defer b.Delete(ctx)
 
 			it := b.Objects(ctx, nil)
-			_, err := it.Next()
+			_, err = it.Next()
 			if err != iterator.Done {
 				t.Errorf("Objects.Next: expected iterator.Done got %v", err)
 			}

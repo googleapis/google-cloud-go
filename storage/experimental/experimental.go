@@ -118,7 +118,7 @@ func WithDirectConnectivityEnforced() option.ClientOption {
 
 // WithOtelMetrics provides an [option.ClientOption] that may be passed to
 // [cloud.google.com/go/storage.NewClient] or [cloud.google.com/go/storage.NewGRPCClient].
-// It enables client-side OpenTelemetry metrics: rpc.client.call.duration and http.client.request.duration.
+// It enables client-side OpenTelemetry metrics.
 func WithOtelMetrics() option.ClientOption {
 	return internal.WithOtelMetrics.(func() option.ClientOption)()
 }

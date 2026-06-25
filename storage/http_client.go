@@ -131,8 +131,8 @@ func newHTTPStorageClient(ctx context.Context, opts ...storageOption) (client st
 		if creds != nil {
 			project, _ = creds.ProjectID(ctx)
 		}
-		if sm, cleanup, err := initMetrics(ctx, project, &config); err == nil {
-			clientMetrics = sm
+		if cm, cleanup, err := initMetrics(ctx, project, &config); err == nil {
+			clientMetrics = cm
 			metricsCleanup = cleanup
 		} else {
 			log.Printf("Failed to enable metrics: %v", err)
@@ -162,8 +162,8 @@ func newHTTPStorageClient(ctx context.Context, opts ...storageOption) (client st
 	transport := hc.Transport
 	if clientMetrics != nil {
 		transport = &metricsRoundTripper{
-			underlying: transport,
-			metrics:    clientMetrics,
+			base:    transport,
+			metrics: clientMetrics,
 		}
 	}
 	hcClone.Transport = &trackingTransport{
