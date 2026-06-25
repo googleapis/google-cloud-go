@@ -37,6 +37,9 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
+const (
+	customMetricPrefix = "custom.googleapis.com/"
+)
 
 // clientMetrics contains the OpenTelemetry metric instruments to record client-side metrics.
 type clientMetrics struct {
@@ -45,14 +48,16 @@ type clientMetrics struct {
 	httpClientRequestDuration metric.Float64Histogram
 }
 
-// clientMetricFormatter formats standard OTel metric names to a format suitable for GCM.
-func clientMetricFormatter(m metricdata.Metrics) string {
-	return "custom.googleapis.com/" + strings.ReplaceAll(string(m.Name), ".", "/")
+func formatMetricWithPrefix(m metricdata.Metrics, prefix string) string {
+	return prefix + strings.ReplaceAll(string(m.Name), ".", "/")
 }
 
 // isOtelMetricsEnabled checks if Otel metrics are enabled.
 // The environment variable GCP_STORAGE_GO_ENABLE_OTEL_METRICS takes precedence.
 func isOtelMetricsEnabled(config *storageConfig) bool {
+	if config.disableClientMetrics {
+		return false
+	}
 	if valStr, present := os.LookupEnv("GCP_STORAGE_GO_ENABLE_OTEL_METRICS"); present {
 		v, err := strconv.ParseBool(valStr)
 		if err == nil {
@@ -66,7 +71,9 @@ func isOtelMetricsEnabled(config *storageConfig) bool {
 func newMetricsGCMExporter(ctx context.Context, projectID string) (sdkmetric.Exporter, error) {
 	exporter, err := mexporter.New(
 		mexporter.WithProjectID(projectID),
-		mexporter.WithMetricDescriptorTypeFormatter(clientMetricFormatter),
+		mexporter.WithMetricDescriptorTypeFormatter(func(m metricdata.Metrics) string {
+			return formatMetricWithPrefix(m, customMetricPrefix)
+		}),
 		mexporter.WithCreateServiceTimeSeries(),
 	)
 	if err != nil {
@@ -157,8 +164,9 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 		httpClientRequestDuration: httpDuration,
 	}
 
-	cleanup := func() {
-		if ownProvider {
+	var cleanup func()
+	if ownProvider {
+		cleanup = func() {
 			shutdownCtx, cancel := context.WithTimeout(context.WithoutCancel(ctx), 5*time.Second)
 			defer cancel()
 			provider.Shutdown(shutdownCtx)
@@ -277,9 +285,7 @@ func (cm *clientMetrics) recordRPC(ctx context.Context, method, target string, d
 	errorType := computeErrorType(err, false, statusCode)
 
 	attrs := []attribute.KeyValue{
-		attribute.String("rpc.system", "grpc"),
 		attribute.String("rpc.system.name", "grpc"),
-		attribute.String("rpcsystem.name", "gRPC"),
 		attribute.String("rpc.service", service),
 		attribute.String("rpc.method", methodName),
 		attribute.Int64("rpc.grpc.status_code", statusCode),
@@ -301,9 +307,7 @@ func (cm *clientMetrics) recordHTTP(ctx context.Context, req *http.Request, resp
 	errorType := computeErrorType(err, true, statusCode)
 
 	attrs := []attribute.KeyValue{
-		attribute.String("rpc.system", "http"),
 		attribute.String("rpc.system.name", "http"),
-		attribute.String("rpcsystem.name", "http"),
 		attribute.String("http.request.method", req.Method),
 		attribute.String("url.template", urlTemplate),
 		attribute.Int64("http.response.status_code", statusCode),
@@ -371,13 +375,13 @@ func stripPort(host string) string {
 
 // metricsRoundTripper is an http.RoundTripper that wraps an underlying transport.
 type metricsRoundTripper struct {
-	underlying http.RoundTripper
-	metrics    *clientMetrics
+	base    http.RoundTripper
+	metrics *clientMetrics
 }
 
 func (rt *metricsRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
 	startTime := time.Now()
-	resp, err := rt.underlying.RoundTrip(req)
+	resp, err := rt.base.RoundTrip(req)
 	if err != nil {
 		duration := time.Since(startTime).Seconds()
 		rt.metrics.recordHTTP(req.Context(), req, nil, duration, err)
@@ -405,7 +409,7 @@ type wrappedResponseBody struct {
 	req       *http.Request
 	resp      *http.Response
 	metrics   *clientMetrics
-	recorded  int32
+	recorded  atomic.Bool
 }
 
 func (w *wrappedResponseBody) Read(p []byte) (n int, err error) {
@@ -423,7 +427,7 @@ func (w *wrappedResponseBody) Close() error {
 }
 
 func (w *wrappedResponseBody) record(err error) {
-	if atomic.CompareAndSwapInt32(&w.recorded, 0, 1) {
+	if w.recorded.CompareAndSwap(false, true) {
 		duration := time.Since(w.startTime).Seconds()
 		w.metrics.recordHTTP(w.req.Context(), w.req, w.resp, duration, err)
 	}
@@ -457,12 +461,14 @@ func metricsInterceptors(cm *clientMetrics) (grpc.UnaryClientInterceptor, grpc.S
 		}
 
 		return &wrappedClientStream{
-			ClientStream: clientStream,
-			startTime:    startTime,
-			method:       method,
-			target:       target,
-			metrics:      cm,
-			ctx:          ctx,
+			ClientStream:  clientStream,
+			startTime:     startTime,
+			method:        method,
+			target:        target,
+			metrics:       cm,
+			ctx:           ctx,
+			serverStreams: desc.ServerStreams,
+			clientStreams: desc.ClientStreams,
 		}, nil
 	}
 
@@ -471,17 +477,22 @@ func metricsInterceptors(cm *clientMetrics) (grpc.UnaryClientInterceptor, grpc.S
 
 type wrappedClientStream struct {
 	grpc.ClientStream
-	startTime time.Time
-	method    string
-	target    string
-	metrics   *clientMetrics
-	ctx       context.Context
-	recorded  int32
+	startTime     time.Time
+	method        string
+	target        string
+	metrics       *clientMetrics
+	ctx           context.Context
+	recorded      atomic.Bool
+	serverStreams bool
+	clientStreams bool
 }
 
 func (w *wrappedClientStream) RecvMsg(m interface{}) error {
 	err := w.ClientStream.RecvMsg(m)
-	if err != nil {
+	// For client-streaming streams (like WriteObject), the single successful RecvMsg call
+	// returns the response and nil error, which marks the completion of the stream.
+	isClientStreaming := !w.serverStreams && w.clientStreams
+	if err != nil || isClientStreaming {
 		w.record(err)
 	}
 	return err
@@ -496,7 +507,7 @@ func (w *wrappedClientStream) SendMsg(m interface{}) error {
 }
 
 func (w *wrappedClientStream) record(err error) {
-	if atomic.CompareAndSwapInt32(&w.recorded, 0, 1) {
+	if w.recorded.CompareAndSwap(false, true) {
 		duration := time.Since(w.startTime).Seconds()
 		w.metrics.recordRPC(w.ctx, w.method, w.target, duration, err)
 	}
