@@ -252,6 +252,8 @@ func TestWaitTracedWaitSpanOnly(t *testing.T) {
 
 	sr := tracetest.NewSpanRecorder()
 	tp := sdktrace.NewTracerProvider(sdktrace.WithSpanProcessor(sr))
+	oldTP := otel.GetTracerProvider()
+	defer otel.SetTracerProvider(oldTP)
 	otel.SetTracerProvider(tp)
 
 	responseDur := durationpb.New(42 * time.Second)
@@ -332,6 +334,8 @@ func TestWaitTracedResumedWaitSpanOnly(t *testing.T) {
 
 	sr := tracetest.NewSpanRecorder()
 	tp := sdktrace.NewTracerProvider(sdktrace.WithSpanProcessor(sr))
+	oldTP := otel.GetTracerProvider()
+	defer otel.SetTracerProvider(oldTP)
 	otel.SetTracerProvider(tp)
 
 	responseDur := durationpb.New(42 * time.Second)
@@ -397,6 +401,8 @@ func TestWaitTracedFallbackWaitSpanOnly(t *testing.T) {
 
 	sr := tracetest.NewSpanRecorder()
 	tp := sdktrace.NewTracerProvider(sdktrace.WithSpanProcessor(sr))
+	oldTP := otel.GetTracerProvider()
+	defer otel.SetTracerProvider(oldTP)
 	otel.SetTracerProvider(tp)
 
 	responseDur := durationpb.New(42 * time.Second)
