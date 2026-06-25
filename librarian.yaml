@@ -1319,7 +1319,7 @@ libraries:
       - path: google/cloud/speech/v1
       - path: google/cloud/speech/v1p1beta1
   - name: storage
-    version: 1.62.2
+    version: 1.63.0
     apis:
       - path: google/storage/v2
         go:
