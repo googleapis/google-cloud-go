@@ -5,6 +5,7 @@ go 1.25.8
 require (
 	cloud.google.com/go v0.123.0
 	github.com/googleapis/gax-go/v2 v2.22.0
+	go.opentelemetry.io/otel/trace v1.43.0
 	google.golang.org/api v0.285.0
 	google.golang.org/genproto v0.0.0-20260319201613-d00831a3d3e7
 	google.golang.org/genproto/googleapis/api v0.0.0-20260615183401-62b3387ff324
@@ -28,7 +29,6 @@ require (
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.67.0 // indirect
 	go.opentelemetry.io/otel v1.43.0 // indirect
 	go.opentelemetry.io/otel/metric v1.43.0 // indirect
-	go.opentelemetry.io/otel/trace v1.43.0 // indirect
 	golang.org/x/crypto v0.53.0 // indirect
 	golang.org/x/net v0.56.0 // indirect
 	golang.org/x/oauth2 v0.36.0 // indirect
