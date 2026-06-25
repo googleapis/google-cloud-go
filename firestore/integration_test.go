@@ -140,13 +140,12 @@ var (
 	defaultClient     *Client
 	enterpriseClients = make(map[string]*Client)
 
-	iClient          *Client
-	iColl            *CollectionRef
-	collectionIDs    = uid.NewSpace("go-integration-test", nil)
-	wantDBPath       string
-	testParams       map[string]interface{}
-	seededFirstIndex bool
-	useEmulator      bool
+	iClient       *Client
+	iColl         *CollectionRef
+	collectionIDs = uid.NewSpace("go-integration-test", nil)
+	wantDBPath    string
+	testParams    map[string]interface{}
+	useEmulator   bool
 )
 
 func createClient(projectID, databaseID string) (*Client, error) {
@@ -2680,7 +2679,7 @@ func testIntegrationNewClientWithDatabase(t *testing.T) {
 	}
 }
 
-// TestIntegration_BulkWriter_Set tests setting values and serverTimeStamp in single write.
+// testIntegrationBulkWriterSet tests setting values and serverTimeStamp in single write.
 func testIntegrationBulkWriterSet(t *testing.T) {
 	doc := iColl.NewDoc()
 	t.Cleanup(func() {
@@ -3598,6 +3597,78 @@ func testIntegrationFindNearest(t *testing.T) {
 	}
 }
 
+func testIntegrationBSONTypes(t *testing.T) {
+	skipIfEdition(t, "BSON types", editionStandard)
+	t.Skip("Temporarily skipping BSON integration test. Not yet released to prod.")
+	ctx := context.Background()
+	coll := integrationColl(t)
+	doc := coll.NewDoc()
+	t.Cleanup(func() {
+		deleteDocuments([]*DocumentRef{doc})
+	})
+
+	oid := BSONObjectID("0123456789abcdef01234567")
+
+	data := map[string]interface{}{
+		"oid":        oid,
+		"regex":      BSONRegex{Pattern: "foo", Options: "im"},
+		"timestamp":  BSONTimestamp{Seconds: 123, Increment: 456},
+		"decimal128": BSONDecimal128("123.45"),
+		"minkey":     BSONMinKey{},
+		"maxkey":     BSONMaxKey{},
+		"binary":     BSONBinary{Subtype: 0x02, Data: []byte{1, 2, 3}},
+		"bson_int":   BSONInt32(42),
+	}
+
+	_, err := doc.Create(ctx, data)
+	if err != nil {
+		t.Fatalf("failed to create doc with BSON types: %v", err)
+	}
+
+	// If write succeeded, we try to read back and verify.
+	ds, err := doc.Get(ctx)
+	if err != nil {
+		t.Fatalf("failed to get doc: %v", err)
+	}
+
+	got := ds.Data()
+	if !testEqual(got, data) {
+		t.Errorf("got vs want diff:\n%s", testDiff(got, data))
+	}
+
+	// Also test decoding into a struct.
+	type bsonStruct struct {
+		Oid        BSONObjectID   `firestore:"oid"`
+		Regex      BSONRegex      `firestore:"regex"`
+		Timestamp  BSONTimestamp  `firestore:"timestamp"`
+		Decimal128 BSONDecimal128 `firestore:"decimal128"`
+		MinKey     BSONMinKey     `firestore:"minkey"`
+		MaxKey     BSONMaxKey     `firestore:"maxkey"`
+		Binary     BSONBinary     `firestore:"binary"`
+		BsonInt    BSONInt32      `firestore:"bson_int"`
+	}
+
+	var gotStruct bsonStruct
+	if err := ds.DataTo(&gotStruct); err != nil {
+		t.Fatalf("DataTo failed: %v", err)
+	}
+
+	wantStruct := bsonStruct{
+		Oid:        oid,
+		Regex:      BSONRegex{Pattern: "foo", Options: "im"},
+		Timestamp:  BSONTimestamp{Seconds: 123, Increment: 456},
+		Decimal128: BSONDecimal128("123.45"),
+		MinKey:     BSONMinKey{},
+		MaxKey:     BSONMaxKey{},
+		Binary:     BSONBinary{Subtype: 0x02, Data: []byte{1, 2, 3}},
+		BsonInt:    BSONInt32(42),
+	}
+
+	if !testEqual(gotStruct, wantStruct) {
+		t.Errorf("got struct vs want struct diff:\n%s", testDiff(gotStruct, wantStruct))
+	}
+}
+
 func testIntegrationTransactionReadTime(t *testing.T) {
 	ctx := context.Background()
 	c := integrationClient(t)
@@ -3676,6 +3747,293 @@ func testIntegrationTransactionWithReadOptionsError(t *testing.T) {
 	if err != errInvalidReadTime {
 		t.Fatalf("got err %v, want %v", err, errInvalidReadTime)
 	}
+}
+
+func testIntegrationBSONQueries(t *testing.T) {
+	skipIfEdition(t, "BSON types", editionStandard)
+	t.Skip("Temporarily skipping BSON integration test. Not yet released to prod.")
+	ctx := context.Background()
+	client := integrationClient(t)
+	h := testHelper{t}
+
+	t.Run("canFilterAndOrderObjectId", func(t *testing.T) {
+		coll := client.Collection(collectionIDs.New())
+		oid1 := BSONObjectID("507f191e810c19729de860ea")
+		oid2 := BSONObjectID("507f191e810c19729de860eb")
+		oid3 := BSONObjectID("507f191e810c19729de860ec")
+
+		h.mustCreate(coll.Doc("doc1"), map[string]interface{}{"key": oid1})
+		h.mustCreate(coll.Doc("doc2"), map[string]interface{}{"key": oid2})
+		h.mustCreate(coll.Doc("doc3"), map[string]interface{}{"key": oid3})
+		t.Cleanup(func() {
+			deleteDocuments([]*DocumentRef{coll.Doc("doc1"), coll.Doc("doc2"), coll.Doc("doc3")})
+		})
+
+		qOid1 := coll.Where("key", ">", oid1).OrderBy("key", Desc)
+		assertQueryOrder(ctx, t, qOid1, []string{"doc3", "doc2"})
+
+		qOid2 := coll.Where("key", "in", []interface{}{oid1, oid2}).OrderBy("key", Desc)
+		assertQueryOrder(ctx, t, qOid2, []string{"doc2", "doc1"})
+	})
+
+	t.Run("canFilterAndOrderInt32", func(t *testing.T) {
+		coll := client.Collection(collectionIDs.New())
+		i1 := BSONInt32(-1)
+		i2 := BSONInt32(1)
+		i3 := BSONInt32(2)
+
+		h.mustCreate(coll.Doc("doc1"), map[string]interface{}{"key": i1})
+		h.mustCreate(coll.Doc("doc2"), map[string]interface{}{"key": i2})
+		h.mustCreate(coll.Doc("doc3"), map[string]interface{}{"key": i3})
+		t.Cleanup(func() {
+			deleteDocuments([]*DocumentRef{coll.Doc("doc1"), coll.Doc("doc2"), coll.Doc("doc3")})
+		})
+
+		qInt1 := coll.Where("key", ">=", i2).OrderBy("key", Desc)
+		assertQueryOrder(ctx, t, qInt1, []string{"doc3", "doc2"})
+
+		qInt2 := coll.Where("key", "not-in", []interface{}{i2}).OrderBy("key", Desc)
+		assertQueryOrder(ctx, t, qInt2, []string{"doc3", "doc1"})
+	})
+
+	t.Run("canFilterAndOrderDecimal128", func(t *testing.T) {
+		coll := client.Collection(collectionIDs.New())
+		d1 := BSONDecimal128("-1.2e3")
+		d2 := BSONDecimal128("0")
+		d3 := BSONDecimal128("1.2e-3")
+
+		h.mustCreate(coll.Doc("doc1"), map[string]interface{}{"key": d1})
+		h.mustCreate(coll.Doc("doc2"), map[string]interface{}{"key": d2})
+		h.mustCreate(coll.Doc("doc3"), map[string]interface{}{"key": d3})
+		t.Cleanup(func() {
+			deleteDocuments([]*DocumentRef{coll.Doc("doc1"), coll.Doc("doc2"), coll.Doc("doc3")})
+		})
+
+		qDec1 := coll.Where("key", ">=", BSONDecimal128("-1.1")).OrderBy("key", Desc)
+		assertQueryOrder(ctx, t, qDec1, []string{"doc3", "doc2"})
+
+		qDec2 := coll.Where("key", "not-in", []interface{}{BSONDecimal128("1.2e-3")}).OrderBy("key", Desc)
+		assertQueryOrder(ctx, t, qDec2, []string{"doc2", "doc1"})
+	})
+
+	t.Run("canFilterAndOrderBsonTimestamp", func(t *testing.T) {
+		coll := client.Collection(collectionIDs.New())
+		bt1 := BSONTimestamp{Seconds: 1, Increment: 1}
+		bt2 := BSONTimestamp{Seconds: 1, Increment: 2}
+		bt3 := BSONTimestamp{Seconds: 2, Increment: 1}
+
+		h.mustCreate(coll.Doc("doc1"), map[string]interface{}{"key": bt1})
+		h.mustCreate(coll.Doc("doc2"), map[string]interface{}{"key": bt2})
+		h.mustCreate(coll.Doc("doc3"), map[string]interface{}{"key": bt3})
+		t.Cleanup(func() {
+			deleteDocuments([]*DocumentRef{coll.Doc("doc1"), coll.Doc("doc2"), coll.Doc("doc3")})
+		})
+
+		qBt1 := coll.Where("key", ">", bt1).OrderBy("key", Desc)
+		assertQueryOrder(ctx, t, qBt1, []string{"doc3", "doc2"})
+
+		qBt2 := coll.Where("key", "!=", bt1).OrderBy("key", Desc)
+		assertQueryOrder(ctx, t, qBt2, []string{"doc3", "doc2"})
+	})
+
+	t.Run("canFilterAndOrderBsonBinaryData", func(t *testing.T) {
+		coll := client.Collection(collectionIDs.New())
+		bb1 := BSONBinary{Subtype: 1, Data: []byte{1, 2, 3}}
+		bb2 := BSONBinary{Subtype: 1, Data: []byte{1, 2, 4}}
+		bb3 := BSONBinary{Subtype: 2, Data: []byte{1, 2, 3}}
+
+		h.mustCreate(coll.Doc("doc1"), map[string]interface{}{"key": bb1})
+		h.mustCreate(coll.Doc("doc2"), map[string]interface{}{"key": bb2})
+		h.mustCreate(coll.Doc("doc3"), map[string]interface{}{"key": bb3})
+		t.Cleanup(func() {
+			deleteDocuments([]*DocumentRef{coll.Doc("doc1"), coll.Doc("doc2"), coll.Doc("doc3")})
+		})
+
+		qBb1 := coll.Where("key", ">", bb1).OrderBy("key", Desc)
+		assertQueryOrder(ctx, t, qBb1, []string{"doc3", "doc2"})
+
+		qBb2 := coll.Where("key", ">=", bb1).Where("key", "<", bb3).OrderBy("key", Desc)
+		assertQueryOrder(ctx, t, qBb2, []string{"doc2", "doc1"})
+	})
+
+	t.Run("canFilterAndOrderRegexValues", func(t *testing.T) {
+		coll := client.Collection(collectionIDs.New())
+		br1 := BSONRegex{Pattern: "^bar", Options: "i"}
+		br2 := BSONRegex{Pattern: "^bar", Options: "x"}
+		br3 := BSONRegex{Pattern: "^baz", Options: "i"}
+
+		h.mustCreate(coll.Doc("doc1"), map[string]interface{}{"key": br1})
+		h.mustCreate(coll.Doc("doc2"), map[string]interface{}{"key": br2})
+		h.mustCreate(coll.Doc("doc3"), map[string]interface{}{"key": br3})
+		t.Cleanup(func() {
+			deleteDocuments([]*DocumentRef{coll.Doc("doc1"), coll.Doc("doc2"), coll.Doc("doc3")})
+		})
+
+		qBr1 := coll.WhereEntity(OrFilter{
+			Filters: []EntityFilter{
+				PropertyFilter{Path: "key", Operator: ">", Value: BSONRegex{Pattern: "^bar", Options: "x"}},
+				PropertyFilter{Path: "key", Operator: "!=", Value: BSONRegex{Pattern: "^bar", Options: "x"}},
+			},
+		}).OrderBy("key", Desc)
+		assertQueryOrder(ctx, t, qBr1, []string{"doc3", "doc1"})
+	})
+
+	t.Run("canFilterAndOrderMinKeys", func(t *testing.T) {
+		coll := client.Collection(collectionIDs.New())
+		h.mustCreate(coll.Doc("doc1"), map[string]interface{}{"key": BSONMinKey{}})
+		h.mustCreate(coll.Doc("doc2"), map[string]interface{}{"key": BSONMinKey{}})
+		h.mustCreate(coll.Doc("doc3"), map[string]interface{}{"key": BSONMaxKey{}})
+		t.Cleanup(func() {
+			deleteDocuments([]*DocumentRef{coll.Doc("doc1"), coll.Doc("doc2"), coll.Doc("doc3")})
+		})
+
+		qMin1 := coll.Where("key", "==", BSONMinKey{}).OrderBy("key", Desc)
+		// MinKeys are equal, would sort by documentId as secondary order
+		assertQueryOrder(ctx, t, qMin1, []string{"doc2", "doc1"})
+	})
+
+	t.Run("canFilterAndOrderMaxKeys", func(t *testing.T) {
+		coll := client.Collection(collectionIDs.New())
+		h.mustCreate(coll.Doc("doc1"), map[string]interface{}{"key": BSONMinKey{}})
+		h.mustCreate(coll.Doc("doc2"), map[string]interface{}{"key": BSONMaxKey{}})
+		h.mustCreate(coll.Doc("doc3"), map[string]interface{}{"key": BSONMaxKey{}})
+		t.Cleanup(func() {
+			deleteDocuments([]*DocumentRef{coll.Doc("doc1"), coll.Doc("doc2"), coll.Doc("doc3")})
+		})
+
+		qMax1 := coll.Where("key", "==", BSONMaxKey{}).OrderBy("key", Desc)
+		// MaxKeys are equal, would sort by documentId as secondary order
+		assertQueryOrder(ctx, t, qMax1, []string{"doc3", "doc2"})
+	})
+}
+
+func testIntegrationBSONCrossTypeOrder(t *testing.T) {
+	skipIfEdition(t, "BSON types", editionStandard)
+	t.Skip("Temporarily skipping BSON integration test. Not yet released to prod.")
+	ctx := context.Background()
+	client := integrationClient(t)
+	coll := client.Collection(collectionIDs.New())
+	h := testHelper{t}
+
+	data := map[string]interface{}{
+		"t": nil,
+		"u": BSONMinKey{},
+		"c": true,
+		"d": math.NaN(),
+		"e": BSONInt32(1),
+		"f": 2.0,
+		"g": BSONDecimal128("2.01e-5"),
+		"h": 3,
+		"i": time.Unix(100, 123456000).UTC(),
+		"j": BSONTimestamp{Seconds: 1, Increment: 2},
+		"k": "string",
+		"l": []byte{0, 1, 3},
+		"m": BSONBinary{Subtype: 1, Data: []byte{1, 2, 3}},
+		"n": coll.Doc("doc_ref_target"),
+		"o": BSONObjectID("507f191e810c19729de860ea"),
+		"p": &latlng.LatLng{Latitude: 0, Longitude: 0},
+		"q": BSONRegex{Pattern: "^foo", Options: "i"},
+		"r": []interface{}{1, 2},
+		"s": Vector64{1.0, 2.0},
+		"a": map[string]interface{}{"a": 1},
+		"b": BSONMaxKey{},
+	}
+
+	var docRefs []*DocumentRef
+	for id, val := range data {
+		docRef := coll.Doc(id)
+		docRefs = append(docRefs, docRef)
+		h.mustCreate(docRef, map[string]interface{}{"key": val})
+	}
+	t.Cleanup(func() {
+		deleteDocuments(docRefs)
+	})
+
+	expectedResult := []string{
+		"b", "a", "s", "r", "q", "p", "o", "n", "m", "l", "k", "j", "i", "h", "f", "e", "g", "d", "c", "u", "t",
+	}
+
+	q := coll.OrderBy("key", Desc)
+	assertQueryOrder(ctx, t, q, expectedResult)
+}
+
+func testIntegrationBSONValidationRejection(t *testing.T) {
+	skipIfEdition(t, "BSON types", editionStandard)
+	t.Skip("Temporarily skipping BSON integration test. Not yet released to prod.")
+	ctx := context.Background()
+	client := integrationClient(t)
+	coll := client.Collection(collectionIDs.New())
+
+	t.Run("invalidRegexGetsRejected", func(t *testing.T) {
+		doc := coll.NewDoc()
+		// "a" is an invalid option. Valid are "i", "m", "s", "u", "x"
+		_, err := doc.Create(ctx, map[string]interface{}{
+			"key": BSONRegex{Pattern: "foo", Options: "a"},
+		})
+		if err == nil {
+			t.Fatal("expected error, got nil")
+		}
+		if !strings.Contains(err.Error(), "Invalid regex option") {
+			t.Errorf("unexpected error message: %v", err)
+		}
+	})
+
+	t.Run("invalidBsonObjectIdGetsRejected", func(t *testing.T) {
+		doc := coll.NewDoc()
+		// Object ID must be 24 hex characters
+		_, err := doc.Create(ctx, map[string]interface{}{
+			"key": BSONObjectID("foobar"),
+		})
+		if err == nil {
+			t.Fatal("expected error, got nil")
+		}
+		if !strings.Contains(err.Error(), "Object ID hex string has incorrect length") {
+			t.Errorf("unexpected error message: %v", err)
+		}
+	})
+}
+
+func assertQueryOrder(ctx context.Context, t *testing.T, q Query, wantDocIDs []string) {
+	t.Helper()
+	// Test server-side query
+	iter := q.Documents(ctx)
+	defer iter.Stop()
+	docs, err := iter.GetAll()
+	if err != nil {
+		t.Fatalf("Query.Documents failed: %v", err)
+	}
+	gotDocIDs := docIDs(docs)
+	if !testEqual(gotDocIDs, wantDocIDs) {
+		t.Errorf("Server query got %v, want %v", gotDocIDs, wantDocIDs)
+	}
+
+	// Test client-side sorting (Watch stream)
+	watchDocs, err := getFirstSnapshot(ctx, q)
+	if err != nil {
+		t.Fatalf("getFirstSnapshot failed: %v", err)
+	}
+	gotWatchDocIDs := docIDs(watchDocs)
+	if !testEqual(gotWatchDocIDs, wantDocIDs) {
+		t.Errorf("Watch snapshot got %v, want %v", gotWatchDocIDs, wantDocIDs)
+	}
+}
+
+func getFirstSnapshot(ctx context.Context, q Query) ([]*DocumentSnapshot, error) {
+	it := q.Snapshots(ctx)
+	defer it.Stop()
+	snap, err := it.Next()
+	if err != nil {
+		return nil, err
+	}
+	return snap.Documents.GetAll()
+}
+
+func docIDs(docs []*DocumentSnapshot) []string {
+	var ids []string
+	for _, doc := range docs {
+		ids = append(ids, doc.Ref.ID)
+	}
+	return ids
 }
 
 func testIntegrationVerifyGRPCLimits(t *testing.T) {
@@ -3805,6 +4163,10 @@ func TestIntegration_EnterpriseDB(t *testing.T) {
 			t.Run("AggregationQuery_Pipeline", testIntegrationAggregationQueryPipeline)
 			t.Run("PipelineSubqueriesAndVariables", testIntegrationPipelineSubqueriesAndVariables)
 			t.Run("PipelineSearch", testIntegrationPipelineSearch)
+			t.Run("BSONTypes", testIntegrationBSONTypes)
+			t.Run("BSONQueries", testIntegrationBSONQueries)
+			t.Run("BSONCrossTypeOrder", testIntegrationBSONCrossTypeOrder)
+			t.Run("BSONValidationRejection", testIntegrationBSONValidationRejection)
 		})
 	}
 }

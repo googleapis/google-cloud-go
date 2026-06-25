@@ -904,6 +904,7 @@ func testIntegrationPipelineFunctions(t *testing.T) {
 	t.Run("objectFuncs", objectFuncs)
 	t.Run("logicalFuncs", logicalFuncs)
 	t.Run("typeFuncs", typeFuncs)
+	t.Run("bsonPipelineFuncs", bsonPipelineFuncs)
 	t.Run("aggregationFuncs", aggregationFuncs)
 }
 
@@ -3406,4 +3407,171 @@ func testIntegrationPipelineSubqueriesAndVariables(t *testing.T) {
 			t.Errorf("expected name Widget, got %v", data["name"])
 		}
 	})
+}
+
+func bsonPipelineFuncs(t *testing.T) {
+	t.Skip("Temporarily skipping BSON integration test. Not yet released to prod.")
+	t.Parallel()
+	h := testHelper{t}
+	client := integrationClient(t)
+	coll := client.Collection(collectionIDs.New())
+
+	// Create a document with all BSON types
+	docRef := coll.NewDoc()
+	t.Cleanup(func() { deleteDocuments([]*DocumentRef{docRef}) })
+
+	oid := BSONObjectID("507f191e810c19729de860ea")
+	regex := BSONRegex{Pattern: "^bar", Options: "i"}
+	timestamp := BSONTimestamp{Seconds: 100, Increment: 10}
+	decimal := BSONDecimal128("1.2e3")
+	minKey := BSONMinKey{}
+	maxKey := BSONMaxKey{}
+	int32Val := BSONInt32(42)
+
+	h.mustCreate(docRef, map[string]interface{}{
+		"oid":       oid,
+		"regex":     regex,
+		"timestamp": timestamp,
+		"decimal":   decimal,
+		"minKey":    minKey,
+		"maxKey":    maxKey,
+		"int32":     int32Val,
+	})
+
+	tests := []struct {
+		name     string
+		pipeline *Pipeline
+		want     map[string]interface{}
+	}{
+		// Type() tests
+		{
+			name:     "Type of ObjectID",
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(Type("oid").As("type"))),
+			want:     map[string]interface{}{"type": "object_id"},
+		},
+		{
+			name:     "Type of Regex",
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(Type("regex").As("type"))),
+			want:     map[string]interface{}{"type": "regex"},
+		},
+		{
+			name:     "Type of BSONTimestamp",
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(Type("timestamp").As("type"))),
+			want:     map[string]interface{}{"type": "bson_timestamp"},
+		},
+		{
+			name:     "Type of Decimal128",
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(Type("decimal").As("type"))),
+			want:     map[string]interface{}{"type": "decimal128"},
+		},
+		{
+			name:     "Type of MinKey",
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(Type("minKey").As("type"))),
+			want:     map[string]interface{}{"type": "min_key"},
+		},
+		{
+			name:     "Type of MaxKey",
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(Type("maxKey").As("type"))),
+			want:     map[string]interface{}{"type": "max_key"},
+		},
+		{
+			name:     "Type of Int32",
+			pipeline: client.Pipeline().Collection(coll.ID).Select(Fields(Type("int32").As("type"))),
+			want:     map[string]interface{}{"type": "int32"},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			ctx := context.Background()
+			iter := test.pipeline.Execute(ctx).Results()
+			defer iter.Stop()
+
+			docs, err := iter.GetAll()
+			if err != nil {
+				t.Fatalf("GetAll: %v", err)
+			}
+			if len(docs) != 1 {
+				t.Fatalf("expected 1 doc, got %d", len(docs))
+			}
+			got := docs[0].Data()
+			if diff := testutil.Diff(got, test.want); diff != "" {
+				t.Errorf("got: %v, want: %v, diff +want -got: %s", got, test.want, diff)
+			}
+		})
+	}
+
+	// IsType filter tests
+	isTypeTests := []struct {
+		name      string
+		pipeline  *Pipeline
+		wantCount int
+	}{
+		{
+			name:      "IsType ObjectID",
+			pipeline:  client.Pipeline().Collection(coll.ID).Where(IsType("oid", "object_id")),
+			wantCount: 1,
+		},
+		{
+			name:      "IsType Regex",
+			pipeline:  client.Pipeline().Collection(coll.ID).Where(IsType("regex", "regex")),
+			wantCount: 1,
+		},
+		{
+			name:      "IsType BSONTimestamp",
+			pipeline:  client.Pipeline().Collection(coll.ID).Where(IsType("timestamp", "bson_timestamp")),
+			wantCount: 1,
+		},
+		{
+			name:      "IsType Decimal128",
+			pipeline:  client.Pipeline().Collection(coll.ID).Where(IsType("decimal", "decimal128")),
+			wantCount: 1,
+		},
+		{
+			name:      "IsType MinKey",
+			pipeline:  client.Pipeline().Collection(coll.ID).Where(IsType("minKey", "min_key")),
+			wantCount: 1,
+		},
+		{
+			name:      "IsType MaxKey",
+			pipeline:  client.Pipeline().Collection(coll.ID).Where(IsType("maxKey", "max_key")),
+			wantCount: 1,
+		},
+		{
+			name:      "IsType Int32",
+			pipeline:  client.Pipeline().Collection(coll.ID).Where(IsType("int32", "int32")),
+			wantCount: 1,
+		},
+		{
+			name:      "IsType Int32 is also number",
+			pipeline:  client.Pipeline().Collection(coll.ID).Where(IsType("int32", "number")),
+			wantCount: 1,
+		},
+		{
+			name:      "IsType Decimal128 is also number",
+			pipeline:  client.Pipeline().Collection(coll.ID).Where(IsType("decimal", "number")),
+			wantCount: 1,
+		},
+		{
+			name:      "IsType ObjectID is not regex",
+			pipeline:  client.Pipeline().Collection(coll.ID).Where(IsType("oid", "regex")),
+			wantCount: 0,
+		},
+	}
+
+	for _, test := range isTypeTests {
+		t.Run(test.name, func(t *testing.T) {
+			ctx := context.Background()
+			iter := test.pipeline.Execute(ctx).Results()
+			defer iter.Stop()
+
+			docs, err := iter.GetAll()
+			if err != nil {
+				t.Fatalf("GetAll: %v", err)
+			}
+			if len(docs) != test.wantCount {
+				t.Errorf("expected %d docs, got %d", test.wantCount, len(docs))
+			}
+		})
+	}
 }
