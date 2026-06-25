@@ -163,14 +163,15 @@ func (op *Operation) WaitWithInterval(ctx context.Context, resp protoadapt.Messa
 }
 
 func (op *Operation) waitWithInterval(ctx context.Context, resp protoadapt.MessageV1, interval time.Duration, sl sleeper, opts ...gax.CallOption) error {
+	bo := gax.Backoff{
+		Initial: 1 * time.Second,
+		Max:     interval,
+	}
+	if bo.Max < bo.Initial {
+		bo.Max = bo.Initial
+	}
+
 	if !gax.IsFeatureEnabled("TRACING") {
-		bo := gax.Backoff{
-			Initial: 1 * time.Second,
-			Max:     interval,
-		}
-		if bo.Max < bo.Initial {
-			bo.Max = bo.Initial
-		}
 		return op.wait(ctx, resp, &bo, sl, opts...)
 	}
 
@@ -188,22 +189,14 @@ func (op *Operation) waitWithInterval(ctx context.Context, resp protoadapt.Messa
 
 	tracer := otel.GetTracerProvider().Tracer("cloud.google.com/go")
 	ctx, span := tracer.Start(ctx, spanName, startOpts...)
+	defer span.End()
 	span.SetAttributes(attribute.String("gcp.resource.destination.id", op.Name()))
-
-	bo := gax.Backoff{
-		Initial: 1 * time.Second,
-		Max:     interval,
-	}
-	if bo.Max < bo.Initial {
-		bo.Max = bo.Initial
-	}
 
 	err := op.wait(ctx, resp, &bo, sl, opts...)
 	if err != nil {
 		span.SetStatus(codes.Error, err.Error())
 		span.RecordError(err)
 	}
-	span.End()
 	return err
 }
 
