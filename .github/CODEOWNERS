@@ -26,12 +26,5 @@
 /internal/protoveneer/  @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
 
 
-# We mark the librarian state file as unowned to avoid gatekeeping librarian operations on 
-# a single owner.  This allows multiple teams to interact with librarian operations that cause
-# changes to librarian state.
-/.librarian/state.yaml
-# Similarly, we mark the internal/generated/snippets directory unowned to avoid
-# tracking granular ownership in the snippets directories, and to avoid chasing
-# code owners approvals for things like snippet metadata versioning bumps which
-# happen naturally as part of release activities.
-/internal/generated/snippets/
+# We mark the release please individual manifest unowned as well to allow teams to release the individual modules without secondary approvals.
+/.release-please-individual-manifest.json
