@@ -1,5 +1,12 @@
 # Changes
 
+## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/longrunning/v1.0.0...longrunning/v1.1.0) (2026-06-26)
+
+
+### Features
+
+* **o11y:** Add experimental trace fields and construction API ([#19968](https://github.com/googleapis/google-cloud-go/issues/19968)) ([c71dd55](https://github.com/googleapis/google-cloud-go/commit/c71dd55685bf2437011b580973a7c28d7ade93b0)), closes [#19969](https://github.com/googleapis/google-cloud-go/issues/19969)
+
 ## [1.0.0](https://github.com/googleapis/google-cloud-go/releases/tag/longrunning%2Fv1.0.0) (2026-05-08)
 
 ## [0.13.0](https://github.com/googleapis/google-cloud-go/releases/tag/longrunning%2Fv0.13.0) (2026-05-07)
@@ -205,4 +212,3 @@
 ## v0.1.0
 
 Initial release.
-
