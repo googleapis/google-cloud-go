@@ -20,9 +20,11 @@ import (
 	"fmt"
 	"io"
 	"math"
+	"net"
 	"net/url"
 	"os"
 	"strings"
+	"syscall"
 	"time"
 
 	vkit "cloud.google.com/go/firestore/apiv1"
@@ -324,80 +326,159 @@ func (c *Client) getAll(ctx context.Context, docRefs []*DocumentRef, tid []byte,
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/firestore.Client.BatchGetDocuments")
 	defer func() { trace.EndSpan(ctx, err) }()
 
-	var docNames []string
 	docIndices := map[string][]int{} // doc name to positions in docRefs
 	for i, dr := range docRefs {
 		if err := dr.isValid(); err != nil {
 			return nil, err
 		}
-		docNames = append(docNames, dr.Path)
 		docIndices[dr.Path] = append(docIndices[dr.Path], i)
 	}
-	req := &pb.BatchGetDocumentsRequest{
-		Database:  c.path(),
-		Documents: docNames,
+
+	// Track outstanding documents.
+	outstanding := make(map[string]bool)
+	for _, dr := range docRefs {
+		outstanding[dr.Path] = true
 	}
 
-	// Note that transaction ID and other consistency selectors are mutually exclusive.
-	// We respect the transaction first, any read options passed by the caller second,
-	// and any read options stored in the client third.
-	if rt, hasOpts := parseReadTime(c, rs); hasOpts {
-		req.ConsistencySelector = &pb.BatchGetDocumentsRequest_ReadTime{ReadTime: rt}
+	docs := make([]*DocumentSnapshot, len(docRefs))
+
+	maxAttempts := 5
+	backoff := gax.Backoff{
+		Initial:    100 * time.Millisecond,
+		Max:        5 * time.Second,
+		Multiplier: 2.0,
 	}
 
-	if tid != nil {
-		req.ConsistencySelector = &pb.BatchGetDocumentsRequest_Transaction{Transaction: tid}
-	}
-
-	batchGetDocsCtx := withResourceHeader(ctx, req.Database)
-	batchGetDocsCtx = withRequestParamsHeader(batchGetDocsCtx, reqParamsHeaderVal(c.path()))
-	streamClient, err := c.c.BatchGetDocuments(batchGetDocsCtx, req)
-	if err != nil {
-		return nil, err
-	}
-
-	// Read and remember all results from the stream.
-	var resps []*pb.BatchGetDocumentsResponse
-	for {
-		resp, err := streamClient.Recv()
-		if err == io.EOF {
+	for attempt := 0; attempt < maxAttempts; attempt++ {
+		if len(outstanding) == 0 {
 			break
 		}
+
+		var activeDocNames []string
+		for _, dr := range docRefs {
+			if outstanding[dr.Path] {
+				activeDocNames = append(activeDocNames, dr.Path)
+			}
+		}
+
+		req := &pb.BatchGetDocumentsRequest{
+			Database:  c.path(),
+			Documents: activeDocNames,
+		}
+
+		if rt, hasOpts := parseReadTime(c, rs); hasOpts {
+			req.ConsistencySelector = &pb.BatchGetDocumentsRequest_ReadTime{ReadTime: rt}
+		}
+		if tid != nil {
+			req.ConsistencySelector = &pb.BatchGetDocumentsRequest_Transaction{Transaction: tid}
+		}
+
+		batchGetDocsCtx := withResourceHeader(ctx, req.Database)
+		batchGetDocsCtx = withRequestParamsHeader(batchGetDocsCtx, reqParamsHeaderVal(c.path()))
+		streamClient, err := c.c.BatchGetDocuments(batchGetDocsCtx, req)
 		if err != nil {
+			if tid == nil && isRetryableStreamError(err) && attempt < maxAttempts-1 {
+				dur := backoff.Pause()
+				select {
+				case <-ctx.Done():
+					return nil, ctx.Err()
+				case <-time.After(dur):
+				}
+				continue
+			}
 			return nil, err
 		}
-		resps = append(resps, resp)
+
+		var streamErr error
+		for {
+			resp, recvErr := streamClient.Recv()
+			if recvErr == io.EOF {
+				break
+			}
+			if recvErr != nil {
+				streamErr = recvErr
+				break
+			}
+
+			var (
+				indices []int
+				doc     *pb.Document
+			)
+			switch r := resp.Result.(type) {
+			case *pb.BatchGetDocumentsResponse_Found:
+				indices = docIndices[r.Found.Name]
+				doc = r.Found
+				delete(outstanding, r.Found.Name)
+			case *pb.BatchGetDocumentsResponse_Missing:
+				indices = docIndices[r.Missing]
+				doc = nil
+				delete(outstanding, r.Missing)
+			default:
+				return nil, errors.New("firestore: unknown BatchGetDocumentsResponse result type")
+			}
+			for _, index := range indices {
+				if docs[index] != nil {
+					return nil, fmt.Errorf("firestore: %q seen twice", docRefs[index].Path)
+				}
+				docs[index], err = newDocumentSnapshot(docRefs[index], doc, c, resp.ReadTime)
+				if err != nil {
+					return nil, err
+				}
+			}
+		}
+
+		if streamErr == nil {
+			if len(outstanding) > 0 {
+				return nil, fmt.Errorf("firestore: stream completed but some documents were not received: %v", outstanding)
+			}
+			break
+		}
+
+		if tid != nil {
+			return nil, streamErr
+		}
+
+		if !isRetryableStreamError(streamErr) {
+			return nil, streamErr
+		}
+
+		if ctxErr := ctx.Err(); ctxErr != nil {
+			return nil, streamErr
+		}
+
+		if attempt == maxAttempts-1 {
+			return nil, streamErr
+		}
+
+		dur := backoff.Pause()
+		select {
+		case <-ctx.Done():
+			return nil, ctx.Err()
+		case <-time.After(dur):
+		}
 	}
 
-	// Results may arrive out of order. Put each at the right indices.
-	docs := make([]*DocumentSnapshot, len(docNames))
-	for _, resp := range resps {
-		var (
-			indices []int
-			doc     *pb.Document
-			err     error
-		)
-		switch r := resp.Result.(type) {
-		case *pb.BatchGetDocumentsResponse_Found:
-			indices = docIndices[r.Found.Name]
-			doc = r.Found
-		case *pb.BatchGetDocumentsResponse_Missing:
-			indices = docIndices[r.Missing]
-			doc = nil
-		default:
-			return nil, errors.New("firestore: unknown BatchGetDocumentsResponse result type")
-		}
-		for _, index := range indices {
-			if docs[index] != nil {
-				return nil, fmt.Errorf("firestore: %q seen twice", docRefs[index].Path)
-			}
-			docs[index], err = newDocumentSnapshot(docRefs[index], doc, c, resp.ReadTime)
-			if err != nil {
-				return nil, err
-			}
+	return docs, nil
+}
+
+func isRetryableStreamError(err error) bool {
+	if err == nil {
+		return false
+	}
+	s, ok := status.FromError(err)
+	if ok {
+		switch s.Code() {
+		case codes.Unavailable, codes.Internal, codes.DeadlineExceeded:
+			return true
 		}
 	}
-	return docs, nil
+	if errors.Is(err, syscall.ECONNRESET) ||
+		errors.Is(err, syscall.ECONNREFUSED) ||
+		errors.Is(err, net.ErrClosed) ||
+		errors.Is(err, io.ErrUnexpectedEOF) {
+		return true
+	}
+	return false
 }
 
 // Collections returns an iterator over the top-level collections.

@@ -489,13 +489,15 @@ func TestGetAllErrors(t *testing.T) {
 	}
 
 	// Internal server error.
-	srv.addRPC(
-		&pb.BatchGetDocumentsRequest{
-			Database:  dbPath,
-			Documents: []string{docPath},
-		},
-		[]interface{}{status.Errorf(codes.Internal, "")},
-	)
+	for i := 0; i < 5; i++ {
+		srv.addRPC(
+			&pb.BatchGetDocumentsRequest{
+				Database:  dbPath,
+				Documents: []string{docPath},
+			},
+			[]interface{}{status.Errorf(codes.Internal, "")},
+		)
+	}
 	_, err := c.GetAll(ctx, []*DocumentRef{c.Doc("C/a")})
 	codeEq(t, "GetAll #1", codes.Internal, err)
 
@@ -555,7 +557,11 @@ func TestClient_WithReadOptions(t *testing.T) {
 		&pb.BatchGetDocumentsResponse{
 			ReadTime: &tspb.Timestamp{Seconds: tm.Unix()},
 			Result: &pb.BatchGetDocumentsResponse_Found{
-				Found: &pb.Document{},
+				Found: &pb.Document{
+					Name:       docPath,
+					CreateTime: aTimestamp,
+					UpdateTime: aTimestamp,
+				},
 			},
 		},
 	})
@@ -605,3 +611,91 @@ func TestNormalizeEmulatorAddress(t *testing.T) {
 		}
 	}
 }
+
+func TestGetAllRetry(t *testing.T) {
+	c, srv, cleanup := newMock(t)
+	defer cleanup()
+
+	const dbPath = "projects/projectID/databases/(default)"
+
+	coll := c.Collection("C")
+	drA := coll.Doc("a")
+	drB := coll.Doc("b")
+	drC := coll.Doc("c")
+	drs := []*DocumentRef{drA, drB, drC}
+
+	pbDocA := &pb.Document{
+		Name:       dbPath + "/documents/C/a",
+		CreateTime: aTimestamp,
+		UpdateTime: aTimestamp,
+		Fields:     map[string]*pb.Value{"f": intval(1)},
+	}
+	pbDocB := &pb.Document{
+		Name:       dbPath + "/documents/C/b",
+		CreateTime: aTimestamp,
+		UpdateTime: aTimestamp,
+		Fields:     map[string]*pb.Value{"f": intval(2)},
+	}
+	pbDocC := &pb.Document{
+		Name:       dbPath + "/documents/C/c",
+		CreateTime: aTimestamp,
+		UpdateTime: aTimestamp,
+		Fields:     map[string]*pb.Value{"f": intval(3)},
+	}
+
+	// First request: all docs
+	req1 := &pb.BatchGetDocumentsRequest{
+		Database:  dbPath,
+		Documents: []string{drA.Path, drB.Path, drC.Path},
+	}
+	// First response: returns docA, then fails with UNAVAILABLE
+	srv.addRPC(req1, []interface{}{
+		&pb.BatchGetDocumentsResponse{
+			Result:   &pb.BatchGetDocumentsResponse_Found{Found: pbDocA},
+			ReadTime: aTimestamp,
+		},
+		status.Errorf(codes.Unavailable, "connection closed"),
+	})
+
+	// Second request (retry): only outstanding docs (B and C)
+	req2 := &pb.BatchGetDocumentsRequest{
+		Database:  dbPath,
+		Documents: []string{drB.Path, drC.Path},
+	}
+	// Second response: returns docB and docC
+	srv.addRPC(req2, []interface{}{
+		&pb.BatchGetDocumentsResponse{
+			Result:   &pb.BatchGetDocumentsResponse_Found{Found: pbDocB},
+			ReadTime: aTimestamp,
+		},
+		&pb.BatchGetDocumentsResponse{
+			Result:   &pb.BatchGetDocumentsResponse_Found{Found: pbDocC},
+			ReadTime: aTimestamp,
+		},
+	})
+
+	docs, err := c.GetAll(context.Background(), drs)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if got, want := len(docs), 3; got != want {
+		t.Fatalf("got %d docs, want %d", got, want)
+	}
+
+	// Verify snapshots
+	wantSnapA, _ := newDocumentSnapshot(drA, pbDocA, c, aTimestamp)
+	wantSnapB, _ := newDocumentSnapshot(drB, pbDocB, c, aTimestamp)
+	wantSnapC, _ := newDocumentSnapshot(drC, pbDocC, c, aTimestamp)
+
+	if diff := testDiff(docs[0], wantSnapA); diff != "" {
+		t.Errorf("docA diff:\n%s", diff)
+	}
+	if diff := testDiff(docs[1], wantSnapB); diff != "" {
+		t.Errorf("docB diff:\n%s", diff)
+	}
+	if diff := testDiff(docs[2], wantSnapC); diff != "" {
+		t.Errorf("docC diff:\n%s", diff)
+	}
+}
+
