@@ -118,6 +118,8 @@ type metricsContext struct {
 	clientOpts []option.ClientOption
 	// instance of metric reader used by gRPC client-side metrics
 	provider *metric.MeterProvider
+	// true if the provider was created by the SDK and should be shut down here
+	isDefaultProvider bool
 	// clean func to call when closing gRPC client
 	close func()
 }
@@ -173,9 +175,11 @@ func newGRPCMetricContext(ctx context.Context, cfg metricsConfig) (*metricsConte
 		meterOpts = append(meterOpts, metric.WithReader(
 			metric.NewPeriodicReader(&exporterLogSuppressor{Exporter: exporter}, metric.WithInterval(interval))))
 	}
+	isDefault := false
 	provider := cfg.meterProvider
 	if provider == nil {
 		provider = metric.NewMeterProvider(meterOpts...)
+		isDefault = true
 	}
 	mo := opentelemetry.MetricsOptions{
 		MeterProvider: provider,
@@ -204,10 +208,13 @@ func newGRPCMetricContext(ctx context.Context, cfg metricsConfig) (*metricsConte
 			grpc.WithDefaultCallOptions(grpc.StaticMethodCallOption{})),
 	}
 	return &metricsContext{
-		clientOpts: opts,
-		provider:   provider,
+		clientOpts:        opts,
+		provider:          provider,
+		isDefaultProvider: isDefault,
 		close: func() {
-			provider.Shutdown(ctx)
+			if isDefault {
+				provider.Shutdown(ctx)
+			}
 		},
 	}, nil
 }

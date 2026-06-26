@@ -272,10 +272,15 @@ func (c *grpcStorageClient) prepareDirectPathMetadata(ctx context.Context, targe
 }
 
 func (c *grpcStorageClient) Close() error {
+	// Close the underlying gRPC connection first.
+	// This ensures that any active streams are cleanly finalized, allowing
+	// their stats handlers to flush `End` events before the metrics pipeline
+	// is torn down.
+	err := c.raw.Close()
 	if c.settings.metricsContext != nil {
 		c.settings.metricsContext.close()
 	}
-	return c.raw.Close()
+	return err
 }
 
 // Top-level methods.
