@@ -2702,7 +2702,7 @@
         "resultType": "MessageIterator",
         "shortName": "ListMessages"
       },
-      "description": "ListMessages lists messages that belong to a given conversation.\n`messages` are ordered by `create_time` in descending order. To fetch\nupdates without duplication, send request with filter\n`create_time_epoch_microseconds >\n[first item's create_time of previous request]` and empty page_token.",
+      "description": "ListMessages lists messages that belong to a given conversation.\n`messages` are ordered by `create_time` in descending order. To fetch\nupdates without duplication, send request with filter\n`create_time_epoch_microseconds \u003e\n[first item's create_time of previous request]` and empty page_token.",
       "file": "ConversationsClient/ListMessages/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -7650,7 +7650,7 @@
         "resultType": "SuggestionIterator",
         "shortName": "ListSuggestions"
       },
-      "description": "ListSuggestions deprecated: Use inline suggestion, event based suggestion or\nSuggestion* API instead.\nSee\n[HumanAgentAssistantConfig.name][google.cloud.dialogflow.v2beta1.HumanAgentAssistantConfig.name]\nfor more details. Removal Date: 2020-09-01.\n\nRetrieves suggestions for live agents.\n\nThis method should be used by human agent client software to fetch auto\ngenerated suggestions in real-time, while the conversation with an end user\nis in progress. The functionality is implemented in terms of the\n[list\npagination](https: //cloud.google.com/apis/design/design_patterns#list_pagination)\ndesign pattern. The client app should use the `next_page_token` field\nto fetch the next batch of suggestions. `suggestions` are sorted by\n`create_time` in descending order.\nTo fetch latest suggestion, just set `page_size` to 1.\nTo fetch new suggestions without duplication, send request with filter\n`create_time_epoch_microseconds > [first item's create_time of previous\nrequest]` and empty page_token.\n\n\nDeprecated: ListSuggestions may be removed in a future version.",
+      "description": "ListSuggestions deprecated: Use inline suggestion, event based suggestion or\nSuggestion* API instead.\nSee\n[HumanAgentAssistantConfig.name][google.cloud.dialogflow.v2beta1.HumanAgentAssistantConfig.name]\nfor more details. Removal Date: 2020-09-01.\n\nRetrieves suggestions for live agents.\n\nThis method should be used by human agent client software to fetch auto\ngenerated suggestions in real-time, while the conversation with an end user\nis in progress. The functionality is implemented in terms of the\n[list\npagination](https: //cloud.google.com/apis/design/design_patterns#list_pagination)\ndesign pattern. The client app should use the `next_page_token` field\nto fetch the next batch of suggestions. `suggestions` are sorted by\n`create_time` in descending order.\nTo fetch latest suggestion, just set `page_size` to 1.\nTo fetch new suggestions without duplication, send request with filter\n`create_time_epoch_microseconds \u003e [first item's create_time of previous\nrequest]` and empty page_token.\n\n\nDeprecated: ListSuggestions may be removed in a future version.",
       "file": "ParticipantsClient/ListSuggestions/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
