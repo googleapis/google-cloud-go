@@ -60,6 +60,7 @@ import (
 	"github.com/googleapis/gax-go/v2/apierror"
 	"go.opentelemetry.io/contrib/detectors/gcp"
 	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/sdk/metric"
 	"go.opentelemetry.io/otel/sdk/metric/metricdata"
 	"go.opentelemetry.io/otel/sdk/resource"
@@ -1262,6 +1263,112 @@ func TestIntegration_MetricsEnablement(t *testing.T) {
 
 	if err := mr.Shutdown(ctx); err != nil {
 		t.Fatalf("manual reader shutdown: %v", err)
+	}
+}
+
+func TestIntegration_OtelMetricsEnablement(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Integration tests skipped in short mode")
+	}
+
+	ctx := context.Background()
+	prefix := grpcTestPrefix
+
+	for _, transportType := range []string{"http", "grpc"} {
+		t.Run(transportType, func(t *testing.T) {
+			res, err := resource.New(ctx,
+				resource.WithAttributes(
+					attribute.String("gcp.client.service", "storage"),
+					attribute.String("gcp.client.repo", "googleapis/google-cloud-go"),
+				),
+			)
+			if err != nil {
+				t.Fatalf("resource.New: %v", err)
+			}
+			mr := metric.NewManualReader()
+			provider := metric.NewMeterProvider(
+				metric.WithReader(mr),
+				metric.WithResource(res),
+			)
+			defer provider.Shutdown(ctx)
+
+			var client *Client
+			opts := []option.ClientOption{
+				experimental.WithOtelMetrics(),
+				experimental.WithMeterProvider(provider),
+			}
+
+			if transportType == "grpc" {
+				client = testConfigGRPC(ctx, t, opts...)
+			} else {
+				client = testConfig(ctx, t, opts...)
+			}
+			defer client.Close()
+
+			bucketName := prefix + uidSpace.New()
+			b := client.Bucket(bucketName)
+
+			if err := b.Create(ctx, testutil.ProjID(), nil); err != nil {
+				t.Fatalf("BucketHandle.Create(%q): %v", bucketName, err)
+			}
+			defer b.Delete(ctx)
+
+			it := b.Objects(ctx, nil)
+			_, err = it.Next()
+			if err != iterator.Done {
+				t.Errorf("Objects.Next: expected iterator.Done got %v", err)
+			}
+
+			rm := metricdata.ResourceMetrics{}
+			if err := mr.Collect(ctx, &rm); err != nil {
+				t.Fatalf("ManualReader.Collect: %v", err)
+			}
+
+			expectedMetricName := "rpc.client.call.duration"
+			if transportType == "http" {
+				expectedMetricName = "http.client.request.duration"
+			}
+
+			found := false
+			for _, sm := range rm.ScopeMetrics {
+				for _, m := range sm.Metrics {
+					if m.Name == expectedMetricName {
+						found = true
+						hist, ok := m.Data.(metricdata.Histogram[float64])
+						if !ok {
+							t.Fatalf("expected Histogram data, got %T", m.Data)
+						}
+						if len(hist.DataPoints) == 0 {
+							t.Fatalf("expected at least 1 datapoint, got 0")
+						}
+						dp := hist.DataPoints[0]
+
+						resAttrs := make(map[string]string)
+						for _, attr := range rm.Resource.Attributes() {
+							resAttrs[string(attr.Key)] = attr.Value.Emit()
+						}
+						if resAttrs["gcp.client.service"] != "storage" {
+							t.Errorf("expected gcp.client.service = storage, got %q", resAttrs["gcp.client.service"])
+						}
+						if resAttrs["gcp.client.repo"] != "googleapis/google-cloud-go" {
+							t.Errorf("expected gcp.client.repo = googleapis/google-cloud-go, got %q", resAttrs["gcp.client.repo"])
+						}
+
+						attrs := make(map[string]string)
+						for _, kv := range dp.Attributes.ToSlice() {
+							attrs[string(kv.Key)] = kv.Value.Emit()
+						}
+						if attrs["server.address"] == "" {
+							t.Errorf("expected non-empty server.address")
+						}
+					}
+				}
+			}
+
+			if !found {
+				t.Errorf("expected metric %q not found", expectedMetricName)
+			}
+		})
 	}
 }
 
