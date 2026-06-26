@@ -1,5 +1,12 @@
 # Changes
 
+## [1.24.0](https://github.com/googleapis/google-cloud-go/compare/eventarc/v1.23.0...eventarc/v1.24.0) (2026-06-26)
+
+
+### Features
+
+* Update API sources and regenerate ([#20047](https://github.com/googleapis/google-cloud-go/issues/20047)) ([e10c9bf](https://github.com/googleapis/google-cloud-go/commit/e10c9bf14d4fc23906d0b369e106420d44915660))
+
 ## [1.23.0](https://github.com/googleapis/google-cloud-go/releases/tag/eventarc%2Fv1.23.0) (2026-05-07)
 
 ## [1.22.0](https://github.com/googleapis/google-cloud-go/releases/tag/eventarc%2Fv1.22.0) (2026-04-30)

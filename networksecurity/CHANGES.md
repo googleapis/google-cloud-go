@@ -1,5 +1,12 @@
 # Changes
 
+## [0.18.0](https://github.com/googleapis/google-cloud-go/compare/networksecurity/v0.17.0...networksecurity/v0.18.0) (2026-06-26)
+
+
+### Features
+
+* Update API sources and regenerate ([#20047](https://github.com/googleapis/google-cloud-go/issues/20047)) ([e10c9bf](https://github.com/googleapis/google-cloud-go/commit/e10c9bf14d4fc23906d0b369e106420d44915660))
+
 ## [0.17.0](https://github.com/googleapis/google-cloud-go/releases/tag/networksecurity%2Fv0.17.0) (2026-06-02)
 
 ## [0.16.0](https://github.com/googleapis/google-cloud-go/releases/tag/networksecurity%2Fv0.16.0) (2026-05-07)

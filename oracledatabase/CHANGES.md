@@ -1,5 +1,12 @@
 # Changes
 
+## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/oracledatabase/v1.2.0...oracledatabase/v1.3.0) (2026-06-26)
+
+
+### Features
+
+* Update API sources and regenerate ([#20047](https://github.com/googleapis/google-cloud-go/issues/20047)) ([e10c9bf](https://github.com/googleapis/google-cloud-go/commit/e10c9bf14d4fc23906d0b369e106420d44915660))
+
 ## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/oracledatabase/v1.1.0...oracledatabase/v1.2.0) (2026-06-22)
 
 

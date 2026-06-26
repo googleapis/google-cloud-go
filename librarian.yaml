@@ -93,7 +93,7 @@ libraries:
         go:
           proto_only: true
   - name: analytics
-    version: 0.35.0
+    version: 0.36.0
     apis:
       - path: google/analytics/admin/v1alpha
   - name: apigateway
@@ -412,7 +412,7 @@ libraries:
     apis:
       - path: google/cloud/certificatemanager/v1
   - name: ces
-    version: 1.1.0
+    version: 1.2.0
     apis:
       - path: google/cloud/ces/v1
       - path: google/cloud/ces/v1beta
@@ -421,15 +421,15 @@ libraries:
     apis:
       - path: google/cloud/channel/v1
   - name: chat
-    version: 1.1.0
+    version: 1.2.0
     apis:
       - path: google/chat/v1
   - name: chronicle
-    version: 1.1.0
+    version: 1.2.0
     apis:
       - path: google/cloud/chronicle/v1
   - name: cloudbuild
-    version: 1.30.0
+    version: 1.31.0
     apis:
       - path: google/devtools/cloudbuild/v2
         go:
@@ -570,7 +570,7 @@ libraries:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
   - name: dataform
-    version: 1.0.0
+    version: 1.1.0
     apis:
       - path: google/cloud/dataform/v1
       - path: google/cloud/dataform/v1beta1
@@ -593,7 +593,7 @@ libraries:
     apis:
       - path: google/cloud/dataplex/v1
   - name: dataproc
-    version: 2.23.0
+    version: 2.24.0
     apis:
       - path: google/cloud/dataproc/v1
         go:
@@ -639,7 +639,7 @@ libraries:
     apis:
       - path: google/cloud/devicestreaming/v1
   - name: dialogflow
-    version: 1.82.0
+    version: 1.83.0
     apis:
       - path: google/cloud/dialogflow/v2
       - path: google/cloud/dialogflow/cx/v3
@@ -695,7 +695,7 @@ libraries:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
   - name: eventarc
-    version: 1.23.0
+    version: 1.24.0
     apis:
       - path: google/cloud/eventarc/v1
       - path: google/cloud/eventarc/publishing/v1
@@ -867,7 +867,7 @@ libraries:
     go:
       nested_module: logadmin
   - name: longrunning
-    version: 1.0.0
+    version: 1.1.0
     apis:
       - path: google/longrunning
         go:
@@ -971,16 +971,16 @@ libraries:
       - path: google/cloud/networkconnectivity/v1beta
       - path: google/cloud/networkconnectivity/v1alpha1
   - name: networkmanagement
-    version: 1.28.0
+    version: 1.29.0
     apis:
       - path: google/cloud/networkmanagement/v1
   - name: networksecurity
-    version: 0.17.0
+    version: 0.18.0
     apis:
       - path: google/cloud/networksecurity/v1
       - path: google/cloud/networksecurity/v1beta1
   - name: networkservices
-    version: 1.1.0
+    version: 1.2.0
     apis:
       - path: google/cloud/networkservices/v1
   - name: notebooks
@@ -994,7 +994,7 @@ libraries:
     apis:
       - path: google/cloud/optimization/v1
   - name: oracledatabase
-    version: 1.2.0
+    version: 1.3.0
     apis:
       - path: google/cloud/oracledatabase/v1
   - name: orchestration
@@ -1395,7 +1395,7 @@ libraries:
         go:
           proto_package: google.cloud.translation.v3
   - name: vectorsearch
-    version: 1.0.0
+    version: 1.1.0
     apis:
       - path: google/cloud/vectorsearch/v1
       - path: google/cloud/vectorsearch/v1beta
