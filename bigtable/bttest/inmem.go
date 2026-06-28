@@ -893,6 +893,26 @@ func filterRow(f *btpb.RowFilter, r *row) (bool, error) {
 			cellCount += len(fam.cells[colName])
 		}
 	}
+	// Clean up empty columns and families so that subsequent filters
+	// (especially ConditionalRowFilter predicates) see the same state
+	// that production Bigtable would produce.
+	for famName, fam := range r.families {
+	    for colName := range fam.cells {
+	        if len(fam.cells[colName]) == 0 {
+	            delete(fam.cells, colName)
+	        }
+	    }
+	    if len(fam.cells) == 0 {
+	        delete(r.families, famName)
+	    } else {
+	        // Rebuild colNames to only include columns that still have cells.
+	        fam.colNames = fam.colNames[:0]
+	        for colName := range fam.cells {
+	            fam.colNames = append(fam.colNames, colName)
+	        }
+	        sort.Strings(fam.colNames)
+	    }
+	}
 	return cellCount > 0, nil
 }
 
