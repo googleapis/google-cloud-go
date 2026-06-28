@@ -893,9 +893,7 @@ func filterRow(f *btpb.RowFilter, r *row) (bool, error) {
 			cellCount += len(fam.cells[colName])
 		}
 	}
-	// Clean up empty columns and families so that subsequent filters
-	// (especially ConditionalRowFilter predicates) see the same state
-	// that production Bigtable would produce.
+	// Clean up empty columns and families so that subsequent filters especially ConditionalRowFilter predicates see the same state that production Bigtable would produce.
 	for famName, fam := range r.families {
 		for colName := range fam.cells {
 			if len(fam.cells[colName]) == 0 {
