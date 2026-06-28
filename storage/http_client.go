@@ -1587,7 +1587,10 @@ func readerReopen(ctx context.Context, header http.Header, params *newRangeReade
 				return ErrObjectNotExist
 			}
 			if res.StatusCode < 200 || res.StatusCode > 299 {
-				body, _ := io.ReadAll(res.Body)
+				// Limit error body reads to avoid OOM on malicious or
+				// misbehaving servers returning arbitrarily large bodies.
+				const maxErrorBodySize = 64 * 1024 // 64 KiB
+				body, _ := io.ReadAll(io.LimitReader(res.Body, maxErrorBodySize))
 				res.Body.Close()
 				return &googleapi.Error{
 					Code:   res.StatusCode,
