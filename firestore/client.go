@@ -391,6 +391,9 @@ func (c *Client) getAll(ctx context.Context, docRefs []*DocumentRef, tid []byte,
 			}
 			return nil, err
 		}
+		if streamClient == nil {
+			return nil, errors.New("firestore: received nil stream client")
+		}
 
 		var streamErr error
 		for {
@@ -400,6 +403,10 @@ func (c *Client) getAll(ctx context.Context, docRefs []*DocumentRef, tid []byte,
 			}
 			if recvErr != nil {
 				streamErr = recvErr
+				break
+			}
+			if resp == nil {
+				streamErr = errors.New("firestore: received nil response from stream")
 				break
 			}
 
