@@ -345,6 +345,11 @@ func (w *gRPCWriter) sendBufferToTarget(cs gRPCWriterCommandHandleChans, buf []b
 	return baseOffset + int64(sent), true
 }
 
+func (w *gRPCWriter) isActive() bool {
+	hasUnackedData := w.bufUnsentIdx > 0 && w.bufUnsentIdx > w.bufFlushedIdx
+	return w.currentCommand != nil || hasUnackedData || len(w.writesChan) > 0
+}
+
 func (w *gRPCWriter) handleCompletion(c gRPCBidiWriteCompletion) {
 	if c.resource != nil {
 		w.setObj(newObjectFromProto(c.resource))
@@ -370,6 +375,10 @@ func (w *gRPCWriter) handleCompletion(c gRPCBidiWriteCompletion) {
 
 	w.setSize(c.flushOffset)
 	w.progress(c.flushOffset)
+
+	if w.chunkRetryDeadline > 0 && w.isActive() {
+		w.abandonRetriesTime = time.Now().Add(w.chunkRetryDeadline)
+	}
 }
 
 // Gather write commands before starting the actual write. Returns nil if the
@@ -424,12 +433,16 @@ func (w *gRPCWriter) gatherFirstBuffer() error {
 func (w *gRPCWriter) writeLoop(ctx context.Context) error {
 	w.attempts++
 	if w.chunkRetryDeadline > 0 {
-		if w.abandonRetriesTime.IsZero() {
-			w.abandonRetriesTime = time.Now().Add(w.chunkRetryDeadline)
-		}
-		// Return an error if we've been waiting for a single operation for too long.
-		if time.Now().After(w.abandonRetriesTime) {
-			return fmt.Errorf("storage: retry deadline of %s reached after %v attempts; last error: %v", w.chunkRetryDeadline, w.attempts, w.lastErr)
+		if w.isActive() {
+			if w.abandonRetriesTime.IsZero() {
+				w.abandonRetriesTime = time.Now().Add(w.chunkRetryDeadline)
+			}
+			// Return an error if we've been waiting for a single operation for too long.
+			if time.Now().After(w.abandonRetriesTime) {
+				return fmt.Errorf("storage: retry deadline of %s reached after %v attempts; last error: %v", w.chunkRetryDeadline, w.attempts, w.lastErr)
+			}
+		} else {
+			w.abandonRetriesTime = time.Time{}
 		}
 	}
 	// Allow each request in w.buf to be sent and result in a completion without
@@ -490,6 +503,9 @@ Loop:
 					return err
 				}
 				w.currentCommand = nil
+				if w.chunkRetryDeadline > 0 && !w.isActive() {
+					w.abandonRetriesTime = time.Time{}
+				}
 			}
 			select {
 			case c, ok := <-completions:
@@ -503,6 +519,9 @@ Loop:
 					return errors.New("storage.Writer: unexpectedly closed w.writesChan")
 				}
 				w.currentCommand = cmd
+				if w.chunkRetryDeadline > 0 && w.abandonRetriesTime.IsZero() {
+					w.abandonRetriesTime = time.Now().Add(w.chunkRetryDeadline)
+				}
 			}
 		}
 	}()
