@@ -366,6 +366,9 @@ func (c *Client) getAll(ctx context.Context, docRefs []*DocumentRef, tid []byte,
 			Documents: activeDocNames,
 		}
 
+		// Note that transaction ID and other consistency selectors are mutually exclusive.
+		// We respect the transaction first, any read options passed by the caller second,
+		// and any read options stored in the client third.
 		if rt, hasOpts := parseReadTime(c, rs); hasOpts {
 			req.ConsistencySelector = &pb.BatchGetDocumentsRequest_ReadTime{ReadTime: rt}
 		}
@@ -406,6 +409,9 @@ func (c *Client) getAll(ctx context.Context, docRefs []*DocumentRef, tid []byte,
 			)
 			switch r := resp.Result.(type) {
 			case *pb.BatchGetDocumentsResponse_Found:
+				if r.Found == nil {
+					return nil, errors.New("firestore: received nil Document in BatchGetDocumentsResponse_Found")
+				}
 				indices = docIndices[r.Found.Name]
 				doc = r.Found
 				delete(outstanding, r.Found.Name)
@@ -416,6 +422,7 @@ func (c *Client) getAll(ctx context.Context, docRefs []*DocumentRef, tid []byte,
 			default:
 				return nil, errors.New("firestore: unknown BatchGetDocumentsResponse result type")
 			}
+			// Results may arrive out of order. Put each at the right indices.
 			for _, index := range indices {
 				if docs[index] != nil {
 					return nil, fmt.Errorf("firestore: %q seen twice", docRefs[index].Path)
@@ -434,6 +441,8 @@ func (c *Client) getAll(ctx context.Context, docRefs []*DocumentRef, tid []byte,
 			break
 		}
 
+		// If we are in a transaction, do not retry here. Transaction retries
+		// are handled by the transaction runner (outer loop).
 		if tid != nil {
 			return nil, streamErr
 		}
@@ -443,7 +452,7 @@ func (c *Client) getAll(ctx context.Context, docRefs []*DocumentRef, tid []byte,
 		}
 
 		if ctxErr := ctx.Err(); ctxErr != nil {
-			return nil, streamErr
+			return nil, ctxErr
 		}
 
 		if attempt == maxAttempts-1 {

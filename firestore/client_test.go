@@ -16,7 +16,11 @@ package firestore
 
 import (
 	"context"
+	"fmt"
+	"io"
+	"net"
 	"os"
+	"syscall"
 	"testing"
 	"time"
 
@@ -696,6 +700,35 @@ func TestGetAllRetry(t *testing.T) {
 	}
 	if diff := testDiff(docs[2], wantSnapC); diff != "" {
 		t.Errorf("docC diff:\n%s", diff)
+	}
+}
+
+func TestIsRetryableStreamError(t *testing.T) {
+	tests := []struct {
+		err  error
+		want bool
+	}{
+		{nil, false},
+		{status.Errorf(codes.Unavailable, "unavailable"), true},
+		{status.Errorf(codes.Internal, "internal"), true},
+		{status.Errorf(codes.DeadlineExceeded, "deadline exceeded"), true},
+		{status.Errorf(codes.InvalidArgument, "invalid argument"), false},
+		{status.Errorf(codes.ResourceExhausted, "resource exhausted"), false},
+		{syscall.ECONNRESET, true},
+		{syscall.ECONNREFUSED, true},
+		{net.ErrClosed, true},
+		{io.ErrUnexpectedEOF, true},
+		{io.EOF, false},
+		{fmt.Errorf("wrapped: %w", syscall.ECONNRESET), true},
+		{fmt.Errorf("wrapped: %w", status.Errorf(codes.Unavailable, "unavailable")), true},
+		{fmt.Errorf("generic error"), false},
+	}
+
+	for _, tc := range tests {
+		got := isRetryableStreamError(tc.err)
+		if got != tc.want {
+			t.Errorf("isRetryableStreamError(%v) = %t; want %t", tc.err, got, tc.want)
+		}
 	}
 }
 
