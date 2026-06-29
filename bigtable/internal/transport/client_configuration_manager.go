@@ -73,6 +73,12 @@ type pollingConfig struct {
 	// up. Each retry is preceded by randomized exponential backoff capped at
 	// maxBackoffSeconds.
 	MaxRPCRetryCount int
+	// StopPolling, when true, tells the pollingLoop to exit. It is set when
+	// the server picks the StopPolling case of the ClientConfiguration.Polling
+	// oneof — a backstop the control plane can flip to halt excessive
+	// GetClientConfiguration RPCs. The current configuration stays in effect
+	// (no fallback to defaults); the loop just stops issuing further polls.
+	StopPolling bool
 }
 
 type sessionConfig struct {
@@ -412,6 +418,11 @@ func (m *ClientConfigurationManager) pollingLoop() {
 		cfg := m.currentConfig
 		m.mu.RUnlock()
 
+		if cfg.Polling.StopPolling {
+			btopt.Debugf(m.logger, "bigtable: server requested polling stop; exiting pollingLoop")
+			return
+		}
+
 		interval := cfg.Polling.PollingInterval
 		if interval < minPollingInterval {
 			interval = minPollingInterval
@@ -576,6 +587,9 @@ func parseConfig(protoCfg *bigtablepb.ClientConfiguration, defaultCfg clientConf
 
 	if p := protoCfg.GetPollingConfiguration(); p != nil {
 		res.Polling = parsePollingConfig(p, res.Polling)
+	}
+	if protoCfg.GetStopPolling() {
+		res.Polling.StopPolling = true
 	}
 
 	if protoCfg.SessionConfiguration != nil {

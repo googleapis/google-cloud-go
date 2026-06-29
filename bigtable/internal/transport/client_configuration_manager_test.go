@@ -604,6 +604,23 @@ func TestAddSessionLoadListener_SkipsOnUnchangedLoad(t *testing.T) {
 	}
 }
 
+func TestManagerPoll_StopPollingFlagsCurrentConfig(t *testing.T) {
+	client := &mockBigtableClient{
+		getConfigFunc: func(ctx context.Context, req *bigtablepb.GetClientConfigurationRequest) (*bigtablepb.ClientConfiguration, error) {
+			return &bigtablepb.ClientConfiguration{
+				Polling: &bigtablepb.ClientConfiguration_StopPolling{StopPolling: true},
+			}, nil
+		},
+	}
+	manager := NewClientConfigurationManager(client, "instance", "profile", nil, nil)
+	manager.poll(context.Background())
+
+	cfg := manager.getConfig()
+	if !cfg.Polling.StopPolling {
+		t.Fatalf("expected currentConfig.Polling.StopPolling=true after StopPolling response, got false")
+	}
+}
+
 // TestManagerNotifyListeners_Race was removed when addListener moved to
 // holding m.mu across the registration-time fire. The race it guarded
 // against — poll() fan-out interleaving with addListener's deferred fire
