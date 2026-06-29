@@ -29,10 +29,10 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// MinPollingInterval is the minimum interval enforced between successive
+// minPollingInterval is the minimum interval enforced between successive
 // GetClientConfiguration polls, regardless of the server-supplied value. It
 // protects the control plane from misconfigured clients overwhelming it.
-const MinPollingInterval = 1 * time.Minute
+const minPollingInterval = 1 * time.Minute
 
 // maxBackoffSeconds caps the per-attempt randomized exponential backoff used
 // between failed GetClientConfiguration retries. Capping prevents the 1<<i
@@ -62,7 +62,7 @@ func (c clientConfig) Clone() clientConfig {
 
 type pollingConfig struct {
 	// PollingInterval is the wall-clock period between successive
-	// GetClientConfiguration polls. Floored at MinPollingInterval.
+	// GetClientConfiguration polls. Floored at minPollingInterval.
 	PollingInterval time.Duration
 	// ValidityDuration is how long a successfully-polled configuration
 	// remains in effect before, on a failed poll, the manager falls back to
@@ -405,7 +405,7 @@ func (m *ClientConfigurationManager) AddSessionLoadListener(listener func(load f
 }
 
 // pollingLoop continuously polls the Bigtable control plane at the configured interval.
-// It enforces a minimum interval (MinPollingInterval) to protect the control plane from DDoSes.
+// It enforces a minimum interval (minPollingInterval) to protect the control plane from DDoSes.
 func (m *ClientConfigurationManager) pollingLoop() {
 	for {
 		m.mu.RLock()
@@ -413,8 +413,8 @@ func (m *ClientConfigurationManager) pollingLoop() {
 		m.mu.RUnlock()
 
 		interval := cfg.Polling.PollingInterval
-		if interval < MinPollingInterval {
-			interval = MinPollingInterval
+		if interval < minPollingInterval {
+			interval = minPollingInterval
 		}
 
 		select {
@@ -566,7 +566,7 @@ func (m *ClientConfigurationManager) poll(ctx context.Context) {
 }
 
 // parseConfig converts the protobuf ClientConfiguration message into the internal clientConfig structure,
-// validating bounds such as MinPollingInterval and capping validity duration to prevent integer overflows.
+// validating bounds such as minPollingInterval and capping validity duration to prevent integer overflows.
 func parseConfig(protoCfg *bigtablepb.ClientConfiguration, defaultCfg clientConfig) clientConfig {
 	res := defaultCfg
 
@@ -597,8 +597,8 @@ func parsePollingConfig(p *bigtablepb.ClientConfiguration_PollingConfiguration, 
 	if p.PollingInterval != nil {
 		res.PollingInterval = p.PollingInterval.AsDuration()
 	}
-	if res.PollingInterval < MinPollingInterval {
-		res.PollingInterval = MinPollingInterval
+	if res.PollingInterval < minPollingInterval {
+		res.PollingInterval = minPollingInterval
 	}
 	if p.ValidityDuration != nil {
 		res.ValidityDuration = p.ValidityDuration.AsDuration()
