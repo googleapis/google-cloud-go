@@ -71,12 +71,18 @@ func (e *testEndpoint) ActiveRequestCount() int {
 }
 
 type testEndpointCache struct {
-	endpoints map[string]*testEndpoint
-	onGet     func(address string)
+	endpoints     map[string]*testEndpoint
+	onGet         func(address string)
+	routingConfig endpointRoutingConfig
+	routingState  map[string]endpointRoutingStateSnapshot
 }
 
 func newTestEndpointCache() *testEndpointCache {
-	return &testEndpointCache{endpoints: make(map[string]*testEndpoint)}
+	return &testEndpointCache{
+		endpoints:     make(map[string]*testEndpoint),
+		routingConfig: defaultEndpointRoutingConfig(),
+		routingState:  make(map[string]endpointRoutingStateSnapshot),
+	}
 }
 
 func (c *testEndpointCache) ClientFor(_ channelEndpoint) spannerClient { return nil }
@@ -108,6 +114,31 @@ func (c *testEndpointCache) GetIfPresent(address string) channelEndpoint {
 func (c *testEndpointCache) Evict(address string) {
 	delete(c.endpoints, address)
 }
+
+func (c *testEndpointCache) setRoutingConfigForTest(cfg endpointRoutingConfig) {
+	c.routingConfig = cfg.normalize()
+}
+
+func (c *testEndpointCache) isCoolingDown(address string) bool {
+	return testRoutingStateIsCoolingDownLocked(c.routingState, c.routingConfig, address)
+}
+
+func (c *testEndpointCache) remainingCooldown(address string) time.Duration {
+	return testRoutingStateRemainingCooldownLocked(c.routingState, c.routingConfig, address)
+}
+
+func (c *testEndpointCache) recordFailure(address string) {
+	testRoutingStateRecordFailureLocked(c.routingState, c.routingConfig, address)
+}
+
+func (*testEndpointCache) selectionCost(uint64, bool, channelEndpoint, string) float64 {
+	return float64(endpointLatencyDefaultRTT) / 1e3
+}
+
+func (*testEndpointCache) recordLatency(uint64, bool, string, time.Duration) {}
+func (*testEndpointCache) recordError(uint64, bool, string)                  {}
+func (*testEndpointCache) hasScore(uint64, bool, string) bool                { return false }
+func (*testEndpointCache) pruneStaleRoutingState(time.Duration)              {}
 
 func (c *testEndpointCache) setHealthy(address string, healthy bool) {
 	if endpoint, ok := c.endpoints[address]; ok {
@@ -179,6 +210,8 @@ func TestCachedGroupFillRoutingHint_PreferLeaderDisabledByDirectedReadOptions(t 
 	endpoint := group.fillRoutingHint(
 		context.Background(),
 		newPassthroughChannelEndpointCache(),
+		nil,
+		false,
 		true,
 		&sppb.DirectedReadOptions{},
 		&sppb.RoutingHint{},
@@ -199,6 +232,8 @@ func TestCachedGroupFillRoutingHint_PreferLeaderDisabledByDirectedReadOptions(t 
 	endpoint = group.fillRoutingHint(
 		context.Background(),
 		newPassthroughChannelEndpointCache(),
+		nil,
+		false,
 		true,
 		directedRead,
 		&sppb.RoutingHint{},
@@ -483,23 +518,16 @@ func TestKeyRangeCache_FillRoutingHintWithDetailsTracksSelectionAndSkipReasons(t
 	endpointCache.setHealthy("server-first", false)
 	endpointCache.setHealthy("server-transient", false)
 	endpointCache.setTransientFailure("server-transient", true)
-	cooldowns := newEndpointOverloadCooldownTrackerWithOptions(
-		time.Minute,
-		time.Minute,
-		10*time.Minute,
-		time.Now,
-		func(n int64) int64 { return n - 1 },
-	)
-	cooldowns.recordFailure("server-excluded")
+	setEndpointRoutingConfigForTest(t, endpointCache, time.Now)
+	endpointCache.recordFailure("server-excluded")
 
 	hint := &sppb.RoutingHint{Key: []byte("a")}
-	endpoint := cache.fillRoutingHintWithCooldownTracker(
+	endpoint := cache.fillRoutingHint(
 		context.Background(),
 		false,
 		rangeModeCoveringSplit,
 		&sppb.DirectedReadOptions{},
 		hint,
-		cooldowns,
 	)
 
 	if endpoint == nil || endpoint.Address() != "server-leader" {
@@ -516,13 +544,12 @@ func TestKeyRangeCache_FillRoutingHintWithDetailsTracksSelectionAndSkipReasons(t
 func TestKeyRangeCache_FillRoutingHintReturnsNilOnCacheMiss(t *testing.T) {
 	cache := newKeyRangeCache(newPassthroughChannelEndpointCache())
 
-	endpoint := cache.fillRoutingHintWithCooldownTracker(
+	endpoint := cache.fillRoutingHint(
 		context.Background(),
 		false,
 		rangeModeCoveringSplit,
 		&sppb.DirectedReadOptions{},
 		&sppb.RoutingHint{Key: []byte("missing")},
-		nil,
 	)
 
 	if endpoint != nil {

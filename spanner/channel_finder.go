@@ -207,16 +207,12 @@ func cloneProto[M interface{ ProtoReflect() protoreflect.Message }](msg M) M {
 }
 
 func (f *channelFinder) findServerRead(ctx context.Context, req *sppb.ReadRequest, preferLeader bool) channelEndpoint {
-	return f.findServerReadWithCooldownTracker(ctx, req, preferLeader, nil)
-}
-
-func (f *channelFinder) findServerReadWithCooldownTracker(ctx context.Context, req *sppb.ReadRequest, preferLeader bool, cooldowns *endpointOverloadCooldownTracker) channelEndpoint {
 	if req == nil {
 		return nil
 	}
 	f.recipeCache.computeReadKeys(req)
 	hint := ensureReadRoutingHint(req)
-	return f.fillRoutingHintWithCooldownTracker(ctx, preferLeader, rangeModeCoveringSplit, req.GetDirectedReadOptions(), hint, cooldowns)
+	return f.fillRoutingHint(ctx, preferLeader, rangeModeCoveringSplit, req.GetDirectedReadOptions(), hint)
 }
 
 func (f *channelFinder) findServerReadWithTransaction(ctx context.Context, req *sppb.ReadRequest) channelEndpoint {
@@ -227,16 +223,12 @@ func (f *channelFinder) findServerReadWithTransaction(ctx context.Context, req *
 }
 
 func (f *channelFinder) findServerExecuteSQL(ctx context.Context, req *sppb.ExecuteSqlRequest, preferLeader bool) channelEndpoint {
-	return f.findServerExecuteSQLWithCooldownTracker(ctx, req, preferLeader, nil)
-}
-
-func (f *channelFinder) findServerExecuteSQLWithCooldownTracker(ctx context.Context, req *sppb.ExecuteSqlRequest, preferLeader bool, cooldowns *endpointOverloadCooldownTracker) channelEndpoint {
 	if req == nil {
 		return nil
 	}
 	f.recipeCache.computeQueryKeys(req)
 	hint := ensureExecuteSQLRoutingHint(req)
-	return f.fillRoutingHintWithCooldownTracker(ctx, preferLeader, rangeModePickRandom, req.GetDirectedReadOptions(), hint, cooldowns)
+	return f.fillRoutingHint(ctx, preferLeader, rangeModePickRandom, req.GetDirectedReadOptions(), hint)
 }
 
 func (f *channelFinder) findServerExecuteSQLWithTransaction(ctx context.Context, req *sppb.ExecuteSqlRequest) channelEndpoint {
@@ -247,21 +239,13 @@ func (f *channelFinder) findServerExecuteSQLWithTransaction(ctx context.Context,
 }
 
 func (f *channelFinder) findServerBeginTransaction(ctx context.Context, req *sppb.BeginTransactionRequest) channelEndpoint {
-	return f.findServerBeginTransactionWithCooldownTracker(ctx, req, nil)
-}
-
-func (f *channelFinder) findServerBeginTransactionWithCooldownTracker(ctx context.Context, req *sppb.BeginTransactionRequest, cooldowns *endpointOverloadCooldownTracker) channelEndpoint {
 	if req == nil || req.GetMutationKey() == nil {
 		return nil
 	}
-	return f.routeMutationWithCooldownTracker(ctx, req.GetMutationKey(), preferLeaderFromTransactionOptions(req.GetOptions()), ensureBeginTransactionRoutingHint(req), cooldowns)
+	return f.routeMutation(ctx, req.GetMutationKey(), preferLeaderFromTransactionOptions(req.GetOptions()), ensureBeginTransactionRoutingHint(req))
 }
 
 func (f *channelFinder) fillCommitRoutingHint(ctx context.Context, req *sppb.CommitRequest) channelEndpoint {
-	return f.fillCommitRoutingHintWithCooldownTracker(ctx, req, nil)
-}
-
-func (f *channelFinder) fillCommitRoutingHintWithCooldownTracker(ctx context.Context, req *sppb.CommitRequest, cooldowns *endpointOverloadCooldownTracker) channelEndpoint {
 	if req == nil {
 		return nil
 	}
@@ -269,14 +253,10 @@ func (f *channelFinder) fillCommitRoutingHintWithCooldownTracker(ctx context.Con
 	if mutation == nil {
 		return nil
 	}
-	return f.routeMutationWithCooldownTracker(ctx, mutation, true, ensureCommitRoutingHint(req), cooldowns)
+	return f.routeMutation(ctx, mutation, true, ensureCommitRoutingHint(req))
 }
 
 func (f *channelFinder) routeMutation(ctx context.Context, mutation *sppb.Mutation, preferLeader bool, hint *sppb.RoutingHint) channelEndpoint {
-	return f.routeMutationWithCooldownTracker(ctx, mutation, preferLeader, hint, nil)
-}
-
-func (f *channelFinder) routeMutationWithCooldownTracker(ctx context.Context, mutation *sppb.Mutation, preferLeader bool, hint *sppb.RoutingHint, cooldowns *endpointOverloadCooldownTracker) channelEndpoint {
 	if mutation == nil || hint == nil {
 		return nil
 	}
@@ -286,14 +266,10 @@ func (f *channelFinder) routeMutationWithCooldownTracker(ctx context.Context, mu
 		return nil
 	}
 	f.recipeCache.applyTargetRange(hint, target)
-	return f.fillRoutingHintWithCooldownTracker(ctx, preferLeader, rangeModeCoveringSplit, &sppb.DirectedReadOptions{}, hint, cooldowns)
+	return f.fillRoutingHint(ctx, preferLeader, rangeModeCoveringSplit, &sppb.DirectedReadOptions{}, hint)
 }
 
 func (f *channelFinder) fillRoutingHint(ctx context.Context, preferLeader bool, mode rangeMode, directedReadOptions *sppb.DirectedReadOptions, hint *sppb.RoutingHint) channelEndpoint {
-	return f.fillRoutingHintWithCooldownTracker(ctx, preferLeader, mode, directedReadOptions, hint, nil)
-}
-
-func (f *channelFinder) fillRoutingHintWithCooldownTracker(ctx context.Context, preferLeader bool, mode rangeMode, directedReadOptions *sppb.DirectedReadOptions, hint *sppb.RoutingHint, cooldowns *endpointOverloadCooldownTracker) channelEndpoint {
 	if hint == nil {
 		return nil
 	}
@@ -302,7 +278,7 @@ func (f *channelFinder) fillRoutingHintWithCooldownTracker(ctx context.Context, 
 		return nil
 	}
 	hint.DatabaseId = databaseID
-	return f.rangeCache.fillRoutingHintWithCooldownTracker(ctx, preferLeader, mode, directedReadOptions, hint, cooldowns)
+	return f.rangeCache.fillRoutingHint(ctx, preferLeader, mode, directedReadOptions, hint)
 }
 
 func preferLeaderFromSelector(selector *sppb.TransactionSelector) bool {

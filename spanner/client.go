@@ -826,7 +826,6 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 			nil,
 			locationRouter,
 			epCache,
-			newEndpointOverloadCooldownTracker(),
 		)
 	}
 
