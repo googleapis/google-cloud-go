@@ -1053,6 +1053,7 @@ func (c *httpStorageClient) newRangeReaderXML(ctx context.Context, params *newRa
 }
 
 func (c *httpStorageClient) newRangeReaderJSON(ctx context.Context, params *newRangeReaderParams, s *settings) (r *Reader, err error) {
+	requestID := uuid.New()
 	call := c.raw.Objects.Get(params.bucket, params.object)
 
 	call.Projection("full")
@@ -1065,7 +1066,50 @@ func (c *httpStorageClient) newRangeReaderJSON(ctx context.Context, params *newR
 		return nil, err
 	}
 
-	reopen := readerReopen(ctx, call.Header(), params, s, func(ctx context.Context) (*http.Response, error) { return call.Context(ctx).Download() },
+	reopen := readerReopen(ctx, call.Header(), params, s,
+		func(ctx context.Context) (*http.Response, error) {
+			if c.dynamicReadReqStallTimeout == nil {
+				return call.Context(ctx).Download()
+			}
+
+			cancelCtx, cancel := context.WithCancel(ctx)
+			var (
+				res *http.Response
+				err error
+			)
+
+			done := make(chan bool)
+			go func() {
+				reqStartTime := time.Now()
+				res, err = call.Context(cancelCtx).Download()
+				if err == nil {
+					reqLatency := time.Since(reqStartTime)
+					c.dynamicReadReqStallTimeout.update(params.bucket, reqLatency)
+				} else if errors.Is(err, context.Canceled) {
+					// context.Canceled means operation took more than current dynamicTimeout,
+					// hence should be increased.
+					c.dynamicReadReqStallTimeout.increase(params.bucket)
+				}
+				done <- true
+			}()
+
+			// Wait until stall timeout or request is successful.
+			stallTimeout := c.dynamicReadReqStallTimeout.getValue(params.bucket)
+			timer := time.After(stallTimeout)
+			select {
+			case <-timer:
+				log.Printf("[%s] stalled read-req cancelled after %fs", requestID, stallTimeout.Seconds())
+				cancel()
+				<-done
+				if res != nil && res.Body != nil {
+					res.Body.Close()
+				}
+				return res, context.DeadlineExceeded
+			case <-done:
+				cancel = nil
+			}
+			return res, err
+		},
 		func() error { return applyConds("NewReader", params.gen, params.conds, call) },
 		func() { call.Generation(params.gen) })
 
