@@ -3343,3 +3343,54 @@ type SchemaPromptSpecInteractionData struct {
 	// If InteractionData is present, every prompt message has an interaction ID.
 	InteractionIDs []string `json:"interactionIds,omitempty"`
 }
+
+// Config for listing deployable models.
+type listDeployableModelsConfig struct {
+	// Optional. Whether to list Hugging Face models.
+	IncludeHuggingFaceModels bool `json:"includeHuggingFaceModels,omitempty"`
+	// Optional. A string to filter the models by.
+	ModelFilter string `json:"modelFilter,omitempty"`
+}
+
+// Config for listing Model Garden models.
+type listModelGardenModelsConfig struct {
+	// Optional. Whether to list Hugging Face models.
+	IncludeHuggingFaceModels bool `json:"includeHuggingFaceModels,omitempty"`
+	// Optional. A string to filter the models by.
+	ModelFilter string `json:"modelFilter,omitempty"`
+}
+
+// Config for listing the deploy options of a publisher model.
+type listPublisherModelDeployOptionsConfig struct {
+	// Optional. Case-insensitive substring filter on the machine type.
+	// Accepts a single keyword (e.g. ``'g2'``) or a list of keywords (e.g.
+	// ``['n1', 'g2']``); an option matches if it contains any of them.
+	MachineTypeFilter string `json:"machineTypeFilter,omitempty"`
+	// Optional. Case-insensitive substring filter on the accelerator
+	// type. Accepts a single keyword (e.g. ``'L4'``) or a list of keywords
+	// (e.g. ``['T4', 'L4']``); an option matches if it contains any of them.
+	AcceleratorTypeFilter string `json:"acceleratorTypeFilter,omitempty"`
+	// Optional. Case-insensitive substring filter on the serving
+	// container image URI. Accepts a single keyword (e.g. ``'vllm'``) or a list
+	// of keywords (e.g. ``['vllm', 'tgi']``); an option matches if it contains
+	// any of them.
+	ServingContainerImageURIFilter string `json:"servingContainerImageUriFilter,omitempty"`
+	// Optional. If True, returns a human-readable string describing the
+	// deploy options (container and machine specs) instead of a list of
+	// ``DeployOption`` objects.
+	Concise bool `json:"concise,omitempty"`
+}
+
+// A verified deploy option for a model.
+type deployOption struct {
+	// Optional. The name of the deploy task.
+	OptionName string `json:"optionName,omitempty"`
+	// Optional. The URI of the serving container.
+	ServingContainerImageURI string `json:"servingContainerImageUri,omitempty"`
+	// Optional. The machine type.
+	MachineType string `json:"machineType,omitempty"`
+	// Optional. The accelerator type.
+	AcceleratorType string `json:"acceleratorType,omitempty"`
+	// Optional. The number of accelerators.
+	AcceleratorCount int32 `json:"acceleratorCount,omitempty"`
+}
