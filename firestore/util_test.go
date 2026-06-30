@@ -31,9 +31,9 @@ import (
 )
 
 var (
-	aTime       = time.Date(2017, 1, 26, 0, 0, 0, 0, time.UTC)
-	aTime2      = time.Date(2017, 2, 5, 0, 0, 0, 0, time.UTC)
-	aTime3      = time.Date(2017, 3, 20, 0, 0, 0, 0, time.UTC)
+	aTime       = time.Date(2017, 1, 26, 1, 2, 3, 4, time.UTC)
+	aTime2      = time.Date(2017, 2, 5, 2, 3, 4, 5, time.UTC)
+	aTime3      = time.Date(2017, 3, 20, 5, 4, 3, 2, time.UTC)
 	aTimestamp  = mustTimestampProto(aTime)
 	aTimestamp2 = mustTimestampProto(aTime2)
 	aTimestamp3 = mustTimestampProto(aTime3)

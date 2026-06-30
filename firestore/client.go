@@ -556,10 +556,10 @@ type readSettings struct {
 // parseReadTime ensures that fallback order of read options is respected.
 func parseReadTime(c *Client, rs *readSettings) (*timestamppb.Timestamp, bool) {
 	if rs != nil && !rs.readTime.IsZero() {
-		return &timestamppb.Timestamp{Seconds: int64(rs.readTime.Unix())}, true
+		return timestamppb.New(rs.readTime), true
 	}
 	if c.readSettings != nil && !c.readSettings.readTime.IsZero() {
-		return &timestamppb.Timestamp{Seconds: int64(c.readSettings.readTime.Unix())}, true
+		return timestamppb.New(c.readSettings.readTime), true
 	}
 	return nil, false
 }
