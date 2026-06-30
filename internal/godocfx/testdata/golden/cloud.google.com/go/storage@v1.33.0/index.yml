@@ -3662,7 +3662,7 @@ items:
             import (
             	"context"
             	"fmt"
-            	"io/ioutil"
+            	"io"
 
             	"cloud.google.com/go/storage"
             )
@@ -3680,7 +3680,7 @@ items:
             	}
             	defer rc.Close()
 
-            	slurp, err := ioutil.ReadAll(rc)
+            	slurp, err := io.ReadAll(rc)
             	if err != nil {
             		// TODO: handle error.
             	}
@@ -3692,7 +3692,7 @@ items:
             import (
             	"context"
             	"fmt"
-            	"io/ioutil"
+            	"io"
 
             	"cloud.google.com/go/storage"
             )
@@ -3710,7 +3710,7 @@ items:
             	}
             	defer rc.Close()
 
-            	slurp, err := ioutil.ReadAll(rc)
+            	slurp, err := io.ReadAll(rc)
             	if err != nil {
             		// TODO: handle error.
             	}
@@ -3723,7 +3723,7 @@ items:
             import (
             	"context"
             	"fmt"
-            	"io/ioutil"
+            	"io"
 
             	"cloud.google.com/go/storage"
             )
@@ -3741,7 +3741,7 @@ items:
             	}
             	defer rc.Close()
 
-            	slurp, err := ioutil.ReadAll(rc)
+            	slurp, err := io.ReadAll(rc)
             	if err != nil {
             		// TODO: handle error.
             	}
@@ -3771,7 +3771,7 @@ items:
             import (
             	"context"
             	"fmt"
-            	"io/ioutil"
+            	"io"
 
             	"cloud.google.com/go/storage"
             )
@@ -3786,7 +3786,7 @@ items:
             	if err != nil {
             		// TODO: handle error.
             	}
-            	slurp, err := ioutil.ReadAll(rc)
+            	slurp, err := io.ReadAll(rc)
             	rc.Close()
             	if err != nil {
             		// TODO: handle error.
@@ -5367,14 +5367,15 @@ items:
 
             import (
             	"fmt"
-            	"io/ioutil"
+            	"io"
             	"time"
-
+              "os"
+              
             	"cloud.google.com/go/storage"
             )
 
             func main() {
-            	pkey, err := ioutil.ReadFile("my-private-key.pem")
+            	pkey, err := os.ReadFile("my-private-key.pem")
             	if err != nil {
             		// TODO: handle error.
             	}
