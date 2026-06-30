@@ -110,19 +110,11 @@ type ReadRowArgs struct {
 	Filter *btpb.RowFilter
 }
 
-// ReadRowResult holds the result returned from a virtual RPC ReadRow call.
-type ReadRowResult struct {
-	Row *btpb.Row
-}
-
 // MutateRowArgs contains arguments required for a virtual RPC MutateRow call.
 type MutateRowArgs struct {
 	RowKey    string
 	Mutations []*btpb.Mutation
 }
-
-// MutateRowResult holds the result of a MutateRow virtual RPC.
-type MutateRowResult struct{}
 
 func encodeReadRow(args ReadRowArgs) *btpb.SessionReadRowRequest {
 	return &btpb.SessionReadRowRequest{
@@ -131,24 +123,11 @@ func encodeReadRow(args ReadRowArgs) *btpb.SessionReadRowRequest {
 	}
 }
 
-func decodeReadRow(resp *btpb.SessionReadRowResponse) ReadRowResult {
-	if resp == nil {
-		return ReadRowResult{}
-	}
-	return ReadRowResult{
-		Row: resp.Row,
-	}
-}
-
 func encodeMutateRow(args MutateRowArgs) *btpb.SessionMutateRowRequest {
 	return &btpb.SessionMutateRowRequest{
 		Key:       []byte(args.RowKey),
 		Mutations: args.Mutations,
 	}
-}
-
-func decodeMutateRow(resp *btpb.SessionMutateRowResponse) MutateRowResult {
-	return MutateRowResult{}
 }
 
 var (
@@ -162,7 +141,7 @@ var (
 			}
 		}),
 		DecodeFn: createTableDecoder(func(env *btpb.TableResponse) interface{} {
-			return decodeReadRow(env.GetReadRow())
+			return env.GetReadRow()
 		}),
 	}
 
@@ -176,7 +155,7 @@ var (
 			}
 		}),
 		DecodeFn: createTableDecoder(func(env *btpb.TableResponse) interface{} {
-			return decodeMutateRow(env.GetMutateRow())
+			return env.GetMutateRow()
 		}),
 	}
 
@@ -190,7 +169,7 @@ var (
 			}
 		}),
 		DecodeFn: createAuthViewDecoder(func(env *btpb.AuthorizedViewResponse) interface{} {
-			return decodeReadRow(env.GetReadRow())
+			return env.GetReadRow()
 		}),
 	}
 
@@ -204,7 +183,7 @@ var (
 			}
 		}),
 		DecodeFn: createAuthViewDecoder(func(env *btpb.AuthorizedViewResponse) interface{} {
-			return decodeMutateRow(env.GetMutateRow())
+			return env.GetMutateRow()
 		}),
 	}
 
@@ -218,7 +197,7 @@ var (
 			}
 		}),
 		DecodeFn: createMatViewDecoder(func(env *btpb.MaterializedViewResponse) interface{} {
-			return decodeReadRow(env.GetReadRow())
+			return env.GetReadRow()
 		}),
 	}
 )
