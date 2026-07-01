@@ -110,7 +110,7 @@ func (h *CloudStreamHandler) startHandlingRequest(ctx context.Context, req *exec
 	}
 
 	// Get a new action handler based on the input action.
-	actionHandler, err := h.newActionHandler(inputAction, outcomeSender)
+	actionHandler, err := h.newActionHandler(ctx, inputAction, outcomeSender)
 	if err != nil {
 		return outcomeSender.FinishWithError(err)
 	}
@@ -143,9 +143,24 @@ func (h *CloudStreamHandler) startHandlingRequest(ctx context.Context, req *exec
 }
 
 // newActionHandler instantiates an actionHandler for executing the given action.
-func (h *CloudStreamHandler) newActionHandler(action *executorpb.SpannerAction, outcomeSender *outputstream.OutcomeSender) (cloudActionHandler, error) {
-	if action.DatabasePath != "" {
+func (h *CloudStreamHandler) newActionHandler(ctx context.Context, action *executorpb.SpannerAction, outcomeSender *outputstream.OutcomeSender) (cloudActionHandler, error) {
+	if action.DatabasePath != "" && h.executionFlowContext.Database != action.DatabasePath {
+		// Update database path
 		h.executionFlowContext.Database = action.DatabasePath
+
+		// Create a new spanner client when there is a change in database path.
+		client, err := spanner.NewClient(ctx, h.executionFlowContext.Database, h.Options...)
+		if err != nil {
+			return nil, outcomeSender.FinishWithError(err)
+		}
+
+		// Close previously created spanner client.
+		if h.executionFlowContext.DbClient != nil {
+			h.executionFlowContext.DbClient.Close()
+		}
+
+		// Assign newly created client
+		h.executionFlowContext.DbClient = client
 	}
 	switch action.GetAction().(type) {
 	case *executorpb.SpannerAction_Start:
