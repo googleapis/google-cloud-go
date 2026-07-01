@@ -97,8 +97,9 @@ func (t *Table) applyGroup(ctx context.Context, group []*entryErr, opts ...Apply
 	attrMap := make(map[string]interface{})
 	mt := t.newBuiltinMetricsTracer(ctx, true)
 	defer mt.recordOperationCompletion()
+	ctx = contextWithMetricsTracer(ctx, mt)
 
-	err = gaxInvokeWithRecorder(ctx, mt, "MutateRows", func(ctx context.Context, headerMD, trailerMD *metadata.MD, _ gax.CallSettings) error {
+	err = gaxInvokeWithRecorder(ctx, "MutateRows", func(ctx context.Context, headerMD, trailerMD *metadata.MD, _ gax.CallSettings) error {
 		attrMap["rowCount"] = len(group)
 		trace.TracePrintf(ctx, attrMap, "Row count in ApplyBulk")
 		err := t.doApplyBulk(ctx, group, headerMD, trailerMD, opts...)

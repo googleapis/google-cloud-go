@@ -619,6 +619,87 @@ func TestConnectivityErrorCount(t *testing.T) {
 			metricNameConnErrCount, totalConnectivityErrorsFromMetrics, statusesReported)
 	}
 }
+
+// TestSuccessfulStreamingAttemptStatusOK guards against the streaming attempt
+// being reported with status=UNKNOWN on graceful EOF — the bug that existed
+// when completion was recorded from a RecvMsg wrapper and io.EOF was
+// (incorrectly) translated by convertToGrpcStatusErr into codes.Unknown.
+func TestSuccessfulStreamingAttemptStatusOK(t *testing.T) {
+	ctx := context.Background()
+	project := "test-project"
+	instance := "test-instance"
+	appProfile := "test-app-profile"
+
+	origSamplePeriod := defaultSamplePeriod
+	defaultSamplePeriod = 500 * time.Millisecond
+	defer func() { defaultSamplePeriod = origSamplePeriod }()
+
+	monitoringServer, err := NewMetricTestServer()
+	if err != nil {
+		t.Fatalf("setting up metrics test server: %v", err)
+	}
+	go monitoringServer.Serve()
+	defer monitoringServer.Shutdown()
+
+	origCreateExporterOptions := createExporterOptions
+	createExporterOptions = func(opts ...option.ClientOption) []option.ClientOption {
+		return []option.ClientOption{
+			option.WithEndpoint(monitoringServer.Endpoint),
+			option.WithoutAuthentication(),
+			option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+		}
+	}
+	defer func() { createExporterOptions = origCreateExporterOptions }()
+
+	tbl, cleanup, err := setupFakeServerWithCustomHandler(project, instance, ClientConfig{AppProfile: appProfile}, sendTwoRowsHandler)
+	defer cleanup()
+	if err != nil {
+		t.Fatalf("setupFakeServerWithCustomHandler: %v", err)
+	}
+
+	monitoringServer.CreateServiceTimeSeriesRequests() // drain
+
+	rows := 0
+	if err := tbl.ReadRows(ctx, NewRange("a", "z"), func(r Row) bool {
+		rows++
+		return true
+	}); err != nil {
+		t.Fatalf("ReadRows: %v", err)
+	}
+	if rows == 0 {
+		t.Fatal("ReadRows returned no rows; expected at least one from sendTwoRowsHandler")
+	}
+
+	time.Sleep(defaultSamplePeriod + 200*time.Millisecond)
+
+	wantOK := canonicalString(codes.OK)
+	perAttemptMetrics := map[string]bool{
+		metricNameAttemptLatencies: false,
+		metricNameServerLatencies:  false,
+	}
+	for _, batch := range monitoringServer.CreateServiceTimeSeriesRequests() {
+		for _, ts := range batch.TimeSeries {
+			parts := strings.Split(ts.Metric.Type, "/")
+			name := parts[len(parts)-1]
+			if _, tracked := perAttemptMetrics[name]; !tracked {
+				continue
+			}
+			if ts.Metric.Labels[metricLabelKeyMethod] != "Bigtable.ReadRows" {
+				continue
+			}
+			perAttemptMetrics[name] = true
+			if got := ts.Metric.Labels[metricLabelKeyStatus]; got != wantOK {
+				t.Errorf("metric %s status label = %q, want %q", name, got, wantOK)
+			}
+		}
+	}
+	for name, seen := range perAttemptMetrics {
+		if !seen {
+			t.Errorf("metric %s for Bigtable.ReadRows not exported", name)
+		}
+	}
+}
+
 func setMockErrorHandler(t *testing.T, mockErrorHandler *MockErrorHandler) {
 	origErrHandler := otel.GetErrorHandler()
 	otel.SetErrorHandler(mockErrorHandler)

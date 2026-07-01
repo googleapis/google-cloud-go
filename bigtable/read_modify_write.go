@@ -31,14 +31,15 @@ func (t *Table) ApplyReadModifyWrite(ctx context.Context, row string, m *ReadMod
 
 	mt := t.newBuiltinMetricsTracer(ctx, false)
 	defer mt.recordOperationCompletion()
+	ctx = contextWithMetricsTracer(ctx, mt)
 
-	updatedRow, err := t.applyReadModifyWrite(ctx, mt, row, m)
+	updatedRow, err := t.applyReadModifyWrite(ctx, row, m)
 	statusCode, statusErr := convertToGrpcStatusErr(err)
 	mt.setCurrOpStatus(statusCode)
 	return updatedRow, statusErr
 }
 
-func (t *Table) applyReadModifyWrite(ctx context.Context, mt *builtinMetricsTracer, row string, m *ReadModifyWrite) (Row, error) {
+func (t *Table) applyReadModifyWrite(ctx context.Context, row string, m *ReadModifyWrite) (Row, error) {
 	req := &btpb.ReadModifyWriteRowRequest{
 		AppProfileId: t.c.appProfile,
 		RowKey:       []byte(row),
@@ -51,7 +52,7 @@ func (t *Table) applyReadModifyWrite(ctx context.Context, mt *builtinMetricsTrac
 	}
 
 	var r Row
-	err := gaxInvokeWithRecorder(ctx, mt, "ReadModifyWriteRow", func(ctx context.Context, headerMD, trailerMD *metadata.MD, _ gax.CallSettings) error {
+	err := gaxInvokeWithRecorder(ctx, "ReadModifyWriteRow", func(ctx context.Context, headerMD, trailerMD *metadata.MD, _ gax.CallSettings) error {
 		res, err := t.c.client.ReadModifyWriteRow(ctx, req, grpc.Header(headerMD), grpc.Trailer(trailerMD))
 		if err != nil {
 			return err

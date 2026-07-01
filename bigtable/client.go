@@ -122,6 +122,9 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 
 	// Add gRPC client interceptors to supply Google client information. No external interceptors are passed.
 	o = append(o, btopt.ClientInterceptorOptions(nil, nil)...)
+	// sharedLatencyStatsHandler drives per-attempt metric recording (attempt
+	// start in TagRPC, completion in HandleRPC(*stats.End)) in addition to
+	// blocking-latency and t4t7 tracking.
 	o = append(o, option.WithGRPCDialOption(grpc.WithStatsHandler(sharedLatencyStatsHandler)))
 	// Default to a connection pool that can be overridden. Raised from 4 to
 	// defaultBigtableConnPoolSize to compensate for dynamic channel pool
@@ -314,26 +317,26 @@ func (c *Client) PingAndWarm(ctx context.Context) (err error) {
 	defer func() { trace.EndSpan(ctx, err) }()
 	mt := c.newBuiltinMetricsTracer(ctx, "", false)
 	defer mt.recordOperationCompletion()
+	ctx = contextWithMetricsTracer(ctx, mt)
 
-	err = c.pingerWithMetadata(ctx, mt)
+	err = c.pingerWithMetadata(ctx)
 	statusCode, statusErr := convertToGrpcStatusErr(err)
 	mt.currOp.setStatus(statusCode.String())
 	return statusErr
 }
 
-func (c *Client) pingerWithMetadata(ctx context.Context, mt *builtinMetricsTracer) (err error) {
+func (c *Client) pingerWithMetadata(ctx context.Context) (err error) {
 	req := &btpb.PingAndWarmRequest{
 		Name:         c.fullInstanceName(),
 		AppProfileId: c.appProfile,
 	}
-	err = gaxInvokeWithRecorder(ctx, mt, "PingAndWarm", func(ctx context.Context, headerMD, trailerMD *metadata.MD, _ gax.CallSettings) error {
+	err = gaxInvokeWithRecorder(ctx, "PingAndWarm", func(ctx context.Context, headerMD, trailerMD *metadata.MD, _ gax.CallSettings) error {
 		var err error
 		_, err = c.client.PingAndWarm(ctx, req, grpc.Header(headerMD), grpc.Trailer(trailerMD))
 		return err
 	})
 
 	return err
-
 }
 
 func (c *Client) newBuiltinMetricsTracer(ctx context.Context, table string, isStreaming bool) *builtinMetricsTracer {
