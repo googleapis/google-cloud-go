@@ -369,7 +369,16 @@ func (j *Job) waitForQuery(ctx context.Context, projectID string) (Schema, uint6
 		res, err = call.Do()
 		trace.EndSpan(sCtx, err)
 		if err != nil {
-			return !retryableError(err, jobRetryReasons), err
+			// GetQueryResults is a polling call, not a job-enqueuing call
+			// (jobs.insert / jobs.query). As noted where jobRetryReasons is
+			// defined, retrying "jobRateLimitExceeded" / "internalError" while
+			// polling can cause unwanted retries until the context deadline:
+			// once project query quota is saturated, every poll returns
+			// jobRateLimitExceeded and this loop retries indefinitely,
+			// generating a request storm that never makes progress (see
+			// https://github.com/dbt-labs/dbt-core/issues/14632). Use the
+			// polling-appropriate reason set instead.
+			return !retryableError(err, defaultRetryReasons), err
 		}
 		if !res.JobComplete { // GetQueryResults may return early without error; retry.
 			return false, nil
