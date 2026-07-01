@@ -3461,9 +3461,10 @@ func testIntegrationClientReadTime(t *testing.T) {
 
 	wantReadTime := tm.Truncate(time.Microsecond)
 	for _, d := range ds {
-		if !wantReadTime.Equal(d.ReadTime.Truncate(time.Microsecond)) {
+		gotTrunc := d.ReadTime.Truncate(time.Microsecond)
+		if !wantReadTime.Equal(gotTrunc) {
 			t.Errorf("wanted read time: %v; got: %v",
-				tm.UnixNano(), d.ReadTime.UnixNano())
+				wantReadTime, gotTrunc)
 		}
 	}
 }
