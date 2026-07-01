@@ -3829,6 +3829,59 @@ func (p *parser) parseSelectFromTable() (SelectFrom, *parseError) {
 	if err != nil {
 		return nil, err
 	}
+
+	// If followed by '(', this is a table-valued function (TVF) call.
+	if p.eat("(") {
+		sf := SelectFromTVF{Name: tname}
+		if !p.eat(")") {
+			for {
+				name, err := p.parseTableOrIndexOrColumnName()
+				if err != nil {
+					return nil, err
+				}
+				if err := p.expect("=", ">"); err != nil {
+					return nil, err
+				}
+				val, err := p.parseExpr()
+				if err != nil {
+					return nil, err
+				}
+				sf.Args = append(sf.Args, TVFArgument{Name: name, Value: val})
+				if !p.eat(",") {
+					break
+				}
+			}
+			if err := p.expect(")"); err != nil {
+				return nil, err
+			}
+		}
+		// The "AS" keyword is optional; also accept a bare alias identifier.
+		if p.eat("AS") {
+			alias, err := p.parseAlias()
+			if err != nil {
+				return nil, err
+			}
+			sf.Alias = alias
+		} else {
+			tok := p.next()
+			if tok.err == nil && (tok.typ == quotedID || tok.typ == unquotedID) &&
+				!tok.caseEqual("WHERE") && !tok.caseEqual("JOIN") && !tok.caseEqual("INNER") &&
+				!tok.caseEqual("LEFT") && !tok.caseEqual("RIGHT") && !tok.caseEqual("FULL") &&
+				!tok.caseEqual("CROSS") && !tok.caseEqual("GROUP") && !tok.caseEqual("ORDER") &&
+				!tok.caseEqual("LIMIT") && !tok.caseEqual("HAVING") && !tok.caseEqual("UNION") &&
+				!tok.caseEqual("INTERSECT") && !tok.caseEqual("EXCEPT") && !tok.caseEqual("ON") {
+				if tok.typ == quotedID {
+					sf.Alias = ID(tok.string)
+				} else {
+					sf.Alias = ID(tok.value)
+				}
+			} else {
+				p.back()
+			}
+		}
+		return sf, nil
+	}
+
 	sf := SelectFromTable{Table: tname}
 	if p.eat("@") {
 		hints, err := p.parseHints(map[string]string{})

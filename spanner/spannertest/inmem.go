@@ -529,6 +529,19 @@ func (s *server) ExecuteSql(ctx context.Context, req *spannerpb.ExecuteSqlReques
 		return s.resultSet(ri)
 	}
 
+	// Try parsing as DML first. Non-DML statements (queries with an explicit
+	// read-only transaction) fall through to executeQuery without touching the
+	// write transaction map, which would not contain their transaction ID.
+	stmt, err := spansql.ParseDMLStmt(req.Sql)
+	if err != nil {
+		ri, err := s.executeQuery(req)
+		if err != nil {
+			return nil, err
+		}
+		return s.resultSet(ri)
+	}
+
+	// DML path: resolve the write transaction.
 	var tid string
 	obj, ok := req.Transaction.Selector.(*spannerpb.TransactionSelector_Id)
 	if ok {
@@ -549,11 +562,18 @@ func (s *server) ExecuteSql(ctx context.Context, req *spannerpb.ExecuteSqlReques
 		tid = string(tx.Id)
 	}
 
-	_ = tid // TODO: lookup an existing transaction by ID.
-
-	stmt, err := spansql.ParseDMLStmt(req.Sql)
-	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "bad DML: %v", err)
+	// Look up the write transaction so DML mutations are tracked for change streams.
+	s.mu.Lock()
+	sess, hasSess := s.sessions[req.Session]
+	s.mu.Unlock()
+	if !hasSess {
+		return nil, status.Errorf(codes.NotFound, "unknown session %q", req.Session)
+	}
+	sess.mu.Lock()
+	writeTx, hasTx := sess.transactions[tid]
+	sess.mu.Unlock()
+	if !hasTx {
+		return nil, status.Errorf(codes.NotFound, "unknown transaction %q in session %q", tid, req.Session)
 	}
 	params, err := parseQueryParams(req.GetParams(), req.ParamTypes)
 	if err != nil {
@@ -565,7 +585,7 @@ func (s *server) ExecuteSql(ctx context.Context, req *spannerpb.ExecuteSqlReques
 		s.logf("        ▹ %v", params)
 	}
 
-	n, err := s.db.Execute(stmt, params)
+	n, err := s.db.Execute(writeTx, stmt, params)
 	if err != nil {
 		return nil, err
 	}
@@ -727,6 +747,60 @@ func (s *server) readStream(ctx context.Context, tx *transaction, send func(*spa
 	return nil
 }
 
+// columnProtoTyper may be implemented by a rowIter to supply Spanner proto
+// type metadata for its columns directly, bypassing spannerTypeFromType.
+type columnProtoTyper interface {
+	ColProtoTypes() []*spannerpb.Type
+}
+
+// resolveColumnProtoTypes returns per-column Spanner proto types for the
+// columns of ri, or nil if none are available. It walks through common
+// wrapper iterators (selIter, offsetIter, limitIter) to find an inner
+// columnProtoTyper and maps the inner proto types to ri's output columns.
+func resolveColumnProtoTypes(ri rowIter) []*spannerpb.Type {
+	// Direct implementation takes priority.
+	if cpt, ok := ri.(columnProtoTyper); ok {
+		return cpt.ColProtoTypes()
+	}
+	// Walk through passthrough wrappers that don't change the column set.
+	switch it := ri.(type) {
+	case *offsetIter:
+		return resolveColumnProtoTypes(it.ri)
+	case *limitIter:
+		return resolveColumnProtoTypes(it.ri)
+	case *selIter:
+		innerTypes := resolveColumnProtoTypes(it.ri)
+		if innerTypes == nil {
+			return nil
+		}
+		// Build a name → proto-type map for the inner columns.
+		innerCols := it.ri.Cols()
+		innerByName := make(map[spansql.ID]*spannerpb.Type, len(innerCols))
+		for i, c := range innerCols {
+			innerByName[c.Name] = innerTypes[i]
+		}
+		// Map each output expression to the corresponding inner proto type.
+		var result []*spannerpb.Type
+		for _, e := range it.list {
+			if e == spansql.Star {
+				result = append(result, innerTypes...)
+				continue
+			}
+			ci, err := it.ec.colInfo(e)
+			if err != nil {
+				return nil // can't determine column — give up
+			}
+			pt, ok := innerByName[ci.Name]
+			if !ok {
+				return nil // no inner proto type for this column — give up
+			}
+			result = append(result, pt)
+		}
+		return result
+	}
+	return nil
+}
+
 func (s *server) buildResultSetMetadata(ri rowIter, tx *transaction) (*spannerpb.ResultSetMetadata, error) {
 	// Build the result set metadata.
 	rsm := &spannerpb.ResultSetMetadata{
@@ -735,10 +809,17 @@ func (s *server) buildResultSetMetadata(ri rowIter, tx *transaction) (*spannerpb
 	if tx != nil {
 		rsm.Transaction = &spannerpb.Transaction{Id: []byte(tx.id)}
 	}
-	for _, ci := range ri.Cols() {
-		st, err := spannerTypeFromType(ci.Type)
-		if err != nil {
-			return nil, err
+	protoTypes := resolveColumnProtoTypes(ri)
+	for i, ci := range ri.Cols() {
+		var st *spannerpb.Type
+		if protoTypes != nil {
+			st = protoTypes[i]
+		} else {
+			var err error
+			st, err = spannerTypeFromType(ci.Type)
+			if err != nil {
+				return nil, err
+			}
 		}
 		rsm.RowType.Fields = append(rsm.RowType.Fields, &spannerpb.StructType_Field{
 			Name: string(ci.Name),
@@ -816,6 +897,12 @@ func (s *server) Commit(ctx context.Context, req *spannerpb.CommitRequest) (resp
 		case *spannerpb.Mutation_InsertOrUpdate:
 			iou := op.InsertOrUpdate
 			err := s.db.InsertOrUpdate(tx, spansql.ID(iou.Table), idList(iou.Columns), iou.Values)
+			if err != nil {
+				return nil, err
+			}
+		case *spannerpb.Mutation_Replace:
+			rep := op.Replace
+			err := s.db.Replace(tx, spansql.ID(rep.Table), idList(rep.Columns), rep.Values)
 			if err != nil {
 				return nil, err
 			}
@@ -957,6 +1044,8 @@ func spannerTypeFromType(typ spansql.Type) (*spannerpb.Type, error) {
 		code = spannerpb.TypeCode_DATE
 	case spansql.Timestamp:
 		code = spannerpb.TypeCode_TIMESTAMP
+	case spansql.JSON:
+		code = spannerpb.TypeCode_JSON
 	}
 	st := &spannerpb.Type{Code: code}
 	if typ.Array {
@@ -1040,4 +1129,11 @@ func idList(ss []string) (ids []spansql.ID) {
 		ids = append(ids, spansql.ID(s))
 	}
 	return
+}
+
+// ColProtoTypes satisfies the columnProtoTyper interface, providing the exact
+// Spanner proto type for the ChangeRecord TVF result column and bypassing the
+// placeholder ARRAY<JSON> type in Cols().
+func (ci *changeStreamIter) ColProtoTypes() []*spannerpb.Type {
+	return []*spannerpb.Type{csChangeRecordColType}
 }

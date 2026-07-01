@@ -19,12 +19,14 @@ package spannertest
 // TODO: More of this test should be moved into integration_test.go.
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"reflect"
 	"strings"
 	"sync"
 	"testing"
+	"time"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -773,5 +775,339 @@ func TestCreateAndManageChangeStream(t *testing.T) {
 
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("Generated SQL statement incorrect.\n got %v\nwant %v", got, want)
+	}
+}
+
+func TestChangeStreamDDL(t *testing.T) {
+	var db database
+
+	// Create a table to watch.
+	if st := db.ApplyDDL(&spansql.CreateTable{
+		Name: "Singers",
+		Columns: []spansql.ColumnDef{
+			{Name: "SingerId", Type: spansql.Type{Base: spansql.Int64}, NotNull: true},
+			{Name: "FirstName", Type: spansql.Type{Base: spansql.String}},
+			{Name: "LastName", Type: spansql.Type{Base: spansql.String}},
+		},
+		PrimaryKey: []spansql.KeyPart{{Column: "SingerId"}},
+	}); st.Code() != codes.OK {
+		t.Fatalf("Creating table: %v", st.Err())
+	}
+
+	// Create a change stream watching Singers.
+	ddl, err := spansql.ParseDDL("f", "CREATE CHANGE STREAM SingerStream FOR Singers")
+	if err != nil {
+		t.Fatalf("ParseDDL: %v", err)
+	}
+	if st := db.ApplyDDL(ddl.List[0]); st.Code() != codes.OK {
+		t.Fatalf("Creating change stream: %v", st.Err())
+	}
+	if _, ok := db.changeStreams["SingerStream"]; !ok {
+		t.Fatal("change stream SingerStream not registered")
+	}
+
+	// Alter the change stream options.
+	ddl, err = spansql.ParseDDL("f", "ALTER CHANGE STREAM SingerStream SET OPTIONS (retention_period = '7d')")
+	if err != nil {
+		t.Fatalf("ParseDDL: %v", err)
+	}
+	if st := db.ApplyDDL(ddl.List[0]); st.Code() != codes.OK {
+		t.Fatalf("Altering change stream: %v", st.Err())
+	}
+	cs := db.changeStreams["SingerStream"]
+	if cs.Options.RetentionPeriod == nil || *cs.Options.RetentionPeriod != "7d" {
+		t.Errorf("retention period not updated; got %v", cs.Options.RetentionPeriod)
+	}
+
+	// Drop the change stream.
+	ddl, err = spansql.ParseDDL("f", "DROP CHANGE STREAM SingerStream")
+	if err != nil {
+		t.Fatalf("ParseDDL: %v", err)
+	}
+	if st := db.ApplyDDL(ddl.List[0]); st.Code() != codes.OK {
+		t.Fatalf("Dropping change stream: %v", st.Err())
+	}
+	if _, ok := db.changeStreams["SingerStream"]; ok {
+		t.Fatal("change stream SingerStream should have been dropped")
+	}
+}
+
+func TestChangeStreamQuery(t *testing.T) {
+	var db database
+
+	// Create a table to watch.
+	if st := db.ApplyDDL(&spansql.CreateTable{
+		Name: "Singers",
+		Columns: []spansql.ColumnDef{
+			{Name: "SingerId", Type: spansql.Type{Base: spansql.Int64}, NotNull: true},
+			{Name: "FirstName", Type: spansql.Type{Base: spansql.String}},
+			{Name: "LastName", Type: spansql.Type{Base: spansql.String}},
+		},
+		PrimaryKey: []spansql.KeyPart{{Column: "SingerId"}},
+	}); st.Code() != codes.OK {
+		t.Fatalf("Creating table: %v", st.Err())
+	}
+
+	// Create a change stream watching Singers.
+	ddl, err := spansql.ParseDDL("f", "CREATE CHANGE STREAM SingerStream FOR Singers")
+	if err != nil {
+		t.Fatalf("ParseDDL: %v", err)
+	}
+	if st := db.ApplyDDL(ddl.List[0]); st.Code() != codes.OK {
+		t.Fatalf("Creating change stream: %v", st.Err())
+	}
+
+	startTS := time.Now().UTC()
+
+	// Insert a row.
+	tx := db.NewTransaction()
+	tx.Start()
+	if err := db.Insert(tx, "Singers",
+		[]spansql.ID{"SingerId", "FirstName", "LastName"},
+		[]*structpb.ListValue{
+			listV(stringV("1"), stringV("Marc"), stringV("Richards")),
+		}); err != nil {
+		t.Fatalf("Insert: %v", err)
+	}
+	commitTS, err := tx.Commit()
+	if err != nil {
+		t.Fatalf("Commit: %v", err)
+	}
+
+	endTS := commitTS.Add(time.Second)
+
+	// Query the change stream TVF.
+	q, err := spansql.ParseQuery(`SELECT ChangeRecord FROM READ_SingerStream(
+		start_timestamp => @start,
+		end_timestamp => @end,
+		heartbeat_milliseconds => @heartbeat
+	)`)
+	if err != nil {
+		t.Fatalf("ParseQuery: %v", err)
+	}
+
+	params := queryParams{
+		"start":     queryParam{Value: startTS, Type: spansql.Type{Base: spansql.Timestamp}},
+		"end":       queryParam{Value: endTS, Type: spansql.Type{Base: spansql.Timestamp}},
+		"heartbeat": queryParam{Value: int64(10000), Type: spansql.Type{Base: spansql.Int64}},
+	}
+
+	ri, err := db.Query(q, params)
+	if err != nil {
+		t.Fatalf("Query change stream: %v", err)
+	}
+
+	rows := slurp(t, ri)
+	if len(rows) == 0 {
+		t.Fatal("Expected at least one row from change stream query")
+	}
+
+	// Each row has one column: ARRAY<ChangeRecord>.
+	// Each ChangeRecord struct is []interface{}{dcrArray, hbArray, cpArray}.
+	// Each DataChangeRecord struct is []interface{}{ts, seq, txid, isLast, table, colTypes, mods, modType, ...}.
+	findDCR := func() []interface{} {
+		for _, row := range rows {
+			if len(row) == 0 {
+				continue
+			}
+			crArr, ok := row[0].([]interface{})
+			if !ok {
+				continue
+			}
+			for _, cr := range crArr {
+				crStruct, ok := cr.([]interface{})
+				if !ok || len(crStruct) < 1 {
+					continue
+				}
+				dcrArr, ok := crStruct[0].([]interface{})
+				if !ok {
+					continue
+				}
+				for _, d := range dcrArr {
+					dcr, ok := d.([]interface{})
+					if ok {
+						return dcr
+					}
+				}
+			}
+		}
+		return nil
+	}
+	dcr := findDCR()
+	if dcr == nil {
+		t.Fatal("No data_change_record found in change stream results")
+	}
+
+	// Validate key fields of the data_change_record (by struct field index).
+	// Field order: [0]=commit_ts [1]=seq [2]=txid [3]=isLast [4]=table [5]=colTypes [6]=mods [7]=modType [8]=valueCaptureType ...
+	if got, _ := dcr[4].(string); got != "Singers" {
+		t.Errorf("table_name: got %q, want %q", got, "Singers")
+	}
+	if got, _ := dcr[7].(string); got != "INSERT" {
+		t.Errorf("mod_type: got %q, want %q", got, "INSERT")
+	}
+	if got, _ := dcr[8].(string); got != "NEW_VALUES" {
+		t.Errorf("value_capture_type: got %q, want %q", got, "NEW_VALUES")
+	}
+
+	// Validate that mods contains the inserted key.
+	// mods is dcr[6]: []interface{} of mod structs, each is []interface{}{keysJSON, newValsJSON, oldValsJSON}.
+	mods, ok := dcr[6].([]interface{})
+	if !ok || len(mods) == 0 {
+		t.Fatalf("Expected mods array, got %T", dcr[6])
+	}
+	mod, ok := mods[0].([]interface{})
+	if !ok || len(mod) < 2 {
+		t.Fatalf("Expected mod struct []interface{}, got %T", mods[0])
+	}
+	var keys map[string]interface{}
+	if err := json.Unmarshal([]byte(mod[0].(string)), &keys); err != nil {
+		t.Fatalf("Parsing keys JSON: %v", err)
+	}
+	if got := keys["SingerId"]; got != "1" {
+		t.Errorf("mod.keys.SingerId: got %v, want %q", got, "1")
+	}
+	var newVals map[string]interface{}
+	if err := json.Unmarshal([]byte(mod[1].(string)), &newVals); err != nil {
+		t.Fatalf("Parsing new_values JSON: %v", err)
+	}
+	if got := newVals["FirstName"]; got != "Marc" {
+		t.Errorf("mod.new_values.FirstName: got %v, want %q", got, "Marc")
+	}
+}
+
+func TestChangeStreamQueryAllTables(t *testing.T) {
+	var db database
+
+	// Create a table.
+	if st := db.ApplyDDL(&spansql.CreateTable{
+		Name: "Albums",
+		Columns: []spansql.ColumnDef{
+			{Name: "AlbumId", Type: spansql.Type{Base: spansql.Int64}, NotNull: true},
+			{Name: "Title", Type: spansql.Type{Base: spansql.String}},
+		},
+		PrimaryKey: []spansql.KeyPart{{Column: "AlbumId"}},
+	}); st.Code() != codes.OK {
+		t.Fatalf("Creating table: %v", st.Err())
+	}
+
+	// Create a change stream watching ALL tables.
+	ddl, err := spansql.ParseDDL("f", "CREATE CHANGE STREAM AllStream FOR ALL")
+	if err != nil {
+		t.Fatalf("ParseDDL: %v", err)
+	}
+	if st := db.ApplyDDL(ddl.List[0]); st.Code() != codes.OK {
+		t.Fatalf("Creating change stream: %v", st.Err())
+	}
+
+	startTS := time.Now().UTC()
+
+	// Insert a row.
+	tx := db.NewTransaction()
+	tx.Start()
+	if err := db.Insert(tx, "Albums",
+		[]spansql.ID{"AlbumId", "Title"},
+		[]*structpb.ListValue{
+			listV(stringV("42"), stringV("Go Songs")),
+		}); err != nil {
+		t.Fatalf("Insert: %v", err)
+	}
+	commitTS, err := tx.Commit()
+	if err != nil {
+		t.Fatalf("Commit: %v", err)
+	}
+
+	endTS := commitTS.Add(time.Second)
+	cs := db.changeStreams["AllStream"]
+	if len(cs.log) != 1 {
+		t.Fatalf("Expected 1 change log entry, got %d", len(cs.log))
+	}
+	if cs.log[0].TableName != "Albums" {
+		t.Errorf("log entry table: got %q, want %q", cs.log[0].TableName, "Albums")
+	}
+	if cs.log[0].ModType != "INSERT" {
+		t.Errorf("log entry mod_type: got %q, want %q", cs.log[0].ModType, "INSERT")
+	}
+
+	// Query the TVF.
+	q, err := spansql.ParseQuery(`SELECT ChangeRecord FROM READ_AllStream(start_timestamp => @start, end_timestamp => @end, heartbeat_milliseconds => @hb)`)
+	if err != nil {
+		t.Fatalf("ParseQuery: %v", err)
+	}
+	params := queryParams{
+		"start": queryParam{Value: startTS, Type: spansql.Type{Base: spansql.Timestamp}},
+		"end":   queryParam{Value: endTS, Type: spansql.Type{Base: spansql.Timestamp}},
+		"hb":    queryParam{Value: int64(1000), Type: spansql.Type{Base: spansql.Int64}},
+	}
+	ri, err := db.Query(q, params)
+	if err != nil {
+		t.Fatalf("Query: %v", err)
+	}
+	rows := slurp(t, ri)
+	if len(rows) == 0 {
+		t.Fatal("Expected at least one row from change stream TVF")
+	}
+}
+
+func TestChangeStreamHeartbeat(t *testing.T) {
+	var db database
+
+	if st := db.ApplyDDL(&spansql.CreateTable{
+		Name: "Things",
+		Columns: []spansql.ColumnDef{
+			{Name: "ID", Type: spansql.Type{Base: spansql.Int64}, NotNull: true},
+		},
+		PrimaryKey: []spansql.KeyPart{{Column: "ID"}},
+	}); st.Code() != codes.OK {
+		t.Fatalf("Creating table: %v", st.Err())
+	}
+	ddl, err := spansql.ParseDDL("f", "CREATE CHANGE STREAM ThingStream FOR Things")
+	if err != nil {
+		t.Fatalf("ParseDDL: %v", err)
+	}
+	if st := db.ApplyDDL(ddl.List[0]); st.Code() != codes.OK {
+		t.Fatalf("Creating change stream: %v", st.Err())
+	}
+
+	// Query with no mutations — should get a heartbeat.
+	startTS := time.Now().UTC()
+	endTS := startTS.Add(time.Second)
+	q, err := spansql.ParseQuery(`SELECT ChangeRecord FROM READ_ThingStream(start_timestamp => @start, end_timestamp => @end, heartbeat_milliseconds => @hb)`)
+	if err != nil {
+		t.Fatalf("ParseQuery: %v", err)
+	}
+	params := queryParams{
+		"start": queryParam{Value: startTS, Type: spansql.Type{Base: spansql.Timestamp}},
+		"end":   queryParam{Value: endTS, Type: spansql.Type{Base: spansql.Timestamp}},
+		"hb":    queryParam{Value: int64(1000), Type: spansql.Type{Base: spansql.Int64}},
+	}
+	ri, err := db.Query(q, params)
+	if err != nil {
+		t.Fatalf("Query: %v", err)
+	}
+	rows := slurp(t, ri)
+	if len(rows) == 0 {
+		t.Fatal("Expected a heartbeat row")
+	}
+	// rows[0][0] is ARRAY<ChangeRecord> — each element is a ChangeRecord struct
+	// ChangeRecord struct: [data_change_record []DCR, heartbeat_record []HBR, child_partitions_record []CPR]
+	crArr, ok := rows[0][0].([]interface{})
+	if !ok || len(crArr) == 0 {
+		t.Fatal("Expected non-empty ChangeRecord array")
+	}
+	crStruct, ok := crArr[0].([]interface{})
+	if !ok || len(crStruct) < 2 {
+		t.Fatalf("Expected ChangeRecord struct, got %T", crArr[0])
+	}
+	hbArr, ok := crStruct[1].([]interface{})
+	if !ok || len(hbArr) == 0 {
+		t.Fatalf("Expected non-empty heartbeat_record array, got %T", crStruct[1])
+	}
+	hbRecord, ok := hbArr[0].([]interface{})
+	if !ok || len(hbRecord) < 1 {
+		t.Fatalf("Expected HeartbeatRecord struct, got %T", hbArr[0])
+	}
+	if _, ok := hbRecord[0].(time.Time); !ok {
+		t.Errorf("Expected time.Time heartbeat timestamp, got %T", hbRecord[0])
 	}
 }

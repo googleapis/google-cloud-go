@@ -2242,6 +2242,43 @@ INNER JOIN t2 ON t1.id = t2.t1_id
 GROUP BY t1.id, t2.name`,
 			reparseQuery,
 		},
+		// TVF (change stream read) without alias.
+		{
+			Query{
+				Select: Select{
+					List: []Expr{ID("ChangeRecord")},
+					From: []SelectFrom{SelectFromTVF{
+						Name: "READ_SingerStream",
+						Args: []TVFArgument{
+							{Name: "start_timestamp", Value: Param("start")},
+							{Name: "end_timestamp", Value: Param("end")},
+							{Name: "heartbeat_milliseconds", Value: Param("hb")},
+						},
+					}},
+				},
+			},
+			"SELECT\n\tChangeRecord\nFROM READ_SingerStream(start_timestamp => @start, end_timestamp => @end, heartbeat_milliseconds => @hb)",
+			reparseQuery,
+		},
+		// TVF with AS alias.
+		{
+			Query{
+				Select: Select{
+					List: []Expr{PathExp{"s", "ChangeRecord"}},
+					From: []SelectFrom{SelectFromTVF{
+						Name: "READ_SingerStream",
+						Args: []TVFArgument{
+							{Name: "start_timestamp", Value: Param("start")},
+							{Name: "end_timestamp", Value: Param("end")},
+							{Name: "heartbeat_milliseconds", Value: Param("hb")},
+						},
+						Alias: "s",
+					}},
+				},
+			},
+			"SELECT\n\ts.ChangeRecord\nFROM READ_SingerStream(start_timestamp => @start, end_timestamp => @end, heartbeat_milliseconds => @hb) AS s",
+			reparseQuery,
+		},
 	}
 	for _, test := range tests {
 		sql := test.data.SQL()
