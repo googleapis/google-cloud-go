@@ -16,6 +16,7 @@ package regionalaccessboundary
 
 import (
 	"context"
+	"crypto/tls"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -27,13 +28,18 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
 
+	"regexp"
+
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/internal"
 	"cloud.google.com/go/auth/internal/retry"
+	"cloud.google.com/go/auth/internal/transport/cert"
+	"cloud.google.com/go/compute/metadata"
 	"github.com/googleapis/gax-go/v2/internallog"
 )
 
@@ -43,6 +49,8 @@ const ProviderKey = "regionalaccessboundary.ProviderKey"
 const (
 	// serviceAccountAllowedLocationsEndpoint is the URL for fetching allowed locations for a given service account email.
 	serviceAccountAllowedLocationsEndpoint = "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/%s/allowedLocations"
+	// serviceAccountAllowedLocationsMTLSEndpoint is the mTLS URL for fetching allowed locations for a given service account email.
+	serviceAccountAllowedLocationsMTLSEndpoint = "https://iamcredentials.mtls.googleapis.com/v1/projects/-/serviceAccounts/%s/allowedLocations"
 
 	// cacheTTL is the duration cached RAB data remains valid before hard expiry.
 	cacheTTL = 6 * time.Hour
@@ -60,31 +68,13 @@ var (
 		Multiplier:  2.0,
 		MaxAttempts: 6,
 	}
+
+	// ErrSkipRegionalAccessBoundary indicates that the Regional Access Boundary lookup
+	// should be permanently skipped for this instance or credential.
+	ErrSkipRegionalAccessBoundary = errors.New("regionalaccessboundary: skip lookup")
+
+	emailRegexp = regexp.MustCompile(`^[^@]+@[^@]+\.[^@]+$`)
 )
-
-// isEnabled wraps isRegionalAccessBoundaryEnabled with sync.OnceValues to ensure it's
-// called only once.
-var isEnabled = sync.OnceValues(isRegionalAccessBoundaryEnabled)
-
-// IsEnabled returns if the Regional Access Boundary feature is enabled and an error if
-// the configuration is invalid. The underlying check is performed only once.
-func IsEnabled() (bool, error) {
-	return isEnabled()
-}
-
-// isRegionalAccessBoundaryEnabled checks if the Regional Access Boundary feature
-// is enabled via the GOOGLE_AUTH_TRUST_BOUNDARY_ENABLED environment variable.
-//
-// If the environment variable is not set or empty, it is considered false.
-//
-// The environment variable is interpreted as a boolean with the following
-// (case-insensitive) rules:
-//   - "true", "1" are considered true.
-//   - All other values (including "false", "0", or invalid strings) are considered false.
-func isRegionalAccessBoundaryEnabled() (bool, error) {
-	val := strings.ToLower(os.Getenv("GOOGLE_AUTH_TRUST_BOUNDARY_ENABLED"))
-	return val == "true" || val == "1", nil
-}
 
 // ConfigProvider provides specific configuration for Regional Access Boundary lookups.
 type ConfigProvider interface {
@@ -208,6 +198,7 @@ type DataProvider struct {
 	isFetching       bool
 	cooldownExpiry   time.Time
 	cooldownDuration time.Duration // tracks the current cooldown duration for exponential backoff
+	skipLookup       bool          // permanently skips RAB lookup if the identity is unsupported
 }
 
 // NewProvider wraps the provided base [auth.TokenProvider] and returns a new
@@ -252,6 +243,16 @@ func (p *DataProvider) Token(ctx context.Context) (*auth.Token, error) {
 // GetHeaderValue immediately returns a valid header if it's cached, or kicks off a background fetch
 // if it is unpopulated or expired.
 func (p *DataProvider) GetHeaderValue(ctx context.Context, reqURL string, accessToken *auth.Token) string {
+	p.mu.RLock()
+	skip := p.skipLookup
+	data := p.data
+	dataExpiry := p.dataExpiry
+	p.mu.RUnlock()
+
+	if skip {
+		return ""
+	}
+
 	if !strings.Contains(reqURL, "://") {
 		reqURL = "https://" + reqURL
 	}
@@ -284,12 +285,6 @@ func (p *DataProvider) GetHeaderValue(ctx context.Context, reqURL string, access
 	if uniDomain != "" && uniDomain != internal.DefaultUniverseDomain {
 		return ""
 	}
-
-	// Return the cached data if present and not expired.
-	p.mu.RLock()
-	data := p.data
-	dataExpiry := p.dataExpiry
-	p.mu.RUnlock()
 
 	now := time.Now()
 	if data != nil && now.Before(dataExpiry) {
@@ -327,20 +322,43 @@ func (p *DataProvider) GetHeaderValue(ctx context.Context, reqURL string, access
 // fetchAsync performs the background lookup for Regional Access Boundary data.
 // It updates the provider's state based on the result (success or failure).
 func (p *DataProvider) fetchAsync(ctx context.Context, accessToken *auth.Token) {
+	var cloned bool
+	var fetchClient *http.Client
 	defer func() {
 		p.mu.Lock()
 		p.isFetching = false
 		p.mu.Unlock()
+		if cloned && fetchClient != nil {
+			fetchClient.CloseIdleConnections()
+		}
 	}()
 
 	url, err := p.configProvider.GetRegionalAccessBoundaryEndpoint(ctx)
+	if errors.Is(err, ErrSkipRegionalAccessBoundary) {
+		// If the compute environment or identity does not support Regional Access Boundary
+		// lookups, permanently disable subsequent attempts to avoid redundant retries.
+		p.mu.Lock()
+		p.skipLookup = true
+		p.mu.Unlock()
+		return
+	}
 	if err != nil {
 		p.logger.WarnContext(ctx, "regionalaccessboundary: error getting the lookup endpoint", "error", err)
 		p.handleFetchFailure(ctx)
 		return
 	}
 
-	newData, fetchErr := fetchRegionalAccessBoundaryData(ctx, p.client, url, accessToken, p.logger)
+	fetchClient = p.client
+	if strings.Contains(url, ".mtls.") {
+		if provider, err := cert.DefaultProvider(); err == nil && provider != nil {
+			clonedClient := maybeCloneClientWithMTLS(p.client, provider)
+			if clonedClient != p.client {
+				fetchClient = clonedClient
+				cloned = true
+			}
+		}
+	}
+	newData, fetchErr := fetchRegionalAccessBoundaryData(ctx, fetchClient, url, accessToken, p.logger)
 
 	if fetchErr != nil {
 		p.logger.WarnContext(ctx, "regionalaccessboundary: async fetch failed", "error", fetchErr)
@@ -378,6 +396,100 @@ func (p *DataProvider) handleFetchFailure(ctx context.Context) {
 	p.cooldownDuration = nextCooldown
 }
 
+func resolveLocalMTLSEndpoint(base, mtls string) (string, error) {
+	mode := strings.ToLower(os.Getenv("GOOGLE_API_USE_MTLS_ENDPOINT"))
+	if mode == "" {
+		mode = strings.ToLower(os.Getenv("GOOGLE_API_USE_MTLS")) // Deprecated.
+	}
+	if mode == "always" {
+		return mtls, nil
+	}
+	if mode == "never" {
+		return base, nil
+	}
+	if mode != "" && mode != "auto" {
+		return base, nil
+	}
+
+	// Honor explicit client certificate suppression matching transport.isClientCertificateEnabled.
+	// We ignore parsing errors to default to false, matching the behavior in cba.go.
+	if val, ok := os.LookupEnv("GOOGLE_API_USE_CLIENT_CERTIFICATE"); ok {
+		b, _ := strconv.ParseBool(val)
+		if !b {
+			return base, nil
+		}
+	}
+
+	// Check if a client certificate is available. If an error occurs (e.g., malformed
+	// certificate configuration file), propagate the error up to trigger cooldown.
+	provider, err := cert.DefaultProvider()
+	if err != nil {
+		return "", err
+	}
+	if provider != nil {
+		return mtls, nil
+	}
+	return base, nil
+}
+
+type cloneableTransport interface {
+	Clone() *http.Transport
+}
+
+// maybeCloneClientWithMTLS returns a clone of client configured to use the client
+// certificate provider if the client's transport is cloneable. If the transport
+// cannot be cloned, it returns the original client unmodified.
+func maybeCloneClientWithMTLS(client *http.Client, provider cert.Provider) *http.Client {
+	if client == nil {
+		return nil
+	}
+	c := *client
+	var trans *http.Transport
+	if client.Transport == nil {
+		if defaultTrans, ok := http.DefaultTransport.(cloneableTransport); ok {
+			trans = defaultTrans.Clone()
+		} else {
+			// Fallback to a clean transport configured with standard timeouts
+			// and ForceAttemptHTTP2 enabled.
+			trans = &http.Transport{
+				Proxy: http.ProxyFromEnvironment,
+				DialContext: (&net.Dialer{
+					Timeout:   30 * time.Second,
+					KeepAlive: 30 * time.Second,
+				}).DialContext,
+				ForceAttemptHTTP2:     true,
+				MaxIdleConns:          100,
+				IdleConnTimeout:       90 * time.Second,
+				TLSHandshakeTimeout:   10 * time.Second,
+				ExpectContinueTimeout: 1 * time.Second,
+			}
+		}
+	} else if cloneable, ok := client.Transport.(cloneableTransport); ok {
+		trans = cloneable.Clone()
+		if trans == nil {
+			return client
+		}
+	} else {
+		// If transport is not cloneable (e.g. custom wrapper), we return the client unmodified.
+		return client
+	}
+
+	if trans.TLSClientConfig == nil {
+		trans.TLSClientConfig = &tls.Config{}
+	} else {
+		trans.TLSClientConfig = trans.TLSClientConfig.Clone()
+	}
+
+	// Only set GetClientCertificate if the user has not already configured
+	// client certificates on this transport.
+	if trans.TLSClientConfig.GetClientCertificate == nil && len(trans.TLSClientConfig.Certificates) == 0 {
+		trans.TLSClientConfig.GetClientCertificate = provider
+	}
+
+	c.Transport = trans
+	return &c
+}
+
 // serviceAccountConfig holds configuration for SA Regional Access Boundary lookups.
 // It implements the ConfigProvider interface.
 type serviceAccountConfig struct {
@@ -399,7 +511,9 @@ func (sac *serviceAccountConfig) GetRegionalAccessBoundaryEndpoint(ctx context.C
 	if sac.ServiceAccountEmail == "" {
 		return "", errors.New("regionalaccessboundary: service account email cannot be empty for config")
 	}
-	return fmt.Sprintf(serviceAccountAllowedLocationsEndpoint, sac.ServiceAccountEmail), nil
+	base := fmt.Sprintf(serviceAccountAllowedLocationsEndpoint, sac.ServiceAccountEmail)
+	mtls := fmt.Sprintf(serviceAccountAllowedLocationsMTLSEndpoint, sac.ServiceAccountEmail)
+	return resolveLocalMTLSEndpoint(base, mtls)
 }
 
 // GetUniverseDomain returns the configured universe domain, defaulting to
@@ -412,28 +526,29 @@ func (sac *serviceAccountConfig) GetUniverseDomain(ctx context.Context) (string,
 }
 
 // GCEConfigProvider implements ConfigProvider for GCE environments.
-// It lazily fetches and caches the necessary metadata (service account email, universe domain)
+// It lazily fetches and caches the necessary service account email metadata.
 type GCEConfigProvider struct {
 	// universeDomainProvider provides the universe domain and underlying metadata client.
 	universeDomainProvider *internal.ComputeUniverseDomainProvider
+	logger                 *slog.Logger
 
 	// Caching for service account email
-	saMu    sync.Mutex
-	saEmail string
-
-	// Caching for universe domain
-	udOnce sync.Once
-	ud     string
-	udErr  error
+	saMu       sync.Mutex
+	saEmail    string
+	skipLookup bool
 }
 
 // NewGCEConfigProvider creates a new GCEConfigProvider
 // which uses the provided gceUDP to interact with the GCE metadata server.
-func NewGCEConfigProvider(gceUDP *internal.ComputeUniverseDomainProvider) *GCEConfigProvider {
+func NewGCEConfigProvider(gceUDP *internal.ComputeUniverseDomainProvider, logger *slog.Logger) *GCEConfigProvider {
+	if logger == nil {
+		logger = slog.New(slog.NewTextHandler(io.Discard, nil))
+	}
 	// The validity of gceUDP and its internal MetadataClient will be checked
 	// within the GetRegionalAccessBoundaryEndpoint and GetUniverseDomain methods.
 	return &GCEConfigProvider{
 		universeDomainProvider: gceUDP,
+		logger:                 internallog.New(logger),
 	}
 }
 
@@ -444,25 +559,13 @@ func (g *GCEConfigProvider) fetchSA(ctx context.Context) (string, error) {
 	mdClient := g.universeDomainProvider.MetadataClient
 	saEmail, err := mdClient.EmailWithContext(ctx, "default")
 	if err != nil {
+		var ndErr metadata.NotDefinedError
+		if errors.As(err, &ndErr) {
+			return "", ErrSkipRegionalAccessBoundary
+		}
 		return "", fmt.Errorf("regionalaccessboundary: GCE config: failed to get service account email: %w", err)
 	}
 	return saEmail, nil
-}
-
-func (g *GCEConfigProvider) fetchUD(ctx context.Context) {
-	if g.universeDomainProvider == nil || g.universeDomainProvider.MetadataClient == nil {
-		g.udErr = errors.New("regionalaccessboundary: GCEConfigProvider not properly initialized (missing ComputeUniverseDomainProvider or MetadataClient)")
-		return
-	}
-	ud, err := g.universeDomainProvider.GetProperty(ctx)
-	if err != nil {
-		g.udErr = fmt.Errorf("regionalaccessboundary: GCE config: failed to get universe domain: %w", err)
-		return
-	}
-	if ud == "" {
-		ud = internal.DefaultUniverseDomain
-	}
-	g.ud = ud
 }
 
 // GetRegionalAccessBoundaryEndpoint constructs the Regional Access Boundary lookup URL for a GCE environment.
@@ -470,10 +573,16 @@ func (g *GCEConfigProvider) fetchUD(ctx context.Context) {
 func (g *GCEConfigProvider) GetRegionalAccessBoundaryEndpoint(ctx context.Context) (string, error) {
 	// Check if we already have a cached service account email.
 	g.saMu.Lock()
+	if g.skipLookup {
+		g.saMu.Unlock()
+		return "", ErrSkipRegionalAccessBoundary
+	}
 	if g.saEmail != "" {
 		email := g.saEmail
 		g.saMu.Unlock()
-		return fmt.Sprintf(serviceAccountAllowedLocationsEndpoint, email), nil
+		base := fmt.Sprintf(serviceAccountAllowedLocationsEndpoint, email)
+		mtls := fmt.Sprintf(serviceAccountAllowedLocationsMTLSEndpoint, email)
+		return resolveLocalMTLSEndpoint(base, mtls)
 	}
 	g.saMu.Unlock()
 
@@ -481,7 +590,26 @@ func (g *GCEConfigProvider) GetRegionalAccessBoundaryEndpoint(ctx context.Contex
 	// during this I/O operation to avoid blocking other goroutines.
 	email, err := g.fetchSA(ctx)
 	if err != nil {
+		if errors.Is(err, ErrSkipRegionalAccessBoundary) {
+			g.saMu.Lock()
+			g.skipLookup = true
+			g.saMu.Unlock()
+		}
 		return "", err
+	}
+	email = strings.TrimSpace(email)
+
+	if !emailRegexp.MatchString(email) {
+		// If the metadata server response does not look like a standard email (e.g.,
+		// a GKE Workload Identity pool ID or principal), permanently skip RAB lookups.
+		g.saMu.Lock()
+		alreadySkipped := g.skipLookup
+		g.skipLookup = true
+		g.saMu.Unlock()
+		if !alreadySkipped && g.logger != nil {
+			g.logger.InfoContext(ctx, "regionalaccessboundary: RAB lookup is skipped for this instance", "response", email)
+		}
+		return "", ErrSkipRegionalAccessBoundary
 	}
 
 	// Cache the successful result.
@@ -489,15 +617,22 @@ func (g *GCEConfigProvider) GetRegionalAccessBoundaryEndpoint(ctx context.Contex
 	g.saEmail = email
 	g.saMu.Unlock()
 
-	return fmt.Sprintf(serviceAccountAllowedLocationsEndpoint, email), nil
+	base := fmt.Sprintf(serviceAccountAllowedLocationsEndpoint, email)
+	mtls := fmt.Sprintf(serviceAccountAllowedLocationsMTLSEndpoint, email)
+	return resolveLocalMTLSEndpoint(base, mtls)
 }
 
 // GetUniverseDomain retrieves the universe domain from the GCE metadata server.
-// It uses a cached value after the first call.
 func (g *GCEConfigProvider) GetUniverseDomain(ctx context.Context) (string, error) {
-	g.udOnce.Do(func() { g.fetchUD(ctx) })
-	if g.udErr != nil {
-		return "", g.udErr
+	if g.universeDomainProvider == nil || g.universeDomainProvider.MetadataClient == nil {
+		return "", errors.New("regionalaccessboundary: GCEConfigProvider not properly initialized (missing ComputeUniverseDomainProvider or MetadataClient)")
 	}
-	return g.ud, nil
+	ud, err := g.universeDomainProvider.GetProperty(ctx)
+	if err != nil {
+		return "", fmt.Errorf("regionalaccessboundary: GCE config: failed to get universe domain: %w", err)
+	}
+	if ud == "" {
+		return internal.DefaultUniverseDomain, nil
+	}
+	return ud, nil
 }
