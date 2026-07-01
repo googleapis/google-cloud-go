@@ -3,7 +3,6 @@
         "config:best-practices",
         "schedule:weekly",
         ":disableDependencyDashboard",
-        "helpers:pinGitHubActionDigests",
         "docker:disable"
     ],
     "semanticCommits": false,
