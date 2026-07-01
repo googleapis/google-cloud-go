@@ -30,7 +30,7 @@ import (
 func TestGetObjectChecksums(t *testing.T) {
 	tests := []struct {
 		name                string
-		fullObjectChecksum  func() uint32
+		fullObjectChecksum  func() *uint32
 		finishWrite         bool
 		sendCRC32C          bool
 		takeoverWriter      bool
@@ -93,7 +93,7 @@ func TestGetObjectChecksums(t *testing.T) {
 		},
 		{
 			name:                "CRC32C enabled, no user-provided checksum",
-			fullObjectChecksum:  func() uint32 { return 456 },
+			fullObjectChecksum:  func() *uint32 { return proto.Uint32(456) },
 			finishWrite:         true,
 			sendCRC32C:          false,
 			disableAutoChecksum: false,
@@ -102,12 +102,14 @@ func TestGetObjectChecksums(t *testing.T) {
 				Crc32C: proto.Uint32(456),
 			},
 		},
-		// TODO(b/461982277): remove this testcase once checksums for takeover writer is implemented
 		{
-			name:           "takeover writer should return nil",
-			finishWrite:    true,
-			takeoverWriter: true,
-			want:           nil,
+			name:                "CRC32C enabled, but callback returns nil (missing initial checksum)",
+			fullObjectChecksum:  func() *uint32 { return nil },
+			finishWrite:         true,
+			sendCRC32C:          false,
+			disableAutoChecksum: false,
+			attrs:               &ObjectAttrs{},
+			want:                nil,
 		},
 	}
 
@@ -119,7 +121,6 @@ func TestGetObjectChecksums(t *testing.T) {
 				objectAttrs:         tt.attrs,
 				fullObjectChecksum:  tt.fullObjectChecksum,
 				finishWrite:         tt.finishWrite,
-				takeoverWriter:      tt.takeoverWriter,
 			})
 			if !proto.Equal(got, tt.want) {
 				t.Errorf("getObjectChecksums() = %v, want %v", got, tt.want)
@@ -411,4 +412,90 @@ func TestGRPCWriter_Deadlock(t *testing.T) {
 		t.Errorf("expected no error, got %v", sendErr)
 	}
 	close(completions)
+}
+
+func TestGRPCWriter_TakeoverChecksum(t *testing.T) {
+	tests := []struct {
+		name           string
+		flushOffset    int64
+		resource       *storagepb.Object
+		wantHasInitial bool
+		wantChecksum   uint32
+	}{
+		{
+			name:           "resource with checksum",
+			flushOffset:    100,
+			resource:       &storagepb.Object{Checksums: &storagepb.ObjectChecksums{Crc32C: proto.Uint32(12345)}},
+			wantHasInitial: true,
+			wantChecksum:   12345,
+		},
+		{
+			name:           "resource with no checksum, flushOffset > 0",
+			flushOffset:    100,
+			resource:       &storagepb.Object{},
+			wantHasInitial: false,
+			wantChecksum:   0,
+		},
+		{
+			name:           "nil resource, flushOffset > 0",
+			flushOffset:    100,
+			resource:       nil,
+			wantHasInitial: false,
+			wantChecksum:   0,
+		},
+		{
+			name:           "nil resource, flushOffset == 0",
+			flushOffset:    0,
+			resource:       nil,
+			wantHasInitial: true,
+			wantChecksum:   0,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			w := &gRPCWriter{
+				c:                  &grpcStorageClient{},
+				appendGen:          12345,
+				hasInitialChecksum: false,
+				spec: &storagepb.WriteObjectSpec{
+					Resource: &storagepb.Object{
+						Bucket: "bucket",
+						Name:   "object",
+					},
+				},
+			}
+			w.setTakeoverOffset = func(int64) {}
+			w.progress = func(int64) {}
+			w.setSize = func(int64) {}
+			w.setObj = func(*ObjectAttrs) {}
+
+			sender := w.newGRPCAppendTakeoverWriteBufferSender()
+			sender.handleTakeoverCompletion(gRPCBidiWriteCompletion{
+				flushOffset: tt.flushOffset,
+				resource:    tt.resource,
+			})
+
+			if w.hasInitialChecksum != tt.wantHasInitial {
+				t.Errorf("w.hasInitialChecksum = %v, want %v", w.hasInitialChecksum, tt.wantHasInitial)
+			}
+			if w.fullObjectChecksum != tt.wantChecksum {
+				t.Errorf("w.fullObjectChecksum = %v, want %v", w.fullObjectChecksum, tt.wantChecksum)
+			}
+
+			checksumFunc := sender.fullObjectChecksum
+			gotChecksumVal := checksumFunc()
+			if tt.wantHasInitial {
+				if gotChecksumVal == nil {
+					t.Errorf("sender.fullObjectChecksum() = nil, want %v", tt.wantChecksum)
+				} else if *gotChecksumVal != tt.wantChecksum {
+					t.Errorf("sender.fullObjectChecksum() = %v, want %v", *gotChecksumVal, tt.wantChecksum)
+				}
+			} else {
+				if gotChecksumVal != nil {
+					t.Errorf("sender.fullObjectChecksum() = %v, want nil", *gotChecksumVal)
+				}
+			}
+		})
+	}
 }
