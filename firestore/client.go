@@ -554,12 +554,14 @@ type readSettings struct {
 }
 
 // parseReadTime ensures that fallback order of read options is respected.
+// As firestore only accepts usec precision, more precise (e.g. nano) values
+// are clamped accordingly.
 func parseReadTime(c *Client, rs *readSettings) (*timestamppb.Timestamp, bool) {
 	if rs != nil && !rs.readTime.IsZero() {
-		return timestamppb.New(rs.readTime), true
+		return timestamppb.New(rs.readTime.Truncate(time.Microsecond)), true
 	}
 	if c.readSettings != nil && !c.readSettings.readTime.IsZero() {
-		return timestamppb.New(c.readSettings.readTime), true
+		return timestamppb.New(c.readSettings.readTime.Truncate(time.Microsecond)), true
 	}
 	return nil, false
 }
