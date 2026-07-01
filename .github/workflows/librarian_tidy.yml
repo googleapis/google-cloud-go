@@ -22,7 +22,7 @@ jobs:
               - 'librarian.yaml'
       # Version of librarian is pulled from librarian.yaml,
       # main corresponds to the action's source definition.
-      - uses: googleapis/librarian@main
+      - uses: googleapis/librarian@main # zizmor: ignore[unpinned-uses]
 
       - name: Run librarian tidy
         if: steps.changes.outputs.librarian == 'true'
