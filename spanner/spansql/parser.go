@@ -4246,6 +4246,44 @@ var tokenDefinitionArgParser = func(p *parser) (Expr, *parseError) {
 	return p.parseExpr()
 }
 
+var lambdaArgParser = func(p *parser) (Expr, *parseError) {
+	var key Expr
+	if p.sniff("(") {
+		defs, err := p.parseParenExprList()
+		if err != nil {
+			return nil, err
+		}
+		key = Paren{Expr: ExprList(defs)}
+	} else if p.sniffAhead(1, "-", ">") {
+		// special case to handle `id -> ...` syntax,
+		// otherwise it gets parsed as a binary operation
+		// and parser expects another identifier, resulting in an error
+		column, err := p.parseLit()
+		if err != nil {
+			return nil, err
+		}
+		key = column
+	} else {
+		column, err := p.parseExpr()
+		if err != nil {
+			return nil, err
+		}
+		key = column
+	}
+
+	if p.eat("-", ">") {
+		expr, err := p.parseExpr()
+		if err != nil {
+			return nil, err
+		}
+		return Lambda{
+			Key:   key,
+			Value: expr,
+		}, nil
+	}
+	return key, nil
+}
+
 func (p *parser) parseAggregateFunc() (Func, *parseError) {
 	tok := p.next()
 	if tok.err != nil {
