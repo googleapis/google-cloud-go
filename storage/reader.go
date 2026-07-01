@@ -25,6 +25,9 @@ import (
 	"sync"
 	"sync/atomic"
 	"time"
+
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/metric"
 )
 
 var crc32cTable = crc32.MakeTable(crc32.Castagnoli)
@@ -389,6 +392,8 @@ type Reader struct {
 
 	bucket string
 	object string
+
+	metricsState *metricsState
 }
 
 // Close closes the Reader. It must be called when done reading.
@@ -399,6 +404,9 @@ func (r *Reader) Close() error {
 		}
 	}
 	err := r.reader.Close()
+	if r.metricsState != nil && r.metricsState.record != nil {
+		r.metricsState.record(err)
+	}
 	endSpan(r.ctx, err)
 	return err
 }
@@ -407,6 +415,11 @@ func (r *Reader) Read(p []byte) (int, error) {
 	n, err := r.reader.Read(p)
 	if !r.unfinalized && !r.Attrs.Decompressed {
 		atomic.AddInt64(&r.remain, -int64(n))
+	}
+	if n > 0 {
+		if r.metricsState != nil && r.metricsState.metrics != nil {
+			r.metricsState.metrics.responseBodySize.Record(r.ctx, int64(n), metric.WithAttributes(attribute.String("rpc.method", "ReadObject")))
+		}
 	}
 	return n, err
 }
@@ -419,6 +432,11 @@ func (r *Reader) WriteTo(w io.Writer) (int64, error) {
 	n, err := io.Copy(w, r.reader)
 	if !r.unfinalized && !r.Attrs.Decompressed {
 		atomic.AddInt64(&r.remain, -int64(n))
+	}
+	if n > 0 {
+		if r.metricsState != nil && r.metricsState.metrics != nil {
+			r.metricsState.metrics.responseBodySize.Record(r.ctx, n, metric.WithAttributes(attribute.String("rpc.method", "ReadObject")))
+		}
 	}
 	return n, err
 }
@@ -554,6 +572,9 @@ func (mrd *MultiRangeDownloader) Add(output io.Writer, offset, length int64, cal
 // it could lead to a deadlock.
 func (mrd *MultiRangeDownloader) Close() error {
 	err := mrd.impl.close(nil)
+	if state := metricsStateFromContext(mrd.impl.getSpanCtx()); state != nil && state.record != nil {
+		state.record(err)
+	}
 	endSpan(mrd.impl.getSpanCtx(), err)
 	return err
 }

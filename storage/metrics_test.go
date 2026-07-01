@@ -15,6 +15,7 @@
 package storage
 
 import (
+	"bytes"
 	"context"
 	"io"
 	"net/http"
@@ -454,6 +455,214 @@ func TestGRPCMetricsRecording(t *testing.T) {
 		}
 		if attrs["error.type"] != "OK" {
 			t.Errorf("expected error.type OK, got %q", attrs["error.type"])
+		}
+	}
+}
+
+type mockStorageClient struct {
+	storageClient
+	getObjectFn  func(ctx context.Context, params *getObjectParams, opts ...storageOption) (*ObjectAttrs, error)
+	newReaderFn  func(ctx context.Context, params *newRangeReaderParams, opts ...storageOption) (*Reader, error)
+	openWriterFn func(params *openWriterParams, opts ...storageOption) (internalWriter, error)
+}
+
+func (m *mockStorageClient) GetObject(ctx context.Context, params *getObjectParams, opts ...storageOption) (*ObjectAttrs, error) {
+	if m.getObjectFn != nil {
+		return m.getObjectFn(ctx, params, opts...)
+	}
+	return nil, nil
+}
+
+func (m *mockStorageClient) NewRangeReader(ctx context.Context, params *newRangeReaderParams, opts ...storageOption) (*Reader, error) {
+	if m.newReaderFn != nil {
+		return m.newReaderFn(ctx, params, opts...)
+	}
+	return nil, nil
+}
+
+func (m *mockStorageClient) OpenWriter(params *openWriterParams, opts ...storageOption) (internalWriter, error) {
+	if m.openWriterFn != nil {
+		return m.openWriterFn(params, opts...)
+	}
+	return nil, nil
+}
+
+type mockInternalWriter struct {
+	internalWriter
+	writeFn func([]byte) (int, error)
+	closeFn func() error
+}
+
+func (m *mockInternalWriter) Write(p []byte) (n int, err error) {
+	if m.writeFn != nil {
+		return m.writeFn(p)
+	}
+	return len(p), nil
+}
+
+func (m *mockInternalWriter) Close() error {
+	if m.closeFn != nil {
+		return m.closeFn()
+	}
+	return nil
+}
+
+func TestStandardMetricsRecording(t *testing.T) {
+	ctx := context.Background()
+	mr := sdkmetric.NewManualReader()
+	provider := sdkmetric.NewMeterProvider(sdkmetric.WithReader(mr))
+	defer provider.Shutdown(ctx)
+
+	cfg := storageConfig{
+		enableOtelMetrics: true,
+		meterProvider:     provider,
+	}
+
+	cm, _, err := initMetrics(ctx, "project-id", &cfg)
+	if err != nil {
+		t.Fatalf("initMetrics: %v", err)
+	}
+
+	// Create mock storageClient.
+	mock := &mockStorageClient{}
+	wrapped := &metricsStorageClient{
+		storageClient: mock,
+		metrics:       cm,
+		isHTTP:        false,
+	}
+
+	client := &Client{
+		tc: wrapped,
+	}
+
+	// 1. Test GetObject (unary).
+	mock.getObjectFn = func(ctx context.Context, params *getObjectParams, opts ...storageOption) (*ObjectAttrs, error) {
+		return &ObjectAttrs{Name: params.object}, nil
+	}
+	_, err = client.Bucket("my-bucket").Object("my-object").Attrs(ctx)
+	if err != nil {
+		t.Fatalf("Attrs: %v", err)
+	}
+
+	// 2. Test Reader (ReadObject).
+	mock.newReaderFn = func(ctx context.Context, params *newRangeReaderParams, opts ...storageOption) (*Reader, error) {
+		return &Reader{
+			reader: io.NopCloser(bytes.NewReader([]byte("hello"))),
+			ctx:    ctx,
+		}, nil
+	}
+	r, err := client.Bucket("my-bucket").Object("my-object").NewReader(ctx)
+	if err != nil {
+		t.Fatalf("NewReader: %v", err)
+	}
+	buf := make([]byte, 5)
+	n, err := r.Read(buf)
+	if err != nil && err != io.EOF {
+		t.Fatalf("Read: %v", err)
+	}
+	if n != 5 || string(buf) != "hello" {
+		t.Errorf("got %q, want %q", string(buf), "hello")
+	}
+	r.Close()
+
+	// 3. Test Writer (WriteObject).
+	donec := make(chan struct{})
+	close(donec) // pre-close it so Close doesn't block
+	mock.openWriterFn = func(params *openWriterParams, opts ...storageOption) (internalWriter, error) {
+		params.setObj(&ObjectAttrs{Name: "my-object", Size: 11})
+		return &mockInternalWriter{
+			writeFn: func(p []byte) (int, error) {
+				return len(p), nil
+			},
+			closeFn: func() error {
+				return nil
+			},
+		}, nil
+	}
+	w := client.Bucket("my-bucket").Object("my-object").NewWriter(ctx)
+	w.ChunkSize = 0
+	w.donec = donec
+	n, err = w.Write([]byte("hello world"))
+	if err != nil {
+		t.Fatalf("Write: %v", err)
+	}
+	if n != 11 {
+		t.Errorf("got write size %d, want 11", n)
+	}
+	if err := w.Close(); err != nil {
+		t.Fatalf("Close: %v", err)
+	}
+
+	// Collect metrics.
+	var rm metricdata.ResourceMetrics
+	if err := mr.Collect(ctx, &rm); err != nil {
+		t.Fatalf("Collect: %v", err)
+	}
+
+	// Verify the metrics.
+	metricsMap := make(map[string]metricdata.Metrics)
+	for _, sm := range rm.ScopeMetrics {
+		for _, m := range sm.Metrics {
+			metricsMap[m.Name] = m
+		}
+	}
+
+	// Check gcp.client.request.duration.
+	if m, ok := metricsMap["gcp.client.request.duration"]; !ok {
+		t.Errorf("metric gcp.client.request.duration not found")
+	} else {
+		hist := m.Data.(metricdata.Histogram[float64])
+		if len(hist.DataPoints) != 3 {
+			t.Errorf("expected 3 datapoints for gcp.client.request.duration, got %d", len(hist.DataPoints))
+		}
+		methods := make(map[string]bool)
+		for _, dp := range hist.DataPoints {
+			for _, kv := range dp.Attributes.ToSlice() {
+				if kv.Key == "rpc.method" {
+					methods[kv.Value.AsString()] = true
+				}
+			}
+		}
+		if !methods["GetObject"] || !methods["ReadObject"] || !methods["WriteObject"] {
+			t.Errorf("expected GetObject, ReadObject, WriteObject, got %v", methods)
+		}
+	}
+
+	// Check gcp.storage.client.operations.
+	if m, ok := metricsMap["gcp.storage.client.operations"]; !ok {
+		t.Errorf("metric gcp.storage.client.operations not found")
+	} else {
+		sum := m.Data.(metricdata.Sum[int64])
+		if len(sum.DataPoints) != 3 {
+			t.Errorf("expected 3 datapoints for gcp.storage.client.operations, got %d", len(sum.DataPoints))
+		}
+	}
+
+	// Check gcp.storage.client.response.body.size.
+	if m, ok := metricsMap["gcp.storage.client.response.body.size"]; !ok {
+		t.Errorf("metric gcp.storage.client.response.body.size not found")
+	} else {
+		hist := m.Data.(metricdata.Histogram[int64])
+		if len(hist.DataPoints) != 1 {
+			t.Fatalf("expected 1 datapoint for response body size, got %d", len(hist.DataPoints))
+		}
+		dp := hist.DataPoints[0]
+		if dp.Sum != 5 {
+			t.Errorf("expected sum 5, got %d", dp.Sum)
+		}
+	}
+
+	// Check gcp.storage.client.request.body.size.
+	if m, ok := metricsMap["gcp.storage.client.request.body.size"]; !ok {
+		t.Errorf("metric gcp.storage.client.request.body.size not found")
+	} else {
+		hist := m.Data.(metricdata.Histogram[int64])
+		if len(hist.DataPoints) != 1 {
+			t.Fatalf("expected 1 datapoint for request body size, got %d", len(hist.DataPoints))
+		}
+		dp := hist.DataPoints[0]
+		if dp.Sum != 11 {
+			t.Errorf("expected sum 11, got %d", dp.Sum)
 		}
 	}
 }
