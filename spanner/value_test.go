@@ -240,6 +240,7 @@ func TestEncodeValue(t *testing.T) {
 	type CustomTime time.Time
 	type CustomDate civil.Date
 	type CustomNumeric big.Rat
+	type CustomInterval Interval
 	type CustomPGNumeric PGNumeric
 	type CustomPGJSONB PGJsonB
 
@@ -250,6 +251,7 @@ func TestEncodeValue(t *testing.T) {
 	type CustomNullTime NullTime
 	type CustomNullDate NullDate
 	type CustomNullNumeric NullNumeric
+	type CustomNullInterval NullInterval
 	type CustomNullJSON NullJSON
 
 	type Message struct {
@@ -286,6 +288,8 @@ func TestEncodeValue(t *testing.T) {
 	num2ValuePtr := big.NewRat(12345, 1e4)
 	maxNumValuePtr, _ := (&big.Rat{}).SetString("99999999999999999999999999999.999999999")
 	minNumValuePtr, _ := (&big.Rat{}).SetString("-99999999999999999999999999999.999999999")
+	ivValue := Interval{Months: 14, Days: 3, Nanos: big.NewInt(43926789000123)}
+	var ivNilPtr *Interval
 
 	singer1ProtoEnum := pb.Genre_ROCK
 	singer1ProtoMsg := &pb.SingerInfo{
@@ -321,6 +325,7 @@ func TestEncodeValue(t *testing.T) {
 		tProtoMessage = protoMessageType(protoMessagefqn)
 		tProtoEnum    = protoEnumType(protoEnumfqn)
 		tUUID         = uuidType()
+		tInterval     = intervalType()
 	)
 	for i, test := range []struct {
 		in       interface{}
@@ -410,6 +415,17 @@ func TestEncodeValue(t *testing.T) {
 		{[]NullNumeric{{*numValuePtr, true}, {*numValuePtr, false}}, listProto(numericProto(numValuePtr), nullProto()), listType(tNumeric), "[]NullNumeric"},
 		{[]*big.Rat{nil, numValuePtr}, listProto(nullProto(), numericProto(numValuePtr)), listType(tNumeric), "[]*big.Rat"},
 		{[]*big.Rat(nil), nullProto(), listType(tNumeric), "null []*big.Rat"},
+		// INTERVAL / INTERVAL ARRAY
+		{ivValue, stringProto(ivValue.String()), tInterval, "Interval"},
+		{&ivValue, stringProto(ivValue.String()), tInterval, "*Interval with value"},
+		{ivNilPtr, nullProto(), tInterval, "*Interval with null"},
+		{NullInterval{ivValue, true}, stringProto(ivValue.String()), tInterval, "NullInterval with value"},
+		{NullInterval{ivValue, false}, nullProto(), tInterval, "NullInterval with null"},
+		{[]Interval(nil), nullProto(), listType(tInterval), "null []Interval"},
+		{[]Interval{ivValue, ivValue}, listProto(stringProto(ivValue.String()), stringProto(ivValue.String())), listType(tInterval), "[]Interval"},
+		{[]NullInterval{{ivValue, true}, {ivValue, false}}, listProto(stringProto(ivValue.String()), nullProto()), listType(tInterval), "[]NullInterval"},
+		{[]*Interval{&ivValue, nil}, listProto(stringProto(ivValue.String()), nullProto()), listType(tInterval), "[]*Interval"},
+		{[]*Interval(nil), nullProto(), listType(tInterval), "null []*Interval"},
 		// JSON
 		{NullJSON{msg, true}, stringProto(jsonStr), tJSON, "NullJSON with value"},
 		{NullJSON{msg, false}, nullProto(), tJSON, "NullJSON with null"},
@@ -540,6 +556,14 @@ func TestEncodeValue(t *testing.T) {
 		{[]CustomNumeric{CustomNumeric(*numValuePtr), CustomNumeric(*num2ValuePtr)}, listProto(numericProto(numValuePtr), numericProto(num2ValuePtr)), listType(tNumeric), "[]CustomNumeric"},
 		{[]CustomNullNumeric(nil), nullProto(), listType(tNumeric), "null []CustomNullNumeric"},
 		{[]CustomNullNumeric{{*numValuePtr, true}, {*num2ValuePtr, false}}, listProto(numericProto(numValuePtr), nullProto()), listType(tNumeric), "[]CustomNullNumeric"},
+		// CUSTOM INTERVAL / CUSTOM INTERVAL ARRAY
+		{CustomInterval(ivValue), stringProto(ivValue.String()), tInterval, "CustomInterval"},
+		{CustomNullInterval{ivValue, true}, stringProto(ivValue.String()), tInterval, "CustomNullInterval with value"},
+		{CustomNullInterval{ivValue, false}, nullProto(), tInterval, "CustomNullInterval with null"},
+		{[]CustomInterval(nil), nullProto(), listType(tInterval), "null []CustomInterval"},
+		{[]CustomInterval{CustomInterval(ivValue), CustomInterval(ivValue)}, listProto(stringProto(ivValue.String()), stringProto(ivValue.String())), listType(tInterval), "[]CustomInterval"},
+		{[]CustomNullInterval(nil), nullProto(), listType(tInterval), "null []CustomNullInterval"},
+		{[]CustomNullInterval{{ivValue, true}, {ivValue, false}}, listProto(stringProto(ivValue.String()), nullProto()), listType(tInterval), "[]CustomNullInterval"},
 		// CUSTOM JSON
 		{CustomNullJSON{msg, true}, stringProto(jsonStr), tJSON, "CustomNullJSON with value"},
 		{CustomNullJSON{msg, false}, nullProto(), tJSON, "CustomNullJSON with null"},
@@ -1505,6 +1529,7 @@ func TestDecodeValue(t *testing.T) {
 	type CustomTime time.Time
 	type CustomDate civil.Date
 	type CustomNumeric big.Rat
+	type CustomInterval Interval
 
 	type CustomNullString NullString
 	type CustomNullInt64 NullInt64
@@ -1513,6 +1538,7 @@ func TestDecodeValue(t *testing.T) {
 	type CustomNullTime NullTime
 	type CustomNullDate NullDate
 	type CustomNullNumeric NullNumeric
+	type CustomNullInterval NullInterval
 	type CustomNullJSON NullJSON
 	type CustomPGNumeric PGNumeric
 
@@ -1563,6 +1589,10 @@ func TestDecodeValue(t *testing.T) {
 	dValue := d1
 	var dNilPtr *civil.Date
 	d2Value := d2
+
+	ivValue := Interval{Months: 14, Days: 3, Nanos: big.NewInt(43926789000123)}
+	ivStr := ivValue.String()
+	var ivNilPtr *Interval
 
 	singerEnumValue := pb.Genre_ROCK
 	singerProtoMsg := pb.SingerInfo{
@@ -1685,6 +1715,13 @@ func TestDecodeValue(t *testing.T) {
 		// NUMERIC ARRAY with []*big.Rat
 		{desc: "decode ARRAY<NUMERIC> to []*big.Rat", proto: listProto(numericProto(numValuePtr), nullProto(), numericProto(num2ValuePtr)), protoType: listType(numericType()), want: []*big.Rat{numValuePtr, nil, num2ValuePtr}},
 		{desc: "decode NULL to []*big.Rat", proto: nullProto(), protoType: listType(numericType()), want: []*big.Rat(nil)},
+		// INTERVAL
+		{desc: "decode INTERVAL to Interval", proto: stringProto(ivStr), protoType: intervalType(), want: ivValue},
+		{desc: "decode NULL to Interval", proto: nullProto(), protoType: intervalType(), want: Interval{}, wantErr: true},
+		{desc: "decode INTERVAL to *Interval", proto: stringProto(ivStr), protoType: intervalType(), want: &ivValue},
+		{desc: "decode NULL to *Interval", proto: nullProto(), protoType: intervalType(), want: ivNilPtr},
+		{desc: "decode INTERVAL to NullInterval", proto: stringProto(ivStr), protoType: intervalType(), want: NullInterval{ivValue, true}},
+		{desc: "decode NULL to NullInterval", proto: nullProto(), protoType: intervalType(), want: NullInterval{}},
 		// JSON
 		{desc: "decode json to NullJSON", proto: stringProto(jsonStr), protoType: jsonType(), want: NullJSON{unmarshalledJSONStruct, true}},
 		{desc: "decode NULL to NullJSON", proto: nullProto(), protoType: jsonType(), want: NullJSON{}},
@@ -1935,6 +1972,7 @@ func TestDecodeValue(t *testing.T) {
 		{desc: "decode NUMERIC to CustomNumeric", proto: numericProto(numValuePtr), protoType: numericType(), want: CustomNumeric(*numValuePtr)},
 		{desc: "decode TIMESTAMP to CustomTimestamp", proto: timeProto(t1), protoType: timeType(), want: CustomTime(t1)},
 		{desc: "decode DATE to CustomDate", proto: dateProto(d1), protoType: dateType(), want: CustomDate(d1)},
+		{desc: "decode INTERVAL to CustomInterval", proto: stringProto(ivStr), protoType: intervalType(), want: CustomInterval(ivValue)},
 
 		{desc: "decode NULL to CustomString", proto: nullProto(), protoType: stringType(), want: CustomString(""), wantErr: true},
 		{desc: "decode NULL to CustomBytes", proto: nullProto(), protoType: bytesType(), want: CustomBytes(nil)},
@@ -1944,6 +1982,7 @@ func TestDecodeValue(t *testing.T) {
 		{desc: "decode NULL to CustomNumeric", proto: nullProto(), protoType: numericType(), want: CustomNumeric{}, wantErr: true},
 		{desc: "decode NULL to CustomTime", proto: nullProto(), protoType: timeType(), want: CustomTime{}, wantErr: true},
 		{desc: "decode NULL to CustomDate", proto: nullProto(), protoType: dateType(), want: CustomDate{}, wantErr: true},
+		{desc: "decode NULL to CustomInterval", proto: nullProto(), protoType: intervalType(), want: CustomInterval{}, wantErr: true},
 
 		{desc: "decode STRING to CustomNullString", proto: stringProto("bar"), protoType: stringType(), want: CustomNullString{"bar", true}},
 		{desc: "decode INT64 to CustomNullInt64", proto: intProto(-100), protoType: intType(), want: CustomNullInt64{-100, true}},
@@ -1955,6 +1994,7 @@ func TestDecodeValue(t *testing.T) {
 		{desc: "decode DATE to CustomNullDate", proto: dateProto(d1), protoType: dateType(), want: CustomNullDate{d1, true}},
 		{desc: "decode PG NUMERIC to CustomPGNumeric", proto: stringProto("123.456"), protoType: pgNumericType(), want: CustomPGNumeric{"123.456", true}},
 		{desc: "decode PG OID to CustomNullInt64", proto: intProto(-100), protoType: pgOidType(), want: CustomNullInt64{-100, true}},
+		{desc: "decode INTERVAL to CustomNullInterval", proto: stringProto(ivStr), protoType: intervalType(), want: CustomNullInterval{ivValue, true}},
 
 		{desc: "decode NULL to CustomNullString", proto: nullProto(), protoType: stringType(), want: CustomNullString{}},
 		{desc: "decode NULL to CustomNullInt64", proto: nullProto(), protoType: intType(), want: CustomNullInt64{}},
@@ -1966,6 +2006,7 @@ func TestDecodeValue(t *testing.T) {
 		{desc: "decode NULL to CustomNullDate", proto: nullProto(), protoType: dateType(), want: CustomNullDate{}},
 		{desc: "decode NULL to CustomPGNumeric", proto: nullProto(), protoType: pgNumericType(), want: CustomPGNumeric{}},
 		{desc: "decode PG OID NULL to CustomNullInt64", proto: nullProto(), protoType: pgOidType(), want: CustomNullInt64{}},
+		{desc: "decode NULL to CustomNullInterval", proto: nullProto(), protoType: intervalType(), want: CustomNullInterval{}},
 
 		// STRING ARRAY
 		{desc: "decode NULL to []CustomString", proto: nullProto(), protoType: listType(stringType()), want: []CustomString(nil)},
@@ -2018,6 +2059,12 @@ func TestDecodeValue(t *testing.T) {
 		{desc: "decode ARRAY<DATE> to []CustomDate", proto: listProto(dateProto(d1), dateProto(d2)), protoType: listType(dateType()), want: []CustomDate{CustomDate(d1), CustomDate(d2)}},
 		{desc: "decode NULL to []CustomNullDate", proto: nullProto(), protoType: listType(dateType()), want: []CustomNullDate(nil)},
 		{desc: "decode ARRAY<DATE> to []CustomNullDate", proto: listProto(dateProto(d1), nullProto(), dateProto(d2)), protoType: listType(dateType()), want: []CustomNullDate{{d1, true}, {}, {d2, true}}},
+		// INTERVAL ARRAY
+		{desc: "decode NULL to []CustomInterval", proto: nullProto(), protoType: listType(intervalType()), want: []CustomInterval(nil)},
+		{desc: "decode ARRAY<INTERVAL> with NULL values to []CustomInterval", proto: listProto(stringProto(ivStr), nullProto(), stringProto(ivStr)), protoType: listType(intervalType()), want: []CustomInterval{}, wantErr: true},
+		{desc: "decode ARRAY<INTERVAL> to []CustomInterval", proto: listProto(stringProto(ivStr), stringProto(ivStr)), protoType: listType(intervalType()), want: []CustomInterval{CustomInterval(ivValue), CustomInterval(ivValue)}},
+		{desc: "decode NULL to []CustomNullInterval", proto: nullProto(), protoType: listType(intervalType()), want: []CustomNullInterval(nil)},
+		{desc: "decode ARRAY<INTERVAL> to []CustomNullInterval", proto: listProto(stringProto(ivStr), nullProto(), stringProto(ivStr)), protoType: listType(intervalType()), want: []CustomNullInterval{{ivValue, true}, {}, {ivValue, true}}},
 		// CUSTOM STRUCT
 		{desc: "decode STRING to CustomStructToString", proto: stringProto("A-B"), protoType: stringType(), want: customStructToString{"A", "B"}},
 		{desc: "decode INT64 to CustomStructToInt", proto: intProto(123), protoType: intType(), want: customStructToInt{1, 23}},
@@ -2153,6 +2200,7 @@ func TestGetDecodableSpannerType(t *testing.T) {
 	type CustomDate civil.Date
 	type CustomNumeric big.Rat
 	type CustomUUID uuid.UUID
+	type CustomInterval Interval
 
 	type CustomNullString NullString
 	type CustomNullInt64 NullInt64
@@ -2163,6 +2211,7 @@ func TestGetDecodableSpannerType(t *testing.T) {
 	type CustomNullDate NullDate
 	type CustomNullNumeric NullNumeric
 	type CustomNullUUID NullUUID
+	type CustomNullInterval NullInterval
 
 	type StringEmbedded struct {
 		string
@@ -2196,6 +2245,8 @@ func TestGetDecodableSpannerType(t *testing.T) {
 		{big.Rat{}, spannerTypeNonNullNumeric},
 		{NullNumeric{}, spannerTypeNullNumeric},
 		{NullUUID{}, spannerTypeNullUUID},
+		{Interval{}, spannerTypeNonNullInterval},
+		{NullInterval{}, spannerTypeNullInterval},
 
 		{[]string{"foo", "bar"}, spannerTypeArrayOfNonNullString},
 		{[][]byte{{1, 2, 3}, {3, 2, 1}}, spannerTypeArrayOfByteArray},
@@ -2218,6 +2269,8 @@ func TestGetDecodableSpannerType(t *testing.T) {
 		{[]big.Rat{*big.NewRat(1234, 1000), *big.NewRat(1234, 100)}, spannerTypeArrayOfNonNullNumeric},
 		{[]NullNumeric{}, spannerTypeArrayOfNullNumeric},
 		{[]NullUUID{}, spannerTypeArrayOfNullUUID},
+		{[]Interval{}, spannerTypeArrayOfNonNullInterval},
+		{[]NullInterval{}, spannerTypeArrayOfNullInterval},
 
 		{CustomString("foo"), spannerTypeNonNullString},
 		{CustomInt64(-100), spannerTypeNonNullInt64},
@@ -2228,6 +2281,7 @@ func TestGetDecodableSpannerType(t *testing.T) {
 		{CustomDate(civil.DateOf(time.Now())), spannerTypeNonNullDate},
 		{CustomNumeric(*big.NewRat(1234, 1000)), spannerTypeNonNullNumeric},
 		{CustomUUID(uuid1), spannerTypeNonNullUUID},
+		{CustomInterval{}, spannerTypeNonNullInterval},
 
 		{[]CustomString{}, spannerTypeArrayOfNonNullString},
 		{[]CustomInt64{}, spannerTypeArrayOfNonNullInt64},
@@ -2238,6 +2292,7 @@ func TestGetDecodableSpannerType(t *testing.T) {
 		{[]CustomDate{}, spannerTypeArrayOfNonNullDate},
 		{[]CustomNumeric{}, spannerTypeArrayOfNonNullNumeric},
 		{[]CustomUUID{}, spannerTypeArrayOfNonNullUUID},
+		{[]CustomInterval{}, spannerTypeArrayOfNonNullInterval},
 
 		{CustomNullString{}, spannerTypeNullString},
 		{CustomNullInt64{}, spannerTypeNullInt64},
@@ -2248,6 +2303,7 @@ func TestGetDecodableSpannerType(t *testing.T) {
 		{CustomNullDate{}, spannerTypeNullDate},
 		{CustomNullNumeric{}, spannerTypeNullNumeric},
 		{CustomNullUUID{}, spannerTypeNullUUID},
+		{CustomNullInterval{}, spannerTypeNullInterval},
 
 		{[]CustomNullString{}, spannerTypeArrayOfNullString},
 		{[]CustomNullInt64{}, spannerTypeArrayOfNullInt64},
@@ -2258,6 +2314,7 @@ func TestGetDecodableSpannerType(t *testing.T) {
 		{[]CustomNullDate{}, spannerTypeArrayOfNullDate},
 		{[]CustomNullNumeric{}, spannerTypeArrayOfNullNumeric},
 		{[]CustomNullUUID{}, spannerTypeArrayOfNullUUID},
+		{[]CustomNullInterval{}, spannerTypeArrayOfNullInterval},
 
 		{StringEmbedded{}, spannerTypeUnknown},
 		{NullStringEmbedded{}, spannerTypeUnknown},
