@@ -26,6 +26,9 @@ const metadataHostEnv = "GCE_METADATA_HOST"
 
 func TestComputeCredentials(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if got, want := r.Header.Get("Metadata-Flavor"), "Google"; got != want {
+			t.Errorf("Metadata-Flavor header: got %q, want %q", got, want)
+		}
 		if !strings.Contains(r.URL.Path, identitySuffix) {
 			t.Errorf("got %q, want contains %q", r.URL.Path, identitySuffix)
 		}
@@ -60,6 +63,9 @@ func TestComputeCredentials(t *testing.T) {
 
 func TestComputeCredentials_Standard(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if got, want := r.Header.Get("Metadata-Flavor"), "Google"; got != want {
+			t.Errorf("Metadata-Flavor header: got %q, want %q", got, want)
+		}
 		if !strings.Contains(r.URL.Path, identitySuffix) {
 			t.Errorf("got %q, want contains %q", r.URL.Path, identitySuffix)
 		}
