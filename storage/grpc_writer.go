@@ -345,6 +345,11 @@ func (w *gRPCWriter) sendBufferToTarget(cs gRPCWriterCommandHandleChans, buf []b
 	return baseOffset + int64(sent), true
 }
 
+func (w *gRPCWriter) isActive() bool {
+	hasUnackedData := w.bufUnsentIdx > 0 && w.bufUnsentIdx > w.bufFlushedIdx
+	return w.currentCommand != nil || hasUnackedData || len(w.writesChan) > 0
+}
+
 func (w *gRPCWriter) handleCompletion(c gRPCBidiWriteCompletion) {
 	if c.resource != nil {
 		w.setObj(newObjectFromProto(c.resource))
@@ -363,17 +368,17 @@ func (w *gRPCWriter) handleCompletion(c gRPCBidiWriteCompletion) {
 		w.bufFlushedIdx = 0
 		w.buf = w.buf[:0]
 	}
+
+	// We made forward progress on the network! Reset the retry stopwatch.
+	w.abandonRetriesTime = time.Time{}
+	w.attempts = 0
+
 	w.setSize(c.flushOffset)
 	w.progress(c.flushOffset)
-}
 
-func (w *gRPCWriter) withCommandRetryDeadline(f func() error) error {
-	w.abandonRetriesTime = time.Now().Add(w.chunkRetryDeadline)
-	err := f()
-	if err == nil {
-		w.abandonRetriesTime = time.Time{}
+	if w.chunkRetryDeadline > 0 && w.isActive() {
+		w.abandonRetriesTime = time.Now().Add(w.chunkRetryDeadline)
 	}
-	return err
 }
 
 // Gather write commands before starting the actual write. Returns nil if the
@@ -427,9 +432,18 @@ func (w *gRPCWriter) gatherFirstBuffer() error {
 
 func (w *gRPCWriter) writeLoop(ctx context.Context) error {
 	w.attempts++
-	// Return an error if we've been waiting for a single operation for too long.
-	if !w.abandonRetriesTime.IsZero() && time.Now().After(w.abandonRetriesTime) {
-		return fmt.Errorf("storage: retry deadline of %s reached after %v attempts; last error: %w", w.chunkRetryDeadline, w.attempts, w.lastErr)
+	if w.chunkRetryDeadline > 0 {
+		if w.isActive() {
+			if w.abandonRetriesTime.IsZero() {
+				w.abandonRetriesTime = time.Now().Add(w.chunkRetryDeadline)
+			}
+			// Return an error if we've been waiting for a single operation for too long.
+			if time.Now().After(w.abandonRetriesTime) {
+				return fmt.Errorf("storage: retry deadline of %s reached after %v attempts; last error: %v", w.chunkRetryDeadline, w.attempts, w.lastErr)
+			}
+		} else {
+			w.abandonRetriesTime = time.Time{}
+		}
 	}
 	// Allow each request in w.buf to be sent and result in a completion without
 	// blocking.
@@ -469,33 +483,29 @@ Loop:
 	}
 
 	// Send any full quantum in w.buf, possibly including a flush
-	if err := w.withCommandRetryDeadline(func() error {
-		sentOffset, ok := w.sendBufferToTarget(chcs, w.buf, w.bufBaseOffset, cap(w.buf),
-			w.handleCompletion)
-		if !ok {
-			return w.streamSender.err()
-		}
-		w.bufUnsentIdx = int(sentOffset - w.bufBaseOffset)
-		// We may have observed a completion that is after all of w.buf if we also
-		// have a write command in w.currentCommand which sent a flush, but failed
-		// before the completion could be delivered.
-		if w.bufUnsentIdx < 0 {
-			w.bufUnsentIdx = 0
-		}
-		return nil
-	}); err != nil {
-		return err
+	sentOffset, ok := w.sendBufferToTarget(chcs, w.buf, w.bufBaseOffset, cap(w.buf),
+		w.handleCompletion)
+	if !ok {
+		return w.streamSender.err()
+	}
+	w.bufUnsentIdx = int(sentOffset - w.bufBaseOffset)
+	// We may have observed a completion that is after all of w.buf if we also
+	// have a write command in w.currentCommand which sent a flush, but failed
+	// before the completion could be delivered.
+	if w.bufUnsentIdx < 0 {
+		w.bufUnsentIdx = 0
 	}
 
 	err := func() error {
 		for {
 			if w.currentCommand != nil {
-				if err := w.withCommandRetryDeadline(func() error {
-					return w.currentCommand.handle(w, chcs)
-				}); err != nil {
+				if err := w.currentCommand.handle(w, chcs); err != nil {
 					return err
 				}
 				w.currentCommand = nil
+				if w.chunkRetryDeadline > 0 && !w.isActive() {
+					w.abandonRetriesTime = time.Time{}
+				}
 			}
 			select {
 			case c, ok := <-completions:
@@ -509,6 +519,9 @@ Loop:
 					return errors.New("storage.Writer: unexpectedly closed w.writesChan")
 				}
 				w.currentCommand = cmd
+				if w.chunkRetryDeadline > 0 && w.abandonRetriesTime.IsZero() {
+					w.abandonRetriesTime = time.Now().Add(w.chunkRetryDeadline)
+				}
 			}
 		}
 	}()
@@ -529,13 +542,8 @@ Loop:
 			flush:       true,
 			finishWrite: true,
 		}
-		if err := w.withCommandRetryDeadline(func() error {
-			if !chcs.deliverRequestUnlessCompleted(req, w.handleCompletion) {
-				return w.streamSender.err()
-			}
-			return nil
-		}); err != nil {
-			return err
+		if !chcs.deliverRequestUnlessCompleted(req, w.handleCompletion) {
+			return w.streamSender.err()
 		}
 	} else {
 		// Unclean shutdown. Cancel the context so we clean up expeditiously.
