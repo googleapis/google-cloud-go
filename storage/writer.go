@@ -21,6 +21,7 @@ import (
 	"io"
 	"log"
 	"sync"
+	"sync/atomic"
 	"time"
 	"unicode/utf8"
 
@@ -40,6 +41,8 @@ type internalWriter interface {
 
 // A Writer writes a Cloud Storage object.
 type Writer struct {
+	bytesWritten int64 // Cumulative bytes written for request size metric.
+
 	// ObjectAttrs are optional attributes to set on the object. Any attributes
 	// must be initialized before the first Write call. Nil or zero-valued
 	// attributes are ignored.
@@ -309,9 +312,7 @@ func (w *Writer) Write(p []byte) (int, error) {
 
 recorded:
 	if n > 0 {
-		if state := metricsStateFromContext(w.ctx); state != nil && state.metrics != nil {
-			state.metrics.requestBodySize.Record(w.ctx, int64(n), metric.WithAttributes(attribute.String("rpc.method", "WriteObject")))
-		}
+		atomic.AddInt64(&w.bytesWritten, int64(n))
 	}
 
 	return w.wrapWriteError(n, err)
@@ -386,8 +387,15 @@ func (w *Writer) Close() error {
 			if w.err == nil && err != nil {
 				w.err = err
 			}
-			if state := metricsStateFromContext(w.ctx); state != nil && state.record != nil {
-				state.record(w.err)
+			if state := metricsStateFromContext(w.ctx); state != nil {
+				if state.metrics != nil {
+					if total := atomic.LoadInt64(&w.bytesWritten); total > 0 {
+						state.metrics.requestBodySize.Record(w.ctx, total, metric.WithAttributes(attribute.String("rpc.method", "WriteObject")))
+					}
+				}
+				if state.record != nil {
+					state.record(w.err)
+				}
 			}
 			endSpan(w.ctx, w.err)
 			return w.err
@@ -408,8 +416,15 @@ func (w *Writer) Close() error {
 	w.mu.Lock()
 	defer w.mu.Unlock()
 	w.closed = true
-	if state := metricsStateFromContext(w.ctx); state != nil && state.record != nil {
-		state.record(w.err)
+	if state := metricsStateFromContext(w.ctx); state != nil {
+		if state.metrics != nil {
+			if total := atomic.LoadInt64(&w.bytesWritten); total > 0 {
+				state.metrics.requestBodySize.Record(w.ctx, total, metric.WithAttributes(attribute.String("rpc.method", "WriteObject")))
+			}
+		}
+		if state.record != nil {
+			state.record(w.err)
+		}
 	}
 	endSpan(w.ctx, w.err)
 	return w.err

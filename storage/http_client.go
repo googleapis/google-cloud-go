@@ -332,8 +332,9 @@ func (c *httpStorageClient) ListBuckets(ctx context.Context, project string, opt
 		if err != nil {
 			return "", err
 		}
+		var b *BucketAttrs
 		for _, item := range resp.Items {
-			b, err := newBucket(item)
+			b, err = newBucket(item)
 			if err != nil {
 				return "", err
 			}
@@ -1369,11 +1370,12 @@ func (c *httpStorageClient) ListHMACKeys(ctx context.Context, project, serviceAc
 			return "", err
 		}
 
+		var hkey *HMACKey
 		for _, metadata := range resp.Items {
 			hk := &raw.HmacKey{
 				Metadata: metadata,
 			}
-			hkey, err := toHMACKeyFromRaw(hk, true)
+			hkey, err = toHMACKeyFromRaw(hk, true)
 			if err != nil {
 				return "", err
 			}
