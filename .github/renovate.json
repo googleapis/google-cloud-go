@@ -3,6 +3,7 @@
         "config:base",
         "schedule:weekly",
         ":disableDependencyDashboard",
+        "helpers:pinGitHubActionDigests",
         "docker:disable"
     ],
     "semanticCommits": false,
