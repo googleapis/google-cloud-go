@@ -1,5 +1,13 @@
 # Changes
 
+## [2.6.1](https://github.com/googleapis/google-cloud-go/compare/pubsub/v2.6.0...pubsub/v2.6.1) (2026-07-02)
+
+
+### Bug Fixes
+
+* **pubsub/v2/pstest:** Make ackIDs unique per delivery ([#14554](https://github.com/googleapis/google-cloud-go/issues/14554)) ([9072072](https://github.com/googleapis/google-cloud-go/commit/9072072537a0e3284043c803b54c5d60065e752f)), closes [#10707](https://github.com/googleapis/google-cloud-go/issues/10707)
+* **pubsub/v2:** Manage exactly once spans properly on failure ([#14559](https://github.com/googleapis/google-cloud-go/issues/14559)) ([dd8448b](https://github.com/googleapis/google-cloud-go/commit/dd8448b9186401259e24a68286e41522e0a8a27c)), closes [#14555](https://github.com/googleapis/google-cloud-go/issues/14555)
+
 ## [2.6.0](https://github.com/googleapis/google-cloud-go/releases/tag/pubsub%2Fv2.6.0) (2026-04-14)
 
 ## [2.5.1](https://github.com/googleapis/google-cloud-go/releases/tag/pubsub%2Fv2.5.1) (2026-03-31)

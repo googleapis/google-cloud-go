@@ -1072,7 +1072,7 @@ libraries:
       - README.md
       - internal/version.go
   - name: pubsub
-    version: 1.50.2
+    version: 2.6.1
     keep:
       - README.md
       - internal/version.go
@@ -1080,7 +1080,7 @@ libraries:
     go:
       nested_module: v2
   - name: pubsub/v2
-    version: 2.6.0
+    version: 2.6.1
     apis:
       - path: google/pubsub/v1
         go:
