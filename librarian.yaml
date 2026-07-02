@@ -50,7 +50,7 @@ libraries:
     apis:
       - path: google/cloud/advisorynotifications/v1
   - name: agentplatform
-    version: 0.21.0
+    version: 0.22.0
     skip_generate: true
     skip_release: true
   - name: agentregistry

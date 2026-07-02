@@ -1,5 +1,5 @@
 {
-  "agentplatform": "0.21.0",
+  "agentplatform": "0.22.0",
   "auth": "0.20.0",
   "auth/oauth2adapt": "0.2.8",
   "bigquery": "1.77.0",
