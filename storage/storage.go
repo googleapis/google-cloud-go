@@ -226,13 +226,22 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		return nil, fmt.Errorf("storage: %w", err)
 	}
 
+	var tcWrapped storageClient = tc
+	if httpClient, ok := tc.(*httpStorageClient); ok && httpClient.metrics != nil {
+		tcWrapped = &metricsStorageClient{
+			storageClient: tc,
+			metrics:       httpClient.metrics,
+			isHTTP:        true,
+		}
+	}
+
 	c := &Client{
 		hc:      hc,
 		raw:     rawService,
 		scheme:  u.Scheme,
 		xmlHost: u.Host,
 		creds:   creds,
-		tc:      tc,
+		tc:      tcWrapped,
 	}
 	if isACOEnabled() {
 		c.bucketMetadataCache = newBucketMetadataCache(defaultBucketMetadataCacheLimit, c.tc)
@@ -257,8 +266,16 @@ func NewGRPCClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 	if err != nil {
 		return nil, err
 	}
+	var tcWrapped storageClient = tc
+	if tc.metrics != nil {
+		tcWrapped = &metricsStorageClient{
+			storageClient: tc,
+			metrics:       tc.metrics,
+			isHTTP:        false,
+		}
+	}
 	c := &Client{
-		tc:                    tc,
+		tc:                    tcWrapped,
 		grpcAppendableUploads: tc.config.grpcAppendableUploads,
 	}
 	if isACOEnabled() {

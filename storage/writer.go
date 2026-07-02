@@ -21,8 +21,12 @@ import (
 	"io"
 	"log"
 	"sync"
+	"sync/atomic"
 	"time"
 	"unicode/utf8"
+
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/metric"
 )
 
 // Interface internalWriter wraps low-level implementations which may vary
@@ -37,6 +41,8 @@ type internalWriter interface {
 
 // A Writer writes a Cloud Storage object.
 type Writer struct {
+	bytesWritten int64 // Cumulative bytes written for request size metric.
+
 	// ObjectAttrs are optional attributes to set on the object. Any attributes
 	// must be initialized before the first Write call. Nil or zero-valued
 	// attributes are ignored.
@@ -280,27 +286,36 @@ func (w *Writer) Write(p []byte) (int, error) {
 		return 0, fmt.Errorf("storage: Writer is closed")
 	}
 
+	var n int
+	var err error
 	if pcu != nil {
-		return w.wrapWriteError(pcu.write(p))
-	}
-
-	if !w.opened {
-		// First time initialization: freeze the configuration to either PCU or standard.
-		if w.EnableParallelUpload {
-			var err error
-			if pcu, err = w.getOrInitPCU(); err != nil {
+		n, err = pcu.write(p)
+	} else {
+		if !w.opened {
+			// First time initialization: freeze the configuration to either PCU or standard.
+			if w.EnableParallelUpload {
+				var err error
+				if pcu, err = w.getOrInitPCU(); err != nil {
+					return 0, err
+				}
+				if pcu != nil {
+					n, err = pcu.write(p)
+					goto recorded
+				}
+			}
+			if err := w.openWriter(); err != nil {
 				return 0, err
 			}
-			if pcu != nil {
-				return w.wrapWriteError(pcu.write(p))
-			}
 		}
-		if err := w.openWriter(); err != nil {
-			return 0, err
-		}
+		n, err = w.iw.Write(p)
 	}
 
-	return w.wrapWriteError(w.iw.Write(p))
+recorded:
+	if n > 0 {
+		atomic.AddInt64(&w.bytesWritten, int64(n))
+	}
+
+	return w.wrapWriteError(n, err)
 }
 
 // Flush syncs all bytes currently in the Writer's buffer to Cloud Storage.
@@ -372,6 +387,16 @@ func (w *Writer) Close() error {
 			if w.err == nil && err != nil {
 				w.err = err
 			}
+			if state := metricsStateFromContext(w.ctx); state != nil {
+				if state.metrics != nil {
+					if total := atomic.LoadInt64(&w.bytesWritten); total > 0 {
+						state.metrics.requestBodySize.Record(w.ctx, total, metric.WithAttributes(attribute.String("rpc.method", "WriteObject")))
+					}
+				}
+				if state.record != nil {
+					state.record(w.err)
+				}
+			}
 			endSpan(w.ctx, w.err)
 			return w.err
 		}
@@ -391,6 +416,16 @@ func (w *Writer) Close() error {
 	w.mu.Lock()
 	defer w.mu.Unlock()
 	w.closed = true
+	if state := metricsStateFromContext(w.ctx); state != nil {
+		if state.metrics != nil {
+			if total := atomic.LoadInt64(&w.bytesWritten); total > 0 {
+				state.metrics.requestBodySize.Record(w.ctx, total, metric.WithAttributes(attribute.String("rpc.method", "WriteObject")))
+			}
+		}
+		if state.record != nil {
+			state.record(w.err)
+		}
+	}
 	endSpan(w.ctx, w.err)
 	return w.err
 }
@@ -440,6 +475,7 @@ func (w *Writer) openWriter() (err error) {
 	if err != nil {
 		return err
 	}
+	w.ctx = params.ctx
 	w.opened = true
 	go w.monitorCancel()
 

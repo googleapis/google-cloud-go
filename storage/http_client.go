@@ -310,6 +310,12 @@ func (c *httpStorageClient) ListBuckets(ctx context.Context, project string, opt
 	}
 
 	fetch := func(pageSize int, pageToken string) (token string, err error) {
+		ctx := it.ctx
+		if state := metricsStateFromContext(ctx); state != nil && state.metrics != nil {
+			var record func(error)
+			ctx, record = state.metrics.startOperation(ctx, "ListBuckets", true)
+			defer func() { record(err) }()
+		}
 		req := c.raw.Buckets.List(it.projectID)
 		req.Projection("full")
 		req.Prefix(it.Prefix)
@@ -319,15 +325,16 @@ func (c *httpStorageClient) ListBuckets(ctx context.Context, project string, opt
 			req.MaxResults(int64(pageSize))
 		}
 		var resp *raw.Buckets
-		err = run(it.ctx, func(ctx context.Context) error {
+		err = run(ctx, func(ctx context.Context) error {
 			resp, err = req.Context(ctx).Do()
 			return err
 		}, s.retry, s.idempotent)
 		if err != nil {
 			return "", err
 		}
+		var b *BucketAttrs
 		for _, item := range resp.Items {
-			b, err := newBucket(item)
+			b, err = newBucket(item)
 			if err != nil {
 				return "", err
 			}
@@ -436,6 +443,12 @@ func (c *httpStorageClient) ListObjects(ctx context.Context, bucket string, q *Q
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		var err error
+		ctx := it.ctx
+		if state := metricsStateFromContext(ctx); state != nil && state.metrics != nil {
+			var record func(error)
+			ctx, record = state.metrics.startOperation(ctx, "ListObjects", true)
+			defer func() { record(err) }()
+		}
 		// Add trace span around List API call within the fetch.
 		ctx, _ = startSpan(ctx, "httpStorageClient.ObjectsListCall")
 		defer func() { endSpan(ctx, err) }()
@@ -473,7 +486,7 @@ func (c *httpStorageClient) ListObjects(ctx context.Context, bucket string, q *Q
 			req.MaxResults(int64(pageSize))
 		}
 		var resp *raw.Objects
-		err = run(it.ctx, func(ctx context.Context) error {
+		err = run(ctx, func(ctx context.Context) error {
 			resp, err = req.Context(ctx).Do()
 			return err
 		}, s.retry, s.idempotent, withOperation("ListObjects"), withObject(it.query.Prefix), withBucket(bucket))
@@ -1325,6 +1338,12 @@ func (c *httpStorageClient) ListHMACKeys(ctx context.Context, project, serviceAc
 		retry:     s.retry,
 	}
 	fetch := func(pageSize int, pageToken string) (token string, err error) {
+		ctx := it.ctx
+		if state := metricsStateFromContext(ctx); state != nil && state.metrics != nil {
+			var record func(error)
+			ctx, record = state.metrics.startOperation(ctx, "ListHMACKeys", true)
+			defer func() { record(err) }()
+		}
 		call := c.raw.Projects.HmacKeys.List(project)
 		if pageToken != "" {
 			call = call.PageToken(pageToken)
@@ -1343,7 +1362,7 @@ func (c *httpStorageClient) ListHMACKeys(ctx context.Context, project, serviceAc
 		}
 
 		var resp *raw.HmacKeysMetadata
-		err = run(it.ctx, func(ctx context.Context) error {
+		err = run(ctx, func(ctx context.Context) error {
 			resp, err = call.Context(ctx).Do()
 			return err
 		}, s.retry, s.idempotent)
@@ -1351,11 +1370,12 @@ func (c *httpStorageClient) ListHMACKeys(ctx context.Context, project, serviceAc
 			return "", err
 		}
 
+		var hkey *HMACKey
 		for _, metadata := range resp.Items {
 			hk := &raw.HmacKey{
 				Metadata: metadata,
 			}
-			hkey, err := toHMACKeyFromRaw(hk, true)
+			hkey, err = toHMACKeyFromRaw(hk, true)
 			if err != nil {
 				return "", err
 			}

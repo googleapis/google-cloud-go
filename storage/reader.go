@@ -25,6 +25,9 @@ import (
 	"sync"
 	"sync/atomic"
 	"time"
+
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/metric"
 )
 
 var crc32cTable = crc32.MakeTable(crc32.Castagnoli)
@@ -373,7 +376,8 @@ var emptyBody = io.NopCloser(strings.NewReader(""))
 type Reader struct {
 	// remain must be the first field in the struct to guarantee 64-bit
 	// alignment on 32-bit architectures for atomic operations.
-	remain int64
+	remain    int64
+	bytesRead int64 // Cumulative bytes read for response size metric.
 
 	Attrs          ReaderObjectAttrs
 	objectMetadata *map[string]string
@@ -384,11 +388,14 @@ type Reader struct {
 	reader      io.ReadCloser
 	ctx         context.Context
 	mu          sync.Mutex
+	err         error // Persistent error encountered during Read or WriteTo.
 	handle      *ReadHandle
 	unfinalized bool
 
 	bucket string
 	object string
+
+	metricsState *metricsState
 }
 
 // Close closes the Reader. It must be called when done reading.
@@ -399,6 +406,22 @@ func (r *Reader) Close() error {
 		}
 	}
 	err := r.reader.Close()
+	r.mu.Lock()
+	if r.err != nil {
+		err = r.err
+	}
+	r.mu.Unlock()
+
+	if r.metricsState != nil {
+		if r.metricsState.metrics != nil {
+			if total := atomic.SwapInt64(&r.bytesRead, 0); total > 0 {
+				r.metricsState.metrics.responseBodySize.Record(r.ctx, total, metric.WithAttributes(attribute.String("rpc.method", "ReadObject")))
+			}
+		}
+		if r.metricsState.record != nil {
+			r.metricsState.record(err)
+		}
+	}
 	endSpan(r.ctx, err)
 	return err
 }
@@ -407,6 +430,14 @@ func (r *Reader) Read(p []byte) (int, error) {
 	n, err := r.reader.Read(p)
 	if !r.unfinalized && !r.Attrs.Decompressed {
 		atomic.AddInt64(&r.remain, -int64(n))
+	}
+	if n > 0 {
+		atomic.AddInt64(&r.bytesRead, int64(n))
+	}
+	if err != nil && err != io.EOF {
+		r.mu.Lock()
+		r.err = err
+		r.mu.Unlock()
 	}
 	return n, err
 }
@@ -419,6 +450,14 @@ func (r *Reader) WriteTo(w io.Writer) (int64, error) {
 	n, err := io.Copy(w, r.reader)
 	if !r.unfinalized && !r.Attrs.Decompressed {
 		atomic.AddInt64(&r.remain, -int64(n))
+	}
+	if n > 0 {
+		atomic.AddInt64(&r.bytesRead, n)
+	}
+	if err != nil && err != io.EOF {
+		r.mu.Lock()
+		r.err = err
+		r.mu.Unlock()
 	}
 	return n, err
 }
@@ -554,6 +593,9 @@ func (mrd *MultiRangeDownloader) Add(output io.Writer, offset, length int64, cal
 // it could lead to a deadlock.
 func (mrd *MultiRangeDownloader) Close() error {
 	err := mrd.impl.close(nil)
+	if state := metricsStateFromContext(mrd.impl.getSpanCtx()); state != nil && state.record != nil {
+		state.record(err)
+	}
 	endSpan(mrd.impl.getSpanCtx(), err)
 	return err
 }
