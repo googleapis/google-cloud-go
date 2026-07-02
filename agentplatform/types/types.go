@@ -586,6 +586,8 @@ type MemoryGenerationTriggerConfigGenerationTriggerRule struct {
 	FixedInterval time.Duration `json:"fixedInterval,omitempty"`
 	// Optional. Specifies to trigger generation when the event count reaches this limit.
 	EventCount *int32 `json:"eventCount,omitempty"`
+	// Optional. Re-include the last N already-processed events in the next window.
+	OverlapEventCount *int32 `json:"overlapEventCount,omitempty"`
 }
 
 func (m *MemoryGenerationTriggerConfigGenerationTriggerRule) UnmarshalJSON(data []byte) error {
@@ -1862,6 +1864,68 @@ type IngestEventsConfig struct {
 	// Optional. Forces a flush of all pending events in the stream and triggers memory
 	// generation immediately bypassing any conditions configured in the `generation_trigger_config`.
 	ForceFlush *bool `json:"forceFlush,omitempty"`
+	// Optional. Labels to apply to the memory revision. For example, you can use this to
+	// label a revision with its data source.
+	RevisionLabels map[string]string `json:"revisionLabels,omitempty"`
+	// Optional. Input only. Timestamp of when the revision is considered expired. If not
+	// set, the memory revision will be kept until manually deleted.
+	RevisionExpireTime time.Time `json:"revisionExpireTime,omitempty"`
+	// Optional. Input only. The TTL for the revision. The expiration time is computed:
+	// now + TTL.
+	RevisionTTL time.Duration `json:"revisionTtl,omitempty"`
+	// Optional. Input only. If true, no revisions will be created for this request.
+	DisableMemoryRevisions *bool `json:"disableMemoryRevisions,omitempty"`
+	// Optional. User-provided metadata for the generated memories. This is not generated
+	// by Memory Bank.
+	Metadata map[string]*MemoryMetadataValue `json:"metadata,omitempty"`
+	// Optional. The strategy to use when applying metadata to existing memories.
+	MetadataMergeStrategy MemoryMetadataMergeStrategy `json:"metadataMergeStrategy,omitempty"`
+}
+
+func (i *IngestEventsConfig) UnmarshalJSON(data []byte) error {
+	type Alias IngestEventsConfig
+	aux := &struct {
+		RevisionExpireTime *time.Time                        `json:"revisionExpireTime,omitempty"`
+		RevisionTTL        *genai_types.InternalDurationJSON `json:"revisionTtl,omitempty"`
+		*Alias
+	}{
+		Alias: (*Alias)(i),
+	}
+
+	if err := json.Unmarshal(data, &aux); err != nil {
+		return err
+	}
+
+	if !reflect.ValueOf(aux.RevisionExpireTime).IsZero() {
+		i.RevisionExpireTime = time.Time(*aux.RevisionExpireTime)
+	}
+
+	if !reflect.ValueOf(aux.RevisionTTL).IsZero() {
+		i.RevisionTTL = time.Duration(*aux.RevisionTTL)
+	}
+
+	return nil
+}
+
+func (i *IngestEventsConfig) MarshalJSON() ([]byte, error) {
+	type Alias IngestEventsConfig
+	aux := &struct {
+		RevisionExpireTime *time.Time                        `json:"revisionExpireTime,omitempty"`
+		RevisionTTL        *genai_types.InternalDurationJSON `json:"revisionTtl,omitempty"`
+		*Alias
+	}{
+		Alias: (*Alias)(i),
+	}
+
+	if !reflect.ValueOf(i.RevisionExpireTime).IsZero() {
+		aux.RevisionExpireTime = (*time.Time)(&i.RevisionExpireTime)
+	}
+
+	if !reflect.ValueOf(i.RevisionTTL).IsZero() {
+		aux.RevisionTTL = (*genai_types.InternalDurationJSON)(&i.RevisionTTL)
+	}
+
+	return json.Marshal(aux)
 }
 
 // Operation that ingests events into a memory bank.

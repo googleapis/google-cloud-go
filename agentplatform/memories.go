@@ -248,6 +248,36 @@ func ingestEventsConfigToVertex(fromObject map[string]any, parentObject map[stri
 		genai.InternalSetValueByPath(parentObject, []string{"forceFlush"}, fromForceFlush)
 	}
 
+	fromRevisionLabels := genai.InternalGetValueByPath(fromObject, []string{"revisionLabels"})
+	if fromRevisionLabels != nil {
+		genai.InternalSetValueByPath(parentObject, []string{"revisionLabels"}, fromRevisionLabels)
+	}
+
+	fromRevisionExpireTime := genai.InternalGetValueByPath(fromObject, []string{"revisionExpireTime"})
+	if fromRevisionExpireTime != nil {
+		genai.InternalSetValueByPath(parentObject, []string{"revisionExpireTime"}, fromRevisionExpireTime)
+	}
+
+	fromRevisionTtl := genai.InternalGetValueByPath(fromObject, []string{"revisionTtl"})
+	if fromRevisionTtl != nil {
+		genai.InternalSetValueByPath(parentObject, []string{"revisionTtl"}, fromRevisionTtl)
+	}
+
+	fromDisableMemoryRevisions := genai.InternalGetValueByPath(fromObject, []string{"disableMemoryRevisions"})
+	if fromDisableMemoryRevisions != nil {
+		genai.InternalSetValueByPath(parentObject, []string{"disableMemoryRevisions"}, fromDisableMemoryRevisions)
+	}
+
+	fromMetadata := genai.InternalGetValueByPath(fromObject, []string{"metadata"})
+	if fromMetadata != nil {
+		genai.InternalSetValueByPath(parentObject, []string{"metadata"}, fromMetadata)
+	}
+
+	fromMetadataMergeStrategy := genai.InternalGetValueByPath(fromObject, []string{"metadataMergeStrategy"})
+	if fromMetadataMergeStrategy != nil {
+		genai.InternalSetValueByPath(parentObject, []string{"metadataMergeStrategy"}, fromMetadataMergeStrategy)
+	}
+
 	return toObject, nil
 }
 
