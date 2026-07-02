@@ -1,5 +1,12 @@
 # Changes
 
+## [1.93.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.92.0...spanner/v1.93.0) (2026-07-02)
+
+
+### Features
+
+* **spanner:** Abstract Spanner Omni gRPC connection logic for TLS/mTLS/plaintext as foundation of auth login functionality ([#14694](https://github.com/googleapis/google-cloud-go/issues/14694)) ([07d1ba5](https://github.com/googleapis/google-cloud-go/commit/07d1ba54b7d88a8c41a38484b3b13fc44c9287cc))
+
 ## [1.92.0](https://github.com/googleapis/google-cloud-go/releases/tag/spanner%2Fv1.92.0) (2026-06-15)
 
 ### Features
