@@ -3,7 +3,7 @@
   "auth": "0.20.0",
   "auth/oauth2adapt": "0.2.8",
   "bigquery": "1.77.0",
-  "bigquery/v2": "0.0.0",
+  "bigquery/v2": "0.1.0",
   "bigtable": "1.50.0",
   "compute/metadata": "0.9.0",
   "datastore": "1.24.0",
