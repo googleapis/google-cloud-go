@@ -94,7 +94,7 @@ type sessionConsumer interface {
 // creating multiplexed sessions.
 type sessionClient struct {
 	waitWorkers          sync.WaitGroup
-	mu                   sync.Mutex
+	mu                   sync.RWMutex
 	closed               bool
 	disableRouteToLeader bool
 
@@ -112,6 +112,8 @@ type sessionClient struct {
 	otConfig             *openTelemetryConfig
 	metricsTracerFactory *builtinMetricsTracerFactory
 	channelIDMap         map[*grpc.ClientConn]uint64
+	connections          []*grpc.ClientConn
+
 
 	// baseClientOpts holds the client options used for creating endpoint-specific
 	// gRPC connections in location-aware routing.
@@ -129,7 +131,7 @@ type sessionClient struct {
 // newSessionClient creates a session client to use for a database.
 func newSessionClient(connPool gtransport.ConnPool, database, userAgent string, sessionLabels map[string]string, databaseRole string, disableRouteToLeader bool, md metadata.MD, batchTimeout time.Duration, logger *log.Logger, callOptions *vkit.CallOptions) *sessionClient {
 	clientID, nthClient := cidGen.nextClientIDAndOrdinal(database)
-	return &sessionClient{
+	sc := &sessionClient{
 		connPool:             connPool,
 		database:             database,
 		userAgent:            userAgent,
@@ -144,7 +146,28 @@ func newSessionClient(connPool gtransport.ConnPool, database, userAgent string, 
 
 		nthClient:  nthClient,
 		nthRequest: new(atomic.Uint32),
+		channelIDMap: make(map[*grpc.ClientConn]uint64),
 	}
+
+	if connPool != nil {
+		num := connPool.Num()
+		if num > 0 {
+			seen := make(map[*grpc.ClientConn]bool)
+			attempts := 0
+			maxAttempts := num * 4
+			for len(sc.connections) < num && attempts < maxAttempts {
+				attempts++
+				conn := connPool.Conn()
+				if conn != nil && !seen[conn] {
+					seen[conn] = true
+					sc.connections = append(sc.connections, conn)
+					sc.channelIDMap[conn] = uint64(len(sc.connections))
+				}
+			}
+		}
+	}
+
+	return sc
 }
 
 func (sc *sessionClient) close() error {
