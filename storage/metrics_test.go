@@ -312,7 +312,6 @@ func TestGRPCMetricsRecording(t *testing.T) {
 		t.Fatalf("initMetrics: %v", err)
 	}
 
-	// 1. Test Unary call.
 	unaryInt, streamInt := metricsInterceptors(cm)
 
 	invoker := func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, opts ...grpc.CallOption) error {
@@ -324,7 +323,7 @@ func TestGRPCMetricsRecording(t *testing.T) {
 		t.Errorf("unexpected unary error: %v", err)
 	}
 
-	// 2. Test Server-Streaming call (ReadObject).
+	// Test Server-Streaming call (ReadObject).
 	streamer := func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, opts ...grpc.CallOption) (grpc.ClientStream, error) {
 		return &mockClientStream{recvErr: io.EOF}, nil
 	}
@@ -343,7 +342,7 @@ func TestGRPCMetricsRecording(t *testing.T) {
 		t.Errorf("expected io.EOF, got %v", err)
 	}
 
-	// 3. Test Client-Streaming call (WriteObject).
+	// Test Client-Streaming call (WriteObject).
 	streamerWrite := func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, opts ...grpc.CallOption) (grpc.ClientStream, error) {
 		return &mockClientStream{recvErr: nil}, nil
 	}
@@ -535,7 +534,7 @@ func TestStandardMetricsRecording(t *testing.T) {
 		tc: wrapped,
 	}
 
-	// 1. Test GetObject (unary).
+	// Test GetObject (unary).
 	mock.getObjectFn = func(ctx context.Context, params *getObjectParams, opts ...storageOption) (*ObjectAttrs, error) {
 		return &ObjectAttrs{Name: params.object}, nil
 	}
@@ -544,7 +543,7 @@ func TestStandardMetricsRecording(t *testing.T) {
 		t.Fatalf("Attrs: %v", err)
 	}
 
-	// 2. Test Reader (ReadObject).
+	// Test Reader (ReadObject).
 	mock.newReaderFn = func(ctx context.Context, params *newRangeReaderParams, opts ...storageOption) (*Reader, error) {
 		return &Reader{
 			reader: io.NopCloser(bytes.NewReader([]byte("hello"))),
@@ -565,7 +564,7 @@ func TestStandardMetricsRecording(t *testing.T) {
 	}
 	r.Close()
 
-	// 3. Test Writer (WriteObject).
+	// Test Writer (WriteObject).
 	donec := make(chan struct{})
 	close(donec) // pre-close it so Close doesn't block
 	mock.openWriterFn = func(params *openWriterParams, opts ...storageOption) (internalWriter, error) {

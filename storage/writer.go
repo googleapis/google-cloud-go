@@ -41,7 +41,8 @@ type internalWriter interface {
 
 // A Writer writes a Cloud Storage object.
 type Writer struct {
-	bytesWritten int64 // Cumulative bytes written for request size metric.
+	// bytesWritten is the cumulative bytes written for request size metric.
+	bytesWritten int64
 
 	// ObjectAttrs are optional attributes to set on the object. Any attributes
 	// must be initialized before the first Write call. Nil or zero-valued
@@ -380,25 +381,7 @@ func (w *Writer) Close() error {
 		}
 
 		if pcu != nil {
-			err = pcu.close()
-			w.mu.Lock()
-			defer w.mu.Unlock()
-			w.closed = true
-			if w.err == nil && err != nil {
-				w.err = err
-			}
-			if state := metricsStateFromContext(w.ctx); state != nil {
-				if state.metrics != nil {
-					if total := atomic.LoadInt64(&w.bytesWritten); total > 0 {
-						state.metrics.requestBodySize.Record(w.ctx, total, metric.WithAttributes(attribute.String("rpc.method", "WriteObject")))
-					}
-				}
-				if state.record != nil {
-					state.record(w.err)
-				}
-			}
-			endSpan(w.ctx, w.err)
-			return w.err
+			return w.markClosed(pcu.close())
 		}
 	}
 
@@ -413,9 +396,18 @@ func (w *Writer) Close() error {
 	}
 
 	<-w.donec
+	return w.markClosed(nil)
+}
+
+// markClosed marks the Writer as closed, records any closing error on Writer.err,
+// and records request body size metrics and trace span completion.
+func (w *Writer) markClosed(err error) error {
 	w.mu.Lock()
 	defer w.mu.Unlock()
 	w.closed = true
+	if w.err == nil && err != nil {
+		w.err = err
+	}
 	if state := metricsStateFromContext(w.ctx); state != nil {
 		if state.metrics != nil {
 			if total := atomic.LoadInt64(&w.bytesWritten); total > 0 {

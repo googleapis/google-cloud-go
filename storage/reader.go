@@ -428,17 +428,7 @@ func (r *Reader) Close() error {
 
 func (r *Reader) Read(p []byte) (int, error) {
 	n, err := r.reader.Read(p)
-	if !r.unfinalized && !r.Attrs.Decompressed {
-		atomic.AddInt64(&r.remain, -int64(n))
-	}
-	if n > 0 {
-		atomic.AddInt64(&r.bytesRead, int64(n))
-	}
-	if err != nil && err != io.EOF {
-		r.mu.Lock()
-		r.err = err
-		r.mu.Unlock()
-	}
+	r.recordRead(int64(n), err)
 	return n, err
 }
 
@@ -448,8 +438,15 @@ func (r *Reader) WriteTo(w io.Writer) (int64, error) {
 	// This implicitly calls r.reader.WriteTo for gRPC only. JSON and XML don't have an
 	// implementation of WriteTo.
 	n, err := io.Copy(w, r.reader)
+	r.recordRead(n, err)
+	return n, err
+}
+
+// recordRead updates remaining byte counts and metrics after a read operation,
+// and saves any persistent error encountered during Read or WriteTo.
+func (r *Reader) recordRead(n int64, err error) {
 	if !r.unfinalized && !r.Attrs.Decompressed {
-		atomic.AddInt64(&r.remain, -int64(n))
+		atomic.AddInt64(&r.remain, -n)
 	}
 	if n > 0 {
 		atomic.AddInt64(&r.bytesRead, n)
@@ -459,7 +456,6 @@ func (r *Reader) WriteTo(w io.Writer) (int64, error) {
 		r.err = err
 		r.mu.Unlock()
 	}
-	return n, err
 }
 
 // Size returns the size of the object in bytes.

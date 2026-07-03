@@ -18,6 +18,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"log"
 	"net"
 	"net/http"
 	"os"
@@ -50,15 +51,13 @@ type clientMetrics struct {
 	provider                  *sdkmetric.MeterProvider
 	rpcClientCallDuration     metric.Float64Histogram
 	httpClientRequestDuration metric.Float64Histogram
-
-	// New standard metrics.
-	veneerDuration   metric.Float64Histogram
-	veneerOperations metric.Int64Counter
-	attempts         metric.Int64Counter
-	requestBodySize  metric.Int64Histogram
-	responseBodySize metric.Int64Histogram
-	ttfb             metric.Float64Histogram
-	attemptErrors    metric.Int64Counter
+	duration                  metric.Float64Histogram
+	operations                metric.Int64Counter
+	attempts                  metric.Int64Counter
+	requestBodySize           metric.Int64Histogram
+	responseBodySize          metric.Int64Histogram
+	ttfb                      metric.Float64Histogram
+	errors                    metric.Int64Counter
 }
 
 func formatMetricWithPrefix(m metricdata.Metrics, prefix string) string {
@@ -187,18 +186,18 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 		return nil, nil, err
 	}
 
-	veneerDuration, err := meter.Float64Histogram(
+	duration, err := meter.Float64Histogram(
 		"gcp.client.request.duration",
-		metric.WithDescription("Latency of a veneer operation"),
+		metric.WithDescription("Latency of a client operation"),
 		metric.WithUnit("s"),
 	)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	veneerOperations, err := meter.Int64Counter(
+	operations, err := meter.Int64Counter(
 		"gcp.storage.client.operations",
-		metric.WithDescription("Number of GCS veneer operations"),
+		metric.WithDescription("Number of GCS client operations"),
 		metric.WithUnit("1"),
 	)
 	if err != nil {
@@ -241,7 +240,7 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 		return nil, nil, err
 	}
 
-	attemptErrors, err := meter.Int64Counter(
+	errors, err := meter.Int64Counter(
 		"gcp.storage.client.errors",
 		metric.WithDescription("Number of GCS client errors"),
 		metric.WithUnit("1"),
@@ -254,13 +253,13 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 		provider:                  provider,
 		rpcClientCallDuration:     rpcDuration,
 		httpClientRequestDuration: httpDuration,
-		veneerDuration:            veneerDuration,
-		veneerOperations:          veneerOperations,
+		duration:                  duration,
+		operations:                operations,
 		attempts:                  attempts,
 		requestBodySize:           requestBodySize,
 		responseBodySize:          responseBodySize,
 		ttfb:                      ttfb,
-		attemptErrors:             attemptErrors,
+		errors:                    errors,
 	}
 
 	var cleanup func()
@@ -415,7 +414,7 @@ func (cm *clientMetrics) recordRPC(ctx context.Context, method, target string, d
 			attribute.String("error.type", errorType),
 			attribute.String("gcp.errors.domain", "storage.googleapis.com"),
 		}
-		cm.attemptErrors.Add(ctx, 1, metric.WithAttributes(errorAttrs...))
+		cm.errors.Add(ctx, 1, metric.WithAttributes(errorAttrs...))
 	}
 
 	// For unary calls, record TTFB equal to the total attempt latency.
@@ -541,7 +540,7 @@ func (rt *metricsRoundTripper) RoundTrip(req *http.Request) (*http.Response, err
 				attribute.String("error.type", errorType),
 				attribute.String("gcp.errors.domain", "storage.googleapis.com"),
 			}
-			rt.metrics.attemptErrors.Add(req.Context(), 1, metric.WithAttributes(errorAttrs...))
+			rt.metrics.errors.Add(req.Context(), 1, metric.WithAttributes(errorAttrs...))
 		}
 
 		// Record TTFB.
@@ -801,8 +800,8 @@ func (cm *clientMetrics) startOperation(ctx context.Context, method string, isHT
 				attribute.String("error.type", errorType),
 			}
 			opts := metric.WithAttributes(attrs...)
-			cm.veneerDuration.Record(ctx, duration, opts)
-			cm.veneerOperations.Add(ctx, 1, opts)
+			cm.duration.Record(ctx, duration, opts)
+			cm.operations.Add(ctx, 1, opts)
 		})
 	}
 	state.record = record
@@ -811,7 +810,30 @@ func (cm *clientMetrics) startOperation(ctx context.Context, method string, isHT
 	return ctx, record
 }
 
-// metricsStorageClient wraps a storageClient and records veneer-level metrics.
+// startMetricsOp starts a client operation if OpenTelemetry metrics are enabled in ctx.
+// It returns the updated context containing metrics state and a recording closure.
+func startMetricsOp(ctx context.Context, method string, isHTTP bool) (context.Context, func(error)) {
+	if state := metricsStateFromContext(ctx); state != nil && state.metrics != nil {
+		return state.metrics.startOperation(ctx, method, isHTTP)
+	}
+	return ctx, func(error) {}
+}
+
+// initClientMetrics initializes OpenTelemetry client metrics if enabled in config.
+// It returns the metrics instance and its cleanup function, or nil if disabled or upon error.
+func initClientMetrics(ctx context.Context, project string, config *storageConfig) (*clientMetrics, func()) {
+	if !isOtelMetricsEnabled(config) {
+		return nil, nil
+	}
+	cm, cleanup, err := initMetrics(ctx, project, config)
+	if err != nil {
+		log.Printf("Failed to enable metrics: %v", err)
+		return nil, nil
+	}
+	return cm, cleanup
+}
+
+// metricsStorageClient wraps a storageClient and records client-level metrics.
 type metricsStorageClient struct {
 	storageClient
 	metrics *clientMetrics

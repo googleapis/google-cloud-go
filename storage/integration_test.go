@@ -1370,7 +1370,7 @@ func TestIntegration_OtelMetricsEnablement(t *testing.T) {
 				}
 			}
 
-			// 2. Check veneer-level duration metric.
+			// Check SDK-level duration metric.
 			if m, ok := metricsMap["gcp.client.request.duration"]; !ok {
 				t.Errorf("expected metric gcp.client.request.duration not found")
 			} else {
@@ -1383,7 +1383,7 @@ func TestIntegration_OtelMetricsEnablement(t *testing.T) {
 				}
 			}
 
-			// 3. Check operations metric.
+			// Check client operations metric.
 			if m, ok := metricsMap["gcp.storage.client.operations"]; !ok {
 				t.Errorf("expected metric gcp.storage.client.operations not found")
 			} else {

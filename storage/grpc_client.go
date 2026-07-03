@@ -175,26 +175,17 @@ func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (client *g
 		}
 	}
 
-	var clientMetrics *clientMetrics
-	var metricsCleanup func()
-	if isOtelMetricsEnabled(&config) {
-		var project string
-		c, err := transport.Creds(ctx, s.clientOption...)
-		if err == nil {
-			project = c.ProjectID
-		}
-		if cm, cleanup, err := initMetrics(ctx, project, &config); err == nil {
-			clientMetrics = cm
-			metricsCleanup = cleanup
-
-			unaryInt, streamInt := metricsInterceptors(cm)
-			s.clientOption = append(s.clientOption,
-				option.WithGRPCDialOption(grpc.WithChainUnaryInterceptor(unaryInt)),
-				option.WithGRPCDialOption(grpc.WithChainStreamInterceptor(streamInt)),
-			)
-		} else {
-			log.Printf("Failed to enable metrics: %v", err)
-		}
+	var project string
+	if c, err := transport.Creds(ctx, s.clientOption...); err == nil {
+		project = c.ProjectID
+	}
+	clientMetrics, metricsCleanup := initClientMetrics(ctx, project, &config)
+	if clientMetrics != nil {
+		unaryInt, streamInt := metricsInterceptors(clientMetrics)
+		s.clientOption = append(s.clientOption,
+			option.WithGRPCDialOption(grpc.WithChainUnaryInterceptor(unaryInt)),
+			option.WithGRPCDialOption(grpc.WithChainStreamInterceptor(streamInt)),
+		)
 	}
 
 	if metricsCleanup != nil {
@@ -369,12 +360,8 @@ func (c *grpcStorageClient) ListBuckets(ctx context.Context, project string, opt
 
 	var gitr *gapic.BucketIterator
 	fetch := func(pageSize int, pageToken string) (token string, err error) {
-		ctx := it.ctx
-		if state := metricsStateFromContext(ctx); state != nil && state.metrics != nil {
-			var record func(error)
-			ctx, record = state.metrics.startOperation(ctx, "ListBuckets", false)
-			defer func() { record(err) }()
-		}
+		ctx, record := startMetricsOp(it.ctx, "ListBuckets", false)
+		defer func() { record(err) }()
 
 		var buckets []*storagepb.Bucket
 		var next string
@@ -617,12 +604,8 @@ func (c *grpcStorageClient) ListObjects(ctx context.Context, bucket string, q *Q
 		Filter:                   it.query.Filter,
 	}
 	fetch := func(pageSize int, pageToken string) (token string, err error) {
-		ctx := it.ctx
-		if state := metricsStateFromContext(ctx); state != nil && state.metrics != nil {
-			var record func(error)
-			ctx, record = state.metrics.startOperation(ctx, "ListObjects", false)
-			defer func() { record(err) }()
-		}
+		ctx, record := startMetricsOp(it.ctx, "ListObjects", false)
+		defer func() { record(err) }()
 		// Add trace span around List API call within the fetch.
 		ctx, _ = startSpan(ctx, "grpcStorageClient.ObjectsListCall")
 		defer func() { endSpan(ctx, err) }()

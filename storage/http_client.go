@@ -124,21 +124,11 @@ func newHTTPStorageClient(ctx context.Context, opts ...storageOption) (client st
 		return nil, fmt.Errorf("dialing: %w", err)
 	}
 
-	var clientMetrics *clientMetrics
-	var metricsCleanup func()
-	if isOtelMetricsEnabled(&config) {
-		var project string
-		if creds != nil {
-			project, _ = creds.ProjectID(ctx)
-		}
-		if cm, cleanup, err := initMetrics(ctx, project, &config); err == nil {
-			clientMetrics = cm
-			metricsCleanup = cleanup
-		} else {
-			log.Printf("Failed to enable metrics: %v", err)
-		}
+	var project string
+	if creds != nil {
+		project, _ = creds.ProjectID(ctx)
 	}
-
+	clientMetrics, metricsCleanup := initClientMetrics(ctx, project, &config)
 	if metricsCleanup != nil {
 		defer func() {
 			if err != nil {
@@ -310,12 +300,8 @@ func (c *httpStorageClient) ListBuckets(ctx context.Context, project string, opt
 	}
 
 	fetch := func(pageSize int, pageToken string) (token string, err error) {
-		ctx := it.ctx
-		if state := metricsStateFromContext(ctx); state != nil && state.metrics != nil {
-			var record func(error)
-			ctx, record = state.metrics.startOperation(ctx, "ListBuckets", true)
-			defer func() { record(err) }()
-		}
+		ctx, record := startMetricsOp(it.ctx, "ListBuckets", true)
+		defer func() { record(err) }()
 		req := c.raw.Buckets.List(it.projectID)
 		req.Projection("full")
 		req.Prefix(it.Prefix)
@@ -443,12 +429,8 @@ func (c *httpStorageClient) ListObjects(ctx context.Context, bucket string, q *Q
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		var err error
-		ctx := it.ctx
-		if state := metricsStateFromContext(ctx); state != nil && state.metrics != nil {
-			var record func(error)
-			ctx, record = state.metrics.startOperation(ctx, "ListObjects", true)
-			defer func() { record(err) }()
-		}
+		ctx, record := startMetricsOp(it.ctx, "ListObjects", true)
+		defer func() { record(err) }()
 		// Add trace span around List API call within the fetch.
 		ctx, _ = startSpan(ctx, "httpStorageClient.ObjectsListCall")
 		defer func() { endSpan(ctx, err) }()
@@ -1338,12 +1320,8 @@ func (c *httpStorageClient) ListHMACKeys(ctx context.Context, project, serviceAc
 		retry:     s.retry,
 	}
 	fetch := func(pageSize int, pageToken string) (token string, err error) {
-		ctx := it.ctx
-		if state := metricsStateFromContext(ctx); state != nil && state.metrics != nil {
-			var record func(error)
-			ctx, record = state.metrics.startOperation(ctx, "ListHMACKeys", true)
-			defer func() { record(err) }()
-		}
+		ctx, record := startMetricsOp(it.ctx, "ListHMACKeys", true)
+		defer func() { record(err) }()
 		call := c.raw.Projects.HmacKeys.List(project)
 		if pageToken != "" {
 			call = call.PageToken(pageToken)
