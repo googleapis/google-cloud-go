@@ -106,18 +106,23 @@ type Writer struct {
 	// ChunkSize must be set before the first Write call.
 	ChunkSize int
 
-	// ChunkRetryDeadline sets a per-chunk retry deadline for multi-chunk
-	// resumable uploads.
+	// ChunkRetryDeadline sets a per-chunk retry deadline for uploads.
 	//
 	// For uploads of larger files, the Writer will attempt to retry if the
 	// request to upload a particular chunk fails with a transient error.
 	// If a single chunk has been attempting to upload for longer than this
 	// deadline and the request fails, it will no longer be retried, and the
-	// error will be returned to the caller. This is only applicable for files
-	// which are large enough to require a multi-chunk resumable upload. The
-	// default value is 32s. Users may want to pick a longer deadline if they
-	// are using larger values for ChunkSize or if they expect to have a slow or
-	// unreliable internet connection.
+	// error will be returned to the caller. This deadline measures the total
+	// time spent queuing, transmitting, and retrying a single chunk. For HTTP
+	// clients, a chunk is defined by the ChunkSize. For gRPC clients, data
+	// is streamed internally in 2 MiB quantums, and this deadline applies to
+	// each individual quantum.
+	//
+	// For HTTP clients, this is only applicable to files which are large
+	// enough to require a multi-chunk upload. For gRPC clients, this applies
+	// to all uploads. The default value is 32s. Users may want to pick a longer
+	// deadline if they are using larger values for ChunkSize or if they expect
+	// to have a slow or unreliable internet connection.
 	//
 	// To set a deadline on the entire upload, use context timeout or
 	// cancellation.
