@@ -21,6 +21,7 @@ import (
 	"os"
 	"reflect"
 	"strconv"
+	"sync"
 	"time"
 
 	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
@@ -92,6 +93,13 @@ func (NoopMetricsProvider) isMetricsProvider() {}
 // The default ClientConfig will be used.
 func NewClient(ctx context.Context, project, instance string, opts ...option.ClientOption) (*Client, error) {
 	return NewClientWithConfig(ctx, project, instance, ClientConfig{}, opts...)
+}
+
+// pool for reusing builtinMetricsTracer
+var metricsTracerPool = sync.Pool{
+	New: func() interface{} {
+		return new(builtinMetricsTracer)
+	},
 }
 
 // NewClientWithConfig creates a new client with the given config.
@@ -313,7 +321,10 @@ func (c *Client) PingAndWarm(ctx context.Context) (err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigtable/PingAndWarm")
 	defer func() { trace.EndSpan(ctx, err) }()
 	mt := c.newBuiltinMetricsTracer(ctx, "", false)
-	defer mt.recordOperationCompletion()
+	defer func() {
+		mt.recordOperationCompletion()
+		metricsTracerPool.Put(mt)
+	}()
 
 	err = c.pingerWithMetadata(ctx, mt)
 	statusCode, statusErr := convertToGrpcStatusErr(err)
@@ -337,8 +348,10 @@ func (c *Client) pingerWithMetadata(ctx context.Context, mt *builtinMetricsTrace
 }
 
 func (c *Client) newBuiltinMetricsTracer(ctx context.Context, table string, isStreaming bool) *builtinMetricsTracer {
-	mt := c.metricsTracerFactory.createBuiltinMetricsTracer(ctx, table, isStreaming)
-	return &mt
+	mt := metricsTracerPool.Get().(*builtinMetricsTracer)
+	// reset the tracer for reuse
+	c.metricsTracerFactory.reset(ctx, mt, table, isStreaming)
+	return mt
 }
 
 func isDirectAccessEnabled(config ClientConfig) bool {

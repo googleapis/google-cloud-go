@@ -30,7 +30,10 @@ func (t *Table) ApplyReadModifyWrite(ctx context.Context, row string, m *ReadMod
 	ctx = mergeOutgoingMetadata(ctx, t.md)
 
 	mt := t.newBuiltinMetricsTracer(ctx, false)
-	defer mt.recordOperationCompletion()
+	defer func() {
+		mt.recordOperationCompletion()
+		metricsTracerPool.Put(mt)
+	}()
 
 	updatedRow, err := t.applyReadModifyWrite(ctx, mt, row, m)
 	statusCode, statusErr := convertToGrpcStatusErr(err)

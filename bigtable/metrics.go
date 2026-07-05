@@ -296,6 +296,41 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, project, instance, appP
 	return tracerFactory, nil
 }
 
+func (tf *builtinMetricsTracerFactory) reset(ctx context.Context, mt *builtinMetricsTracer, tableName string, isStreaming bool) {
+	mt.ctx = ctx
+	mt.builtInEnabled = tf.enabled
+	mt.clientAttributes = tf.clientAttributes
+
+	mt.instrumentOperationLatencies = tf.operationLatencies
+	mt.instrumentServerLatencies = tf.serverLatencies
+	mt.instrumentAttemptLatencies = tf.attemptLatencies
+	mt.instrumentFirstRespLatencies = tf.firstRespLatencies
+	mt.instrumentAppBlockingLatencies = tf.appBlockingLatencies
+	mt.instrumentClientBlockingLatencies = tf.clientBlockingLatencies
+	mt.instrumentRetryCount = tf.retryCount
+	mt.instrumentConnErrCount = tf.connErrCount
+	mt.instrumentDebugTags = tf.debugTags
+
+	mt.tableName = tableName
+	mt.method = ""
+	mt.isStreaming = isStreaming
+
+	mt.currOp.attemptCount = 0
+	mt.currOp.startTime = time.Now()
+	mt.currOp.firstRespTime = time.Time{}
+	mt.currOp.status = ""
+	mt.currOp.currAttempt = attemptTracer{}
+	mt.currOp.appBlockingLatency = 0.0
+
+	if mt.currOp.cookies == nil {
+		mt.currOp.cookies = make(map[string]string)
+	} else {
+		for k := range mt.currOp.cookies {
+			delete(mt.currOp.cookies, k)
+		}
+	}
+}
+
 func builtInMeterProviderOptions(project string, opts ...option.ClientOption) ([]sdkmetric.Option, error) {
 	allOpts := createExporterOptions(opts...)
 	defaultExporter, err := newMonitoringExporter(context.Background(), project, allOpts...)
