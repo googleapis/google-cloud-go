@@ -331,6 +331,11 @@ func (w *gRPCWriter) sendBufferToTarget(cs gRPCWriterCommandHandleChans, buf []b
 		if flushAt-sent < w.writeQuantum {
 			q = flushAt - sent
 		}
+
+		if w.chunkRetryDeadline > 0 && w.abandonRetriesTime.IsZero() {
+			w.abandonRetriesTime = time.Now().Add(w.chunkRetryDeadline)
+		}
+
 		req := gRPCBidiWriteRequest{
 			buf:    buf[:q],
 			offset: baseOffset + int64(sent),
@@ -376,6 +381,7 @@ func (w *gRPCWriter) handleCompletion(c gRPCBidiWriteCompletion) {
 	w.setSize(c.flushOffset)
 	w.progress(c.flushOffset)
 
+	// Restart the stopwatch if there is still more data waiting to be sent.
 	if w.chunkRetryDeadline > 0 && w.isActive() {
 		w.abandonRetriesTime = time.Now().Add(w.chunkRetryDeadline)
 	}
@@ -503,6 +509,7 @@ Loop:
 					return err
 				}
 				w.currentCommand = nil
+				// Pause the stopwatch if we are completely idle and waiting for the user's next Write() call.
 				if w.chunkRetryDeadline > 0 && !w.isActive() {
 					w.abandonRetriesTime = time.Time{}
 				}
@@ -519,9 +526,6 @@ Loop:
 					return errors.New("storage.Writer: unexpectedly closed w.writesChan")
 				}
 				w.currentCommand = cmd
-				if w.chunkRetryDeadline > 0 && w.abandonRetriesTime.IsZero() {
-					w.abandonRetriesTime = time.Now().Add(w.chunkRetryDeadline)
-				}
 			}
 		}
 	}()
@@ -536,6 +540,10 @@ Loop:
 
 	if closeErr.err == nil {
 		// Clean shutdown. Send any remaining tail.
+		if w.chunkRetryDeadline > 0 && w.abandonRetriesTime.IsZero() {
+			w.abandonRetriesTime = time.Now().Add(w.chunkRetryDeadline)
+		}
+
 		req := gRPCBidiWriteRequest{
 			buf:         w.buf[w.bufUnsentIdx:],
 			offset:      w.bufBaseOffset + int64(w.bufUnsentIdx),
@@ -834,6 +842,10 @@ func (c *gRPCWriterCommandFlush) handle(w *gRPCWriter, cs gRPCWriterCommandHandl
 	// We know that there are at most w.writeQuantum bytes in
 	// w.buf[w.bufUnsentIdx:], because we send anything more inline when handling
 	// a write.
+	if w.chunkRetryDeadline > 0 && w.abandonRetriesTime.IsZero() {
+		w.abandonRetriesTime = time.Now().Add(w.chunkRetryDeadline)
+	}
+
 	req := gRPCBidiWriteRequest{
 		buf:         w.buf[w.bufUnsentIdx:],
 		offset:      w.bufBaseOffset + int64(w.bufUnsentIdx),
