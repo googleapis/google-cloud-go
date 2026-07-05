@@ -79,10 +79,10 @@ type workforcePoolConfigProvider struct {
 	universeDomain string
 }
 
-func (p *workforcePoolConfigProvider) GetRegionalAccessBoundaryEndpoint(ctx context.Context) (string, error) {
+func (p *workforcePoolConfigProvider) GetRegionalAccessBoundaryEndpoint(ctx context.Context, clientCertProvided bool) (string, error) {
 	base := fmt.Sprintf(workforceAllowedLocationsEndpoint, p.poolID)
 	mtls := fmt.Sprintf(workforceAllowedLocationsMTLSEndpoint, p.poolID)
-	return resolveLocalMTLSEndpoint(base, mtls)
+	return resolveLocalMTLSEndpoint(base, mtls, clientCertProvided)
 }
 
 func (p *workforcePoolConfigProvider) GetUniverseDomain(ctx context.Context) (string, error) {
@@ -95,10 +95,10 @@ type workloadIdentityPoolConfigProvider struct {
 	universeDomain string
 }
 
-func (p *workloadIdentityPoolConfigProvider) GetRegionalAccessBoundaryEndpoint(ctx context.Context) (string, error) {
+func (p *workloadIdentityPoolConfigProvider) GetRegionalAccessBoundaryEndpoint(ctx context.Context, clientCertProvided bool) (string, error) {
 	base := fmt.Sprintf(workloadAllowedLocationsEndpoint, p.projectNumber, p.poolID)
 	mtls := fmt.Sprintf(workloadAllowedLocationsMTLSEndpoint, p.projectNumber, p.poolID)
-	return resolveLocalMTLSEndpoint(base, mtls)
+	return resolveLocalMTLSEndpoint(base, mtls, clientCertProvided)
 }
 
 func (p *workloadIdentityPoolConfigProvider) GetUniverseDomain(ctx context.Context) (string, error) {

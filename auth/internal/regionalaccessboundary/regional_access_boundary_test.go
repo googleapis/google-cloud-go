@@ -275,7 +275,7 @@ func TestServiceAccountConfig(t *testing.T) {
 		for _, tt := range tests {
 			t.Run(tt.name, func(t *testing.T) {
 				cfg := NewServiceAccountConfigProvider(tt.saEmail, tt.ud)
-				url, err := cfg.GetRegionalAccessBoundaryEndpoint(context.Background())
+				url, err := cfg.GetRegionalAccessBoundaryEndpoint(context.Background(), false)
 				if (err != nil && err.Error() != tt.wantErr) || (err == nil && tt.wantErr != "") {
 					t.Errorf("GetRegionalAccessBoundaryEndpoint() error = %v, wantErr %q", err, tt.wantErr)
 					return
@@ -465,7 +465,7 @@ func TestGCEConfigProvider(t *testing.T) {
 				provider = NewGCEConfigProvider(tt.gceUDP, nil)
 			}
 
-			endpoint, err := provider.GetRegionalAccessBoundaryEndpoint(ctx)
+			endpoint, err := provider.GetRegionalAccessBoundaryEndpoint(ctx, false)
 			if tt.wantErrEndpoint != "" {
 				if err == nil {
 					t.Errorf("GetRegionalAccessBoundaryEndpoint() error = nil, want  %q", tt.wantErrEndpoint)
@@ -518,7 +518,7 @@ func TestGCEConfigProvider_CachesResults(t *testing.T) {
 
 	for i := 0; i < 5; i++ {
 		t.Run(fmt.Sprintf("call-%d", i+1), func(t *testing.T) {
-			provider.GetRegionalAccessBoundaryEndpoint(context.Background())
+			provider.GetRegionalAccessBoundaryEndpoint(context.Background(), false)
 			provider.GetUniverseDomain(context.Background())
 			// The actual number of requests to the metadata server is 2 (one for email, one for UD)
 			if m := requestCount.Load(); m > 2 {
@@ -555,7 +555,7 @@ func TestGCEConfigProvider_TransientFailure(t *testing.T) {
 	ctx := context.Background()
 
 	// First call should fail (MDS down)
-	_, err := provider.GetRegionalAccessBoundaryEndpoint(ctx)
+	_, err := provider.GetRegionalAccessBoundaryEndpoint(ctx, false)
 	if err == nil {
 		t.Fatal("GetRegionalAccessBoundaryEndpoint() expected error on first call, got nil")
 	}
@@ -564,7 +564,7 @@ func TestGCEConfigProvider_TransientFailure(t *testing.T) {
 	failMDS.Store(false)
 
 	// Second call should succeed (MDS up)
-	endpoint, err := provider.GetRegionalAccessBoundaryEndpoint(ctx)
+	endpoint, err := provider.GetRegionalAccessBoundaryEndpoint(ctx, false)
 	if err != nil {
 		t.Fatalf("GetRegionalAccessBoundaryEndpoint() unexpected error on second call: %v", err)
 	}
@@ -586,7 +586,7 @@ type mockConfigProvider struct {
 	endpointCallCh      chan struct{}
 }
 
-func (m *mockConfigProvider) GetRegionalAccessBoundaryEndpoint(ctx context.Context) (string, error) {
+func (m *mockConfigProvider) GetRegionalAccessBoundaryEndpoint(ctx context.Context, clientCertProvided bool) (string, error) {
 	m.mu.Lock()
 	m.endpointCallCount++
 	m.mu.Unlock()
@@ -870,7 +870,7 @@ func TestGCEConfigProvider_NonGSAIdentity_BypassesLookup(t *testing.T) {
 	gceConfig := NewGCEConfigProvider(udp, logger)
 
 	// Fetch endpoint first time - should log and return error
-	endpoint, err := gceConfig.GetRegionalAccessBoundaryEndpoint(ctx)
+	endpoint, err := gceConfig.GetRegionalAccessBoundaryEndpoint(ctx, false)
 	if !errors.Is(err, ErrSkipRegionalAccessBoundary) {
 		t.Fatalf("expected ErrSkipRegionalAccessBoundary, got %v", err)
 	}
@@ -888,7 +888,7 @@ func TestGCEConfigProvider_NonGSAIdentity_BypassesLookup(t *testing.T) {
 	logBuf.Reset()
 
 	// Fetch endpoint second time - should silently return SkipRegionalAccessBoundary without logging again
-	endpoint2, err2 := gceConfig.GetRegionalAccessBoundaryEndpoint(ctx)
+	endpoint2, err2 := gceConfig.GetRegionalAccessBoundaryEndpoint(ctx, false)
 	if !errors.Is(err2, ErrSkipRegionalAccessBoundary) {
 		t.Fatalf("second call: expected ErrSkipRegionalAccessBoundary, got %v", err2)
 	}

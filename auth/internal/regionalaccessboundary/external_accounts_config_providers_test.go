@@ -156,7 +156,7 @@ func TestWorkloadIdentityPoolConfigProvider(t *testing.T) {
 
 	t.Run("GetRegionalAccessBoundaryEndpoint", func(t *testing.T) {
 		want := "https://iamcredentials.googleapis.com/v1/projects/12345/locations/global/workloadIdentityPools/my-pool/allowedLocations"
-		endpoint, err := p.GetRegionalAccessBoundaryEndpoint(ctx)
+		endpoint, err := p.GetRegionalAccessBoundaryEndpoint(ctx, false)
 		if err != nil {
 			t.Fatalf("GetRegionalAccessBoundaryEndpoint() unexpected error: %v", err)
 		}
@@ -186,7 +186,7 @@ func TestWorkforcePoolConfigProvider(t *testing.T) {
 
 	t.Run("GetRegionalAccessBoundaryEndpoint", func(t *testing.T) {
 		want := "https://iamcredentials.googleapis.com/v1/locations/global/workforcePools/my-pool/allowedLocations"
-		endpoint, err := p.GetRegionalAccessBoundaryEndpoint(ctx)
+		endpoint, err := p.GetRegionalAccessBoundaryEndpoint(ctx, false)
 		if err != nil {
 			t.Fatalf("GetRegionalAccessBoundaryEndpoint() unexpected error: %v", err)
 		}
