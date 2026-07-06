@@ -13,14 +13,17 @@ jobs:
   scan_changes:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
       with:
         ref: main
+        persist-credentials: false
     - name: Get main commit
       id: main
       run: echo "hash=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
-    - uses: actions/checkout@v6
-    - uses: actions/setup-go@v6
+    - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+      with:
+        persist-credentials: false
+    - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6
       with:
         go-version: '1.26.x'
     - name: Get changed directories
@@ -52,14 +55,15 @@ jobs:
     strategy:
       matrix: ${{ fromJson(needs.scan_changes.outputs.changed_dirs) }}
     steps:
-    - uses: actions/setup-go@v6
+    - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6
       with:
         go-version: '1.26.x'
     - name: Install latest apidiff
       run: go install golang.org/x/exp/cmd/apidiff@latest
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
       with:
         ref: main
+        persist-credentials: false
     - name: Create baseline
       id: baseline
       run: |
@@ -73,14 +77,16 @@ jobs:
         MATRIX_CHANGED: ${{ matrix.changed }}
         STEPS_BASELINE_OUTPUTS_PKG: ${{ steps.baseline.outputs.pkg }}
     - name: Upload baseline package data
-      uses: actions/upload-artifact@v7
+      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
       with:
         name: ${{ steps.baseline.outputs.pkg }}
         path: ${{ matrix.changed }}/${{ steps.baseline.outputs.pkg }}
         retention-days: 1
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+      with:
+        persist-credentials: false
     - name: Download baseline package data
-      uses: actions/download-artifact@v8
+      uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
       with:
         name: ${{ steps.baseline.outputs.pkg }}
         path: ${{ matrix.changed }}
@@ -134,7 +140,7 @@ jobs:
     # review, even if they don't block the PR.
     - name: Add breaking change label
       if: ${{ steps.detect.outputs.breaking_change_found == 'true' && !github.event.pull_request.head.repo.fork }}
-      uses: actions/github-script@v9
+      uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
       with:
         script: |
           github.rest.issues.addLabels({
@@ -150,12 +156,14 @@ jobs:
     # the failed presubmit check is the primary signal.
     - name: Post breaking change details as a comment
       if: ${{ steps.ga_check.outcome == 'success' && !github.event.pull_request.head.repo.fork }}
-      uses: actions/github-script@v9
+      uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
+      env:
+        CHANGED_MODULE: ${{ matrix.changed }}
       with:
         script: |
           const fs = require('fs');
-          const diff = fs.readFileSync('${{ matrix.changed }}/diff.txt', 'utf8');
-          const moduleName = '${{ matrix.changed }}';
+          const diff = fs.readFileSync(`${process.env.CHANGED_MODULE}/diff.txt`, 'utf8');
+          const moduleName = process.env.CHANGED_MODULE;
           const commentHeader = `### ⚠️ Breaking change detected in pre-GA module: \`${moduleName}\``;
           const body = `${commentHeader}\n\nThe apidiff check has detected one or more breaking changes in this module for pre-GA APIs.\n\nPre-GA breaking changes do not block the pull request, but are flagged here for review.\n\nFor any pre-GA breaking change that needs investigation, open a new issue containing a link to this comment, then you may proceed with reviewing and merging this PR.\n\n\`\`\`\n${diff}\n\`\`\``;
           const { data: comments } = await github.rest.issues.listComments({
