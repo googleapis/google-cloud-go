@@ -41,10 +41,9 @@ const (
 	// This should never be hit in practice, but is a safety valve to prevent
 	// unbounded memory usage if the user is adding ranges faster than they
 	// can be processed.
-	mrdAddInternalQueueMaxSize     = 50000
-	defaultTargetPendingBytes      = 1 << 30 // 1 GiB
-	defaultTargetPendingRanges     = 500
-	defaultMaxProcessingGoroutines = 100
+	mrdAddInternalQueueMaxSize = 50000
+	defaultTargetPendingBytes  = 1 << 30 // 1 GiB
+	defaultTargetPendingRanges = 500
 )
 
 // --- internalMultiRangeDownloader Interface ---

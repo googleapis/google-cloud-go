@@ -2029,7 +2029,7 @@ func (d *readResponseDecoder) readAndUpdateCRC(p []byte, readID int64, updateCRC
 }
 
 func (d *readResponseDecoder) verifyChecksums() {
-	if d.msg == nil || len(d.databufs) == 0 {
+	if d.msg == nil {
 		return
 	}
 	if d.crcErrs == nil {
@@ -2046,6 +2046,9 @@ func (d *readResponseDecoder) verifyChecksums() {
 
 		if ok {
 			for i := offsets.startBuf; i <= offsets.endBuf; i++ {
+				if i < 0 || i >= len(d.databufs) {
+					continue
+				}
 				databuf := d.databufs[i]
 				start := offsets.startOff
 				if i > offsets.startBuf {
@@ -2054,6 +2057,12 @@ func (d *readResponseDecoder) verifyChecksums() {
 				end := uint64(databuf.Len())
 				if i == offsets.endBuf {
 					end = offsets.endOff
+				}
+				if start > uint64(databuf.Len()) {
+					start = uint64(databuf.Len())
+				}
+				if end > uint64(databuf.Len()) {
+					end = uint64(databuf.Len())
 				}
 				if start >= end {
 					continue

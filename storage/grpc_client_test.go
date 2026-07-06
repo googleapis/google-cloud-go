@@ -668,7 +668,7 @@ func TestVerifyChecksums(t *testing.T) {
 			wantErrs: nil, // stays nil
 		},
 		{
-			desc: "empty databufs returns early and does not initialize crcErrs",
+			desc: "empty databufs with checksum return error",
 			msg: &storagepb.BidiReadObjectResponse{
 				ObjectDataRanges: []*storagepb.ObjectRangeData{
 					{
@@ -680,7 +680,9 @@ func TestVerifyChecksums(t *testing.T) {
 				},
 			},
 			databufs: mem.BufferSlice{},
-			wantErrs: nil, // stays nil
+			wantErrs: map[int64]string{
+				1: "storage: bad CRC on chunk read: got",
+			},
 		},
 		{
 			desc: "missing checksummed data is skipped",
