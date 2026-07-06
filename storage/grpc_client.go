@@ -1900,6 +1900,7 @@ type readResponseDecoder struct {
 	msg         *storagepb.BidiReadObjectResponse // processed response message with all fields other than object data populated
 	dataOffsets map[int64]bufferSliceOffsets      // Map ReadId to the offsets of the object data for that ID in the message.
 	done        bool                              // true if the data has been completely read.
+	crcErrs     map[int64]error                   // Map ReadId to the CRC validation error if it failed.
 }
 
 type bufferSliceOffsets struct {
@@ -2025,6 +2026,47 @@ func (d *readResponseDecoder) readAndUpdateCRC(p []byte, readID int64, updateCRC
 	d.dataOffsets[readID] = offsets
 
 	return n, true
+}
+
+func (d *readResponseDecoder) verifyChecksums() {
+	if d.msg == nil || len(d.databufs) == 0 {
+		return
+	}
+	if d.crcErrs == nil {
+		d.crcErrs = make(map[int64]error)
+	}
+	for _, dataRange := range d.msg.GetObjectDataRanges() {
+		if dataRange.GetChecksummedData() == nil || dataRange.GetChecksummedData().Crc32C == nil {
+			continue
+		}
+		readID := dataRange.GetReadRange().GetReadId()
+		offsets, ok := d.dataOffsets[readID]
+		wantCRC := *dataRange.GetChecksummedData().Crc32C
+		var gotCRC uint32
+
+		if ok {
+			for i := offsets.startBuf; i <= offsets.endBuf; i++ {
+				databuf := d.databufs[i]
+				start := offsets.startOff
+				if i > offsets.startBuf {
+					start = 0
+				}
+				end := uint64(databuf.Len())
+				if i == offsets.endBuf {
+					end = offsets.endOff
+				}
+				if start >= end {
+					continue
+				}
+				dataSlice := databuf.ReadOnlyData()[start:end]
+				gotCRC = crc32.Update(gotCRC, crc32cTable, dataSlice)
+			}
+		}
+
+		if gotCRC != wantCRC {
+			d.crcErrs[readID] = fmt.Errorf("storage: bad CRC on chunk read: got %d, want %d", gotCRC, wantCRC)
+		}
+	}
 }
 
 func (d *readResponseDecoder) writeToAndUpdateCRC(w io.Writer, readID int64, updateCRC func([]byte)) (totalWritten int64, found bool, err error) {
