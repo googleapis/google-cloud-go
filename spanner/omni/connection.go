@@ -174,10 +174,11 @@ type omniTokenSource struct {
 
 // NewTokenSource creates a new TokenSource for Omni authentication.
 func NewTokenSource(username, password string, opts []option.ClientOption) oauth2.TokenSource {
+	tsOpts := append([]option.ClientOption{option.WithoutAuthentication()}, opts...)
 	return &omniTokenSource{
 		username: username,
 		password: password,
-		opts:     opts,
+		opts:     tsOpts,
 	}
 }
 
@@ -269,7 +270,12 @@ func (ts *omniTokenSource) Token() (*oauth2.Token, error) {
 		return nil, fmt.Errorf("failed to marshal access token: %w", err)
 	}
 
-	exp := accessToken.ExpirationTime.AsTime()
+	exp := time.Now().Add(1 * time.Hour)
+	if accessToken.ExpirationTime != nil {
+		if t := accessToken.ExpirationTime.AsTime(); !t.IsZero() {
+			exp = t
+		}
+	}
 	ts.token = &oauth2.Token{
 		AccessToken: base64.StdEncoding.EncodeToString(accessTokenBytes),
 		TokenType:   "Bearer",

@@ -68,9 +68,12 @@ type userAuthenticator struct {
 
 // newAuthenticator creates a new userAuthenticator instance configured with the server's HashParameters.
 func newAuthenticator(username, password string, hashParams *HashParameters) (*userAuthenticator, error) {
+	if hashParams == nil {
+		return nil, fmt.Errorf("hashParams cannot be nil")
+	}
 	argon2Params, ok := hashParams.GetParameters().(*HashParameters_Argon2IdParameters_)
-	if !ok {
-		return nil, fmt.Errorf("expected Argon2IdParameters in HashParameters")
+	if !ok || argon2Params.Argon2IdParameters == nil {
+		return nil, fmt.Errorf("expected non-nil Argon2IdParameters in HashParameters")
 	}
 	return &userAuthenticator{
 		username:     username,
@@ -291,7 +294,9 @@ func finalize(blind []byte, evaluatedMessage []byte) ([]byte, error) {
 	curve := elliptic.P256()
 	order := curve.Params().N
 	inversedBlind := new(big.Int)
-	inversedBlind = inversedBlind.ModInverse(privateKey, order)
+	if inversedBlind = inversedBlind.ModInverse(privateKey, order); inversedBlind == nil {
+		return nil, fmt.Errorf("failed to compute modular inverse of blind")
+	}
 	bytesInversedBlind := make([]byte, 32)
 	inversedBlind.FillBytes(bytesInversedBlind)
 	oprf, err := evaluatedElement.ScalarMult(evaluatedElement, bytesInversedBlind)
