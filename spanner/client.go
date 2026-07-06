@@ -390,6 +390,14 @@ type ClientConfig struct {
 	// If unspecified, it defaults to CLOUD.
 	Type InstanceType
 
+	// Username is the username for logging into Spanner Omni.
+	// Note: This field is only applicable when Type is OMNI.
+	Username string
+
+	// Password is the password for logging into Spanner Omni.
+	// Note: This field is only applicable when Type is OMNI.
+	Password string
+
 	// UsePlainText specifies whether to use plain text for the connection.
 	UsePlainText bool
 
@@ -442,6 +450,16 @@ func (c ClientConfig) GetInstanceType() string {
 // GetUsePlainText returns whether plain text is used.
 func (c ClientConfig) GetUsePlainText() bool {
 	return c.UsePlainText
+}
+
+// GetUsername returns the username for OPAQUE login.
+func (c ClientConfig) GetUsername() string {
+	return c.Username
+}
+
+// GetPassword returns the password for OPAQUE login.
+func (c ClientConfig) GetPassword() string {
+	return c.Password
 }
 
 // GetCaCertificateFile returns the CA certificate file path.
@@ -624,6 +642,13 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 			return nil, err
 		}
 		opts = append(opts, omniOpts...)
+
+		if config.Username != "" && config.Password != "" {
+			tsOpts := append([]option.ClientOption(nil), opts...)
+			opts = append(opts, option.WithTokenSource(omni.NewTokenSource(config.Username, config.Password, tsOpts)))
+		} else {
+			opts = append(opts, option.WithoutAuthentication())
+		}
 	}
 
 	// Validate database path.

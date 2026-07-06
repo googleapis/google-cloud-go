@@ -411,6 +411,8 @@ func init() {
 	flag.StringVar(&omniConfig.caCertificateFile, "it.omni-ca-cert", "", "Path to CA certificate file for Spanner Omni connection")
 	flag.StringVar(&omniConfig.clientCertificateFile, "it.omni-client-cert", "", "Path to client certificate file for Spanner Omni connection")
 	flag.StringVar(&omniConfig.clientKeyFile, "it.omni-client-key", "", "Path to client key file for Spanner Omni connection")
+	flag.StringVar(&omniConfig.username, "it.omni-username", "", "Username for Spanner Omni connection")
+	flag.StringVar(&omniConfig.password, "it.omni-password", "", "Password for Spanner Omni connection")
 }
 
 type directPathTestConfig struct {
@@ -425,6 +427,8 @@ type spannerOmniTestConfig struct {
 	caCertificateFile     string
 	clientCertificateFile string
 	clientKeyFile         string
+	username              string
+	password              string
 }
 
 func omniConnectionConfig() ClientConfig {
@@ -438,6 +442,8 @@ func omniConnectionConfig() ClientConfig {
 		CaCertificateFile:     omniConfig.caCertificateFile,
 		ClientCertificateFile: omniConfig.clientCertificateFile,
 		ClientKeyFile:         omniConfig.clientKeyFile,
+		Username:              omniConfig.username,
+		Password:              omniConfig.password,
 	}
 }
 
@@ -5639,6 +5645,7 @@ func TestIntegration_Foreign_Key_Delete_Cascade_Action(t *testing.T) {
 
 func TestIntegration_GFE_Latency(t *testing.T) {
 	skipDirectPathTest(t)
+	skipSpannerOmniTest(t)
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 
@@ -6402,6 +6409,8 @@ func createClient(ctx context.Context, dbPath string, config ClientConfig) (clie
 		config.CaCertificateFile = omniConf.CaCertificateFile
 		config.ClientCertificateFile = omniConf.ClientCertificateFile
 		config.ClientKeyFile = omniConf.ClientKeyFile
+		config.Username = omniConf.Username
+		config.Password = omniConf.Password
 	}
 	client, err = makeClientWithConfig(ctx, dbPath, config, serverAddress, opts...)
 	if err != nil {
@@ -6429,6 +6438,8 @@ func createClientWithRole(ctx context.Context, dbPath string, spc SessionPoolCon
 		config.CaCertificateFile = omniConf.CaCertificateFile
 		config.ClientCertificateFile = omniConf.ClientCertificateFile
 		config.ClientKeyFile = omniConf.ClientKeyFile
+		config.Username = omniConf.Username
+		config.Password = omniConf.Password
 	}
 	client, err = makeClientWithConfig(ctx, dbPath, config, serverAddress, opts...)
 	if err != nil {
@@ -6455,6 +6466,8 @@ func createClientForProtoColumns(ctx context.Context, dbPath string, spc Session
 		config.CaCertificateFile = omniConf.CaCertificateFile
 		config.ClientCertificateFile = omniConf.ClientCertificateFile
 		config.ClientKeyFile = omniConf.ClientKeyFile
+		config.Username = omniConf.Username
+		config.Password = omniConf.Password
 	}
 	client, err = NewClientWithConfig(ctx, dbPath, config, opts...)
 	if err != nil {

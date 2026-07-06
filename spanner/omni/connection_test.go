@@ -121,8 +121,8 @@ func TestConnectionOptions(t *testing.T) {
 		if err != nil {
 			t.Fatalf("ConnectionOptions() unexpected error: %v", err)
 		}
-		if len(opts) != 2 {
-			t.Errorf("expected 2 connection options, got %v", len(opts))
+		if len(opts) != 1 {
+			t.Errorf("expected 1 connection option, got %v", len(opts))
 		}
 	})
 
@@ -131,8 +131,8 @@ func TestConnectionOptions(t *testing.T) {
 		if err != nil {
 			t.Fatalf("ConnectionOptions() unexpected error: %v", err)
 		}
-		if len(opts) != 2 {
-			t.Errorf("expected 2 connection options, got %v", len(opts))
+		if len(opts) != 1 {
+			t.Errorf("expected 1 connection option, got %v", len(opts))
 		}
 	})
 
@@ -142,8 +142,8 @@ func TestConnectionOptions(t *testing.T) {
 		if err != nil {
 			t.Fatalf("ConnectionOptions() unexpected error: %v", err)
 		}
-		if len(opts) != 2 {
-			t.Errorf("expected 2 connection options, got %v", len(opts))
+		if len(opts) != 1 {
+			t.Errorf("expected 1 connection option, got %v", len(opts))
 		}
 	})
 
@@ -153,8 +153,8 @@ func TestConnectionOptions(t *testing.T) {
 		if err != nil {
 			t.Fatalf("ConnectionOptions() unexpected error: %v", err)
 		}
-		if len(opts) != 2 {
-			t.Errorf("expected 2 connection options, got %v", len(opts))
+		if len(opts) != 1 {
+			t.Errorf("expected 1 connection option, got %v", len(opts))
 		}
 	})
 

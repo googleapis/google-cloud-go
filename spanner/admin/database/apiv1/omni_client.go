@@ -35,6 +35,8 @@ type OmniClientConfig interface {
 	GetCaCertificateFile() string
 	GetClientCertificateFile() string
 	GetClientKeyFile() string
+	GetUsername() string
+	GetPassword() string
 }
 
 // NewDatabaseAdminClientWithConfig creates a new database admin client with
@@ -55,6 +57,13 @@ func NewDatabaseAdminClientWithConfig(ctx context.Context, config OmniClientConf
 			return nil, err
 		}
 		opts = append(opts, omniOpts...)
+
+		if config.GetUsername() != "" && config.GetPassword() != "" {
+			tsOpts := append([]option.ClientOption(nil), opts...)
+			opts = append(opts, option.WithTokenSource(omni.NewTokenSource(config.GetUsername(), config.GetPassword(), tsOpts)))
+		} else {
+			opts = append(opts, option.WithoutAuthentication())
+		}
 	}
 
 	return NewDatabaseAdminClient(ctx, opts...)
