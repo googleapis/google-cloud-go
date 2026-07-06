@@ -135,6 +135,9 @@ func (ua *userAuthenticator) InitialRequest() (*LoginRequest, error) {
 
 // FinalRequest processes the server's initial response and generates the client's final OPAQUE verification message.
 func (ua *userAuthenticator) FinalRequest(initialResp *LoginResponse) (*LoginRequest, error) {
+	if initialResp == nil {
+		return nil, fmt.Errorf("initialResp cannot be nil")
+	}
 	opaqueResp := initialResp.GetOpaqueResponse().GetInitialResponse()
 	if opaqueResp == nil {
 		return nil, fmt.Errorf("expected initial opaque response")
@@ -446,8 +449,6 @@ func xorBytes(a, b []byte) ([]byte, error) {
 		return nil, fmt.Errorf("xorBytes: slices must not be empty")
 	}
 	result := make([]byte, len(a))
-	for i := range len(a) {
-		result[i] = a[i] ^ b[i]
-	}
+	subtle.XORBytes(result, a, b)
 	return result, nil
 }
