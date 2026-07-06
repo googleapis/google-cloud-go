@@ -24,7 +24,6 @@ import (
 	"crypto/subtle"
 	"fmt"
 	"io"
-	"math"
 	"math/big"
 	"slices"
 
@@ -75,10 +74,23 @@ func newAuthenticator(username, password string, hashParams *HashParameters) (*u
 	if !ok || argon2Params.Argon2IdParameters == nil {
 		return nil, fmt.Errorf("expected non-nil Argon2IdParameters in HashParameters")
 	}
+	p := argon2Params.Argon2IdParameters
+	if p.IterationCount < 1 {
+		return nil, fmt.Errorf("invalid Argon2Id iteration count: %d", p.IterationCount)
+	}
+	if p.MemoryUsage < 8 {
+		return nil, fmt.Errorf("invalid Argon2Id memory usage: %d", p.MemoryUsage)
+	}
+	if p.Parallelism < 1 {
+		return nil, fmt.Errorf("invalid Argon2Id parallelism: %d", p.Parallelism)
+	}
+	if p.HashSize < 1 {
+		return nil, fmt.Errorf("invalid Argon2Id hash size: %d", p.HashSize)
+	}
 	return &userAuthenticator{
 		username:     username,
 		password:     password,
-		argon2Params: argon2Params.Argon2IdParameters,
+		argon2Params: p,
 	}, nil
 }
 
@@ -328,7 +340,7 @@ func deriveKeyPair(seed, info []byte) (publicKey, privateKey []byte, err error) 
 func randomOracleSha256(x []byte, max *big.Int) ([]byte, error) {
 	hashOutputLength := 256
 	outputBitLength := max.BitLen() + hashOutputLength
-	iterCount := int(math.Ceil(float64(outputBitLength) / float64(hashOutputLength)))
+	iterCount := (outputBitLength + hashOutputLength - 1) / hashOutputLength
 	if iterCount*hashOutputLength > 130048 {
 		return nil, fmt.Errorf("the domain bit length must not be greater than 130048. Desired bit length: %d", outputBitLength)
 	}
@@ -353,10 +365,19 @@ func randomOracleSha256(x []byte, max *big.Int) ([]byte, error) {
 func blind(plaintext []byte) (publicKey, privateKey []byte, err error) {
 	point := p256.HashToCurve(plaintext, []byte(loginDomainSeparationTag))
 	curve := elliptic.P256()
-	scalar, _, _, err := elliptic.GenerateKey(curve, rand.Reader)
-	if err != nil {
-		return nil, nil, err
+	order := curve.Params().N
+	var scalarInt *big.Int
+	for {
+		scalarInt, err = rand.Int(rand.Reader, order)
+		if err != nil {
+			return nil, nil, err
+		}
+		if scalarInt.Sign() != 0 {
+			break
+		}
 	}
+	scalar := make([]byte, 32)
+	scalarInt.FillBytes(scalar)
 	point, err = point.ScalarMult(point, scalar)
 	if err != nil {
 		return nil, nil, err

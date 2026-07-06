@@ -58,6 +58,9 @@ func NewDatabaseAdminClientWithConfig(ctx context.Context, config OmniClientConf
 		}
 		opts = append(opts, omniOpts...)
 
+		if (config.GetUsername() != "") != (config.GetPassword() != "") {
+			return nil, status.Errorf(codes.InvalidArgument, "both Username and Password must be specified for Omni authentication")
+		}
 		if config.GetUsername() != "" && config.GetPassword() != "" {
 			tsOpts := append([]option.ClientOption(nil), opts...)
 			opts = append(opts, option.WithTokenSource(omni.NewTokenSource(config.GetUsername(), config.GetPassword(), tsOpts)))

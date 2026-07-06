@@ -643,6 +643,9 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 		}
 		opts = append(opts, omniOpts...)
 
+		if (config.Username != "") != (config.Password != "") {
+			return nil, spannerErrorf(codes.InvalidArgument, "both Username and Password must be specified for Omni authentication")
+		}
 		if config.Username != "" && config.Password != "" {
 			tsOpts := append([]option.ClientOption(nil), opts...)
 			opts = append(opts, option.WithTokenSource(omni.NewTokenSource(config.Username, config.Password, tsOpts)))
