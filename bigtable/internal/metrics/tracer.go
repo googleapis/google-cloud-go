@@ -360,12 +360,7 @@ func NewFactory(ctx context.Context, project, instance, appProfile string, metri
 		if otelContext != nil {
 			otelContext.close()
 		}
-		// context.WithoutCancel ensures the meter provider gets a chance to
-		// flush queued time series even if the caller's ctx is already
-		// canceled by the time Close() runs.
-		shutdownCtx, cancel := context.WithTimeout(context.WithoutCancel(ctx), 5*time.Second)
-		defer cancel()
-		meterProvider.Shutdown(shutdownCtx)
+		meterProvider.Shutdown(ctx)
 	}
 
 	// Create meter and instruments

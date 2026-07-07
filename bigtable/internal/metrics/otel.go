@@ -241,12 +241,7 @@ func newOtelMetricsContext(ctx context.Context, cfg metricsConfig) (*otelMetrics
 		ClientOpts:        opts,
 		OtelMeterProvider: OtelMeterProvider,
 		close: func() {
-			// context.WithoutCancel ensures the exporter gets a chance to
-			// flush queued time series even if the caller's ctx is already
-			// canceled by the time Close() runs.
-			shutdownCtx, cancel := context.WithTimeout(context.WithoutCancel(ctx), 5*time.Second)
-			defer cancel()
-			OtelMeterProvider.Shutdown(shutdownCtx)
+			OtelMeterProvider.Shutdown(ctx)
 		},
 	}, nil
 }
