@@ -29,11 +29,9 @@ import (
 	"fmt"
 	"os"
 	"reflect"
+	"strings"
 	"sync/atomic"
 	"time"
-
-	"regexp"
-	"strings"
 
 	"cloud.google.com/go/bigtable/internal"
 	btransport "cloud.google.com/go/bigtable/internal/transport"
@@ -236,7 +234,38 @@ var (
 
 	SharedStatsHandler = &StatsHandler{}
 
-	camel = regexp.MustCompile("([a-z0-9])([A-Z])")
+	// canonicalStatusStrings maps the standard gRPC status codes to their
+	// canonical SCREAMING_SNAKE_CASE string form. Indexed by codes.Code so
+	// CanonicalString is an allocation-free lookup on the status-recording
+	// hot path.
+	//
+	// Hand-rolled rather than delegating to grpc-go's canonicalString
+	// (unexported: only reachable via grpc/internal/CanonicalString) or
+	// google.golang.org/genproto/googleapis/rpc/code.Code_name (exported
+	// but emits "CANCELLED" for Canceled). The bigtable metrics label
+	// history uses "CANCELED" (single L) — matching the pre-refactor
+	// upstream code that ran `strings.ToUpper` over grpc-go's
+	// `codes.Canceled.String()` = "Canceled". Changing to either helper
+	// would flip the emitted label and break downstream dashboards.
+	canonicalStatusStrings = [...]string{
+		codes.OK:                 "OK",
+		codes.Canceled:           "CANCELED",
+		codes.Unknown:            "UNKNOWN",
+		codes.InvalidArgument:    "INVALID_ARGUMENT",
+		codes.DeadlineExceeded:   "DEADLINE_EXCEEDED",
+		codes.NotFound:           "NOT_FOUND",
+		codes.AlreadyExists:      "ALREADY_EXISTS",
+		codes.PermissionDenied:   "PERMISSION_DENIED",
+		codes.ResourceExhausted:  "RESOURCE_EXHAUSTED",
+		codes.FailedPrecondition: "FAILED_PRECONDITION",
+		codes.Aborted:            "ABORTED",
+		codes.OutOfRange:         "OUT_OF_RANGE",
+		codes.Unimplemented:      "UNIMPLEMENTED",
+		codes.Internal:           "INTERNAL",
+		codes.Unavailable:        "UNAVAILABLE",
+		codes.DataLoss:           "DATA_LOSS",
+		codes.Unauthenticated:    "UNAUTHENTICATED",
+	}
 )
 
 type metricInfo struct {
@@ -272,9 +301,9 @@ type Factory struct {
 }
 
 // Returns error only if MetricsProvider is of unknown type. Rest all errors are swallowed
-func NewFactory(ctx context.Context, project, instance, appProfile string, MetricsProvider MetricsProvider, opts ...option.ClientOption) (*Factory, error) {
-	if MetricsProvider != nil {
-		switch MetricsProvider.(type) {
+func NewFactory(ctx context.Context, project, instance, appProfile string, metricsProvider MetricsProvider, opts ...option.ClientOption) (*Factory, error) {
+	if metricsProvider != nil {
+		switch metricsProvider.(type) {
 		case NoopMetricsProvider:
 			return disabledMetricsTracerFactory, nil
 		default:
@@ -331,7 +360,12 @@ func NewFactory(ctx context.Context, project, instance, appProfile string, Metri
 		if otelContext != nil {
 			otelContext.close()
 		}
-		meterProvider.Shutdown(ctx)
+		// context.WithoutCancel ensures the meter provider gets a chance to
+		// flush queued time series even if the caller's ctx is already
+		// canceled by the time Close() runs.
+		shutdownCtx, cancel := context.WithTimeout(context.WithoutCancel(ctx), 5*time.Second)
+		defer cancel()
+		meterProvider.Shutdown(shutdownCtx)
 	}
 
 	// Create meter and instruments
@@ -341,7 +375,6 @@ func NewFactory(ctx context.Context, project, instance, appProfile string, Metri
 		// Swallow the error and disable metrics
 		return disabledMetricsTracerFactory, nil
 	}
-	// Swallow the error and disable metrics
 	return tracerFactory, nil
 }
 
@@ -1010,7 +1043,12 @@ func (mt *Tracer) CurrAttempt() *AttemptTracer {
 }
 
 func CanonicalString(c codes.Code) string {
-	return strings.ToUpper(camel.ReplaceAllString(c.String(), "${1}_${2}"))
+	if int(c) >= 0 && int(c) < len(canonicalStatusStrings) {
+		if s := canonicalStatusStrings[c]; s != "" {
+			return s
+		}
+	}
+	return "UNKNOWN"
 }
 
 func (mt *Tracer) IncrementAppBlockingLatency(latency float64) {
@@ -1103,9 +1141,14 @@ func (h *StatsHandler) TagRPC(ctx context.Context, info *stats.RPCTagInfo) conte
 	mt.RecordAttemptStart()
 
 	// Set method name if a caller (e.g. gaxInvokeWithRecorder) hasn't already.
+	// strings.LastIndex avoids the slice allocation strings.Split would incur
+	// on this per-attempt hot path.
 	if mt.method == "" {
-		parts := strings.Split(info.FullMethodName, "/")
-		mt.SetMethod(parts[len(parts)-1])
+		if idx := strings.LastIndex(info.FullMethodName, "/"); idx != -1 {
+			mt.SetMethod(info.FullMethodName[idx+1:])
+		} else {
+			mt.SetMethod(info.FullMethodName)
+		}
 	}
 
 	blockTracker := &blockingLatencyTracker{}
