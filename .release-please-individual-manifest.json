@@ -9,7 +9,7 @@
   "datastore": "1.24.0",
   "firestore": "1.22.0",
   "pubsub": "1.50.3",
-  "pubsub/v2": "2.6.0",
+  "pubsub/v2": "2.6.1",
   "pubsublite": "1.9.0",
   "spanner": "1.92.0",
   "storage": "1.63.0",
