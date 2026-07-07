@@ -1,10 +1,10 @@
 module cloud.google.com/go/internal/examples/fake
 
-go 1.25.8
+go 1.25.0
 
 require (
 	cloud.google.com/go/translate v1.17.0
-	google.golang.org/api v0.285.0
+	google.golang.org/api v0.287.1
 	google.golang.org/grpc v1.81.1
 )
 
@@ -20,7 +20,7 @@ require (
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/google/s2a-go v0.1.9 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.3.16 // indirect
-	github.com/googleapis/gax-go/v2 v2.22.0 // indirect
+	github.com/googleapis/gax-go/v2 v2.23.0 // indirect
 	go.opentelemetry.io/auto/sdk v1.2.1 // indirect
 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.67.0 // indirect
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.67.0 // indirect

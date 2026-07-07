@@ -3,7 +3,7 @@
 // For migration, see https://github.com/googleapis/google-cloud-go/blob/main/pubsub/MIGRATING.md
 module cloud.google.com/go/pubsub
 
-go 1.25.8
+go 1.25.0
 
 require (
 	cloud.google.com/go v0.123.0
@@ -12,7 +12,7 @@ require (
 	cloud.google.com/go/pubsub/v2 v2.6.0
 	github.com/google/go-cmp v0.7.0
 	github.com/google/uuid v1.6.0
-	github.com/googleapis/gax-go/v2 v2.22.0
+	github.com/googleapis/gax-go/v2 v2.23.0
 	go.einride.tech/aip v0.83.0
 	go.opencensus.io v0.24.0
 	go.opentelemetry.io/otel v1.44.0
@@ -21,7 +21,7 @@ require (
 	golang.org/x/oauth2 v0.36.0
 	golang.org/x/sync v0.21.0
 	golang.org/x/time v0.15.0
-	google.golang.org/api v0.285.0
+	google.golang.org/api v0.287.1
 	google.golang.org/genproto v0.0.0-20260319201613-d00831a3d3e7
 	google.golang.org/genproto/googleapis/api v0.0.0-20260615183401-62b3387ff324
 	google.golang.org/grpc v1.81.1

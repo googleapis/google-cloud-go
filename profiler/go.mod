@@ -1,6 +1,6 @@
 module cloud.google.com/go/profiler
 
-go 1.25.8
+go 1.25.0
 
 require (
 	cloud.google.com/go v0.123.0
@@ -8,9 +8,9 @@ require (
 	cloud.google.com/go/storage v1.62.3
 	github.com/golang/mock v1.7.0-rc.1
 	github.com/google/pprof v0.0.0-20260604005048-7023385849c0
-	github.com/googleapis/gax-go/v2 v2.22.0
+	github.com/googleapis/gax-go/v2 v2.23.0
 	golang.org/x/oauth2 v0.36.0
-	google.golang.org/api v0.285.0
+	google.golang.org/api v0.287.1
 	google.golang.org/genproto v0.0.0-20260319201613-d00831a3d3e7
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20260615183401-62b3387ff324
 	google.golang.org/grpc v1.81.1

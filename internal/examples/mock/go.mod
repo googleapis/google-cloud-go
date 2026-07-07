@@ -4,7 +4,7 @@ go 1.25.0
 
 require (
 	cloud.google.com/go/translate v1.17.0
-	github.com/googleapis/gax-go/v2 v2.22.0
+	github.com/googleapis/gax-go/v2 v2.23.0
 )
 
 require (
