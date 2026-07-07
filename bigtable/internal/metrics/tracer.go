@@ -1043,7 +1043,10 @@ func CanonicalString(c codes.Code) string {
 			return s
 		}
 	}
-	return "UNKNOWN"
+	// Match grpc-go's canonicalString fallback for out-of-range codes so
+	// tests (and log/metric consumers) that expect the "CODE(N)" shape
+	// keep working — e.g. metrics_test.go's TestCanonicalString.
+	return fmt.Sprintf("CODE(%d)", int(c))
 }
 
 func (mt *Tracer) IncrementAppBlockingLatency(latency float64) {

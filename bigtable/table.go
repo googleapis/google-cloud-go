@@ -15,9 +15,9 @@
 package bigtable
 
 import (
-	metrics "cloud.google.com/go/bigtable/internal/metrics"
 	"context"
 
+	metrics "cloud.google.com/go/bigtable/internal/metrics"
 	"google.golang.org/grpc/metadata"
 )
 

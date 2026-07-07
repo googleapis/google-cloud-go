@@ -15,7 +15,6 @@
 package bigtable
 
 import (
-	metrics "cloud.google.com/go/bigtable/internal/metrics"
 	"bytes"
 	"context"
 	"errors"
@@ -26,6 +25,7 @@ import (
 	"time"
 
 	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
+	metrics "cloud.google.com/go/bigtable/internal/metrics"
 	"cloud.google.com/go/internal/trace"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/apierror"

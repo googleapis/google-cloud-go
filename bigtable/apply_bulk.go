@@ -15,13 +15,13 @@
 package bigtable
 
 import (
-	metrics "cloud.google.com/go/bigtable/internal/metrics"
 	"context"
 	"errors"
 	"fmt"
 	"io"
 
 	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
+	metrics "cloud.google.com/go/bigtable/internal/metrics"
 	"cloud.google.com/go/internal/trace"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/grpc/codes"
