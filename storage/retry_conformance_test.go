@@ -21,7 +21,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"net/url"
 	"os"
@@ -1134,7 +1133,6 @@ var methods = map[string][]retryFunc{
 			if err != nil {
 				return fmt.Errorf("NewWriterFromAppendableObject: %v", err)
 			}
-			log.Printf("writer created")
 			if l != int64(2*MiB) {
 				return fmt.Errorf("NewWriterFromAppendableObject unexpected len: got %v, want %v", l, 2*MiB)
 			}

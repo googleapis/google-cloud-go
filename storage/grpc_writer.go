@@ -53,7 +53,7 @@ func (w *gRPCWriter) Write(p []byte) (n int, err error) {
 	case <-w.donec:
 		return 0, w.streamResult
 	case w.writesChan <- cmd:
-		if w.shouldChecksum() {
+		if w.shouldChecksum(true) {
 			w.fullObjectChecksumMu.Lock()
 			w.fullObjectChecksum = crc32.Update(w.fullObjectChecksum, crc32cTable, p)
 			w.fullObjectChecksumMu.Unlock()
@@ -73,7 +73,7 @@ func (w *gRPCWriter) Write(p []byte) (n int, err error) {
 func (w *gRPCWriter) Flush() (int64, error) {
 	done := make(chan int64)
 	cmd := &gRPCWriterCommandFlush{done: done}
-	if w.shouldChecksum() {
+	if w.shouldChecksum(true) {
 		w.fullObjectChecksumMu.RLock()
 		cmd.checksum = w.fullObjectChecksum
 		w.fullObjectChecksumMu.RUnlock()
@@ -102,7 +102,7 @@ func (w *gRPCWriter) Close() error {
 func (w *gRPCWriter) CloseWithError(err error) error {
 	// N.B. CloseWithError always returns nil!
 	var checksum uint32
-	if w.shouldChecksum() {
+	if w.shouldChecksum(true) {
 		w.fullObjectChecksumMu.RLock()
 		checksum = w.fullObjectChecksum
 		w.fullObjectChecksumMu.RUnlock()
@@ -565,9 +565,12 @@ Loop:
 	return closeErr.err
 }
 
-func (w *gRPCWriter) shouldChecksum() bool {
+func (w *gRPCWriter) shouldChecksum(checkInitialChecksum bool) bool {
 	md5Provided := w.attrs != nil && w.attrs.MD5 != nil
 	// Skip checksum calculation if user configures MD5 or CRC32C themselves.
+	if !checkInitialChecksum {
+		return !w.disableAutoChecksum && !w.sendCRC32C && !md5Provided
+	}
 	return !w.disableAutoChecksum && !w.sendCRC32C && !md5Provided && w.hasInitialChecksum
 }
 
@@ -582,7 +585,7 @@ func (w *gRPCWriter) getFullObjectChecksum() *uint32 {
 }
 
 func (w *gRPCWriter) popFlushChecksum(offset int64) (uint32, bool) {
-	if !w.shouldChecksum() {
+	if !w.shouldChecksum(true) {
 		return 0, false
 	}
 	w.flushChecksumsMu.Lock()
@@ -874,7 +877,7 @@ type gRPCWriterCommandFlush struct {
 
 func (c *gRPCWriterCommandFlush) handle(w *gRPCWriter, cs gRPCWriterCommandHandleChans) error {
 	flushTarget := w.bufBaseOffset + int64(len(w.buf))
-	if w.shouldChecksum() {
+	if w.shouldChecksum(true) {
 		w.flushChecksumsMu.Lock()
 		if w.flushChecksums == nil {
 			w.flushChecksums = make(map[int64]uint32)
@@ -920,7 +923,7 @@ func (e *gRPCWriterCommandClose) Error() string {
 
 func (c *gRPCWriterCommandClose) handle(w *gRPCWriter, cs gRPCWriterCommandHandleChans) error {
 	flushTarget := w.bufBaseOffset + int64(len(w.buf))
-	if w.shouldChecksum() {
+	if w.shouldChecksum(true) {
 		w.flushChecksumsMu.Lock()
 		if w.flushChecksums == nil {
 			w.flushChecksums = make(map[int64]uint32)
@@ -1529,7 +1532,7 @@ func (w *gRPCWriter) newGRPCAppendTakeoverWriteBufferSender() *gRPCAppendTakeove
 			w.handleCompletion(c)
 			// Ignore full object checksum if checksum is not returned by server
 			// on takeover.
-			if !w.disableAutoChecksum {
+			if w.shouldChecksum(false) {
 				if c.resource != nil && c.resource.Checksums != nil && c.resource.Checksums.Crc32C != nil {
 					w.fullObjectChecksum = c.resource.GetChecksums().GetCrc32C()
 					w.hasInitialChecksum = true
