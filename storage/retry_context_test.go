@@ -208,7 +208,6 @@ func TestGRPCRetryContextMetadataListObjects(t *testing.T) {
 	// it.Next() triggers the fetch, which triggers ListObjects call
 	_, err = it.Next()
 
-
 	if err == nil {
 		t.Fatalf("expected call to fail due to invalid address, but got success")
 	}
@@ -306,7 +305,6 @@ func TestGRPCRetryContextMetadataMultiRangeDownloader(t *testing.T) {
 			return ctx.Attempt < 3
 		}),
 	).NewMultiRangeDownloader(ctx)
-
 
 	if err == nil {
 		if mrd != nil {
