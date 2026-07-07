@@ -443,7 +443,7 @@ func omniConnectionConfig() ClientConfig {
 		ClientCertificateFile: omniConfig.clientCertificateFile,
 		ClientKeyFile:         omniConfig.clientKeyFile,
 		Username:              omniConfig.username,
-		Password:              omniConfig.password,
+		Password:              []byte(omniConfig.password),
 	}
 }
 

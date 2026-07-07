@@ -23,6 +23,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"os"
+	"slices"
 	sync "sync"
 	"time"
 
@@ -173,17 +174,17 @@ var LoginServiceServiceDesc = grpc.ServiceDesc{
 type omniTokenSource struct {
 	mu       sync.Mutex
 	username string
-	password string
+	password []byte
 	opts     []option.ClientOption
 	token    *oauth2.Token
 }
 
 // NewTokenSource creates a new TokenSource for Omni authentication.
-func NewTokenSource(username, password string, opts []option.ClientOption) oauth2.TokenSource {
+func NewTokenSource(username string, password []byte, opts []option.ClientOption) oauth2.TokenSource {
 	tsOpts := append([]option.ClientOption{option.WithoutAuthentication()}, opts...)
 	return &omniTokenSource{
 		username: username,
-		password: password,
+		password: slices.Clone(password),
 		opts:     tsOpts,
 	}
 }

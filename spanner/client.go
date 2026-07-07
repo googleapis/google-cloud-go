@@ -396,7 +396,7 @@ type ClientConfig struct {
 
 	// Password is the password for logging into Spanner Omni.
 	// Note: This field is only applicable when Type is OMNI.
-	Password string
+	Password []byte
 
 	// UsePlainText specifies whether to use plain text for the connection.
 	UsePlainText bool
@@ -458,7 +458,7 @@ func (c ClientConfig) GetUsername() string {
 }
 
 // GetPassword returns the password for OPAQUE login.
-func (c ClientConfig) GetPassword() string {
+func (c ClientConfig) GetPassword() []byte {
 	return c.Password
 }
 
@@ -643,10 +643,12 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 		}
 		opts = append(opts, omniOpts...)
 
-		if (config.Username != "") != (config.Password != "") {
+		hasUsername := config.Username != ""
+		hasPassword := len(config.Password) > 0
+		if hasUsername != hasPassword {
 			return nil, spannerErrorf(codes.InvalidArgument, "both Username and Password must be specified for Omni authentication")
 		}
-		if config.Username != "" && config.Password != "" {
+		if hasUsername && hasPassword {
 			tsOpts := append([]option.ClientOption(nil), opts...)
 			opts = append(opts, option.WithTokenSource(omni.NewTokenSource(config.Username, config.Password, tsOpts)))
 		} else {

@@ -384,7 +384,7 @@ func TestExtract(t *testing.T) {
 
 func TestNewAuthenticatorValidation(t *testing.T) {
 	t.Run("nil hashParams", func(t *testing.T) {
-		_, err := newAuthenticator("user", "pass", nil)
+		_, err := newAuthenticator("user", []byte("pass"), nil)
 		if err == nil {
 			t.Errorf("expected error for nil hashParams")
 		}
@@ -396,7 +396,7 @@ func TestNewAuthenticatorValidation(t *testing.T) {
 				Argon2IdParameters: nil,
 			},
 		}
-		_, err := newAuthenticator("user", "pass", hashParams)
+		_, err := newAuthenticator("user", []byte("pass"), hashParams)
 		if err == nil {
 			t.Errorf("expected error for nil Argon2IdParameters")
 		}
@@ -451,7 +451,7 @@ func TestNewAuthenticatorValidation(t *testing.T) {
 						Argon2IdParameters: tc.params,
 					},
 				}
-				_, err := newAuthenticator("user", "pass", hashParams)
+				_, err := newAuthenticator("user", []byte("pass"), hashParams)
 				if err == nil {
 					t.Errorf("expected error for %s", tc.name)
 				}

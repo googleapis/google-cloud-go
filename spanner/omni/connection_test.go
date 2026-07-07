@@ -264,7 +264,7 @@ func TestTokenSource_ServerUnsupportedProtocol(t *testing.T) {
 	})
 	defer cleanup()
 
-	ts := NewTokenSource("user", "pass", []option.ClientOption{
+	ts := NewTokenSource("user", []byte("pass"), []option.ClientOption{
 		option.WithGRPCDialOption(grpc.WithContextDialer(func(context.Context, string) (net.Conn, error) {
 			return lis.Dial()
 		})),
@@ -280,7 +280,7 @@ func TestTokenSource_ServerUnsupportedProtocol(t *testing.T) {
 
 func TestTokenSource_NoAccessTokenInFinalResponse(t *testing.T) {
 	username := "admin"
-	password := "password"
+	password := []byte("password")
 	argon2Params := &HashParameters_Argon2IdParameters{
 		IterationCount: 3,
 		MemoryUsage:    64 * 1024,
@@ -367,7 +367,7 @@ func TestTokenSource_NoAccessTokenInFinalResponse(t *testing.T) {
 
 func TestTokenSource_SuccessAndCaching(t *testing.T) {
 	username := "admin"
-	password := "admin1234"
+	password := []byte("admin1234")
 
 	// Pre-derive server & client user registration data for OPAQUE
 	serverSeed := []byte("server-seed")
@@ -391,7 +391,7 @@ func TestTokenSource_SuccessAndCaching(t *testing.T) {
 	if err != nil {
 		t.Fatalf("deriveKeyPair failed: %v", err)
 	}
-	oprf, err := evaluate(t, []byte(password), oprfKey)
+	oprf, err := evaluate(t, password, oprfKey)
 	if err != nil {
 		t.Fatalf("evaluate failed: %v", err)
 	}

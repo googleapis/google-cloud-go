@@ -47,17 +47,12 @@ const (
 	hashLength                         = sha256.Size
 	publicKeyLength                    = 33
 	credentialResponsePadLength        = publicKeyLength + nonceLength + macTagLength
-
-	argon2IterationCount uint32 = 3
-	argon2MemoryLimit    uint32 = 64 * 1024
-	argon2Threads        uint8  = 4
-	argon2SaltLength            = 32
 )
 
 // userAuthenticator manages the client state for OPAQUE login authentication.
 type userAuthenticator struct {
 	username              string
-	password              string
+	password              []byte
 	blind                 []byte
 	clientPublicKeyshare  []byte
 	clientPrivateKeyshare []byte
@@ -66,7 +61,7 @@ type userAuthenticator struct {
 }
 
 // newAuthenticator creates a new userAuthenticator instance configured with the server's HashParameters.
-func newAuthenticator(username, password string, hashParams *HashParameters) (*userAuthenticator, error) {
+func newAuthenticator(username string, password []byte, hashParams *HashParameters) (*userAuthenticator, error) {
 	if hashParams == nil {
 		return nil, fmt.Errorf("hashParams cannot be nil")
 	}
@@ -89,7 +84,7 @@ func newAuthenticator(username, password string, hashParams *HashParameters) (*u
 	}
 	return &userAuthenticator{
 		username:     username,
-		password:     password,
+		password:     slices.Clone(password),
 		argon2Params: p,
 	}, nil
 }
