@@ -1329,6 +1329,91 @@ func TestWriterFlushEmulated(t *testing.T) {
 	})
 }
 
+// customFlushCRCWriteStream intercepts BidiWriteObjectResponse
+// messages and injects an invalid CRC32C checksum on the flush.
+type customFlushCRCWriteStream struct {
+	grpc.ClientStream
+}
+
+func (s *customFlushCRCWriteStream) RecvMsg(m any) error {
+	err := s.ClientStream.RecvMsg(m)
+	if err != nil {
+		return err
+	}
+
+	resp, ok := m.(*storagepb.BidiWriteObjectResponse)
+	if ok && resp.PersistedDataChecksums != nil && resp.PersistedDataChecksums.Crc32C != nil {
+		*resp.PersistedDataChecksums.Crc32C++
+	}
+
+	return nil
+}
+
+func TestWriterWrongFlushChecksumEmulated(t *testing.T) {
+	checkEmulatorEnvironment(t)
+	for _, tc := range []struct {
+		name       string
+		testAction func(*Writer) error
+	}{
+		{
+			name: "Flush",
+			testAction: func(w *Writer) error {
+				_, err := w.Flush()
+				return err
+			},
+		},
+		{
+			name: "Close without finalize",
+			testAction: func(w *Writer) error {
+				return w.Close()
+			},
+		},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			ctx := context.Background()
+
+			streamInterceptor := grpc.WithStreamInterceptor(
+				func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
+					clientStream, err := streamer(ctx, desc, cc, method, opts...)
+					if method == "/google.storage.v2.Storage/BidiWriteObject" {
+						clientStream = &customFlushCRCWriteStream{ClientStream: clientStream}
+					}
+					return clientStream, err
+				})
+
+			client, err := NewGRPCClient(ctx, option.WithGRPCDialOption(streamInterceptor))
+			if err != nil {
+				t.Fatalf("NewGRPCClient: %v", err)
+			}
+			defer client.Close()
+
+			prefix := time.Now().Nanosecond()
+			bucket := fmt.Sprintf("bucket-%d", prefix)
+			objName := fmt.Sprintf("%d-object", prefix)
+			o := client.Bucket(bucket).Object(objName)
+
+			if err := client.Bucket(bucket).Create(ctx, "project", nil); err != nil {
+				t.Fatalf("creating test bucket: %v", err)
+			}
+			defer client.Bucket(bucket).Delete(ctx)
+
+			w := o.NewWriter(ctx)
+			w.Append = true
+
+			if _, err = w.Write([]byte("test data")); err != nil {
+				t.Fatalf("writing test data: got %v; want ok", err)
+			}
+
+			err = tc.testAction(w)
+			if err == nil {
+				t.Errorf("%s: got nil error, want checksum mismatch error", tc.name)
+			} else if !strings.Contains(err.Error(), "checksum mismatch") {
+				t.Errorf("%s: got %v error, want checksum mismatch error", tc.name, err)
+			}
+		})
+	}
+}
+
 func TestWriterFlushAtCloseEmulated(t *testing.T) {
 	transportClientTest(skipHTTP("appends only supported via gRPC"), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
 		// Populate test data.

@@ -4330,6 +4330,7 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 			takeoverFlushOffset  int64
 			opts                 *AppendableWriterOpts
 			checkProgressOffsets []int64
+			incorrectChecksum    bool
 		}{
 			{
 				name:           "first message takeover w/large flush",
@@ -4406,6 +4407,25 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 					FinalizeOnClose: true,
 				},
 			},
+			{
+				name:           "takeover with user checksum with finalize",
+				content:        randomBytes9MiB,
+				takeoverOffset: MiB,
+				opts: &AppendableWriterOpts{
+					SendCRC32C:      true,
+					FinalizeOnClose: true,
+				},
+			},
+			{
+				name:           "takeover with incorrect checksum with finalize",
+				content:        randomBytes9MiB,
+				takeoverOffset: MiB,
+				opts: &AppendableWriterOpts{
+					SendCRC32C:      true,
+					FinalizeOnClose: true,
+				},
+				incorrectChecksum: true,
+			},
 		}
 		for _, tc := range testCases {
 			t.Run(tc.name, func(t *testing.T) {
@@ -4434,12 +4454,27 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 						gotOffsets = append(gotOffsets, n)
 					}
 				}
+				if opts != nil && opts.SendCRC32C {
+					opts.CRC32C = crc32.Checksum(tc.content, crc32cTable)
+					if tc.incorrectChecksum {
+						opts.CRC32C++
+					}
+				}
 				w2, off, err := obj.Generation(gen).NewWriterFromAppendableObject(ctx, opts)
 				if err != nil {
 					t.Fatalf("NewWriterFromAppendableObject: %v", err)
 				}
 				if off != tc.takeoverOffset {
 					t.Errorf("takeover offset: got %v, want %v", off, tc.takeoverOffset)
+				}
+				if tc.incorrectChecksum {
+					if _, err := w2.Write(tc.content[off:]); err != nil {
+						t.Fatalf("writer.Write: %v", err)
+					}
+					if err := w2.Close(); !errorIsStatusCode(err, http.StatusBadRequest, codes.InvalidArgument) {
+						t.Fatalf("expected an InvalidArgument error for incorrect checksum, but got %v", err)
+					}
+					return
 				}
 
 				// Validate that options are populated as expected.

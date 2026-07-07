@@ -21,6 +21,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"net/url"
 	"os"
@@ -987,6 +988,257 @@ var methods = map[string][]retryFunc{
 			if err != nil {
 				return fmt.Errorf("obj.NewReader: %v", err)
 			}
+			content, err := io.ReadAll(r)
+			if err != nil {
+				return fmt.Errorf("Reader.Read: %v", err)
+			}
+
+			gotMd5 := md5.Sum(content)
+			expectedMd5 := md5.Sum(toWrite)
+			if d := cmp.Diff(gotMd5, expectedMd5); d != "" {
+				return fmt.Errorf("content mismatch, got %v bytes (md5: %v), want %v bytes (md5: %v)",
+					len(content), gotMd5, len(toWrite), expectedMd5)
+			}
+			return nil
+		},
+		// Appendable upload writing 2 MiB at a time.
+		func(ctx context.Context, c *Client, fs *resources, preconditions bool) error {
+			b := c.Bucket(fs.bucket.Name)
+			obj := b.Object(objectIDs.New())
+			if preconditions {
+				obj = obj.If(Conditions{DoesNotExist: true})
+			}
+
+			objW := obj.NewWriter(ctx)
+			objW.ChunkSize = 4 * MiB
+			data := generateRandomBytes(32 * MiB)
+			objW.Append = true
+			objW.FinalizeOnClose = true
+
+			writeSize := 2 * MiB
+			for i := 0; i < 16; i++ {
+				if _, err := objW.Write(data[i*writeSize : (i+1)*writeSize]); err != nil {
+					return fmt.Errorf("Writer.Write: %v", err)
+				}
+			}
+			if err := objW.Close(); err != nil {
+				return fmt.Errorf("Writer.Close: %v", err)
+			}
+
+			if objW.Attrs() == nil {
+				return fmt.Errorf("Writer.Attrs: expected attrs for written object, got nil")
+			}
+
+			r, err := b.Object(obj.ObjectName()).NewReader(ctx)
+			if err != nil {
+				return fmt.Errorf("obj.NewReader: %v", err)
+			}
+			defer r.Close()
+			content, err := io.ReadAll(r)
+			if err != nil {
+				return fmt.Errorf("Reader.Read: %v", err)
+			}
+
+			gotMd5 := md5.Sum(content)
+			expectedMd5 := md5.Sum(data)
+			if d := cmp.Diff(gotMd5, expectedMd5); d != "" {
+				return fmt.Errorf("content mismatch, got %v bytes (md5: %v), want %v bytes (md5: %v)",
+					len(content), gotMd5, len(data), expectedMd5)
+			}
+			return nil
+		},
+		// Appendable upload writing small and large chunks.
+		func(ctx context.Context, c *Client, fs *resources, preconditions bool) error {
+			b := c.Bucket(fs.bucket.Name)
+			obj := b.Object(objectIDs.New())
+			if preconditions {
+				obj = obj.If(Conditions{DoesNotExist: true})
+			}
+
+			objW := obj.NewWriter(ctx)
+			objW.ChunkSize = 4 * MiB
+			data := generateRandomBytes(32 * MiB)
+			objW.Append = true
+			objW.FinalizeOnClose = true
+
+			totalWriteSize := 0
+			times := 0
+			for totalWriteSize < len(data) {
+				times++
+				writeSize := 5 * KiB
+				if times%2 == 0 {
+					writeSize = 6 * MiB
+				}
+				if totalWriteSize+writeSize > len(data) {
+					writeSize = len(data) - totalWriteSize
+				}
+				if _, err := objW.Write(data[totalWriteSize : totalWriteSize+writeSize]); err != nil {
+					return fmt.Errorf("Writer.Write: %v", err)
+				}
+				totalWriteSize += writeSize
+			}
+			if err := objW.Close(); err != nil {
+				return fmt.Errorf("Writer.Close: %v", err)
+			}
+
+			if objW.Attrs() == nil {
+				return fmt.Errorf("Writer.Attrs: expected attrs for written object, got nil")
+			}
+
+			r, err := b.Object(obj.ObjectName()).NewReader(ctx)
+			if err != nil {
+				return fmt.Errorf("obj.NewReader: %v", err)
+			}
+			defer r.Close()
+			content, err := io.ReadAll(r)
+			if err != nil {
+				return fmt.Errorf("Reader.Read: %v", err)
+			}
+
+			gotMd5 := md5.Sum(content)
+			expectedMd5 := md5.Sum(data)
+			if d := cmp.Diff(gotMd5, expectedMd5); d != "" {
+				return fmt.Errorf("content mismatch, got %v bytes (md5: %v), want %v bytes (md5: %v)",
+					len(content), gotMd5, len(data), expectedMd5)
+			}
+			return nil
+		},
+		// Appendable upload using a takeover, writing remaining data 2 MiB at a time.
+		func(ctx context.Context, c *Client, fs *resources, preconditions bool) error {
+			b := c.Bucket(fs.bucket.Name)
+			obj := b.Object(objectIDs.New())
+			if preconditions {
+				obj = obj.If(Conditions{DoesNotExist: true})
+			}
+
+			// Total data: 34 MiB. Initial write: 2 MiB. Remaining: 32 MiB.
+			chunkSize := 4 * MiB
+			toWrite := generateRandomBytes(34 * MiB)
+
+			objW := obj.NewWriter(ctx)
+			objW.Append = true
+			objW.ChunkSize = chunkSize
+			if _, err := objW.Write(toWrite[0 : 2*MiB]); err != nil {
+				return fmt.Errorf("Writer.Write: %w", err)
+			}
+			if err := objW.Close(); err != nil {
+				return fmt.Errorf("Creation Writer.Close: %v", err)
+			}
+
+			generation := int64(0)
+			if preconditions {
+				generation = objW.Attrs().Generation
+			}
+			objT := b.Object(obj.ObjectName()).Generation(generation)
+			w, l, err := objT.NewWriterFromAppendableObject(ctx, &AppendableWriterOpts{ChunkSize: chunkSize})
+			if err != nil {
+				return fmt.Errorf("NewWriterFromAppendableObject: %v", err)
+			}
+			log.Printf("writer created")
+			if l != int64(2*MiB) {
+				return fmt.Errorf("NewWriterFromAppendableObject unexpected len: got %v, want %v", l, 2*MiB)
+			}
+
+			// Write remaining 32 MiB, 2 MiB at a time
+			writeSize := 2 * MiB
+			for i := 0; i < 16; i++ {
+				offset := 2*MiB + i*writeSize
+				if _, err := w.Write(toWrite[offset : offset+writeSize]); err != nil {
+					return fmt.Errorf("Writer.Write: %v", err)
+				}
+			}
+			if err := w.Close(); err != nil {
+				return fmt.Errorf("Writer.Close: %v", err)
+			}
+
+			if w.Attrs() == nil {
+				return fmt.Errorf("Writer.Attrs: expected attrs for written object, got nil")
+			}
+
+			r, err := b.Object(obj.ObjectName()).NewReader(ctx)
+			if err != nil {
+				return fmt.Errorf("obj.NewReader: %v", err)
+			}
+			defer r.Close()
+			content, err := io.ReadAll(r)
+			if err != nil {
+				return fmt.Errorf("Reader.Read: %v", err)
+			}
+
+			gotMd5 := md5.Sum(content)
+			expectedMd5 := md5.Sum(toWrite)
+			if d := cmp.Diff(gotMd5, expectedMd5); d != "" {
+				return fmt.Errorf("content mismatch, got %v bytes (md5: %v), want %v bytes (md5: %v)",
+					len(content), gotMd5, len(toWrite), expectedMd5)
+			}
+			return nil
+		},
+		// Appendable upload using a takeover, writing remaining data in small and large chunks.
+		func(ctx context.Context, c *Client, fs *resources, preconditions bool) error {
+			b := c.Bucket(fs.bucket.Name)
+			obj := b.Object(objectIDs.New())
+			if preconditions {
+				obj = obj.If(Conditions{DoesNotExist: true})
+			}
+
+			// Total data: 34 MiB. Initial write: 2 MiB. Remaining: 32 MiB.
+			chunkSize := 4 * MiB
+			toWrite := generateRandomBytes(34 * MiB)
+
+			objW := obj.NewWriter(ctx)
+			objW.Append = true
+			objW.ChunkSize = chunkSize
+			if _, err := objW.Write(toWrite[0 : 2*MiB]); err != nil {
+				return fmt.Errorf("Writer.Write: %w", err)
+			}
+			if err := objW.Close(); err != nil {
+				return fmt.Errorf("Creation Writer.Close: %v", err)
+			}
+
+			generation := int64(0)
+			if preconditions {
+				generation = objW.Attrs().Generation
+			}
+			objT := b.Object(obj.ObjectName()).Generation(generation)
+			w, l, err := objT.NewWriterFromAppendableObject(ctx, &AppendableWriterOpts{ChunkSize: chunkSize})
+			if err != nil {
+				return fmt.Errorf("NewWriterFromAppendableObject: %v", err)
+			}
+			if l != int64(2*MiB) {
+				return fmt.Errorf("NewWriterFromAppendableObject unexpected len: got %v, want %v", l, 2*MiB)
+			}
+
+			// Write remaining 32 MiB in small and large chunks.
+			remainingData := toWrite[2*MiB:]
+			totalWriteSize := 0
+			times := 0
+			for totalWriteSize < len(remainingData) {
+				times++
+				writeSize := 5 * KiB
+				if times%2 == 0 {
+					writeSize = 6 * MiB
+				}
+				if totalWriteSize+writeSize > len(remainingData) {
+					writeSize = len(remainingData) - totalWriteSize
+				}
+				if _, err := w.Write(remainingData[totalWriteSize : totalWriteSize+writeSize]); err != nil {
+					return fmt.Errorf("Writer.Write: %v", err)
+				}
+				totalWriteSize += writeSize
+			}
+			if err := w.Close(); err != nil {
+				return fmt.Errorf("Writer.Close: %v", err)
+			}
+
+			if w.Attrs() == nil {
+				return fmt.Errorf("Writer.Attrs: expected attrs for written object, got nil")
+			}
+
+			r, err := b.Object(obj.ObjectName()).NewReader(ctx)
+			if err != nil {
+				return fmt.Errorf("obj.NewReader: %v", err)
+			}
+			defer r.Close()
 			content, err := io.ReadAll(r)
 			if err != nil {
 				return fmt.Errorf("Reader.Read: %v", err)
