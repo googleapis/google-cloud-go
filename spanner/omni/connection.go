@@ -163,7 +163,13 @@ var LoginServiceServiceDesc = grpc.ServiceDesc{
 	Metadata: "omni.proto",
 }
 
-// omniTokenSource is a TokenSource that performs OPAQUE protocol handshake to retrieve access token.
+// omniTokenSource implements oauth2.TokenSource to provide bearer tokens for Spanner Omni.
+//
+// Note: The token issued by Spanner Omni is a custom OPAQUE access token (a serialized
+// and base64-encoded AccessToken proto) rather than an OAuth 2.0 token issued by an
+// OAuth authorization server. We implement oauth2.TokenSource so that gRPC transport
+// can automatically inject the token as an "authorization: Bearer <token>" header on
+// outgoing RPCs and manage token caching and expiration tracking via oauth2.Token.Valid().
 type omniTokenSource struct {
 	mu       sync.Mutex
 	username string
@@ -276,6 +282,10 @@ func (ts *omniTokenSource) Token() (*oauth2.Token, error) {
 			exp = t
 		}
 	}
+
+	// Spanner Omni access tokens are custom serialized AccessToken protos rather than OAuth2 tokens.
+	// We wrap the base64-encoded proto in an oauth2.Token so gRPC transport automatically
+	// attaches the "authorization: Bearer <token>" header on outgoing RPCs.
 	ts.token = &oauth2.Token{
 		AccessToken: base64.StdEncoding.EncodeToString(accessTokenBytes),
 		TokenType:   "Bearer",
