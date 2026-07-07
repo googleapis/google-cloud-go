@@ -31,6 +31,9 @@ import (
 	pb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/apierror"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
@@ -156,6 +159,10 @@ func (op *Operation) Wait(ctx context.Context, resp protoadapt.MessageV1, opts .
 //
 // See documentation of Poll for error-handling information.
 func (op *Operation) WaitWithInterval(ctx context.Context, resp protoadapt.MessageV1, interval time.Duration, opts ...gax.CallOption) error {
+	return op.waitWithInterval(ctx, resp, interval, gax.Sleep, opts...)
+}
+
+func (op *Operation) waitWithInterval(ctx context.Context, resp protoadapt.MessageV1, interval time.Duration, sl sleeper, opts ...gax.CallOption) error {
 	bo := gax.Backoff{
 		Initial: 1 * time.Second,
 		Max:     interval,
@@ -163,7 +170,34 @@ func (op *Operation) WaitWithInterval(ctx context.Context, resp protoadapt.Messa
 	if bo.Max < bo.Initial {
 		bo.Max = bo.Initial
 	}
-	return op.wait(ctx, resp, &bo, gax.Sleep, opts...)
+
+	if !gax.IsFeatureEnabled("TRACING") {
+		return op.wait(ctx, resp, &bo, sl, opts...)
+	}
+
+	spanName := op.opName
+	if spanName == "" {
+		spanName = "*longrunning.Operation.Wait"
+	} else {
+		spanName = spanName + ".Wait"
+	}
+
+	var startOpts []trace.SpanStartOption
+	if op.initSpanContext.IsValid() {
+		startOpts = append(startOpts, trace.WithLinks(trace.Link{SpanContext: op.initSpanContext}))
+	}
+
+	tracer := otel.GetTracerProvider().Tracer("cloud.google.com/go")
+	ctx, span := tracer.Start(ctx, spanName, startOpts...)
+	defer span.End()
+	span.SetAttributes(attribute.String("gcp.resource.destination.id", op.Name()))
+
+	err := op.wait(ctx, resp, &bo, sl, opts...)
+	if err != nil {
+		span.SetStatus(codes.Error, err.Error())
+		span.RecordError(err)
+	}
+	return err
 }
 
 type sleeper func(context.Context, time.Duration) error
