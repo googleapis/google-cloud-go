@@ -191,7 +191,9 @@ func (op *Operation) waitWithInterval(ctx context.Context, resp protoadapt.Messa
 	tracer := otel.GetTracerProvider().Tracer("cloud.google.com/go")
 	ctx, span := tracer.Start(ctx, spanName, startOpts...)
 	defer span.End()
-	span.SetAttributes(attribute.String("gcp.resource.destination.id", op.Name()))
+	span.SetAttributes(
+		attribute.String("gcp.resource.destination.id", op.Name()),
+	)
 
 	err := op.waitTraced(ctx, resp, &bo, sl, opts...)
 	if err != nil {
@@ -261,7 +263,9 @@ func (op *Operation) waitTraced(ctx context.Context, resp protoadapt.MessageV1, 
 		}
 
 		_, sleepSpan := tracer.Start(ctx, "LRO Sleep")
-		sleepSpan.SetAttributes(attribute.String("gcp.resource.destination.id", op.Name()))
+		sleepSpan.SetAttributes(
+			attribute.String("gcp.resource.destination.id", op.Name()),
+		)
 		sleepErr := sl(ctx, bo.Pause())
 		if sleepErr != nil {
 			sleepSpan.SetStatus(codes.Error, sleepErr.Error())
