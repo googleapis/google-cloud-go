@@ -240,8 +240,8 @@ func (op *Operation) waitTraced(ctx context.Context, resp protoadapt.MessageV1, 
 		if op.Done() {
 			var statusCode int
 			if err != nil {
-				if s, ok := status.FromError(err); ok {
-					statusCode = int(s.Code())
+				if apiErr, ok := apierror.FromError(err); ok {
+					statusCode = int(apiErr.GRPCStatus().Code())
 				} else {
 					statusCode = int(grpccodes.Unknown)
 				}
