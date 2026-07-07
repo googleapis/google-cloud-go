@@ -1,6 +1,6 @@
 module cloud.google.com/go/bigtable
 
-go 1.25.8
+go 1.25.0
 
 toolchain go1.26.4
 

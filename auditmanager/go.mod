@@ -1,6 +1,6 @@
 module cloud.google.com/go/auditmanager
 
-go 1.25.8
+go 1.25.0
 
 retract v0.1.0 // Contains incorrectly generated go proto code.
 

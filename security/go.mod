@@ -1,6 +1,6 @@
 module cloud.google.com/go/security
 
-go 1.25.8
+go 1.25.0
 
 require (
 	cloud.google.com/go/iam v1.11.0

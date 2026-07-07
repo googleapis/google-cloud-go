@@ -1,6 +1,6 @@
 module cloud.google.com/go/cloudquotas
 
-go 1.25.8
+go 1.25.0
 
 require (
 	github.com/googleapis/gax-go/v2 v2.23.0

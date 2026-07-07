@@ -1,6 +1,6 @@
 module cloud.google.com/go/edgenetwork
 
-go 1.25.8
+go 1.25.0
 
 require (
 	cloud.google.com/go/longrunning v1.0.0

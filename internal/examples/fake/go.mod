@@ -1,6 +1,6 @@
 module cloud.google.com/go/internal/examples/fake
 
-go 1.25.8
+go 1.25.0
 
 require (
 	cloud.google.com/go/translate v1.17.0
