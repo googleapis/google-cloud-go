@@ -34,19 +34,12 @@ import (
 )
 
 const (
-	loginDomainSeparationTag           = "Spanner-Omni-Login"
-	authKeyInfo                        = "AuthKey"
-	exportKeyInfo                      = "ExportKey"
-	privateKeyInfo                     = "PrivateKey"
-	maskingKeyInfo                     = "MaskingKey"
-	diffieHellmanKeyInfo               = "OPAQUE-DeriveDiffieHellmanKeyPair"
-	nonceLength                        = 32
-	macTagLength                       = 32
-	extractOutputLength                = 32
-	stretchOutputLength         uint32 = 32
-	hashLength                         = sha256.Size
-	publicKeyLength                    = 33
-	credentialResponsePadLength        = publicKeyLength + nonceLength + macTagLength
+	loginDomainSeparationTag = "Spanner-Omni-Login"
+	authKeyInfo              = "AuthKey"
+	exportKeyInfo            = "ExportKey"
+	privateKeyInfo           = "PrivateKey"
+	maskingKeyInfo           = "MaskingKey"
+	diffieHellmanKeyInfo     = "OPAQUE-DeriveDiffieHellmanKeyPair"
 )
 
 // userAuthenticator manages the client state for OPAQUE login authentication.
@@ -91,7 +84,7 @@ func newAuthenticator(username string, password []byte, hashParams *HashParamete
 
 // InitialRequest generates the first message in the OPAQUE protocol handshake containing the blinded password.
 func (ua *userAuthenticator) InitialRequest() (*LoginRequest, error) {
-	blindedMessage, blind, err := blind([]byte(ua.password))
+	blindedMessage, blind, err := blind(ua.password)
 	if err != nil {
 		return nil, err
 	}
@@ -175,11 +168,11 @@ func (ua *userAuthenticator) generateKe3(evaluatedElement, maskingNonce, maskedR
 	if err != nil {
 		return nil, nil, err
 	}
-	maskingKey, err := expand(randomizedPassword, []byte(maskingKeyInfo), hashLength)
+	maskingKey, err := expand(randomizedPassword, []byte(maskingKeyInfo), sha256.Size)
 	if err != nil {
 		return nil, nil, err
 	}
-	credentialResponsePad, err := expand(maskingKey, slices.Concat(maskingNonce, []byte("CredentialResponsePad")), credentialResponsePadLength)
+	credentialResponsePad, err := expand(maskingKey, slices.Concat(maskingNonce, []byte("CredentialResponsePad")), len(maskedResponse))
 	if err != nil {
 		return nil, nil, err
 	}
@@ -187,9 +180,11 @@ func (ua *userAuthenticator) generateKe3(evaluatedElement, maskingNonce, maskedR
 	if err != nil {
 		return nil, nil, err
 	}
+	publicKeyLength := len(ua.clientPublicKeyshare)
+	nonceLength := len(ua.clientNonce)
 	serverPublicKey := serializedEnvelope[:publicKeyLength]
 	envelopeNonce := serializedEnvelope[publicKeyLength : publicKeyLength+nonceLength]
-	authTag := serializedEnvelope[publicKeyLength+nonceLength : publicKeyLength+nonceLength+macTagLength]
+	authTag := serializedEnvelope[publicKeyLength+nonceLength:]
 
 	exportKey, clientPrivateKey, err := recoverClient(ua.username, randomizedPassword, envelopeNonce, authTag, serverPublicKey)
 	if err != nil {
@@ -249,7 +244,7 @@ func deriveSharedKeys(inputKeyMaterial, preamble []byte) (km2, km3, sessionKey [
 
 func deriveSecret(inputKeyMaterial, label, transcriptHash []byte) ([]byte, error) {
 	info := slices.Concat([]byte("OPAQUE-"), label, transcriptHash)
-	return expand(inputKeyMaterial, info, extractOutputLength)
+	return expand(inputKeyMaterial, info, sha256.Size)
 }
 
 func (ua *userAuthenticator) preamble(evaluatedElement, serverPublicKey, serverNonce, serverPublicKeyshare []byte) []byte {
@@ -271,15 +266,15 @@ func diffieHellman(privateKey, publicKey []byte) ([]byte, error) {
 
 // recoverClient recovers the client's export key and private key from the envelope.
 func recoverClient(username string, randomizedPassword, envelopeNonce, authTag, serverPublicKey []byte) (exportKey, clientPrivateKey []byte, err error) {
-	authKey, err := expand(randomizedPassword, slices.Concat(envelopeNonce, []byte(authKeyInfo)), hashLength)
+	authKey, err := expand(randomizedPassword, slices.Concat(envelopeNonce, []byte(authKeyInfo)), sha256.Size)
 	if err != nil {
 		return nil, nil, err
 	}
-	exportKey, err = expand(randomizedPassword, slices.Concat(envelopeNonce, []byte(exportKeyInfo)), hashLength)
+	exportKey, err = expand(randomizedPassword, slices.Concat(envelopeNonce, []byte(exportKeyInfo)), sha256.Size)
 	if err != nil {
 		return nil, nil, err
 	}
-	seed, err := expand(randomizedPassword, slices.Concat(envelopeNonce, []byte(privateKeyInfo)), hashLength)
+	seed, err := expand(randomizedPassword, slices.Concat(envelopeNonce, []byte(privateKeyInfo)), sha256.Size)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -389,7 +384,7 @@ func stretch(input []byte, params *HashParameters_Argon2IdParameters) ([]byte, e
 	if err != nil {
 		return nil, err
 	}
-	return argon2Hash(input, salt, stretchOutputLength, params), nil
+	return argon2Hash(input, salt, params.HashSize, params), nil
 }
 
 // expand expands key material using HKDF.
@@ -404,7 +399,7 @@ func expand(inputKeyMaterial, info []byte, size int) ([]byte, error) {
 
 // extract extracts key material using HKDF.
 func extract(inputKeyMaterial []byte) ([]byte, error) {
-	return expand(inputKeyMaterial, []byte("Extract"), extractOutputLength)
+	return expand(inputKeyMaterial, []byte("Extract"), sha256.Size)
 }
 
 // argon2Hash hashes key material using Argon2Id.
@@ -420,7 +415,7 @@ func sha256Hash(input []byte) []byte {
 
 // nonce generates a cryptographically secure random nonce.
 func nonce() ([]byte, error) {
-	nonce := make([]byte, nonceLength)
+	nonce := make([]byte, sha256.Size)
 	if _, err := rand.Reader.Read(nonce); err != nil {
 		return nil, err
 	}
@@ -431,8 +426,7 @@ func nonce() ([]byte, error) {
 func mac(key, data []byte) []byte {
 	m := hmac.New(sha256.New, key)
 	m.Write(data)
-	macResult := m.Sum(nil)
-	return macResult[:macTagLength]
+	return m.Sum(nil)
 }
 
 // xorBytes computes the bitwise XOR of two byte slices.

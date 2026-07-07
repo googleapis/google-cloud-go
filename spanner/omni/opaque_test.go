@@ -18,6 +18,7 @@ package omni
 
 import (
 	"bytes"
+	"crypto/sha256"
 	"fmt"
 	"math/big"
 	"testing"
@@ -88,8 +89,8 @@ func TestMac(t *testing.T) {
 		if !bytes.Equal(mac1, mac2) {
 			t.Errorf("mac() = %s, want %s", mac2, mac1)
 		}
-		if len(mac1) != macTagLength {
-			t.Errorf("mac() length = %d, want %d", len(mac1), macTagLength)
+		if len(mac1) != sha256.Size {
+			t.Errorf("mac() length = %d, want %d", len(mac1), sha256.Size)
 		}
 	}
 }

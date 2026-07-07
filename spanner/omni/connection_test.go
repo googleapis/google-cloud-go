@@ -21,6 +21,7 @@ import (
 	"crypto/ecdsa"
 	"crypto/elliptic"
 	"crypto/rand"
+	"crypto/sha256"
 	"crypto/x509"
 	"crypto/x509/pkix"
 	"encoding/pem"
@@ -409,15 +410,15 @@ func TestTokenSource_SuccessAndCaching(t *testing.T) {
 	if err != nil {
 		t.Fatalf("nonce failed: %v", err)
 	}
-	maskingKey, err := expand(randomizedPassword, []byte(maskingKeyInfo), hashLength)
+	maskingKey, err := expand(randomizedPassword, []byte(maskingKeyInfo), sha256.Size)
 	if err != nil {
 		t.Fatalf("expand failed: %v", err)
 	}
-	authKey, err := expand(randomizedPassword, slices.Concat(envelopeNonce, []byte(authKeyInfo)), hashLength)
+	authKey, err := expand(randomizedPassword, slices.Concat(envelopeNonce, []byte(authKeyInfo)), sha256.Size)
 	if err != nil {
 		t.Fatalf("expand failed: %v", err)
 	}
-	seed, err := expand(randomizedPassword, slices.Concat(envelopeNonce, []byte(privateKeyInfo)), hashLength)
+	seed, err := expand(randomizedPassword, slices.Concat(envelopeNonce, []byte(privateKeyInfo)), sha256.Size)
 	if err != nil {
 		t.Fatalf("expand failed: %v", err)
 	}
@@ -477,11 +478,11 @@ func TestTokenSource_SuccessAndCaching(t *testing.T) {
 			return err
 		}
 
-		credentialResponsePad, err := expand(maskingKey, slices.Concat(maskingNonce, []byte("CredentialResponsePad")), credentialResponsePadLength)
+		clearTextEnvelope := slices.Concat(serverPublicKey, envelopeNonce, authTag)
+		credentialResponsePad, err := expand(maskingKey, slices.Concat(maskingNonce, []byte("CredentialResponsePad")), len(clearTextEnvelope))
 		if err != nil {
 			return err
 		}
-		clearTextEnvelope := slices.Concat(serverPublicKey, envelopeNonce, authTag)
 		maskedResponse, err := xorBytes(clearTextEnvelope, credentialResponsePad)
 		if err != nil {
 			return err
