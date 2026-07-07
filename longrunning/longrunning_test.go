@@ -339,41 +339,45 @@ func TestWaitTraced(t *testing.T) {
 		t.Fatalf("expected 3 poll spans, got %d", len(pollSpans))
 	}
 
+	verifyPollAndSleepSpans(t, pollSpans, sleepSpans, "foo")
+}
+
+func verifyPollAndSleepSpans(t *testing.T, pollSpans, sleepSpans []sdktrace.ReadOnlySpan, expectedResID string) {
+	t.Helper()
 	for i, pollSpan := range pollSpans {
 		attrs := pollSpan.Attributes()
 		var resID string
+		var hasCount bool
 		var count int
 		var done bool
-		var hasDone, hasCount bool
-
 		for _, attr := range attrs {
-			switch attr.Key {
-			case "gcp.resource.destination.id":
+			if attr.Key == "gcp.resource.destination.id" {
 				resID = attr.Value.AsString()
-			case "gcp.longrunning.poll_attempt_count":
-				count = int(attr.Value.AsInt64())
+			}
+			if attr.Key == "gcp.longrunning.poll_attempt_count" {
 				hasCount = true
-			case "gcp.longrunning.done":
+				count = int(attr.Value.AsInt64())
+			}
+			if attr.Key == "gcp.longrunning.done" {
 				done = attr.Value.AsBool()
-				hasDone = true
 			}
 		}
 
-		if resID != "foo" {
-			t.Errorf("poll span %d expected gcp.resource.destination.id to be 'foo', got '%s'", i, resID)
+		if resID != expectedResID {
+			t.Errorf("poll span %d expected gcp.resource.destination.id to be '%s', got '%s'", i, expectedResID, resID)
 		}
 		if !hasCount || count != i+1 {
 			t.Errorf("poll span %d expected count to be %d, got %d", i, i+1, count)
 		}
-		if !hasDone {
+
+		if i != len(pollSpans)-1 && done {
 			t.Errorf("poll span %d expected gcp.longrunning.done to be set", i)
 		}
 
-		if i == 2 {
+		if i == len(pollSpans)-1 {
 			if !done {
 				t.Error("expected done to be true on terminal poll span")
 			}
-			// check status code is present and 0 (OK)
 			hasStatus := false
 			var statusCode int
 			for _, attr := range attrs {
@@ -385,28 +389,13 @@ func TestWaitTraced(t *testing.T) {
 			if !hasStatus || statusCode != 0 {
 				t.Errorf("expected status code 0 on terminal poll, got %d (hasStatus: %t)", statusCode, hasStatus)
 			}
-		} else {
-			if done {
-				t.Errorf("expected done to be false on non-terminal poll span %d", i)
-			}
 		}
 	}
 
 	// Verify T5 Sleep Spans
-	if len(sleepSpans) != 2 {
-		t.Errorf("expected 2 sleep spans, got %d", len(sleepSpans))
-	}
-	for i, sleepSpan := range sleepSpans {
-		attrs := sleepSpan.Attributes()
-		var resID string
-		for _, attr := range attrs {
-			if attr.Key == "gcp.resource.destination.id" {
-				resID = attr.Value.AsString()
-			}
-		}
-		if resID != "foo" {
-			t.Errorf("sleep span %d expected gcp.resource.destination.id to be 'foo', got '%s'", i, resID)
-		}
+	expectedSleeps := len(pollSpans) - 1
+	if len(sleepSpans) != expectedSleeps {
+		t.Errorf("expected %d sleep spans, got %d", expectedSleeps, len(sleepSpans))
 	}
 }
 
@@ -462,6 +451,7 @@ func TestWaitTracedResumed(t *testing.T) {
 	spans := sr.Ended()
 	var waitSpan sdktrace.ReadOnlySpan
 	var pollSpans []sdktrace.ReadOnlySpan
+	var sleepSpans []sdktrace.ReadOnlySpan
 
 	for _, span := range spans {
 		switch span.Name() {
@@ -469,6 +459,8 @@ func TestWaitTracedResumed(t *testing.T) {
 			waitSpan = span
 		case "*longrunning.OperationsClient.GetOperation":
 			pollSpans = append(pollSpans, span)
+		case "LRO Sleep":
+			sleepSpans = append(sleepSpans, span)
 		}
 	}
 
@@ -484,6 +476,8 @@ func TestWaitTracedResumed(t *testing.T) {
 	if len(pollSpans) != 2 {
 		t.Fatalf("expected 2 poll spans, got %d", len(pollSpans))
 	}
+
+	verifyPollAndSleepSpans(t, pollSpans, sleepSpans, "foo")
 }
 
 func TestWaitTracedFallback(t *testing.T) {
@@ -537,6 +531,7 @@ func TestWaitTracedFallback(t *testing.T) {
 	spans := sr.Ended()
 	var waitSpan sdktrace.ReadOnlySpan
 	var pollSpans []sdktrace.ReadOnlySpan
+	var sleepSpans []sdktrace.ReadOnlySpan
 
 	for _, span := range spans {
 		switch span.Name() {
@@ -544,6 +539,8 @@ func TestWaitTracedFallback(t *testing.T) {
 			waitSpan = span
 		case "*longrunning.OperationsClient.GetOperation":
 			pollSpans = append(pollSpans, span)
+		case "LRO Sleep":
+			sleepSpans = append(sleepSpans, span)
 		}
 	}
 
@@ -559,4 +556,6 @@ func TestWaitTracedFallback(t *testing.T) {
 	if len(pollSpans) != 2 {
 		t.Fatalf("expected 2 poll spans, got %d", len(pollSpans))
 	}
+
+	verifyPollAndSleepSpans(t, pollSpans, sleepSpans, "foo")
 }
