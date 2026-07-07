@@ -21,6 +21,7 @@ import (
 	"reflect"
 	"time"
 
+	"cloud.google.com/go/civil"
 	genai_types "google.golang.org/genai"
 )
 
@@ -97,6 +98,16 @@ const (
 	OperatorLessThan Operator = "LESS_THAN"
 )
 
+// The machine config of the code execution environment.
+type MachineConfig string
+
+const (
+	// The default value: milligcu 2000, memory 1.5Gib
+	MachineConfigUnspecified MachineConfig = "MACHINE_CONFIG_UNSPECIFIED"
+	// The default value: milligcu 4000, memory 4 Gib
+	MachineConfigVcpu4Ram4gib MachineConfig = "MACHINE_CONFIG_VCPU4_RAM4GIB"
+)
+
 // The coding language supported in this environment.
 type Language string
 
@@ -107,16 +118,6 @@ const (
 	LanguagePython Language = "LANGUAGE_PYTHON"
 	// The coding language is JavaScript.
 	LanguageJavascript Language = "LANGUAGE_JAVASCRIPT"
-)
-
-// The machine config of the code execution environment.
-type MachineConfig string
-
-const (
-	// The default value: milligcu 2000, memory 1.5Gib
-	MachineConfigUnspecified MachineConfig = "MACHINE_CONFIG_UNSPECIFIED"
-	// The default value: milligcu 4000, memory 4 Gib
-	MachineConfigVcpu4Ram4gib MachineConfig = "MACHINE_CONFIG_VCPU4_RAM4GIB"
 )
 
 // The runtime state of the SandboxEnvironment.
@@ -135,6 +136,58 @@ const (
 	SandboxStateTerminated SandboxState = "STATE_TERMINATED"
 	// Sandbox runtime has been deleted.
 	SandboxStateDeleted SandboxState = "STATE_DELETED"
+	// Sandbox runtime is paused.
+	SandboxStatePaused SandboxState = "STATE_PAUSED"
+	// Sandbox runtime is pausing.
+	SandboxStatePausing SandboxState = "STATE_PAUSING"
+	// Sandbox runtime is resuming.
+	SandboxStateResuming SandboxState = "STATE_RESUMING"
+)
+
+// The state of the session.
+type State string
+
+const (
+	// State unspecified.
+	StateUnspecified State = "STATE_UNSPECIFIED"
+	// The session is idle.
+	StateSessionIdle State = "SESSION_IDLE"
+	// The session is in progress.
+	StateSessionInProgress State = "SESSION_IN_PROGRESS"
+)
+
+// The traffic type for this request.
+type TrafficType string
+
+const (
+	// Unspecified request traffic type.
+	TrafficTypeUnspecified TrafficType = "TRAFFIC_TYPE_UNSPECIFIED"
+	// Type for Pay-As-You-Go traffic.
+	TrafficTypeOnDemand TrafficType = "ON_DEMAND"
+	// Type for Priority Pay-As-You-Go traffic.
+	TrafficTypeOnDemandPriority TrafficType = "ON_DEMAND_PRIORITY"
+	// Type for Flex traffic.
+	TrafficTypeOnDemandFlex TrafficType = "ON_DEMAND_FLEX"
+	// Type for Provisioned Throughput traffic.
+	TrafficTypeProvisionedThroughput TrafficType = "PROVISIONED_THROUGHPUT"
+)
+
+// The modality that this token count applies to.
+type MediaModality string
+
+const (
+	// When a modality is not specified, it is treated as `TEXT`.
+	MediaModalityUnspecified MediaModality = "MODALITY_UNSPECIFIED"
+	// The `Part` contains plain text.
+	MediaModalityText MediaModality = "TEXT"
+	// The `Part` contains an image.
+	MediaModalityImage MediaModality = "IMAGE"
+	// The `Part` contains a video.
+	MediaModalityVideo MediaModality = "VIDEO"
+	// The `Part` contains audio.
+	MediaModalityAudio MediaModality = "AUDIO"
+	// The `Part` contains a document, such as a PDF.
+	MediaModalityDocument MediaModality = "DOCUMENT"
 )
 
 // Framework used to build the application.
@@ -147,18 +200,6 @@ const (
 	FrameworkReact Framework = "REACT"
 	// Angular framework.
 	FrameworkAngular Framework = "ANGULAR"
-)
-
-// The state of the revision.
-type State string
-
-const (
-	// The unspecified state.
-	StateUnspecified State = "STATE_UNSPECIFIED"
-	// Is deployed and ready to be used.
-	StateActive State = "ACTIVE"
-	// Is deprecated, may not be used, only preserved for historical purposes.
-	StateDeprecated State = "DEPRECATED"
 )
 
 // The strategy to use when applying metadata to existing memories during consolidation.
@@ -332,6 +373,9 @@ type ReasoningEngineSpecDeploymentSpec struct {
 	// on a specified endpoint that a deployment host should use to keep the container alive
 	// based on the probe settings.
 	KeepAliveProbe *KeepAliveProbe `json:"keepAliveProbe,omitempty"`
+	// Optional. If true, the Reasoning Engine will be deployed with a dedicated ingress
+	// endpoint.
+	DedicatedIngressEndpointEnabled *bool `json:"dedicatedIngressEndpointEnabled,omitempty"`
 }
 
 // User-provided package specification, containing pickled object and package requirements.
@@ -439,6 +483,13 @@ type ReasoningEngineSpecContainerSpec struct {
 	ImageURI string `json:"imageUri,omitempty"`
 }
 
+// Specification for building container image.
+type ReasoningEngineSpecBuildSpec struct {
+	// Optional. Identifier. The resource name of the Cloud Build WorkerPool to use for
+	// the build. Format: `projects/{project}/locations/{location}/workerPools/{worker_pool}`
+	WorkerPool string `json:"workerPool,omitempty"`
+}
+
 // The specification of an agent engine.
 type ReasoningEngineSpec struct {
 	// Optional. The A2A Agent Card for the agent (if available). It follows the specification
@@ -475,6 +526,14 @@ type ReasoningEngineSpec struct {
 	SourceCodeSpec *ReasoningEngineSpecSourceCodeSpec `json:"sourceCodeSpec,omitempty"`
 	// Deploy from a container image with a defined entrypoint and commands.
 	ContainerSpec *ReasoningEngineSpecContainerSpec `json:"containerSpec,omitempty"`
+	// Optional. The resource name of the linked ExampleStore. At query time, examples can
+	// be used to guide the performance of the agent by providing the expected response
+	// or demonstrating when and how tools should be called. Format: `projects/{project}/locations/{location}/exampleStores/{example_store}`
+	ExampleStore string `json:"exampleStore,omitempty"`
+	// Output only. Boolean signifying if this agent engine has a runtime currently or not.
+	RuntimeActive *bool `json:"runtimeActive,omitempty"`
+	// Optional. Configuration for building container image.
+	BuildSpec *ReasoningEngineSpecBuildSpec `json:"buildSpec,omitempty"`
 }
 
 // The conversation source event for generating memories.
@@ -495,6 +554,8 @@ type MemoryTopicID struct {
 	CustomMemoryTopicLabel string `json:"customMemoryTopicLabel,omitempty"`
 	// Optional. Represents the managed memory topic.
 	ManagedMemoryTopic ManagedTopicEnum `json:"managedMemoryTopic,omitempty"`
+	// Optional. Deprecated: Use `schema_id` in top-level protos instead.
+	SchemaID string `json:"schemaId,omitempty"`
 }
 
 // A memory generated by the operation.
@@ -588,6 +649,8 @@ type MemoryGenerationTriggerConfigGenerationTriggerRule struct {
 	EventCount *int32 `json:"eventCount,omitempty"`
 	// Optional. Re-include the last N already-processed events in the next window.
 	OverlapEventCount *int32 `json:"overlapEventCount,omitempty"`
+	// Optional. Specifies to trigger generation when the token count reaches this limit.
+	TokenLimit *int32 `json:"tokenLimit,omitempty"`
 }
 
 func (m *MemoryGenerationTriggerConfigGenerationTriggerRule) UnmarshalJSON(data []byte) error {
@@ -650,6 +713,9 @@ type ReasoningEngineContextSpecMemoryBankConfigGenerationConfig struct {
 	// Optional. Specifies the default trigger configuration for generating memories using
 	// `IngestEvents`.
 	GenerationTriggerConfig *MemoryGenerationTriggerConfig `json:"generationTriggerConfig,omitempty"`
+	// Optional. A custom prompt to use for extracting memories from conversations. If not
+	// set, a default prompt will be used.
+	MemoryExtractionInstructions string `json:"memoryExtractionInstructions,omitempty"`
 }
 
 // Configuration for how to perform similarity search on memories.
@@ -832,10 +898,27 @@ type ReasoningEngineContextSpecMemoryBankConfig struct {
 	StructuredMemoryConfigs []*StructuredMemoryConfig `json:"structuredMemoryConfigs,omitempty"`
 }
 
+// Configuration for how to perform similarity search on examples.
+type ReasoningEngineContextSpecExampleStoreConfigSimilaritySearchConfig struct {
+	// Required. The Gemini model used to generate embeddings to lookup similar examples.
+	// Format: `projects/{project}/locations/{location}/publishers/google/models/{model}`.
+	EmbeddingModel string `json:"embeddingModel,omitempty"`
+}
+
+// Specification for an Example Store.
+type ReasoningEngineContextSpecExampleStoreConfig struct {
+	// Optional. Configuration for how to perform similarity search on examples. If not
+	// set, the Example Store will use the default embedding model `text-embedding-005`.
+	SimilaritySearchConfig *ReasoningEngineContextSpecExampleStoreConfigSimilaritySearchConfig `json:"similaritySearchConfig,omitempty"`
+}
+
 // Configuration for how Agent Engine sub-resources should manage context.
 type ReasoningEngineContextSpec struct {
 	// Optional. Specification for a Memory Bank, which manages memories for the Agent Engine.
 	MemoryBankConfig *ReasoningEngineContextSpecMemoryBankConfig `json:"memoryBankConfig,omitempty"`
+	// Optional. Specification for an Example Store, which manages few-shot examples for
+	// the Agent Engine.
+	ExampleStoreConfig *ReasoningEngineContextSpecExampleStoreConfig `json:"exampleStoreConfig,omitempty"`
 }
 
 // Config for create agent engine.
@@ -973,6 +1056,34 @@ type ReasoningEngineTrafficConfig struct {
 	TrafficSplitManual *ReasoningEngineTrafficConfigTrafficSplitManual `json:"trafficSplitManual,omitempty"`
 }
 
+// The experiment config to control feature experiments.
+type ExperimentConfig struct {
+}
+
+// Performs no automatic garbage collection on Runtime Revisions.
+type ReasoningEngineRevisionGarbageCollectionStrategyNoGarbageCollection struct {
+}
+
+// Keeps only the latest N Runtime Revisions active.
+type ReasoningEngineRevisionGarbageCollectionStrategyKeepNLatest struct {
+	// Required. Specifies the maximum number of Runtime Revisions to keep active. If an
+	// update to Reasoning Engine would result in exceeding this number of active Runtime
+	// Revisions, a new Runtime Revision will be created, while the oldest Runtime Revision
+	// will be automatically deprecated, providing it's not configured to serve traffic
+	// via `traffic_config`. If the oldest Runtime Revision is configured to serve traffic,
+	// the update will fail validation. No changes will be made to the Reasoning Engine,
+	// existing Runtime Revisions, and no new Runtime Revision will be created.
+	MaxActiveRevisions int32 `json:"maxActiveRevisions,omitempty"`
+}
+
+// Configures garbage collection of Runtime Revisions.
+type ReasoningEngineRevisionGarbageCollectionStrategy struct {
+	// Optional. Performs no automatic garbage collection on Runtime Revisions.
+	NoGarbageCollection *ReasoningEngineRevisionGarbageCollectionStrategyNoGarbageCollection `json:"noGarbageCollection,omitempty"`
+	// Optional. Keeps only the latest N Runtime Revisions active.
+	KeepNLatest *ReasoningEngineRevisionGarbageCollectionStrategyKeepNLatest `json:"keepNLatest,omitempty"`
+}
+
 // An agent engine.
 type ReasoningEngine struct {
 	// Customer-managed encryption key spec for a ReasoningEngine. If set, this ReasoningEngine
@@ -999,6 +1110,13 @@ type ReasoningEngine struct {
 	UpdateTime time.Time `json:"updateTime,omitempty"`
 	// Optional. Traffic distribution configuration for the Reasoning Engine.
 	TrafficConfig *ReasoningEngineTrafficConfig `json:"trafficConfig,omitempty"`
+	// Optional. The experiment config used to control which features to enable in this
+	// API call.
+	ExperimentConfig *ExperimentConfig `json:"experimentConfig,omitempty"`
+	// Optional. Configures garbage collection of Runtime Revisions.
+	RevisionGarbageCollectionStrategy *ReasoningEngineRevisionGarbageCollectionStrategy `json:"revisionGarbageCollectionStrategy,omitempty"`
+	// Output only. The URL of the reasoning engine.
+	URL string `json:"url,omitempty"`
 }
 
 func (r *ReasoningEngine) UnmarshalJSON(data []byte) error {
@@ -1460,6 +1578,8 @@ type Memory struct {
 	MemoryType MemoryType `json:"memoryType,omitempty"`
 	// Optional. Represents the structured content of the memory.
 	StructuredContent *MemoryStructuredContent `json:"structuredContent,omitempty"`
+	// Optional. Deprecated: Use `structured_content` instead.
+	StructuredData map[string]any `json:"structuredData,omitempty"`
 }
 
 func (m *Memory) UnmarshalJSON(data []byte) error {
@@ -1652,6 +1772,44 @@ func (g *GenerateMemoriesRequestVertexSessionSource) MarshalJSON() ([]byte, erro
 type GenerateMemoriesRequestDirectContentsSourceEvent struct {
 	// Optional. Required. A single piece of content from which to generate memories.
 	Content *genai_types.Content `json:"content,omitempty"`
+	// Optional. The time at which the event occurred.
+	EventTime time.Time `json:"eventTime,omitempty"`
+}
+
+func (g *GenerateMemoriesRequestDirectContentsSourceEvent) UnmarshalJSON(data []byte) error {
+	type Alias GenerateMemoriesRequestDirectContentsSourceEvent
+	aux := &struct {
+		EventTime *time.Time `json:"eventTime,omitempty"`
+		*Alias
+	}{
+		Alias: (*Alias)(g),
+	}
+
+	if err := json.Unmarshal(data, &aux); err != nil {
+		return err
+	}
+
+	if !reflect.ValueOf(aux.EventTime).IsZero() {
+		g.EventTime = time.Time(*aux.EventTime)
+	}
+
+	return nil
+}
+
+func (g *GenerateMemoriesRequestDirectContentsSourceEvent) MarshalJSON() ([]byte, error) {
+	type Alias GenerateMemoriesRequestDirectContentsSourceEvent
+	aux := &struct {
+		EventTime *time.Time `json:"eventTime,omitempty"`
+		*Alias
+	}{
+		Alias: (*Alias)(g),
+	}
+
+	if !reflect.ValueOf(g.EventTime).IsZero() {
+		aux.EventTime = (*time.Time)(&g.EventTime)
+	}
+
+	return json.Marshal(aux)
 }
 
 // The direct contents source for generating memories.
@@ -2277,6 +2435,9 @@ type IntermediateExtractedMemory struct {
 	Context string `json:"context,omitempty"`
 	// Output only. Represents the structured value of the extracted memory.
 	StructuredData map[string]any `json:"structuredData,omitempty"`
+	// Output only. Indicates that the extracted memory originated from an explicit instruction
+	// to remember or forget information.
+	IsExplicit bool `json:"isExplicit,omitempty"`
 }
 
 // A memory revision.
@@ -2385,6 +2546,9 @@ type SandboxEnvironmentSpecCodeExecutionEnvironment struct {
 
 // The computer use environment with customized settings.
 type SandboxEnvironmentSpecComputerUseEnvironment struct {
+	// Optional. The Artifact Registry Docker image URI (e.g., us-docker.dev.pkg/my-proj/my-repo/my-image:my-tag).
+	// When unspecified, the default Computer Use container image will be used.
+	ImageURI string `json:"imageUri,omitempty"`
 }
 
 // The specification of a sandbox environment.
@@ -2466,6 +2630,8 @@ type SandboxEnvironmentConnectionInfo struct {
 	SandboxInternalIp string `json:"sandboxInternalIp,omitempty"`
 	// Output only. The routing token for the SandboxEnvironment.
 	RoutingToken string `json:"routingToken,omitempty"`
+	// Output only. The hostname of the SandboxEnvironment.
+	SandboxHostname string `json:"sandboxHostname,omitempty"`
 }
 
 // A sandbox environment.
@@ -2499,8 +2665,7 @@ type SandboxEnvironment struct {
 	// this SandboxEnvironment. Format: `projects/{project}/locations/{location}/reasoningEngines/{reasoning_engine}/sandboxEnvironmentSnapshots/{sandbox_environment_snapshot}`
 	SandboxEnvironmentSnapshot string `json:"sandboxEnvironmentSnapshot,omitempty"`
 	// Optional. The name of the SandboxEnvironmentTemplate specified in the parent Agent
-	// Engine resource that this SandboxEnvironment is created from. Only one of `sandbox_environment_template`
-	// and `spec` should be set.
+	// Engine resource that this SandboxEnvironment is created from.
 	SandboxEnvironmentTemplate string `json:"sandboxEnvironmentTemplate,omitempty"`
 }
 
@@ -2779,6 +2944,16 @@ type Session struct {
 	UpdateTime time.Time `json:"updateTime,omitempty"`
 	// Required. Immutable. String ID provided by the user
 	UserID string `json:"userId,omitempty"`
+	// Output only. The resource names of the Agents that interacted within the session.
+	// Each resource name has the format: `projects/{project}/locations/{location}/agents/{agent}`.
+	Agents []string `json:"agents,omitempty"`
+	// The default limit of the number of steps each child Run can contain. Default to 20
+	// if not specified.
+	DefaultRunStepLimit int64 `json:"defaultRunStepLimit,omitempty,string"`
+	// Output only. The state of the session.
+	State State `json:"state,omitempty"`
+	// Optional. Custom metadata for the session.
+	CustomMetadata map[string]any `json:"customMetadata,omitempty"`
 }
 
 func (s *Session) UnmarshalJSON(data []byte) error {
@@ -3024,6 +3199,149 @@ type EventActions struct {
 	StateDelta map[string]any `json:"stateDelta,omitempty"`
 	// Optional. If set, the event transfers to the specified agent.
 	TransferAgent string `json:"transferAgent,omitempty"`
+	// Optional. If set, the event transfers to the specified agent. This field is intended
+	// to replace 'transfer_agent'. Not in use pending data migration.
+	TransferToAgent string `json:"transferToAgent,omitempty"`
+	// Optional. A dict of tool confirmation requested by this event, keyed by function
+	// call id.
+	RequestedToolConfirmations map[string]any `json:"requestedToolConfirmations,omitempty"`
+	// Optional. If true, the current agent has finished its current run.
+	EndOfAgent *bool `json:"endOfAgent,omitempty"`
+	// Optional. The agent state at the current event.
+	AgentState map[string]any `json:"agentState,omitempty"`
+}
+
+// A citation for a piece of generatedcontent.
+type Citation struct {
+	// Output only. The start index of the citation in the content.
+	StartIndex int32 `json:"startIndex,omitempty"`
+	// Output only. The end index of the citation in the content.
+	EndIndex int32 `json:"endIndex,omitempty"`
+	// Output only. The URI of the source of the citation.
+	URI string `json:"uri,omitempty"`
+	// Output only. The title of the source of the citation.
+	Title string `json:"title,omitempty"`
+	// Output only. The license of the source of the citation.
+	License string `json:"license,omitempty"`
+	// Output only. The publication date of the source of the citation.
+	PublicationDate civil.Date `json:"publicationDate,omitempty"`
+}
+
+func (c *Citation) UnmarshalJSON(data []byte) error {
+	type Alias Citation
+	aux := &struct {
+		PublicationDate *genai_types.InternalDateJSON `json:"publicationDate,omitempty"`
+		*Alias
+	}{
+		Alias: (*Alias)(c),
+	}
+
+	if err := json.Unmarshal(data, &aux); err != nil {
+		return err
+	}
+
+	if !reflect.ValueOf(aux.PublicationDate).IsZero() {
+		c.PublicationDate = civil.Date(*aux.PublicationDate)
+	}
+
+	return nil
+}
+
+func (c *Citation) MarshalJSON() ([]byte, error) {
+	type Alias Citation
+	aux := &struct {
+		PublicationDate *genai_types.InternalDateJSON `json:"publicationDate,omitempty"`
+		*Alias
+	}{
+		Alias: (*Alias)(c),
+	}
+
+	if !reflect.ValueOf(c.PublicationDate).IsZero() {
+		aux.PublicationDate = (*genai_types.InternalDateJSON)(&c.PublicationDate)
+	}
+
+	return json.Marshal(aux)
+}
+
+// A collection of citations that apply to a piece of generated content.
+type CitationMetadata struct {
+	// Output only. A list of citations for the content.
+	Citations []*Citation `json:"citations,omitempty"`
+}
+
+// Represents a breakdown of token usage by modality. This message is used in CountTokensResponse
+// and GenerateContentResponse.UsageMetadata to provide a detailed view of how many
+// tokens are used by each modality (e.g., text, image, video) in a request. This is
+// particularly useful for multimodal models, allowing you to track and manage token
+// consumption for billing and quota purposes.
+type ModalityTokenCount struct {
+	// The modality that this token count applies to.
+	Modality MediaModality `json:"modality,omitempty"`
+	// The number of tokens counted for this modality.
+	TokenCount int32 `json:"tokenCount,omitempty"`
+}
+
+// [Deprecated] Billable usage information.
+type UsageMetadataBillablleUsage struct {
+	// The number of text characters.
+	TextCount *int32 `json:"textCount,omitempty"`
+	// The number of images.
+	ImageCount *int32 `json:"imageCount,omitempty"`
+	// The duration of video in seconds.
+	VideoDurationSeconds *int32 `json:"videoDurationSeconds,omitempty"`
+	// The duration of audio in seconds.
+	AudioDurationSeconds *int32 `json:"audioDurationSeconds,omitempty"`
+}
+
+type ToolCallStats struct {
+	// Output only. Note: Assuming `ToolType` mapping or just standardizing on strings depending
+	// on Vertex's `Tool` definitions.
+	FunctionName string `json:"functionName,omitempty"`
+	// toolCallCount
+	ToolCallCount *int32 `json:"toolCallCount,omitempty"`
+	// serverExecuted
+	ServerExecuted *bool `json:"serverExecuted,omitempty"`
+}
+
+// Usage metadata about the content generation request and response. This message provides
+// a detailed breakdown of token usage and other relevant metrics.
+type UsageMetadata struct {
+	// The total number of tokens in the prompt. This includes any text, images, or other
+	// media provided in the request. When `cached_content` is set, this also includes the
+	// number of tokens in the cached content.
+	PromptTokenCount *int32 `json:"promptTokenCount,omitempty"`
+	// The total number of tokens in the generated candidates.
+	CandidatesTokenCount *int32 `json:"candidatesTokenCount,omitempty"`
+	// The total number of tokens for the entire request. This is the sum of `prompt_token_count`,
+	// `candidates_token_count`, `tool_use_prompt_token_count`, and `thoughts_token_count`.
+	TotalTokenCount *int32 `json:"totalTokenCount,omitempty"`
+	// Output only. The number of tokens in the results from tool executions, which are
+	// provided back to the model as input, if applicable.
+	ToolUsePromptTokenCount *int32 `json:"toolUsePromptTokenCount,omitempty"`
+	// Output only. The number of tokens that were part of the model's generated "thoughts"
+	// output, if applicable.
+	ThoughtsTokenCount *int32 `json:"thoughtsTokenCount,omitempty"`
+	// Output only. The number of tokens in the cached content that was used for this request.
+	CachedContentTokenCount *int32 `json:"cachedContentTokenCount,omitempty"`
+	// Output only. A detailed breakdown of the token count for each modality in the prompt.
+	PromptTokensDetails []*ModalityTokenCount `json:"promptTokensDetails,omitempty"`
+	// Output only. A detailed breakdown of the token count for each modality in the cached
+	// content.
+	CacheTokensDetails []*ModalityTokenCount `json:"cacheTokensDetails,omitempty"`
+	// Output only. A detailed breakdown of the token count for each modality in the generated
+	// candidates.
+	CandidatesTokensDetails []*ModalityTokenCount `json:"candidatesTokensDetails,omitempty"`
+	// Output only. A detailed breakdown by modality of the token counts from the results
+	// of tool executions, which are provided back to the model as input.
+	ToolUsePromptTokensDetails []*ModalityTokenCount `json:"toolUsePromptTokensDetails,omitempty"`
+	// Output only. The traffic type for this request.
+	TrafficType TrafficType `json:"trafficType,omitempty"`
+	// Output only. [Deprecated] Billable usage for the prompt.
+	BillablePromptUsage *UsageMetadataBillablleUsage `json:"billablePromptUsage,omitempty"`
+	// Output only. [Deprecated] Billable usage for the cached content.
+	BillableCachedContentUsage *UsageMetadataBillablleUsage `json:"billableCachedContentUsage,omitempty"`
+	// Output only. Statistics about function calls in this generation request.
+	ToolCallStats []*ToolCallStats `json:"toolCallStats,omitempty"`
 }
 
 // Metadata relating to a LLM response event.
@@ -3053,6 +3371,10 @@ type EventMetadata struct {
 	InputTranscription *genai_types.Transcription `json:"inputTranscription,omitempty"`
 	// Optional. Audio transcription of model output.
 	OutputTranscription *genai_types.Transcription `json:"outputTranscription,omitempty"`
+	// Optional. Citation metadata for the response.
+	CitationMetadata *CitationMetadata `json:"citationMetadata,omitempty"`
+	// Optional. Usage metadata for the response.
+	UsageMetadata *UsageMetadata `json:"usageMetadata,omitempty"`
 }
 
 // Config for appending agent engine session event.
