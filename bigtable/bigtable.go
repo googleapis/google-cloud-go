@@ -203,6 +203,11 @@ func createFeatureFlagsMD(clientSideMetricsEnabled, disableRetryInfo, enableDire
 		RetryInfo:                !disableRetryInfo,
 		TrafficDirectorEnabled:   enableDirectAccess,
 		DirectAccessRequested:    enableDirectAccess,
+		// PeerInfo tells the server it may send the bigtable-peer-info
+		// sideband metadata that populates attempt_latencies2's
+		// transport_type/region/zone/subzone labels. Extracted from
+		// header/trailer MD by metrics.ExtractPeerInfo in the tracer.
+		PeerInfo: true,
 	}
 
 	val := ""
