@@ -263,11 +263,13 @@ func (op *Operation) waitTraced(ctx context.Context, resp protoadapt.MessageV1, 
 		_, sleepSpan := tracer.Start(ctx, "LRO Sleep")
 		sleepSpan.SetAttributes(attribute.String("gcp.resource.destination.id", op.Name()))
 		sleepErr := sl(ctx, bo.Pause())
-		sleepSpan.End()
-
 		if sleepErr != nil {
+			sleepSpan.SetStatus(codes.Error, sleepErr.Error())
+			sleepSpan.RecordError(sleepErr)
+			sleepSpan.End()
 			return sleepErr
 		}
+		sleepSpan.End()
 	}
 }
 
