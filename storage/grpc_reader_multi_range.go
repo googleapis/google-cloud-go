@@ -1011,6 +1011,10 @@ func (m *multiRangeDownloaderManager) processSessionResult(result mrdSessionResu
 		m.handleStreamEnd(result, m.streams[result.id])
 		return
 	}
+	// Safety check but this should not happen.
+	if result.decoder == nil {
+		return
+	}
 
 	resp := result.decoder.msg
 	if handle := resp.GetReadHandle().GetHandle(); len(handle) > 0 {

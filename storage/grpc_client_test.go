@@ -906,10 +906,6 @@ func TestVerifyChecksums(t *testing.T) {
 				return
 			}
 
-			if decoder.crcErrs == nil {
-				t.Fatalf("expected crcErrs to be initialized, got nil")
-			}
-
 			// Count expected errors (we don't expect errors for empty strings in wantErrs, i.e. 10 is correct)
 			var expectedCount int
 			for _, wantSubstr := range tc.wantErrs {

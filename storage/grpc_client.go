@@ -2032,16 +2032,14 @@ func (d *readResponseDecoder) verifyChecksums() {
 	if d.msg == nil {
 		return
 	}
-	if d.crcErrs == nil {
-		d.crcErrs = make(map[int64]error)
-	}
 	for _, dataRange := range d.msg.GetObjectDataRanges() {
-		if dataRange.GetChecksummedData() == nil || dataRange.GetChecksummedData().Crc32C == nil {
+		checksummedData := dataRange.GetChecksummedData()
+		if checksummedData == nil || checksummedData.Crc32C == nil {
 			continue
 		}
 		readID := dataRange.GetReadRange().GetReadId()
 		offsets, ok := d.dataOffsets[readID]
-		wantCRC := *dataRange.GetChecksummedData().Crc32C
+		wantCRC := *checksummedData.Crc32C
 		var gotCRC uint32
 
 		if ok {
@@ -2050,19 +2048,13 @@ func (d *readResponseDecoder) verifyChecksums() {
 					continue
 				}
 				databuf := d.databufs[i]
-				start := offsets.startOff
-				if i > offsets.startBuf {
-					start = 0
+				var start uint64
+				if i == offsets.startBuf {
+					start = min(offsets.startOff, uint64(databuf.Len()))
 				}
 				end := uint64(databuf.Len())
 				if i == offsets.endBuf {
-					end = offsets.endOff
-				}
-				if start > uint64(databuf.Len()) {
-					start = uint64(databuf.Len())
-				}
-				if end > uint64(databuf.Len()) {
-					end = uint64(databuf.Len())
+					end = min(offsets.endOff, end)
 				}
 				if start >= end {
 					continue
@@ -2073,6 +2065,9 @@ func (d *readResponseDecoder) verifyChecksums() {
 		}
 
 		if gotCRC != wantCRC {
+			if d.crcErrs == nil {
+				d.crcErrs = make(map[int64]error)
+			}
 			d.crcErrs[readID] = fmt.Errorf("storage: bad CRC on chunk read: got %d, want %d", gotCRC, wantCRC)
 		}
 	}
