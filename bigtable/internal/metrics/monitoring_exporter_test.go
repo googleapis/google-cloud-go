@@ -13,13 +13,12 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-package bigtable
+package internal
 
 import (
 	"context"
 	"errors"
 	"fmt"
-	"net"
 	"reflect"
 	"strings"
 	"sync"
@@ -34,168 +33,14 @@ import (
 	"go.opentelemetry.io/otel/sdk/resource"
 	semconv "go.opentelemetry.io/otel/semconv/v1.24.0"
 
+	"cloud.google.com/go/bigtable/internal/metricstest"
 	"cloud.google.com/go/internal/testutil"
-	"cloud.google.com/go/monitoring/apiv3/v2/monitoringpb"
 	"google.golang.org/api/option"
 	googlemetricpb "google.golang.org/genproto/googleapis/api/metric"
-	metricpb "google.golang.org/genproto/googleapis/api/metric"
 	monitoredrespb "google.golang.org/genproto/googleapis/api/monitoredres"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
-	"google.golang.org/grpc/keepalive"
-	"google.golang.org/grpc/metadata"
-	"google.golang.org/protobuf/types/known/emptypb"
 )
-
-type MetricsTestServer struct {
-	lis                         net.Listener
-	srv                         *grpc.Server
-	Endpoint                    string
-	userAgent                   string
-	createMetricDescriptorReqs  []*monitoringpb.CreateMetricDescriptorRequest
-	createServiceTimeSeriesReqs []*monitoringpb.CreateTimeSeriesRequest
-	RetryCount                  int
-	mu                          sync.Mutex
-
-	createServiceTimeSeriesReqCount     int
-	expectedCreateServiceTimeSeriesReqs int
-	timeSeriesReqCh                     chan struct{}
-}
-
-func (m *MetricsTestServer) Shutdown() {
-	// this will close mts.lis
-	m.srv.GracefulStop()
-}
-
-// Pops out the UserAgent from the most recent CreateTimeSeriesRequests or CreateServiceTimeSeriesRequests.
-func (m *MetricsTestServer) UserAgent() string {
-	m.mu.Lock()
-	defer m.mu.Unlock()
-	ua := m.userAgent
-	m.userAgent = ""
-	return ua
-}
-
-// Pops out the CreateServiceTimeSeriesRequests which the test server has received so far.
-func (m *MetricsTestServer) CreateServiceTimeSeriesRequests() []*monitoringpb.CreateTimeSeriesRequest {
-	m.mu.Lock()
-	defer m.mu.Unlock()
-	reqs := m.createServiceTimeSeriesReqs
-	m.createServiceTimeSeriesReqs = nil
-	return reqs
-}
-
-func (m *MetricsTestServer) appendCreateMetricDescriptorReq(ctx context.Context, req *monitoringpb.CreateMetricDescriptorRequest) {
-	m.mu.Lock()
-	defer m.mu.Unlock()
-	m.createMetricDescriptorReqs = append(m.createMetricDescriptorReqs, req)
-}
-
-func (m *MetricsTestServer) appendCreateServiceTimeSeriesReq(ctx context.Context, req *monitoringpb.CreateTimeSeriesRequest) {
-	m.mu.Lock()
-	defer m.mu.Unlock()
-	m.createServiceTimeSeriesReqs = append(m.createServiceTimeSeriesReqs, req)
-	if md, ok := metadata.FromIncomingContext(ctx); ok {
-		m.userAgent = strings.Join(md.Get("User-Agent"), ";")
-	}
-
-	m.createServiceTimeSeriesReqCount++
-	if m.expectedCreateServiceTimeSeriesReqs > 0 && m.createServiceTimeSeriesReqCount >= m.expectedCreateServiceTimeSeriesReqs {
-		// Non-blocking send in case the channel is not being listened to or already signaled
-		select {
-		case m.timeSeriesReqCh <- struct{}{}:
-		default:
-		}
-	}
-}
-
-func (m *MetricsTestServer) waitForRequests(ctx context.Context, count int, timeout time.Duration) error {
-	m.mu.Lock()
-	m.expectedCreateServiceTimeSeriesReqs = count
-	m.createServiceTimeSeriesReqCount = 0 // Reset counter
-	// Ensure channel is clean, in case this method is called multiple times or after a previous signal without a wait.
-	// A new channel is made each time to avoid race conditions with previous waiters.
-	m.timeSeriesReqCh = make(chan struct{}, 1)
-	// Read current count in case requests came in before waitForRequests was called
-	currentReqCount := len(m.createServiceTimeSeriesReqs)
-	// If currentReqCount already meets or exceeds the target, signal immediately.
-	// This handles cases where metrics are exported very quickly.
-	if currentReqCount >= count {
-		m.mu.Unlock()
-		// Non-blocking send as channel is buffered and we are the only sender here.
-		select {
-		case m.timeSeriesReqCh <- struct{}{}:
-		default:
-		}
-	} else {
-		m.mu.Unlock()
-	}
-
-	select {
-	case <-m.timeSeriesReqCh:
-		m.mu.Lock()
-		m.expectedCreateServiceTimeSeriesReqs = 0 // Reset expected count
-		m.mu.Unlock()
-		return nil
-	case <-ctx.Done():
-		m.mu.Lock()
-		m.expectedCreateServiceTimeSeriesReqs = 0 // Reset expected count
-		m.mu.Unlock()
-		return ctx.Err()
-	case <-time.After(timeout):
-		m.mu.Lock()
-		m.expectedCreateServiceTimeSeriesReqs = 0 // Reset expected count
-		numReceived := m.createServiceTimeSeriesReqCount
-		m.mu.Unlock()
-		return fmt.Errorf("timed out waiting for %d requests, received %d", count, numReceived)
-	}
-}
-
-func (m *MetricsTestServer) Serve() error {
-	return m.srv.Serve(m.lis)
-}
-
-type fakeMetricServiceServer struct {
-	monitoringpb.UnimplementedMetricServiceServer
-	metricsTestServer *MetricsTestServer
-}
-
-func (f *fakeMetricServiceServer) CreateServiceTimeSeries(
-	ctx context.Context,
-	req *monitoringpb.CreateTimeSeriesRequest,
-) (*emptypb.Empty, error) {
-	f.metricsTestServer.appendCreateServiceTimeSeriesReq(ctx, req)
-	return &emptypb.Empty{}, nil
-}
-
-func (f *fakeMetricServiceServer) CreateMetricDescriptor(
-	ctx context.Context,
-	req *monitoringpb.CreateMetricDescriptorRequest,
-) (*metricpb.MetricDescriptor, error) {
-	f.metricsTestServer.appendCreateMetricDescriptorReq(ctx, req)
-	return &metricpb.MetricDescriptor{}, nil
-}
-
-func NewMetricTestServer() (*MetricsTestServer, error) {
-	srv := grpc.NewServer(grpc.KeepaliveParams(keepalive.ServerParameters{Time: 5 * time.Minute}))
-	lis, err := net.Listen("tcp", "localhost:0")
-	if err != nil {
-		return nil, err
-	}
-	testServer := &MetricsTestServer{
-		Endpoint:        lis.Addr().String(),
-		lis:             lis,
-		srv:             srv,
-		timeSeriesReqCh: make(chan struct{}, 1), // Buffered channel
-	}
-
-	monitoringpb.RegisterMetricServiceServer(
-		srv,
-		&fakeMetricServiceServer{metricsTestServer: testServer},
-	)
-
-	return testServer, nil
-}
 
 func requireNoError(t *testing.T, err error) {
 	if err != nil {
@@ -226,7 +71,7 @@ func TestExportMetrics(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Minute)
 	defer cancel()
 
-	testServer, err := NewMetricTestServer()
+	testServer, err := metricstest.NewMetricTestServer()
 	//nolint:errcheck
 	go testServer.Serve()
 	defer testServer.Shutdown()
@@ -245,13 +90,13 @@ func TestExportMetrics(t *testing.T) {
 	}
 
 	// Reduce sampling period to reduce test run time
-	origSamplePeriod := defaultSamplePeriod
-	defaultSamplePeriod = 500 * time.Millisecond
+	origSamplePeriod := DefaultSamplePeriod
+	DefaultSamplePeriod = 500 * time.Millisecond
 	defer func() {
-		defaultSamplePeriod = origSamplePeriod
+		DefaultSamplePeriod = origSamplePeriod
 	}()
 	provider := metric.NewMeterProvider(
-		metric.WithReader(metric.NewPeriodicReader(exporter, metric.WithInterval(defaultSamplePeriod))),
+		metric.WithReader(metric.NewPeriodicReader(exporter, metric.WithInterval(DefaultSamplePeriod))),
 		metric.WithResource(res),
 	)
 
@@ -261,7 +106,7 @@ func TestExportMetrics(t *testing.T) {
 		assertNoError(t, err)
 	}()
 
-	meterBuiltIn := provider.Meter(builtInMetricsMeterName)
+	meterBuiltIn := provider.Meter(BuiltInMetricsMeterName)
 	counterBuiltIn, err := meterBuiltIn.Int64Counter("name.lastvalue")
 	requireNoError(t, err)
 
@@ -276,7 +121,7 @@ func TestExportMetrics(t *testing.T) {
 
 	// Wait for at least two export cycles.
 	// A 20-second timeout should be generous.
-	err = testServer.waitForRequests(ctx, 2, 20*time.Second)
+	err = testServer.WaitForRequests(ctx, 2, 20*time.Second)
 	if err != nil {
 		t.Fatalf("Error waiting for requests: %v", err)
 	}
@@ -293,7 +138,7 @@ func TestExportMetrics(t *testing.T) {
 
 func TestExportCounter(t *testing.T) {
 	ctx := context.Background()
-	testServer, err := NewMetricTestServer()
+	testServer, err := metricstest.NewMetricTestServer()
 	//nolint:errcheck
 	go testServer.Serve()
 	defer testServer.Shutdown()
@@ -322,7 +167,7 @@ func TestExportCounter(t *testing.T) {
 	}()
 
 	// Start meter
-	meter := provider.Meter(builtInMetricsMeterName)
+	meter := provider.Meter(BuiltInMetricsMeterName)
 
 	// Register counter value
 	counter, err := meter.Int64Counter("counter-a")
@@ -333,7 +178,7 @@ func TestExportCounter(t *testing.T) {
 
 func TestExportHistogram(t *testing.T) {
 	ctx := context.Background()
-	testServer, err := NewMetricTestServer()
+	testServer, err := metricstest.NewMetricTestServer()
 	//nolint:errcheck
 	go testServer.Serve()
 	defer testServer.Shutdown()
@@ -364,7 +209,7 @@ func TestExportHistogram(t *testing.T) {
 	}()
 
 	// Start meter
-	meter := provider.Meter(builtInMetricsMeterName)
+	meter := provider.Meter(BuiltInMetricsMeterName)
 
 	// Register counter value
 	counter, err := meter.Float64Histogram("counter-a")
@@ -389,18 +234,18 @@ func TestRecordToMpb(t *testing.T) {
 	inputAttributes := attribute.NewSet(
 		attribute.Key("a").String("A"),
 		attribute.Key("b").Int64(100),
-		attribute.Key(monitoredResLabelKeyProject).String(monitoredResLabelValueProject),
-		attribute.Key(monitoredResLabelKeyInstance).String(monitoredResLabelValueInstance),
-		attribute.Key(monitoredResLabelKeyZone).String(monitoredResLabelValueZone),
-		attribute.Key(monitoredResLabelKeyTable).String(monitoredResLabelValueTable),
-		attribute.Key(monitoredResLabelKeyCluster).String(monitoredResLabelValueCluster),
+		attribute.Key(MonitoredResLabelKeyProject).String(monitoredResLabelValueProject),
+		attribute.Key(MonitoredResLabelKeyInstance).String(monitoredResLabelValueInstance),
+		attribute.Key(MonitoredResLabelKeyZone).String(monitoredResLabelValueZone),
+		attribute.Key(MonitoredResLabelKeyTable).String(monitoredResLabelValueTable),
+		attribute.Key(MonitoredResLabelKeyCluster).String(monitoredResLabelValueCluster),
 	)
 	inputMetrics := metricdata.Metrics{
 		Name: metricName,
 	}
 
 	wantMetric := &googlemetricpb.Metric{
-		Type: fmt.Sprintf("%v%s", builtInMetricsMeterName, metricName),
+		Type: fmt.Sprintf("%v%s", BuiltInMetricsMeterName, metricName),
 		Labels: map[string]string{
 			"a": "A",
 			"b": "100",
@@ -410,11 +255,11 @@ func TestRecordToMpb(t *testing.T) {
 	wantMonitoredResource := &monitoredrespb.MonitoredResource{
 		Type: "bigtable_client_raw",
 		Labels: map[string]string{
-			monitoredResLabelKeyProject:  monitoredResLabelValueProject,
-			monitoredResLabelKeyInstance: monitoredResLabelValueInstance,
-			monitoredResLabelKeyZone:     monitoredResLabelValueZone,
-			monitoredResLabelKeyTable:    monitoredResLabelValueTable,
-			monitoredResLabelKeyCluster:  monitoredResLabelValueCluster,
+			MonitoredResLabelKeyProject:  monitoredResLabelValueProject,
+			MonitoredResLabelKeyInstance: monitoredResLabelValueInstance,
+			MonitoredResLabelKeyZone:     monitoredResLabelValueZone,
+			MonitoredResLabelKeyTable:    monitoredResLabelValueTable,
+			MonitoredResLabelKeyCluster:  monitoredResLabelValueCluster,
 		},
 	}
 
@@ -492,7 +337,7 @@ func TestTimeIntervalPassthru(t *testing.T) {
 }
 
 func TestConcurrentCallsAfterShutdown(t *testing.T) {
-	testServer, err := NewMetricTestServer()
+	testServer, err := metricstest.NewMetricTestServer()
 	//nolint:errcheck
 	go testServer.Serve()
 	defer testServer.Shutdown()
@@ -533,7 +378,7 @@ func TestConcurrentCallsAfterShutdown(t *testing.T) {
 }
 
 func TestConcurrentExport(t *testing.T) {
-	testServer, err := NewMetricTestServer()
+	testServer, err := metricstest.NewMetricTestServer()
 	//nolint:errcheck
 	go testServer.Serve()
 	defer testServer.Shutdown()
@@ -590,8 +435,8 @@ func TestConcurrentExport(t *testing.T) {
 
 func TestBatchingExport(t *testing.T) {
 	ctx := context.Background()
-	setup := func(t *testing.T) (metric.Exporter, *MetricsTestServer) {
-		testServer, err := NewMetricTestServer()
+	setup := func(t *testing.T) (metric.Exporter, *metricstest.MetricsTestServer) {
+		testServer, err := metricstest.NewMetricTestServer()
 		//nolint:errcheck
 		go testServer.Serve()
 		t.Cleanup(testServer.Shutdown)
@@ -668,7 +513,7 @@ func TestBatchingExport(t *testing.T) {
 				ScopeMetrics: []metricdata.ScopeMetrics{
 					{
 						Scope: instrumentation.Scope{
-							Name: builtInMetricsMeterName,
+							Name: BuiltInMetricsMeterName,
 						},
 						Metrics: input,
 					},
