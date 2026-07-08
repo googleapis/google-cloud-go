@@ -25,6 +25,18 @@ func (f *Factory) ClientAttributes() []attribute.KeyValue {
 	return f.clientAttributes
 }
 
+// AdditionalAttrs exposes the per-metric additional label list. Read-only.
+func (m metricInfo) AdditionalAttrs() []string {
+	return m.additionalAttrs
+}
+
+// ToOtelMetricAttrs is the exported form of toOtelMetricAttrs, offered
+// so external tests can drive the same attribute-derivation path the
+// record* methods take internally.
+func (mt *Tracer) ToOtelMetricAttrs(metricName string) (attribute.Set, error) {
+	return mt.toOtelMetricAttrs(metricName)
+}
+
 // HasInstruments reports whether the factory has constructed all of
 // its OTel instruments. Returns false on the disabled-metrics factory
 // (NoopMetricsProvider or emulator mode) and true on a fully-wired
@@ -38,18 +50,6 @@ func (f *Factory) HasInstruments() bool {
 		f.firstRespLatencies != nil &&
 		f.retryCount != nil &&
 		f.connErrCount != nil
-}
-
-// ToOtelMetricAttrs is the exported form of toOtelMetricAttrs, offered
-// so external tests can drive the same attribute-derivation path the
-// record* methods take internally.
-func (mt *Tracer) ToOtelMetricAttrs(metricName string) (attribute.Set, error) {
-	return mt.toOtelMetricAttrs(metricName)
-}
-
-// AdditionalAttrs exposes the per-metric additional label list. Read-only.
-func (m metricInfo) AdditionalAttrs() []string {
-	return m.additionalAttrs
 }
 
 // ClientName returns the "go-bigtable/<version>" string this process

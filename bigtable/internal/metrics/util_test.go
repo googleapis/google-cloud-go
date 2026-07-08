@@ -23,10 +23,11 @@ import (
 	"strings"
 	"testing"
 
-	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	"go.opentelemetry.io/otel/attribute"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"
+
+	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 )
 
 // equalErrs compares two errors by string containment. Local helper
@@ -318,7 +319,7 @@ func TestToOtelMetricAttrsAttemptLatencies2(t *testing.T) {
 		tableName:   "test-table",
 		isStreaming: true,
 		clientAttributes: []attribute.KeyValue{
-			attribute.String(MonitoredResLabelKeyProject, "test-project"),
+			attribute.String(MetricLabelKeyProject, "test-project"),
 		},
 		currOp: OpTracer{
 			status: "UNAVAILABLE",
@@ -340,10 +341,10 @@ func TestToOtelMetricAttrsAttemptLatencies2(t *testing.T) {
 	}
 	want := map[attribute.Key]attribute.Value{
 		MetricLabelKeyMethod:             attribute.StringValue("Bigtable.ReadRows"),
-		MonitoredResLabelKeyTable:        attribute.StringValue("test-table"),
-		MonitoredResLabelKeyCluster:      attribute.StringValue("test-cluster"),
-		MonitoredResLabelKeyZone:         attribute.StringValue("test-zone"),
-		MonitoredResLabelKeyProject:      attribute.StringValue("test-project"),
+		MetricLabelKeyTable:              attribute.StringValue("test-table"),
+		MetricLabelKeyCluster:            attribute.StringValue("test-cluster"),
+		MetricLabelKeyZone:               attribute.StringValue("test-zone"),
+		MetricLabelKeyProject:            attribute.StringValue("test-project"),
 		MetricLabelKeyStatus:             attribute.StringValue("OK"),
 		MetricLabelKeyStreamingOperation: attribute.BoolValue(true),
 		MetricTransportType:              attribute.StringValue("cloudpath"),

@@ -25,43 +25,38 @@ package internal
 
 import (
 	"context"
-	"errors"
 	"fmt"
-	"os"
-	"reflect"
 	"strings"
 	"sync/atomic"
 	"time"
 
-	"cloud.google.com/go/bigtable/internal"
-	btransport "cloud.google.com/go/bigtable/internal/transport"
-	"github.com/google/uuid"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
-	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
-	"google.golang.org/api/option"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/stats"
+
+	"cloud.google.com/go/bigtable/internal"
+	btransport "cloud.google.com/go/bigtable/internal/transport"
 )
 
 const (
 	BuiltInMetricsMeterName = "bigtable.googleapis.com/internal/client/"
 
-	metricsPrefix         = "bigtable/"
 	LocationMDKey         = "x-goog-ext-425905942-bin"
 	ServerTimingMDKey     = "server-timing"
 	serverTimingValPrefix = "gfet4t7; dur="
 	metricMethodPrefix    = "Bigtable."
 
-	// Monitored resource labels
-	MonitoredResLabelKeyProject  = "project_id"
-	MonitoredResLabelKeyInstance = "instance"
-	MonitoredResLabelKeyTable    = "table"
-	MonitoredResLabelKeyCluster  = "cluster"
-	MonitoredResLabelKeyZone     = "zone"
-
-	// Metric labels
+	// Metric labels. project_id / instance / table / cluster / zone
+	// double as the monitored-resource labels the Cloud Monitoring
+	// exporter promotes off the metric (see monitoring_exporter.go's
+	// monitoredResLabelsSet); the tracer itself makes no distinction.
+	MetricLabelKeyProject            = "project_id"
+	MetricLabelKeyInstance           = "instance"
+	MetricLabelKeyTable              = "table"
+	MetricLabelKeyCluster            = "cluster"
+	MetricLabelKeyZone               = "zone"
 	MetricLabelKeyAppProfile         = "app_profile"
 	MetricLabelKeyMethod             = "method"
 	MetricLabelKeyStatus             = "status"
@@ -76,6 +71,15 @@ const (
 	MetricTransportRegion  = "transport_region"
 	MetricTransportSubZone = "transport_subzone"
 	MetricTransportZone    = "transport_zone"
+
+	// methodNameReadRows is the method label emitted on operation- and
+	// first-response-latency metrics for ReadRows calls. Duplicated from
+	// bigtable.methodNameReadRows so the tracer can name-match without
+	// importing the bigtable package. Only ReadRows currently records
+	// first_response_latencies; the constant lives here rather than in a
+	// per-method table because there is no other method that needs
+	// special-casing in this file.
+	methodNameReadRows = "ReadRows"
 
 	// Metric names
 	MetricNameOperationLatencies      = "operation_latencies"
@@ -92,7 +96,6 @@ const (
 	// Metric units
 	metricUnitMS    = "ms"
 	metricUnitCount = "1"
-	maxAttrsLen     = 16 // Monitored resource labels + Metric labels (incl. 4 transport labels on attempt_latencies2)
 )
 
 type contextKey string
@@ -121,14 +124,6 @@ func FromContext(ctx context.Context) *Tracer {
 
 // These are effectively constant, but for testing purposes they are mutable
 var (
-	// duration between two metric exports
-	DefaultSamplePeriod = time.Minute
-
-	disabledMetricsTracerFactory = &Factory{
-		Enabled:  false,
-		Shutdown: func() {},
-	}
-
 	// MetricsErrorPrefix wraps every metrics-subsystem error surfaced to
 	// the OTel error handler. Exposed so tests can assert that exporter
 	// / handler failures make it into the error stream.
@@ -207,347 +202,12 @@ var (
 		},
 	}
 
-	// Generates unique client ID in the format go-<random UUID>@<hostname>
-	GenerateClientUID = func() (string, error) {
-		hostname, err := os.Hostname()
-		if err != nil {
-			return "", err
-		}
-		return "go-" + uuid.NewString() + "@" + hostname, nil
-	}
-
-	endpointOptionType = reflect.TypeOf(option.WithEndpoint(""))
-
-	// CreateExporterOptions takes Bigtable client options and returns exporter
-	// options, filtering out any WithEndpoint option to ensure the metrics
-	// exporter uses its default endpoint. Overridden in tests to redirect
-	// the exporter to a fake Cloud Monitoring server.
-	CreateExporterOptions = func(btOpts ...option.ClientOption) []option.ClientOption {
-		filteredOptions := []option.ClientOption{}
-		for _, opt := range btOpts {
-			if reflect.TypeOf(opt) != endpointOptionType {
-				filteredOptions = append(filteredOptions, opt)
-			}
-		}
-		return filteredOptions
-	}
-
 	SharedStatsHandler = &StatsHandler{}
-
-	// canonicalStatusStrings maps the standard gRPC status codes to their
-	// canonical SCREAMING_SNAKE_CASE string form. Indexed by codes.Code so
-	// CanonicalString is an allocation-free lookup on the status-recording
-	// hot path.
-	//
-	// Hand-rolled rather than delegating to grpc-go's canonicalString
-	// (unexported: only reachable via grpc/internal/CanonicalString) or
-	// google.golang.org/genproto/googleapis/rpc/code.Code_name (exported
-	// but emits "CANCELLED" for Canceled). The bigtable metrics label
-	// history uses "CANCELED" (single L) — matching the pre-refactor
-	// upstream code that ran `strings.ToUpper` over grpc-go's
-	// `codes.Canceled.String()` = "Canceled". Changing to either helper
-	// would flip the emitted label and break downstream dashboards.
-	canonicalStatusStrings = [...]string{
-		codes.OK:                 "OK",
-		codes.Canceled:           "CANCELED",
-		codes.Unknown:            "UNKNOWN",
-		codes.InvalidArgument:    "INVALID_ARGUMENT",
-		codes.DeadlineExceeded:   "DEADLINE_EXCEEDED",
-		codes.NotFound:           "NOT_FOUND",
-		codes.AlreadyExists:      "ALREADY_EXISTS",
-		codes.PermissionDenied:   "PERMISSION_DENIED",
-		codes.ResourceExhausted:  "RESOURCE_EXHAUSTED",
-		codes.FailedPrecondition: "FAILED_PRECONDITION",
-		codes.Aborted:            "ABORTED",
-		codes.OutOfRange:         "OUT_OF_RANGE",
-		codes.Unimplemented:      "UNIMPLEMENTED",
-		codes.Internal:           "INTERNAL",
-		codes.Unavailable:        "UNAVAILABLE",
-		codes.DataLoss:           "DATA_LOSS",
-		codes.Unauthenticated:    "UNAUTHENTICATED",
-	}
 )
 
 type metricInfo struct {
 	additionalAttrs    []string
 	recordedPerAttempt bool
-}
-
-type Factory struct {
-	Enabled bool
-
-	ClientOpts []option.ClientOption
-
-	// To be called on client close
-	Shutdown func()
-
-	// attributes that are specific to a client instance and
-	// do not change across different function calls on client
-	clientAttributes []attribute.KeyValue
-
-	// OtelMeterProvider
-	OtelMeterProvider metric.MeterProvider
-
-	operationLatencies      metric.Float64Histogram
-	serverLatencies         metric.Float64Histogram
-	attemptLatencies        metric.Float64Histogram
-	attemptLatencies2       metric.Float64Histogram
-	firstRespLatencies      metric.Float64Histogram
-	appBlockingLatencies    metric.Float64Histogram
-	clientBlockingLatencies metric.Float64Histogram
-	retryCount              metric.Int64Counter
-	connErrCount            metric.Int64Counter
-	debugTags               metric.Int64Counter
-}
-
-// Returns error only if MetricsProvider is of unknown type. Rest all errors are swallowed
-func NewFactory(ctx context.Context, project, instance, appProfile string, metricsProvider MetricsProvider, opts ...option.ClientOption) (*Factory, error) {
-	if metricsProvider != nil {
-		switch metricsProvider.(type) {
-		case NoopMetricsProvider:
-			return disabledMetricsTracerFactory, nil
-		default:
-			return disabledMetricsTracerFactory, errors.New("bigtable: unknown MetricsProvider type")
-		}
-	}
-
-	// Metrics are Enabled.
-	clientUID, err := GenerateClientUID()
-	if err != nil {
-		// Swallow the error and disable metrics
-		return disabledMetricsTracerFactory, nil
-	}
-
-	tracerFactory := &Factory{
-		Enabled: true,
-		clientAttributes: []attribute.KeyValue{
-			attribute.String(MonitoredResLabelKeyProject, project),
-			attribute.String(MonitoredResLabelKeyInstance, instance),
-			attribute.String(MetricLabelKeyAppProfile, appProfile),
-			attribute.String(MetricLabelKeyClientUID, clientUID),
-			attribute.String(MetricLabelKeyClientName, clientName),
-		},
-		Shutdown: func() {},
-	}
-
-	// Create default meter provider
-	mpOptions, err := builtInMeterProviderOptions(project, opts...)
-	if err != nil {
-		// Swallow the error and disable metrics
-		return disabledMetricsTracerFactory, nil
-	}
-	meterProvider := sdkmetric.NewMeterProvider(mpOptions...)
-	// Enable Otel metrics collection
-	otelContext, err := newOtelMetricsContext(ctx, metricsConfig{
-		project:         project,
-		instance:        instance,
-		appProfile:      appProfile,
-		clientName:      clientName,
-		clientUID:       clientUID,
-		interval:        DefaultSamplePeriod,
-		customExporter:  nil,
-		manualReader:    nil,
-		disableExporter: false,
-		resourceOpts:    nil,
-	})
-
-	// the error from newOtelMetricsContext is silently ignored since metrics are not critical to client creation.
-	if err == nil {
-		tracerFactory.ClientOpts = otelContext.ClientOpts
-		tracerFactory.OtelMeterProvider = otelContext.OtelMeterProvider
-	}
-	tracerFactory.Shutdown = func() {
-		if otelContext != nil {
-			otelContext.close()
-		}
-		meterProvider.Shutdown(ctx)
-	}
-
-	// Create meter and instruments
-	meter := meterProvider.Meter(BuiltInMetricsMeterName, metric.WithInstrumentationVersion(internal.Version))
-	err = tracerFactory.createInstruments(meter)
-	if err != nil {
-		// Swallow the error and disable metrics
-		return disabledMetricsTracerFactory, nil
-	}
-	return tracerFactory, nil
-}
-
-// NewFactoryForTest constructs an enabled Factory backed by the supplied
-// MeterProvider. Test-only: skips the built-in Cloud Monitoring exporter
-// setup NewFactory does, so callers can inject a ManualReader-backed
-// provider and assert on the emitted data points. Production code must
-// use NewFactory.
-func NewFactoryForTest(project, instance, appProfile string, mp metric.MeterProvider) (*Factory, error) {
-	clientUID, err := GenerateClientUID()
-	if err != nil {
-		return nil, err
-	}
-	tf := &Factory{
-		Enabled: true,
-		clientAttributes: []attribute.KeyValue{
-			attribute.String(MonitoredResLabelKeyProject, project),
-			attribute.String(MonitoredResLabelKeyInstance, instance),
-			attribute.String(MetricLabelKeyAppProfile, appProfile),
-			attribute.String(MetricLabelKeyClientUID, clientUID),
-			attribute.String(MetricLabelKeyClientName, clientName),
-		},
-		OtelMeterProvider: mp,
-		Shutdown:          func() {},
-	}
-	meter := mp.Meter(BuiltInMetricsMeterName, metric.WithInstrumentationVersion(internal.Version))
-	if err := tf.createInstruments(meter); err != nil {
-		return nil, err
-	}
-	return tf, nil
-}
-
-func builtInMeterProviderOptions(project string, opts ...option.ClientOption) ([]sdkmetric.Option, error) {
-	allOpts := CreateExporterOptions(opts...)
-	defaultExporter, err := newMonitoringExporter(context.Background(), project, allOpts...)
-	if err != nil {
-		return nil, err
-	}
-
-	return []sdkmetric.Option{sdkmetric.WithReader(
-		sdkmetric.NewPeriodicReader(
-			defaultExporter,
-			sdkmetric.WithInterval(DefaultSamplePeriod),
-		),
-	)}, nil
-}
-
-func (tf *Factory) NewAsyncRefreshErrHandler() func() {
-	if !tf.Enabled {
-		return func() {}
-	}
-
-	asyncRefreshMetricAttrs := tf.clientAttributes
-	asyncRefreshMetricAttrs = append(asyncRefreshMetricAttrs,
-		attribute.String(MetricLabelKeyTag, "async_refresh_dry_run"),
-		// Table, cluster and zone are unknown at this point
-		// Use default values
-		attribute.String(MonitoredResLabelKeyTable, defaultTable),
-		attribute.String(MonitoredResLabelKeyCluster, defaultCluster),
-		attribute.String(MonitoredResLabelKeyZone, defaultZone),
-	)
-	return func() {
-		tf.debugTags.Add(context.Background(), 1,
-			metric.WithAttributes(asyncRefreshMetricAttrs...))
-	}
-}
-
-func (tf *Factory) createInstruments(meter metric.Meter) error {
-	var err error
-
-	// Create operation_latencies
-	tf.operationLatencies, err = meter.Float64Histogram(
-		MetricNameOperationLatencies,
-		metric.WithDescription("Total time until final operation success or failure, including retries and backoff."),
-		metric.WithUnit(metricUnitMS),
-		metric.WithExplicitBucketBoundaries(bucketBounds...),
-	)
-	if err != nil {
-		return err
-	}
-
-	// Create attempt_latencies
-	tf.attemptLatencies, err = meter.Float64Histogram(
-		MetricNameAttemptLatencies,
-		metric.WithDescription("Client observed latency per RPC attempt."),
-		metric.WithUnit(metricUnitMS),
-		metric.WithExplicitBucketBoundaries(bucketBounds...),
-	)
-	if err != nil {
-		return err
-	}
-
-	// Create attempt_latencies2 — same latency value as attempt_latencies,
-	// broken out with transport_type/region/zone/subzone attributes sourced
-	// from the bigtable-peer-info sideband metadata. Uses the shared
-	// java-parity FineGrainLatencyBounds so sub-ms DirectPath samples
-	// don't collapse into a single [0,1)ms bucket.
-	tf.attemptLatencies2, err = meter.Float64Histogram(
-		MetricNameAttemptLatencies2,
-		metric.WithDescription("Client observed latency per RPC attempt, labeled by transport type and AFE location."),
-		metric.WithUnit(metricUnitMS),
-		metric.WithExplicitBucketBoundaries(btransport.FineGrainLatencyBounds...),
-	)
-	if err != nil {
-		return err
-	}
-
-	// Create server_latencies
-	tf.serverLatencies, err = meter.Float64Histogram(
-		MetricNameServerLatencies,
-		metric.WithDescription("The latency measured from the moment that the RPC entered the Google data center until the RPC was completed."),
-		metric.WithUnit(metricUnitMS),
-		metric.WithExplicitBucketBoundaries(bucketBounds...),
-	)
-	if err != nil {
-		return err
-	}
-
-	// Create first_response_latencies
-	tf.firstRespLatencies, err = meter.Float64Histogram(
-		MetricNameFirstRespLatencies,
-		metric.WithDescription("Latency from operation start until the response headers were received. The publishing of the measurement will be delayed until the attempt response has been received."),
-		metric.WithUnit(metricUnitMS),
-		metric.WithExplicitBucketBoundaries(bucketBounds...),
-	)
-	if err != nil {
-		return err
-	}
-
-	// Create application_latencies
-	tf.appBlockingLatencies, err = meter.Float64Histogram(
-		MetricNameAppBlockingLatencies,
-		metric.WithDescription("The latency of the client application consuming available response data."),
-		metric.WithUnit(metricUnitMS),
-		metric.WithExplicitBucketBoundaries(bucketBounds...),
-	)
-	if err != nil {
-		return err
-	}
-
-	// Create client_blocking_latencies
-	tf.clientBlockingLatencies, err = meter.Float64Histogram(
-		MetricNameClientBlockingLatencies,
-		metric.WithDescription("The latencies of requests queued on gRPC channels."),
-		metric.WithUnit(metricUnitMS),
-		metric.WithExplicitBucketBoundaries(clientBlockingBucketBounds...),
-	)
-	if err != nil {
-		return err
-	}
-
-	// Create retry_count
-	tf.retryCount, err = meter.Int64Counter(
-		MetricNameRetryCount,
-		metric.WithDescription("The number of additional RPCs sent after the initial attempt."),
-		metric.WithUnit(metricUnitCount),
-	)
-	if err != nil {
-		return err
-	}
-
-	// Create connectivity_error_count
-	tf.connErrCount, err = meter.Int64Counter(
-		MetricNameConnErrCount,
-		metric.WithDescription("Number of requests that failed to reach the Google datacenter. (Requests without google response headers"),
-		metric.WithUnit(metricUnitCount),
-	)
-	if err != nil {
-		return err
-	}
-
-	// Create debug_tags
-	tf.debugTags, err = meter.Int64Counter(
-		MetricNameDebugTags,
-		metric.WithDescription("A counter of internal client events used for debugging."),
-		metric.WithUnit(metricUnitCount),
-	)
-	return err
 }
 
 // Tracer is created one per operation
@@ -714,44 +374,6 @@ func (a *AttemptTracer) SetTransportSubZone(v string) { a.transportSubZone = v }
 // clientBlockingLatency stamping.
 func (a *AttemptTracer) StartTime() time.Time { return a.startTime }
 
-func (tf *Factory) CreateTracer(ctx context.Context, tableName string, isStreaming bool) Tracer {
-	// Operation has started but not the attempt.
-	// So, create only operation tracer and not attempt tracer
-	currOpTracer := OpTracer{
-		cookies: make(map[string]string),
-	}
-	currOpTracer.SetStartTime(time.Now())
-
-	if !tf.Enabled {
-		return Tracer{
-			BuiltInEnabled: false,
-			currOp:         currOpTracer,
-		}
-	}
-
-	return Tracer{
-		ctx:            ctx,
-		BuiltInEnabled: tf.Enabled,
-
-		currOp:           currOpTracer,
-		clientAttributes: tf.clientAttributes,
-
-		instrumentOperationLatencies:      tf.operationLatencies,
-		instrumentServerLatencies:         tf.serverLatencies,
-		instrumentAttemptLatencies:        tf.attemptLatencies,
-		instrumentAttemptLatencies2:       tf.attemptLatencies2,
-		instrumentFirstRespLatencies:      tf.firstRespLatencies,
-		instrumentAppBlockingLatencies:    tf.appBlockingLatencies,
-		instrumentClientBlockingLatencies: tf.clientBlockingLatencies,
-		instrumentRetryCount:              tf.retryCount,
-		instrumentConnErrCount:            tf.connErrCount,
-		instrumentDebugTags:               tf.debugTags,
-
-		tableName:   tableName,
-		isStreaming: isStreaming,
-	}
-}
-
 func (mt *Tracer) SetMethod(m string) {
 	mt.method = metricMethodPrefix + m
 }
@@ -778,7 +400,9 @@ func (mt *Tracer) toOtelMetricAttrs(metricName string) (attribute.Set, error) {
 		zoneID = FallbackString(zoneID, mt.currOp.lastZoneID)
 	}
 
-	attrKeyValues := make([]attribute.KeyValue, 0, maxAttrsLen)
+	// 4 fixed attributes below (method / table / cluster / zone) plus the
+	// per-client attributes plus this metric's additional attributes.
+	attrKeyValues := make([]attribute.KeyValue, 0, 4+len(mt.clientAttributes)+len(mDetails.additionalAttrs))
 	// Create attribute key value pairs for attributes common to all metricss
 	attrKeyValues = append(attrKeyValues,
 		attribute.String(MetricLabelKeyMethod, mt.method),
@@ -786,10 +410,10 @@ func (mt *Tracer) toOtelMetricAttrs(metricName string) (attribute.Set, error) {
 		// Add resource labels to otel metric labels.
 		// These will be used for creating the monitored resource but exporter
 		// will not add them to Google Cloud Monitoring metric labels
-		attribute.String(MonitoredResLabelKeyTable, mt.tableName),
+		attribute.String(MetricLabelKeyTable, mt.tableName),
 
-		attribute.String(MonitoredResLabelKeyCluster, clusterID),
-		attribute.String(MonitoredResLabelKeyZone, zoneID),
+		attribute.String(MetricLabelKeyCluster, clusterID),
+		attribute.String(MetricLabelKeyZone, zoneID),
 	)
 	attrKeyValues = append(attrKeyValues, mt.clientAttributes...)
 
@@ -1035,18 +659,6 @@ func (mt *Tracer) CurrAttempt() *AttemptTracer {
 		return nil
 	}
 	return &mt.currOp.currAttempt
-}
-
-func CanonicalString(c codes.Code) string {
-	if int(c) >= 0 && int(c) < len(canonicalStatusStrings) {
-		if s := canonicalStatusStrings[c]; s != "" {
-			return s
-		}
-	}
-	// Match grpc-go's canonicalString fallback for out-of-range codes so
-	// tests (and log/metric consumers) that expect the "CODE(N)" shape
-	// keep working — e.g. metrics_test.go's TestCanonicalString.
-	return fmt.Sprintf("CODE(%d)", int(c))
 }
 
 func (mt *Tracer) IncrementAppBlockingLatency(latency float64) {

@@ -318,8 +318,8 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 			wantBuiltinEnabled:     true,
 			wantCreateTSCallsCount: 2,
 			wantClientAttributes: []attribute.KeyValue{
-				attribute.String(metrics.MonitoredResLabelKeyProject, project),
-				attribute.String(metrics.MonitoredResLabelKeyInstance, instance),
+				attribute.String(metrics.MetricLabelKeyProject, project),
+				attribute.String(metrics.MetricLabelKeyInstance, instance),
 				attribute.String(metrics.MetricLabelKeyAppProfile, appProfile),
 				attribute.String(metrics.MetricLabelKeyClientUID, clientUID),
 				attribute.String(metrics.MetricLabelKeyClientName, metrics.ClientName()),
@@ -734,12 +734,12 @@ func TestToOtelMetricAttrs(t *testing.T) {
 			desc:       "Known metric",
 			metricName: metrics.MetricNameOperationLatencies,
 			wantAttrs: []attribute.KeyValue{
-				attribute.String(metrics.MonitoredResLabelKeyTable, "my-table"),
+				attribute.String(metrics.MetricLabelKeyTable, "my-table"),
 				attribute.String(metrics.MetricLabelKeyMethod, "ReadRows"),
 				attribute.Bool(metrics.MetricLabelKeyStreamingOperation, true),
 				attribute.String(metrics.MetricLabelKeyStatus, metrics.CanonicalString(codes.OK)),
-				attribute.String(metrics.MonitoredResLabelKeyCluster, "my-cluster"),
-				attribute.String(metrics.MonitoredResLabelKeyZone, "my-zone"),
+				attribute.String(metrics.MetricLabelKeyCluster, "my-cluster"),
+				attribute.String(metrics.MetricLabelKeyZone, "my-zone"),
 			},
 			wantError: nil,
 		},
@@ -1129,8 +1129,8 @@ func TestApplicationLatencies(t *testing.T) {
 					t.Errorf("Label %s should not be present for %s", metrics.MetricLabelKeyStreamingOperation, expectedMetricType)
 				}
 				resLabels := ts.GetResource().GetLabels()
-				if tblName, ok := resLabels[metrics.MonitoredResLabelKeyTable]; (ok && tblName != tableID && tblName != "") || !ok {
-					t.Errorf("Label %s: got %q, want %q for resource %s", metrics.MonitoredResLabelKeyTable, tblName, tableID, ts.GetResource())
+				if tblName, ok := resLabels[metrics.MetricLabelKeyTable]; (ok && tblName != tableID && tblName != "") || !ok {
+					t.Errorf("Label %s: got %q, want %q for resource %s", metrics.MetricLabelKeyTable, tblName, tableID, ts.GetResource())
 				}
 			}
 		}

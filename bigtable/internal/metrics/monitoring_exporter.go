@@ -27,8 +27,6 @@ import (
 	"sync"
 	"time"
 
-	monitoring "cloud.google.com/go/monitoring/apiv3/v2"
-	"cloud.google.com/go/monitoring/apiv3/v2/monitoringpb"
 	"go.opentelemetry.io/otel/attribute"
 	otelmetric "go.opentelemetry.io/otel/sdk/metric"
 	otelmetricdata "go.opentelemetry.io/otel/sdk/metric/metricdata"
@@ -37,6 +35,9 @@ import (
 	googlemetricpb "google.golang.org/genproto/googleapis/api/metric"
 	monitoredrespb "google.golang.org/genproto/googleapis/api/monitoredres"
 	"google.golang.org/protobuf/types/known/timestamppb"
+
+	monitoring "cloud.google.com/go/monitoring/apiv3/v2"
+	"cloud.google.com/go/monitoring/apiv3/v2/monitoringpb"
 )
 
 const (
@@ -49,11 +50,11 @@ const (
 
 var (
 	monitoredResLabelsSet = map[string]bool{
-		MonitoredResLabelKeyProject:  true,
-		MonitoredResLabelKeyInstance: true,
-		MonitoredResLabelKeyCluster:  true,
-		MonitoredResLabelKeyTable:    true,
-		MonitoredResLabelKeyZone:     true,
+		MetricLabelKeyProject:  true,
+		MetricLabelKeyInstance: true,
+		MetricLabelKeyCluster:  true,
+		MetricLabelKeyTable:    true,
+		MetricLabelKeyZone:     true,
 	}
 
 	errShutdown = fmt.Errorf("exporter is shutdown")

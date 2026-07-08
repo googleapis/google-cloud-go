@@ -24,11 +24,12 @@ import (
 	"strings"
 	"time"
 
-	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
+
+	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 )
 
 const (
@@ -37,6 +38,72 @@ const (
 	defaultTable   = "<unspecified>"
 	PeerInfoMDKey  = "bigtable-peer-info"
 )
+
+// canonicalStatusStrings maps standard gRPC status codes to their
+// canonical SCREAMING_SNAKE_CASE string form. Indexed by codes.Code so
+// CanonicalString is an allocation-free lookup on the status-recording
+// hot path.
+//
+// Hand-rolled rather than delegating to grpc-go's canonicalString
+// (unexported: only reachable via grpc/internal/CanonicalString) or
+// google.golang.org/genproto/googleapis/rpc/code.Code_name (exported
+// but emits "CANCELLED" for Canceled). The bigtable metrics label
+// history uses "CANCELED" (single L) — matching the pre-refactor
+// upstream code that ran `strings.ToUpper` over grpc-go's
+// `codes.Canceled.String()` = "Canceled". Changing to either helper
+// would flip the emitted label and break downstream dashboards.
+var canonicalStatusStrings = [...]string{
+	codes.OK:                 "OK",
+	codes.Canceled:           "CANCELED",
+	codes.Unknown:            "UNKNOWN",
+	codes.InvalidArgument:    "INVALID_ARGUMENT",
+	codes.DeadlineExceeded:   "DEADLINE_EXCEEDED",
+	codes.NotFound:           "NOT_FOUND",
+	codes.AlreadyExists:      "ALREADY_EXISTS",
+	codes.PermissionDenied:   "PERMISSION_DENIED",
+	codes.ResourceExhausted:  "RESOURCE_EXHAUSTED",
+	codes.FailedPrecondition: "FAILED_PRECONDITION",
+	codes.Aborted:            "ABORTED",
+	codes.OutOfRange:         "OUT_OF_RANGE",
+	codes.Unimplemented:      "UNIMPLEMENTED",
+	codes.Internal:           "INTERNAL",
+	codes.Unavailable:        "UNAVAILABLE",
+	codes.DataLoss:           "DATA_LOSS",
+	codes.Unauthenticated:    "UNAUTHENTICATED",
+}
+
+// CanonicalString returns the SCREAMING_SNAKE_CASE form of a gRPC code.
+// See canonicalStatusStrings for why this is hand-rolled.
+func CanonicalString(c codes.Code) string {
+	if int(c) >= 0 && int(c) < len(canonicalStatusStrings) {
+		if s := canonicalStatusStrings[c]; s != "" {
+			return s
+		}
+	}
+	// Match grpc-go's canonicalString fallback for out-of-range codes so
+	// tests (and log/metric consumers) that expect the "CODE(N)" shape
+	// keep working — e.g. metrics_test.go's TestCanonicalString.
+	return fmt.Sprintf("CODE(%d)", int(c))
+}
+
+// convertToGrpcStatusErr returns the gRPC status code for err along
+// with an error canonicalized to a plain status.Error so downstream
+// logging doesn't leak wrapping/details. Callers that only need the
+// code use GrpcCodeOf instead.
+func convertToGrpcStatusErr(err error) (codes.Code, error) {
+	code := GrpcCodeOf(err)
+	if err == nil {
+		return code, nil
+	}
+	if s, ok := status.FromError(err); ok {
+		return code, status.Error(code, s.Message())
+	}
+	if code != codes.Unknown {
+		// Context error path — canonicalize with the ctx-derived message.
+		return code, status.Error(code, status.FromContextError(err).Message())
+	}
+	return code, err
+}
 
 // get GFE latency in ms from response metadata
 func ExtractServerLatency(headerMD metadata.MD, trailerMD metadata.MD) (float64, error) {

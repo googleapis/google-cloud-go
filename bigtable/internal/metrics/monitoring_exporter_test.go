@@ -33,13 +33,14 @@ import (
 	"go.opentelemetry.io/otel/sdk/resource"
 	semconv "go.opentelemetry.io/otel/semconv/v1.24.0"
 
-	"cloud.google.com/go/bigtable/internal/metricstest"
-	"cloud.google.com/go/internal/testutil"
 	"google.golang.org/api/option"
 	googlemetricpb "google.golang.org/genproto/googleapis/api/metric"
 	monitoredrespb "google.golang.org/genproto/googleapis/api/monitoredres"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+
+	"cloud.google.com/go/bigtable/internal/metricstest"
+	"cloud.google.com/go/internal/testutil"
 )
 
 func requireNoError(t *testing.T, err error) {
@@ -234,11 +235,11 @@ func TestRecordToMpb(t *testing.T) {
 	inputAttributes := attribute.NewSet(
 		attribute.Key("a").String("A"),
 		attribute.Key("b").Int64(100),
-		attribute.Key(MonitoredResLabelKeyProject).String(monitoredResLabelValueProject),
-		attribute.Key(MonitoredResLabelKeyInstance).String(monitoredResLabelValueInstance),
-		attribute.Key(MonitoredResLabelKeyZone).String(monitoredResLabelValueZone),
-		attribute.Key(MonitoredResLabelKeyTable).String(monitoredResLabelValueTable),
-		attribute.Key(MonitoredResLabelKeyCluster).String(monitoredResLabelValueCluster),
+		attribute.Key(MetricLabelKeyProject).String(monitoredResLabelValueProject),
+		attribute.Key(MetricLabelKeyInstance).String(monitoredResLabelValueInstance),
+		attribute.Key(MetricLabelKeyZone).String(monitoredResLabelValueZone),
+		attribute.Key(MetricLabelKeyTable).String(monitoredResLabelValueTable),
+		attribute.Key(MetricLabelKeyCluster).String(monitoredResLabelValueCluster),
 	)
 	inputMetrics := metricdata.Metrics{
 		Name: metricName,
@@ -255,11 +256,11 @@ func TestRecordToMpb(t *testing.T) {
 	wantMonitoredResource := &monitoredrespb.MonitoredResource{
 		Type: "bigtable_client_raw",
 		Labels: map[string]string{
-			MonitoredResLabelKeyProject:  monitoredResLabelValueProject,
-			MonitoredResLabelKeyInstance: monitoredResLabelValueInstance,
-			MonitoredResLabelKeyZone:     monitoredResLabelValueZone,
-			MonitoredResLabelKeyTable:    monitoredResLabelValueTable,
-			MonitoredResLabelKeyCluster:  monitoredResLabelValueCluster,
+			MetricLabelKeyProject:  monitoredResLabelValueProject,
+			MetricLabelKeyInstance: monitoredResLabelValueInstance,
+			MetricLabelKeyZone:     monitoredResLabelValueZone,
+			MetricLabelKeyTable:    monitoredResLabelValueTable,
+			MetricLabelKeyCluster:  monitoredResLabelValueCluster,
 		},
 	}
 

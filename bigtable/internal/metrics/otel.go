@@ -170,34 +170,27 @@ type metricsConfig struct {
 	clientName      string // client_name
 	clientUID       string // uuid
 	interval        time.Duration
-	customExporter  *metric.Exporter
 	manualReader    *metric.ManualReader // used by tests
 	disableExporter bool                 // used by tests disables exports
 	resourceOpts    []resource.Option    // used by tests
 }
 
 func newOtelMetricsContext(ctx context.Context, cfg metricsConfig) (*otelMetricsContext, error) {
-	var exporter metric.Exporter
-	meterOpts := []metric.Option{}
-	if cfg.customExporter == nil {
-		var ropts []resource.Option
-		if cfg.resourceOpts != nil {
-			ropts = cfg.resourceOpts
-		} else {
-			ropts = []resource.Option{resource.WithDetectors(gcp.NewDetector())}
-		}
-		smr, err := newBigtableClientMonitoredResource(ctx, cfg.project, cfg.appProfile, cfg.instance, cfg.clientName, cfg.clientUID, ropts...)
-		if err != nil {
-			return nil, err
-		}
-		exporter, err = smr.exporter()
-		if err != nil {
-			return nil, err
-		}
-		meterOpts = append(meterOpts, metric.WithResource(smr.resource))
+	var ropts []resource.Option
+	if cfg.resourceOpts != nil {
+		ropts = cfg.resourceOpts
 	} else {
-		exporter = *cfg.customExporter
+		ropts = []resource.Option{resource.WithDetectors(gcp.NewDetector())}
 	}
+	smr, err := newBigtableClientMonitoredResource(ctx, cfg.project, cfg.appProfile, cfg.instance, cfg.clientName, cfg.clientUID, ropts...)
+	if err != nil {
+		return nil, err
+	}
+	exporter, err := smr.exporter()
+	if err != nil {
+		return nil, err
+	}
+	meterOpts := []metric.Option{metric.WithResource(smr.resource)}
 	interval := time.Minute
 	if cfg.interval > 0 {
 		interval = cfg.interval

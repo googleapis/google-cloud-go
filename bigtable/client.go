@@ -60,9 +60,11 @@ type ClientConfig struct {
 	// If unspecified, the default app profile for the instance will be used.
 	AppProfile string
 
-	// If not set or set to nil, client side metrics will be collected and exported
+	// MetricsProvider controls the built-in client-side metrics.
 	//
-	// To disable client side metrics, set 'MetricsProvider' to 'NoopMetricsProvider'
+	// Leave unset (nil) or set to DefaultMetricsProvider{} to enable the
+	// built-in Cloud Monitoring exporter (default behavior). Set to
+	// NoopMetricsProvider{} to disable metrics entirely.
 	//
 	// TODO: support user provided meter provider
 	MetricsProvider MetricsProvider
@@ -85,6 +87,11 @@ type ClientConfig struct {
 // bigtable/internal/metrics so both classic and session data planes can
 // share it without an import cycle.
 type MetricsProvider = metrics.MetricsProvider
+
+// DefaultMetricsProvider enables the built-in Cloud Monitoring metrics
+// exporter (the same behavior as leaving ClientConfig.MetricsProvider
+// nil). Type alias to the internal metrics package's implementation.
+type DefaultMetricsProvider = metrics.DefaultMetricsProvider
 
 // NoopMetricsProvider disables the built-in metrics. Type alias to the
 // internal metrics package's implementation.
