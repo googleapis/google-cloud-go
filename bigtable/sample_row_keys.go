@@ -34,7 +34,7 @@ func (t *Table) SampleRowKeys(ctx context.Context) ([]string, error) {
 	ctx = metrics.NewContext(ctx, mt)
 
 	rowKeys, err := t.sampleRowKeys(ctx)
-	statusCode, statusErr := convertToGrpcStatusErr(err)
+	statusCode, statusErr := metrics.ConvertToGrpcStatusErr(err)
 	mt.SetCurrOpStatus(statusCode)
 	return rowKeys, statusErr
 }

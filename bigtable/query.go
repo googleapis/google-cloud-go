@@ -112,7 +112,7 @@ func (c *Client) prepareStatementWithMetadata(ctx context.Context, query string,
 	ctx = metrics.NewContext(ctx, mt)
 
 	preparedStatement, err = c.prepareStatement(ctx, query, paramTypes, opts...)
-	statusCode, statusErr := convertToGrpcStatusErr(err)
+	statusCode, statusErr := metrics.ConvertToGrpcStatusErr(err)
 	mt.SetCurrOpStatus(statusCode)
 	return preparedStatement, statusErr
 }
@@ -292,7 +292,7 @@ func (bs *BoundStatement) Execute(ctx context.Context, f func(ResultRow) bool, o
 	ctx = metrics.NewContext(ctx, mt)
 
 	err = bs.execute(ctx, f)
-	statusCode, statusErr := convertToGrpcStatusErr(err)
+	statusCode, statusErr := metrics.ConvertToGrpcStatusErr(err)
 	mt.SetCurrOpStatus(statusCode)
 	return statusErr
 }

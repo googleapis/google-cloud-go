@@ -164,24 +164,6 @@ func init() {
 	}
 }
 
-// Convert error to grpc status error
-func convertToGrpcStatusErr(err error) (codes.Code, error) {
-	if err == nil {
-		return codes.OK, nil
-	}
-
-	if errStatus, ok := status.FromError(err); ok {
-		return errStatus.Code(), status.Error(errStatus.Code(), errStatus.Message())
-	}
-
-	ctxStatus := status.FromContextError(err)
-	if ctxStatus.Code() != codes.Unknown {
-		return ctxStatus.Code(), status.Error(ctxStatus.Code(), ctxStatus.Message())
-	}
-
-	return codes.Unknown, err
-}
-
 // mergeOutgoingMetadata returns a context populated by the existing outgoing
 // metadata merged with the provided mds.
 func mergeOutgoingMetadata(ctx context.Context, mds ...metadata.MD) context.Context {
@@ -206,7 +188,7 @@ func createFeatureFlagsMD(clientSideMetricsEnabled, disableRetryInfo, enableDire
 		// PeerInfo tells the server it may send the bigtable-peer-info
 		// sideband metadata that populates attempt_latencies2's
 		// transport_type/region/zone/subzone labels. Extracted from
-		// header/trailer MD by metrics.ExtractPeerInfo in the tracer.
+		// header/trailer MD by the tracer's extractPeerInfo.
 		PeerInfo: true,
 	}
 
@@ -238,7 +220,7 @@ func (t *Table) ReadRows(ctx context.Context, arg RowSet, f func(Row) bool, opts
 	ctx = metrics.NewContext(ctx, mt)
 
 	err = t.readRows(ctx, arg, f, opts...)
-	statusCode, statusErr := convertToGrpcStatusErr(err)
+	statusCode, statusErr := metrics.ConvertToGrpcStatusErr(err)
 	mt.SetCurrOpStatus(statusCode)
 	return statusErr
 }
@@ -921,7 +903,7 @@ func (t *Table) Apply(ctx context.Context, row string, m *Mutation, opts ...Appl
 	ctx = metrics.NewContext(ctx, mt)
 
 	err = t.apply(ctx, row, m, opts...)
-	statusCode, statusErr := convertToGrpcStatusErr(err)
+	statusCode, statusErr := metrics.ConvertToGrpcStatusErr(err)
 	mt.SetCurrOpStatus(statusCode)
 	return statusErr
 }

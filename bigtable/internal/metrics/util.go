@@ -39,7 +39,7 @@ const (
 
 	// PeerInfoMDKey is the response-metadata key the server uses to
 	// carry the serialized PeerInfo proto once the PeerInfo feature
-	// flag is negotiated on. ExtractPeerInfo decodes the value.
+	// flag is negotiated on. extractPeerInfo decodes the value.
 	PeerInfoMDKey = "bigtable-peer-info"
 )
 
@@ -90,11 +90,13 @@ func CanonicalString(c codes.Code) string {
 	return fmt.Sprintf("CODE(%d)", int(c))
 }
 
-// convertToGrpcStatusErr returns the gRPC status code for err along
+// ConvertToGrpcStatusErr returns the gRPC status code for err along
 // with an error canonicalized to a plain status.Error so downstream
-// logging doesn't leak wrapping/details. Callers that only need the
-// code use GrpcCodeOf instead.
-func convertToGrpcStatusErr(err error) (codes.Code, error) {
+// logging doesn't leak wrapping/details. Shared by the tracer's
+// attempt-completion path and every classic-path RPC method's
+// SetCurrOpStatus wrapper. Callers that only need the code use
+// GrpcCodeOf instead.
+func ConvertToGrpcStatusErr(err error) (codes.Code, error) {
 	code := GrpcCodeOf(err)
 	if err == nil {
 		return code, nil
@@ -109,11 +111,11 @@ func convertToGrpcStatusErr(err error) (codes.Code, error) {
 	return code, err
 }
 
-// ExtractServerLatency returns the GFE server latency (in milliseconds)
+// extractServerLatency returns the GFE server latency (in milliseconds)
 // carried by the server-timing header or trailer metadata, whichever is
 // populated. Returns the parse error when the header is present but
 // malformed.
-func ExtractServerLatency(headerMD metadata.MD, trailerMD metadata.MD) (float64, error) {
+func extractServerLatency(headerMD metadata.MD, trailerMD metadata.MD) (float64, error) {
 	serverTimingStr := ""
 
 	// Check whether server latency available in response header metadata
@@ -143,11 +145,11 @@ func ExtractServerLatency(headerMD metadata.MD, trailerMD metadata.MD) (float64,
 	return serverLatencyMillis, nil
 }
 
-// ExtractLocation returns the (cluster, zone) pair encoded in the
+// extractLocation returns the (cluster, zone) pair encoded in the
 // LocationMDKey response metadata. Checks headers first, then
 // trailers — different serving environments emit the metadata in one
 // or the other.
-func ExtractLocation(headerMD metadata.MD, trailerMD metadata.MD) (string, string, error) {
+func extractLocation(headerMD metadata.MD, trailerMD metadata.MD) (string, string, error) {
 	var locationMetadata []string
 
 	// Check whether location metadata available in response header metadata
@@ -177,14 +179,14 @@ func ExtractLocation(headerMD metadata.MD, trailerMD metadata.MD) (string, strin
 	return responseParams.GetClusterId(), responseParams.GetZoneId(), nil
 }
 
-// ExtractPeerInfo decodes the bigtable-peer-info sideband metadata (populated
+// extractPeerInfo decodes the bigtable-peer-info sideband metadata (populated
 // by the server when the PeerInfo feature flag is negotiated on) and returns
 // the parsed PeerInfo. Returns (nil, nil) when the header is absent — the
 // caller records the attempt without transport labels in that case. Server
 // emits URL-safe base64; any '=' padding is stripped so a single
 // RawURLEncoding decoder handles both padded and unpadded shapes (matches
 // java-bigtable's Base64.getUrlDecoder()).
-func ExtractPeerInfo(headerMD metadata.MD, trailerMD metadata.MD) (*btpb.PeerInfo, error) {
+func extractPeerInfo(headerMD metadata.MD, trailerMD metadata.MD) (*btpb.PeerInfo, error) {
 	var peerInfoData []string
 	if headerMD != nil {
 		peerInfoData = headerMD.Get(PeerInfoMDKey)
@@ -204,6 +206,31 @@ func ExtractPeerInfo(headerMD metadata.MD, trailerMD metadata.MD) (*btpb.PeerInf
 		return nil, fmt.Errorf("failed to parse %s protobuf: %w", PeerInfoMDKey, err)
 	}
 	return &peerInfo, nil
+}
+
+// transportTypeName maps the PeerInfo transport type enum to the short
+// label used in metric attributes and debug UIs (e.g. "cloudpath",
+// "session_directpath"). Prefer this over .String(), which yields the
+// verbose "TRANSPORT_TYPE_…" proto enum names.
+func transportTypeName(tt btpb.PeerInfo_TransportType) string {
+	switch tt {
+	case btpb.PeerInfo_TRANSPORT_TYPE_EXTERNAL:
+		return "external"
+	case btpb.PeerInfo_TRANSPORT_TYPE_CLOUD_PATH:
+		return "cloudpath"
+	case btpb.PeerInfo_TRANSPORT_TYPE_DIRECT_ACCESS:
+		return "directpath"
+	case btpb.PeerInfo_TRANSPORT_TYPE_SESSION_EXTERNAL:
+		return "session_external"
+	case btpb.PeerInfo_TRANSPORT_TYPE_SESSION_CLOUD_PATH:
+		return "session_cloudpath"
+	case btpb.PeerInfo_TRANSPORT_TYPE_SESSION_DIRECT_ACCESS:
+		return "session_directpath"
+	case btpb.PeerInfo_TRANSPORT_TYPE_SESSION_UNKNOWN:
+		return "session_unknown"
+	default:
+		return "unknown"
+	}
 }
 
 // ConvertToMs converts a time.Duration to a float64 millisecond value

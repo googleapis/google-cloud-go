@@ -35,8 +35,26 @@ import (
 	"google.golang.org/api/option"
 
 	"cloud.google.com/go/bigtable/internal"
-	btransport "cloud.google.com/go/bigtable/internal/transport"
 )
+
+// fineGrainLatencyBounds matches java-bigtable's
+// AGGREGATION_WITH_MILLIS_HISTOGRAM: fine sub-ms + coarse tail. Used
+// as the attempt_latencies2 bucket boundaries so sub-ms DirectPath
+// samples don't collapse into a single [0,1)ms bucket.
+var fineGrainLatencyBounds = []float64{
+	// Linear 0 → 3ms by 0.1ms (31 boundaries): fine-grained sub-ms.
+	0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9,
+	1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9,
+	2.0, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.8, 2.9, 3.0,
+	// Coarse 4ms → 80ms.
+	4.0, 5.0, 6.0, 8.0, 10.0, 13.0, 16.0, 20.0, 25.0, 30.0, 40.0, 50.0, 65.0, 80.0,
+	// Coarse 100ms → 900ms.
+	100.0, 130.0, 160.0, 200.0, 250.0, 300.0, 400.0, 500.0, 650.0, 800.0, 900.0,
+	// Coarse 1s → 50s.
+	1000.0, 2000.0, 3000.0, 4000.0, 5000.0, 6000.0, 10000.0, 20000.0, 50000.0,
+	// Long tail: 100s → 5000s (~83 min).
+	100000.0, 200000.0, 500000.0, 1000000.0, 2000000.0, 5000000.0,
+}
 
 var (
 	// DefaultSamplePeriod is the interval between two metric exports.
@@ -276,14 +294,14 @@ func (tf *Factory) createInstruments(meter metric.Meter) error {
 
 	// Create attempt_latencies2 — same latency value as attempt_latencies,
 	// broken out with transport_type/region/zone/subzone attributes sourced
-	// from the bigtable-peer-info sideband metadata. Uses the shared
-	// java-parity FineGrainLatencyBounds so sub-ms DirectPath samples
+	// from the bigtable-peer-info sideband metadata. Uses the
+	// java-parity fineGrainLatencyBounds so sub-ms DirectPath samples
 	// don't collapse into a single [0,1)ms bucket.
 	tf.attemptLatencies2, err = meter.Float64Histogram(
 		MetricNameAttemptLatencies2,
 		metric.WithDescription("Client observed latency per RPC attempt, labeled by transport type and AFE location."),
 		metric.WithUnit(metricUnitMS),
-		metric.WithExplicitBucketBoundaries(btransport.FineGrainLatencyBounds...),
+		metric.WithExplicitBucketBoundaries(fineGrainLatencyBounds...),
 	)
 	if err != nil {
 		return err

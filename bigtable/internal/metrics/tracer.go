@@ -38,7 +38,6 @@ import (
 	"google.golang.org/grpc/stats"
 
 	"cloud.google.com/go/bigtable/internal"
-	btransport "cloud.google.com/go/bigtable/internal/transport"
 )
 
 // BuiltInMetricsMeterName is the OTel meter name the built-in metrics
@@ -518,7 +517,7 @@ func (mt *Tracer) RecordAttemptCompletionWithMetadata(attemptHeaderMD, attempTra
 	}
 
 	// 2. Extract server latency and apply t4t7 fallback
-	serverLatency, serverLatencyErr := ExtractServerLatency(attemptHeaderMD, attempTrailerMD)
+	serverLatency, serverLatencyErr := extractServerLatency(attemptHeaderMD, attempTrailerMD)
 	if serverLatency == 0 && mt.currOp.currAttempt.t4t7Tracker != nil {
 		fallbackLatency := mt.currOp.currAttempt.t4t7Tracker.getLatencyMs()
 		if fallbackLatency > 0 {
@@ -542,7 +541,7 @@ func (mt *Tracer) RecordAttemptCompletion(attemptHeaderMD, attempTrailerMD metad
 	}
 
 	// Set attempt status
-	statusCode, _ := convertToGrpcStatusErr(err)
+	statusCode, _ := ConvertToGrpcStatusErr(err)
 	mt.currOp.currAttempt.setStatus(statusCode.String())
 
 	// Get location attributes from metadata and set it in tracer.
@@ -553,7 +552,7 @@ func (mt *Tracer) RecordAttemptCompletion(attemptHeaderMD, attempTrailerMD metad
 	// missing or the sentinel default. lastClusterID/lastZoneID always track
 	// the freshest real value so operation-level metrics get a sensible
 	// fallback.
-	clusterID, zoneID, _ := ExtractLocation(attemptHeaderMD, attempTrailerMD)
+	clusterID, zoneID, _ := extractLocation(attemptHeaderMD, attempTrailerMD)
 	if clusterID != "" {
 		if existing := mt.currOp.currAttempt.clusterID; existing == "" || existing == defaultCluster {
 			mt.currOp.currAttempt.SetClusterID(clusterID)
@@ -575,8 +574,8 @@ func (mt *Tracer) RecordAttemptCompletion(attemptHeaderMD, attempTrailerMD metad
 	// (populated by the server when the PeerInfo feature flag is negotiated
 	// on). Feeds the attempt_latencies2 metric only; other metrics stay on
 	// the classic label set. No-op when the header is absent.
-	if peerInfo, _ := ExtractPeerInfo(attemptHeaderMD, attempTrailerMD); peerInfo != nil {
-		mt.currOp.currAttempt.transportType = btransport.TransportTypeName(peerInfo.GetTransportType())
+	if peerInfo, _ := extractPeerInfo(attemptHeaderMD, attempTrailerMD); peerInfo != nil {
+		mt.currOp.currAttempt.transportType = transportTypeName(peerInfo.GetTransportType())
 		mt.currOp.currAttempt.transportRegion = peerInfo.GetApplicationFrontendRegion()
 		mt.currOp.currAttempt.transportZone = peerInfo.GetApplicationFrontendZone()
 		mt.currOp.currAttempt.transportSubZone = peerInfo.GetApplicationFrontendSubzone()

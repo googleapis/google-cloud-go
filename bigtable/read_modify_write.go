@@ -35,7 +35,7 @@ func (t *Table) ApplyReadModifyWrite(ctx context.Context, row string, m *ReadMod
 	ctx = metrics.NewContext(ctx, mt)
 
 	updatedRow, err := t.applyReadModifyWrite(ctx, row, m)
-	statusCode, statusErr := convertToGrpcStatusErr(err)
+	statusCode, statusErr := metrics.ConvertToGrpcStatusErr(err)
 	mt.SetCurrOpStatus(statusCode)
 	return updatedRow, statusErr
 }

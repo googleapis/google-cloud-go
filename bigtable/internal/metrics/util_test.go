@@ -137,7 +137,7 @@ func TestExtractServerLatency(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.desc, func(t *testing.T) {
-			gotLatency, gotErr := ExtractServerLatency(test.headerMD, test.trailerMD)
+			gotLatency, gotErr := extractServerLatency(test.headerMD, test.trailerMD)
 			if !equalErrs(gotErr, test.wantError) {
 				t.Errorf("error got: %v, want: %v", gotErr, test.wantError)
 			}
@@ -214,7 +214,7 @@ func TestExtractLocation(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.desc, func(t *testing.T) {
-			gotCluster, gotZone, gotErr := ExtractLocation(test.headerMD, test.trailerMD)
+			gotCluster, gotZone, gotErr := extractLocation(test.headerMD, test.trailerMD)
 			if gotCluster != test.wantCluster {
 				t.Errorf("cluster got: %v, want: %v", gotCluster, test.wantCluster)
 			}
@@ -237,7 +237,7 @@ func TestExtractPeerInfo(t *testing.T) {
 		t.Fatalf("marshal peer info: %v", err)
 	}
 	// Server sends URL-safe base64; unpadded (RawURL) is the wire shape,
-	// but URLEncoding (padded) must also decode — see ExtractPeerInfo.
+	// but URLEncoding (padded) must also decode — see extractPeerInfo.
 	validRawURL := base64.RawURLEncoding.EncodeToString(protoBytes)
 	validURLPadded := base64.URLEncoding.EncodeToString(protoBytes)
 	invalidBase64 := "invalid-base64-data-$$$"
@@ -302,12 +302,12 @@ func TestExtractPeerInfo(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.desc, func(t *testing.T) {
-			got, err := ExtractPeerInfo(test.headerMD, test.trailerMD)
+			got, err := extractPeerInfo(test.headerMD, test.trailerMD)
 			if (err != nil) != test.wantErr {
-				t.Fatalf("ExtractPeerInfo() err = %v, wantErr %v", err, test.wantErr)
+				t.Fatalf("extractPeerInfo() err = %v, wantErr %v", err, test.wantErr)
 			}
 			if !proto.Equal(got, test.want) {
-				t.Errorf("ExtractPeerInfo() got = %v, want %v", got, test.want)
+				t.Errorf("extractPeerInfo() got = %v, want %v", got, test.want)
 			}
 		})
 	}

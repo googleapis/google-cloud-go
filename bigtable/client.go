@@ -326,7 +326,7 @@ func (c *Client) PingAndWarm(ctx context.Context) (err error) {
 	ctx = metrics.NewContext(ctx, mt)
 
 	err = c.pingerWithMetadata(ctx)
-	statusCode, statusErr := convertToGrpcStatusErr(err)
+	statusCode, statusErr := metrics.ConvertToGrpcStatusErr(err)
 	mt.SetCurrOpStatus(statusCode)
 	return statusErr
 }

@@ -118,7 +118,7 @@ func (t *Table) applyGroup(ctx context.Context, group []*entryErr, opts ...Apply
 		return nil
 	}, t.c.retryOption)
 
-	statusCode, statusErr := convertToGrpcStatusErr(err)
+	statusCode, statusErr := metrics.ConvertToGrpcStatusErr(err)
 	mt.SetCurrOpStatus(statusCode)
 	return statusErr
 }
@@ -165,7 +165,7 @@ func (t *Table) doApplyBulk(ctx context.Context, entryErrs []*entryErr, headerMD
 
 	stream, err := t.c.client.MutateRows(ctx, req)
 	if err != nil {
-		_, topLevelErr = convertToGrpcStatusErr(err)
+		_, topLevelErr = metrics.ConvertToGrpcStatusErr(err)
 		return err
 	}
 
@@ -180,7 +180,7 @@ func (t *Table) doApplyBulk(ctx context.Context, entryErrs []*entryErr, headerMD
 		}
 		if err != nil {
 			*trailerMD = stream.Trailer()
-			_, topLevelErr = convertToGrpcStatusErr(err)
+			_, topLevelErr = metrics.ConvertToGrpcStatusErr(err)
 			return err
 		}
 
