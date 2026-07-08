@@ -61,7 +61,7 @@ const (
 // Metric attribute label keys. project_id / instance / table / cluster
 // / zone double as the monitored-resource labels the Cloud Monitoring
 // exporter promotes off the metric (see monitoring_exporter.go's
-// monitoredResLabelsSet); the tracer itself makes no distinction.
+// monitoredResLabelsSet).
 const (
 	MetricLabelKeyProject            = "project_id"
 	MetricLabelKeyInstance           = "instance"
