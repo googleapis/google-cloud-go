@@ -384,6 +384,20 @@ func TestExtract(t *testing.T) {
 }
 
 func TestNewAuthenticatorValidation(t *testing.T) {
+	t.Run("empty username", func(t *testing.T) {
+		_, err := newAuthenticator("", []byte("pass"), &HashParameters{})
+		if err == nil {
+			t.Errorf("expected error for empty username")
+		}
+	})
+
+	t.Run("empty password", func(t *testing.T) {
+		_, err := newAuthenticator("user", []byte(""), &HashParameters{})
+		if err == nil {
+			t.Errorf("expected error for empty password")
+		}
+	})
+
 	t.Run("nil hashParams", func(t *testing.T) {
 		_, err := newAuthenticator("user", []byte("pass"), nil)
 		if err == nil {

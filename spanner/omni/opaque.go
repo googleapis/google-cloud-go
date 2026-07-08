@@ -55,6 +55,12 @@ type userAuthenticator struct {
 
 // newAuthenticator creates a new userAuthenticator instance configured with the server's HashParameters.
 func newAuthenticator(username string, password []byte, hashParams *HashParameters) (*userAuthenticator, error) {
+	if username == "" {
+		return nil, fmt.Errorf("username cannot be empty")
+	}
+	if len(password) == 0 {
+		return nil, fmt.Errorf("password cannot be empty")
+	}
 	if hashParams == nil {
 		return nil, fmt.Errorf("hashParams cannot be nil")
 	}
@@ -221,8 +227,9 @@ func (ua *userAuthenticator) generateKe3(evaluatedElement, maskingNonce, maskedR
 	}
 	publicKeyLength := len(ua.clientPublicKeyshare)
 	nonceLength := len(ua.clientNonce)
-	if len(serializedEnvelope) < publicKeyLength+nonceLength {
-		return nil, nil, fmt.Errorf("invalid serialized envelope length: got %d, want at least %d", len(serializedEnvelope), publicKeyLength+nonceLength)
+	expectedEnvelopeLen := publicKeyLength + nonceLength + sha256.Size
+	if len(serializedEnvelope) != expectedEnvelopeLen {
+		return nil, nil, fmt.Errorf("invalid serialized envelope length: got %d, want %d", len(serializedEnvelope), expectedEnvelopeLen)
 	}
 	serverPublicKey := serializedEnvelope[:publicKeyLength]
 	envelopeNonce := serializedEnvelope[publicKeyLength : publicKeyLength+nonceLength]
@@ -339,6 +346,9 @@ func recoverClient(username string, randomizedPassword, envelopeNonce, authTag, 
 
 // finalize computes the OPRF output.
 func finalize(blind []byte, evaluatedMessage []byte) ([]byte, error) {
+	if len(blind) == 0 {
+		return nil, fmt.Errorf("blind scalar cannot be empty")
+	}
 	evaluatedElement, err := nistec.NewP256Point().SetBytes(evaluatedMessage)
 	if err != nil {
 		return nil, err
