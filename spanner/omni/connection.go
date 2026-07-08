@@ -202,8 +202,6 @@ func (ts *omniTokenSource) Token() (*oauth2.Token, error) {
 	parentCtx := ts.ctx
 	if parentCtx == nil {
 		parentCtx = context.Background()
-	} else {
-		parentCtx = context.WithoutCancel(parentCtx)
 	}
 	ctx, cancel := context.WithTimeout(parentCtx, 60*time.Second)
 	defer cancel()

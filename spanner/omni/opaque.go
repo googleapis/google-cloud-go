@@ -186,7 +186,8 @@ func (ua *userAuthenticator) FinalRequest(initialResp *LoginResponse) (*LoginReq
 
 func (ua *userAuthenticator) generateKe3(evaluatedElement, maskingNonce, maskedResponse, serverNonce, serverMac, serverPublicKeyshare []byte) (exportKey, clientMac []byte, err error) {
 	var oprf, stretchedOprf, randomizedPassword, maskingKey, clientPrivateKey []byte
-	var dh1, dh2, dh3, inputKeyMaterial, km2, km3 []byte
+	var dh1, dh2, dh3, inputKeyMaterial, km2, km3, sessionKey []byte
+	var recoveredExportKey []byte
 	defer func() {
 		clear(oprf)
 		clear(stretchedOprf)
@@ -199,6 +200,10 @@ func (ua *userAuthenticator) generateKe3(evaluatedElement, maskingNonce, maskedR
 		clear(inputKeyMaterial)
 		clear(km2)
 		clear(km3)
+		clear(sessionKey)
+		if err != nil {
+			clear(recoveredExportKey)
+		}
 	}()
 
 	oprf, err = finalize(ua.blind, evaluatedElement)
@@ -235,7 +240,7 @@ func (ua *userAuthenticator) generateKe3(evaluatedElement, maskingNonce, maskedR
 	envelopeNonce := serializedEnvelope[publicKeyLength : publicKeyLength+nonceLength]
 	authTag := serializedEnvelope[publicKeyLength+nonceLength:]
 
-	exportKey, clientPrivateKey, err = recoverClient(ua.username, randomizedPassword, envelopeNonce, authTag, serverPublicKey)
+	recoveredExportKey, clientPrivateKey, err = recoverClient(ua.username, randomizedPassword, envelopeNonce, authTag, serverPublicKey)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -253,7 +258,7 @@ func (ua *userAuthenticator) generateKe3(evaluatedElement, maskingNonce, maskedR
 	}
 	inputKeyMaterial = slices.Concat(dh1, dh2, dh3)
 	preamble := ua.preamble(evaluatedElement, serverPublicKey, serverNonce, serverPublicKeyshare)
-	km2, km3, _, err = deriveSharedKeys(inputKeyMaterial, preamble)
+	km2, km3, sessionKey, err = deriveSharedKeys(inputKeyMaterial, preamble)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -263,16 +268,27 @@ func (ua *userAuthenticator) generateKe3(evaluatedElement, maskingNonce, maskedR
 		return nil, nil, fmt.Errorf("server mac mismatch")
 	}
 	clientMac = mac(km3, sha256Hash(slices.Concat(preamble, expectedServerMac)))
-	return exportKey, clientMac, nil
+	return recoveredExportKey, clientMac, nil
 }
 
 func deriveSharedKeys(inputKeyMaterial, preamble []byte) (km2, km3, sessionKey []byte, err error) {
-	prk, err := extract(inputKeyMaterial)
+	var prk, handshakeSecret []byte
+	defer func() {
+		clear(prk)
+		clear(handshakeSecret)
+		if err != nil {
+			clear(km2)
+			clear(km3)
+			clear(sessionKey)
+		}
+	}()
+
+	prk, err = extract(inputKeyMaterial)
 	if err != nil {
 		return nil, nil, nil, err
 	}
 	preambleHash := sha256Hash(preamble)
-	handshakeSecret, err := deriveSecret(prk, []byte("HandshakeSecret"), preambleHash)
+	handshakeSecret, err = deriveSecret(prk, []byte("HandshakeSecret"), preambleHash)
 	if err != nil {
 		return nil, nil, nil, err
 	}
