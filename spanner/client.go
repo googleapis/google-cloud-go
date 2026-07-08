@@ -650,7 +650,7 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 		}
 		if hasUsername && hasPassword {
 			tsOpts := append([]option.ClientOption(nil), opts...)
-			opts = append(opts, option.WithTokenSource(omni.NewTokenSource(config.Username, config.Password, tsOpts)))
+			opts = append(opts, option.WithTokenSource(omni.NewTokenSource(ctx, config.Username, config.Password, tsOpts)))
 		} else {
 			opts = append(opts, option.WithoutAuthentication())
 		}

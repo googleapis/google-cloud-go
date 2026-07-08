@@ -65,7 +65,7 @@ func NewDatabaseAdminClientWithConfig(ctx context.Context, config OmniClientConf
 		}
 		if hasUsername && hasPassword {
 			tsOpts := append([]option.ClientOption(nil), opts...)
-			opts = append(opts, option.WithTokenSource(omni.NewTokenSource(config.GetUsername(), config.GetPassword(), tsOpts)))
+			opts = append(opts, option.WithTokenSource(omni.NewTokenSource(ctx, config.GetUsername(), config.GetPassword(), tsOpts)))
 		} else {
 			opts = append(opts, option.WithoutAuthentication())
 		}

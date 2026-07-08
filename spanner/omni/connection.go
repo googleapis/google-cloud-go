@@ -172,6 +172,7 @@ var LoginServiceServiceDesc = grpc.ServiceDesc{
 // can automatically inject the token as an "authorization: Bearer <token>" header on
 // outgoing RPCs and manage token caching and expiration tracking via oauth2.Token.Valid().
 type omniTokenSource struct {
+	ctx      context.Context
 	mu       sync.Mutex
 	username string
 	password []byte
@@ -180,9 +181,10 @@ type omniTokenSource struct {
 }
 
 // NewTokenSource creates a new TokenSource for Omni authentication.
-func NewTokenSource(username string, password []byte, opts []option.ClientOption) oauth2.TokenSource {
+func NewTokenSource(ctx context.Context, username string, password []byte, opts []option.ClientOption) oauth2.TokenSource {
 	tsOpts := append([]option.ClientOption{option.WithoutAuthentication()}, opts...)
 	return &omniTokenSource{
+		ctx:      ctx,
 		username: username,
 		password: slices.Clone(password),
 		opts:     tsOpts,
@@ -197,7 +199,11 @@ func (ts *omniTokenSource) Token() (*oauth2.Token, error) {
 		return ts.token, nil
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
+	parentCtx := ts.ctx
+	if parentCtx == nil {
+		parentCtx = context.Background()
+	}
+	ctx, cancel := context.WithTimeout(parentCtx, 60*time.Second)
 	defer cancel()
 
 	// Add x-goog-api-client header to satisfy headers_enforcer in tests

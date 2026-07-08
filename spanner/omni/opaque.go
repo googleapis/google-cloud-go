@@ -84,12 +84,16 @@ func newAuthenticator(username string, password []byte, hashParams *HashParamete
 
 // InitialRequest generates the first message in the OPAQUE protocol handshake containing the blinded password.
 func (ua *userAuthenticator) InitialRequest() (*LoginRequest, error) {
+	if ua.password != nil {
+		defer func() {
+			clear(ua.password)
+			ua.password = nil
+		}()
+	}
 	blindedMessage, blind, err := blind(ua.password)
 	if err != nil {
 		return nil, err
 	}
-	clear(ua.password)
-	ua.password = nil
 	ua.blind = blind
 	clientNonce, err := nonce()
 	if err != nil {
@@ -127,6 +131,9 @@ func (ua *userAuthenticator) InitialRequest() (*LoginRequest, error) {
 func (ua *userAuthenticator) FinalRequest(initialResp *LoginResponse) (*LoginRequest, error) {
 	if initialResp == nil {
 		return nil, fmt.Errorf("initialResp cannot be nil")
+	}
+	if len(ua.clientPublicKeyshare) == 0 || len(ua.clientNonce) == 0 || len(ua.clientPrivateKeyshare) == 0 {
+		return nil, fmt.Errorf("authenticator not initialized; InitialRequest must be called first")
 	}
 	opaqueResp := initialResp.GetOpaqueResponse().GetInitialResponse()
 	if opaqueResp == nil {

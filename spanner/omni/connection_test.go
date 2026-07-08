@@ -265,7 +265,7 @@ func TestTokenSource_ServerUnsupportedProtocol(t *testing.T) {
 	})
 	defer cleanup()
 
-	ts := NewTokenSource("user", []byte("pass"), []option.ClientOption{
+	ts := NewTokenSource(context.Background(), "user", []byte("pass"), []option.ClientOption{
 		option.WithGRPCDialOption(grpc.WithContextDialer(func(context.Context, string) (net.Conn, error) {
 			return lis.Dial()
 		})),
@@ -352,7 +352,7 @@ func TestTokenSource_NoAccessTokenInFinalResponse(t *testing.T) {
 	})
 	defer cleanup()
 
-	ts := NewTokenSource(username, password, []option.ClientOption{
+	ts := NewTokenSource(context.Background(), username, password, []option.ClientOption{
 		option.WithGRPCDialOption(grpc.WithContextDialer(func(context.Context, string) (net.Conn, error) {
 			return lis.Dial()
 		})),
@@ -546,7 +546,7 @@ func TestTokenSource_SuccessAndCaching(t *testing.T) {
 	})
 	defer cleanup()
 
-	ts := NewTokenSource(username, password, []option.ClientOption{
+	ts := NewTokenSource(context.Background(), username, password, []option.ClientOption{
 		option.WithGRPCDialOption(grpc.WithContextDialer(func(context.Context, string) (net.Conn, error) {
 			return lis.Dial()
 		})),

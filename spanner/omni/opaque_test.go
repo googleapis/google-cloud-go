@@ -495,6 +495,36 @@ func TestNewAuthenticatorValidation(t *testing.T) {
 			})
 		}
 	})
+
+	t.Run("uninitialized FinalRequest", func(t *testing.T) {
+		hashParams := &HashParameters{
+			Parameters: &HashParameters_Argon2IdParameters_{
+				Argon2IdParameters: &HashParameters_Argon2IdParameters{
+					IterationCount: 3,
+					MemoryUsage:    64 * 1024,
+					Parallelism:    4,
+					HashSize:       32,
+				},
+			},
+		}
+		ua, err := newAuthenticator("user", []byte("pass"), hashParams)
+		if err != nil {
+			t.Fatalf("newAuthenticator failed: %v", err)
+		}
+		resp := &LoginResponse{
+			Response: &LoginResponse_OpaqueResponse{
+				OpaqueResponse: &OpaqueLoginResponse{
+					Response: &OpaqueLoginResponse_InitialResponse{
+						InitialResponse: &InitialOpaqueLoginResponse{},
+					},
+				},
+			},
+		}
+		_, err = ua.FinalRequest(resp)
+		if err == nil {
+			t.Errorf("expected error when calling FinalRequest before InitialRequest")
+		}
+	})
 }
 
 func blindEvaluate(t *testing.T, username string, pubKey, oprfSeed []byte) ([]byte, error) {
