@@ -72,7 +72,7 @@ func TestExportMetrics(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Minute)
 	defer cancel()
 
-	testServer, err := metricstest.NewMetricTestServer()
+	testServer, err := metricstest.NewServer()
 	//nolint:errcheck
 	go testServer.Serve()
 	defer testServer.Shutdown()
@@ -139,7 +139,7 @@ func TestExportMetrics(t *testing.T) {
 
 func TestExportCounter(t *testing.T) {
 	ctx := context.Background()
-	testServer, err := metricstest.NewMetricTestServer()
+	testServer, err := metricstest.NewServer()
 	//nolint:errcheck
 	go testServer.Serve()
 	defer testServer.Shutdown()
@@ -179,7 +179,7 @@ func TestExportCounter(t *testing.T) {
 
 func TestExportHistogram(t *testing.T) {
 	ctx := context.Background()
-	testServer, err := metricstest.NewMetricTestServer()
+	testServer, err := metricstest.NewServer()
 	//nolint:errcheck
 	go testServer.Serve()
 	defer testServer.Shutdown()
@@ -338,7 +338,7 @@ func TestTimeIntervalPassthru(t *testing.T) {
 }
 
 func TestConcurrentCallsAfterShutdown(t *testing.T) {
-	testServer, err := metricstest.NewMetricTestServer()
+	testServer, err := metricstest.NewServer()
 	//nolint:errcheck
 	go testServer.Serve()
 	defer testServer.Shutdown()
@@ -379,7 +379,7 @@ func TestConcurrentCallsAfterShutdown(t *testing.T) {
 }
 
 func TestConcurrentExport(t *testing.T) {
-	testServer, err := metricstest.NewMetricTestServer()
+	testServer, err := metricstest.NewServer()
 	//nolint:errcheck
 	go testServer.Serve()
 	defer testServer.Shutdown()
@@ -436,8 +436,8 @@ func TestConcurrentExport(t *testing.T) {
 
 func TestBatchingExport(t *testing.T) {
 	ctx := context.Background()
-	setup := func(t *testing.T) (metric.Exporter, *metricstest.MetricsTestServer) {
-		testServer, err := metricstest.NewMetricTestServer()
+	setup := func(t *testing.T) (metric.Exporter, *metricstest.Server) {
+		testServer, err := metricstest.NewServer()
 		//nolint:errcheck
 		go testServer.Serve()
 		t.Cleanup(testServer.Shutdown)

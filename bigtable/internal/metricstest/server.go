@@ -35,11 +35,11 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
-// MetricsTestServer is an in-process fake implementation of
+// Server is an in-process fake implementation of
 // google.monitoring.v3.MetricService. Tests use it to capture the
 // CreateServiceTimeSeries / CreateMetricDescriptor calls the metrics
 // exporter would otherwise send to Cloud Monitoring.
-type MetricsTestServer struct {
+type Server struct {
 	lis                         net.Listener
 	srv                         *grpc.Server
 	Endpoint                    string
@@ -55,13 +55,13 @@ type MetricsTestServer struct {
 }
 
 // Shutdown gracefully stops the fake server.
-func (m *MetricsTestServer) Shutdown() {
+func (m *Server) Shutdown() {
 	m.srv.GracefulStop()
 }
 
 // UserAgent returns (and clears) the most recently observed user-agent
 // header from a CreateServiceTimeSeries call.
-func (m *MetricsTestServer) UserAgent() string {
+func (m *Server) UserAgent() string {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	ua := m.userAgent
@@ -71,7 +71,7 @@ func (m *MetricsTestServer) UserAgent() string {
 
 // CreateServiceTimeSeriesRequests pops the CreateTimeSeriesRequest
 // batches captured so far.
-func (m *MetricsTestServer) CreateServiceTimeSeriesRequests() []*monitoringpb.CreateTimeSeriesRequest {
+func (m *Server) CreateServiceTimeSeriesRequests() []*monitoringpb.CreateTimeSeriesRequest {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	reqs := m.createServiceTimeSeriesReqs
@@ -79,13 +79,13 @@ func (m *MetricsTestServer) CreateServiceTimeSeriesRequests() []*monitoringpb.Cr
 	return reqs
 }
 
-func (m *MetricsTestServer) appendCreateMetricDescriptorReq(_ context.Context, req *monitoringpb.CreateMetricDescriptorRequest) {
+func (m *Server) appendCreateMetricDescriptorReq(_ context.Context, req *monitoringpb.CreateMetricDescriptorRequest) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	m.createMetricDescriptorReqs = append(m.createMetricDescriptorReqs, req)
 }
 
-func (m *MetricsTestServer) appendCreateServiceTimeSeriesReq(ctx context.Context, req *monitoringpb.CreateTimeSeriesRequest) {
+func (m *Server) appendCreateServiceTimeSeriesReq(ctx context.Context, req *monitoringpb.CreateTimeSeriesRequest) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	m.createServiceTimeSeriesReqs = append(m.createServiceTimeSeriesReqs, req)
@@ -104,7 +104,7 @@ func (m *MetricsTestServer) appendCreateServiceTimeSeriesReq(ctx context.Context
 
 // WaitForRequests blocks until `count` CreateServiceTimeSeries calls
 // have arrived, or ctx cancels, or `timeout` elapses.
-func (m *MetricsTestServer) WaitForRequests(ctx context.Context, count int, timeout time.Duration) error {
+func (m *Server) WaitForRequests(ctx context.Context, count int, timeout time.Duration) error {
 	m.mu.Lock()
 	m.expectedCreateServiceTimeSeriesReqs = count
 	m.createServiceTimeSeriesReqCount = 0
@@ -141,20 +141,20 @@ func (m *MetricsTestServer) WaitForRequests(ctx context.Context, count int, time
 }
 
 // Serve blocks serving the gRPC listener; call from a goroutine.
-func (m *MetricsTestServer) Serve() error {
+func (m *Server) Serve() error {
 	return m.srv.Serve(m.lis)
 }
 
 type fakeMetricServiceServer struct {
 	monitoringpb.UnimplementedMetricServiceServer
-	metricsTestServer *MetricsTestServer
+	testServer *Server
 }
 
 func (f *fakeMetricServiceServer) CreateServiceTimeSeries(
 	ctx context.Context,
 	req *monitoringpb.CreateTimeSeriesRequest,
 ) (*emptypb.Empty, error) {
-	f.metricsTestServer.appendCreateServiceTimeSeriesReq(ctx, req)
+	f.testServer.appendCreateServiceTimeSeriesReq(ctx, req)
 	return &emptypb.Empty{}, nil
 }
 
@@ -162,20 +162,20 @@ func (f *fakeMetricServiceServer) CreateMetricDescriptor(
 	ctx context.Context,
 	req *monitoringpb.CreateMetricDescriptorRequest,
 ) (*metricpb.MetricDescriptor, error) {
-	f.metricsTestServer.appendCreateMetricDescriptorReq(ctx, req)
+	f.testServer.appendCreateMetricDescriptorReq(ctx, req)
 	return &metricpb.MetricDescriptor{}, nil
 }
 
-// NewMetricTestServer stands up a fresh in-process fake Cloud Monitoring
+// NewServer stands up a fresh in-process fake Cloud Monitoring
 // server on 127.0.0.1:<random-free-port>. Call Serve() from a goroutine
 // and Shutdown() from a defer.
-func NewMetricTestServer() (*MetricsTestServer, error) {
+func NewServer() (*Server, error) {
 	srv := grpc.NewServer(grpc.KeepaliveParams(keepalive.ServerParameters{Time: 5 * time.Minute}))
 	lis, err := net.Listen("tcp", "localhost:0")
 	if err != nil {
 		return nil, err
 	}
-	testServer := &MetricsTestServer{
+	testServer := &Server{
 		Endpoint:        lis.Addr().String(),
 		lis:             lis,
 		srv:             srv,
@@ -184,7 +184,7 @@ func NewMetricTestServer() (*MetricsTestServer, error) {
 
 	monitoringpb.RegisterMetricServiceServer(
 		srv,
-		&fakeMetricServiceServer{metricsTestServer: testServer},
+		&fakeMetricServiceServer{testServer: testServer},
 	)
 
 	return testServer, nil

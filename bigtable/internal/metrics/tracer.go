@@ -14,11 +14,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-// Package metrics owns the OpenTelemetry tracer machinery for the
-// bigtable client — per-operation Tracer, per-attempt AttemptTracer,
-// the gRPC stats.Handler that drives attempt boundaries, and the
-// Cloud Monitoring exporter wiring. Split from the bigtable package
-// so the internal/session data-plane can stamp per-attempt attributes
+// Package internal (import path bigtable/internal/metrics) owns the
+// OpenTelemetry tracer machinery for the bigtable client —
+// per-operation Tracer, per-attempt AttemptTracer, the gRPC
+// stats.Handler that drives attempt boundaries, and the Cloud
+// Monitoring exporter wiring. Split from the bigtable package so the
+// internal/session data-plane can stamp per-attempt attributes
 // (cluster_id, zone_id, transport labels, client-blocking latency,
 // server latency) on session-path calls without an import cycle.
 package internal
@@ -40,18 +41,29 @@ import (
 	btransport "cloud.google.com/go/bigtable/internal/transport"
 )
 
-const (
-	BuiltInMetricsMeterName = "bigtable.googleapis.com/internal/client/"
+// BuiltInMetricsMeterName is the OTel meter name the built-in metrics
+// factory registers its instruments under. Cloud Monitoring derives
+// the metric-descriptor prefix from this value.
+const BuiltInMetricsMeterName = "bigtable.googleapis.com/internal/client/"
 
-	LocationMDKey         = "x-goog-ext-425905942-bin"
+const (
+	// LocationMDKey is the response-metadata key the server uses to
+	// carry the serialized ResponseParams proto with the cluster/zone
+	// that served the request.
+	LocationMDKey = "x-goog-ext-425905942-bin"
+	// ServerTimingMDKey is the response-metadata key the server uses to
+	// carry GFE latency (matches the standard Server-Timing HTTP
+	// header).
 	ServerTimingMDKey     = "server-timing"
 	serverTimingValPrefix = "gfet4t7; dur="
 	metricMethodPrefix    = "Bigtable."
+)
 
-	// Metric labels. project_id / instance / table / cluster / zone
-	// double as the monitored-resource labels the Cloud Monitoring
-	// exporter promotes off the metric (see monitoring_exporter.go's
-	// monitoredResLabelsSet); the tracer itself makes no distinction.
+// Metric attribute label keys. project_id / instance / table / cluster
+// / zone double as the monitored-resource labels the Cloud Monitoring
+// exporter promotes off the metric (see monitoring_exporter.go's
+// monitoredResLabelsSet); the tracer itself makes no distinction.
+const (
 	MetricLabelKeyProject            = "project_id"
 	MetricLabelKeyInstance           = "instance"
 	MetricLabelKeyTable              = "table"
@@ -64,24 +76,30 @@ const (
 	MetricLabelKeyStreamingOperation = "streaming"
 	MetricLabelKeyClientName         = "client_name"
 	MetricLabelKeyClientUID          = "client_uid"
+)
 
-	// Peer-info-derived attributes (attempt_latencies2 only). Populated from
-	// the bigtable-peer-info sideband metadata via ExtractPeerInfo.
+// Peer-info-derived attributes recorded only on attempt_latencies2.
+// Populated from the bigtable-peer-info sideband metadata via
+// ExtractPeerInfo.
+const (
 	MetricTransportType    = "transport_type"
 	MetricTransportRegion  = "transport_region"
 	MetricTransportSubZone = "transport_subzone"
 	MetricTransportZone    = "transport_zone"
+)
 
-	// methodNameReadRows is the method label emitted on operation- and
-	// first-response-latency metrics for ReadRows calls. Duplicated from
-	// bigtable.methodNameReadRows so the tracer can name-match without
-	// importing the bigtable package. Only ReadRows currently records
-	// first_response_latencies; the constant lives here rather than in a
-	// per-method table because there is no other method that needs
-	// special-casing in this file.
-	methodNameReadRows = "ReadRows"
+// methodNameReadRows is the method label emitted on operation- and
+// first-response-latency metrics for ReadRows calls. Duplicated from
+// bigtable.methodNameReadRows so the tracer can name-match without
+// importing the bigtable package. Only ReadRows currently records
+// first_response_latencies; the constant lives here rather than in a
+// per-method table because there is no other method that needs
+// special-casing in this file.
+const methodNameReadRows = "ReadRows"
 
-	// Metric names
+// OTel instrument names. These are the on-the-wire metric names Cloud
+// Monitoring stores; changing these strings would break dashboards.
+const (
 	MetricNameOperationLatencies      = "operation_latencies"
 	MetricNameAttemptLatencies        = "attempt_latencies"
 	MetricNameAttemptLatencies2       = "attempt_latencies2"
@@ -92,8 +110,9 @@ const (
 	MetricNameRetryCount              = "retry_count"
 	MetricNameDebugTags               = "debug_tags"
 	MetricNameConnErrCount            = "connectivity_error_count"
+)
 
-	// Metric units
+const (
 	metricUnitMS    = "ms"
 	metricUnitCount = "1"
 )
@@ -106,10 +125,17 @@ const (
 	metricsTracerContextKey contextKey = "bigtable/metricsTracer"
 )
 
+// NewContext returns a copy of ctx that carries mt so downstream
+// callers (retry loop, gRPC stats.Handler) can recover it via
+// FromContext.
 func NewContext(ctx context.Context, mt *Tracer) context.Context {
 	return context.WithValue(ctx, metricsTracerContextKey, mt)
 }
 
+// FromContext returns the Tracer stashed on ctx by NewContext. If ctx
+// carries none (metrics disabled, or a test call bypassing the retry
+// loop) it returns a stub Tracer with BuiltInEnabled=false so callers
+// don't need to nil-check.
 func FromContext(ctx context.Context) *Tracer {
 	if mt, ok := ctx.Value(metricsTracerContextKey).(*Tracer); ok {
 		return mt
@@ -265,6 +291,8 @@ type OpTracer struct {
 	lastZoneID    string
 }
 
+// SetStartTime stamps the operation start time used by
+// recordOperationCompletion to compute operation_latencies.
 func (o *OpTracer) SetStartTime(t time.Time) {
 	o.startTime = t
 }
@@ -281,6 +309,9 @@ func (o *OpTracer) incrementAttemptCount() {
 	o.attemptCount++
 }
 
+// IncrementAppBlockingLatency accumulates application-blocking
+// latency (ms) into the operation total that will be recorded onto
+// application_latencies at operation completion.
 func (o *OpTracer) IncrementAppBlockingLatency(latency float64) {
 	o.appBlockingLatency += latency
 }
@@ -323,14 +354,21 @@ type AttemptTracer struct {
 	trailerMD metadata.MD
 }
 
+// SetStartTime stamps the attempt start time. attempt_latencies and
+// attempt_latencies2 are recorded as (now - startTime) at attempt
+// completion.
 func (a *AttemptTracer) SetStartTime(t time.Time) {
 	a.startTime = t
 }
 
+// SetClusterID stamps the "cluster" attribute derived from the
+// LocationMDKey response metadata.
 func (a *AttemptTracer) SetClusterID(clusterID string) {
 	a.clusterID = clusterID
 }
 
+// SetZoneID stamps the "zone" attribute derived from the LocationMDKey
+// response metadata.
 func (a *AttemptTracer) SetZoneID(zoneID string) {
 	a.zoneID = zoneID
 }
@@ -339,6 +377,8 @@ func (a *AttemptTracer) setStatus(status string) {
 	a.status = status
 }
 
+// SetServerLatency stamps the GFE-reported server latency (ms) that
+// will be recorded onto server_latencies at attempt completion.
 func (a *AttemptTracer) SetServerLatency(latency float64) {
 	a.serverLatency = latency
 }
@@ -374,6 +414,9 @@ func (a *AttemptTracer) SetTransportSubZone(v string) { a.transportSubZone = v }
 // clientBlockingLatency stamping.
 func (a *AttemptTracer) StartTime() time.Time { return a.startTime }
 
+// SetMethod stamps the "method" label the tracer emits on every
+// metric for this operation. Callers pass the short method name
+// (e.g. "ReadRows"); the tracer prepends "Bigtable." for the wire.
 func (mt *Tracer) SetMethod(m string) {
 	mt.method = metricMethodPrefix + m
 }
@@ -441,6 +484,9 @@ func (mt *Tracer) toOtelMetricAttrs(metricName string) (attribute.Set, error) {
 	return attrSet, nil
 }
 
+// RecordAttemptStart resets the per-attempt state on the tracer and
+// stamps the attempt start time. Called by StatsHandler.TagRPC at the
+// beginning of every gRPC attempt.
 func (mt *Tracer) RecordAttemptStart() {
 	if !mt.BuiltInEnabled {
 		return
@@ -612,6 +658,9 @@ func (mt *Tracer) RecordOperationCompletion() {
 	mt.instrumentAppBlockingLatencies.Record(mt.ctx, mt.currOp.appBlockingLatency, metric.WithAttributeSet(appBlockingLatAttrs))
 }
 
+// SetCurrOpStatus stamps the operation-level status code that will be
+// recorded as the "status" label on operation_latencies /
+// first_response_latencies at operation completion.
 func (mt *Tracer) SetCurrOpStatus(code codes.Code) {
 	if !mt.BuiltInEnabled {
 		return
@@ -661,6 +710,10 @@ func (mt *Tracer) CurrAttempt() *AttemptTracer {
 	return &mt.currOp.currAttempt
 }
 
+// IncrementAppBlockingLatency accumulates application-blocking
+// latency (ms) onto the operation tracer. Callers use this to record
+// how long the application was blocked returning rows to user code
+// between attempts.
 func (mt *Tracer) IncrementAppBlockingLatency(latency float64) {
 	if !mt.BuiltInEnabled {
 		return
@@ -742,6 +795,9 @@ type StatsHandler struct{}
 
 var _ stats.Handler = (*StatsHandler)(nil)
 
+// TagRPC implements grpc/stats.Handler. Called once per attempt when
+// the client begins the RPC; drives RecordAttemptStart and installs
+// the per-attempt blocking / t4t7 trackers onto ctx.
 func (h *StatsHandler) TagRPC(ctx context.Context, info *stats.RPCTagInfo) context.Context {
 	mt := FromContext(ctx)
 	if !mt.BuiltInEnabled {
@@ -772,6 +828,9 @@ func (h *StatsHandler) TagRPC(ctx context.Context, info *stats.RPCTagInfo) conte
 	return ctx
 }
 
+// HandleRPC implements grpc/stats.Handler. Fires on every RPC-level
+// stats event (OutPayload, OutHeader, InHeader, InTrailer, End) and
+// funnels attempt boundaries + response metadata into the tracer.
 func (h *StatsHandler) HandleRPC(ctx context.Context, s stats.RPCStats) {
 	if tracker, ok := ctx.Value(statsContextKey).(*blockingLatencyTracker); ok {
 		if op, ok := s.(*stats.OutPayload); ok {
@@ -812,12 +871,20 @@ func (h *StatsHandler) HandleRPC(ctx context.Context, s stats.RPCStats) {
 	}
 }
 
+// TagConn implements grpc/stats.Handler. The tracer records no
+// per-connection state, so this is a pass-through.
 func (h *StatsHandler) TagConn(ctx context.Context, info *stats.ConnTagInfo) context.Context {
 	return ctx
 }
 
+// HandleConn implements grpc/stats.Handler. The tracer records no
+// per-connection state, so this is a no-op.
 func (h *StatsHandler) HandleConn(context.Context, stats.ConnStats) {}
 
+// FallbackString returns a when non-empty, otherwise b. Used at metric
+// recording time to fall back to the tracer's last known
+// cluster_id/zone_id when the current attempt didn't carry the
+// LocationMDKey metadata.
 func FallbackString(a, b string) string {
 	if a != "" {
 		return a

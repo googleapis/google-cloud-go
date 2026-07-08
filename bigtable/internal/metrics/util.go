@@ -1,5 +1,5 @@
 /*
-Copyright 2024 Google LLC
+Copyright 2026 Google LLC
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -36,7 +36,11 @@ const (
 	defaultCluster = "<unspecified>"
 	defaultZone    = "global"
 	defaultTable   = "<unspecified>"
-	PeerInfoMDKey  = "bigtable-peer-info"
+
+	// PeerInfoMDKey is the response-metadata key the server uses to
+	// carry the serialized PeerInfo proto once the PeerInfo feature
+	// flag is negotiated on. ExtractPeerInfo decodes the value.
+	PeerInfoMDKey = "bigtable-peer-info"
 )
 
 // canonicalStatusStrings maps standard gRPC status codes to their
@@ -105,7 +109,10 @@ func convertToGrpcStatusErr(err error) (codes.Code, error) {
 	return code, err
 }
 
-// get GFE latency in ms from response metadata
+// ExtractServerLatency returns the GFE server latency (in milliseconds)
+// carried by the server-timing header or trailer metadata, whichever is
+// populated. Returns the parse error when the header is present but
+// malformed.
 func ExtractServerLatency(headerMD metadata.MD, trailerMD metadata.MD) (float64, error) {
 	serverTimingStr := ""
 
@@ -136,9 +143,10 @@ func ExtractServerLatency(headerMD metadata.MD, trailerMD metadata.MD) (float64,
 	return serverLatencyMillis, nil
 }
 
-// Obtain cluster and zone from response metadata
-// Check both headers and trailers because in different environments the metadata could
-// be returned in headers or trailers
+// ExtractLocation returns the (cluster, zone) pair encoded in the
+// LocationMDKey response metadata. Checks headers first, then
+// trailers — different serving environments emit the metadata in one
+// or the other.
 func ExtractLocation(headerMD metadata.MD, trailerMD metadata.MD) (string, string, error) {
 	var locationMetadata []string
 
@@ -198,6 +206,9 @@ func ExtractPeerInfo(headerMD metadata.MD, trailerMD metadata.MD) (*btpb.PeerInf
 	return &peerInfo, nil
 }
 
+// ConvertToMs converts a time.Duration to a float64 millisecond value
+// suitable for recording on the millisecond-bucketed latency
+// histograms.
 func ConvertToMs(d time.Duration) float64 {
 	return float64(d.Nanoseconds()) / 1000000
 }

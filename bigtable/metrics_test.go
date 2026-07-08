@@ -261,7 +261,7 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 	}()
 
 	// Setup mock monitoring server
-	monitoringServer, err := metricstest.NewMetricTestServer()
+	monitoringServer, err := metricstest.NewServer()
 	if err != nil {
 		t.Fatalf("Error setting up metrics test server")
 	}
@@ -464,7 +464,7 @@ func TestConnectivityErrorCount(t *testing.T) {
 	}()
 
 	// Setup mock monitoring server
-	monitoringServer, err := metricstest.NewMetricTestServer()
+	monitoringServer, err := metricstest.NewServer()
 	if err != nil {
 		t.Fatalf("Error setting up metrics test server: %v", err)
 	}
@@ -849,7 +849,7 @@ func TestFirstResponseLatencyWithDelayedStream(t *testing.T) {
 	})
 
 	// Setup mock monitoring server
-	monitoringServer, err := metricstest.NewMetricTestServer()
+	monitoringServer, err := metricstest.NewServer()
 	if err != nil {
 		t.Fatalf("Error setting up metrics test server: %v", err)
 	}
@@ -1029,7 +1029,7 @@ func TestApplicationLatencies(t *testing.T) {
 	})
 
 	// Setup mock monitoring server
-	monitoringServer, err := metricstest.NewMetricTestServer()
+	monitoringServer, err := metricstest.NewServer()
 	if err != nil {
 		t.Fatalf("Error setting up metrics test server: %v", err)
 	}
@@ -1184,7 +1184,7 @@ func TestFallbackT4T7Latency(t *testing.T) {
 	otel.SetErrorHandler(mer)
 	t.Cleanup(func() { otel.SetErrorHandler(origErrHandler) })
 
-	monitoringServer, err := metricstest.NewMetricTestServer()
+	monitoringServer, err := metricstest.NewServer()
 	if err != nil {
 		t.Fatalf("Error setting up metrics test server: %v", err)
 	}
@@ -1301,7 +1301,7 @@ func TestClientBlockingLatency(t *testing.T) {
 	otel.SetErrorHandler(mer)
 	t.Cleanup(func() { otel.SetErrorHandler(origErrHandler) })
 
-	monitoringServer, err := metricstest.NewMetricTestServer()
+	monitoringServer, err := metricstest.NewServer()
 	if err != nil {
 		t.Fatalf("Error setting up metrics test server: %v", err)
 	}
