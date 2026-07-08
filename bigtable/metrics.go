@@ -64,9 +64,16 @@ const (
 	metricLabelKeyClientName         = "client_name"
 	metricLabelKeyClientUID          = "client_uid"
 
+	metricTransportType    = "transport_type"
+	metricTransportRegion  = "transport_region"
+	metricTransportSubZone = "transport_subzone"
+	metricTransportZone    = "transport_zone"
+
 	// Metric names
-	metricNameOperationLatencies      = "operation_latencies"
-	metricNameAttemptLatencies        = "attempt_latencies"
+	metricNameOperationLatencies = "operation_latencies"
+	metricNameAttemptLatencies   = "attempt_latencies"
+	metricNameAttemptLatencies2  = "attempt_latencies2"
+
 	metricNameServerLatencies         = "server_latencies"
 	metricNameAppBlockingLatencies    = "application_latencies"
 	metricNameClientBlockingLatencies = "throttling_latencies"
@@ -78,7 +85,7 @@ const (
 	// Metric units
 	metricUnitMS    = "ms"
 	metricUnitCount = "1"
-	maxAttrsLen     = 12 // Monitored resource labels +  Metric labels
+	maxAttrsLen     = 16 // Monitored resource labels +  Metric labels
 )
 
 type contextKey string
@@ -128,6 +135,17 @@ var (
 			additionalAttrs: []string{
 				metricLabelKeyStatus,
 				metricLabelKeyStreamingOperation,
+			},
+			recordedPerAttempt: true,
+		},
+		metricNameAttemptLatencies2: {
+			additionalAttrs: []string{
+				metricLabelKeyStatus,
+				metricLabelKeyStreamingOperation,
+				metricTransportType,
+				metricTransportRegion,
+				metricTransportSubZone,
+				metricTransportZone,
 			},
 			recordedPerAttempt: true,
 		},
@@ -215,6 +233,7 @@ type builtinMetricsTracerFactory struct {
 	operationLatencies      metric.Float64Histogram
 	serverLatencies         metric.Float64Histogram
 	attemptLatencies        metric.Float64Histogram
+	attemptLatencies2       metric.Float64Histogram
 	firstRespLatencies      metric.Float64Histogram
 	appBlockingLatencies    metric.Float64Histogram
 	clientBlockingLatencies metric.Float64Histogram
@@ -332,6 +351,19 @@ func (tf *builtinMetricsTracerFactory) createInstruments(meter metric.Meter) err
 		metric.WithUnit(metricUnitMS),
 		metric.WithExplicitBucketBoundaries(bucketBounds...),
 	)
+
+	if err != nil {
+		return err
+	}
+
+	// Create attempt_latencies2
+	tf.attemptLatencies2, err = meter.Float64Histogram(
+		metricNameAttemptLatencies2,
+		metric.WithDescription("Client observed latency per RPC attempt."),
+		metric.WithUnit(metricUnitMS),
+		metric.WithExplicitBucketBoundaries(bucketBounds...),
+	)
+
 	if err != nil {
 		return err
 	}
@@ -417,6 +449,7 @@ type builtinMetricsTracer struct {
 	instrumentOperationLatencies      metric.Float64Histogram
 	instrumentServerLatencies         metric.Float64Histogram
 	instrumentAttemptLatencies        metric.Float64Histogram
+	instrumentAttemptLatencies2       metric.Float64Histogram
 	instrumentFirstRespLatencies      metric.Float64Histogram
 	instrumentAppBlockingLatencies    metric.Float64Histogram
 	instrumentClientBlockingLatencies metric.Float64Histogram
@@ -480,6 +513,11 @@ type attemptTracer struct {
 	clusterID string
 	zoneID    string
 
+	transportRegion  string
+	transportZone    string
+	transportSubZone string
+	transportType    string
+
 	// gRPC status code
 	status string
 
@@ -506,6 +544,22 @@ func (a *attemptTracer) setClusterID(clusterID string) {
 
 func (a *attemptTracer) setZoneID(zoneID string) {
 	a.zoneID = zoneID
+}
+
+func (a *attemptTracer) setTransportZone(transportZone string) {
+	a.transportZone = transportZone
+}
+
+func (a *attemptTracer) setTransportSubZone(transportSubZone string) {
+	a.transportSubZone = transportSubZone
+}
+
+func (a *attemptTracer) setTransportRegion(transportRegion string) {
+	a.transportRegion = transportRegion
+}
+
+func (a *attemptTracer) setTransportType(transportType string) {
+	a.transportType = transportType
 }
 
 func (a *attemptTracer) setStatus(status string) {
@@ -545,6 +599,7 @@ func (tf *builtinMetricsTracerFactory) createBuiltinMetricsTracer(ctx context.Co
 		instrumentOperationLatencies:      tf.operationLatencies,
 		instrumentServerLatencies:         tf.serverLatencies,
 		instrumentAttemptLatencies:        tf.attemptLatencies,
+		instrumentAttemptLatencies2:       tf.attemptLatencies2,
 		instrumentFirstRespLatencies:      tf.firstRespLatencies,
 		instrumentAppBlockingLatencies:    tf.appBlockingLatencies,
 		instrumentClientBlockingLatencies: tf.clientBlockingLatencies,
@@ -600,6 +655,14 @@ func (mt *builtinMetricsTracer) toOtelMetricAttrs(metricName string) (attribute.
 			attrKeyValues = append(attrKeyValues, attribute.String(metricLabelKeyStatus, status))
 		case metricLabelKeyStreamingOperation:
 			attrKeyValues = append(attrKeyValues, attribute.Bool(metricLabelKeyStreamingOperation, mt.isStreaming))
+		case metricTransportRegion:
+			attrKeyValues = append(attrKeyValues, attribute.String(metricTransportRegion, mt.currOp.currAttempt.transportRegion))
+		case metricTransportSubZone:
+			attrKeyValues = append(attrKeyValues, attribute.String(metricTransportSubZone, mt.currOp.currAttempt.transportSubZone))
+		case metricTransportZone:
+			attrKeyValues = append(attrKeyValues, attribute.String(metricTransportZone, mt.currOp.currAttempt.transportZone))
+		case metricTransportType:
+			attrKeyValues = append(attrKeyValues, attribute.String(metricTransportType, mt.currOp.currAttempt.transportType))
 		default:
 			return attribute.Set{}, fmt.Errorf("unknown additional attribute: %v", attrKey)
 		}
@@ -638,6 +701,15 @@ func (mt *builtinMetricsTracer) recordAttemptCompletion(attemptHeaderMD, attempT
 	// Get location attributes from metadata and set it in tracer
 	// Ignore get location error since the metric can still be recorded with rest of the attributes
 	clusterID, zoneID, _ := extractLocation(attemptHeaderMD, attempTrailerMD)
+
+	peerInfo, _ := extractPeerInfo(attemptHeaderMD, attempTrailerMD)
+	if peerInfo != nil {
+		mt.currOp.currAttempt.setTransportType(peerInfo.TransportType.String())
+		mt.currOp.currAttempt.setTransportRegion(peerInfo.GetApplicationFrontendZone())
+		mt.currOp.currAttempt.setTransportZone(peerInfo.GetApplicationFrontendZone())
+		mt.currOp.currAttempt.setTransportSubZone(peerInfo.GetApplicationFrontendSubzone())
+	}
+
 	mt.currOp.currAttempt.setClusterID(clusterID)
 	mt.currOp.currAttempt.setZoneID(zoneID)
 
@@ -666,6 +738,10 @@ func (mt *builtinMetricsTracer) recordAttemptCompletion(attemptHeaderMD, attempT
 	// Record attempt_latencies
 	attemptLatAttrs, _ := mt.toOtelMetricAttrs(metricNameAttemptLatencies)
 	mt.instrumentAttemptLatencies.Record(mt.ctx, elapsedTime, metric.WithAttributeSet(attemptLatAttrs))
+
+	// Record attempt_latencies
+	attemptLat2Attrs, _ := mt.toOtelMetricAttrs(metricNameAttemptLatencies2)
+	mt.instrumentAttemptLatencies2.Record(mt.ctx, elapsedTime, metric.WithAttributeSet(attemptLat2Attrs))
 
 	// Record client_blocking_latencies
 	var clientBlockingLatencyMs float64
