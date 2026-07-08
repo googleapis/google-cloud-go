@@ -2661,6 +2661,133 @@ func TestMultiRangeDownloaderSpecifyGenerationEmulated(t *testing.T) {
 	})
 }
 
+type customFailingBidiStream struct {
+	grpc.ClientStream
+	mu          *sync.Mutex
+	failCounter *int
+	maxFailures int
+	msgCount    int
+}
+
+func (s *customFailingBidiStream) RecvMsg(m any) error {
+	err := s.ClientStream.RecvMsg(m)
+	if err != nil {
+		return err
+	}
+
+	s.mu.Lock()
+	currMsgCount := s.msgCount
+	s.msgCount++
+	currFailCounter := *s.failCounter
+	maxFailures := s.maxFailures
+	s.mu.Unlock()
+
+	// First message (metadata) succeeds to allow session creation.
+	if currMsgCount == 0 {
+		return nil
+	}
+
+	// Subsequent reads fail if we haven't hit maxFailures yet.
+	if currFailCounter < maxFailures {
+		s.mu.Lock()
+		*s.failCounter++
+		newFailCounter := *s.failCounter
+		s.mu.Unlock()
+		log.Printf("[DEBUG MRD] Intercepted successful read and returning transient Unavailable error (failCounter=%v)", newFailCounter)
+		return status.Error(codes.Unavailable, "transient test error")
+	}
+
+	return nil
+}
+
+func TestMultiRangeDownloaderRetryLimitEmulated(t *testing.T) {
+	checkEmulatorEnvironment(t)
+	ctx := context.Background()
+
+	var (
+		failCounter int
+		mu          sync.Mutex
+	)
+	streamInterceptor := grpc.WithStreamInterceptor(
+		func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
+			clientStream, err := streamer(ctx, desc, cc, method, opts...)
+			if err != nil {
+				return nil, err
+			}
+			if method == "/google.storage.v2.Storage/BidiReadObject" {
+				clientStream = &customFailingBidiStream{
+					ClientStream: clientStream,
+					mu:           &mu,
+					failCounter:  &failCounter,
+					maxFailures:  3,
+				}
+			}
+			return clientStream, nil
+		},
+	)
+
+	client, err := newGRPCStorageClient(ctx, withClientOptions(option.WithGRPCDialOption(streamInterceptor)))
+	if err != nil {
+		t.Fatalf("newGRPCStorageClient: %v", err)
+	}
+	defer client.Close()
+
+	setBidiReads(t, client)
+
+	project := "grpc-project"
+	bucket := fmt.Sprintf("grpc-bucket-%d", time.Now().UnixNano())
+	content := make([]byte, 10000)
+	rand.New(rand.NewSource(0)).Read(content)
+
+	_, err = client.CreateBucket(ctx, project, bucket, &BucketAttrs{Name: bucket}, nil)
+	if err != nil {
+		t.Fatalf("client.CreateBucket: %v", err)
+	}
+
+	objectName := fmt.Sprintf("object-%d", time.Now().UnixNano())
+	vc := &Client{tc: client}
+	// Configure veneer client with MaxAttempts retry limit of 2.
+	vc.SetRetry(WithMaxAttempts(2))
+
+	w := vc.Bucket(bucket).Object(objectName).NewWriter(ctx)
+	if _, err := w.Write(content); err != nil {
+		t.Fatalf("w.Write: %v", err)
+	}
+	if err := w.Close(); err != nil {
+		t.Fatalf("w.Close: %v", err)
+	}
+
+	reader, err := vc.Bucket(bucket).Object(objectName).NewMultiRangeDownloader(ctx)
+	if err != nil {
+		t.Fatalf("NewMultiRangeDownloader: %v", err)
+	}
+	defer reader.Close()
+
+	// Add Range 1. It should fail after 2 attempts.
+	doneChan := make(chan struct{})
+	var range1Err error
+	buf1 := new(bytes.Buffer)
+	reader.Add(buf1, 0, 1000, func(offset, length int64, err error) {
+		range1Err = err
+		close(doneChan)
+	})
+
+	// Wait for Range 1 to fail with a timeout.
+	select {
+	case <-doneChan:
+		// Callback completed.
+	case <-time.After(5 * time.Second):
+		t.Fatalf("timed out waiting for Range 1 to fail")
+	}
+
+	if range1Err == nil {
+		t.Fatalf("expected Range 1 to fail, but it succeeded")
+	}
+	if !strings.Contains(range1Err.Error(), "retry failed after 2 attempts") {
+		t.Errorf("expected error to contain 'retry failed after 2 attempts', got: %v", range1Err)
+	}
+}
+
 func TestWholeObjectReaderSpecifyGenerationEmulated(t *testing.T) {
 	transportClientTest(skipHTTP("mrd is implemented for grpc client"), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
 		content := make([]byte, 5000)
@@ -4002,5 +4129,136 @@ func setBidiReads(t *testing.T, client storageClient) {
 		t.Cleanup(func() {
 			c.config.grpcBidiReads = false
 		})
+	}
+}
+
+type customIdleFailingBidiStream struct {
+	grpc.ClientStream
+	mu            *sync.Mutex
+	streamIndex   int
+	msgCount      int
+	rangeComplete chan struct{}
+}
+
+func (s *customIdleFailingBidiStream) RecvMsg(m any) error {
+	s.mu.Lock()
+	currMsgCount := s.msgCount
+	s.msgCount++
+	streamIndex := s.streamIndex
+	s.mu.Unlock()
+
+	if streamIndex == 0 {
+		if currMsgCount == 0 {
+			return s.ClientStream.RecvMsg(m)
+		}
+		if currMsgCount == 1 {
+			return s.ClientStream.RecvMsg(m)
+		}
+		// Third call: block until test tells us to fail.
+		<-s.rangeComplete
+		return status.Error(codes.Unavailable, "transient error on idle stream")
+	}
+	return status.Error(codes.Unavailable, "pre-warming connection failed")
+}
+
+func TestMRDStreamEndIdleEmulated(t *testing.T) {
+	checkEmulatorEnvironment(t)
+	ctx := context.Background()
+
+	var (
+		mu            sync.Mutex
+		streamCounter int
+		rangeComplete = make(chan struct{})
+	)
+
+	streamInterceptor := grpc.WithStreamInterceptor(
+		func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
+			clientStream, err := streamer(ctx, desc, cc, method, opts...)
+			if err != nil {
+				return nil, err
+			}
+			if method == "/google.storage.v2.Storage/BidiReadObject" {
+				mu.Lock()
+				currStreamIndex := streamCounter
+				streamCounter++
+				mu.Unlock()
+
+				clientStream = &customIdleFailingBidiStream{
+					ClientStream:  clientStream,
+					mu:            &mu,
+					streamIndex:   currStreamIndex,
+					rangeComplete: rangeComplete,
+				}
+			}
+			return clientStream, nil
+		},
+	)
+
+	client, err := newGRPCStorageClient(ctx, withClientOptions(option.WithGRPCDialOption(streamInterceptor)))
+	if err != nil {
+		t.Fatalf("newGRPCStorageClient: %v", err)
+	}
+	defer client.Close()
+
+	setBidiReads(t, client)
+
+	project := "grpc-project"
+	bucket := fmt.Sprintf("grpc-bucket-%d", time.Now().UnixNano())
+	content := make([]byte, 1000)
+	rand.New(rand.NewSource(0)).Read(content)
+
+	_, err = client.CreateBucket(ctx, project, bucket, &BucketAttrs{Name: bucket}, nil)
+	if err != nil {
+		t.Fatalf("client.CreateBucket: %v", err)
+	}
+
+	objectName := fmt.Sprintf("object-%d", time.Now().UnixNano())
+	vc := &Client{tc: client}
+
+	w := vc.Bucket(bucket).Object(objectName).NewWriter(ctx)
+	if _, err := w.Write(content); err != nil {
+		t.Fatalf("w.Write: %v", err)
+	}
+	if err := w.Close(); err != nil {
+		t.Fatalf("w.Close: %v", err)
+	}
+
+	reader, err := vc.Bucket(bucket).Object(objectName).NewMultiRangeDownloader(ctx)
+	if err != nil {
+		t.Fatalf("NewMultiRangeDownloader: %v", err)
+	}
+	defer reader.Close()
+
+	doneChan := make(chan struct{})
+	var rangeErr error
+	buf := new(bytes.Buffer)
+	reader.Add(buf, 0, 1000, func(offset, length int64, err error) {
+		rangeErr = err
+		close(doneChan)
+	})
+
+	select {
+	case <-doneChan:
+	case <-time.After(5 * time.Second):
+		t.Fatalf("timed out waiting for download to complete")
+	}
+
+	if rangeErr != nil {
+		t.Fatalf("range download failed: %v", rangeErr)
+	}
+
+	if !bytes.Equal(buf.Bytes(), content) {
+		t.Errorf("downloaded content mismatch")
+	}
+
+	// Trigger failure in Stream 1.
+	close(rangeComplete)
+
+	// Wait a bit to let Stream 1 failure propagate and Stream 2 connection attempt fail.
+	time.Sleep(200 * time.Millisecond)
+
+	// Close reader. It should succeed because manager did not enter error state.
+	if err := reader.Close(); err != nil {
+		t.Fatalf("expected reader.Close() to succeed, but got error: %v", err)
 	}
 }

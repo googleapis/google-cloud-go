@@ -337,7 +337,11 @@ func (c *mrdAddStreamErrorCmd) apply(ctx context.Context, m *multiRangeDownloade
 		} else {
 			err = errors.New("no streams available")
 		}
-		m.failManager(err)
+		if m.pendingRangesCount > 0 || m.unsentRequests.Len() > 0 {
+			m.failManager(err)
+		} else {
+			m.suspendIdleConnect = true
+		}
 	}
 }
 
@@ -391,6 +395,7 @@ type multiRangeDownloaderManager struct {
 	unsentRequests     *requestQueue
 	addStreams         chan mrdCommand
 	atCapacityCount    int
+	suspendIdleConnect bool
 }
 
 type rangeRequest struct {
@@ -409,6 +414,7 @@ type rangeRequest struct {
 	wantChunkCRC    uint32
 	gotChunkCRC     uint32
 	chunkCRCPresent bool
+	attempts        int // The number of stream connection attempts made for this specific range request. Used to enforce per-range retry limits.
 }
 
 // Methods implementing internalMultiRangeDownloader
@@ -584,6 +590,7 @@ func (m *multiRangeDownloaderManager) eventLoop() {
 		// This path only triggers if space is available in the channel.
 		// It never blocks the eventLoop.
 		case targetChan <- nextReq:
+			nextRangeReq.attempts = 1
 			targetStream.pendingRanges[nextRangeReq.readID] = nextRangeReq
 			targetStream.updateCapacity(m, 1, nextRangeReq.length)
 
@@ -823,6 +830,8 @@ func (m *multiRangeDownloaderManager) handleAddCmd(ctx context.Context, cmd *mrd
 		return
 	}
 
+	m.suspendIdleConnect = false
+
 	req := &rangeRequest{
 		output:     cmd.output,
 		offset:     cmd.offset,
@@ -831,6 +840,7 @@ func (m *multiRangeDownloaderManager) handleAddCmd(ctx context.Context, cmd *mrd
 		origLength: cmd.length,
 		callback:   cmd.callback,
 		readID:     m.readIDCounter,
+		attempts:   0,
 	}
 	m.readIDCounter++
 
@@ -854,7 +864,13 @@ func (m *multiRangeDownloaderManager) shouldAddStream() bool {
 		len(m.streams) >= m.params.maxConnections {
 		return false
 	}
+	if m.unsentRequests.Len() > 0 {
+		return true
+	}
 	if len(m.streams) < m.params.minConnections {
+		if m.suspendIdleConnect {
+			return false
+		}
 		return true
 	}
 
@@ -925,7 +941,11 @@ func (m *multiRangeDownloaderManager) handleAddStreamCmd(ctx context.Context, cm
 			if err == nil {
 				err = errors.New("no streams available: stream creation failed or has error")
 			}
-			m.failManager(err)
+			if m.pendingRangesCount > 0 || m.unsentRequests.Len() > 0 {
+				m.failManager(err)
+			} else {
+				m.suspendIdleConnect = true
+			}
 		}
 		return
 	}
@@ -961,8 +981,10 @@ func (m *multiRangeDownloaderManager) handleReconnectStreamCmd(ctx context.Conte
 		}
 		m.failStream(stream, finalErr)
 		if len(m.streams) == 0 && !m.streamCreating {
-			err := fmt.Errorf("no streams available. Last observed error: %w", finalErr)
-			m.failManager(err)
+			if m.pendingRangesCount > 0 || m.unsentRequests.Len() > 0 {
+				err := fmt.Errorf("no streams available. Last observed error: %w", finalErr)
+				m.failManager(err)
+			}
 		}
 		return
 	}
@@ -1158,7 +1180,30 @@ func (m *multiRangeDownloaderManager) handleStreamEnd(result mrdSessionResult, s
 		m.readSpec.ReadHandle = result.redirect.ReadHandle
 		m.ensureSession(m.ctx, stream)
 	} else if m.settings.retry != nil && m.settings.retry.runShouldRetry(err, nil) {
-		m.ensureSession(m.ctx, stream)
+		// Enforce per-range retry limits to prevent infinite reconnection loops.
+		// Since stream reconnections create fresh request contexts, we must
+		// persistently track attempts on each rangeRequest object individually.
+		if m.settings.retry.maxAttempts != nil {
+			maxAttempts := *m.settings.retry.maxAttempts
+			var failedRanges []*rangeRequest
+			for _, req := range stream.pendingRanges {
+				req.attempts++
+				if req.attempts > maxAttempts {
+					failedRanges = append(failedRanges, req)
+				}
+			}
+			// Permanently fail only the range requests that have exceeded the maxAttempts threshold.
+			for _, req := range failedRanges {
+				m.failRange(stream, req, fmt.Errorf("storage: retry failed after %v attempts; last error: %w", maxAttempts, err))
+			}
+		}
+
+		// Only reconnect the stream if there are still pending ranges that need to be downloaded.
+		if len(stream.pendingRanges) > 0 {
+			m.ensureSession(m.ctx, stream)
+		} else {
+			delete(m.streams, stream.id)
+		}
 	} else {
 		m.failStream(stream, err)
 		if len(m.streams) == 0 && !m.streamCreating {
