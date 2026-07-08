@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -48,35 +48,44 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type BinauthzManagementServiceV1Client interface {
-	// A [policy][google.cloud.binaryauthorization.v1.Policy] specifies the [attestors][google.cloud.binaryauthorization.v1.Attestor] that must attest to
-	// a container image, before the project is allowed to deploy that
-	// image. There is at most one policy per project. All image admission
-	// requests are permitted if a project has no policy.
+	// A [policy][google.cloud.binaryauthorization.v1.Policy] specifies the
+	// [attestors][google.cloud.binaryauthorization.v1.Attestor] that must attest
+	// to a container image, before the project is allowed to deploy that image.
+	// There is at most one policy per project. All image admission requests are
+	// permitted if a project has no policy.
 	//
-	// Gets the [policy][google.cloud.binaryauthorization.v1.Policy] for this project. Returns a default
-	// [policy][google.cloud.binaryauthorization.v1.Policy] if the project does not have one.
+	// Gets the [policy][google.cloud.binaryauthorization.v1.Policy] for this
+	// project. Returns a default
+	// [policy][google.cloud.binaryauthorization.v1.Policy] if the project does
+	// not have one.
 	GetPolicy(ctx context.Context, in *GetPolicyRequest, opts ...grpc.CallOption) (*Policy, error)
-	// Creates or updates a project's [policy][google.cloud.binaryauthorization.v1.Policy], and returns a copy of the
-	// new [policy][google.cloud.binaryauthorization.v1.Policy]. A policy is always updated as a whole, to avoid race
-	// conditions with concurrent policy enforcement (or management!)
-	// requests. Returns NOT_FOUND if the project does not exist, INVALID_ARGUMENT
-	// if the request is malformed.
+	// Creates or updates a project's
+	// [policy][google.cloud.binaryauthorization.v1.Policy], and returns a copy of
+	// the new [policy][google.cloud.binaryauthorization.v1.Policy]. A policy is
+	// always updated as a whole, to avoid race conditions with concurrent policy
+	// enforcement (or management!) requests. Returns `NOT_FOUND` if the project
+	// does not exist, `INVALID_ARGUMENT` if the request is malformed.
 	UpdatePolicy(ctx context.Context, in *UpdatePolicyRequest, opts ...grpc.CallOption) (*Policy, error)
-	// Creates an [attestor][google.cloud.binaryauthorization.v1.Attestor], and returns a copy of the new
-	// [attestor][google.cloud.binaryauthorization.v1.Attestor]. Returns NOT_FOUND if the project does not exist,
-	// INVALID_ARGUMENT if the request is malformed, ALREADY_EXISTS if the
+	// Creates an [attestor][google.cloud.binaryauthorization.v1.Attestor], and
+	// returns a copy of the new
+	// [attestor][google.cloud.binaryauthorization.v1.Attestor]. Returns
+	// `NOT_FOUND` if the project does not exist, `INVALID_ARGUMENT` if the
+	// request is malformed, `ALREADY_EXISTS` if the
 	// [attestor][google.cloud.binaryauthorization.v1.Attestor] already exists.
 	CreateAttestor(ctx context.Context, in *CreateAttestorRequest, opts ...grpc.CallOption) (*Attestor, error)
 	// Gets an [attestor][google.cloud.binaryauthorization.v1.Attestor].
-	// Returns NOT_FOUND if the [attestor][google.cloud.binaryauthorization.v1.Attestor] does not exist.
+	// Returns `NOT_FOUND` if the
+	// [attestor][google.cloud.binaryauthorization.v1.Attestor] does not exist.
 	GetAttestor(ctx context.Context, in *GetAttestorRequest, opts ...grpc.CallOption) (*Attestor, error)
 	// Updates an [attestor][google.cloud.binaryauthorization.v1.Attestor].
-	// Returns NOT_FOUND if the [attestor][google.cloud.binaryauthorization.v1.Attestor] does not exist.
+	// Returns `NOT_FOUND` if the
+	// [attestor][google.cloud.binaryauthorization.v1.Attestor] does not exist.
 	UpdateAttestor(ctx context.Context, in *UpdateAttestorRequest, opts ...grpc.CallOption) (*Attestor, error)
 	// Lists [attestors][google.cloud.binaryauthorization.v1.Attestor].
-	// Returns INVALID_ARGUMENT if the project does not exist.
+	// Returns `INVALID_ARGUMENT` if the project does not exist.
 	ListAttestors(ctx context.Context, in *ListAttestorsRequest, opts ...grpc.CallOption) (*ListAttestorsResponse, error)
-	// Deletes an [attestor][google.cloud.binaryauthorization.v1.Attestor]. Returns NOT_FOUND if the
+	// Deletes an [attestor][google.cloud.binaryauthorization.v1.Attestor].
+	// Returns `NOT_FOUND` if the
 	// [attestor][google.cloud.binaryauthorization.v1.Attestor] does not exist.
 	DeleteAttestor(ctx context.Context, in *DeleteAttestorRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
@@ -156,35 +165,44 @@ func (c *binauthzManagementServiceV1Client) DeleteAttestor(ctx context.Context, 
 // All implementations should embed UnimplementedBinauthzManagementServiceV1Server
 // for forward compatibility
 type BinauthzManagementServiceV1Server interface {
-	// A [policy][google.cloud.binaryauthorization.v1.Policy] specifies the [attestors][google.cloud.binaryauthorization.v1.Attestor] that must attest to
-	// a container image, before the project is allowed to deploy that
-	// image. There is at most one policy per project. All image admission
-	// requests are permitted if a project has no policy.
+	// A [policy][google.cloud.binaryauthorization.v1.Policy] specifies the
+	// [attestors][google.cloud.binaryauthorization.v1.Attestor] that must attest
+	// to a container image, before the project is allowed to deploy that image.
+	// There is at most one policy per project. All image admission requests are
+	// permitted if a project has no policy.
 	//
-	// Gets the [policy][google.cloud.binaryauthorization.v1.Policy] for this project. Returns a default
-	// [policy][google.cloud.binaryauthorization.v1.Policy] if the project does not have one.
+	// Gets the [policy][google.cloud.binaryauthorization.v1.Policy] for this
+	// project. Returns a default
+	// [policy][google.cloud.binaryauthorization.v1.Policy] if the project does
+	// not have one.
 	GetPolicy(context.Context, *GetPolicyRequest) (*Policy, error)
-	// Creates or updates a project's [policy][google.cloud.binaryauthorization.v1.Policy], and returns a copy of the
-	// new [policy][google.cloud.binaryauthorization.v1.Policy]. A policy is always updated as a whole, to avoid race
-	// conditions with concurrent policy enforcement (or management!)
-	// requests. Returns NOT_FOUND if the project does not exist, INVALID_ARGUMENT
-	// if the request is malformed.
+	// Creates or updates a project's
+	// [policy][google.cloud.binaryauthorization.v1.Policy], and returns a copy of
+	// the new [policy][google.cloud.binaryauthorization.v1.Policy]. A policy is
+	// always updated as a whole, to avoid race conditions with concurrent policy
+	// enforcement (or management!) requests. Returns `NOT_FOUND` if the project
+	// does not exist, `INVALID_ARGUMENT` if the request is malformed.
 	UpdatePolicy(context.Context, *UpdatePolicyRequest) (*Policy, error)
-	// Creates an [attestor][google.cloud.binaryauthorization.v1.Attestor], and returns a copy of the new
-	// [attestor][google.cloud.binaryauthorization.v1.Attestor]. Returns NOT_FOUND if the project does not exist,
-	// INVALID_ARGUMENT if the request is malformed, ALREADY_EXISTS if the
+	// Creates an [attestor][google.cloud.binaryauthorization.v1.Attestor], and
+	// returns a copy of the new
+	// [attestor][google.cloud.binaryauthorization.v1.Attestor]. Returns
+	// `NOT_FOUND` if the project does not exist, `INVALID_ARGUMENT` if the
+	// request is malformed, `ALREADY_EXISTS` if the
 	// [attestor][google.cloud.binaryauthorization.v1.Attestor] already exists.
 	CreateAttestor(context.Context, *CreateAttestorRequest) (*Attestor, error)
 	// Gets an [attestor][google.cloud.binaryauthorization.v1.Attestor].
-	// Returns NOT_FOUND if the [attestor][google.cloud.binaryauthorization.v1.Attestor] does not exist.
+	// Returns `NOT_FOUND` if the
+	// [attestor][google.cloud.binaryauthorization.v1.Attestor] does not exist.
 	GetAttestor(context.Context, *GetAttestorRequest) (*Attestor, error)
 	// Updates an [attestor][google.cloud.binaryauthorization.v1.Attestor].
-	// Returns NOT_FOUND if the [attestor][google.cloud.binaryauthorization.v1.Attestor] does not exist.
+	// Returns `NOT_FOUND` if the
+	// [attestor][google.cloud.binaryauthorization.v1.Attestor] does not exist.
 	UpdateAttestor(context.Context, *UpdateAttestorRequest) (*Attestor, error)
 	// Lists [attestors][google.cloud.binaryauthorization.v1.Attestor].
-	// Returns INVALID_ARGUMENT if the project does not exist.
+	// Returns `INVALID_ARGUMENT` if the project does not exist.
 	ListAttestors(context.Context, *ListAttestorsRequest) (*ListAttestorsResponse, error)
-	// Deletes an [attestor][google.cloud.binaryauthorization.v1.Attestor]. Returns NOT_FOUND if the
+	// Deletes an [attestor][google.cloud.binaryauthorization.v1.Attestor].
+	// Returns `NOT_FOUND` if the
 	// [attestor][google.cloud.binaryauthorization.v1.Attestor] does not exist.
 	DeleteAttestor(context.Context, *DeleteAttestorRequest) (*emptypb.Empty, error)
 }
@@ -490,8 +508,8 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ValidationHelperV1Client interface {
-	// Returns whether the given Attestation for the given image URI
-	// was signed by the given Attestor
+	// Returns whether the given `Attestation` for the given image URI
+	// was signed by the given `Attestor`
 	ValidateAttestationOccurrence(ctx context.Context, in *ValidateAttestationOccurrenceRequest, opts ...grpc.CallOption) (*ValidateAttestationOccurrenceResponse, error)
 }
 
@@ -516,8 +534,8 @@ func (c *validationHelperV1Client) ValidateAttestationOccurrence(ctx context.Con
 // All implementations should embed UnimplementedValidationHelperV1Server
 // for forward compatibility
 type ValidationHelperV1Server interface {
-	// Returns whether the given Attestation for the given image URI
-	// was signed by the given Attestor
+	// Returns whether the given `Attestation` for the given image URI
+	// was signed by the given `Attestor`
 	ValidateAttestationOccurrence(context.Context, *ValidateAttestationOccurrenceRequest) (*ValidateAttestationOccurrenceResponse, error)
 }
 

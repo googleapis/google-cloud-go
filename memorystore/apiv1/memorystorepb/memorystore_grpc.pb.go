@@ -50,6 +50,8 @@ const (
 	Memorystore_DeleteBackup_FullMethodName                          = "/google.cloud.memorystore.v1.Memorystore/DeleteBackup"
 	Memorystore_ExportBackup_FullMethodName                          = "/google.cloud.memorystore.v1.Memorystore/ExportBackup"
 	Memorystore_BackupInstance_FullMethodName                        = "/google.cloud.memorystore.v1.Memorystore/BackupInstance"
+	Memorystore_StartMigration_FullMethodName                        = "/google.cloud.memorystore.v1.Memorystore/StartMigration"
+	Memorystore_FinishMigration_FullMethodName                       = "/google.cloud.memorystore.v1.Memorystore/FinishMigration"
 )
 
 // MemorystoreClient is the client API for Memorystore service.
@@ -102,6 +104,22 @@ type MemorystoreClient interface {
 	// require critical update. After preview, there will be no critical update
 	// needed for backup.
 	BackupInstance(ctx context.Context, in *BackupInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Initiates the migration of a source instance to the target Memorystore
+	// instance.
+	//
+	// After the successful completion of this operation, the target instance
+	// will:
+	// 1. Set up replication with the source instance and replicate any writes to
+	// the source instance.
+	// 2. Only allow reads.
+	StartMigration(ctx context.Context, in *StartMigrationRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Finalizes the migration process.
+	//
+	// After the successful completion of this operation, the target instance
+	// will:
+	// 1. Stop replicating from the source instance.
+	// 2. Allow both reads and writes.
+	FinishMigration(ctx context.Context, in *FinishMigrationRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
 
 type memorystoreClient struct {
@@ -247,6 +265,24 @@ func (c *memorystoreClient) BackupInstance(ctx context.Context, in *BackupInstan
 	return out, nil
 }
 
+func (c *memorystoreClient) StartMigration(ctx context.Context, in *StartMigrationRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, Memorystore_StartMigration_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *memorystoreClient) FinishMigration(ctx context.Context, in *FinishMigrationRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, Memorystore_FinishMigration_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MemorystoreServer is the server API for Memorystore service.
 // All implementations should embed UnimplementedMemorystoreServer
 // for forward compatibility
@@ -297,6 +333,22 @@ type MemorystoreServer interface {
 	// require critical update. After preview, there will be no critical update
 	// needed for backup.
 	BackupInstance(context.Context, *BackupInstanceRequest) (*longrunningpb.Operation, error)
+	// Initiates the migration of a source instance to the target Memorystore
+	// instance.
+	//
+	// After the successful completion of this operation, the target instance
+	// will:
+	// 1. Set up replication with the source instance and replicate any writes to
+	// the source instance.
+	// 2. Only allow reads.
+	StartMigration(context.Context, *StartMigrationRequest) (*longrunningpb.Operation, error)
+	// Finalizes the migration process.
+	//
+	// After the successful completion of this operation, the target instance
+	// will:
+	// 1. Stop replicating from the source instance.
+	// 2. Allow both reads and writes.
+	FinishMigration(context.Context, *FinishMigrationRequest) (*longrunningpb.Operation, error)
 }
 
 // UnimplementedMemorystoreServer should be embedded to have forward compatible implementations.
@@ -347,6 +399,12 @@ func (UnimplementedMemorystoreServer) ExportBackup(context.Context, *ExportBacku
 }
 func (UnimplementedMemorystoreServer) BackupInstance(context.Context, *BackupInstanceRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BackupInstance not implemented")
+}
+func (UnimplementedMemorystoreServer) StartMigration(context.Context, *StartMigrationRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method StartMigration not implemented")
+}
+func (UnimplementedMemorystoreServer) FinishMigration(context.Context, *FinishMigrationRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FinishMigration not implemented")
 }
 
 // UnsafeMemorystoreServer may be embedded to opt out of forward compatibility for this service.
@@ -630,6 +688,42 @@ func _Memorystore_BackupInstance_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Memorystore_StartMigration_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StartMigrationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MemorystoreServer).StartMigration(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Memorystore_StartMigration_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MemorystoreServer).StartMigration(ctx, req.(*StartMigrationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Memorystore_FinishMigration_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FinishMigrationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MemorystoreServer).FinishMigration(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Memorystore_FinishMigration_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MemorystoreServer).FinishMigration(ctx, req.(*FinishMigrationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Memorystore_ServiceDesc is the grpc.ServiceDesc for Memorystore service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -696,6 +790,14 @@ var Memorystore_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "BackupInstance",
 			Handler:    _Memorystore_BackupInstance_Handler,
+		},
+		{
+			MethodName: "StartMigration",
+			Handler:    _Memorystore_StartMigration_Handler,
+		},
+		{
+			MethodName: "FinishMigration",
+			Handler:    _Memorystore_FinishMigration_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -28,6 +28,7 @@ import (
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -57,6 +58,7 @@ type Tool struct {
 	//	*Tool_SystemTool
 	//	*Tool_AgentTool
 	//	*Tool_WidgetTool
+	//	*Tool_RemoteAgentTool
 	ToolType isTool_ToolType `protobuf_oneof:"tool_type"`
 	// Identifier. The resource name of the tool. Format:
 	//
@@ -74,6 +76,10 @@ type Tool struct {
 	DisplayName string `protobuf:"bytes,13,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
 	// Optional. The execution type of the tool.
 	ExecutionType ExecutionType `protobuf:"varint,12,opt,name=execution_type,json=executionType,proto3,enum=google.cloud.ces.v1.ExecutionType" json:"execution_type,omitempty"`
+	// Optional. The timeout for the tool execution. If not set, the default
+	// timeout is 30 seconds for `SYNCHRONOUS` tools and 60 seconds for
+	// `ASYNCHRONOUS` tools.
+	Timeout *durationpb.Duration `protobuf:"bytes,22,opt,name=timeout,proto3" json:"timeout,omitempty"`
 	// Output only. Timestamp when the tool was created.
 	CreateTime *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
 	// Output only. Timestamp when the tool was last updated.
@@ -227,6 +233,15 @@ func (x *Tool) GetWidgetTool() *WidgetTool {
 	return nil
 }
 
+func (x *Tool) GetRemoteAgentTool() *RemoteAgentTool {
+	if x != nil {
+		if x, ok := x.ToolType.(*Tool_RemoteAgentTool); ok {
+			return x.RemoteAgentTool
+		}
+	}
+	return nil
+}
+
 func (x *Tool) GetName() string {
 	if x != nil {
 		return x.Name
@@ -246,6 +261,13 @@ func (x *Tool) GetExecutionType() ExecutionType {
 		return x.ExecutionType
 	}
 	return ExecutionType_EXECUTION_TYPE_UNSPECIFIED
+}
+
+func (x *Tool) GetTimeout() *durationpb.Duration {
+	if x != nil {
+		return x.Timeout
+	}
+	return nil
 }
 
 func (x *Tool) GetCreateTime() *timestamppb.Timestamp {
@@ -343,6 +365,11 @@ type Tool_WidgetTool struct {
 	WidgetTool *WidgetTool `protobuf:"bytes,24,opt,name=widget_tool,json=widgetTool,proto3,oneof"`
 }
 
+type Tool_RemoteAgentTool struct {
+	// Optional. The remote agent tool.
+	RemoteAgentTool *RemoteAgentTool `protobuf:"bytes,25,opt,name=remote_agent_tool,json=remoteAgentTool,proto3,oneof"`
+}
+
 func (*Tool_ClientFunction) isTool_ToolType() {}
 
 func (*Tool_OpenApiTool) isTool_ToolType() {}
@@ -365,11 +392,13 @@ func (*Tool_AgentTool) isTool_ToolType() {}
 
 func (*Tool_WidgetTool) isTool_ToolType() {}
 
+func (*Tool_RemoteAgentTool) isTool_ToolType() {}
+
 var File_google_cloud_ces_v1_tool_proto protoreflect.FileDescriptor
 
 const file_google_cloud_ces_v1_tool_proto_rawDesc = "" +
 	"\n" +
-	"\x1egoogle/cloud/ces/v1/tool.proto\x12\x13google.cloud.ces.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a$google/cloud/ces/v1/agent_tool.proto\x1a)google/cloud/ces/v1/client_function.proto\x1a google/cloud/ces/v1/common.proto\x1a(google/cloud/ces/v1/connector_tool.proto\x1a)google/cloud/ces/v1/data_store_tool.proto\x1a\x1fgoogle/cloud/ces/v1/fakes.proto\x1a*google/cloud/ces/v1/file_search_tool.proto\x1a,google/cloud/ces/v1/google_search_tool.proto\x1a\"google/cloud/ces/v1/mcp_tool.proto\x1a'google/cloud/ces/v1/open_api_tool.proto\x1a)google/cloud/ces/v1/python_function.proto\x1a%google/cloud/ces/v1/system_tool.proto\x1a%google/cloud/ces/v1/widget_tool.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x94\v\n" +
+	"\x1egoogle/cloud/ces/v1/tool.proto\x12\x13google.cloud.ces.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a$google/cloud/ces/v1/agent_card.proto\x1a$google/cloud/ces/v1/agent_tool.proto\x1a)google/cloud/ces/v1/client_function.proto\x1a google/cloud/ces/v1/common.proto\x1a(google/cloud/ces/v1/connector_tool.proto\x1a)google/cloud/ces/v1/data_store_tool.proto\x1a\x1fgoogle/cloud/ces/v1/fakes.proto\x1a*google/cloud/ces/v1/file_search_tool.proto\x1a,google/cloud/ces/v1/google_search_tool.proto\x1a\"google/cloud/ces/v1/mcp_tool.proto\x1a'google/cloud/ces/v1/open_api_tool.proto\x1a)google/cloud/ces/v1/python_function.proto\x1a%google/cloud/ces/v1/system_tool.proto\x1a%google/cloud/ces/v1/widget_tool.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa7\f\n" +
 	"\x04Tool\x12S\n" +
 	"\x0fclient_function\x18\x02 \x01(\v2#.google.cloud.ces.v1.ClientFunctionB\x03\xe0A\x01H\x00R\x0eclientFunction\x12K\n" +
 	"\ropen_api_tool\x18\x03 \x01(\v2 .google.cloud.ces.v1.OpenApiToolB\x03\xe0A\x01H\x00R\vopenApiTool\x12Z\n" +
@@ -385,10 +414,12 @@ const file_google_cloud_ces_v1_tool_proto_rawDesc = "" +
 	"\n" +
 	"agent_tool\x18\x17 \x01(\v2\x1e.google.cloud.ces.v1.AgentToolB\x03\xe0A\x01H\x00R\tagentTool\x12G\n" +
 	"\vwidget_tool\x18\x18 \x01(\v2\x1f.google.cloud.ces.v1.WidgetToolB\x03\xe0A\x01H\x00R\n" +
-	"widgetTool\x12\x17\n" +
+	"widgetTool\x12W\n" +
+	"\x11remote_agent_tool\x18\x19 \x01(\v2$.google.cloud.ces.v1.RemoteAgentToolB\x03\xe0A\x01H\x00R\x0fremoteAgentTool\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12&\n" +
 	"\fdisplay_name\x18\r \x01(\tB\x03\xe0A\x03R\vdisplayName\x12N\n" +
-	"\x0eexecution_type\x18\f \x01(\x0e2\".google.cloud.ces.v1.ExecutionTypeB\x03\xe0A\x01R\rexecutionType\x12@\n" +
+	"\x0eexecution_type\x18\f \x01(\x0e2\".google.cloud.ces.v1.ExecutionTypeB\x03\xe0A\x01R\rexecutionType\x128\n" +
+	"\atimeout\x18\x16 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\atimeout\x12@\n" +
 	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
 	"createTime\x12@\n" +
 	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
@@ -426,9 +457,11 @@ var file_google_cloud_ces_v1_tool_proto_goTypes = []any{
 	(*SystemTool)(nil),            // 9: google.cloud.ces.v1.SystemTool
 	(*AgentTool)(nil),             // 10: google.cloud.ces.v1.AgentTool
 	(*WidgetTool)(nil),            // 11: google.cloud.ces.v1.WidgetTool
-	(ExecutionType)(0),            // 12: google.cloud.ces.v1.ExecutionType
-	(*timestamppb.Timestamp)(nil), // 13: google.protobuf.Timestamp
-	(*ToolFakeConfig)(nil),        // 14: google.cloud.ces.v1.ToolFakeConfig
+	(*RemoteAgentTool)(nil),       // 12: google.cloud.ces.v1.RemoteAgentTool
+	(ExecutionType)(0),            // 13: google.cloud.ces.v1.ExecutionType
+	(*durationpb.Duration)(nil),   // 14: google.protobuf.Duration
+	(*timestamppb.Timestamp)(nil), // 15: google.protobuf.Timestamp
+	(*ToolFakeConfig)(nil),        // 16: google.cloud.ces.v1.ToolFakeConfig
 }
 var file_google_cloud_ces_v1_tool_proto_depIdxs = []int32{
 	1,  // 0: google.cloud.ces.v1.Tool.client_function:type_name -> google.cloud.ces.v1.ClientFunction
@@ -442,15 +475,17 @@ var file_google_cloud_ces_v1_tool_proto_depIdxs = []int32{
 	9,  // 8: google.cloud.ces.v1.Tool.system_tool:type_name -> google.cloud.ces.v1.SystemTool
 	10, // 9: google.cloud.ces.v1.Tool.agent_tool:type_name -> google.cloud.ces.v1.AgentTool
 	11, // 10: google.cloud.ces.v1.Tool.widget_tool:type_name -> google.cloud.ces.v1.WidgetTool
-	12, // 11: google.cloud.ces.v1.Tool.execution_type:type_name -> google.cloud.ces.v1.ExecutionType
-	13, // 12: google.cloud.ces.v1.Tool.create_time:type_name -> google.protobuf.Timestamp
-	13, // 13: google.cloud.ces.v1.Tool.update_time:type_name -> google.protobuf.Timestamp
-	14, // 14: google.cloud.ces.v1.Tool.tool_fake_config:type_name -> google.cloud.ces.v1.ToolFakeConfig
-	15, // [15:15] is the sub-list for method output_type
-	15, // [15:15] is the sub-list for method input_type
-	15, // [15:15] is the sub-list for extension type_name
-	15, // [15:15] is the sub-list for extension extendee
-	0,  // [0:15] is the sub-list for field type_name
+	12, // 11: google.cloud.ces.v1.Tool.remote_agent_tool:type_name -> google.cloud.ces.v1.RemoteAgentTool
+	13, // 12: google.cloud.ces.v1.Tool.execution_type:type_name -> google.cloud.ces.v1.ExecutionType
+	14, // 13: google.cloud.ces.v1.Tool.timeout:type_name -> google.protobuf.Duration
+	15, // 14: google.cloud.ces.v1.Tool.create_time:type_name -> google.protobuf.Timestamp
+	15, // 15: google.cloud.ces.v1.Tool.update_time:type_name -> google.protobuf.Timestamp
+	16, // 16: google.cloud.ces.v1.Tool.tool_fake_config:type_name -> google.cloud.ces.v1.ToolFakeConfig
+	17, // [17:17] is the sub-list for method output_type
+	17, // [17:17] is the sub-list for method input_type
+	17, // [17:17] is the sub-list for extension type_name
+	17, // [17:17] is the sub-list for extension extendee
+	0,  // [0:17] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_ces_v1_tool_proto_init() }
@@ -458,6 +493,7 @@ func file_google_cloud_ces_v1_tool_proto_init() {
 	if File_google_cloud_ces_v1_tool_proto != nil {
 		return
 	}
+	file_google_cloud_ces_v1_agent_card_proto_init()
 	file_google_cloud_ces_v1_agent_tool_proto_init()
 	file_google_cloud_ces_v1_client_function_proto_init()
 	file_google_cloud_ces_v1_common_proto_init()
@@ -483,6 +519,7 @@ func file_google_cloud_ces_v1_tool_proto_init() {
 		(*Tool_SystemTool)(nil),
 		(*Tool_AgentTool)(nil),
 		(*Tool_WidgetTool)(nil),
+		(*Tool_RemoteAgentTool)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
