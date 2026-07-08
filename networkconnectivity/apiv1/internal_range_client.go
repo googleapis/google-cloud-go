@@ -31,6 +31,7 @@ import (
 	networkconnectivitypb "cloud.google.com/go/networkconnectivity/apiv1/networkconnectivitypb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -505,8 +506,12 @@ func (c *internalRangeGRPCClient) CreateInternalRange(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkconnectivity.CreateInternalRangeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateInternalRangeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -528,8 +533,12 @@ func (c *internalRangeGRPCClient) UpdateInternalRange(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkconnectivity.UpdateInternalRangeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateInternalRangeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -554,8 +563,12 @@ func (c *internalRangeGRPCClient) DeleteInternalRange(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkconnectivity.DeleteInternalRangeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteInternalRangeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -809,7 +822,7 @@ func (c *internalRangeGRPCClient) ListOperations(ctx context.Context, req *longr
 // The name must be that of a previously created CreateInternalRangeOperation, possibly from a different process.
 func (c *internalRangeGRPCClient) CreateInternalRangeOperation(name string) *CreateInternalRangeOperation {
 	return &CreateInternalRangeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkconnectivity.CreateInternalRangeOperation"),
 	}
 }
 
@@ -817,7 +830,7 @@ func (c *internalRangeGRPCClient) CreateInternalRangeOperation(name string) *Cre
 // The name must be that of a previously created DeleteInternalRangeOperation, possibly from a different process.
 func (c *internalRangeGRPCClient) DeleteInternalRangeOperation(name string) *DeleteInternalRangeOperation {
 	return &DeleteInternalRangeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkconnectivity.DeleteInternalRangeOperation"),
 	}
 }
 
@@ -825,6 +838,6 @@ func (c *internalRangeGRPCClient) DeleteInternalRangeOperation(name string) *Del
 // The name must be that of a previously created UpdateInternalRangeOperation, possibly from a different process.
 func (c *internalRangeGRPCClient) UpdateInternalRangeOperation(name string) *UpdateInternalRangeOperation {
 	return &UpdateInternalRangeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkconnectivity.UpdateInternalRangeOperation"),
 	}
 }

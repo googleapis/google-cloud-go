@@ -33,6 +33,7 @@ import (
 	resourcemanagerpb "cloud.google.com/go/resourcemanager/apiv3/resourcemanagerpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -869,8 +870,12 @@ func (c *projectsGRPCClient) CreateProject(ctx context.Context, req *resourceman
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*resourcemanager.CreateProjectOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateProjectOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -892,8 +897,12 @@ func (c *projectsGRPCClient) UpdateProject(ctx context.Context, req *resourceman
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*resourcemanager.UpdateProjectOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateProjectOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -918,8 +927,12 @@ func (c *projectsGRPCClient) MoveProject(ctx context.Context, req *resourcemanag
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*resourcemanager.MoveProjectOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &MoveProjectOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -944,8 +957,12 @@ func (c *projectsGRPCClient) DeleteProject(ctx context.Context, req *resourceman
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*resourcemanager.DeleteProjectOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteProjectOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -970,8 +987,12 @@ func (c *projectsGRPCClient) UndeleteProject(ctx context.Context, req *resourcem
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*resourcemanager.UndeleteProjectOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UndeleteProjectOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1365,8 +1386,12 @@ func (c *projectsRESTClient) CreateProject(ctx context.Context, req *resourceman
 	}
 
 	override := fmt.Sprintf("/v3/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*resourcemanager.CreateProjectOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateProjectOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1441,8 +1466,12 @@ func (c *projectsRESTClient) UpdateProject(ctx context.Context, req *resourceman
 	}
 
 	override := fmt.Sprintf("/v3/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*resourcemanager.UpdateProjectOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateProjectOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1520,8 +1549,12 @@ func (c *projectsRESTClient) MoveProject(ctx context.Context, req *resourcemanag
 	}
 
 	override := fmt.Sprintf("/v3/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*resourcemanager.MoveProjectOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &MoveProjectOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1612,8 +1645,12 @@ func (c *projectsRESTClient) DeleteProject(ctx context.Context, req *resourceman
 	}
 
 	override := fmt.Sprintf("/v3/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*resourcemanager.DeleteProjectOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteProjectOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1686,8 +1723,12 @@ func (c *projectsRESTClient) UndeleteProject(ctx context.Context, req *resourcem
 	}
 
 	override := fmt.Sprintf("/v3/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*resourcemanager.UndeleteProjectOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UndeleteProjectOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1982,7 +2023,7 @@ func (c *projectsRESTClient) GetOperation(ctx context.Context, req *longrunningp
 // The name must be that of a previously created CreateProjectOperation, possibly from a different process.
 func (c *projectsGRPCClient) CreateProjectOperation(name string) *CreateProjectOperation {
 	return &CreateProjectOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*resourcemanager.CreateProjectOperation"),
 	}
 }
 
@@ -1991,7 +2032,7 @@ func (c *projectsGRPCClient) CreateProjectOperation(name string) *CreateProjectO
 func (c *projectsRESTClient) CreateProjectOperation(name string) *CreateProjectOperation {
 	override := fmt.Sprintf("/v3/%s", name)
 	return &CreateProjectOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*resourcemanager.CreateProjectOperation"),
 		pollPath: override,
 	}
 }
@@ -2000,7 +2041,7 @@ func (c *projectsRESTClient) CreateProjectOperation(name string) *CreateProjectO
 // The name must be that of a previously created DeleteProjectOperation, possibly from a different process.
 func (c *projectsGRPCClient) DeleteProjectOperation(name string) *DeleteProjectOperation {
 	return &DeleteProjectOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*resourcemanager.DeleteProjectOperation"),
 	}
 }
 
@@ -2009,7 +2050,7 @@ func (c *projectsGRPCClient) DeleteProjectOperation(name string) *DeleteProjectO
 func (c *projectsRESTClient) DeleteProjectOperation(name string) *DeleteProjectOperation {
 	override := fmt.Sprintf("/v3/%s", name)
 	return &DeleteProjectOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*resourcemanager.DeleteProjectOperation"),
 		pollPath: override,
 	}
 }
@@ -2018,7 +2059,7 @@ func (c *projectsRESTClient) DeleteProjectOperation(name string) *DeleteProjectO
 // The name must be that of a previously created MoveProjectOperation, possibly from a different process.
 func (c *projectsGRPCClient) MoveProjectOperation(name string) *MoveProjectOperation {
 	return &MoveProjectOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*resourcemanager.MoveProjectOperation"),
 	}
 }
 
@@ -2027,7 +2068,7 @@ func (c *projectsGRPCClient) MoveProjectOperation(name string) *MoveProjectOpera
 func (c *projectsRESTClient) MoveProjectOperation(name string) *MoveProjectOperation {
 	override := fmt.Sprintf("/v3/%s", name)
 	return &MoveProjectOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*resourcemanager.MoveProjectOperation"),
 		pollPath: override,
 	}
 }
@@ -2036,7 +2077,7 @@ func (c *projectsRESTClient) MoveProjectOperation(name string) *MoveProjectOpera
 // The name must be that of a previously created UndeleteProjectOperation, possibly from a different process.
 func (c *projectsGRPCClient) UndeleteProjectOperation(name string) *UndeleteProjectOperation {
 	return &UndeleteProjectOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*resourcemanager.UndeleteProjectOperation"),
 	}
 }
 
@@ -2045,7 +2086,7 @@ func (c *projectsGRPCClient) UndeleteProjectOperation(name string) *UndeleteProj
 func (c *projectsRESTClient) UndeleteProjectOperation(name string) *UndeleteProjectOperation {
 	override := fmt.Sprintf("/v3/%s", name)
 	return &UndeleteProjectOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*resourcemanager.UndeleteProjectOperation"),
 		pollPath: override,
 	}
 }
@@ -2054,7 +2095,7 @@ func (c *projectsRESTClient) UndeleteProjectOperation(name string) *UndeleteProj
 // The name must be that of a previously created UpdateProjectOperation, possibly from a different process.
 func (c *projectsGRPCClient) UpdateProjectOperation(name string) *UpdateProjectOperation {
 	return &UpdateProjectOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*resourcemanager.UpdateProjectOperation"),
 	}
 }
 
@@ -2063,7 +2104,7 @@ func (c *projectsGRPCClient) UpdateProjectOperation(name string) *UpdateProjectO
 func (c *projectsRESTClient) UpdateProjectOperation(name string) *UpdateProjectOperation {
 	override := fmt.Sprintf("/v3/%s", name)
 	return &UpdateProjectOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*resourcemanager.UpdateProjectOperation"),
 		pollPath: override,
 	}
 }

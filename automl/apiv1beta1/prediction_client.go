@@ -32,6 +32,7 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -481,8 +482,12 @@ func (c *predictionGRPCClient) BatchPredict(ctx context.Context, req *automlpb.B
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*automl.BatchPredictOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &BatchPredictOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -650,8 +655,12 @@ func (c *predictionRESTClient) BatchPredict(ctx context.Context, req *automlpb.B
 	}
 
 	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*automl.BatchPredictOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &BatchPredictOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -660,7 +669,7 @@ func (c *predictionRESTClient) BatchPredict(ctx context.Context, req *automlpb.B
 // The name must be that of a previously created BatchPredictOperation, possibly from a different process.
 func (c *predictionGRPCClient) BatchPredictOperation(name string) *BatchPredictOperation {
 	return &BatchPredictOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*automl.BatchPredictOperation"),
 	}
 }
 
@@ -669,7 +678,7 @@ func (c *predictionGRPCClient) BatchPredictOperation(name string) *BatchPredictO
 func (c *predictionRESTClient) BatchPredictOperation(name string) *BatchPredictOperation {
 	override := fmt.Sprintf("/v1beta1/%s", name)
 	return &BatchPredictOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*automl.BatchPredictOperation"),
 		pollPath: override,
 	}
 }

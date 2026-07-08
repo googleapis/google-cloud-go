@@ -32,6 +32,7 @@ import (
 	retailpb "cloud.google.com/go/retail/apiv2/retailpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -465,8 +466,12 @@ func (c *analyticsGRPCClient) ExportAnalyticsMetrics(ctx context.Context, req *r
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*retail.ExportAnalyticsMetricsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportAnalyticsMetricsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -600,8 +605,12 @@ func (c *analyticsRESTClient) ExportAnalyticsMetrics(ctx context.Context, req *r
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*retail.ExportAnalyticsMetricsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportAnalyticsMetricsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -748,7 +757,7 @@ func (c *analyticsRESTClient) ListOperations(ctx context.Context, req *longrunni
 // The name must be that of a previously created ExportAnalyticsMetricsOperation, possibly from a different process.
 func (c *analyticsGRPCClient) ExportAnalyticsMetricsOperation(name string) *ExportAnalyticsMetricsOperation {
 	return &ExportAnalyticsMetricsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*retail.ExportAnalyticsMetricsOperation"),
 	}
 }
 
@@ -757,7 +766,7 @@ func (c *analyticsGRPCClient) ExportAnalyticsMetricsOperation(name string) *Expo
 func (c *analyticsRESTClient) ExportAnalyticsMetricsOperation(name string) *ExportAnalyticsMetricsOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &ExportAnalyticsMetricsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*retail.ExportAnalyticsMetricsOperation"),
 		pollPath: override,
 	}
 }

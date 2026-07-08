@@ -32,6 +32,7 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -492,8 +493,12 @@ func (c *workflowsServiceV2BetaGRPCClient) RunPipeline(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*lifesciences.RunPipelineOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RunPipelineOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -727,8 +732,12 @@ func (c *workflowsServiceV2BetaRESTClient) RunPipeline(ctx context.Context, req 
 	}
 
 	override := fmt.Sprintf("/v2beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*lifesciences.RunPipelineOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RunPipelineOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1075,7 +1084,7 @@ func (c *workflowsServiceV2BetaRESTClient) ListOperations(ctx context.Context, r
 // The name must be that of a previously created RunPipelineOperation, possibly from a different process.
 func (c *workflowsServiceV2BetaGRPCClient) RunPipelineOperation(name string) *RunPipelineOperation {
 	return &RunPipelineOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*lifesciences.RunPipelineOperation"),
 	}
 }
 
@@ -1084,7 +1093,7 @@ func (c *workflowsServiceV2BetaGRPCClient) RunPipelineOperation(name string) *Ru
 func (c *workflowsServiceV2BetaRESTClient) RunPipelineOperation(name string) *RunPipelineOperation {
 	override := fmt.Sprintf("/v2beta/%s", name)
 	return &RunPipelineOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*lifesciences.RunPipelineOperation"),
 		pollPath: override,
 	}
 }
