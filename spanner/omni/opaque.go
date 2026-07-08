@@ -316,16 +316,21 @@ func diffieHellman(privateKey, publicKey []byte) ([]byte, error) {
 // recoverClient recovers the client's export key and private key from the envelope.
 func recoverClient(username string, randomizedPassword, envelopeNonce, authTag, serverPublicKey []byte) (exportKey, clientPrivateKey []byte, err error) {
 	var authKey, seed []byte
+	var derivedExportKey, derivedClientPrivateKey []byte
 	defer func() {
 		clear(authKey)
 		clear(seed)
+		if err != nil {
+			clear(derivedExportKey)
+			clear(derivedClientPrivateKey)
+		}
 	}()
 
 	authKey, err = expand(randomizedPassword, slices.Concat(envelopeNonce, []byte(authKeyInfo)), sha256.Size)
 	if err != nil {
 		return nil, nil, err
 	}
-	exportKey, err = expand(randomizedPassword, slices.Concat(envelopeNonce, []byte(exportKeyInfo)), sha256.Size)
+	derivedExportKey, err = expand(randomizedPassword, slices.Concat(envelopeNonce, []byte(exportKeyInfo)), sha256.Size)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -333,7 +338,7 @@ func recoverClient(username string, randomizedPassword, envelopeNonce, authTag, 
 	if err != nil {
 		return nil, nil, err
 	}
-	_, clientPrivateKey, err = deriveKeyPair(seed, []byte(diffieHellmanKeyInfo))
+	_, derivedClientPrivateKey, err = deriveKeyPair(seed, []byte(diffieHellmanKeyInfo))
 	if err != nil {
 		return nil, nil, err
 	}
@@ -341,7 +346,7 @@ func recoverClient(username string, randomizedPassword, envelopeNonce, authTag, 
 	if len(authTag) != len(expectedTag) || subtle.ConstantTimeCompare(expectedTag, authTag) != 1 {
 		return nil, nil, fmt.Errorf("auth tag mismatch")
 	}
-	return exportKey, clientPrivateKey, nil
+	return derivedExportKey, derivedClientPrivateKey, nil
 }
 
 // finalize computes the OPRF output.
@@ -360,6 +365,7 @@ func finalize(blind []byte, evaluatedMessage []byte) ([]byte, error) {
 	inversedBlind := new(big.Int).Exp(privateKey, orderMinusTwo, order)
 	bytesInversedBlind := make([]byte, 32)
 	inversedBlind.FillBytes(bytesInversedBlind)
+	defer clear(bytesInversedBlind)
 	oprf, err := evaluatedElement.ScalarMult(evaluatedElement, bytesInversedBlind)
 	if err != nil {
 		return nil, err
@@ -380,6 +386,7 @@ func deriveKeyPair(seed, info []byte) (publicKey, privateKey []byte, err error) 
 	}
 	pubKey, err := p.ScalarMult(p, privateKey)
 	if err != nil {
+		clear(privateKey)
 		return nil, nil, err
 	}
 	return pubKey.BytesCompressed(), privateKey, nil
@@ -397,10 +404,9 @@ func randomOracleSha256(x []byte, max *big.Int) ([]byte, error) {
 	hashOutput := big.NewInt(0)
 	for i := 1; i <= iterCount; i++ {
 		hashOutput = hashOutput.Lsh(hashOutput, uint(hashOutputLength))
-		bignumBytes := slices.Concat(big.NewInt(int64(i)).Bytes(), x)
+		bignumBytes := slices.Concat([]byte{byte(i)}, x)
 		hashedString := sha256Hash(bignumBytes)
-		newBigNum := big.NewInt(0)
-		newBigNum.SetBytes(hashedString)
+		newBigNum := new(big.Int).SetBytes(hashedString)
 		hashOutput = hashOutput.Add(hashOutput, newBigNum)
 	}
 	hashOutput = hashOutput.Rsh(hashOutput, excessBitCount)
@@ -433,6 +439,7 @@ func blind(plaintext []byte) (publicKey, privateKey []byte, err error) {
 	scalarInt.FillBytes(scalar)
 	point, err = point.ScalarMult(point, scalar)
 	if err != nil {
+		clear(scalar)
 		return nil, nil, err
 	}
 	return point.BytesCompressed(), scalar, nil
