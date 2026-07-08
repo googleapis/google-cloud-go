@@ -32,6 +32,8 @@ import (
 	"time"
 
 	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
+	metrics "cloud.google.com/go/bigtable/internal/metrics"
+	"cloud.google.com/go/bigtable/internal/metricstest"
 	"cloud.google.com/go/internal/testutil"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"go.opentelemetry.io/otel"
@@ -73,12 +75,12 @@ var (
 	})
 
 	testHeaderMD = &metadata.MD{
-		locationMDKey:     []string{string(testHeaders)},
-		serverTimingMDKey: []string{"gfet4t7; dur=1234"},
+		metrics.LocationMDKey:     []string{string(testHeaders)},
+		metrics.ServerTimingMDKey: []string{"gfet4t7; dur=1234"},
 	}
 	testTrailerMD = &metadata.MD{
-		locationMDKey:     []string{string(testTrailers)},
-		serverTimingMDKey: []string{"gfet4t7; dur=5678"},
+		metrics.LocationMDKey:     []string{string(testTrailers)},
+		metrics.ServerTimingMDKey: []string{"gfet4t7; dur=5678"},
 	}
 
 	sleepDurationForTest = 200 * time.Millisecond // Used in ReadRowsWithDelay
@@ -89,8 +91,8 @@ var (
 func ReadRowsWithDelay(_ any, stream btpb.Bigtable_ReadRowsServer) error {
 	// 1. Send headers immediately
 	if err := stream.SendHeader(metadata.MD{
-		serverTimingMDKey: []string{"gfet4t7; dur=10"}, // Small initial server latency
-		locationMDKey:     []string{string(testHeaders)},
+		metrics.ServerTimingMDKey: []string{"gfet4t7; dur=10"}, // Small initial server latency
+		metrics.LocationMDKey:     []string{string(testHeaders)},
 	}); err != nil {
 		return err
 	}
@@ -151,7 +153,7 @@ func setupFakeServerWithCustomHandler(projectID, instanceID string, cfg ClientCo
 		return nil, nil, fmt.Errorf("failed to start bttest server: %w", err)
 	}
 
-	conn, err := grpc.Dial(rawGrpcServer.Addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock(), grpc.WithStatsHandler(sharedLatencyStatsHandler))
+	conn, err := grpc.Dial(rawGrpcServer.Addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock(), grpc.WithStatsHandler(metrics.SharedStatsHandler))
 	if err != nil {
 		rawGrpcServer.Close()
 		return nil, nil, fmt.Errorf("failed to dial test server: %w", err)
@@ -177,22 +179,11 @@ func setupFakeServerWithCustomHandler(projectID, instanceID string, cfg ClientCo
 	return tbl, cleanup, nil
 }
 
-func equalErrs(gotErr error, wantErr error) bool {
-	if gotErr == nil && wantErr == nil {
-		return true
-	}
-	if gotErr == nil || wantErr == nil {
-		return false
-	}
-	return strings.Contains(gotErr.Error(), wantErr.Error())
-}
-
-// readRowsWithAppBlockingDelayLogic implements the core logic for a ReadRows RPC that introduces
 // sendTwoRowsHandler is a simple server-side stream handler that sends two predefined rows.
 func sendTwoRowsHandler(_ any, stream btpb.Bigtable_ReadRowsServer) error {
 	// 1. Send headers immediately
 	if err := stream.SendHeader(metadata.MD{
-		locationMDKey: []string{string(testHeaders)}, // Send cluster/zone info
+		metrics.LocationMDKey: []string{string(testHeaders)}, // Send cluster/zone info
 	}); err != nil {
 		return err
 	}
@@ -237,39 +228,40 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 	clientUID := "test-uid"
 
 	wantMetricNamesStdout := []string{
-		metricNameAttemptLatencies, metricNameAttemptLatencies,
-		metricNameFirstRespLatencies,
-		metricNameConnErrCount, metricNameConnErrCount,
-		metricNameOperationLatencies,
-		metricNameRetryCount,
-		metricNameServerLatencies,
-		metricNameClientBlockingLatencies, metricNameClientBlockingLatencies,
-		metricNameAppBlockingLatencies,
+		metrics.MetricNameAttemptLatencies, metrics.MetricNameAttemptLatencies,
+		metrics.MetricNameAttemptLatencies2, metrics.MetricNameAttemptLatencies2,
+		metrics.MetricNameFirstRespLatencies,
+		metrics.MetricNameConnErrCount, metrics.MetricNameConnErrCount,
+		metrics.MetricNameOperationLatencies,
+		metrics.MetricNameRetryCount,
+		metrics.MetricNameServerLatencies,
+		metrics.MetricNameClientBlockingLatencies, metrics.MetricNameClientBlockingLatencies,
+		metrics.MetricNameAppBlockingLatencies,
 	}
 	wantMetricTypesGCM := []string{}
 	for _, wantMetricName := range wantMetricNamesStdout {
-		wantMetricTypesGCM = append(wantMetricTypesGCM, builtInMetricsMeterName+wantMetricName)
+		wantMetricTypesGCM = append(wantMetricTypesGCM, metrics.BuiltInMetricsMeterName+wantMetricName)
 	}
 	sort.Strings(wantMetricTypesGCM)
 
 	// Reduce sampling period to reduce test run time
-	origSamplePeriod := defaultSamplePeriod
-	defaultSamplePeriod = 500 * time.Millisecond
+	origSamplePeriod := metrics.DefaultSamplePeriod
+	metrics.DefaultSamplePeriod = 500 * time.Millisecond
 	defer func() {
-		defaultSamplePeriod = origSamplePeriod
+		metrics.DefaultSamplePeriod = origSamplePeriod
 	}()
 
 	// return constant client UID instead of random, so that attributes can be compared
-	origGenerateClientUID := generateClientUID
-	generateClientUID = func() (string, error) {
+	origGenerateClientUID := metrics.GenerateClientUID
+	metrics.GenerateClientUID = func() (string, error) {
 		return clientUID, nil
 	}
 	defer func() {
-		generateClientUID = origGenerateClientUID
+		metrics.GenerateClientUID = origGenerateClientUID
 	}()
 
 	// Setup mock monitoring server
-	monitoringServer, err := NewMetricTestServer()
+	monitoringServer, err := metricstest.NewServer()
 	if err != nil {
 		t.Fatalf("Error setting up metrics test server")
 	}
@@ -277,8 +269,8 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 	defer monitoringServer.Shutdown()
 
 	// Override exporter options
-	origCreateExporterOptions := createExporterOptions
-	createExporterOptions = func(opts ...option.ClientOption) []option.ClientOption {
+	origCreateExporterOptions := metrics.CreateExporterOptions
+	metrics.CreateExporterOptions = func(opts ...option.ClientOption) []option.ClientOption {
 		return []option.ClientOption{
 			option.WithEndpoint(monitoringServer.Endpoint), // Connect to mock
 			option.WithoutAuthentication(),
@@ -286,7 +278,7 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 		}
 	}
 	defer func() {
-		createExporterOptions = origCreateExporterOptions
+		metrics.CreateExporterOptions = origCreateExporterOptions
 	}()
 
 	// Setup fake Bigtable server
@@ -304,8 +296,8 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 
 			// Send server headers
 			header := metadata.New(map[string]string{
-				serverTimingMDKey: "gfet4t7; dur=123",
-				locationMDKey:     string(testHeaders),
+				metrics.ServerTimingMDKey: "gfet4t7; dur=123",
+				metrics.LocationMDKey:     string(testHeaders),
 			})
 			ss.SendHeader(header)
 		}
@@ -326,11 +318,11 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 			wantBuiltinEnabled:     true,
 			wantCreateTSCallsCount: 2,
 			wantClientAttributes: []attribute.KeyValue{
-				attribute.String(monitoredResLabelKeyProject, project),
-				attribute.String(monitoredResLabelKeyInstance, instance),
-				attribute.String(metricLabelKeyAppProfile, appProfile),
-				attribute.String(metricLabelKeyClientUID, clientUID),
-				attribute.String(metricLabelKeyClientName, clientName),
+				attribute.String(metrics.MetricLabelKeyProject, project),
+				attribute.String(metrics.MetricLabelKeyInstance, instance),
+				attribute.String(metrics.MetricLabelKeyAppProfile, appProfile),
+				attribute.String(metrics.MetricLabelKeyClientUID, clientUID),
+				attribute.String(metrics.MetricLabelKeyClientName, metrics.ClientName()),
 			},
 		},
 		{
@@ -360,24 +352,17 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 
 			gotClient := tbl.c
 
-			if gotClient.metricsTracerFactory.enabled != test.wantBuiltinEnabled {
-				t.Errorf("builtinEnabled: got: %v, want: %v", gotClient.metricsTracerFactory.enabled, test.wantBuiltinEnabled)
+			if gotClient.metricsTracerFactory.Enabled != test.wantBuiltinEnabled {
+				t.Errorf("builtinEnabled: got: %v, want: %v", gotClient.metricsTracerFactory.Enabled, test.wantBuiltinEnabled)
 			}
 
-			if !equalsKeyValue(gotClient.metricsTracerFactory.clientAttributes, test.wantClientAttributes) {
-				t.Errorf("clientAttributes: got: %+v, want: %+v", gotClient.metricsTracerFactory.clientAttributes, test.wantClientAttributes)
+			if !equalsKeyValue(gotClient.metricsTracerFactory.ClientAttributes(), test.wantClientAttributes) {
+				t.Errorf("clientAttributes: got: %+v, want: %+v", gotClient.metricsTracerFactory.ClientAttributes(), test.wantClientAttributes)
 			}
 
 			// Check instruments
-			gotNonNilInstruments := gotClient.metricsTracerFactory.operationLatencies != nil &&
-				gotClient.metricsTracerFactory.serverLatencies != nil &&
-				gotClient.metricsTracerFactory.attemptLatencies != nil &&
-				gotClient.metricsTracerFactory.appBlockingLatencies != nil &&
-				gotClient.metricsTracerFactory.firstRespLatencies != nil &&
-				gotClient.metricsTracerFactory.retryCount != nil &&
-				gotClient.metricsTracerFactory.connErrCount != nil
-			if test.wantBuiltinEnabled != gotNonNilInstruments {
-				t.Errorf("NonNilInstruments: got: %v, want: %v", gotNonNilInstruments, test.wantBuiltinEnabled)
+			if got := gotClient.metricsTracerFactory.HasInstruments(); got != test.wantBuiltinEnabled {
+				t.Errorf("NonNilInstruments: got: %v, want: %v", got, test.wantBuiltinEnabled)
 			}
 
 			// record start time
@@ -420,9 +405,9 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 
 			// Calculate elapsed time
 			elapsedTime := time.Since(testStartTime)
-			if elapsedTime < 3*defaultSamplePeriod {
+			if elapsedTime < 3*metrics.DefaultSamplePeriod {
 				// Ensure at least 2 datapoints are recorded
-				time.Sleep(3*defaultSamplePeriod - elapsedTime)
+				time.Sleep(3*metrics.DefaultSamplePeriod - elapsedTime)
 			}
 
 			// Get new CreateServiceTimeSeriesRequests
@@ -434,21 +419,21 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 					gotMetricTypes = append(gotMetricTypes, ts.Metric.Type)
 
 					// Assert "streaming" metric label is correct
-					gotStreaming, gotStreamingExists := ts.Metric.Labels[metricLabelKeyStreamingOperation]
+					gotStreaming, gotStreamingExists := ts.Metric.Labels[metrics.MetricLabelKeyStreamingOperation]
 					splitMetricType := strings.Split(ts.Metric.Type, "/")
 					internalMetricName := splitMetricType[len(splitMetricType)-1] // server_latencies
-					wantStreamingExists := slices.Contains(metricsDetails[internalMetricName].additionalAttrs, metricLabelKeyStreamingOperation)
+					wantStreamingExists := slices.Contains(metrics.MetricsDetails[internalMetricName].AdditionalAttrs(), metrics.MetricLabelKeyStreamingOperation)
 					if wantStreamingExists && (!gotStreamingExists || gotStreaming != "true") {
-						t.Errorf("Metric label key: %s, value: got: %v, want: %v", metricLabelKeyStreamingOperation, gotStreaming, "true")
+						t.Errorf("Metric label key: %s, value: got: %v, want: %v", metrics.MetricLabelKeyStreamingOperation, gotStreaming, "true")
 					}
 					if !wantStreamingExists && gotStreamingExists {
-						t.Errorf("Metric label key: %s exists, value: got: %v, want: %v", metricLabelKeyStreamingOperation, gotStreamingExists, wantStreamingExists)
+						t.Errorf("Metric label key: %s exists, value: got: %v, want: %v", metrics.MetricLabelKeyStreamingOperation, gotStreamingExists, wantStreamingExists)
 					}
 
 					// Assert "method" metric label is correct
 					wantMethod := "Bigtable.ReadRows"
-					if gotLabel, ok := ts.Metric.Labels[metricLabelKeyMethod]; !ok || gotLabel != wantMethod {
-						t.Errorf("Metric label key: %s, value: got: %v, want: %v", metricLabelKeyMethod, gotLabel, wantMethod)
+					if gotLabel, ok := ts.Metric.Labels[metrics.MetricLabelKeyMethod]; !ok || gotLabel != wantMethod {
+						t.Errorf("Metric label key: %s, value: got: %v, want: %v", metrics.MetricLabelKeyMethod, gotLabel, wantMethod)
 					}
 				}
 				sort.Strings(gotMetricTypes)
@@ -472,14 +457,14 @@ func TestConnectivityErrorCount(t *testing.T) {
 	appProfile := "test-app-profile"
 
 	// Increase sampling period to simulate potential delays
-	origSamplePeriod := defaultSamplePeriod
-	defaultSamplePeriod = 500 * time.Millisecond
+	origSamplePeriod := metrics.DefaultSamplePeriod
+	metrics.DefaultSamplePeriod = 500 * time.Millisecond
 	defer func() {
-		defaultSamplePeriod = origSamplePeriod
+		metrics.DefaultSamplePeriod = origSamplePeriod
 	}()
 
 	// Setup mock monitoring server
-	monitoringServer, err := NewMetricTestServer()
+	monitoringServer, err := metricstest.NewServer()
 	if err != nil {
 		t.Fatalf("Error setting up metrics test server: %v", err)
 	}
@@ -487,8 +472,8 @@ func TestConnectivityErrorCount(t *testing.T) {
 	defer monitoringServer.Shutdown()
 
 	// Override exporter options to connect to the mock server
-	origCreateExporterOptions := createExporterOptions
-	createExporterOptions = func(opts ...option.ClientOption) []option.ClientOption {
+	origCreateExporterOptions := metrics.CreateExporterOptions
+	metrics.CreateExporterOptions = func(opts ...option.ClientOption) []option.ClientOption {
 		return []option.ClientOption{
 			option.WithEndpoint(monitoringServer.Endpoint),
 			option.WithoutAuthentication(),
@@ -496,7 +481,7 @@ func TestConnectivityErrorCount(t *testing.T) {
 		}
 	}
 	defer func() {
-		createExporterOptions = origCreateExporterOptions
+		metrics.CreateExporterOptions = origCreateExporterOptions
 	}()
 
 	// Control structure for mock server behavior during the specific ReadRows call.
@@ -516,7 +501,7 @@ func TestConnectivityErrorCount(t *testing.T) {
 				}
 				if currentTestAttempt == 2 {
 					header := metadata.New(map[string]string{
-						locationMDKey: string(testHeaders),
+						metrics.LocationMDKey: string(testHeaders),
 					})
 					if errH := ss.SendHeader(header); errH != nil {
 						t.Errorf("[ServerInterceptor Attempt 2] Error sending header: %v", errH)
@@ -573,7 +558,7 @@ func TestConnectivityErrorCount(t *testing.T) {
 	// Wait a bit for metrics to be exported. The defaultSamplePeriod is 500ms,
 	// so waiting slightly longer should be sufficient.
 	// If tests are flaky, this might need adjustment or a more sophisticated wait.
-	time.Sleep(defaultSamplePeriod + 200*time.Millisecond)
+	time.Sleep(metrics.DefaultSamplePeriod + 200*time.Millisecond)
 
 	var totalConnectivityErrorsFromMetrics int64
 	statusesReported := make(map[string]int64)
@@ -582,13 +567,13 @@ func TestConnectivityErrorCount(t *testing.T) {
 	exportedMetricBatches := monitoringServer.CreateServiceTimeSeriesRequests()
 	for _, batch := range exportedMetricBatches {
 		for _, ts := range batch.TimeSeries {
-			if strings.HasSuffix(ts.Metric.Type, metricNameConnErrCount) {
-				methodLabel, ok := ts.Metric.Labels[metricLabelKeyMethod]
+			if strings.HasSuffix(ts.Metric.Type, metrics.MetricNameConnErrCount) {
+				methodLabel, ok := ts.Metric.Labels[metrics.MetricLabelKeyMethod]
 				if !ok || methodLabel != "Bigtable.ReadRows" {
 					continue
 				}
 				foundConnErrMetricForTest = true
-				statusKey := ts.Metric.Labels[metricLabelKeyStatus]
+				statusKey := ts.Metric.Labels[metrics.MetricLabelKeyStatus]
 				for _, point := range ts.Points {
 					// Summing up values from points. For a counter, this is the delta.
 					// We expect each reported error to be a single point with a value of 1.
@@ -600,23 +585,23 @@ func TestConnectivityErrorCount(t *testing.T) {
 	}
 
 	if !foundConnErrMetricForTest {
-		t.Fatalf("Metric %s for method Bigtable.ReadRows was not found in exported metrics. Batches received: %+v", metricNameConnErrCount, exportedMetricBatches)
+		t.Fatalf("Metric %s for method Bigtable.ReadRows was not found in exported metrics. Batches received: %+v", metrics.MetricNameConnErrCount, exportedMetricBatches)
 	}
 
 	if statusesReported[codes.Unavailable.String()] != 1 {
 		t.Errorf("Metric %s for status %s: got cumulative value %d, want 1. All statuses: %v",
-			metricNameConnErrCount, codes.Unavailable.String(), statusesReported[codes.Unavailable.String()], statusesReported)
+			metrics.MetricNameConnErrCount, codes.Unavailable.String(), statusesReported[codes.Unavailable.String()], statusesReported)
 	}
 	if statusesReported[codes.Internal.String()] != 1 {
 		t.Errorf("Metric %s for status %s: got cumulative value %d, want 1. All statuses: %v",
-			metricNameConnErrCount, codes.Internal.String(), statusesReported[codes.Internal.String()], statusesReported)
+			metrics.MetricNameConnErrCount, codes.Internal.String(), statusesReported[codes.Internal.String()], statusesReported)
 	}
 
 	// The total connectivity errors should be 2.
 	// Attempt 2 (Unavailable, with location) should not increment the error count.
 	if totalConnectivityErrorsFromMetrics != 2 {
 		t.Errorf("Metric %s: got cumulative value %d, want 2. Statuses reported: %v",
-			metricNameConnErrCount, totalConnectivityErrorsFromMetrics, statusesReported)
+			metrics.MetricNameConnErrCount, totalConnectivityErrorsFromMetrics, statusesReported)
 	}
 }
 func setMockErrorHandler(t *testing.T, mockErrorHandler *MockErrorHandler) {
@@ -661,10 +646,10 @@ func TestExporterLogs(t *testing.T) {
 	instance := "test-instance"
 
 	// Reduce sampling period to reduce test run time
-	origSamplePeriod := defaultSamplePeriod
-	defaultSamplePeriod = 500 * time.Millisecond
+	origSamplePeriod := metrics.DefaultSamplePeriod
+	metrics.DefaultSamplePeriod = 500 * time.Millisecond
 	defer func() {
-		defaultSamplePeriod = origSamplePeriod
+		metrics.DefaultSamplePeriod = origSamplePeriod
 	}()
 
 	tbl, cleanup, gotErr := setupFakeServer(project, instance, ClientConfig{})
@@ -690,17 +675,17 @@ func TestExporterLogs(t *testing.T) {
 
 	// Calculate elapsed time
 	elapsedTime := time.Since(testStartTime)
-	if elapsedTime < 3*defaultSamplePeriod {
+	if elapsedTime < 3*metrics.DefaultSamplePeriod {
 		// Ensure at least 2 datapoints are recorded
-		time.Sleep(3*defaultSamplePeriod - elapsedTime)
+		time.Sleep(3*metrics.DefaultSamplePeriod - elapsedTime)
 	}
 
 	data, readErr := mer.read()
 	if readErr != nil {
 		t.Errorf("Failed to read errBuf: %v", readErr)
 	}
-	if !strings.Contains(data, metricsErrorPrefix) {
-		t.Errorf("Expected %v to contain %v", data, metricsErrorPrefix)
+	if !strings.Contains(data, metrics.MetricsErrorPrefix) {
+		t.Errorf("Expected %v to contain %v", data, metrics.MetricsErrorPrefix)
 	}
 }
 
@@ -726,44 +711,40 @@ func (m *MockErrorHandler) read() (string, error) {
 }
 
 func TestToOtelMetricAttrs(t *testing.T) {
-	mt := builtinMetricsTracer{
-		tableName:   "my-table",
-		method:      "ReadRows",
-		isStreaming: true,
-		currOp: opTracer{
-			status: canonicalString(codes.OK),
-			currAttempt: attemptTracer{
-				startTime: time.Now(),
-				clusterID: "my-cluster",
-				zoneID:    "my-zone",
-			},
-			attemptCount: 1,
-		},
+	// Build a tracer via the factory so the private fields are populated
+	// consistently. Then stamp the fields the test cares about.
+	factory := &metrics.Factory{Enabled: true}
+	mt := factory.CreateTracer(context.Background(), "my-table", true)
+	mt.SetMethod("ReadRows")
+	mt.SetCurrOpStatus(codes.OK)
+	att := mt.CurrAttempt()
+	if att != nil {
+		att.SetStartTime(time.Now())
+		att.SetClusterID("my-cluster")
+		att.SetZoneID("my-zone")
 	}
+
 	tests := []struct {
 		desc       string
-		mt         builtinMetricsTracer
 		metricName string
 		wantAttrs  []attribute.KeyValue
 		wantError  error
 	}{
 		{
 			desc:       "Known metric",
-			mt:         mt,
-			metricName: metricNameOperationLatencies,
+			metricName: metrics.MetricNameOperationLatencies,
 			wantAttrs: []attribute.KeyValue{
-				attribute.String(monitoredResLabelKeyTable, "my-table"),
-				attribute.String(metricLabelKeyMethod, "ReadRows"),
-				attribute.Bool(metricLabelKeyStreamingOperation, true),
-				attribute.String(metricLabelKeyStatus, canonicalString(codes.OK)),
-				attribute.String(monitoredResLabelKeyCluster, clusterID1),
-				attribute.String(monitoredResLabelKeyZone, zoneID1),
+				attribute.String(metrics.MetricLabelKeyTable, "my-table"),
+				attribute.String(metrics.MetricLabelKeyMethod, "ReadRows"),
+				attribute.Bool(metrics.MetricLabelKeyStreamingOperation, true),
+				attribute.String(metrics.MetricLabelKeyStatus, metrics.CanonicalString(codes.OK)),
+				attribute.String(metrics.MetricLabelKeyCluster, "my-cluster"),
+				attribute.String(metrics.MetricLabelKeyZone, "my-zone"),
 			},
 			wantError: nil,
 		},
 		{
 			desc:       "Unknown metric",
-			mt:         mt,
 			metricName: "unknown_metric",
 			wantAttrs:  []attribute.KeyValue{}, // Expect empty slice on error
 			wantError:  fmt.Errorf("unable to create attributes list for unknown metric: unknown_metric"),
@@ -773,7 +754,7 @@ func TestToOtelMetricAttrs(t *testing.T) {
 	lessKeyValue := func(a, b attribute.KeyValue) bool { return a.Key < b.Key }
 	for _, test := range tests {
 		t.Run(test.desc, func(t *testing.T) {
-			gotAttrSet, gotErr := test.mt.toOtelMetricAttrs(test.metricName)
+			gotAttrSet, gotErr := mt.ToOtelMetricAttrs(test.metricName)
 			if !equalErrs(gotErr, test.wantError) {
 				t.Errorf("error got: %v, want: %v", gotErr, test.wantError)
 			}
@@ -801,7 +782,7 @@ func TestCreateExporterOptionsFiltering(t *testing.T) {
 		audiencesOpt,
 	}
 
-	filteredOpts := createExporterOptions(inputOpts...)
+	filteredOpts := metrics.CreateExporterOptions(inputOpts...)
 
 	foundEndpointOpt := false
 	foundAPIKeyOpt := false
@@ -844,19 +825,19 @@ func TestFirstResponseLatencyWithDelayedStream(t *testing.T) {
 	clientUID := "test-uid-delayed"
 
 	// Reduce sampling period to reduce test run time
-	origSamplePeriod := defaultSamplePeriod
-	defaultSamplePeriod = 100 * time.Millisecond
+	origSamplePeriod := metrics.DefaultSamplePeriod
+	metrics.DefaultSamplePeriod = 100 * time.Millisecond
 	defer func() {
-		defaultSamplePeriod = origSamplePeriod
+		metrics.DefaultSamplePeriod = origSamplePeriod
 	}()
 
 	// return constant client UID instead of random, so that attributes can be compared
-	origGenerateClientUID := generateClientUID
-	generateClientUID = func() (string, error) {
+	origGenerateClientUID := metrics.GenerateClientUID
+	metrics.GenerateClientUID = func() (string, error) {
 		return clientUID, nil
 	}
 	defer func() {
-		generateClientUID = origGenerateClientUID
+		metrics.GenerateClientUID = origGenerateClientUID
 	}()
 
 	// Set up a mock error handler to swallow expected shutdown errors
@@ -868,7 +849,7 @@ func TestFirstResponseLatencyWithDelayedStream(t *testing.T) {
 	})
 
 	// Setup mock monitoring server
-	monitoringServer, err := NewMetricTestServer()
+	monitoringServer, err := metricstest.NewServer()
 	if err != nil {
 		t.Fatalf("Error setting up metrics test server: %v", err)
 	}
@@ -876,8 +857,8 @@ func TestFirstResponseLatencyWithDelayedStream(t *testing.T) {
 	defer monitoringServer.Shutdown()
 
 	// Override exporter options
-	origCreateExporterOptions := createExporterOptions
-	createExporterOptions = func(opts ...option.ClientOption) []option.ClientOption {
+	origCreateExporterOptions := metrics.CreateExporterOptions
+	metrics.CreateExporterOptions = func(opts ...option.ClientOption) []option.ClientOption {
 		return []option.ClientOption{
 			option.WithEndpoint(monitoringServer.Endpoint),
 			option.WithoutAuthentication(),
@@ -885,7 +866,7 @@ func TestFirstResponseLatencyWithDelayedStream(t *testing.T) {
 		}
 	}
 	defer func() {
-		createExporterOptions = origCreateExporterOptions
+		metrics.CreateExporterOptions = origCreateExporterOptions
 	}()
 
 	// Setup fake Bigtable server with delayed stream handler
@@ -915,7 +896,7 @@ func TestFirstResponseLatencyWithDelayedStream(t *testing.T) {
 
 	// Allow time for metrics to be exported
 	// Wait for at least 3 export cycles to be reasonably sure metrics are flushed.
-	time.Sleep(defaultSamplePeriod * 10)
+	time.Sleep(metrics.DefaultSamplePeriod * 10)
 
 	// Fetch and analyze metrics
 	requests := monitoringServer.CreateServiceTimeSeriesRequests()
@@ -931,15 +912,15 @@ func TestFirstResponseLatencyWithDelayedStream(t *testing.T) {
 		for _, ts := range req.TimeSeries {
 			metricType := ts.GetMetric().GetType()
 			// Check client UID label first
-			clientUIDLabel, ok := ts.GetMetric().GetLabels()[metricLabelKeyClientUID]
+			clientUIDLabel, ok := ts.GetMetric().GetLabels()[metrics.MetricLabelKeyClientUID]
 			if !ok || clientUIDLabel != clientUID {
 				// Metric does not match target client UID. Skipping
 				continue
 			}
 
-			wantStatus := canonicalString(codes.OK)
-			if strings.Contains(metricType, metricNameFirstRespLatencies) && ts.GetMetric().GetLabels()[metricLabelKeyStatus] != wantStatus {
-				t.Errorf("Incorrect status:  got: %v, want: %v", ts.GetMetric().GetLabels()[metricLabelKeyStatus], wantStatus)
+			wantStatus := metrics.CanonicalString(codes.OK)
+			if strings.Contains(metricType, metrics.MetricNameFirstRespLatencies) && ts.GetMetric().GetLabels()[metrics.MetricLabelKeyStatus] != wantStatus {
+				t.Errorf("Incorrect status:  got: %v, want: %v", ts.GetMetric().GetLabels()[metrics.MetricLabelKeyStatus], wantStatus)
 			}
 			// If we reach here, the metric belongs to our test client instance
 			foundMetricsForClientUID = append(foundMetricsForClientUID, metricType)
@@ -962,9 +943,9 @@ func TestFirstResponseLatencyWithDelayedStream(t *testing.T) {
 			}
 
 			// Already filtered by clientUID above.
-			if strings.HasSuffix(metricType, metricNameFirstRespLatencies) {
+			if strings.HasSuffix(metricType, metrics.MetricNameFirstRespLatencies) {
 				firstRespLatencyValue = distVal.GetMean()
-			} else if strings.HasSuffix(metricType, metricNameOperationLatencies) {
+			} else if strings.HasSuffix(metricType, metrics.MetricNameOperationLatencies) {
 				opLatencyValue = distVal.GetMean()
 			}
 		}
@@ -1024,19 +1005,19 @@ func TestApplicationLatencies(t *testing.T) {
 	const appProcessingDelay = 150 * time.Millisecond
 
 	// Reduce sampling period to reduce test run time
-	origSamplePeriod := defaultSamplePeriod
-	defaultSamplePeriod = 100 * time.Millisecond // Shorter for quicker metric export
+	origSamplePeriod := metrics.DefaultSamplePeriod
+	metrics.DefaultSamplePeriod = 100 * time.Millisecond // Shorter for quicker metric export
 	defer func() {
-		defaultSamplePeriod = origSamplePeriod
+		metrics.DefaultSamplePeriod = origSamplePeriod
 	}()
 
 	// return constant client UID instead of random, so that attributes can be compared
-	origGenerateClientUID := generateClientUID
-	generateClientUID = func() (string, error) {
+	origGenerateClientUID := metrics.GenerateClientUID
+	metrics.GenerateClientUID = func() (string, error) {
 		return clientUID, nil
 	}
 	defer func() {
-		generateClientUID = origGenerateClientUID
+		metrics.GenerateClientUID = origGenerateClientUID
 	}()
 
 	// Set up a mock error handler to swallow expected shutdown errors
@@ -1048,7 +1029,7 @@ func TestApplicationLatencies(t *testing.T) {
 	})
 
 	// Setup mock monitoring server
-	monitoringServer, err := NewMetricTestServer()
+	monitoringServer, err := metricstest.NewServer()
 	if err != nil {
 		t.Fatalf("Error setting up metrics test server: %v", err)
 	}
@@ -1056,8 +1037,8 @@ func TestApplicationLatencies(t *testing.T) {
 	defer monitoringServer.Shutdown()
 
 	// Override exporter options
-	origCreateExporterOptions := createExporterOptions
-	createExporterOptions = func(opts ...option.ClientOption) []option.ClientOption {
+	origCreateExporterOptions := metrics.CreateExporterOptions
+	metrics.CreateExporterOptions = func(opts ...option.ClientOption) []option.ClientOption {
 		return []option.ClientOption{
 			option.WithEndpoint(monitoringServer.Endpoint),
 			option.WithoutAuthentication(),
@@ -1065,7 +1046,7 @@ func TestApplicationLatencies(t *testing.T) {
 		}
 	}
 	defer func() {
-		createExporterOptions = origCreateExporterOptions
+		metrics.CreateExporterOptions = origCreateExporterOptions
 	}()
 
 	// Setup fake Bigtable server which returns 2 rows
@@ -1094,7 +1075,7 @@ func TestApplicationLatencies(t *testing.T) {
 	// Allow time for metrics to be exported
 	// Wait for at least 3 export cycles to be reasonably sure metrics are flushed.
 	// Increased sleep duration to see if it's a timing issue.
-	time.Sleep(defaultSamplePeriod * 10)
+	time.Sleep(metrics.DefaultSamplePeriod * 10)
 
 	// Fetch and analyze metrics
 	requests := monitoringServer.CreateServiceTimeSeriesRequests()
@@ -1103,7 +1084,7 @@ func TestApplicationLatencies(t *testing.T) {
 	}
 
 	foundAppLatencyMetric := false
-	expectedMetricType := builtInMetricsMeterName + metricNameAppBlockingLatencies
+	expectedMetricType := metrics.BuiltInMetricsMeterName + metrics.MetricNameAppBlockingLatencies
 	expectedTotalAppLatency := float64(rowsProcessed) * float64(appProcessingDelay/time.Millisecond)
 	epsilon := 50.0 // Epsilon in milliseconds, allow for some overhead
 
@@ -1112,7 +1093,7 @@ func TestApplicationLatencies(t *testing.T) {
 			metricType := ts.GetMetric().GetType()
 			metricLabels := ts.GetMetric().GetLabels()
 
-			if clientUIDLabel, ok := metricLabels[metricLabelKeyClientUID]; !ok || clientUIDLabel != clientUID {
+			if clientUIDLabel, ok := metricLabels[metrics.MetricLabelKeyClientUID]; !ok || clientUIDLabel != clientUID {
 				continue // Not for this client
 			}
 
@@ -1139,17 +1120,17 @@ func TestApplicationLatencies(t *testing.T) {
 				}
 
 				// Assert standard labels
-				if method, ok := metricLabels[metricLabelKeyMethod]; !ok || method != "Bigtable.ReadRows" {
-					t.Errorf("Label %s: got %v, want Bigtable.ReadRows", metricLabelKeyMethod, method)
+				if method, ok := metricLabels[metrics.MetricLabelKeyMethod]; !ok || method != "Bigtable.ReadRows" {
+					t.Errorf("Label %s: got %v, want Bigtable.ReadRows", metrics.MetricLabelKeyMethod, method)
 				}
 
 				// Assert streaming label is not present (as per metricsDetails)
-				if _, exists := metricLabels[metricLabelKeyStreamingOperation]; exists {
-					t.Errorf("Label %s should not be present for %s", metricLabelKeyStreamingOperation, expectedMetricType)
+				if _, exists := metricLabels[metrics.MetricLabelKeyStreamingOperation]; exists {
+					t.Errorf("Label %s should not be present for %s", metrics.MetricLabelKeyStreamingOperation, expectedMetricType)
 				}
 				resLabels := ts.GetResource().GetLabels()
-				if tblName, ok := resLabels[monitoredResLabelKeyTable]; (ok && tblName != tableID && tblName != "") || !ok {
-					t.Errorf("Label %s: got %q, want %q for resource %s", monitoredResLabelKeyTable, tblName, tableID, ts.GetResource())
+				if tblName, ok := resLabels[metrics.MetricLabelKeyTable]; (ok && tblName != tableID && tblName != "") || !ok {
+					t.Errorf("Label %s: got %q, want %q for resource %s", metrics.MetricLabelKeyTable, tblName, tableID, ts.GetResource())
 				}
 			}
 		}
@@ -1172,7 +1153,7 @@ func TestCanonicalString(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		got := canonicalString(test.code)
+		got := metrics.CanonicalString(test.code)
 		if got != test.want {
 			t.Errorf("canonicalString(%v) = %q, want %q", test.code, got, test.want)
 		}
@@ -1190,35 +1171,35 @@ func TestFallbackT4T7Latency(t *testing.T) {
 	const serverDelay = 150 * time.Millisecond
 
 	// Reduce sampling period to reduce test run time
-	origSamplePeriod := defaultSamplePeriod
-	defaultSamplePeriod = 100 * time.Millisecond
-	defer func() { defaultSamplePeriod = origSamplePeriod }()
+	origSamplePeriod := metrics.DefaultSamplePeriod
+	metrics.DefaultSamplePeriod = 100 * time.Millisecond
+	defer func() { metrics.DefaultSamplePeriod = origSamplePeriod }()
 
-	origGenerateClientUID := generateClientUID
-	generateClientUID = func() (string, error) { return clientUID, nil }
-	defer func() { generateClientUID = origGenerateClientUID }()
+	origGenerateClientUID := metrics.GenerateClientUID
+	metrics.GenerateClientUID = func() (string, error) { return clientUID, nil }
+	defer func() { metrics.GenerateClientUID = origGenerateClientUID }()
 
 	mer := &MockErrorHandler{buffer: new(bytes.Buffer)}
 	origErrHandler := otel.GetErrorHandler()
 	otel.SetErrorHandler(mer)
 	t.Cleanup(func() { otel.SetErrorHandler(origErrHandler) })
 
-	monitoringServer, err := NewMetricTestServer()
+	monitoringServer, err := metricstest.NewServer()
 	if err != nil {
 		t.Fatalf("Error setting up metrics test server: %v", err)
 	}
 	go monitoringServer.Serve()
 	defer monitoringServer.Shutdown()
 
-	origCreateExporterOptions := createExporterOptions
-	createExporterOptions = func(opts ...option.ClientOption) []option.ClientOption {
+	origCreateExporterOptions := metrics.CreateExporterOptions
+	metrics.CreateExporterOptions = func(opts ...option.ClientOption) []option.ClientOption {
 		return []option.ClientOption{
 			option.WithEndpoint(monitoringServer.Endpoint),
 			option.WithoutAuthentication(),
 			option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
 		}
 	}
-	defer func() { createExporterOptions = origCreateExporterOptions }()
+	defer func() { metrics.CreateExporterOptions = origCreateExporterOptions }()
 
 	// Custom handler that delays the response and intentionally omits the server-timing header
 	handler := func(_ any, stream btpb.Bigtable_ReadRowsServer) error {
@@ -1226,7 +1207,7 @@ func TestFallbackT4T7Latency(t *testing.T) {
 
 		// Send the headers, but completely OMIT the serverTimingMDKey
 		if err := stream.SendHeader(metadata.MD{
-			locationMDKey: []string{string(testHeaders)},
+			metrics.LocationMDKey: []string{string(testHeaders)},
 		}); err != nil {
 			return err
 		}
@@ -1255,7 +1236,7 @@ func TestFallbackT4T7Latency(t *testing.T) {
 		t.Fatalf("ReadRows failed: %v", readErr)
 	}
 
-	time.Sleep(defaultSamplePeriod * 5)
+	time.Sleep(metrics.DefaultSamplePeriod * 5)
 
 	requests := monitoringServer.CreateServiceTimeSeriesRequests()
 	foundMetric := false
@@ -1263,11 +1244,11 @@ func TestFallbackT4T7Latency(t *testing.T) {
 	for _, req := range requests {
 		for _, ts := range req.TimeSeries {
 			metricType := ts.GetMetric().GetType()
-			if !strings.HasSuffix(metricType, metricNameServerLatencies) {
+			if !strings.HasSuffix(metricType, metrics.MetricNameServerLatencies) {
 				continue
 			}
 
-			clientUIDLabel, ok := ts.GetMetric().GetLabels()[metricLabelKeyClientUID]
+			clientUIDLabel, ok := ts.GetMetric().GetLabels()[metrics.MetricLabelKeyClientUID]
 			if !ok || clientUIDLabel != clientUID {
 				continue
 			}
@@ -1296,7 +1277,7 @@ func TestFallbackT4T7Latency(t *testing.T) {
 	}
 
 	if !foundMetric {
-		t.Fatalf("Failed to find metric %s for client UID %s. The t4t7 fallback latency was not recorded.", metricNameServerLatencies, clientUID)
+		t.Fatalf("Failed to find metric %s for client UID %s. The t4t7 fallback latency was not recorded.", metrics.MetricNameServerLatencies, clientUID)
 	}
 }
 
@@ -1307,35 +1288,35 @@ func TestClientBlockingLatency(t *testing.T) {
 	appProfile := "test-app-profile-client-blocking"
 	clientUID := "test-uid-client-blocking"
 
-	origSamplePeriod := defaultSamplePeriod
-	defaultSamplePeriod = 100 * time.Millisecond
-	defer func() { defaultSamplePeriod = origSamplePeriod }()
+	origSamplePeriod := metrics.DefaultSamplePeriod
+	metrics.DefaultSamplePeriod = 100 * time.Millisecond
+	defer func() { metrics.DefaultSamplePeriod = origSamplePeriod }()
 
-	origGenerateClientUID := generateClientUID
-	generateClientUID = func() (string, error) { return clientUID, nil }
-	defer func() { generateClientUID = origGenerateClientUID }()
+	origGenerateClientUID := metrics.GenerateClientUID
+	metrics.GenerateClientUID = func() (string, error) { return clientUID, nil }
+	defer func() { metrics.GenerateClientUID = origGenerateClientUID }()
 
 	mer := &MockErrorHandler{buffer: new(bytes.Buffer)}
 	origErrHandler := otel.GetErrorHandler()
 	otel.SetErrorHandler(mer)
 	t.Cleanup(func() { otel.SetErrorHandler(origErrHandler) })
 
-	monitoringServer, err := NewMetricTestServer()
+	monitoringServer, err := metricstest.NewServer()
 	if err != nil {
 		t.Fatalf("Error setting up metrics test server: %v", err)
 	}
 	go monitoringServer.Serve()
 	defer monitoringServer.Shutdown()
 
-	origCreateExporterOptions := createExporterOptions
-	createExporterOptions = func(opts ...option.ClientOption) []option.ClientOption {
+	origCreateExporterOptions := metrics.CreateExporterOptions
+	metrics.CreateExporterOptions = func(opts ...option.ClientOption) []option.ClientOption {
 		return []option.ClientOption{
 			option.WithEndpoint(monitoringServer.Endpoint),
 			option.WithoutAuthentication(),
 			option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
 		}
 	}
-	defer func() { createExporterOptions = origCreateExporterOptions }()
+	defer func() { metrics.CreateExporterOptions = origCreateExporterOptions }()
 
 	tbl, cleanup, err := setupFakeServerWithCustomHandler(project, instance, ClientConfig{AppProfile: appProfile}, sendTwoRowsHandler)
 	defer cleanup()
@@ -1352,7 +1333,7 @@ func TestClientBlockingLatency(t *testing.T) {
 	}
 
 	// Allow time for metrics to be exported
-	time.Sleep(defaultSamplePeriod * 5)
+	time.Sleep(metrics.DefaultSamplePeriod * 5)
 
 	requests := monitoringServer.CreateServiceTimeSeriesRequests()
 	foundMetric := false
@@ -1360,11 +1341,11 @@ func TestClientBlockingLatency(t *testing.T) {
 	for _, req := range requests {
 		for _, ts := range req.TimeSeries {
 			metricType := ts.GetMetric().GetType()
-			if !strings.HasSuffix(metricType, metricNameClientBlockingLatencies) {
+			if !strings.HasSuffix(metricType, metrics.MetricNameClientBlockingLatencies) {
 				continue
 			}
 
-			clientUIDLabel, ok := ts.GetMetric().GetLabels()[metricLabelKeyClientUID]
+			clientUIDLabel, ok := ts.GetMetric().GetLabels()[metrics.MetricLabelKeyClientUID]
 			if !ok || clientUIDLabel != clientUID {
 				continue
 			}
@@ -1390,6 +1371,6 @@ func TestClientBlockingLatency(t *testing.T) {
 	}
 
 	if !foundMetric {
-		t.Fatalf("Failed to find metric %s for client UID %s", metricNameClientBlockingLatencies, clientUID)
+		t.Fatalf("Failed to find metric %s for client UID %s", metrics.MetricNameClientBlockingLatencies, clientUID)
 	}
 }
