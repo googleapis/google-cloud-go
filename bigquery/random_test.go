@@ -14,20 +14,19 @@
 
 package bigquery
 
-import (
-	"crypto/rand"
-	"encoding/hex"
-)
+import "testing"
 
-// Support for random values (typically job IDs and insert IDs).
-
-// For testing.
-var randomIDFn = randomID
-
-func randomID() string {
-	var b [16]byte
-	if _, err := rand.Read(b[:]); err != nil {
-		panic("bigquery: failed to generate random ID: " + err.Error())
+func TestRandomID(t *testing.T) {
+	// A very simplistic collision test.
+	colMap := make(map[string]struct{})
+	for i := 0; i < 50000; i++ {
+		id := randomID()
+		if len(id) != 32 {
+			t.Fatalf("anomalous ID len (%d): %q", len(id), id)
+		}
+		if _, ok := colMap[id]; ok {
+			t.Fatalf("collision on id: %q", id)
+		}
+		colMap[id] = struct{}{}
 	}
-	return hex.EncodeToString(b[:]) // 32 alphanumeric hex characters (e.g. "4a7f9c2d1e8b3a0f...")
 }
