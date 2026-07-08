@@ -78,6 +78,9 @@ func collectModFiles(rootDir string) ([]string, error) {
 	var paths []string
 
 	err := filepath.WalkDir(rootDir, func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
 		if !d.IsDir() && filepath.Base(path) == "go.mod" {
 			paths = append(paths, path)
 		}
