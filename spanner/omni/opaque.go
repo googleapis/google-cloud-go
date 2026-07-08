@@ -63,11 +63,11 @@ func newAuthenticator(username string, password []byte, hashParams *HashParamete
 		return nil, fmt.Errorf("expected non-nil Argon2IdParameters in HashParameters")
 	}
 	p := argon2Params.Argon2IdParameters
-	if p.IterationCount < 1 || p.IterationCount > 100 {
-		return nil, fmt.Errorf("invalid Argon2Id iteration count: %d (must be between 1 and 100)", p.IterationCount)
+	if p.IterationCount < 1 || p.IterationCount > 10 {
+		return nil, fmt.Errorf("invalid Argon2Id iteration count: %d (must be between 1 and 10)", p.IterationCount)
 	}
-	if p.MemoryUsage < 8 || p.MemoryUsage > 1024*1024 {
-		return nil, fmt.Errorf("invalid Argon2Id memory usage: %d (must be between 8 and 1048576 KB)", p.MemoryUsage)
+	if p.MemoryUsage < 8 || p.MemoryUsage > 64*1024 {
+		return nil, fmt.Errorf("invalid Argon2Id memory usage: %d (must be between 8 and 65536 KB)", p.MemoryUsage)
 	}
 	if p.Parallelism < 1 || p.Parallelism > 255 {
 		return nil, fmt.Errorf("invalid Argon2Id parallelism: %d (must be between 1 and 255)", p.Parallelism)
@@ -135,6 +135,16 @@ func (ua *userAuthenticator) FinalRequest(initialResp *LoginResponse) (*LoginReq
 	if len(ua.clientPublicKeyshare) == 0 || len(ua.clientNonce) == 0 || len(ua.clientPrivateKeyshare) == 0 {
 		return nil, fmt.Errorf("authenticator not initialized; InitialRequest must be called first")
 	}
+	defer func() {
+		if ua.blind != nil {
+			clear(ua.blind)
+			ua.blind = nil
+		}
+		if ua.clientPrivateKeyshare != nil {
+			clear(ua.clientPrivateKeyshare)
+			ua.clientPrivateKeyshare = nil
+		}
+	}()
 	opaqueResp := initialResp.GetOpaqueResponse().GetInitialResponse()
 	if opaqueResp == nil {
 		return nil, fmt.Errorf("expected initial opaque response")
@@ -165,19 +175,35 @@ func (ua *userAuthenticator) FinalRequest(initialResp *LoginResponse) (*LoginReq
 }
 
 func (ua *userAuthenticator) generateKe3(evaluatedElement, maskingNonce, maskedResponse, serverNonce, serverMac, serverPublicKeyshare []byte) (exportKey, clientMac []byte, err error) {
-	oprf, err := finalize(ua.blind, evaluatedElement)
+	var oprf, stretchedOprf, randomizedPassword, maskingKey, clientPrivateKey []byte
+	var dh1, dh2, dh3, inputKeyMaterial, km2, km3 []byte
+	defer func() {
+		clear(oprf)
+		clear(stretchedOprf)
+		clear(randomizedPassword)
+		clear(maskingKey)
+		clear(clientPrivateKey)
+		clear(dh1)
+		clear(dh2)
+		clear(dh3)
+		clear(inputKeyMaterial)
+		clear(km2)
+		clear(km3)
+	}()
+
+	oprf, err = finalize(ua.blind, evaluatedElement)
 	if err != nil {
 		return nil, nil, err
 	}
-	stretchedOprf, err := stretch(oprf, ua.argon2Params)
+	stretchedOprf, err = stretch(oprf, ua.argon2Params)
 	if err != nil {
 		return nil, nil, err
 	}
-	randomizedPassword, err := extract(slices.Concat(oprf, stretchedOprf))
+	randomizedPassword, err = extract(slices.Concat(oprf, stretchedOprf))
 	if err != nil {
 		return nil, nil, err
 	}
-	maskingKey, err := expand(randomizedPassword, []byte(maskingKeyInfo), sha256.Size)
+	maskingKey, err = expand(randomizedPassword, []byte(maskingKeyInfo), sha256.Size)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -198,25 +224,25 @@ func (ua *userAuthenticator) generateKe3(evaluatedElement, maskingNonce, maskedR
 	envelopeNonce := serializedEnvelope[publicKeyLength : publicKeyLength+nonceLength]
 	authTag := serializedEnvelope[publicKeyLength+nonceLength:]
 
-	exportKey, clientPrivateKey, err := recoverClient(ua.username, randomizedPassword, envelopeNonce, authTag, serverPublicKey)
+	exportKey, clientPrivateKey, err = recoverClient(ua.username, randomizedPassword, envelopeNonce, authTag, serverPublicKey)
 	if err != nil {
 		return nil, nil, err
 	}
-	dh1, err := diffieHellman(ua.clientPrivateKeyshare, serverPublicKeyshare)
+	dh1, err = diffieHellman(ua.clientPrivateKeyshare, serverPublicKeyshare)
 	if err != nil {
 		return nil, nil, err
 	}
-	dh2, err := diffieHellman(ua.clientPrivateKeyshare, serverPublicKey)
+	dh2, err = diffieHellman(ua.clientPrivateKeyshare, serverPublicKey)
 	if err != nil {
 		return nil, nil, err
 	}
-	dh3, err := diffieHellman(clientPrivateKey, serverPublicKeyshare)
+	dh3, err = diffieHellman(clientPrivateKey, serverPublicKeyshare)
 	if err != nil {
 		return nil, nil, err
 	}
-	inputKeyMaterial := slices.Concat(dh1, dh2, dh3)
+	inputKeyMaterial = slices.Concat(dh1, dh2, dh3)
 	preamble := ua.preamble(evaluatedElement, serverPublicKey, serverNonce, serverPublicKeyshare)
-	km2, km3, _, err := deriveSharedKeys(inputKeyMaterial, preamble)
+	km2, km3, _, err = deriveSharedKeys(inputKeyMaterial, preamble)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -278,7 +304,13 @@ func diffieHellman(privateKey, publicKey []byte) ([]byte, error) {
 
 // recoverClient recovers the client's export key and private key from the envelope.
 func recoverClient(username string, randomizedPassword, envelopeNonce, authTag, serverPublicKey []byte) (exportKey, clientPrivateKey []byte, err error) {
-	authKey, err := expand(randomizedPassword, slices.Concat(envelopeNonce, []byte(authKeyInfo)), sha256.Size)
+	var authKey, seed []byte
+	defer func() {
+		clear(authKey)
+		clear(seed)
+	}()
+
+	authKey, err = expand(randomizedPassword, slices.Concat(envelopeNonce, []byte(authKeyInfo)), sha256.Size)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -286,7 +318,7 @@ func recoverClient(username string, randomizedPassword, envelopeNonce, authTag, 
 	if err != nil {
 		return nil, nil, err
 	}
-	seed, err := expand(randomizedPassword, slices.Concat(envelopeNonce, []byte(privateKeyInfo)), sha256.Size)
+	seed, err = expand(randomizedPassword, slices.Concat(envelopeNonce, []byte(privateKeyInfo)), sha256.Size)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -310,10 +342,8 @@ func finalize(blind []byte, evaluatedMessage []byte) ([]byte, error) {
 	privateKey := new(big.Int).SetBytes(blind)
 	curve := elliptic.P256()
 	order := curve.Params().N
-	inversedBlind := new(big.Int)
-	if inversedBlind = inversedBlind.ModInverse(privateKey, order); inversedBlind == nil {
-		return nil, fmt.Errorf("failed to compute modular inverse of blind")
-	}
+	orderMinusTwo := new(big.Int).Sub(order, big.NewInt(2))
+	inversedBlind := new(big.Int).Exp(privateKey, orderMinusTwo, order)
 	bytesInversedBlind := make([]byte, 32)
 	inversedBlind.FillBytes(bytesInversedBlind)
 	oprf, err := evaluatedElement.ScalarMult(evaluatedElement, bytesInversedBlind)
