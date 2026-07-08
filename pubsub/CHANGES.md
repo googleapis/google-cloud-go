@@ -1,5 +1,12 @@
 # Changes
 
+## [1.50.4](https://github.com/googleapis/google-cloud-go/compare/pubsub/v1.50.3...pubsub/v1.50.4) (2026-07-08)
+
+
+### Bug Fixes
+
+* **pubsub:** Fix concurrent map write ([8fa634a](https://github.com/googleapis/google-cloud-go/commit/8fa634ae2975377077b84fe965e5c290d5584515))
+
 ## [1.50.3](https://github.com/googleapis/google-cloud-go/compare/pubsub/v1.50.2...pubsub/v1.50.3) (2026-07-07)
 
 
