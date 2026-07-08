@@ -775,7 +775,7 @@ func (m *multiRangeDownloaderManager) createNewSession(id int, readSpec *storage
 		newSession = session
 		firstResult = result
 		return nil
-	}, retry, true)
+	}, retry, true, withOperation("ReadObject"), withBucket(m.params.bucket), withObject(m.params.object))
 
 	if err != nil {
 		return nil, nil, err

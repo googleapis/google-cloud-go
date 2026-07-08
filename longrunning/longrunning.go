@@ -35,6 +35,7 @@ import (
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/trace"
+	grpccodes "google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/protoadapt"
@@ -190,9 +191,11 @@ func (op *Operation) waitWithInterval(ctx context.Context, resp protoadapt.Messa
 	tracer := otel.GetTracerProvider().Tracer("cloud.google.com/go")
 	ctx, span := tracer.Start(ctx, spanName, startOpts...)
 	defer span.End()
-	span.SetAttributes(attribute.String("gcp.resource.destination.id", op.Name()))
+	span.SetAttributes(
+		attribute.String("gcp.resource.destination.id", op.Name()),
+	)
 
-	err := op.wait(ctx, resp, &bo, sl, opts...)
+	err := op.waitTraced(ctx, resp, &bo, sl, opts...)
 	if err != nil {
 		span.SetStatus(codes.Error, err.Error())
 		span.RecordError(err)
@@ -214,6 +217,60 @@ func (op *Operation) wait(ctx context.Context, resp protoadapt.MessageV1, bo *ga
 		if err := sl(ctx, bo.Pause()); err != nil {
 			return err
 		}
+	}
+}
+
+func (op *Operation) waitTraced(ctx context.Context, resp protoadapt.MessageV1, bo *gax.Backoff, sl sleeper, opts ...gax.CallOption) error {
+	tracer := otel.GetTracerProvider().Tracer("cloud.google.com/go")
+	pollAttempt := 0
+
+	for {
+		pollAttempt++
+		pollSpanName := "*longrunning.OperationsClient.GetOperation"
+
+		pollCtx, pollSpan := tracer.Start(ctx, pollSpanName)
+		pollSpan.SetAttributes(
+			attribute.String("gcp.resource.destination.id", op.Name()),
+			attribute.Int("gcp.longrunning.poll_attempt_count", pollAttempt),
+		)
+
+		err := op.Poll(pollCtx, resp, opts...)
+
+		pollSpan.SetAttributes(attribute.Bool("gcp.longrunning.done", op.Done()))
+		if op.Done() {
+			var statusCode int
+			if err != nil {
+				if apiErr, ok := apierror.FromError(err); ok {
+					statusCode = int(apiErr.GRPCStatus().Code())
+				} else {
+					statusCode = int(grpccodes.Unknown)
+				}
+			}
+			pollSpan.SetAttributes(attribute.Int("gcp.longrunning.status_code", statusCode))
+		}
+
+		if err != nil {
+			pollSpan.SetStatus(codes.Error, err.Error())
+			pollSpan.RecordError(err)
+			pollSpan.End()
+			return err
+		}
+
+		pollSpan.End()
+
+		if op.Done() {
+			return nil
+		}
+
+		_, sleepSpan := tracer.Start(ctx, "LRO Sleep")
+		sleepErr := sl(ctx, bo.Pause())
+		if sleepErr != nil {
+			sleepSpan.SetStatus(codes.Error, sleepErr.Error())
+			sleepSpan.RecordError(sleepErr)
+			sleepSpan.End()
+			return sleepErr
+		}
+		sleepSpan.End()
 	}
 }
 

@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 language: go
-version: v0.22.0
+version: v0.25.0
 repo: googleapis/google-cloud-go
 sources:
   googleapis:
@@ -1080,7 +1080,7 @@ libraries:
     go:
       nested_module: v2
   - name: pubsub/v2
-    version: 2.6.0
+    version: 2.6.1
     apis:
       - path: google/pubsub/v1
         go:
