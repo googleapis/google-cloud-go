@@ -104,10 +104,6 @@ libraries:
     version: 1.12.0
     apis:
       - path: google/cloud/apigeeconnect/v1
-  - name: apigeeregistry
-    version: 1.0.0
-    apis:
-      - path: google/cloud/apigeeregistry/v1
   - name: apihub
     version: 1.0.0
     apis:
