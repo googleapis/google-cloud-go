@@ -30,16 +30,17 @@ func (t *Table) SampleRowKeys(ctx context.Context) ([]string, error) {
 
 	mt := t.newBuiltinMetricsTracer(ctx, true)
 	defer mt.recordOperationCompletion()
+	ctx = contextWithMetricsTracer(ctx, mt)
 
-	rowKeys, err := t.sampleRowKeys(ctx, mt)
+	rowKeys, err := t.sampleRowKeys(ctx)
 	statusCode, statusErr := convertToGrpcStatusErr(err)
 	mt.setCurrOpStatus(statusCode)
 	return rowKeys, statusErr
 }
 
-func (t *Table) sampleRowKeys(ctx context.Context, mt *builtinMetricsTracer) ([]string, error) {
+func (t *Table) sampleRowKeys(ctx context.Context) ([]string, error) {
 	var sampledRowKeys []string
-	err := gaxInvokeWithRecorder(ctx, mt, "SampleRowKeys", func(ctx context.Context, headerMD, trailerMD *metadata.MD, _ gax.CallSettings) error {
+	err := gaxInvokeWithRecorder(ctx, "SampleRowKeys", func(ctx context.Context, headerMD, trailerMD *metadata.MD, _ gax.CallSettings) error {
 		sampledRowKeys = nil
 		req := &btpb.SampleRowKeysRequest{
 			AppProfileId: t.c.appProfile,
