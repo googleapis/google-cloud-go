@@ -26,7 +26,7 @@ import (
 )
 
 var (
-	dir      = flag.String("dir", "", "the root directory to evaluate")
+	dir      = flag.String("dir", ".", "the root directory to evaluate")
 	enforced = flag.String("enforced_version", "", "go version string to be enforced")
 )
 
