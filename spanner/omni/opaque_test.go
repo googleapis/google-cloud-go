@@ -427,11 +427,20 @@ func TestNewAuthenticatorValidation(t *testing.T) {
 				},
 			},
 			{
-				name: "invalid Parallelism",
+				name: "invalid Parallelism zero",
 				params: &HashParameters_Argon2IdParameters{
 					IterationCount: 3,
 					MemoryUsage:    64 * 1024,
 					Parallelism:    0,
+					HashSize:       32,
+				},
+			},
+			{
+				name: "invalid Parallelism overflow",
+				params: &HashParameters_Argon2IdParameters{
+					IterationCount: 3,
+					MemoryUsage:    64 * 1024,
+					Parallelism:    256,
 					HashSize:       32,
 				},
 			},

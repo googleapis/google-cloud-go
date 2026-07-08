@@ -69,8 +69,8 @@ func newAuthenticator(username string, password []byte, hashParams *HashParamete
 	if p.MemoryUsage < 8 {
 		return nil, fmt.Errorf("invalid Argon2Id memory usage: %d", p.MemoryUsage)
 	}
-	if p.Parallelism < 1 {
-		return nil, fmt.Errorf("invalid Argon2Id parallelism: %d", p.Parallelism)
+	if p.Parallelism < 1 || p.Parallelism > 255 {
+		return nil, fmt.Errorf("invalid Argon2Id parallelism: %d (must be between 1 and 255)", p.Parallelism)
 	}
 	if p.HashSize < 1 {
 		return nil, fmt.Errorf("invalid Argon2Id hash size: %d", p.HashSize)
@@ -182,6 +182,9 @@ func (ua *userAuthenticator) generateKe3(evaluatedElement, maskingNonce, maskedR
 	}
 	publicKeyLength := len(ua.clientPublicKeyshare)
 	nonceLength := len(ua.clientNonce)
+	if len(serializedEnvelope) < publicKeyLength+nonceLength {
+		return nil, nil, fmt.Errorf("invalid serialized envelope length: got %d, want at least %d", len(serializedEnvelope), publicKeyLength+nonceLength)
+	}
 	serverPublicKey := serializedEnvelope[:publicKeyLength]
 	envelopeNonce := serializedEnvelope[publicKeyLength : publicKeyLength+nonceLength]
 	authTag := serializedEnvelope[publicKeyLength+nonceLength:]
@@ -210,7 +213,7 @@ func (ua *userAuthenticator) generateKe3(evaluatedElement, maskingNonce, maskedR
 	}
 	hashedPreamble := sha256Hash(preamble)
 	expectedServerMac := mac(km2, hashedPreamble[:])
-	if subtle.ConstantTimeCompare(expectedServerMac, serverMac) != 1 {
+	if len(serverMac) != len(expectedServerMac) || subtle.ConstantTimeCompare(expectedServerMac, serverMac) != 1 {
 		return nil, nil, fmt.Errorf("server mac mismatch")
 	}
 	clientMac = mac(km3, sha256Hash(slices.Concat(preamble, expectedServerMac)))
@@ -283,7 +286,7 @@ func recoverClient(username string, randomizedPassword, envelopeNonce, authTag, 
 		return nil, nil, err
 	}
 	expectedTag := mac(authKey, slices.Concat(envelopeNonce, serverPublicKey, []byte(username)))
-	if subtle.ConstantTimeCompare(expectedTag, authTag) != 1 {
+	if len(authTag) != len(expectedTag) || subtle.ConstantTimeCompare(expectedTag, authTag) != 1 {
 		return nil, nil, fmt.Errorf("auth tag mismatch")
 	}
 	return exportKey, clientPrivateKey, nil
