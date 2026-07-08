@@ -37,6 +37,8 @@ type internalWriter interface {
 	// CloseWithError terminates the write operation and sets its status.
 	// Note that CloseWithError always returns nil.
 	CloseWithError(error) error
+	// Set final object checksum for appendable objects
+	setAppendFinalCRC32C(*uint32)
 }
 
 // A Writer writes a Cloud Storage object.
@@ -203,6 +205,14 @@ type Writer struct {
 	// **Note:** This feature is currently experimental and its API surface may change
 	// in future releases. It is not yet recommended for production use.
 	ParallelUploadConfig ParallelUploadConfig
+
+	// AppendFinalCRC32C is the final object checksum to be used for the uploaded object
+	// when performing an append operation.
+	// This field has to be set on the writer before calling the close operation. If this field
+	// is not set, no checksum validation will be performed for the complete object.
+	// However, chunk level validation will be performed for all chunks if writer.DisableAutoChecksum
+	// is not set.
+	AppendFinalCRC32C *uint32
 
 	ctx context.Context
 	o   *ObjectHandle
@@ -389,6 +399,10 @@ func (w *Writer) Close() error {
 		if err := w.openWriter(); err != nil {
 			return w.markClosed(err)
 		}
+	}
+
+	if w.AppendFinalCRC32C != nil {
+		w.iw.setAppendFinalCRC32C(w.AppendFinalCRC32C)
 	}
 
 	if err := w.iw.Close(); err != nil {
