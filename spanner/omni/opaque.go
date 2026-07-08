@@ -63,17 +63,17 @@ func newAuthenticator(username string, password []byte, hashParams *HashParamete
 		return nil, fmt.Errorf("expected non-nil Argon2IdParameters in HashParameters")
 	}
 	p := argon2Params.Argon2IdParameters
-	if p.IterationCount < 1 {
-		return nil, fmt.Errorf("invalid Argon2Id iteration count: %d", p.IterationCount)
+	if p.IterationCount < 1 || p.IterationCount > 100 {
+		return nil, fmt.Errorf("invalid Argon2Id iteration count: %d (must be between 1 and 100)", p.IterationCount)
 	}
-	if p.MemoryUsage < 8 {
-		return nil, fmt.Errorf("invalid Argon2Id memory usage: %d", p.MemoryUsage)
+	if p.MemoryUsage < 8 || p.MemoryUsage > 1024*1024 {
+		return nil, fmt.Errorf("invalid Argon2Id memory usage: %d (must be between 8 and 1048576 KB)", p.MemoryUsage)
 	}
 	if p.Parallelism < 1 || p.Parallelism > 255 {
 		return nil, fmt.Errorf("invalid Argon2Id parallelism: %d (must be between 1 and 255)", p.Parallelism)
 	}
-	if p.HashSize < 1 {
-		return nil, fmt.Errorf("invalid Argon2Id hash size: %d", p.HashSize)
+	if p.HashSize < 1 || p.HashSize > 512 {
+		return nil, fmt.Errorf("invalid Argon2Id hash size: %d (must be between 1 and 512)", p.HashSize)
 	}
 	return &userAuthenticator{
 		username:     username,
@@ -88,6 +88,8 @@ func (ua *userAuthenticator) InitialRequest() (*LoginRequest, error) {
 	if err != nil {
 		return nil, err
 	}
+	clear(ua.password)
+	ua.password = nil
 	ua.blind = blind
 	clientNonce, err := nonce()
 	if err != nil {
@@ -352,7 +354,11 @@ func randomOracleSha256(x []byte, max *big.Int) ([]byte, error) {
 	}
 	hashOutput = hashOutput.Rsh(hashOutput, excessBitCount)
 	hashOutput = hashOutput.Mod(hashOutput, max)
-	scalarBytes := make([]byte, hashOutputLength/8)
+	scalarLen := hashOutputLength / 8
+	if maxLen := (max.BitLen() + 7) / 8; maxLen > scalarLen {
+		scalarLen = maxLen
+	}
+	scalarBytes := make([]byte, scalarLen)
 	hashOutput.FillBytes(scalarBytes)
 	return scalarBytes, nil
 }

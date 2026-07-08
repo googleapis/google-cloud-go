@@ -409,7 +409,7 @@ func TestNewAuthenticatorValidation(t *testing.T) {
 			params *HashParameters_Argon2IdParameters
 		}{
 			{
-				name: "invalid IterationCount",
+				name: "invalid IterationCount zero",
 				params: &HashParameters_Argon2IdParameters{
 					IterationCount: 0,
 					MemoryUsage:    64 * 1024,
@@ -418,10 +418,28 @@ func TestNewAuthenticatorValidation(t *testing.T) {
 				},
 			},
 			{
-				name: "invalid MemoryUsage",
+				name: "invalid IterationCount overflow",
+				params: &HashParameters_Argon2IdParameters{
+					IterationCount: 101,
+					MemoryUsage:    64 * 1024,
+					Parallelism:    4,
+					HashSize:       32,
+				},
+			},
+			{
+				name: "invalid MemoryUsage low",
 				params: &HashParameters_Argon2IdParameters{
 					IterationCount: 3,
 					MemoryUsage:    4,
+					Parallelism:    4,
+					HashSize:       32,
+				},
+			},
+			{
+				name: "invalid MemoryUsage overflow",
+				params: &HashParameters_Argon2IdParameters{
+					IterationCount: 3,
+					MemoryUsage:    1024*1024 + 1,
 					Parallelism:    4,
 					HashSize:       32,
 				},
@@ -445,12 +463,21 @@ func TestNewAuthenticatorValidation(t *testing.T) {
 				},
 			},
 			{
-				name: "invalid HashSize",
+				name: "invalid HashSize zero",
 				params: &HashParameters_Argon2IdParameters{
 					IterationCount: 3,
 					MemoryUsage:    64 * 1024,
 					Parallelism:    4,
 					HashSize:       0,
+				},
+			},
+			{
+				name: "invalid HashSize overflow",
+				params: &HashParameters_Argon2IdParameters{
+					IterationCount: 3,
+					MemoryUsage:    64 * 1024,
+					Parallelism:    4,
+					HashSize:       513,
 				},
 			},
 		}
