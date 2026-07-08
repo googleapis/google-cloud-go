@@ -575,7 +575,7 @@ func (mt *Tracer) RecordAttemptCompletion(attemptHeaderMD, attempTrailerMD metad
 	// on). Feeds the attempt_latencies2 metric only; other metrics stay on
 	// the classic label set. No-op when the header is absent.
 	if peerInfo, _ := extractPeerInfo(attemptHeaderMD, attempTrailerMD); peerInfo != nil {
-		mt.currOp.currAttempt.transportType = transportTypeName(peerInfo.GetTransportType())
+		mt.currOp.currAttempt.transportType = TransportTypeName(peerInfo.GetTransportType())
 		mt.currOp.currAttempt.transportRegion = peerInfo.GetApplicationFrontendRegion()
 		mt.currOp.currAttempt.transportZone = peerInfo.GetApplicationFrontendZone()
 		mt.currOp.currAttempt.transportSubZone = peerInfo.GetApplicationFrontendSubzone()
