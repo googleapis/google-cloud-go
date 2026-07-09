@@ -1900,6 +1900,7 @@ type readResponseDecoder struct {
 	msg         *storagepb.BidiReadObjectResponse // processed response message with all fields other than object data populated
 	dataOffsets map[int64]bufferSliceOffsets      // Map ReadId to the offsets of the object data for that ID in the message.
 	done        bool                              // true if the data has been completely read.
+	crcErrs     map[int64]error                   // Map ReadId to the CRC validation error if it failed.
 }
 
 type bufferSliceOffsets struct {
@@ -2027,6 +2028,51 @@ func (d *readResponseDecoder) readAndUpdateCRC(p []byte, readID int64, updateCRC
 	return n, true
 }
 
+func (d *readResponseDecoder) verifyChecksums() {
+	if d.msg == nil {
+		return
+	}
+	for _, dataRange := range d.msg.GetObjectDataRanges() {
+		checksummedData := dataRange.GetChecksummedData()
+		if checksummedData == nil || checksummedData.Crc32C == nil {
+			continue
+		}
+		readID := dataRange.GetReadRange().GetReadId()
+		offsets, ok := d.dataOffsets[readID]
+		wantCRC := *checksummedData.Crc32C
+		var gotCRC uint32
+
+		if ok {
+			for i := offsets.startBuf; i <= offsets.endBuf; i++ {
+				if i < 0 || i >= len(d.databufs) {
+					continue
+				}
+				databuf := d.databufs[i]
+				var start uint64
+				if i == offsets.startBuf {
+					start = min(offsets.startOff, uint64(databuf.Len()))
+				}
+				end := uint64(databuf.Len())
+				if i == offsets.endBuf {
+					end = min(offsets.endOff, end)
+				}
+				if start >= end {
+					continue
+				}
+				dataSlice := databuf.ReadOnlyData()[start:end]
+				gotCRC = crc32.Update(gotCRC, crc32cTable, dataSlice)
+			}
+		}
+
+		if gotCRC != wantCRC {
+			if d.crcErrs == nil {
+				d.crcErrs = make(map[int64]error)
+			}
+			d.crcErrs[readID] = fmt.Errorf("storage: bad CRC on chunk read: got %d, want %d", gotCRC, wantCRC)
+		}
+	}
+}
+
 func (d *readResponseDecoder) writeToAndUpdateCRC(w io.Writer, readID int64, updateCRC func([]byte)) (totalWritten int64, found bool, err error) {
 	// For a completely empty message, just return 0
 	if len(d.databufs) == 0 {
@@ -2042,6 +2088,9 @@ func (d *readResponseDecoder) writeToAndUpdateCRC(w io.Writer, readID int64, upd
 
 	// Loop from the current buffer to the ending buffer for this specific data range.
 	for i := offsets.currBuf; i <= offsets.endBuf; i++ {
+		if i < 0 || i >= len(d.databufs) {
+			continue
+		}
 		databuf := d.databufs[i]
 
 		// Determine the start and end of the data slice for the current buffer.

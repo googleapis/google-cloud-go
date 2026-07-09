@@ -54,6 +54,8 @@ type Server struct {
 	PingAndWarmFn func(context.Context, *btpb.PingAndWarmRequest) (*btpb.PingAndWarmResponse, error)
 	// ReadModifyWriteRowFn mocks ReadModifyWriteRow.
 	ReadModifyWriteRowFn func(context.Context, *btpb.ReadModifyWriteRowRequest) (*btpb.ReadModifyWriteRowResponse, error)
+	// GetClientConfigurationFn mocks GetClientConfiguration.
+	GetClientConfigurationFn func(context.Context, *btpb.GetClientConfigurationRequest) (*btpb.ClientConfiguration, error)
 }
 
 // NewServer creates a new Server.
@@ -138,6 +140,14 @@ func (s *Server) PingAndWarm(ctx context.Context, srv *btpb.PingAndWarmRequest) 
 func (s *Server) ReadModifyWriteRow(ctx context.Context, srv *btpb.ReadModifyWriteRowRequest) (*btpb.ReadModifyWriteRowResponse, error) {
 	if s.ReadModifyWriteRowFn != nil {
 		return s.ReadModifyWriteRowFn(ctx, srv)
+	}
+	return nil, status.Error(codes.Unimplemented, "unimplemented")
+}
+
+// GetClientConfiguration implements GetClientConfiguration of the BigtableServer interface.
+func (s *Server) GetClientConfiguration(ctx context.Context, req *btpb.GetClientConfigurationRequest) (*btpb.ClientConfiguration, error) {
+	if s.GetClientConfigurationFn != nil {
+		return s.GetClientConfigurationFn(ctx, req)
 	}
 	return nil, status.Error(codes.Unimplemented, "unimplemented")
 }

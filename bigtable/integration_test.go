@@ -41,6 +41,7 @@ import (
 
 	btapb "cloud.google.com/go/bigtable/admin/apiv2/adminpb"
 	"cloud.google.com/go/bigtable/bttest"
+	metrics "cloud.google.com/go/bigtable/internal/metrics"
 	"cloud.google.com/go/civil"
 	"cloud.google.com/go/iam"
 	"cloud.google.com/go/internal"
@@ -520,10 +521,10 @@ func TestIntegration_ExportBuiltInMetrics(t *testing.T) {
 		Nanos:   int32(testStartTime.Nanosecond()),
 	}
 
-	origSamplePeriod := defaultSamplePeriod
-	defaultSamplePeriod = 1 * time.Minute
+	origSamplePeriod := metrics.DefaultSamplePeriod
+	metrics.DefaultSamplePeriod = 1 * time.Minute
 	t.Cleanup(func() {
-		defaultSamplePeriod = origSamplePeriod
+		metrics.DefaultSamplePeriod = origSamplePeriod
 	})
 
 	ctx := context.Background()
@@ -579,10 +580,10 @@ func TestIntegration_ExportBuiltInMetrics(t *testing.T) {
 		t.Errorf("Failed to create metric client: %v", err)
 	}
 	metricNamesValidate := []string{
-		metricNameOperationLatencies,
-		metricNameAttemptLatencies,
-		metricNameServerLatencies,
-		metricNameFirstRespLatencies,
+		metrics.MetricNameOperationLatencies,
+		metrics.MetricNameAttemptLatencies,
+		metrics.MetricNameServerLatencies,
+		metrics.MetricNameFirstRespLatencies,
 	}
 
 	// Try for 5m with 10s sleep between retries
