@@ -2088,6 +2088,9 @@ func (d *readResponseDecoder) writeToAndUpdateCRC(w io.Writer, readID int64, upd
 
 	// Loop from the current buffer to the ending buffer for this specific data range.
 	for i := offsets.currBuf; i <= offsets.endBuf; i++ {
+		if i < 0 || i >= len(d.databufs) {
+			continue
+		}
 		databuf := d.databufs[i]
 
 		// Determine the start and end of the data slice for the current buffer.
