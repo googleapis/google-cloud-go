@@ -71,6 +71,7 @@
 //     failures + the handful of explicit "this is really wrong"
 //     observations. Everything else is lvl.Warn (recordDebugTag).
 //   - Adding a site = one new const in the catalog block + one call.
+
 package internal
 
 import (
