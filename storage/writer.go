@@ -41,9 +41,6 @@ type internalWriter interface {
 
 // A Writer writes a Cloud Storage object.
 type Writer struct {
-	// bytesWritten is the cumulative bytes written for request size metric.
-	bytesWritten int64
-
 	// ObjectAttrs are optional attributes to set on the object. Any attributes
 	// must be initialized before the first Write call. Nil or zero-valued
 	// attributes are ignored.
@@ -222,6 +219,9 @@ type Writer struct {
 	mu                sync.Mutex
 	err               error
 	setTakeoverOffset func(int64)
+
+	// bytesWritten is the cumulative bytes written for request size metric.
+	bytesWritten int64
 }
 
 func (w *Writer) wrapWriteError(n int, err error) (int, error) {
@@ -295,23 +295,23 @@ func (w *Writer) Write(p []byte) (int, error) {
 		if !w.opened {
 			// First time initialization: freeze the configuration to either PCU or standard.
 			if w.EnableParallelUpload {
-				var err error
 				if pcu, err = w.getOrInitPCU(); err != nil {
 					return 0, err
 				}
-				if pcu != nil {
-					n, err = pcu.write(p)
-					goto recorded
+			}
+			if pcu == nil {
+				if err = w.openWriter(); err != nil {
+					return 0, err
 				}
 			}
-			if err := w.openWriter(); err != nil {
-				return 0, err
-			}
 		}
-		n, err = w.iw.Write(p)
+		if pcu != nil {
+			n, err = pcu.write(p)
+		} else {
+			n, err = w.iw.Write(p)
+		}
 	}
 
-recorded:
 	if n > 0 {
 		atomic.AddInt64(&w.bytesWritten, int64(n))
 	}
@@ -377,7 +377,7 @@ func (w *Writer) Close() error {
 	if pcu != nil || (!w.opened && w.EnableParallelUpload) {
 		var err error
 		if pcu, err = w.getOrInitPCU(); err != nil {
-			return err
+			return w.markClosed(err)
 		}
 
 		if pcu != nil {
@@ -387,12 +387,12 @@ func (w *Writer) Close() error {
 
 	if !w.opened {
 		if err := w.openWriter(); err != nil {
-			return err
+			return w.markClosed(err)
 		}
 	}
 
 	if err := w.iw.Close(); err != nil {
-		return err
+		return w.markClosed(err)
 	}
 
 	<-w.donec
@@ -468,7 +468,6 @@ func (w *Writer) openWriter() (err error) {
 	if err != nil {
 		return err
 	}
-	w.ctx = params.ctx
 	w.opened = true
 	go w.monitorCancel()
 
