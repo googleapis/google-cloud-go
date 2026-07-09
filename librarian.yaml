@@ -34,7 +34,7 @@ tools:
 default:
   tag_format: '{name}/v{version}'
   go:
-    toolchain: go1.25.8
+    toolchain: go1.25.0
     default_enabled_generator_features:
       - F_open_telemetry_attributes
 libraries:
