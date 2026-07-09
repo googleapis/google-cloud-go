@@ -161,11 +161,14 @@ const (
 
 var (
 	// debugTagCounter is the OTel Int64Counter registered inside
-	// InitializeSessionMetrics. Nil until initialization runs (or if
-	// initialization was called with a nil meter provider) — every
-	// emission path nil-checks it, so the tracer is safe to call before
-	// InitializeSessionMetrics or in tests that don't wire OTel at all.
-	debugTagCounter metric.Int64Counter
+	// InitializeSessionMetrics. Held in an atomic.Value so the
+	// register-once write and the every-emission reads don't race on the
+	// two-word interface value. Empty (Load returns nil) until
+	// initialization runs (or if initialization was called with a nil
+	// meter provider) — every emission path checks the type assertion, so
+	// the tracer is safe to call before InitializeSessionMetrics or in
+	// tests that don't wire OTel at all.
+	debugTagCounter atomic.Value
 
 	// debugTagLevelFloor is the runtime-configurable floor. Emissions
 	// with level < floor are dropped without incrementing either the
@@ -220,7 +223,7 @@ func registerDebugTagCounter(meter metric.Meter) error {
 	if err != nil {
 		return fmt.Errorf("create debug_tags counter: %w", err)
 	}
-	debugTagCounter = c
+	debugTagCounter.Store(c)
 	return nil
 }
 
@@ -251,9 +254,9 @@ func recordDebugTagAt(level debugLevel, name string) {
 	if int32(level) < debugTagLevelFloor.Load() {
 		return
 	}
-	bumpDebugTagCountLocked(name)
-	if debugTagCounter != nil {
-		debugTagCounter.Add(context.Background(), 1,
+	bumpDebugTagCount(name)
+	if c, ok := debugTagCounter.Load().(metric.Int64Counter); ok && c != nil {
+		c.Add(context.Background(), 1,
 			metric.WithAttributes(attribute.String(debugTagAttrKey, name)))
 	}
 }
@@ -286,11 +289,13 @@ func assertDebugTagf(expr bool, name, format string, args ...interface{}) bool {
 	return false
 }
 
-// bumpDebugTagCountLocked increments the in-memory count for `name` and
+// bumpDebugTagCount increments the in-memory count for `name` and
 // stamps the emission timestamps. First-emission case creates the entry
 // under the write lock; subsequent emissions hit the RLock fast path
-// and only touch atomics on the stat.
-func bumpDebugTagCountLocked(name string) {
+// and only touch atomics on the stat. Handles its own locking — the
+// name is deliberately NOT "…Locked" (which by convention means the
+// caller holds the lock).
+func bumpDebugTagCount(name string) {
 	now := time.Now().UnixNano()
 	debugTagCountsMu.RLock()
 	s, ok := debugTagStats[name]
@@ -318,7 +323,6 @@ func bumpDebugTagCountLocked(name string) {
 // without paging.
 func DebugTags() []DebugTagSnapshot {
 	debugTagCountsMu.RLock()
-	defer debugTagCountsMu.RUnlock()
 	out := make([]DebugTagSnapshot, 0, len(debugTagStats))
 	for name, s := range debugTagStats {
 		out = append(out, DebugTagSnapshot{
@@ -328,6 +332,9 @@ func DebugTags() []DebugTagSnapshot {
 			LastSeen:  time.Unix(0, s.lastSeen.Load()),
 		})
 	}
+	debugTagCountsMu.RUnlock()
+	// Sort outside the lock — `out` is a local slice, and every field
+	// captured above is a value copy, so sorting touches no shared state.
 	sort.Slice(out, func(i, j int) bool {
 		return out[i].LastSeen.After(out[j].LastSeen)
 	})
