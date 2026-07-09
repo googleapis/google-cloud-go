@@ -22,7 +22,7 @@ jobs:
       with:
         go-version: 1.26.x
     - name: Validate go minimum version
-      id: modfiles
+      id: validate
       run: |
         go run internal/actions/cmd/modvalidate --enforced_version=1.25.0 --dir=${{ github.workspace }}
         
