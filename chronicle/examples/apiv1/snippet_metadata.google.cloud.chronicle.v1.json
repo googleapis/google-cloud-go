@@ -3123,6 +3123,602 @@
     {
       "clientMethod": {
         "client": {
+          "fullName": "google.cloud.chronicle.v1.FindingsRefinementClient",
+          "shortName": "FindingsRefinementClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.FindingsRefinementClient.CancelOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "CancelOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.CancelOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "CancelOperation"
+      },
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "FindingsRefinementClient/CancelOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_FindingsRefinementService_CancelOperation_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle CancelOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.FindingsRefinementClient",
+          "shortName": "FindingsRefinementClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.FindingsRefinementClient.ComputeAllFindingsRefinementActivities",
+        "method": {
+          "fullName": "google.cloud.chronicle.v1.FindingsRefinementService.ComputeAllFindingsRefinementActivities",
+          "service": {
+            "fullName": "google.cloud.chronicle.v1.FindingsRefinementService",
+            "shortName": "FindingsRefinementService"
+          },
+          "shortName": "ComputeAllFindingsRefinementActivities"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chroniclepb.ComputeAllFindingsRefinementActivitiesRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*chroniclepb.ComputeAllFindingsRefinementActivitiesResponse",
+        "shortName": "ComputeAllFindingsRefinementActivities"
+      },
+      "description": "ComputeAllFindingsRefinementActivities returns findings refinement activity for all findings refinements.",
+      "file": "FindingsRefinementClient/ComputeAllFindingsRefinementActivities/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_FindingsRefinementService_ComputeAllFindingsRefinementActivities_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle ComputeAllFindingsRefinementActivities Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.FindingsRefinementClient",
+          "shortName": "FindingsRefinementClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.FindingsRefinementClient.ComputeFindingsRefinementActivity",
+        "method": {
+          "fullName": "google.cloud.chronicle.v1.FindingsRefinementService.ComputeFindingsRefinementActivity",
+          "service": {
+            "fullName": "google.cloud.chronicle.v1.FindingsRefinementService",
+            "shortName": "FindingsRefinementService"
+          },
+          "shortName": "ComputeFindingsRefinementActivity"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chroniclepb.ComputeFindingsRefinementActivityRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*chroniclepb.ComputeFindingsRefinementActivityResponse",
+        "shortName": "ComputeFindingsRefinementActivity"
+      },
+      "description": "ComputeFindingsRefinementActivity returns findings refinement activity for a specific findings refinement.",
+      "file": "FindingsRefinementClient/ComputeFindingsRefinementActivity/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_FindingsRefinementService_ComputeFindingsRefinementActivity_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle ComputeFindingsRefinementActivity Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.FindingsRefinementClient",
+          "shortName": "FindingsRefinementClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.FindingsRefinementClient.CreateFindingsRefinement",
+        "method": {
+          "fullName": "google.cloud.chronicle.v1.FindingsRefinementService.CreateFindingsRefinement",
+          "service": {
+            "fullName": "google.cloud.chronicle.v1.FindingsRefinementService",
+            "shortName": "FindingsRefinementService"
+          },
+          "shortName": "CreateFindingsRefinement"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chroniclepb.CreateFindingsRefinementRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*chroniclepb.FindingsRefinement",
+        "shortName": "CreateFindingsRefinement"
+      },
+      "description": "CreateFindingsRefinement creates a new findings refinement.",
+      "file": "FindingsRefinementClient/CreateFindingsRefinement/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_FindingsRefinementService_CreateFindingsRefinement_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle CreateFindingsRefinement Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.FindingsRefinementClient",
+          "shortName": "FindingsRefinementClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.FindingsRefinementClient.DeleteOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "DeleteOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.DeleteOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteOperation"
+      },
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "FindingsRefinementClient/DeleteOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_FindingsRefinementService_DeleteOperation_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle DeleteOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.FindingsRefinementClient",
+          "shortName": "FindingsRefinementClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.FindingsRefinementClient.GetFindingsRefinement",
+        "method": {
+          "fullName": "google.cloud.chronicle.v1.FindingsRefinementService.GetFindingsRefinement",
+          "service": {
+            "fullName": "google.cloud.chronicle.v1.FindingsRefinementService",
+            "shortName": "FindingsRefinementService"
+          },
+          "shortName": "GetFindingsRefinement"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chroniclepb.GetFindingsRefinementRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*chroniclepb.FindingsRefinement",
+        "shortName": "GetFindingsRefinement"
+      },
+      "description": "GetFindingsRefinement gets a single findings refinement.",
+      "file": "FindingsRefinementClient/GetFindingsRefinement/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_FindingsRefinementService_GetFindingsRefinement_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle GetFindingsRefinement Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.FindingsRefinementClient",
+          "shortName": "FindingsRefinementClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.FindingsRefinementClient.GetFindingsRefinementDeployment",
+        "method": {
+          "fullName": "google.cloud.chronicle.v1.FindingsRefinementService.GetFindingsRefinementDeployment",
+          "service": {
+            "fullName": "google.cloud.chronicle.v1.FindingsRefinementService",
+            "shortName": "FindingsRefinementService"
+          },
+          "shortName": "GetFindingsRefinementDeployment"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chroniclepb.GetFindingsRefinementDeploymentRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*chroniclepb.FindingsRefinementDeployment",
+        "shortName": "GetFindingsRefinementDeployment"
+      },
+      "description": "GetFindingsRefinementDeployment gets a findings refinement deployment.",
+      "file": "FindingsRefinementClient/GetFindingsRefinementDeployment/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_FindingsRefinementService_GetFindingsRefinementDeployment_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle GetFindingsRefinementDeployment Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.FindingsRefinementClient",
+          "shortName": "FindingsRefinementClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.FindingsRefinementClient.GetOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "GetOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.GetOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "shortName": "GetOperation"
+      },
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "FindingsRefinementClient/GetOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_FindingsRefinementService_GetOperation_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle GetOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.FindingsRefinementClient",
+          "shortName": "FindingsRefinementClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.FindingsRefinementClient.ListAllFindingsRefinementDeployments",
+        "method": {
+          "fullName": "google.cloud.chronicle.v1.FindingsRefinementService.ListAllFindingsRefinementDeployments",
+          "service": {
+            "fullName": "google.cloud.chronicle.v1.FindingsRefinementService",
+            "shortName": "FindingsRefinementService"
+          },
+          "shortName": "ListAllFindingsRefinementDeployments"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chroniclepb.ListAllFindingsRefinementDeploymentsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "FindingsRefinementDeploymentIterator",
+        "shortName": "ListAllFindingsRefinementDeployments"
+      },
+      "description": "ListAllFindingsRefinementDeployments lists all findings refinement deployments.",
+      "file": "FindingsRefinementClient/ListAllFindingsRefinementDeployments/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_FindingsRefinementService_ListAllFindingsRefinementDeployments_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle ListAllFindingsRefinementDeployments Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.FindingsRefinementClient",
+          "shortName": "FindingsRefinementClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.FindingsRefinementClient.ListFindingsRefinements",
+        "method": {
+          "fullName": "google.cloud.chronicle.v1.FindingsRefinementService.ListFindingsRefinements",
+          "service": {
+            "fullName": "google.cloud.chronicle.v1.FindingsRefinementService",
+            "shortName": "FindingsRefinementService"
+          },
+          "shortName": "ListFindingsRefinements"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chroniclepb.ListFindingsRefinementsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "FindingsRefinementIterator",
+        "shortName": "ListFindingsRefinements"
+      },
+      "description": "ListFindingsRefinements lists a collection of findings refinements.",
+      "file": "FindingsRefinementClient/ListFindingsRefinements/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_FindingsRefinementService_ListFindingsRefinements_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle ListFindingsRefinements Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.FindingsRefinementClient",
+          "shortName": "FindingsRefinementClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.FindingsRefinementClient.ListOperations",
+        "method": {
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "ListOperations"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.ListOperationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "shortName": "ListOperations"
+      },
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "FindingsRefinementClient/ListOperations/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_FindingsRefinementService_ListOperations_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle ListOperations Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.FindingsRefinementClient",
+          "shortName": "FindingsRefinementClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.FindingsRefinementClient.UpdateFindingsRefinement",
+        "method": {
+          "fullName": "google.cloud.chronicle.v1.FindingsRefinementService.UpdateFindingsRefinement",
+          "service": {
+            "fullName": "google.cloud.chronicle.v1.FindingsRefinementService",
+            "shortName": "FindingsRefinementService"
+          },
+          "shortName": "UpdateFindingsRefinement"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chroniclepb.UpdateFindingsRefinementRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*chroniclepb.FindingsRefinement",
+        "shortName": "UpdateFindingsRefinement"
+      },
+      "description": "UpdateFindingsRefinement updates a findings refinement.",
+      "file": "FindingsRefinementClient/UpdateFindingsRefinement/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_FindingsRefinementService_UpdateFindingsRefinement_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle UpdateFindingsRefinement Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.FindingsRefinementClient",
+          "shortName": "FindingsRefinementClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.FindingsRefinementClient.UpdateFindingsRefinementDeployment",
+        "method": {
+          "fullName": "google.cloud.chronicle.v1.FindingsRefinementService.UpdateFindingsRefinementDeployment",
+          "service": {
+            "fullName": "google.cloud.chronicle.v1.FindingsRefinementService",
+            "shortName": "FindingsRefinementService"
+          },
+          "shortName": "UpdateFindingsRefinementDeployment"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chroniclepb.UpdateFindingsRefinementDeploymentRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*chroniclepb.FindingsRefinementDeployment",
+        "shortName": "UpdateFindingsRefinementDeployment"
+      },
+      "description": "UpdateFindingsRefinementDeployment updates a findings refinement deployment.",
+      "file": "FindingsRefinementClient/UpdateFindingsRefinementDeployment/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_FindingsRefinementService_UpdateFindingsRefinementDeployment_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle UpdateFindingsRefinementDeployment Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
           "fullName": "google.cloud.chronicle.v1.InstanceClient",
           "shortName": "InstanceClient"
         },

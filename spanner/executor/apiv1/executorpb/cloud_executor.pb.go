@@ -740,7 +740,9 @@ type QueryAction struct {
 	// The SQL string.
 	Sql string `protobuf:"bytes,1,opt,name=sql,proto3" json:"sql,omitempty"`
 	// Parameters for the SQL string.
-	Params        []*QueryAction_Parameter `protobuf:"bytes,2,rep,name=params,proto3" json:"params,omitempty"`
+	Params []*QueryAction_Parameter `protobuf:"bytes,2,rep,name=params,proto3" json:"params,omitempty"`
+	// Secure context parameters.
+	SecureContext map[string]*Value `protobuf:"bytes,3,rep,name=secure_context,json=secureContext,proto3" json:"secure_context,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -785,6 +787,13 @@ func (x *QueryAction) GetSql() string {
 func (x *QueryAction) GetParams() []*QueryAction_Parameter {
 	if x != nil {
 		return x.Params
+	}
+	return nil
+}
+
+func (x *QueryAction) GetSecureContext() map[string]*Value {
+	if x != nil {
+		return x.SecureContext
 	}
 	return nil
 }
@@ -5312,7 +5321,9 @@ func (x *BatchPartition) GetIndex() string {
 type ExecutePartitionAction struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Batch partition to execute on.
-	Partition     *BatchPartition `protobuf:"bytes,1,opt,name=partition,proto3" json:"partition,omitempty"`
+	Partition *BatchPartition `protobuf:"bytes,1,opt,name=partition,proto3" json:"partition,omitempty"`
+	// Secure context parameters.
+	SecureContext map[string]*Value `protobuf:"bytes,2,rep,name=secure_context,json=secureContext,proto3" json:"secure_context,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -5350,6 +5361,13 @@ func (*ExecutePartitionAction) Descriptor() ([]byte, []int) {
 func (x *ExecutePartitionAction) GetPartition() *BatchPartition {
 	if x != nil {
 		return x.Partition
+	}
+	return nil
+}
+
+func (x *ExecutePartitionAction) GetSecureContext() map[string]*Value {
+	if x != nil {
+		return x.SecureContext
 	}
 	return nil
 }
@@ -6731,7 +6749,7 @@ type MutationAction_InsertArgs struct {
 
 func (x *MutationAction_InsertArgs) Reset() {
 	*x = MutationAction_InsertArgs{}
-	mi := &file_google_spanner_executor_v1_cloud_executor_proto_msgTypes[75]
+	mi := &file_google_spanner_executor_v1_cloud_executor_proto_msgTypes[76]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6743,7 +6761,7 @@ func (x *MutationAction_InsertArgs) String() string {
 func (*MutationAction_InsertArgs) ProtoMessage() {}
 
 func (x *MutationAction_InsertArgs) ProtoReflect() protoreflect.Message {
-	mi := &file_google_spanner_executor_v1_cloud_executor_proto_msgTypes[75]
+	mi := &file_google_spanner_executor_v1_cloud_executor_proto_msgTypes[76]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6795,7 +6813,7 @@ type MutationAction_UpdateArgs struct {
 
 func (x *MutationAction_UpdateArgs) Reset() {
 	*x = MutationAction_UpdateArgs{}
-	mi := &file_google_spanner_executor_v1_cloud_executor_proto_msgTypes[76]
+	mi := &file_google_spanner_executor_v1_cloud_executor_proto_msgTypes[77]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6807,7 +6825,7 @@ func (x *MutationAction_UpdateArgs) String() string {
 func (*MutationAction_UpdateArgs) ProtoMessage() {}
 
 func (x *MutationAction_UpdateArgs) ProtoReflect() protoreflect.Message {
-	mi := &file_google_spanner_executor_v1_cloud_executor_proto_msgTypes[76]
+	mi := &file_google_spanner_executor_v1_cloud_executor_proto_msgTypes[77]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6868,7 +6886,7 @@ type MutationAction_Mod struct {
 
 func (x *MutationAction_Mod) Reset() {
 	*x = MutationAction_Mod{}
-	mi := &file_google_spanner_executor_v1_cloud_executor_proto_msgTypes[77]
+	mi := &file_google_spanner_executor_v1_cloud_executor_proto_msgTypes[78]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6880,7 +6898,7 @@ func (x *MutationAction_Mod) String() string {
 func (*MutationAction_Mod) ProtoMessage() {}
 
 func (x *MutationAction_Mod) ProtoReflect() protoreflect.Message {
-	mi := &file_google_spanner_executor_v1_cloud_executor_proto_msgTypes[77]
+	mi := &file_google_spanner_executor_v1_cloud_executor_proto_msgTypes[78]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6950,7 +6968,7 @@ type PartitionedUpdateAction_ExecutePartitionedUpdateOptions struct {
 
 func (x *PartitionedUpdateAction_ExecutePartitionedUpdateOptions) Reset() {
 	*x = PartitionedUpdateAction_ExecutePartitionedUpdateOptions{}
-	mi := &file_google_spanner_executor_v1_cloud_executor_proto_msgTypes[78]
+	mi := &file_google_spanner_executor_v1_cloud_executor_proto_msgTypes[79]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6962,7 +6980,7 @@ func (x *PartitionedUpdateAction_ExecutePartitionedUpdateOptions) String() strin
 func (*PartitionedUpdateAction_ExecutePartitionedUpdateOptions) ProtoMessage() {}
 
 func (x *PartitionedUpdateAction_ExecutePartitionedUpdateOptions) ProtoReflect() protoreflect.Message {
-	mi := &file_google_spanner_executor_v1_cloud_executor_proto_msgTypes[78]
+	mi := &file_google_spanner_executor_v1_cloud_executor_proto_msgTypes[79]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7009,7 +7027,7 @@ type DataChangeRecord_ColumnType struct {
 
 func (x *DataChangeRecord_ColumnType) Reset() {
 	*x = DataChangeRecord_ColumnType{}
-	mi := &file_google_spanner_executor_v1_cloud_executor_proto_msgTypes[83]
+	mi := &file_google_spanner_executor_v1_cloud_executor_proto_msgTypes[85]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7021,7 +7039,7 @@ func (x *DataChangeRecord_ColumnType) String() string {
 func (*DataChangeRecord_ColumnType) ProtoMessage() {}
 
 func (x *DataChangeRecord_ColumnType) ProtoReflect() protoreflect.Message {
-	mi := &file_google_spanner_executor_v1_cloud_executor_proto_msgTypes[83]
+	mi := &file_google_spanner_executor_v1_cloud_executor_proto_msgTypes[85]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7082,7 +7100,7 @@ type DataChangeRecord_Mod struct {
 
 func (x *DataChangeRecord_Mod) Reset() {
 	*x = DataChangeRecord_Mod{}
-	mi := &file_google_spanner_executor_v1_cloud_executor_proto_msgTypes[84]
+	mi := &file_google_spanner_executor_v1_cloud_executor_proto_msgTypes[86]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7094,7 +7112,7 @@ func (x *DataChangeRecord_Mod) String() string {
 func (*DataChangeRecord_Mod) ProtoMessage() {}
 
 func (x *DataChangeRecord_Mod) ProtoReflect() protoreflect.Message {
-	mi := &file_google_spanner_executor_v1_cloud_executor_proto_msgTypes[84]
+	mi := &file_google_spanner_executor_v1_cloud_executor_proto_msgTypes[86]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7144,7 +7162,7 @@ type ChildPartitionsRecord_ChildPartition struct {
 
 func (x *ChildPartitionsRecord_ChildPartition) Reset() {
 	*x = ChildPartitionsRecord_ChildPartition{}
-	mi := &file_google_spanner_executor_v1_cloud_executor_proto_msgTypes[85]
+	mi := &file_google_spanner_executor_v1_cloud_executor_proto_msgTypes[87]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7156,7 +7174,7 @@ func (x *ChildPartitionsRecord_ChildPartition) String() string {
 func (*ChildPartitionsRecord_ChildPartition) ProtoMessage() {}
 
 func (x *ChildPartitionsRecord_ChildPartition) ProtoReflect() protoreflect.Message {
-	mi := &file_google_spanner_executor_v1_cloud_executor_proto_msgTypes[85]
+	mi := &file_google_spanner_executor_v1_cloud_executor_proto_msgTypes[87]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7227,14 +7245,18 @@ const file_google_spanner_executor_v1_cloud_executor_proto_rawDesc = "" +
 	"\x06column\x18\x03 \x03(\tR\x06column\x126\n" +
 	"\x04keys\x18\x04 \x01(\v2\".google.spanner.executor.v1.KeySetR\x04keys\x12\x14\n" +
 	"\x05limit\x18\x05 \x01(\x05R\x05limitB\b\n" +
-	"\x06_index\"\xf2\x01\n" +
+	"\x06_index\"\xba\x03\n" +
 	"\vQueryAction\x12\x10\n" +
 	"\x03sql\x18\x01 \x01(\tR\x03sql\x12I\n" +
-	"\x06params\x18\x02 \x03(\v21.google.spanner.executor.v1.QueryAction.ParameterR\x06params\x1a\x85\x01\n" +
+	"\x06params\x18\x02 \x03(\v21.google.spanner.executor.v1.QueryAction.ParameterR\x06params\x12a\n" +
+	"\x0esecure_context\x18\x03 \x03(\v2:.google.spanner.executor.v1.QueryAction.SecureContextEntryR\rsecureContext\x1a\x85\x01\n" +
 	"\tParameter\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12+\n" +
 	"\x04type\x18\x02 \x01(\v2\x17.google.spanner.v1.TypeR\x04type\x127\n" +
-	"\x05value\x18\x03 \x01(\v2!.google.spanner.executor.v1.ValueR\x05value\"\xe4\x01\n" +
+	"\x05value\x18\x03 \x01(\v2!.google.spanner.executor.v1.ValueR\x05value\x1ac\n" +
+	"\x12SecureContextEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x127\n" +
+	"\x05value\x18\x02 \x01(\v2!.google.spanner.executor.v1.ValueR\x05value:\x028\x01\"\xe4\x01\n" +
 	"\tDmlAction\x12?\n" +
 	"\x06update\x18\x01 \x01(\v2'.google.spanner.executor.v1.QueryActionR\x06update\x12;\n" +
 	"\x17autocommit_if_supported\x18\x02 \x01(\bH\x00R\x15autocommitIfSupported\x88\x01\x01\x12*\n" +
@@ -7665,9 +7687,13 @@ const file_google_spanner_executor_v1_cloud_executor_proto_rawDesc = "" +
 	"\x05table\x18\x03 \x01(\tH\x00R\x05table\x88\x01\x01\x12\x19\n" +
 	"\x05index\x18\x04 \x01(\tH\x01R\x05index\x88\x01\x01B\b\n" +
 	"\x06_tableB\b\n" +
-	"\x06_index\"b\n" +
+	"\x06_index\"\xb5\x02\n" +
 	"\x16ExecutePartitionAction\x12H\n" +
-	"\tpartition\x18\x01 \x01(\v2*.google.spanner.executor.v1.BatchPartitionR\tpartition\"\x80\x04\n" +
+	"\tpartition\x18\x01 \x01(\v2*.google.spanner.executor.v1.BatchPartitionR\tpartition\x12l\n" +
+	"\x0esecure_context\x18\x02 \x03(\v2E.google.spanner.executor.v1.ExecutePartitionAction.SecureContextEntryR\rsecureContext\x1ac\n" +
+	"\x12SecureContextEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x127\n" +
+	"\x05value\x18\x02 \x01(\v2!.google.spanner.executor.v1.ValueR\x05value:\x028\x01\"\x80\x04\n" +
 	"\x18ExecuteChangeStreamQuery\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x129\n" +
 	"\n" +
@@ -7814,7 +7840,7 @@ func file_google_spanner_executor_v1_cloud_executor_proto_rawDescGZIP() []byte {
 }
 
 var file_google_spanner_executor_v1_cloud_executor_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_google_spanner_executor_v1_cloud_executor_proto_msgTypes = make([]protoimpl.MessageInfo, 86)
+var file_google_spanner_executor_v1_cloud_executor_proto_msgTypes = make([]protoimpl.MessageInfo, 88)
 var file_google_spanner_executor_v1_cloud_executor_proto_goTypes = []any{
 	(KeyRange_Type)(0),                                              // 0: google.spanner.executor.v1.KeyRange.Type
 	(FinishTransactionAction_Mode)(0),                               // 1: google.spanner.executor.v1.FinishTransactionAction.Mode
@@ -7893,32 +7919,34 @@ var file_google_spanner_executor_v1_cloud_executor_proto_goTypes = []any{
 	(*SpannerOptions)(nil),                                          // 74: google.spanner.executor.v1.SpannerOptions
 	(*SessionPoolOptions)(nil),                                      // 75: google.spanner.executor.v1.SessionPoolOptions
 	(*QueryAction_Parameter)(nil),                                   // 76: google.spanner.executor.v1.QueryAction.Parameter
-	(*MutationAction_InsertArgs)(nil),                               // 77: google.spanner.executor.v1.MutationAction.InsertArgs
-	(*MutationAction_UpdateArgs)(nil),                               // 78: google.spanner.executor.v1.MutationAction.UpdateArgs
-	(*MutationAction_Mod)(nil),                                      // 79: google.spanner.executor.v1.MutationAction.Mod
-	(*PartitionedUpdateAction_ExecutePartitionedUpdateOptions)(nil), // 80: google.spanner.executor.v1.PartitionedUpdateAction.ExecutePartitionedUpdateOptions
-	nil,                                 // 81: google.spanner.executor.v1.UpdateUserInstanceConfigAction.LabelsEntry
-	nil,                                 // 82: google.spanner.executor.v1.CreateCloudInstanceAction.LabelsEntry
-	nil,                                 // 83: google.spanner.executor.v1.UpdateCloudInstanceAction.LabelsEntry
-	nil,                                 // 84: google.spanner.executor.v1.AdaptMessageAction.AttachmentsEntry
-	(*DataChangeRecord_ColumnType)(nil), // 85: google.spanner.executor.v1.DataChangeRecord.ColumnType
-	(*DataChangeRecord_Mod)(nil),        // 86: google.spanner.executor.v1.DataChangeRecord.Mod
-	(*ChildPartitionsRecord_ChildPartition)(nil), // 87: google.spanner.executor.v1.ChildPartitionsRecord.ChildPartition
-	(*timestamppb.Timestamp)(nil),                // 88: google.protobuf.Timestamp
-	(*spannerpb.Type)(nil),                       // 89: google.spanner.v1.Type
-	(*instancepb.ReplicaInfo)(nil),               // 90: google.spanner.admin.instance.v1.ReplicaInfo
-	(*instancepb.AutoscalingConfig)(nil),         // 91: google.spanner.admin.instance.v1.AutoscalingConfig
-	(instancepb.Instance_Edition)(0),             // 92: google.spanner.admin.instance.v1.Instance.Edition
-	(*databasepb.EncryptionConfig)(nil),          // 93: google.spanner.admin.database.v1.EncryptionConfig
-	(*databasepb.SplitPoints)(nil),               // 94: google.spanner.admin.database.v1.SplitPoints
-	(*status.Status)(nil),                        // 95: google.rpc.Status
-	(*databasepb.Backup)(nil),                    // 96: google.spanner.admin.database.v1.Backup
-	(*longrunningpb.Operation)(nil),              // 97: google.longrunning.Operation
-	(*instancepb.Instance)(nil),                  // 98: google.spanner.admin.instance.v1.Instance
-	(*instancepb.InstanceConfig)(nil),            // 99: google.spanner.admin.instance.v1.InstanceConfig
-	(*databasepb.Database)(nil),                  // 100: google.spanner.admin.database.v1.Database
-	(*spannerpb.StructType)(nil),                 // 101: google.spanner.v1.StructType
-	(spannerpb.RequestOptions_Priority)(0),       // 102: google.spanner.v1.RequestOptions.Priority
+	nil,                                                             // 77: google.spanner.executor.v1.QueryAction.SecureContextEntry
+	(*MutationAction_InsertArgs)(nil),                               // 78: google.spanner.executor.v1.MutationAction.InsertArgs
+	(*MutationAction_UpdateArgs)(nil),                               // 79: google.spanner.executor.v1.MutationAction.UpdateArgs
+	(*MutationAction_Mod)(nil),                                      // 80: google.spanner.executor.v1.MutationAction.Mod
+	(*PartitionedUpdateAction_ExecutePartitionedUpdateOptions)(nil), // 81: google.spanner.executor.v1.PartitionedUpdateAction.ExecutePartitionedUpdateOptions
+	nil,                                 // 82: google.spanner.executor.v1.UpdateUserInstanceConfigAction.LabelsEntry
+	nil,                                 // 83: google.spanner.executor.v1.CreateCloudInstanceAction.LabelsEntry
+	nil,                                 // 84: google.spanner.executor.v1.UpdateCloudInstanceAction.LabelsEntry
+	nil,                                 // 85: google.spanner.executor.v1.AdaptMessageAction.AttachmentsEntry
+	nil,                                 // 86: google.spanner.executor.v1.ExecutePartitionAction.SecureContextEntry
+	(*DataChangeRecord_ColumnType)(nil), // 87: google.spanner.executor.v1.DataChangeRecord.ColumnType
+	(*DataChangeRecord_Mod)(nil),        // 88: google.spanner.executor.v1.DataChangeRecord.Mod
+	(*ChildPartitionsRecord_ChildPartition)(nil), // 89: google.spanner.executor.v1.ChildPartitionsRecord.ChildPartition
+	(*timestamppb.Timestamp)(nil),                // 90: google.protobuf.Timestamp
+	(*spannerpb.Type)(nil),                       // 91: google.spanner.v1.Type
+	(*instancepb.ReplicaInfo)(nil),               // 92: google.spanner.admin.instance.v1.ReplicaInfo
+	(*instancepb.AutoscalingConfig)(nil),         // 93: google.spanner.admin.instance.v1.AutoscalingConfig
+	(instancepb.Instance_Edition)(0),             // 94: google.spanner.admin.instance.v1.Instance.Edition
+	(*databasepb.EncryptionConfig)(nil),          // 95: google.spanner.admin.database.v1.EncryptionConfig
+	(*databasepb.SplitPoints)(nil),               // 96: google.spanner.admin.database.v1.SplitPoints
+	(*status.Status)(nil),                        // 97: google.rpc.Status
+	(*databasepb.Backup)(nil),                    // 98: google.spanner.admin.database.v1.Backup
+	(*longrunningpb.Operation)(nil),              // 99: google.longrunning.Operation
+	(*instancepb.Instance)(nil),                  // 100: google.spanner.admin.instance.v1.Instance
+	(*instancepb.InstanceConfig)(nil),            // 101: google.spanner.admin.instance.v1.InstanceConfig
+	(*databasepb.Database)(nil),                  // 102: google.spanner.admin.database.v1.Database
+	(*spannerpb.StructType)(nil),                 // 103: google.spanner.v1.StructType
+	(spannerpb.RequestOptions_Priority)(0),       // 104: google.spanner.v1.RequestOptions.Priority
 }
 var file_google_spanner_executor_v1_cloud_executor_proto_depIdxs = []int32{
 	4,   // 0: google.spanner.executor.v1.SpannerAsyncActionRequest.action:type_name -> google.spanner.executor.v1.SpannerAction
@@ -7944,139 +7972,143 @@ var file_google_spanner_executor_v1_cloud_executor_proto_depIdxs = []int32{
 	36,  // 20: google.spanner.executor.v1.SpannerAction.adapt_message:type_name -> google.spanner.executor.v1.AdaptMessageAction
 	11,  // 21: google.spanner.executor.v1.ReadAction.keys:type_name -> google.spanner.executor.v1.KeySet
 	76,  // 22: google.spanner.executor.v1.QueryAction.params:type_name -> google.spanner.executor.v1.QueryAction.Parameter
-	6,   // 23: google.spanner.executor.v1.DmlAction.update:type_name -> google.spanner.executor.v1.QueryAction
-	6,   // 24: google.spanner.executor.v1.BatchDmlAction.updates:type_name -> google.spanner.executor.v1.QueryAction
-	12,  // 25: google.spanner.executor.v1.Value.struct_value:type_name -> google.spanner.executor.v1.ValueList
-	88,  // 26: google.spanner.executor.v1.Value.timestamp_value:type_name -> google.protobuf.Timestamp
-	12,  // 27: google.spanner.executor.v1.Value.array_value:type_name -> google.spanner.executor.v1.ValueList
-	89,  // 28: google.spanner.executor.v1.Value.array_type:type_name -> google.spanner.v1.Type
-	12,  // 29: google.spanner.executor.v1.KeyRange.start:type_name -> google.spanner.executor.v1.ValueList
-	12,  // 30: google.spanner.executor.v1.KeyRange.limit:type_name -> google.spanner.executor.v1.ValueList
-	0,   // 31: google.spanner.executor.v1.KeyRange.type:type_name -> google.spanner.executor.v1.KeyRange.Type
-	12,  // 32: google.spanner.executor.v1.KeySet.point:type_name -> google.spanner.executor.v1.ValueList
-	10,  // 33: google.spanner.executor.v1.KeySet.range:type_name -> google.spanner.executor.v1.KeyRange
-	9,   // 34: google.spanner.executor.v1.ValueList.value:type_name -> google.spanner.executor.v1.Value
-	79,  // 35: google.spanner.executor.v1.MutationAction.mod:type_name -> google.spanner.executor.v1.MutationAction.Mod
-	13,  // 36: google.spanner.executor.v1.WriteMutationsAction.mutation:type_name -> google.spanner.executor.v1.MutationAction
-	80,  // 37: google.spanner.executor.v1.PartitionedUpdateAction.options:type_name -> google.spanner.executor.v1.PartitionedUpdateAction.ExecutePartitionedUpdateOptions
-	6,   // 38: google.spanner.executor.v1.PartitionedUpdateAction.update:type_name -> google.spanner.executor.v1.QueryAction
-	17,  // 39: google.spanner.executor.v1.StartTransactionAction.concurrency:type_name -> google.spanner.executor.v1.Concurrency
-	18,  // 40: google.spanner.executor.v1.StartTransactionAction.table:type_name -> google.spanner.executor.v1.TableMetadata
-	20,  // 41: google.spanner.executor.v1.StartTransactionAction.execution_options:type_name -> google.spanner.executor.v1.TransactionExecutionOptions
-	19,  // 42: google.spanner.executor.v1.TableMetadata.column:type_name -> google.spanner.executor.v1.ColumnMetadata
-	19,  // 43: google.spanner.executor.v1.TableMetadata.key_column:type_name -> google.spanner.executor.v1.ColumnMetadata
-	89,  // 44: google.spanner.executor.v1.ColumnMetadata.type:type_name -> google.spanner.v1.Type
-	1,   // 45: google.spanner.executor.v1.FinishTransactionAction.mode:type_name -> google.spanner.executor.v1.FinishTransactionAction.Mode
-	23,  // 46: google.spanner.executor.v1.AdminAction.create_user_instance_config:type_name -> google.spanner.executor.v1.CreateUserInstanceConfigAction
-	24,  // 47: google.spanner.executor.v1.AdminAction.update_user_instance_config:type_name -> google.spanner.executor.v1.UpdateUserInstanceConfigAction
-	26,  // 48: google.spanner.executor.v1.AdminAction.delete_user_instance_config:type_name -> google.spanner.executor.v1.DeleteUserInstanceConfigAction
-	25,  // 49: google.spanner.executor.v1.AdminAction.get_cloud_instance_config:type_name -> google.spanner.executor.v1.GetCloudInstanceConfigAction
-	27,  // 50: google.spanner.executor.v1.AdminAction.list_instance_configs:type_name -> google.spanner.executor.v1.ListCloudInstanceConfigsAction
-	28,  // 51: google.spanner.executor.v1.AdminAction.create_cloud_instance:type_name -> google.spanner.executor.v1.CreateCloudInstanceAction
-	29,  // 52: google.spanner.executor.v1.AdminAction.update_cloud_instance:type_name -> google.spanner.executor.v1.UpdateCloudInstanceAction
-	30,  // 53: google.spanner.executor.v1.AdminAction.delete_cloud_instance:type_name -> google.spanner.executor.v1.DeleteCloudInstanceAction
-	38,  // 54: google.spanner.executor.v1.AdminAction.list_cloud_instances:type_name -> google.spanner.executor.v1.ListCloudInstancesAction
-	39,  // 55: google.spanner.executor.v1.AdminAction.get_cloud_instance:type_name -> google.spanner.executor.v1.GetCloudInstanceAction
-	31,  // 56: google.spanner.executor.v1.AdminAction.create_cloud_database:type_name -> google.spanner.executor.v1.CreateCloudDatabaseAction
-	32,  // 57: google.spanner.executor.v1.AdminAction.update_cloud_database_ddl:type_name -> google.spanner.executor.v1.UpdateCloudDatabaseDdlAction
-	33,  // 58: google.spanner.executor.v1.AdminAction.update_cloud_database:type_name -> google.spanner.executor.v1.UpdateCloudDatabaseAction
-	34,  // 59: google.spanner.executor.v1.AdminAction.drop_cloud_database:type_name -> google.spanner.executor.v1.DropCloudDatabaseAction
-	37,  // 60: google.spanner.executor.v1.AdminAction.list_cloud_databases:type_name -> google.spanner.executor.v1.ListCloudDatabasesAction
-	40,  // 61: google.spanner.executor.v1.AdminAction.list_cloud_database_operations:type_name -> google.spanner.executor.v1.ListCloudDatabaseOperationsAction
-	41,  // 62: google.spanner.executor.v1.AdminAction.restore_cloud_database:type_name -> google.spanner.executor.v1.RestoreCloudDatabaseAction
-	42,  // 63: google.spanner.executor.v1.AdminAction.get_cloud_database:type_name -> google.spanner.executor.v1.GetCloudDatabaseAction
-	43,  // 64: google.spanner.executor.v1.AdminAction.create_cloud_backup:type_name -> google.spanner.executor.v1.CreateCloudBackupAction
-	44,  // 65: google.spanner.executor.v1.AdminAction.copy_cloud_backup:type_name -> google.spanner.executor.v1.CopyCloudBackupAction
-	45,  // 66: google.spanner.executor.v1.AdminAction.get_cloud_backup:type_name -> google.spanner.executor.v1.GetCloudBackupAction
-	46,  // 67: google.spanner.executor.v1.AdminAction.update_cloud_backup:type_name -> google.spanner.executor.v1.UpdateCloudBackupAction
-	47,  // 68: google.spanner.executor.v1.AdminAction.delete_cloud_backup:type_name -> google.spanner.executor.v1.DeleteCloudBackupAction
-	48,  // 69: google.spanner.executor.v1.AdminAction.list_cloud_backups:type_name -> google.spanner.executor.v1.ListCloudBackupsAction
-	49,  // 70: google.spanner.executor.v1.AdminAction.list_cloud_backup_operations:type_name -> google.spanner.executor.v1.ListCloudBackupOperationsAction
-	50,  // 71: google.spanner.executor.v1.AdminAction.get_operation:type_name -> google.spanner.executor.v1.GetOperationAction
-	52,  // 72: google.spanner.executor.v1.AdminAction.cancel_operation:type_name -> google.spanner.executor.v1.CancelOperationAction
-	35,  // 73: google.spanner.executor.v1.AdminAction.change_quorum_cloud_database:type_name -> google.spanner.executor.v1.ChangeQuorumCloudDatabaseAction
-	53,  // 74: google.spanner.executor.v1.AdminAction.add_split_points:type_name -> google.spanner.executor.v1.AddSplitPointsAction
-	90,  // 75: google.spanner.executor.v1.CreateUserInstanceConfigAction.replicas:type_name -> google.spanner.admin.instance.v1.ReplicaInfo
-	81,  // 76: google.spanner.executor.v1.UpdateUserInstanceConfigAction.labels:type_name -> google.spanner.executor.v1.UpdateUserInstanceConfigAction.LabelsEntry
-	91,  // 77: google.spanner.executor.v1.CreateCloudInstanceAction.autoscaling_config:type_name -> google.spanner.admin.instance.v1.AutoscalingConfig
-	82,  // 78: google.spanner.executor.v1.CreateCloudInstanceAction.labels:type_name -> google.spanner.executor.v1.CreateCloudInstanceAction.LabelsEntry
-	92,  // 79: google.spanner.executor.v1.CreateCloudInstanceAction.edition:type_name -> google.spanner.admin.instance.v1.Instance.Edition
-	91,  // 80: google.spanner.executor.v1.UpdateCloudInstanceAction.autoscaling_config:type_name -> google.spanner.admin.instance.v1.AutoscalingConfig
-	83,  // 81: google.spanner.executor.v1.UpdateCloudInstanceAction.labels:type_name -> google.spanner.executor.v1.UpdateCloudInstanceAction.LabelsEntry
-	92,  // 82: google.spanner.executor.v1.UpdateCloudInstanceAction.edition:type_name -> google.spanner.admin.instance.v1.Instance.Edition
-	93,  // 83: google.spanner.executor.v1.CreateCloudDatabaseAction.encryption_config:type_name -> google.spanner.admin.database.v1.EncryptionConfig
-	84,  // 84: google.spanner.executor.v1.AdaptMessageAction.attachments:type_name -> google.spanner.executor.v1.AdaptMessageAction.AttachmentsEntry
-	93,  // 85: google.spanner.executor.v1.RestoreCloudDatabaseAction.encryption_config:type_name -> google.spanner.admin.database.v1.EncryptionConfig
-	88,  // 86: google.spanner.executor.v1.CreateCloudBackupAction.expire_time:type_name -> google.protobuf.Timestamp
-	88,  // 87: google.spanner.executor.v1.CreateCloudBackupAction.version_time:type_name -> google.protobuf.Timestamp
-	93,  // 88: google.spanner.executor.v1.CreateCloudBackupAction.encryption_config:type_name -> google.spanner.admin.database.v1.EncryptionConfig
-	88,  // 89: google.spanner.executor.v1.CopyCloudBackupAction.expire_time:type_name -> google.protobuf.Timestamp
-	88,  // 90: google.spanner.executor.v1.UpdateCloudBackupAction.expire_time:type_name -> google.protobuf.Timestamp
-	94,  // 91: google.spanner.executor.v1.AddSplitPointsAction.split_points:type_name -> google.spanner.admin.database.v1.SplitPoints
-	88,  // 92: google.spanner.executor.v1.StartBatchTransactionAction.batch_txn_time:type_name -> google.protobuf.Timestamp
-	5,   // 93: google.spanner.executor.v1.GenerateDbPartitionsForReadAction.read:type_name -> google.spanner.executor.v1.ReadAction
-	18,  // 94: google.spanner.executor.v1.GenerateDbPartitionsForReadAction.table:type_name -> google.spanner.executor.v1.TableMetadata
-	6,   // 95: google.spanner.executor.v1.GenerateDbPartitionsForQueryAction.query:type_name -> google.spanner.executor.v1.QueryAction
-	58,  // 96: google.spanner.executor.v1.ExecutePartitionAction.partition:type_name -> google.spanner.executor.v1.BatchPartition
-	88,  // 97: google.spanner.executor.v1.ExecuteChangeStreamQuery.start_time:type_name -> google.protobuf.Timestamp
-	88,  // 98: google.spanner.executor.v1.ExecuteChangeStreamQuery.end_time:type_name -> google.protobuf.Timestamp
-	95,  // 99: google.spanner.executor.v1.SpannerActionOutcome.status:type_name -> google.rpc.Status
-	88,  // 100: google.spanner.executor.v1.SpannerActionOutcome.commit_time:type_name -> google.protobuf.Timestamp
-	68,  // 101: google.spanner.executor.v1.SpannerActionOutcome.read_result:type_name -> google.spanner.executor.v1.ReadResult
-	69,  // 102: google.spanner.executor.v1.SpannerActionOutcome.query_result:type_name -> google.spanner.executor.v1.QueryResult
-	58,  // 103: google.spanner.executor.v1.SpannerActionOutcome.db_partition:type_name -> google.spanner.executor.v1.BatchPartition
-	62,  // 104: google.spanner.executor.v1.SpannerActionOutcome.admin_result:type_name -> google.spanner.executor.v1.AdminResult
-	70,  // 105: google.spanner.executor.v1.SpannerActionOutcome.change_stream_records:type_name -> google.spanner.executor.v1.ChangeStreamRecord
-	63,  // 106: google.spanner.executor.v1.AdminResult.backup_response:type_name -> google.spanner.executor.v1.CloudBackupResponse
-	64,  // 107: google.spanner.executor.v1.AdminResult.operation_response:type_name -> google.spanner.executor.v1.OperationResponse
-	67,  // 108: google.spanner.executor.v1.AdminResult.database_response:type_name -> google.spanner.executor.v1.CloudDatabaseResponse
-	65,  // 109: google.spanner.executor.v1.AdminResult.instance_response:type_name -> google.spanner.executor.v1.CloudInstanceResponse
-	66,  // 110: google.spanner.executor.v1.AdminResult.instance_config_response:type_name -> google.spanner.executor.v1.CloudInstanceConfigResponse
-	96,  // 111: google.spanner.executor.v1.CloudBackupResponse.listed_backups:type_name -> google.spanner.admin.database.v1.Backup
-	97,  // 112: google.spanner.executor.v1.CloudBackupResponse.listed_backup_operations:type_name -> google.longrunning.Operation
-	96,  // 113: google.spanner.executor.v1.CloudBackupResponse.backup:type_name -> google.spanner.admin.database.v1.Backup
-	97,  // 114: google.spanner.executor.v1.OperationResponse.listed_operations:type_name -> google.longrunning.Operation
-	97,  // 115: google.spanner.executor.v1.OperationResponse.operation:type_name -> google.longrunning.Operation
-	98,  // 116: google.spanner.executor.v1.CloudInstanceResponse.listed_instances:type_name -> google.spanner.admin.instance.v1.Instance
-	98,  // 117: google.spanner.executor.v1.CloudInstanceResponse.instance:type_name -> google.spanner.admin.instance.v1.Instance
-	99,  // 118: google.spanner.executor.v1.CloudInstanceConfigResponse.listed_instance_configs:type_name -> google.spanner.admin.instance.v1.InstanceConfig
-	99,  // 119: google.spanner.executor.v1.CloudInstanceConfigResponse.instance_config:type_name -> google.spanner.admin.instance.v1.InstanceConfig
-	100, // 120: google.spanner.executor.v1.CloudDatabaseResponse.listed_databases:type_name -> google.spanner.admin.database.v1.Database
-	97,  // 121: google.spanner.executor.v1.CloudDatabaseResponse.listed_database_operations:type_name -> google.longrunning.Operation
-	100, // 122: google.spanner.executor.v1.CloudDatabaseResponse.database:type_name -> google.spanner.admin.database.v1.Database
-	12,  // 123: google.spanner.executor.v1.ReadResult.row:type_name -> google.spanner.executor.v1.ValueList
-	101, // 124: google.spanner.executor.v1.ReadResult.row_type:type_name -> google.spanner.v1.StructType
-	12,  // 125: google.spanner.executor.v1.QueryResult.row:type_name -> google.spanner.executor.v1.ValueList
-	101, // 126: google.spanner.executor.v1.QueryResult.row_type:type_name -> google.spanner.v1.StructType
-	71,  // 127: google.spanner.executor.v1.ChangeStreamRecord.data_change:type_name -> google.spanner.executor.v1.DataChangeRecord
-	72,  // 128: google.spanner.executor.v1.ChangeStreamRecord.child_partition:type_name -> google.spanner.executor.v1.ChildPartitionsRecord
-	73,  // 129: google.spanner.executor.v1.ChangeStreamRecord.heartbeat:type_name -> google.spanner.executor.v1.HeartbeatRecord
-	88,  // 130: google.spanner.executor.v1.DataChangeRecord.commit_time:type_name -> google.protobuf.Timestamp
-	85,  // 131: google.spanner.executor.v1.DataChangeRecord.column_types:type_name -> google.spanner.executor.v1.DataChangeRecord.ColumnType
-	86,  // 132: google.spanner.executor.v1.DataChangeRecord.mods:type_name -> google.spanner.executor.v1.DataChangeRecord.Mod
-	88,  // 133: google.spanner.executor.v1.ChildPartitionsRecord.start_time:type_name -> google.protobuf.Timestamp
-	87,  // 134: google.spanner.executor.v1.ChildPartitionsRecord.child_partitions:type_name -> google.spanner.executor.v1.ChildPartitionsRecord.ChildPartition
-	88,  // 135: google.spanner.executor.v1.HeartbeatRecord.heartbeat_time:type_name -> google.protobuf.Timestamp
-	75,  // 136: google.spanner.executor.v1.SpannerOptions.session_pool_options:type_name -> google.spanner.executor.v1.SessionPoolOptions
-	89,  // 137: google.spanner.executor.v1.QueryAction.Parameter.type:type_name -> google.spanner.v1.Type
-	9,   // 138: google.spanner.executor.v1.QueryAction.Parameter.value:type_name -> google.spanner.executor.v1.Value
-	89,  // 139: google.spanner.executor.v1.MutationAction.InsertArgs.type:type_name -> google.spanner.v1.Type
-	12,  // 140: google.spanner.executor.v1.MutationAction.InsertArgs.values:type_name -> google.spanner.executor.v1.ValueList
-	89,  // 141: google.spanner.executor.v1.MutationAction.UpdateArgs.type:type_name -> google.spanner.v1.Type
-	12,  // 142: google.spanner.executor.v1.MutationAction.UpdateArgs.values:type_name -> google.spanner.executor.v1.ValueList
-	77,  // 143: google.spanner.executor.v1.MutationAction.Mod.insert:type_name -> google.spanner.executor.v1.MutationAction.InsertArgs
-	78,  // 144: google.spanner.executor.v1.MutationAction.Mod.update:type_name -> google.spanner.executor.v1.MutationAction.UpdateArgs
-	77,  // 145: google.spanner.executor.v1.MutationAction.Mod.insert_or_update:type_name -> google.spanner.executor.v1.MutationAction.InsertArgs
-	77,  // 146: google.spanner.executor.v1.MutationAction.Mod.replace:type_name -> google.spanner.executor.v1.MutationAction.InsertArgs
-	11,  // 147: google.spanner.executor.v1.MutationAction.Mod.delete_keys:type_name -> google.spanner.executor.v1.KeySet
-	102, // 148: google.spanner.executor.v1.PartitionedUpdateAction.ExecutePartitionedUpdateOptions.rpc_priority:type_name -> google.spanner.v1.RequestOptions.Priority
-	2,   // 149: google.spanner.executor.v1.SpannerExecutorProxy.ExecuteActionAsync:input_type -> google.spanner.executor.v1.SpannerAsyncActionRequest
-	3,   // 150: google.spanner.executor.v1.SpannerExecutorProxy.ExecuteActionAsync:output_type -> google.spanner.executor.v1.SpannerAsyncActionResponse
-	150, // [150:151] is the sub-list for method output_type
-	149, // [149:150] is the sub-list for method input_type
-	149, // [149:149] is the sub-list for extension type_name
-	149, // [149:149] is the sub-list for extension extendee
-	0,   // [0:149] is the sub-list for field type_name
+	77,  // 23: google.spanner.executor.v1.QueryAction.secure_context:type_name -> google.spanner.executor.v1.QueryAction.SecureContextEntry
+	6,   // 24: google.spanner.executor.v1.DmlAction.update:type_name -> google.spanner.executor.v1.QueryAction
+	6,   // 25: google.spanner.executor.v1.BatchDmlAction.updates:type_name -> google.spanner.executor.v1.QueryAction
+	12,  // 26: google.spanner.executor.v1.Value.struct_value:type_name -> google.spanner.executor.v1.ValueList
+	90,  // 27: google.spanner.executor.v1.Value.timestamp_value:type_name -> google.protobuf.Timestamp
+	12,  // 28: google.spanner.executor.v1.Value.array_value:type_name -> google.spanner.executor.v1.ValueList
+	91,  // 29: google.spanner.executor.v1.Value.array_type:type_name -> google.spanner.v1.Type
+	12,  // 30: google.spanner.executor.v1.KeyRange.start:type_name -> google.spanner.executor.v1.ValueList
+	12,  // 31: google.spanner.executor.v1.KeyRange.limit:type_name -> google.spanner.executor.v1.ValueList
+	0,   // 32: google.spanner.executor.v1.KeyRange.type:type_name -> google.spanner.executor.v1.KeyRange.Type
+	12,  // 33: google.spanner.executor.v1.KeySet.point:type_name -> google.spanner.executor.v1.ValueList
+	10,  // 34: google.spanner.executor.v1.KeySet.range:type_name -> google.spanner.executor.v1.KeyRange
+	9,   // 35: google.spanner.executor.v1.ValueList.value:type_name -> google.spanner.executor.v1.Value
+	80,  // 36: google.spanner.executor.v1.MutationAction.mod:type_name -> google.spanner.executor.v1.MutationAction.Mod
+	13,  // 37: google.spanner.executor.v1.WriteMutationsAction.mutation:type_name -> google.spanner.executor.v1.MutationAction
+	81,  // 38: google.spanner.executor.v1.PartitionedUpdateAction.options:type_name -> google.spanner.executor.v1.PartitionedUpdateAction.ExecutePartitionedUpdateOptions
+	6,   // 39: google.spanner.executor.v1.PartitionedUpdateAction.update:type_name -> google.spanner.executor.v1.QueryAction
+	17,  // 40: google.spanner.executor.v1.StartTransactionAction.concurrency:type_name -> google.spanner.executor.v1.Concurrency
+	18,  // 41: google.spanner.executor.v1.StartTransactionAction.table:type_name -> google.spanner.executor.v1.TableMetadata
+	20,  // 42: google.spanner.executor.v1.StartTransactionAction.execution_options:type_name -> google.spanner.executor.v1.TransactionExecutionOptions
+	19,  // 43: google.spanner.executor.v1.TableMetadata.column:type_name -> google.spanner.executor.v1.ColumnMetadata
+	19,  // 44: google.spanner.executor.v1.TableMetadata.key_column:type_name -> google.spanner.executor.v1.ColumnMetadata
+	91,  // 45: google.spanner.executor.v1.ColumnMetadata.type:type_name -> google.spanner.v1.Type
+	1,   // 46: google.spanner.executor.v1.FinishTransactionAction.mode:type_name -> google.spanner.executor.v1.FinishTransactionAction.Mode
+	23,  // 47: google.spanner.executor.v1.AdminAction.create_user_instance_config:type_name -> google.spanner.executor.v1.CreateUserInstanceConfigAction
+	24,  // 48: google.spanner.executor.v1.AdminAction.update_user_instance_config:type_name -> google.spanner.executor.v1.UpdateUserInstanceConfigAction
+	26,  // 49: google.spanner.executor.v1.AdminAction.delete_user_instance_config:type_name -> google.spanner.executor.v1.DeleteUserInstanceConfigAction
+	25,  // 50: google.spanner.executor.v1.AdminAction.get_cloud_instance_config:type_name -> google.spanner.executor.v1.GetCloudInstanceConfigAction
+	27,  // 51: google.spanner.executor.v1.AdminAction.list_instance_configs:type_name -> google.spanner.executor.v1.ListCloudInstanceConfigsAction
+	28,  // 52: google.spanner.executor.v1.AdminAction.create_cloud_instance:type_name -> google.spanner.executor.v1.CreateCloudInstanceAction
+	29,  // 53: google.spanner.executor.v1.AdminAction.update_cloud_instance:type_name -> google.spanner.executor.v1.UpdateCloudInstanceAction
+	30,  // 54: google.spanner.executor.v1.AdminAction.delete_cloud_instance:type_name -> google.spanner.executor.v1.DeleteCloudInstanceAction
+	38,  // 55: google.spanner.executor.v1.AdminAction.list_cloud_instances:type_name -> google.spanner.executor.v1.ListCloudInstancesAction
+	39,  // 56: google.spanner.executor.v1.AdminAction.get_cloud_instance:type_name -> google.spanner.executor.v1.GetCloudInstanceAction
+	31,  // 57: google.spanner.executor.v1.AdminAction.create_cloud_database:type_name -> google.spanner.executor.v1.CreateCloudDatabaseAction
+	32,  // 58: google.spanner.executor.v1.AdminAction.update_cloud_database_ddl:type_name -> google.spanner.executor.v1.UpdateCloudDatabaseDdlAction
+	33,  // 59: google.spanner.executor.v1.AdminAction.update_cloud_database:type_name -> google.spanner.executor.v1.UpdateCloudDatabaseAction
+	34,  // 60: google.spanner.executor.v1.AdminAction.drop_cloud_database:type_name -> google.spanner.executor.v1.DropCloudDatabaseAction
+	37,  // 61: google.spanner.executor.v1.AdminAction.list_cloud_databases:type_name -> google.spanner.executor.v1.ListCloudDatabasesAction
+	40,  // 62: google.spanner.executor.v1.AdminAction.list_cloud_database_operations:type_name -> google.spanner.executor.v1.ListCloudDatabaseOperationsAction
+	41,  // 63: google.spanner.executor.v1.AdminAction.restore_cloud_database:type_name -> google.spanner.executor.v1.RestoreCloudDatabaseAction
+	42,  // 64: google.spanner.executor.v1.AdminAction.get_cloud_database:type_name -> google.spanner.executor.v1.GetCloudDatabaseAction
+	43,  // 65: google.spanner.executor.v1.AdminAction.create_cloud_backup:type_name -> google.spanner.executor.v1.CreateCloudBackupAction
+	44,  // 66: google.spanner.executor.v1.AdminAction.copy_cloud_backup:type_name -> google.spanner.executor.v1.CopyCloudBackupAction
+	45,  // 67: google.spanner.executor.v1.AdminAction.get_cloud_backup:type_name -> google.spanner.executor.v1.GetCloudBackupAction
+	46,  // 68: google.spanner.executor.v1.AdminAction.update_cloud_backup:type_name -> google.spanner.executor.v1.UpdateCloudBackupAction
+	47,  // 69: google.spanner.executor.v1.AdminAction.delete_cloud_backup:type_name -> google.spanner.executor.v1.DeleteCloudBackupAction
+	48,  // 70: google.spanner.executor.v1.AdminAction.list_cloud_backups:type_name -> google.spanner.executor.v1.ListCloudBackupsAction
+	49,  // 71: google.spanner.executor.v1.AdminAction.list_cloud_backup_operations:type_name -> google.spanner.executor.v1.ListCloudBackupOperationsAction
+	50,  // 72: google.spanner.executor.v1.AdminAction.get_operation:type_name -> google.spanner.executor.v1.GetOperationAction
+	52,  // 73: google.spanner.executor.v1.AdminAction.cancel_operation:type_name -> google.spanner.executor.v1.CancelOperationAction
+	35,  // 74: google.spanner.executor.v1.AdminAction.change_quorum_cloud_database:type_name -> google.spanner.executor.v1.ChangeQuorumCloudDatabaseAction
+	53,  // 75: google.spanner.executor.v1.AdminAction.add_split_points:type_name -> google.spanner.executor.v1.AddSplitPointsAction
+	92,  // 76: google.spanner.executor.v1.CreateUserInstanceConfigAction.replicas:type_name -> google.spanner.admin.instance.v1.ReplicaInfo
+	82,  // 77: google.spanner.executor.v1.UpdateUserInstanceConfigAction.labels:type_name -> google.spanner.executor.v1.UpdateUserInstanceConfigAction.LabelsEntry
+	93,  // 78: google.spanner.executor.v1.CreateCloudInstanceAction.autoscaling_config:type_name -> google.spanner.admin.instance.v1.AutoscalingConfig
+	83,  // 79: google.spanner.executor.v1.CreateCloudInstanceAction.labels:type_name -> google.spanner.executor.v1.CreateCloudInstanceAction.LabelsEntry
+	94,  // 80: google.spanner.executor.v1.CreateCloudInstanceAction.edition:type_name -> google.spanner.admin.instance.v1.Instance.Edition
+	93,  // 81: google.spanner.executor.v1.UpdateCloudInstanceAction.autoscaling_config:type_name -> google.spanner.admin.instance.v1.AutoscalingConfig
+	84,  // 82: google.spanner.executor.v1.UpdateCloudInstanceAction.labels:type_name -> google.spanner.executor.v1.UpdateCloudInstanceAction.LabelsEntry
+	94,  // 83: google.spanner.executor.v1.UpdateCloudInstanceAction.edition:type_name -> google.spanner.admin.instance.v1.Instance.Edition
+	95,  // 84: google.spanner.executor.v1.CreateCloudDatabaseAction.encryption_config:type_name -> google.spanner.admin.database.v1.EncryptionConfig
+	85,  // 85: google.spanner.executor.v1.AdaptMessageAction.attachments:type_name -> google.spanner.executor.v1.AdaptMessageAction.AttachmentsEntry
+	95,  // 86: google.spanner.executor.v1.RestoreCloudDatabaseAction.encryption_config:type_name -> google.spanner.admin.database.v1.EncryptionConfig
+	90,  // 87: google.spanner.executor.v1.CreateCloudBackupAction.expire_time:type_name -> google.protobuf.Timestamp
+	90,  // 88: google.spanner.executor.v1.CreateCloudBackupAction.version_time:type_name -> google.protobuf.Timestamp
+	95,  // 89: google.spanner.executor.v1.CreateCloudBackupAction.encryption_config:type_name -> google.spanner.admin.database.v1.EncryptionConfig
+	90,  // 90: google.spanner.executor.v1.CopyCloudBackupAction.expire_time:type_name -> google.protobuf.Timestamp
+	90,  // 91: google.spanner.executor.v1.UpdateCloudBackupAction.expire_time:type_name -> google.protobuf.Timestamp
+	96,  // 92: google.spanner.executor.v1.AddSplitPointsAction.split_points:type_name -> google.spanner.admin.database.v1.SplitPoints
+	90,  // 93: google.spanner.executor.v1.StartBatchTransactionAction.batch_txn_time:type_name -> google.protobuf.Timestamp
+	5,   // 94: google.spanner.executor.v1.GenerateDbPartitionsForReadAction.read:type_name -> google.spanner.executor.v1.ReadAction
+	18,  // 95: google.spanner.executor.v1.GenerateDbPartitionsForReadAction.table:type_name -> google.spanner.executor.v1.TableMetadata
+	6,   // 96: google.spanner.executor.v1.GenerateDbPartitionsForQueryAction.query:type_name -> google.spanner.executor.v1.QueryAction
+	58,  // 97: google.spanner.executor.v1.ExecutePartitionAction.partition:type_name -> google.spanner.executor.v1.BatchPartition
+	86,  // 98: google.spanner.executor.v1.ExecutePartitionAction.secure_context:type_name -> google.spanner.executor.v1.ExecutePartitionAction.SecureContextEntry
+	90,  // 99: google.spanner.executor.v1.ExecuteChangeStreamQuery.start_time:type_name -> google.protobuf.Timestamp
+	90,  // 100: google.spanner.executor.v1.ExecuteChangeStreamQuery.end_time:type_name -> google.protobuf.Timestamp
+	97,  // 101: google.spanner.executor.v1.SpannerActionOutcome.status:type_name -> google.rpc.Status
+	90,  // 102: google.spanner.executor.v1.SpannerActionOutcome.commit_time:type_name -> google.protobuf.Timestamp
+	68,  // 103: google.spanner.executor.v1.SpannerActionOutcome.read_result:type_name -> google.spanner.executor.v1.ReadResult
+	69,  // 104: google.spanner.executor.v1.SpannerActionOutcome.query_result:type_name -> google.spanner.executor.v1.QueryResult
+	58,  // 105: google.spanner.executor.v1.SpannerActionOutcome.db_partition:type_name -> google.spanner.executor.v1.BatchPartition
+	62,  // 106: google.spanner.executor.v1.SpannerActionOutcome.admin_result:type_name -> google.spanner.executor.v1.AdminResult
+	70,  // 107: google.spanner.executor.v1.SpannerActionOutcome.change_stream_records:type_name -> google.spanner.executor.v1.ChangeStreamRecord
+	63,  // 108: google.spanner.executor.v1.AdminResult.backup_response:type_name -> google.spanner.executor.v1.CloudBackupResponse
+	64,  // 109: google.spanner.executor.v1.AdminResult.operation_response:type_name -> google.spanner.executor.v1.OperationResponse
+	67,  // 110: google.spanner.executor.v1.AdminResult.database_response:type_name -> google.spanner.executor.v1.CloudDatabaseResponse
+	65,  // 111: google.spanner.executor.v1.AdminResult.instance_response:type_name -> google.spanner.executor.v1.CloudInstanceResponse
+	66,  // 112: google.spanner.executor.v1.AdminResult.instance_config_response:type_name -> google.spanner.executor.v1.CloudInstanceConfigResponse
+	98,  // 113: google.spanner.executor.v1.CloudBackupResponse.listed_backups:type_name -> google.spanner.admin.database.v1.Backup
+	99,  // 114: google.spanner.executor.v1.CloudBackupResponse.listed_backup_operations:type_name -> google.longrunning.Operation
+	98,  // 115: google.spanner.executor.v1.CloudBackupResponse.backup:type_name -> google.spanner.admin.database.v1.Backup
+	99,  // 116: google.spanner.executor.v1.OperationResponse.listed_operations:type_name -> google.longrunning.Operation
+	99,  // 117: google.spanner.executor.v1.OperationResponse.operation:type_name -> google.longrunning.Operation
+	100, // 118: google.spanner.executor.v1.CloudInstanceResponse.listed_instances:type_name -> google.spanner.admin.instance.v1.Instance
+	100, // 119: google.spanner.executor.v1.CloudInstanceResponse.instance:type_name -> google.spanner.admin.instance.v1.Instance
+	101, // 120: google.spanner.executor.v1.CloudInstanceConfigResponse.listed_instance_configs:type_name -> google.spanner.admin.instance.v1.InstanceConfig
+	101, // 121: google.spanner.executor.v1.CloudInstanceConfigResponse.instance_config:type_name -> google.spanner.admin.instance.v1.InstanceConfig
+	102, // 122: google.spanner.executor.v1.CloudDatabaseResponse.listed_databases:type_name -> google.spanner.admin.database.v1.Database
+	99,  // 123: google.spanner.executor.v1.CloudDatabaseResponse.listed_database_operations:type_name -> google.longrunning.Operation
+	102, // 124: google.spanner.executor.v1.CloudDatabaseResponse.database:type_name -> google.spanner.admin.database.v1.Database
+	12,  // 125: google.spanner.executor.v1.ReadResult.row:type_name -> google.spanner.executor.v1.ValueList
+	103, // 126: google.spanner.executor.v1.ReadResult.row_type:type_name -> google.spanner.v1.StructType
+	12,  // 127: google.spanner.executor.v1.QueryResult.row:type_name -> google.spanner.executor.v1.ValueList
+	103, // 128: google.spanner.executor.v1.QueryResult.row_type:type_name -> google.spanner.v1.StructType
+	71,  // 129: google.spanner.executor.v1.ChangeStreamRecord.data_change:type_name -> google.spanner.executor.v1.DataChangeRecord
+	72,  // 130: google.spanner.executor.v1.ChangeStreamRecord.child_partition:type_name -> google.spanner.executor.v1.ChildPartitionsRecord
+	73,  // 131: google.spanner.executor.v1.ChangeStreamRecord.heartbeat:type_name -> google.spanner.executor.v1.HeartbeatRecord
+	90,  // 132: google.spanner.executor.v1.DataChangeRecord.commit_time:type_name -> google.protobuf.Timestamp
+	87,  // 133: google.spanner.executor.v1.DataChangeRecord.column_types:type_name -> google.spanner.executor.v1.DataChangeRecord.ColumnType
+	88,  // 134: google.spanner.executor.v1.DataChangeRecord.mods:type_name -> google.spanner.executor.v1.DataChangeRecord.Mod
+	90,  // 135: google.spanner.executor.v1.ChildPartitionsRecord.start_time:type_name -> google.protobuf.Timestamp
+	89,  // 136: google.spanner.executor.v1.ChildPartitionsRecord.child_partitions:type_name -> google.spanner.executor.v1.ChildPartitionsRecord.ChildPartition
+	90,  // 137: google.spanner.executor.v1.HeartbeatRecord.heartbeat_time:type_name -> google.protobuf.Timestamp
+	75,  // 138: google.spanner.executor.v1.SpannerOptions.session_pool_options:type_name -> google.spanner.executor.v1.SessionPoolOptions
+	91,  // 139: google.spanner.executor.v1.QueryAction.Parameter.type:type_name -> google.spanner.v1.Type
+	9,   // 140: google.spanner.executor.v1.QueryAction.Parameter.value:type_name -> google.spanner.executor.v1.Value
+	9,   // 141: google.spanner.executor.v1.QueryAction.SecureContextEntry.value:type_name -> google.spanner.executor.v1.Value
+	91,  // 142: google.spanner.executor.v1.MutationAction.InsertArgs.type:type_name -> google.spanner.v1.Type
+	12,  // 143: google.spanner.executor.v1.MutationAction.InsertArgs.values:type_name -> google.spanner.executor.v1.ValueList
+	91,  // 144: google.spanner.executor.v1.MutationAction.UpdateArgs.type:type_name -> google.spanner.v1.Type
+	12,  // 145: google.spanner.executor.v1.MutationAction.UpdateArgs.values:type_name -> google.spanner.executor.v1.ValueList
+	78,  // 146: google.spanner.executor.v1.MutationAction.Mod.insert:type_name -> google.spanner.executor.v1.MutationAction.InsertArgs
+	79,  // 147: google.spanner.executor.v1.MutationAction.Mod.update:type_name -> google.spanner.executor.v1.MutationAction.UpdateArgs
+	78,  // 148: google.spanner.executor.v1.MutationAction.Mod.insert_or_update:type_name -> google.spanner.executor.v1.MutationAction.InsertArgs
+	78,  // 149: google.spanner.executor.v1.MutationAction.Mod.replace:type_name -> google.spanner.executor.v1.MutationAction.InsertArgs
+	11,  // 150: google.spanner.executor.v1.MutationAction.Mod.delete_keys:type_name -> google.spanner.executor.v1.KeySet
+	104, // 151: google.spanner.executor.v1.PartitionedUpdateAction.ExecutePartitionedUpdateOptions.rpc_priority:type_name -> google.spanner.v1.RequestOptions.Priority
+	9,   // 152: google.spanner.executor.v1.ExecutePartitionAction.SecureContextEntry.value:type_name -> google.spanner.executor.v1.Value
+	2,   // 153: google.spanner.executor.v1.SpannerExecutorProxy.ExecuteActionAsync:input_type -> google.spanner.executor.v1.SpannerAsyncActionRequest
+	3,   // 154: google.spanner.executor.v1.SpannerExecutorProxy.ExecuteActionAsync:output_type -> google.spanner.executor.v1.SpannerAsyncActionResponse
+	154, // [154:155] is the sub-list for method output_type
+	153, // [153:154] is the sub-list for method input_type
+	153, // [153:153] is the sub-list for extension type_name
+	153, // [153:153] is the sub-list for extension extendee
+	0,   // [0:153] is the sub-list for field type_name
 }
 
 func init() { file_google_spanner_executor_v1_cloud_executor_proto_init() }
@@ -8187,14 +8219,14 @@ func file_google_spanner_executor_v1_cloud_executor_proto_init() {
 		(*ChangeStreamRecord_ChildPartition)(nil),
 		(*ChangeStreamRecord_Heartbeat)(nil),
 	}
-	file_google_spanner_executor_v1_cloud_executor_proto_msgTypes[78].OneofWrappers = []any{}
+	file_google_spanner_executor_v1_cloud_executor_proto_msgTypes[79].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_spanner_executor_v1_cloud_executor_proto_rawDesc), len(file_google_spanner_executor_v1_cloud_executor_proto_rawDesc)),
 			NumEnums:      2,
-			NumMessages:   86,
+			NumMessages:   88,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

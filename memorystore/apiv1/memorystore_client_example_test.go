@@ -206,6 +206,36 @@ func ExampleClient_ExportBackup() {
 	_ = resp
 }
 
+func ExampleClient_FinishMigration() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := memorystore.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &memorystorepb.FinishMigrationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/memorystore/apiv1/memorystorepb#FinishMigrationRequest.
+	}
+	op, err := c.FinishMigration(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleClient_GetBackup() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -460,6 +490,36 @@ func ExampleClient_RescheduleMaintenance() {
 		// See https://pkg.go.dev/cloud.google.com/go/memorystore/apiv1/memorystorepb#RescheduleMaintenanceRequest.
 	}
 	op, err := c.RescheduleMaintenance(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_StartMigration() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := memorystore.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &memorystorepb.StartMigrationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/memorystore/apiv1/memorystorepb#StartMigrationRequest.
+	}
+	op, err := c.StartMigration(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
