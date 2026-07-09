@@ -16,6 +16,7 @@ package storage
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -37,6 +38,7 @@ import (
 	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
 	"go.opentelemetry.io/otel/sdk/metric/metricdata"
 	"go.opentelemetry.io/otel/sdk/resource"
+	"google.golang.org/api/googleapi"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -320,7 +322,7 @@ func grpcCodeToString(code codes.Code) string {
 func computeErrorType(err error, isHTTP bool, statusCode int64) string {
 	if err == nil {
 		if isHTTP && statusCode >= 400 {
-			return strconv.FormatInt(statusCode, 10)
+			return mapHTTPStatusCode(int(statusCode))
 		}
 		return "OK"
 	}
@@ -357,11 +359,50 @@ func computeErrorType(err error, isHTTP bool, statusCode int64) string {
 		}
 	}
 
-	if isHTTP && statusCode >= 400 {
-		return strconv.FormatInt(statusCode, 10)
+	if isHTTP {
+		var apiErr *googleapi.Error
+		if errors.As(err, &apiErr) {
+			return mapHTTPStatusCode(apiErr.Code)
+		}
+		if statusCode >= 400 {
+			return mapHTTPStatusCode(int(statusCode))
+		}
 	}
 
 	return "UNKNOWN"
+}
+
+// mapHTTPStatusCode converts an HTTP status code to a canonical API error string.
+// If there is no direct mapping, it returns the numeric string.
+func mapHTTPStatusCode(code int) string {
+	switch code {
+	case 400:
+		return "INVALID_ARGUMENT"
+	case 401:
+		return "UNAUTHENTICATED"
+	case 403:
+		return "PERMISSION_DENIED"
+	case 404:
+		return "NOT_FOUND"
+	case 409:
+		return "ABORTED"
+	case 416:
+		return "OUT_OF_RANGE"
+	case 429:
+		return "RESOURCE_EXHAUSTED"
+	case 499:
+		return "CANCELLED"
+	case 500:
+		return "INTERNAL"
+	case 501:
+		return "UNIMPLEMENTED"
+	case 503:
+		return "UNAVAILABLE"
+	case 504:
+		return "DEADLINE_EXCEEDED"
+	default:
+		return strconv.Itoa(code)
+	}
 }
 
 func (cm *clientMetrics) recordRPC(ctx context.Context, method, target string, duration float64, err error) {
