@@ -1,5 +1,10 @@
 name: validate go modules
-
+# The purpose of this action is to maintain a simple invariant that all the SDKs we release
+# supported versions of go in accordance with our policy:
+# https://docs.cloud.google.com/go/getting-started/supported-go-versions
+#
+# In a nutshell, this action runs on PRs to identify any go module files that declare an atypical
+# Go release version and flag them to the reviewer for scrutiny.
 on:
   pull_request:
     paths:
