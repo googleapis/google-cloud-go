@@ -403,23 +403,24 @@ func (w *Writer) Close() error {
 // and records request body size metrics and trace span completion.
 func (w *Writer) markClosed(err error) error {
 	w.mu.Lock()
-	defer w.mu.Unlock()
 	w.closed = true
 	if w.err == nil && err != nil {
 		w.err = err
 	}
+	closingErr := w.err
+	total := atomic.LoadInt64(&w.bytesWritten)
+	w.mu.Unlock()
+
 	if state := metricsStateFromContext(w.ctx); state != nil {
-		if state.metrics != nil {
-			if total := atomic.LoadInt64(&w.bytesWritten); total > 0 {
-				state.metrics.requestBodySize.Record(w.ctx, total, metric.WithAttributes(attribute.String("rpc.method", "WriteObject")))
-			}
+		if state.metrics != nil && total > 0 {
+			state.metrics.requestBodySize.Record(w.ctx, total, metric.WithAttributes(attribute.String("rpc.method", "WriteObject")))
 		}
 		if state.record != nil {
-			state.record(w.err)
+			state.record(closingErr)
 		}
 	}
-	endSpan(w.ctx, w.err)
-	return w.err
+	endSpan(w.ctx, closingErr)
+	return closingErr
 }
 
 func (w *Writer) openWriter() (err error) {

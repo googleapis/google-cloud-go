@@ -175,17 +175,21 @@ func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (client *g
 		}
 	}
 
-	var project string
-	if c, err := transport.Creds(ctx, s.clientOption...); err == nil {
-		project = c.ProjectID
-	}
-	clientMetrics, metricsCleanup := initClientMetrics(ctx, project, &config)
-	if clientMetrics != nil {
-		unaryInt, streamInt := metricsInterceptors(clientMetrics)
-		s.clientOption = append(s.clientOption,
-			option.WithGRPCDialOption(grpc.WithChainUnaryInterceptor(unaryInt)),
-			option.WithGRPCDialOption(grpc.WithChainStreamInterceptor(streamInt)),
-		)
+	var clientMetrics *clientMetrics
+	var metricsCleanup func()
+	if isOtelMetricsEnabled(&config) {
+		var project string
+		if c, err := transport.Creds(ctx, s.clientOption...); err == nil {
+			project = c.ProjectID
+		}
+		clientMetrics, metricsCleanup = initClientMetrics(ctx, project, &config)
+		if clientMetrics != nil {
+			unaryInt, streamInt := metricsInterceptors(clientMetrics)
+			s.clientOption = append(s.clientOption,
+				option.WithGRPCDialOption(grpc.WithChainUnaryInterceptor(unaryInt)),
+				option.WithGRPCDialOption(grpc.WithChainStreamInterceptor(streamInt)),
+			)
+		}
 	}
 
 	if metricsCleanup != nil {

@@ -124,11 +124,15 @@ func newHTTPStorageClient(ctx context.Context, opts ...storageOption) (client st
 		return nil, fmt.Errorf("dialing: %w", err)
 	}
 
-	var project string
-	if creds != nil {
-		project, _ = creds.ProjectID(ctx)
+	var clientMetrics *clientMetrics
+	var metricsCleanup func()
+	if isOtelMetricsEnabled(&config) {
+		var project string
+		if creds != nil {
+			project, _ = creds.ProjectID(ctx)
+		}
+		clientMetrics, metricsCleanup = initClientMetrics(ctx, project, &config)
 	}
-	clientMetrics, metricsCleanup := initClientMetrics(ctx, project, &config)
 	if metricsCleanup != nil {
 		defer func() {
 			if err != nil {

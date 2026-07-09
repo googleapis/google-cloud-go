@@ -704,7 +704,7 @@ func (w *wrappedClientStream) record(err error) {
 }
 
 func (w *wrappedClientStream) recordTTFB(m interface{}) {
-	if !w.recordedTTFB.CompareAndSwap(false, true) {
+	if w.recordedTTFB.Load() {
 		return
 	}
 	isTTFB := false
@@ -728,7 +728,7 @@ func (w *wrappedClientStream) recordTTFB(m interface{}) {
 		isTTFB = true
 	}
 
-	if isTTFB {
+	if isTTFB && w.recordedTTFB.CompareAndSwap(false, true) {
 		duration := time.Since(w.startTime).Seconds()
 		state := metricsStateFromContext(w.ctx)
 		logicalMethod := methodName
