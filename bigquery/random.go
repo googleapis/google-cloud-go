@@ -31,3 +31,8 @@ func randomID() string {
 	}
 	return hex.EncodeToString(b[:]) // 32 alphanumeric hex characters (e.g. "4a7f9c2d1e8b3a0f...")
 }
+
+// Seed is a no-op.
+//
+// Deprecated: Seed is no longer supported as random IDs are now cryptographically secure.
+func Seed(s int64) {}
