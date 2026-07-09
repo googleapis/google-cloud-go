@@ -37,7 +37,8 @@ type internalWriter interface {
 	// CloseWithError terminates the write operation and sets its status.
 	// Note that CloseWithError always returns nil.
 	CloseWithError(error) error
-	// Set final object checksum for appendable objects
+	// Set final object checksum for appendable objects after write
+	// and before finalization.
 	setAppendFinalCRC32C(*uint32)
 }
 
@@ -206,12 +207,13 @@ type Writer struct {
 	// in future releases. It is not yet recommended for production use.
 	ParallelUploadConfig ParallelUploadConfig
 
-	// AppendFinalCRC32C is the final object checksum to be used for the uploaded object
-	// when performing an append operation.
-	// This field has to be set on the writer before calling the close operation. If this field
-	// is not set, no checksum validation will be performed for the complete object.
-	// However, chunk level validation will be performed for all chunks if writer.DisableAutoChecksum
-	// is not set.
+	// AppendFinalCRC32C is the final object checksum to be used for the validation of
+	// appendable object when using gRPC writer. This field has to be set on the writer
+	// before calling the close operation. Alternatively, it can be assigned a pointer to
+	// a local variable at initialization, and the underlying value can be updated before
+	// Close is called. If this field is not set, no checksum validation will be
+	// performed for the complete object. However, chunk level validation will be
+	// performed for all chunks if writer.DisableAutoChecksum is not set.
 	AppendFinalCRC32C *uint32
 
 	ctx context.Context

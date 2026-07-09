@@ -1370,6 +1370,15 @@ type AppendableWriterOpts struct {
 	ProgressFunc func(int64)
 	// FinalizeOnClose: See Writer.FinalizeOnClose.
 	FinalizeOnClose bool
+	// DisableAutoChecksum: See Writer.DisableAutoChecksum.
+	DisableAutoChecksum bool
+	// SendCRC32C: See Writer.SendCRC32C.
+	SendCRC32C bool
+	// CRC32C of the whole object.
+	// See Writer.CRC32C.
+	CRC32C uint32
+	// MD5: See Writer.MD5.
+	MD5 []byte
 }
 
 func (opts *AppendableWriterOpts) apply(w *Writer) {
@@ -1380,6 +1389,10 @@ func (opts *AppendableWriterOpts) apply(w *Writer) {
 	w.ProgressFunc = opts.ProgressFunc
 	w.ChunkSize = opts.ChunkSize
 	w.FinalizeOnClose = opts.FinalizeOnClose
+	w.DisableAutoChecksum = opts.DisableAutoChecksum
+	w.CRC32C = opts.CRC32C
+	w.SendCRC32C = opts.SendCRC32C
+	w.MD5 = opts.MD5
 }
 
 func (o *ObjectHandle) validate() error {

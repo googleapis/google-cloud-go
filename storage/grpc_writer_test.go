@@ -33,9 +33,9 @@ func TestGetObjectChecksums(t *testing.T) {
 		fullObjectChecksum  func() *uint32
 		finishWrite         bool
 		sendCRC32C          bool
-		takeoverWriter      bool
 		disableAutoChecksum bool
 		attrs               *ObjectAttrs
+		append              bool
 		want                *storagepb.ObjectChecksums
 	}{
 		{
@@ -111,6 +111,28 @@ func TestGetObjectChecksums(t *testing.T) {
 			attrs:               &ObjectAttrs{},
 			want:                nil,
 		},
+		{
+			name:                "Append operation without final user-provided CRC32C (callback returns nil)",
+			fullObjectChecksum:  func() *uint32 { return nil },
+			finishWrite:         true,
+			append:              true,
+			sendCRC32C:          false,
+			disableAutoChecksum: false,
+			attrs:               &ObjectAttrs{},
+			want:                nil,
+		},
+		{
+			name:                "Append operation with final CRC32C and initial CRC32C",
+			fullObjectChecksum:  func() *uint32 { return proto.Uint32(123) },
+			finishWrite:         true,
+			append:              true,
+			sendCRC32C:          false,
+			disableAutoChecksum: false,
+			attrs:               &ObjectAttrs{CRC32C: 456},
+			want: &storagepb.ObjectChecksums{
+				Crc32C: proto.Uint32(123),
+			},
+		},
 	}
 
 	for _, tt := range tests {
@@ -121,6 +143,7 @@ func TestGetObjectChecksums(t *testing.T) {
 				objectAttrs:         tt.attrs,
 				fullObjectChecksum:  tt.fullObjectChecksum,
 				finishWrite:         tt.finishWrite,
+				append:              tt.append,
 			})
 			if !proto.Equal(got, tt.want) {
 				t.Errorf("getObjectChecksums() = %v, want %v", got, tt.want)

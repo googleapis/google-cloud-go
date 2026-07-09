@@ -972,35 +972,26 @@ func getObjectChecksums(params *getObjectChecksumsParams) *storagepb.ObjectCheck
 	}
 
 	// For append operations, send user's final checksum on last write op if available.
+	// Auto checksum is not supported for appendable writes.
 	if params.append && params.fullObjectChecksum != nil {
 		if val := params.fullObjectChecksum(); val != nil {
-			return &storagepb.ObjectChecksums{
-				Crc32C: val,
-			}
+			return &storagepb.ObjectChecksums{Crc32C: val}
 		}
 	}
+
 	// send user's checksum on last write op if available
 	if params.sendCRC32C || (params.objectAttrs != nil && params.objectAttrs.MD5 != nil) {
 		return toProtoChecksums(params.sendCRC32C, params.objectAttrs)
 	}
 
-	// TODO(b/461982277): Enable checksum validation for appendable takeover writer gRPC
-	if params.disableAutoChecksum {
+	if params.append || params.disableAutoChecksum || params.fullObjectChecksum == nil {
 		return nil
 	}
-	if params.fullObjectChecksum == nil {
-		return nil
+
+	if val := params.fullObjectChecksum(); val != nil {
+		return &storagepb.ObjectChecksums{Crc32C: val}
 	}
-	var fullObjectChecksum *uint32
-	if params.fullObjectChecksum != nil {
-		fullObjectChecksum = params.fullObjectChecksum()
-	}
-	if fullObjectChecksum == nil {
-		return nil
-	}
-	return &storagepb.ObjectChecksums{
-		Crc32C: fullObjectChecksum,
-	}
+	return nil
 }
 
 type gRPCBidiWriteBufferSender interface {
