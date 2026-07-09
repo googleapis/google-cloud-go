@@ -25,5 +25,5 @@ jobs:
       id: validate
       run: |
         cd internal/actions
-        go run ./cmd/modvalidate --enforced_version=1.25.0 --dir=${{ github.workspace }}
+        go run ./cmd/modvalidator --enforced_version=1.25.0 --dir=${{ github.workspace }}
         
