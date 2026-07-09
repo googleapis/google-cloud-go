@@ -208,11 +208,13 @@ func extractPeerInfo(headerMD metadata.MD, trailerMD metadata.MD) (*btpb.PeerInf
 	return &peerInfo, nil
 }
 
-// transportTypeName maps the PeerInfo transport type enum to the short
+// TransportTypeName maps the PeerInfo transport type enum to the short
 // label used in metric attributes and debug UIs (e.g. "cloudpath",
 // "session_directpath"). Prefer this over .String(), which yields the
-// verbose "TRANSPORT_TYPE_…" proto enum names.
-func transportTypeName(tt btpb.PeerInfo_TransportType) string {
+// verbose "TRANSPORT_TYPE_…" proto enum names. Exported so the transport
+// package's session tracer + debug surfaces share the same mapping
+// without duplicating the switch.
+func TransportTypeName(tt btpb.PeerInfo_TransportType) string {
 	switch tt {
 	case btpb.PeerInfo_TRANSPORT_TYPE_EXTERNAL:
 		return "external"
