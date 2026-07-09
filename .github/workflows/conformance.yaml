@@ -39,15 +39,17 @@ jobs:
         go: [ '1.25', '1.26']
         folders: ['bigtable']
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
       with:
         path: google-cloud-go
-    - uses: actions/checkout@v6
+        persist-credentials: false
+    - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
       with:
         repository: googleapis/cloud-bigtable-clients-test
         ref: v0.0.3
         path: cloud-bigtable-clients-test
-    - uses: actions/setup-go@v6
+        persist-credentials: false
+    - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6
       with:
           go-version: ${{ matrix.go }}
     - run: go version

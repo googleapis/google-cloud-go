@@ -620,7 +620,7 @@ func (c *grpcStorageClient) ListObjects(ctx context.Context, bucket string, q *Q
 			gitr = c.raw.ListObjects(ctx, req, s.gax...)
 			objects, token, err = gitr.InternalFetch(pageSize, pageToken)
 			return err
-		}, s.retry, s.idempotent)
+		}, s.retry, s.idempotent, withOperation("ListObjects"), withBucket(bucket), withObject(it.query.Prefix))
 		if err != nil {
 			return "", formatBucketError(err)
 		}
@@ -1369,7 +1369,7 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 			}
 			err = decoder.readFullObjectResponse()
 			return err
-		}, s.retry, s.idempotent)
+		}, s.retry, s.idempotent, withOperation("ReadObject"), withBucket(params.bucket), withObject(params.object))
 		if err != nil {
 			// Close the stream context we just created to ensure we don't leak
 			// resources.

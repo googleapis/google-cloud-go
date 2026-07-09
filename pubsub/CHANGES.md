@@ -1,5 +1,19 @@
 # Changes
 
+## [1.50.4](https://github.com/googleapis/google-cloud-go/compare/pubsub/v1.50.3...pubsub/v1.50.4) (2026-07-08)
+
+
+### Bug Fixes
+
+* **pubsub:** Fix concurrent map write ([8fa634a](https://github.com/googleapis/google-cloud-go/commit/8fa634ae2975377077b84fe965e5c290d5584515))
+
+## [1.50.3](https://github.com/googleapis/google-cloud-go/compare/pubsub/v1.50.2...pubsub/v1.50.3) (2026-07-07)
+
+
+### Bug Fixes
+
+* **pubsub/v2:** Release flow control credit on scheduler.Add error ([#20079](https://github.com/googleapis/google-cloud-go/issues/20079)) ([18d7b77](https://github.com/googleapis/google-cloud-go/commit/18d7b77ad527cb28e98f7b670e9926e781b2535d)), closes [#20078](https://github.com/googleapis/google-cloud-go/issues/20078)
+
 ## [1.50.2](https://github.com/googleapis/google-cloud-go/releases/tag/pubsub%2Fv1.50.2) (2026-03-31)
 
 ### Bug Fixes

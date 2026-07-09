@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 language: go
-version: v0.22.0
+version: v0.25.0
 repo: googleapis/google-cloud-go
 sources:
   googleapis:
@@ -104,10 +104,6 @@ libraries:
     version: 1.12.0
     apis:
       - path: google/cloud/apigeeconnect/v1
-  - name: apigeeregistry
-    version: 1.0.0
-    apis:
-      - path: google/cloud/apigeeregistry/v1
   - name: apihub
     version: 1.0.0
     apis:
@@ -188,7 +184,7 @@ libraries:
     apis:
       - path: google/cloud/auditmanager/v1
   - name: auth
-    version: 0.20.0
+    version: 0.21.0
     keep:
       - README.md
       - internal/version.go
@@ -867,7 +863,7 @@ libraries:
     go:
       nested_module: logadmin
   - name: longrunning
-    version: 1.1.0
+    version: 1.2.0
     apis:
       - path: google/longrunning
         go:
@@ -1072,7 +1068,7 @@ libraries:
       - README.md
       - internal/version.go
   - name: pubsub
-    version: 1.50.2
+    version: 1.50.4
     keep:
       - README.md
       - internal/version.go
@@ -1080,7 +1076,7 @@ libraries:
     go:
       nested_module: v2
   - name: pubsub/v2
-    version: 2.6.0
+    version: 2.6.1
     apis:
       - path: google/pubsub/v1
         go:
@@ -1095,7 +1091,7 @@ libraries:
       - README.md
     skip_release: true
   - name: pubsublite
-    version: 1.8.2
+    version: 1.9.0
     apis:
       - path: google/cloud/pubsublite/v1
         go:
