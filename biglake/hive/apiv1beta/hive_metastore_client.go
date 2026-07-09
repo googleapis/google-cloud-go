@@ -566,7 +566,7 @@ func defaultHiveMetastoreRESTCallOptions() *HiveMetastoreCallOptions {
 	}
 }
 
-// internalHiveMetastoreClient is an interface that defines the methods available from BigLake API.
+// internalHiveMetastoreClient is an interface that defines the methods available from Lakehouse API.
 type internalHiveMetastoreClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -592,7 +592,7 @@ type internalHiveMetastoreClient interface {
 	ListPartitions(context.Context, *hivepb.ListPartitionsRequest, ...gax.CallOption) (hivepb.HiveMetastoreService_ListPartitionsClient, error)
 }
 
-// HiveMetastoreClient is a client for interacting with BigLake API.
+// HiveMetastoreClient is a client for interacting with Lakehouse API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // Hive Metastore Service is a biglake service that allows users to manage
@@ -740,7 +740,7 @@ func (c *HiveMetastoreClient) ListPartitions(ctx context.Context, req *hivepb.Li
 	return c.internalClient.ListPartitions(ctx, req, opts...)
 }
 
-// hiveMetastoreGRPCClient is a client for interacting with BigLake API over gRPC transport.
+// hiveMetastoreGRPCClient is a client for interacting with Lakehouse API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type hiveMetastoreGRPCClient struct {

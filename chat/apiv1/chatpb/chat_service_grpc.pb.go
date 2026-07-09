@@ -67,6 +67,11 @@ const (
 	ChatService_GetSpaceReadState_FullMethodName              = "/google.chat.v1.ChatService/GetSpaceReadState"
 	ChatService_UpdateSpaceReadState_FullMethodName           = "/google.chat.v1.ChatService/UpdateSpaceReadState"
 	ChatService_GetThreadReadState_FullMethodName             = "/google.chat.v1.ChatService/GetThreadReadState"
+	ChatService_GetAvailability_FullMethodName                = "/google.chat.v1.ChatService/GetAvailability"
+	ChatService_MarkAsActive_FullMethodName                   = "/google.chat.v1.ChatService/MarkAsActive"
+	ChatService_MarkAsAway_FullMethodName                     = "/google.chat.v1.ChatService/MarkAsAway"
+	ChatService_MarkAsDoNotDisturb_FullMethodName             = "/google.chat.v1.ChatService/MarkAsDoNotDisturb"
+	ChatService_UpdateAvailability_FullMethodName             = "/google.chat.v1.ChatService/UpdateAvailability"
 	ChatService_GetSpaceEvent_FullMethodName                  = "/google.chat.v1.ChatService/GetSpaceEvent"
 	ChatService_ListSpaceEvents_FullMethodName                = "/google.chat.v1.ChatService/ListSpaceEvents"
 	ChatService_GetSpaceNotificationSetting_FullMethodName    = "/google.chat.v1.ChatService/GetSpaceNotificationSetting"
@@ -881,6 +886,77 @@ type ChatServiceClient interface {
 	//   - `https://www.googleapis.com/auth/chat.users.readstate.readonly`
 	//   - `https://www.googleapis.com/auth/chat.users.readstate`
 	GetThreadReadState(ctx context.Context, in *GetThreadReadStateRequest, opts ...grpc.CallOption) (*ThreadReadState, error)
+	// Returns availability information for a human user in Google Chat. For
+	// example, this can be used to check if a user is online or away, or to
+	// retrieve their custom status message.
+	//
+	// This method only retrieves the authenticated user's availability.
+	//
+	// Requires [user
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with one of the following [authorization
+	// scopes](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.users.availability.readonly`
+	//   - `https://www.googleapis.com/auth/chat.users.availability`
+	GetAvailability(ctx context.Context, in *GetAvailabilityRequest, opts ...grpc.CallOption) (*Availability, error)
+	// Marks user as `ACTIVE` in Google Chat.
+	//
+	// Sets the user's availability state to `ACTIVE`. The `ACTIVE` state
+	// lasts until the specified expiration, at which point the user's state
+	// becomes `AWAY`. Note that if the user is actively using Chat, the `ACTIVE`
+	// state duration may extend beyond the provided expiration.
+	//
+	// This method only updates the authenticated user's availability.
+	//
+	// Requires [user
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with [authorization
+	// scope](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.users.availability`
+	MarkAsActive(ctx context.Context, in *MarkAsActiveRequest, opts ...grpc.CallOption) (*Availability, error)
+	// Marks user as `AWAY` in Google Chat.
+	//
+	// Sets the user's state to away and is not affected by the user's
+	// activity.
+	//
+	// This method only updates the authenticated user's availability.
+	//
+	// Requires [user
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with [authorization
+	// scope](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.users.availability`
+	MarkAsAway(ctx context.Context, in *MarkAsAwayRequest, opts ...grpc.CallOption) (*Availability, error)
+	// Marks user as `DO_NOT_DISTURB` in Google Chat.
+	//
+	// Sets a user's availability state to `DO_NOT_DISTURB` until a specified
+	// expiration time.
+	// When in `DO_NOT_DISTURB`, users typically won't receive notifications.
+	//
+	// This method only updates the authenticated user's availability.
+	//
+	// Requires [user
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with [authorization
+	// scope](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.users.availability`
+	MarkAsDoNotDisturb(ctx context.Context, in *MarkAsDoNotDisturbRequest, opts ...grpc.CallOption) (*Availability, error)
+	// Updates availability information for a human user. Only the `custom_status`
+	// field can be updated through this method.
+	//
+	// This method only updates the authenticated user's availability.
+	//
+	// Requires [user
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with one of the following [authorization
+	// scopes](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.users.availability`
+	UpdateAvailability(ctx context.Context, in *UpdateAvailabilityRequest, opts ...grpc.CallOption) (*Availability, error)
 	// Returns an event from a Google Chat space. The [event
 	// payload](https://developers.google.com/workspace/chat/api/reference/rest/v1/spaces.spaceEvents#SpaceEvent.FIELDS.oneof_payload)
 	// contains the most recent version of the resource that changed. For example,
@@ -1371,6 +1447,51 @@ func (c *chatServiceClient) UpdateSpaceReadState(ctx context.Context, in *Update
 func (c *chatServiceClient) GetThreadReadState(ctx context.Context, in *GetThreadReadStateRequest, opts ...grpc.CallOption) (*ThreadReadState, error) {
 	out := new(ThreadReadState)
 	err := c.cc.Invoke(ctx, ChatService_GetThreadReadState_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *chatServiceClient) GetAvailability(ctx context.Context, in *GetAvailabilityRequest, opts ...grpc.CallOption) (*Availability, error) {
+	out := new(Availability)
+	err := c.cc.Invoke(ctx, ChatService_GetAvailability_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *chatServiceClient) MarkAsActive(ctx context.Context, in *MarkAsActiveRequest, opts ...grpc.CallOption) (*Availability, error) {
+	out := new(Availability)
+	err := c.cc.Invoke(ctx, ChatService_MarkAsActive_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *chatServiceClient) MarkAsAway(ctx context.Context, in *MarkAsAwayRequest, opts ...grpc.CallOption) (*Availability, error) {
+	out := new(Availability)
+	err := c.cc.Invoke(ctx, ChatService_MarkAsAway_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *chatServiceClient) MarkAsDoNotDisturb(ctx context.Context, in *MarkAsDoNotDisturbRequest, opts ...grpc.CallOption) (*Availability, error) {
+	out := new(Availability)
+	err := c.cc.Invoke(ctx, ChatService_MarkAsDoNotDisturb_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *chatServiceClient) UpdateAvailability(ctx context.Context, in *UpdateAvailabilityRequest, opts ...grpc.CallOption) (*Availability, error) {
+	out := new(Availability)
+	err := c.cc.Invoke(ctx, ChatService_UpdateAvailability_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -2277,6 +2398,77 @@ type ChatServiceServer interface {
 	//   - `https://www.googleapis.com/auth/chat.users.readstate.readonly`
 	//   - `https://www.googleapis.com/auth/chat.users.readstate`
 	GetThreadReadState(context.Context, *GetThreadReadStateRequest) (*ThreadReadState, error)
+	// Returns availability information for a human user in Google Chat. For
+	// example, this can be used to check if a user is online or away, or to
+	// retrieve their custom status message.
+	//
+	// This method only retrieves the authenticated user's availability.
+	//
+	// Requires [user
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with one of the following [authorization
+	// scopes](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.users.availability.readonly`
+	//   - `https://www.googleapis.com/auth/chat.users.availability`
+	GetAvailability(context.Context, *GetAvailabilityRequest) (*Availability, error)
+	// Marks user as `ACTIVE` in Google Chat.
+	//
+	// Sets the user's availability state to `ACTIVE`. The `ACTIVE` state
+	// lasts until the specified expiration, at which point the user's state
+	// becomes `AWAY`. Note that if the user is actively using Chat, the `ACTIVE`
+	// state duration may extend beyond the provided expiration.
+	//
+	// This method only updates the authenticated user's availability.
+	//
+	// Requires [user
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with [authorization
+	// scope](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.users.availability`
+	MarkAsActive(context.Context, *MarkAsActiveRequest) (*Availability, error)
+	// Marks user as `AWAY` in Google Chat.
+	//
+	// Sets the user's state to away and is not affected by the user's
+	// activity.
+	//
+	// This method only updates the authenticated user's availability.
+	//
+	// Requires [user
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with [authorization
+	// scope](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.users.availability`
+	MarkAsAway(context.Context, *MarkAsAwayRequest) (*Availability, error)
+	// Marks user as `DO_NOT_DISTURB` in Google Chat.
+	//
+	// Sets a user's availability state to `DO_NOT_DISTURB` until a specified
+	// expiration time.
+	// When in `DO_NOT_DISTURB`, users typically won't receive notifications.
+	//
+	// This method only updates the authenticated user's availability.
+	//
+	// Requires [user
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with [authorization
+	// scope](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.users.availability`
+	MarkAsDoNotDisturb(context.Context, *MarkAsDoNotDisturbRequest) (*Availability, error)
+	// Updates availability information for a human user. Only the `custom_status`
+	// field can be updated through this method.
+	//
+	// This method only updates the authenticated user's availability.
+	//
+	// Requires [user
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with one of the following [authorization
+	// scopes](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.users.availability`
+	UpdateAvailability(context.Context, *UpdateAvailabilityRequest) (*Availability, error)
 	// Returns an event from a Google Chat space. The [event
 	// payload](https://developers.google.com/workspace/chat/api/reference/rest/v1/spaces.spaceEvents#SpaceEvent.FIELDS.oneof_payload)
 	// contains the most recent version of the resource that changed. For example,
@@ -2576,6 +2768,21 @@ func (UnimplementedChatServiceServer) UpdateSpaceReadState(context.Context, *Upd
 }
 func (UnimplementedChatServiceServer) GetThreadReadState(context.Context, *GetThreadReadStateRequest) (*ThreadReadState, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetThreadReadState not implemented")
+}
+func (UnimplementedChatServiceServer) GetAvailability(context.Context, *GetAvailabilityRequest) (*Availability, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAvailability not implemented")
+}
+func (UnimplementedChatServiceServer) MarkAsActive(context.Context, *MarkAsActiveRequest) (*Availability, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MarkAsActive not implemented")
+}
+func (UnimplementedChatServiceServer) MarkAsAway(context.Context, *MarkAsAwayRequest) (*Availability, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MarkAsAway not implemented")
+}
+func (UnimplementedChatServiceServer) MarkAsDoNotDisturb(context.Context, *MarkAsDoNotDisturbRequest) (*Availability, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MarkAsDoNotDisturb not implemented")
+}
+func (UnimplementedChatServiceServer) UpdateAvailability(context.Context, *UpdateAvailabilityRequest) (*Availability, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateAvailability not implemented")
 }
 func (UnimplementedChatServiceServer) GetSpaceEvent(context.Context, *GetSpaceEventRequest) (*SpaceEvent, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetSpaceEvent not implemented")
@@ -3198,6 +3405,96 @@ func _ChatService_GetThreadReadState_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ChatService_GetAvailability_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAvailabilityRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ChatServiceServer).GetAvailability(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ChatService_GetAvailability_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ChatServiceServer).GetAvailability(ctx, req.(*GetAvailabilityRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ChatService_MarkAsActive_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MarkAsActiveRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ChatServiceServer).MarkAsActive(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ChatService_MarkAsActive_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ChatServiceServer).MarkAsActive(ctx, req.(*MarkAsActiveRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ChatService_MarkAsAway_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MarkAsAwayRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ChatServiceServer).MarkAsAway(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ChatService_MarkAsAway_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ChatServiceServer).MarkAsAway(ctx, req.(*MarkAsAwayRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ChatService_MarkAsDoNotDisturb_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MarkAsDoNotDisturbRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ChatServiceServer).MarkAsDoNotDisturb(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ChatService_MarkAsDoNotDisturb_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ChatServiceServer).MarkAsDoNotDisturb(ctx, req.(*MarkAsDoNotDisturbRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ChatService_UpdateAvailability_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateAvailabilityRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ChatServiceServer).UpdateAvailability(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ChatService_UpdateAvailability_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ChatServiceServer).UpdateAvailability(ctx, req.(*UpdateAvailabilityRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _ChatService_GetSpaceEvent_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetSpaceEventRequest)
 	if err := dec(in); err != nil {
@@ -3530,6 +3827,26 @@ var ChatService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetThreadReadState",
 			Handler:    _ChatService_GetThreadReadState_Handler,
+		},
+		{
+			MethodName: "GetAvailability",
+			Handler:    _ChatService_GetAvailability_Handler,
+		},
+		{
+			MethodName: "MarkAsActive",
+			Handler:    _ChatService_MarkAsActive_Handler,
+		},
+		{
+			MethodName: "MarkAsAway",
+			Handler:    _ChatService_MarkAsAway_Handler,
+		},
+		{
+			MethodName: "MarkAsDoNotDisturb",
+			Handler:    _ChatService_MarkAsDoNotDisturb_Handler,
+		},
+		{
+			MethodName: "UpdateAvailability",
+			Handler:    _ChatService_UpdateAvailability_Handler,
 		},
 		{
 			MethodName: "GetSpaceEvent",
