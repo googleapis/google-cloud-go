@@ -28,7 +28,7 @@ type reqMsgType int
 
 const (
 	reqMsgOpenSession reqMsgType = iota
-	reqMsgVirtualRpc
+	reqMsgVirtualRPC
 	reqMsgCloseSession
 	reqMsgOther
 	numReqMsgTypes
@@ -37,8 +37,8 @@ const (
 func (t reqMsgType) String() string {
 	switch t {
 	case reqMsgOpenSession:
-		return "OpenSession"
-	case reqMsgVirtualRpc:
+		return "OpenSessionRequest"
+	case reqMsgVirtualRPC:
 		return "VirtualRpc"
 	case reqMsgCloseSession:
 		return "CloseSession"
@@ -55,7 +55,7 @@ func classifyReq(req *spb.SessionRequest) reqMsgType {
 	case *spb.SessionRequest_OpenSession:
 		return reqMsgOpenSession
 	case *spb.SessionRequest_VirtualRpc:
-		return reqMsgVirtualRpc
+		return reqMsgVirtualRPC
 	case *spb.SessionRequest_CloseSession:
 		return reqMsgCloseSession
 	default:
@@ -67,7 +67,7 @@ type respMsgType int
 
 const (
 	respMsgOpenSession respMsgType = iota
-	respMsgVirtualRpc
+	respMsgVirtualRPC
 	respMsgError
 	respMsgSessionParameters
 	respMsgHeartbeat
@@ -80,8 +80,8 @@ const (
 func (t respMsgType) String() string {
 	switch t {
 	case respMsgOpenSession:
-		return "OpenSession"
-	case respMsgVirtualRpc:
+		return "OpenSessionResponse"
+	case respMsgVirtualRPC:
 		return "VirtualRpc"
 	case respMsgError:
 		return "Error"
@@ -106,7 +106,7 @@ func classifyResp(resp *spb.SessionResponse) respMsgType {
 	case *spb.SessionResponse_OpenSession:
 		return respMsgOpenSession
 	case *spb.SessionResponse_VirtualRpc:
-		return respMsgVirtualRpc
+		return respMsgVirtualRPC
 	case *spb.SessionResponse_Error:
 		return respMsgError
 	case *spb.SessionResponse_SessionParameters:
