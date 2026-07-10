@@ -48,6 +48,16 @@ const (
 	// MaxPublishRequestBytes is the maximum size of a single publish request
 	// in bytes, as defined by the PubSub service.
 	MaxPublishRequestBytes = 1e7
+
+	// hedging is disabled by default but if HedgingSettings is set to a zero value,
+	// we will use a default value of 50ms.
+	defaultHedgingDelay time.Duration = 50 * time.Millisecond
+)
+
+// Default Token Bucket configurations
+const (
+	defaultHedgingRatio     float64 = 0.1
+	defaultMaxHedgingTokens float64 = 100.0
 )
 
 // ErrOversizedMessage indicates that a message's size exceeds MaxPublishRequestBytes.
@@ -78,6 +88,88 @@ type Publisher struct {
 	// This is configured at client instantiation, and allows
 	// disabling tracing even when a tracer provider is detectd.
 	enableTracing bool
+
+	// if non-zero, publish requests will be hedged after this delay.
+	// The first request will be sent immediately, and if it has not
+	// completed after the hedging delay, a second request will be sent.
+	// The first response to arrive will be used, and the other request
+	// will be cancelled.
+	hedgingDelay time.Duration
+
+	// the current number of tokens which limits the number of hedged requests
+	// that can be sent concurrently.
+	hedgingTokenBucket float64
+
+	hedgingMu      sync.Mutex
+	hedgingQueue   []*hedgedRequest
+	hedgingStopped bool
+}
+
+type hedgedRequest struct {
+	sendAfter time.Time
+	exec      func()
+	isDone    func() bool
+}
+
+// cancellationSharer coordinates cancellation between all publish attempts.
+// When one attempt completes, it cancels all other attempts to minimize
+// duplicate messages on the server.
+type cancellationSharer struct {
+	mu      sync.Mutex
+	cancels map[int]context.CancelFunc
+	done    bool
+	nextID  int
+}
+
+func newCancellationSharer() *cancellationSharer {
+	return &cancellationSharer{
+		cancels: make(map[int]context.CancelFunc),
+	}
+}
+
+func (cs *cancellationSharer) isDone() bool {
+	cs.mu.Lock()
+	defer cs.mu.Unlock()
+	return cs.done
+}
+
+// add registers a cancel function and returns its ID. Returns -1 if already done.
+func (cs *cancellationSharer) add(cancel context.CancelFunc) int {
+	cs.mu.Lock()
+	defer cs.mu.Unlock()
+	if cs.done {
+		cancel()
+		return -1
+	}
+	id := cs.nextID
+	cs.nextID++
+	cs.cancels[id] = cancel
+	return id
+}
+
+// win marks the coordinator as resolved by winnerID and cancels all other attempts.
+func (cs *cancellationSharer) win(winnerID int) {
+	cs.mu.Lock()
+	defer cs.mu.Unlock()
+	if cs.done {
+		return
+	}
+	cs.done = true
+	for id, cancel := range cs.cancels {
+		if id != winnerID {
+			cancel()
+		}
+	}
+}
+
+// cancelAll cancels all registered attempt contexts.
+func (cs *cancellationSharer) cancelAll() {
+	cs.mu.Lock()
+	defer cs.mu.Unlock()
+	cs.done = true
+	for _, cancel := range cs.cancels {
+		cancel()
+	}
 }
 
 // PublishSettings control the bundling of published messages.
@@ -111,6 +203,23 @@ type PublishSettings struct {
 	// CompressionBytesThreshold defines the threshold (in bytes) above which messages
 	// are compressed for transport. Only takes effect if EnableCompression is true.
 	CompressionBytesThreshold int
+
+	HedgingSettings *HedgingSettings
+}
+
+type HedgingSettings struct {
+	Delay time.Duration
+
+	// MaxHedgedAttempts is the maximum number of hedged requests to send.
+	// If 0, there is no limit on hedged attempts (dynamic multi-hedging).
+	// If set to 1, at most 1 hedged request is sent per bundle (single hedging).
+	MaxHedgedAttempts int
+
+	// MaxTokens is the maximum number of tokens for the hedging token bucket.
+	MaxTokens float64
+
+	// TokenRatio is the amount of tokens added to the bucket per successful publish.
+	TokenRatio float64
 }
 
 func (ps *PublishSettings) shouldCompress(batchSize int) bool {
@@ -154,11 +263,17 @@ func (c *Client) Publisher(topicNameOrID string) *Publisher {
 }
 
 func newPublisher(c *Client, name string) *Publisher {
+	var maxTokens float64 = defaultMaxHedgingTokens
+	if DefaultPublishSettings.HedgingSettings != nil && DefaultPublishSettings.HedgingSettings.MaxTokens > 0 {
+		maxTokens = DefaultPublishSettings.HedgingSettings.MaxTokens
+	}
+
 	return &Publisher{
-		c:               c,
-		name:            name,
-		PublishSettings: DefaultPublishSettings,
-		enableTracing:   c.enableTracing,
+		c:                  c,
+		name:               name,
+		PublishSettings:    DefaultPublishSettings,
+		enableTracing:      c.enableTracing,
+		hedgingTokenBucket: maxTokens,
 	}
 }
 
@@ -192,6 +307,7 @@ var ErrPublisherStopped = errors.New("pubsub: Stop has been called for this publ
 type PublishResult = ipubsub.PublishResult
 
 var errPublisherOrderingNotEnabled = errors.New("Publisher.EnableMessageOrdering=false, but an OrderingKey was set in Message. Please remove the OrderingKey or turn on Publisher.EnableMessageOrdering")
+var errPublisherHedgingAndOrderingEnabled = errors.New("pubsub: Hedging and MessageOrdering cannot both be enabled on the Publisher")
 
 // Publish publishes msg to the topic asynchronously. Messages are batched and
 // sent according to the topic's PublishSettings. Publish never blocks.
@@ -218,6 +334,11 @@ func (t *Publisher) Publish(ctx context.Context, msg *Message) *PublishResult {
 	if !t.EnableMessageOrdering && msg.OrderingKey != "" {
 		ipubsub.SetPublishResult(r, "", errPublisherOrderingNotEnabled)
 		spanRecordError(createSpan, errPublisherOrderingNotEnabled)
+		return r
+	}
+	if t.EnableMessageOrdering && t.PublishSettings.HedgingSettings != nil {
+		ipubsub.SetPublishResult(r, "", errPublisherHedgingAndOrderingEnabled)
+		spanRecordError(createSpan, errPublisherHedgingAndOrderingEnabled)
 		return r
 	}
 
@@ -293,6 +414,7 @@ func (t *Publisher) Stop() {
 	if noop {
 		return
 	}
+	t.stopHedging()
 	t.scheduler.FlushAndStop()
 }
 
@@ -387,6 +509,97 @@ func (t *Publisher) initBundler() {
 	// The max size of publish messages in a system should be handled by the flow controller,
 	// not the scheduler or bundler. Disable this by setting to MaxInt.
 	t.scheduler.BufferedByteLimit = math.MaxInt
+
+	if t.PublishSettings.HedgingSettings != nil && !t.EnableMessageOrdering {
+		t.hedgingDelay = t.PublishSettings.HedgingSettings.Delay
+		if t.hedgingDelay == 0 {
+			t.hedgingDelay = defaultHedgingDelay
+		}
+		go t.runHedgingQueue()
+	}
+}
+
+func (t *Publisher) stopHedging() {
+	t.hedgingMu.Lock()
+	t.hedgingStopped = true
+	t.hedgingQueue = nil
+	t.hedgingMu.Unlock()
+}
+
+func (t *Publisher) enqueueHedgedRequest(req *hedgedRequest) {
+	t.hedgingMu.Lock()
+	defer t.hedgingMu.Unlock()
+	if t.hedgingStopped {
+		return
+	}
+	t.hedgingQueue = append(t.hedgingQueue, req)
+}
+
+func (t *Publisher) runHedgingQueue() {
+	ticker := time.NewTicker(5 * time.Millisecond)
+	defer ticker.Stop()
+	for range ticker.C {
+		t.hedgingMu.Lock()
+		if t.hedgingStopped {
+			t.hedgingMu.Unlock()
+			return
+		}
+		now := time.Now()
+		var ready []*hedgedRequest
+		var remaining []*hedgedRequest
+		for _, req := range t.hedgingQueue {
+			if req.isDone != nil && req.isDone() {
+				// Request already completed or cancelled; discard without token usage.
+				continue
+			}
+			if !now.Before(req.sendAfter) {
+				ready = append(ready, req)
+			} else {
+				remaining = append(remaining, req)
+			}
+		}
+		t.hedgingQueue = remaining
+		t.hedgingMu.Unlock()
+
+		for _, req := range ready {
+			if req.isDone != nil && req.isDone() {
+				continue
+			}
+			t.hedgingMu.Lock()
+			hasToken := t.hedgingTokenBucket >= 1.0
+			if hasToken {
+				t.hedgingTokenBucket -= 1.0
+			}
+			t.hedgingMu.Unlock()
+
+			if hasToken {
+				go req.exec()
+			}
+		}
+	}
+}
+
+func (t *Publisher) replenishHedgingTokens() {
+	t.hedgingMu.Lock()
+	defer t.hedgingMu.Unlock()
+
+	ratio := defaultHedgingRatio
+	maxTokens := defaultMaxHedgingTokens
+	if t.PublishSettings.HedgingSettings != nil {
+		if t.PublishSettings.HedgingSettings.TokenRatio > 0 {
+			ratio = t.PublishSettings.HedgingSettings.TokenRatio
+		}
+		if t.PublishSettings.HedgingSettings.MaxTokens > 0 {
+			maxTokens = t.PublishSettings.HedgingSettings.MaxTokens
+		}
+	}
+
+	if t.hedgingTokenBucket < maxTokens {
+		t.hedgingTokenBucket += ratio
+		if t.hedgingTokenBucket > maxTokens {
+			t.hedgingTokenBucket = maxTokens
+		}
+	}
 }
 
 // ErrPublishingPaused is a custom error indicating that the publish paused for the specified ordering key.
@@ -480,10 +693,84 @@ func (t *Publisher) publishMessageBundle(ctx context.Context, bms []*bundledMess
 		if t.PublishSettings.shouldCompress(batchSize) {
 			gaxOpts = append(gaxOpts, gax.WithGRPCOptions(grpc.UseCompressor(gzip.Name)))
 		}
-		res, err = t.c.TopicAdminClient.Publish(ctx, &pb.PublishRequest{
-			Topic:    t.name,
-			Messages: pbMsgs,
-		}, gaxOpts...)
+
+		if t.hedgingDelay > 0 && orderingKey == "" {
+			type attemptResult struct {
+				res    *pb.PublishResponse
+				err    error
+				isMain bool
+				id     int
+			}
+			cs := newCancellationSharer()
+			defer cs.cancelAll()
+
+			resCh := make(chan attemptResult, 1)
+
+			var scheduleNextHedge func(int)
+			scheduleNextHedge = func(attemptNum int) {
+				maxHedged := t.PublishSettings.HedgingSettings.MaxHedgedAttempts
+				if maxHedged > 0 && attemptNum > maxHedged {
+					return
+				}
+				t.enqueueHedgedRequest(&hedgedRequest{
+					sendAfter: time.Now().Add(t.hedgingDelay),
+					isDone:    cs.isDone,
+					exec: func() {
+						if cs.isDone() || ctx.Err() != nil {
+							return
+						}
+						// Schedule the next hedged attempt dynamically
+						scheduleNextHedge(attemptNum + 1)
+
+						hedgedCtx, hedgedCancel := context.WithCancel(ctx)
+						id := cs.add(hedgedCancel)
+						if id == -1 {
+							return
+						}
+						r, e := t.c.TopicAdminClient.Publish(hedgedCtx, &pb.PublishRequest{
+							Topic:    t.name,
+							Messages: pbMsgs,
+						}, gaxOpts...)
+						select {
+						case resCh <- attemptResult{res: r, err: e, isMain: false, id: id}:
+							cs.win(id)
+						default:
+						}
+					},
+				})
+			}
+
+			scheduleNextHedge(1)
+
+			mainCtx, mainCancel := context.WithCancel(ctx)
+			mainID := cs.add(mainCancel)
+			r, e := t.c.TopicAdminClient.Publish(mainCtx, &pb.PublishRequest{
+				Topic:    t.name,
+				Messages: pbMsgs,
+			}, gaxOpts...)
+
+			select {
+			case winner := <-resCh:
+				res = winner.res
+				err = winner.err
+			default:
+				cs.win(mainID)
+				res = r
+				err = e
+				if err == nil {
+					t.replenishHedgingTokens()
+				}
+			}
+		} else {
+			// regular publish without hedging
+			res, err = t.c.TopicAdminClient.Publish(ctx, &pb.PublishRequest{
+				Topic:    t.name,
+				Messages: pbMsgs,
+			}, gaxOpts...)
+			if err == nil && t.hedgingDelay > 0 {
+				t.replenishHedgingTokens()
+			}
+		}
 	}
 	end := time.Now()
 	if err != nil {
