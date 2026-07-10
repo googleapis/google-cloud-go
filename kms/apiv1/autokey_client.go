@@ -33,6 +33,7 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -624,8 +625,12 @@ func (c *autokeyGRPCClient) CreateKeyHandle(ctx context.Context, req *kmspb.Crea
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*kms.CreateKeyHandleOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateKeyHandleOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -938,8 +943,12 @@ func (c *autokeyRESTClient) CreateKeyHandle(ctx context.Context, req *kmspb.Crea
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*kms.CreateKeyHandleOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateKeyHandleOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1487,7 +1496,7 @@ func (c *autokeyRESTClient) GetOperation(ctx context.Context, req *longrunningpb
 // The name must be that of a previously created CreateKeyHandleOperation, possibly from a different process.
 func (c *autokeyGRPCClient) CreateKeyHandleOperation(name string) *CreateKeyHandleOperation {
 	return &CreateKeyHandleOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*kms.CreateKeyHandleOperation"),
 	}
 }
 
@@ -1496,7 +1505,7 @@ func (c *autokeyGRPCClient) CreateKeyHandleOperation(name string) *CreateKeyHand
 func (c *autokeyRESTClient) CreateKeyHandleOperation(name string) *CreateKeyHandleOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateKeyHandleOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*kms.CreateKeyHandleOperation"),
 		pollPath: override,
 	}
 }

@@ -32,6 +32,7 @@ import (
 	retailpb "cloud.google.com/go/retail/apiv2beta/retailpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -1243,8 +1244,12 @@ func (c *productGRPCClient) PurgeProducts(ctx context.Context, req *retailpb.Pur
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*retail.PurgeProductsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &PurgeProductsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1269,8 +1274,12 @@ func (c *productGRPCClient) ImportProducts(ctx context.Context, req *retailpb.Im
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*retail.ImportProductsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ImportProductsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1295,8 +1304,12 @@ func (c *productGRPCClient) ExportProducts(ctx context.Context, req *retailpb.Ex
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*retail.ExportProductsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportProductsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1318,8 +1331,12 @@ func (c *productGRPCClient) SetInventory(ctx context.Context, req *retailpb.SetI
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*retail.SetInventoryOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &SetInventoryOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1344,8 +1361,12 @@ func (c *productGRPCClient) AddFulfillmentPlaces(ctx context.Context, req *retai
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*retail.AddFulfillmentPlacesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &AddFulfillmentPlacesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1370,8 +1391,12 @@ func (c *productGRPCClient) RemoveFulfillmentPlaces(ctx context.Context, req *re
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*retail.RemoveFulfillmentPlacesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RemoveFulfillmentPlacesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1396,8 +1421,12 @@ func (c *productGRPCClient) AddLocalInventories(ctx context.Context, req *retail
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*retail.AddLocalInventoriesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &AddLocalInventoriesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1422,8 +1451,12 @@ func (c *productGRPCClient) RemoveLocalInventories(ctx context.Context, req *ret
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*retail.RemoveLocalInventoriesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RemoveLocalInventoriesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1896,8 +1929,12 @@ func (c *productRESTClient) PurgeProducts(ctx context.Context, req *retailpb.Pur
 	}
 
 	override := fmt.Sprintf("/v2beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*retail.PurgeProductsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &PurgeProductsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1968,8 +2005,12 @@ func (c *productRESTClient) ImportProducts(ctx context.Context, req *retailpb.Im
 	}
 
 	override := fmt.Sprintf("/v2beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*retail.ImportProductsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ImportProductsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2034,8 +2075,12 @@ func (c *productRESTClient) ExportProducts(ctx context.Context, req *retailpb.Ex
 	}
 
 	override := fmt.Sprintf("/v2beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*retail.ExportProductsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportProductsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2145,8 +2190,12 @@ func (c *productRESTClient) SetInventory(ctx context.Context, req *retailpb.SetI
 	}
 
 	override := fmt.Sprintf("/v2beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*retail.SetInventoryOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &SetInventoryOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2240,8 +2289,12 @@ func (c *productRESTClient) AddFulfillmentPlaces(ctx context.Context, req *retai
 	}
 
 	override := fmt.Sprintf("/v2beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*retail.AddFulfillmentPlacesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &AddFulfillmentPlacesOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2335,8 +2388,12 @@ func (c *productRESTClient) RemoveFulfillmentPlaces(ctx context.Context, req *re
 	}
 
 	override := fmt.Sprintf("/v2beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*retail.RemoveFulfillmentPlacesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RemoveFulfillmentPlacesOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2428,8 +2485,12 @@ func (c *productRESTClient) AddLocalInventories(ctx context.Context, req *retail
 	}
 
 	override := fmt.Sprintf("/v2beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*retail.AddLocalInventoriesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &AddLocalInventoriesOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2519,8 +2580,12 @@ func (c *productRESTClient) RemoveLocalInventories(ctx context.Context, req *ret
 	}
 
 	override := fmt.Sprintf("/v2beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*retail.RemoveLocalInventoriesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RemoveLocalInventoriesOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2667,7 +2732,7 @@ func (c *productRESTClient) ListOperations(ctx context.Context, req *longrunning
 // The name must be that of a previously created AddFulfillmentPlacesOperation, possibly from a different process.
 func (c *productGRPCClient) AddFulfillmentPlacesOperation(name string) *AddFulfillmentPlacesOperation {
 	return &AddFulfillmentPlacesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*retail.AddFulfillmentPlacesOperation"),
 	}
 }
 
@@ -2676,7 +2741,7 @@ func (c *productGRPCClient) AddFulfillmentPlacesOperation(name string) *AddFulfi
 func (c *productRESTClient) AddFulfillmentPlacesOperation(name string) *AddFulfillmentPlacesOperation {
 	override := fmt.Sprintf("/v2beta/%s", name)
 	return &AddFulfillmentPlacesOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*retail.AddFulfillmentPlacesOperation"),
 		pollPath: override,
 	}
 }
@@ -2685,7 +2750,7 @@ func (c *productRESTClient) AddFulfillmentPlacesOperation(name string) *AddFulfi
 // The name must be that of a previously created AddLocalInventoriesOperation, possibly from a different process.
 func (c *productGRPCClient) AddLocalInventoriesOperation(name string) *AddLocalInventoriesOperation {
 	return &AddLocalInventoriesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*retail.AddLocalInventoriesOperation"),
 	}
 }
 
@@ -2694,7 +2759,7 @@ func (c *productGRPCClient) AddLocalInventoriesOperation(name string) *AddLocalI
 func (c *productRESTClient) AddLocalInventoriesOperation(name string) *AddLocalInventoriesOperation {
 	override := fmt.Sprintf("/v2beta/%s", name)
 	return &AddLocalInventoriesOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*retail.AddLocalInventoriesOperation"),
 		pollPath: override,
 	}
 }
@@ -2703,7 +2768,7 @@ func (c *productRESTClient) AddLocalInventoriesOperation(name string) *AddLocalI
 // The name must be that of a previously created ExportProductsOperation, possibly from a different process.
 func (c *productGRPCClient) ExportProductsOperation(name string) *ExportProductsOperation {
 	return &ExportProductsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*retail.ExportProductsOperation"),
 	}
 }
 
@@ -2712,7 +2777,7 @@ func (c *productGRPCClient) ExportProductsOperation(name string) *ExportProducts
 func (c *productRESTClient) ExportProductsOperation(name string) *ExportProductsOperation {
 	override := fmt.Sprintf("/v2beta/%s", name)
 	return &ExportProductsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*retail.ExportProductsOperation"),
 		pollPath: override,
 	}
 }
@@ -2721,7 +2786,7 @@ func (c *productRESTClient) ExportProductsOperation(name string) *ExportProducts
 // The name must be that of a previously created ImportProductsOperation, possibly from a different process.
 func (c *productGRPCClient) ImportProductsOperation(name string) *ImportProductsOperation {
 	return &ImportProductsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*retail.ImportProductsOperation"),
 	}
 }
 
@@ -2730,7 +2795,7 @@ func (c *productGRPCClient) ImportProductsOperation(name string) *ImportProducts
 func (c *productRESTClient) ImportProductsOperation(name string) *ImportProductsOperation {
 	override := fmt.Sprintf("/v2beta/%s", name)
 	return &ImportProductsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*retail.ImportProductsOperation"),
 		pollPath: override,
 	}
 }
@@ -2739,7 +2804,7 @@ func (c *productRESTClient) ImportProductsOperation(name string) *ImportProducts
 // The name must be that of a previously created PurgeProductsOperation, possibly from a different process.
 func (c *productGRPCClient) PurgeProductsOperation(name string) *PurgeProductsOperation {
 	return &PurgeProductsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*retail.PurgeProductsOperation"),
 	}
 }
 
@@ -2748,7 +2813,7 @@ func (c *productGRPCClient) PurgeProductsOperation(name string) *PurgeProductsOp
 func (c *productRESTClient) PurgeProductsOperation(name string) *PurgeProductsOperation {
 	override := fmt.Sprintf("/v2beta/%s", name)
 	return &PurgeProductsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*retail.PurgeProductsOperation"),
 		pollPath: override,
 	}
 }
@@ -2757,7 +2822,7 @@ func (c *productRESTClient) PurgeProductsOperation(name string) *PurgeProductsOp
 // The name must be that of a previously created RemoveFulfillmentPlacesOperation, possibly from a different process.
 func (c *productGRPCClient) RemoveFulfillmentPlacesOperation(name string) *RemoveFulfillmentPlacesOperation {
 	return &RemoveFulfillmentPlacesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*retail.RemoveFulfillmentPlacesOperation"),
 	}
 }
 
@@ -2766,7 +2831,7 @@ func (c *productGRPCClient) RemoveFulfillmentPlacesOperation(name string) *Remov
 func (c *productRESTClient) RemoveFulfillmentPlacesOperation(name string) *RemoveFulfillmentPlacesOperation {
 	override := fmt.Sprintf("/v2beta/%s", name)
 	return &RemoveFulfillmentPlacesOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*retail.RemoveFulfillmentPlacesOperation"),
 		pollPath: override,
 	}
 }
@@ -2775,7 +2840,7 @@ func (c *productRESTClient) RemoveFulfillmentPlacesOperation(name string) *Remov
 // The name must be that of a previously created RemoveLocalInventoriesOperation, possibly from a different process.
 func (c *productGRPCClient) RemoveLocalInventoriesOperation(name string) *RemoveLocalInventoriesOperation {
 	return &RemoveLocalInventoriesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*retail.RemoveLocalInventoriesOperation"),
 	}
 }
 
@@ -2784,7 +2849,7 @@ func (c *productGRPCClient) RemoveLocalInventoriesOperation(name string) *Remove
 func (c *productRESTClient) RemoveLocalInventoriesOperation(name string) *RemoveLocalInventoriesOperation {
 	override := fmt.Sprintf("/v2beta/%s", name)
 	return &RemoveLocalInventoriesOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*retail.RemoveLocalInventoriesOperation"),
 		pollPath: override,
 	}
 }
@@ -2793,7 +2858,7 @@ func (c *productRESTClient) RemoveLocalInventoriesOperation(name string) *Remove
 // The name must be that of a previously created SetInventoryOperation, possibly from a different process.
 func (c *productGRPCClient) SetInventoryOperation(name string) *SetInventoryOperation {
 	return &SetInventoryOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*retail.SetInventoryOperation"),
 	}
 }
 
@@ -2802,7 +2867,7 @@ func (c *productGRPCClient) SetInventoryOperation(name string) *SetInventoryOper
 func (c *productRESTClient) SetInventoryOperation(name string) *SetInventoryOperation {
 	override := fmt.Sprintf("/v2beta/%s", name)
 	return &SetInventoryOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*retail.SetInventoryOperation"),
 		pollPath: override,
 	}
 }

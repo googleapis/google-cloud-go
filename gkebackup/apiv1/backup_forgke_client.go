@@ -33,6 +33,7 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -1565,8 +1566,12 @@ func (c *backupForGKEGRPCClient) CreateBackupPlan(ctx context.Context, req *gkeb
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*gkebackup.CreateBackupPlanOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateBackupPlanOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1664,8 +1669,12 @@ func (c *backupForGKEGRPCClient) UpdateBackupPlan(ctx context.Context, req *gkeb
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*gkebackup.UpdateBackupPlanOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateBackupPlanOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1690,8 +1699,12 @@ func (c *backupForGKEGRPCClient) DeleteBackupPlan(ctx context.Context, req *gkeb
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*gkebackup.DeleteBackupPlanOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteBackupPlanOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1716,8 +1729,12 @@ func (c *backupForGKEGRPCClient) CreateBackupChannel(ctx context.Context, req *g
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*gkebackup.CreateBackupChannelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateBackupChannelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1815,8 +1832,12 @@ func (c *backupForGKEGRPCClient) UpdateBackupChannel(ctx context.Context, req *g
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*gkebackup.UpdateBackupChannelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateBackupChannelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1841,8 +1862,12 @@ func (c *backupForGKEGRPCClient) DeleteBackupChannel(ctx context.Context, req *g
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*gkebackup.DeleteBackupChannelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteBackupChannelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1943,8 +1968,12 @@ func (c *backupForGKEGRPCClient) CreateBackup(ctx context.Context, req *gkebacku
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*gkebackup.CreateBackupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateBackupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2042,8 +2071,12 @@ func (c *backupForGKEGRPCClient) UpdateBackup(ctx context.Context, req *gkebacku
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*gkebackup.UpdateBackupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateBackupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2068,8 +2101,12 @@ func (c *backupForGKEGRPCClient) DeleteBackup(ctx context.Context, req *gkebacku
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*gkebackup.DeleteBackupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteBackupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2170,8 +2207,12 @@ func (c *backupForGKEGRPCClient) CreateRestorePlan(ctx context.Context, req *gke
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*gkebackup.CreateRestorePlanOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateRestorePlanOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2269,8 +2310,12 @@ func (c *backupForGKEGRPCClient) UpdateRestorePlan(ctx context.Context, req *gke
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*gkebackup.UpdateRestorePlanOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateRestorePlanOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2295,8 +2340,12 @@ func (c *backupForGKEGRPCClient) DeleteRestorePlan(ctx context.Context, req *gke
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*gkebackup.DeleteRestorePlanOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteRestorePlanOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2321,8 +2370,12 @@ func (c *backupForGKEGRPCClient) CreateRestoreChannel(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*gkebackup.CreateRestoreChannelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateRestoreChannelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2420,8 +2473,12 @@ func (c *backupForGKEGRPCClient) UpdateRestoreChannel(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*gkebackup.UpdateRestoreChannelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateRestoreChannelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2446,8 +2503,12 @@ func (c *backupForGKEGRPCClient) DeleteRestoreChannel(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*gkebackup.DeleteRestoreChannelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteRestoreChannelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2548,8 +2609,12 @@ func (c *backupForGKEGRPCClient) CreateRestore(ctx context.Context, req *gkeback
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*gkebackup.CreateRestoreOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateRestoreOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2647,8 +2712,12 @@ func (c *backupForGKEGRPCClient) UpdateRestore(ctx context.Context, req *gkeback
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*gkebackup.UpdateRestoreOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateRestoreOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2673,8 +2742,12 @@ func (c *backupForGKEGRPCClient) DeleteRestore(ctx context.Context, req *gkeback
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*gkebackup.DeleteRestoreOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteRestoreOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -3086,8 +3159,12 @@ func (c *backupForGKERESTClient) CreateBackupPlan(ctx context.Context, req *gkeb
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*gkebackup.CreateBackupPlanOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateBackupPlanOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3298,8 +3375,12 @@ func (c *backupForGKERESTClient) UpdateBackupPlan(ctx context.Context, req *gkeb
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*gkebackup.UpdateBackupPlanOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateBackupPlanOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3361,8 +3442,12 @@ func (c *backupForGKERESTClient) DeleteBackupPlan(ctx context.Context, req *gkeb
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*gkebackup.DeleteBackupPlanOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteBackupPlanOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3431,8 +3516,12 @@ func (c *backupForGKERESTClient) CreateBackupChannel(ctx context.Context, req *g
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*gkebackup.CreateBackupChannelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateBackupChannelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3643,8 +3732,12 @@ func (c *backupForGKERESTClient) UpdateBackupChannel(ctx context.Context, req *g
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*gkebackup.UpdateBackupChannelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateBackupChannelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3709,8 +3802,12 @@ func (c *backupForGKERESTClient) DeleteBackupChannel(ctx context.Context, req *g
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*gkebackup.DeleteBackupChannelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteBackupChannelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3920,8 +4017,12 @@ func (c *backupForGKERESTClient) CreateBackup(ctx context.Context, req *gkebacku
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*gkebackup.CreateBackupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateBackupOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4135,8 +4236,12 @@ func (c *backupForGKERESTClient) UpdateBackup(ctx context.Context, req *gkebacku
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*gkebackup.UpdateBackupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateBackupOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4201,8 +4306,12 @@ func (c *backupForGKERESTClient) DeleteBackup(ctx context.Context, req *gkebacku
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*gkebackup.DeleteBackupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteBackupOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4410,8 +4519,12 @@ func (c *backupForGKERESTClient) CreateRestorePlan(ctx context.Context, req *gke
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*gkebackup.CreateRestorePlanOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateRestorePlanOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4622,8 +4735,12 @@ func (c *backupForGKERESTClient) UpdateRestorePlan(ctx context.Context, req *gke
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*gkebackup.UpdateRestorePlanOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateRestorePlanOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4688,8 +4805,12 @@ func (c *backupForGKERESTClient) DeleteRestorePlan(ctx context.Context, req *gke
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*gkebackup.DeleteRestorePlanOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteRestorePlanOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4758,8 +4879,12 @@ func (c *backupForGKERESTClient) CreateRestoreChannel(ctx context.Context, req *
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*gkebackup.CreateRestoreChannelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateRestoreChannelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4970,8 +5095,12 @@ func (c *backupForGKERESTClient) UpdateRestoreChannel(ctx context.Context, req *
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*gkebackup.UpdateRestoreChannelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateRestoreChannelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5033,8 +5162,12 @@ func (c *backupForGKERESTClient) DeleteRestoreChannel(ctx context.Context, req *
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*gkebackup.DeleteRestoreChannelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteRestoreChannelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5242,8 +5375,12 @@ func (c *backupForGKERESTClient) CreateRestore(ctx context.Context, req *gkeback
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*gkebackup.CreateRestoreOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateRestoreOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5454,8 +5591,12 @@ func (c *backupForGKERESTClient) UpdateRestore(ctx context.Context, req *gkeback
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*gkebackup.UpdateRestoreOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateRestoreOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5520,8 +5661,12 @@ func (c *backupForGKERESTClient) DeleteRestore(ctx context.Context, req *gkeback
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*gkebackup.DeleteRestoreOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteRestoreOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -6282,7 +6427,7 @@ func (c *backupForGKERESTClient) ListOperations(ctx context.Context, req *longru
 // The name must be that of a previously created CreateBackupOperation, possibly from a different process.
 func (c *backupForGKEGRPCClient) CreateBackupOperation(name string) *CreateBackupOperation {
 	return &CreateBackupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*gkebackup.CreateBackupOperation"),
 	}
 }
 
@@ -6291,7 +6436,7 @@ func (c *backupForGKEGRPCClient) CreateBackupOperation(name string) *CreateBacku
 func (c *backupForGKERESTClient) CreateBackupOperation(name string) *CreateBackupOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateBackupOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*gkebackup.CreateBackupOperation"),
 		pollPath: override,
 	}
 }
@@ -6300,7 +6445,7 @@ func (c *backupForGKERESTClient) CreateBackupOperation(name string) *CreateBacku
 // The name must be that of a previously created CreateBackupChannelOperation, possibly from a different process.
 func (c *backupForGKEGRPCClient) CreateBackupChannelOperation(name string) *CreateBackupChannelOperation {
 	return &CreateBackupChannelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*gkebackup.CreateBackupChannelOperation"),
 	}
 }
 
@@ -6309,7 +6454,7 @@ func (c *backupForGKEGRPCClient) CreateBackupChannelOperation(name string) *Crea
 func (c *backupForGKERESTClient) CreateBackupChannelOperation(name string) *CreateBackupChannelOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateBackupChannelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*gkebackup.CreateBackupChannelOperation"),
 		pollPath: override,
 	}
 }
@@ -6318,7 +6463,7 @@ func (c *backupForGKERESTClient) CreateBackupChannelOperation(name string) *Crea
 // The name must be that of a previously created CreateBackupPlanOperation, possibly from a different process.
 func (c *backupForGKEGRPCClient) CreateBackupPlanOperation(name string) *CreateBackupPlanOperation {
 	return &CreateBackupPlanOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*gkebackup.CreateBackupPlanOperation"),
 	}
 }
 
@@ -6327,7 +6472,7 @@ func (c *backupForGKEGRPCClient) CreateBackupPlanOperation(name string) *CreateB
 func (c *backupForGKERESTClient) CreateBackupPlanOperation(name string) *CreateBackupPlanOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateBackupPlanOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*gkebackup.CreateBackupPlanOperation"),
 		pollPath: override,
 	}
 }
@@ -6336,7 +6481,7 @@ func (c *backupForGKERESTClient) CreateBackupPlanOperation(name string) *CreateB
 // The name must be that of a previously created CreateRestoreOperation, possibly from a different process.
 func (c *backupForGKEGRPCClient) CreateRestoreOperation(name string) *CreateRestoreOperation {
 	return &CreateRestoreOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*gkebackup.CreateRestoreOperation"),
 	}
 }
 
@@ -6345,7 +6490,7 @@ func (c *backupForGKEGRPCClient) CreateRestoreOperation(name string) *CreateRest
 func (c *backupForGKERESTClient) CreateRestoreOperation(name string) *CreateRestoreOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateRestoreOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*gkebackup.CreateRestoreOperation"),
 		pollPath: override,
 	}
 }
@@ -6354,7 +6499,7 @@ func (c *backupForGKERESTClient) CreateRestoreOperation(name string) *CreateRest
 // The name must be that of a previously created CreateRestoreChannelOperation, possibly from a different process.
 func (c *backupForGKEGRPCClient) CreateRestoreChannelOperation(name string) *CreateRestoreChannelOperation {
 	return &CreateRestoreChannelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*gkebackup.CreateRestoreChannelOperation"),
 	}
 }
 
@@ -6363,7 +6508,7 @@ func (c *backupForGKEGRPCClient) CreateRestoreChannelOperation(name string) *Cre
 func (c *backupForGKERESTClient) CreateRestoreChannelOperation(name string) *CreateRestoreChannelOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateRestoreChannelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*gkebackup.CreateRestoreChannelOperation"),
 		pollPath: override,
 	}
 }
@@ -6372,7 +6517,7 @@ func (c *backupForGKERESTClient) CreateRestoreChannelOperation(name string) *Cre
 // The name must be that of a previously created CreateRestorePlanOperation, possibly from a different process.
 func (c *backupForGKEGRPCClient) CreateRestorePlanOperation(name string) *CreateRestorePlanOperation {
 	return &CreateRestorePlanOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*gkebackup.CreateRestorePlanOperation"),
 	}
 }
 
@@ -6381,7 +6526,7 @@ func (c *backupForGKEGRPCClient) CreateRestorePlanOperation(name string) *Create
 func (c *backupForGKERESTClient) CreateRestorePlanOperation(name string) *CreateRestorePlanOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateRestorePlanOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*gkebackup.CreateRestorePlanOperation"),
 		pollPath: override,
 	}
 }
@@ -6390,7 +6535,7 @@ func (c *backupForGKERESTClient) CreateRestorePlanOperation(name string) *Create
 // The name must be that of a previously created DeleteBackupOperation, possibly from a different process.
 func (c *backupForGKEGRPCClient) DeleteBackupOperation(name string) *DeleteBackupOperation {
 	return &DeleteBackupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*gkebackup.DeleteBackupOperation"),
 	}
 }
 
@@ -6399,7 +6544,7 @@ func (c *backupForGKEGRPCClient) DeleteBackupOperation(name string) *DeleteBacku
 func (c *backupForGKERESTClient) DeleteBackupOperation(name string) *DeleteBackupOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteBackupOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*gkebackup.DeleteBackupOperation"),
 		pollPath: override,
 	}
 }
@@ -6408,7 +6553,7 @@ func (c *backupForGKERESTClient) DeleteBackupOperation(name string) *DeleteBacku
 // The name must be that of a previously created DeleteBackupChannelOperation, possibly from a different process.
 func (c *backupForGKEGRPCClient) DeleteBackupChannelOperation(name string) *DeleteBackupChannelOperation {
 	return &DeleteBackupChannelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*gkebackup.DeleteBackupChannelOperation"),
 	}
 }
 
@@ -6417,7 +6562,7 @@ func (c *backupForGKEGRPCClient) DeleteBackupChannelOperation(name string) *Dele
 func (c *backupForGKERESTClient) DeleteBackupChannelOperation(name string) *DeleteBackupChannelOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteBackupChannelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*gkebackup.DeleteBackupChannelOperation"),
 		pollPath: override,
 	}
 }
@@ -6426,7 +6571,7 @@ func (c *backupForGKERESTClient) DeleteBackupChannelOperation(name string) *Dele
 // The name must be that of a previously created DeleteBackupPlanOperation, possibly from a different process.
 func (c *backupForGKEGRPCClient) DeleteBackupPlanOperation(name string) *DeleteBackupPlanOperation {
 	return &DeleteBackupPlanOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*gkebackup.DeleteBackupPlanOperation"),
 	}
 }
 
@@ -6435,7 +6580,7 @@ func (c *backupForGKEGRPCClient) DeleteBackupPlanOperation(name string) *DeleteB
 func (c *backupForGKERESTClient) DeleteBackupPlanOperation(name string) *DeleteBackupPlanOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteBackupPlanOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*gkebackup.DeleteBackupPlanOperation"),
 		pollPath: override,
 	}
 }
@@ -6444,7 +6589,7 @@ func (c *backupForGKERESTClient) DeleteBackupPlanOperation(name string) *DeleteB
 // The name must be that of a previously created DeleteRestoreOperation, possibly from a different process.
 func (c *backupForGKEGRPCClient) DeleteRestoreOperation(name string) *DeleteRestoreOperation {
 	return &DeleteRestoreOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*gkebackup.DeleteRestoreOperation"),
 	}
 }
 
@@ -6453,7 +6598,7 @@ func (c *backupForGKEGRPCClient) DeleteRestoreOperation(name string) *DeleteRest
 func (c *backupForGKERESTClient) DeleteRestoreOperation(name string) *DeleteRestoreOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteRestoreOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*gkebackup.DeleteRestoreOperation"),
 		pollPath: override,
 	}
 }
@@ -6462,7 +6607,7 @@ func (c *backupForGKERESTClient) DeleteRestoreOperation(name string) *DeleteRest
 // The name must be that of a previously created DeleteRestoreChannelOperation, possibly from a different process.
 func (c *backupForGKEGRPCClient) DeleteRestoreChannelOperation(name string) *DeleteRestoreChannelOperation {
 	return &DeleteRestoreChannelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*gkebackup.DeleteRestoreChannelOperation"),
 	}
 }
 
@@ -6471,7 +6616,7 @@ func (c *backupForGKEGRPCClient) DeleteRestoreChannelOperation(name string) *Del
 func (c *backupForGKERESTClient) DeleteRestoreChannelOperation(name string) *DeleteRestoreChannelOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteRestoreChannelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*gkebackup.DeleteRestoreChannelOperation"),
 		pollPath: override,
 	}
 }
@@ -6480,7 +6625,7 @@ func (c *backupForGKERESTClient) DeleteRestoreChannelOperation(name string) *Del
 // The name must be that of a previously created DeleteRestorePlanOperation, possibly from a different process.
 func (c *backupForGKEGRPCClient) DeleteRestorePlanOperation(name string) *DeleteRestorePlanOperation {
 	return &DeleteRestorePlanOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*gkebackup.DeleteRestorePlanOperation"),
 	}
 }
 
@@ -6489,7 +6634,7 @@ func (c *backupForGKEGRPCClient) DeleteRestorePlanOperation(name string) *Delete
 func (c *backupForGKERESTClient) DeleteRestorePlanOperation(name string) *DeleteRestorePlanOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteRestorePlanOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*gkebackup.DeleteRestorePlanOperation"),
 		pollPath: override,
 	}
 }
@@ -6498,7 +6643,7 @@ func (c *backupForGKERESTClient) DeleteRestorePlanOperation(name string) *Delete
 // The name must be that of a previously created UpdateBackupOperation, possibly from a different process.
 func (c *backupForGKEGRPCClient) UpdateBackupOperation(name string) *UpdateBackupOperation {
 	return &UpdateBackupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*gkebackup.UpdateBackupOperation"),
 	}
 }
 
@@ -6507,7 +6652,7 @@ func (c *backupForGKEGRPCClient) UpdateBackupOperation(name string) *UpdateBacku
 func (c *backupForGKERESTClient) UpdateBackupOperation(name string) *UpdateBackupOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateBackupOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*gkebackup.UpdateBackupOperation"),
 		pollPath: override,
 	}
 }
@@ -6516,7 +6661,7 @@ func (c *backupForGKERESTClient) UpdateBackupOperation(name string) *UpdateBacku
 // The name must be that of a previously created UpdateBackupChannelOperation, possibly from a different process.
 func (c *backupForGKEGRPCClient) UpdateBackupChannelOperation(name string) *UpdateBackupChannelOperation {
 	return &UpdateBackupChannelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*gkebackup.UpdateBackupChannelOperation"),
 	}
 }
 
@@ -6525,7 +6670,7 @@ func (c *backupForGKEGRPCClient) UpdateBackupChannelOperation(name string) *Upda
 func (c *backupForGKERESTClient) UpdateBackupChannelOperation(name string) *UpdateBackupChannelOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateBackupChannelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*gkebackup.UpdateBackupChannelOperation"),
 		pollPath: override,
 	}
 }
@@ -6534,7 +6679,7 @@ func (c *backupForGKERESTClient) UpdateBackupChannelOperation(name string) *Upda
 // The name must be that of a previously created UpdateBackupPlanOperation, possibly from a different process.
 func (c *backupForGKEGRPCClient) UpdateBackupPlanOperation(name string) *UpdateBackupPlanOperation {
 	return &UpdateBackupPlanOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*gkebackup.UpdateBackupPlanOperation"),
 	}
 }
 
@@ -6543,7 +6688,7 @@ func (c *backupForGKEGRPCClient) UpdateBackupPlanOperation(name string) *UpdateB
 func (c *backupForGKERESTClient) UpdateBackupPlanOperation(name string) *UpdateBackupPlanOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateBackupPlanOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*gkebackup.UpdateBackupPlanOperation"),
 		pollPath: override,
 	}
 }
@@ -6552,7 +6697,7 @@ func (c *backupForGKERESTClient) UpdateBackupPlanOperation(name string) *UpdateB
 // The name must be that of a previously created UpdateRestoreOperation, possibly from a different process.
 func (c *backupForGKEGRPCClient) UpdateRestoreOperation(name string) *UpdateRestoreOperation {
 	return &UpdateRestoreOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*gkebackup.UpdateRestoreOperation"),
 	}
 }
 
@@ -6561,7 +6706,7 @@ func (c *backupForGKEGRPCClient) UpdateRestoreOperation(name string) *UpdateRest
 func (c *backupForGKERESTClient) UpdateRestoreOperation(name string) *UpdateRestoreOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateRestoreOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*gkebackup.UpdateRestoreOperation"),
 		pollPath: override,
 	}
 }
@@ -6570,7 +6715,7 @@ func (c *backupForGKERESTClient) UpdateRestoreOperation(name string) *UpdateRest
 // The name must be that of a previously created UpdateRestoreChannelOperation, possibly from a different process.
 func (c *backupForGKEGRPCClient) UpdateRestoreChannelOperation(name string) *UpdateRestoreChannelOperation {
 	return &UpdateRestoreChannelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*gkebackup.UpdateRestoreChannelOperation"),
 	}
 }
 
@@ -6579,7 +6724,7 @@ func (c *backupForGKEGRPCClient) UpdateRestoreChannelOperation(name string) *Upd
 func (c *backupForGKERESTClient) UpdateRestoreChannelOperation(name string) *UpdateRestoreChannelOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateRestoreChannelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*gkebackup.UpdateRestoreChannelOperation"),
 		pollPath: override,
 	}
 }
@@ -6588,7 +6733,7 @@ func (c *backupForGKERESTClient) UpdateRestoreChannelOperation(name string) *Upd
 // The name must be that of a previously created UpdateRestorePlanOperation, possibly from a different process.
 func (c *backupForGKEGRPCClient) UpdateRestorePlanOperation(name string) *UpdateRestorePlanOperation {
 	return &UpdateRestorePlanOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*gkebackup.UpdateRestorePlanOperation"),
 	}
 }
 
@@ -6597,7 +6742,7 @@ func (c *backupForGKEGRPCClient) UpdateRestorePlanOperation(name string) *Update
 func (c *backupForGKERESTClient) UpdateRestorePlanOperation(name string) *UpdateRestorePlanOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateRestorePlanOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*gkebackup.UpdateRestorePlanOperation"),
 		pollPath: override,
 	}
 }

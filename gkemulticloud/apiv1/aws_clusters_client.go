@@ -30,6 +30,7 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -672,8 +673,12 @@ func (c *awsClustersGRPCClient) CreateAwsCluster(ctx context.Context, req *gkemu
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*gkemulticloud.CreateAwsClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateAwsClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -695,8 +700,12 @@ func (c *awsClustersGRPCClient) UpdateAwsCluster(ctx context.Context, req *gkemu
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*gkemulticloud.UpdateAwsClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateAwsClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -797,8 +806,12 @@ func (c *awsClustersGRPCClient) DeleteAwsCluster(ctx context.Context, req *gkemu
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*gkemulticloud.DeleteAwsClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteAwsClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -871,8 +884,12 @@ func (c *awsClustersGRPCClient) CreateAwsNodePool(ctx context.Context, req *gkem
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*gkemulticloud.CreateAwsNodePoolOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateAwsNodePoolOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -894,8 +911,12 @@ func (c *awsClustersGRPCClient) UpdateAwsNodePool(ctx context.Context, req *gkem
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*gkemulticloud.UpdateAwsNodePoolOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateAwsNodePoolOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -920,8 +941,12 @@ func (c *awsClustersGRPCClient) RollbackAwsNodePoolUpdate(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*gkemulticloud.RollbackAwsNodePoolUpdateOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RollbackAwsNodePoolUpdateOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1022,8 +1047,12 @@ func (c *awsClustersGRPCClient) DeleteAwsNodePool(ctx context.Context, req *gkem
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*gkemulticloud.DeleteAwsNodePoolOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteAwsNodePoolOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1207,7 +1236,7 @@ func (c *awsClustersGRPCClient) ListOperations(ctx context.Context, req *longrun
 // The name must be that of a previously created CreateAwsClusterOperation, possibly from a different process.
 func (c *awsClustersGRPCClient) CreateAwsClusterOperation(name string) *CreateAwsClusterOperation {
 	return &CreateAwsClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*gkemulticloud.CreateAwsClusterOperation"),
 	}
 }
 
@@ -1215,7 +1244,7 @@ func (c *awsClustersGRPCClient) CreateAwsClusterOperation(name string) *CreateAw
 // The name must be that of a previously created CreateAwsNodePoolOperation, possibly from a different process.
 func (c *awsClustersGRPCClient) CreateAwsNodePoolOperation(name string) *CreateAwsNodePoolOperation {
 	return &CreateAwsNodePoolOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*gkemulticloud.CreateAwsNodePoolOperation"),
 	}
 }
 
@@ -1223,7 +1252,7 @@ func (c *awsClustersGRPCClient) CreateAwsNodePoolOperation(name string) *CreateA
 // The name must be that of a previously created DeleteAwsClusterOperation, possibly from a different process.
 func (c *awsClustersGRPCClient) DeleteAwsClusterOperation(name string) *DeleteAwsClusterOperation {
 	return &DeleteAwsClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*gkemulticloud.DeleteAwsClusterOperation"),
 	}
 }
 
@@ -1231,7 +1260,7 @@ func (c *awsClustersGRPCClient) DeleteAwsClusterOperation(name string) *DeleteAw
 // The name must be that of a previously created DeleteAwsNodePoolOperation, possibly from a different process.
 func (c *awsClustersGRPCClient) DeleteAwsNodePoolOperation(name string) *DeleteAwsNodePoolOperation {
 	return &DeleteAwsNodePoolOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*gkemulticloud.DeleteAwsNodePoolOperation"),
 	}
 }
 
@@ -1239,7 +1268,7 @@ func (c *awsClustersGRPCClient) DeleteAwsNodePoolOperation(name string) *DeleteA
 // The name must be that of a previously created RollbackAwsNodePoolUpdateOperation, possibly from a different process.
 func (c *awsClustersGRPCClient) RollbackAwsNodePoolUpdateOperation(name string) *RollbackAwsNodePoolUpdateOperation {
 	return &RollbackAwsNodePoolUpdateOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*gkemulticloud.RollbackAwsNodePoolUpdateOperation"),
 	}
 }
 
@@ -1247,7 +1276,7 @@ func (c *awsClustersGRPCClient) RollbackAwsNodePoolUpdateOperation(name string) 
 // The name must be that of a previously created UpdateAwsClusterOperation, possibly from a different process.
 func (c *awsClustersGRPCClient) UpdateAwsClusterOperation(name string) *UpdateAwsClusterOperation {
 	return &UpdateAwsClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*gkemulticloud.UpdateAwsClusterOperation"),
 	}
 }
 
@@ -1255,6 +1284,6 @@ func (c *awsClustersGRPCClient) UpdateAwsClusterOperation(name string) *UpdateAw
 // The name must be that of a previously created UpdateAwsNodePoolOperation, possibly from a different process.
 func (c *awsClustersGRPCClient) UpdateAwsNodePoolOperation(name string) *UpdateAwsNodePoolOperation {
 	return &UpdateAwsNodePoolOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*gkemulticloud.UpdateAwsNodePoolOperation"),
 	}
 }

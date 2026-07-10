@@ -32,6 +32,7 @@ import (
 	publishpb "cloud.google.com/go/streetview/publish/apiv1/publishpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -1112,8 +1113,12 @@ func (c *streetViewPublishGRPCClient) CreatePhotoSequence(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*publish.CreatePhotoSequenceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreatePhotoSequenceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1135,8 +1140,12 @@ func (c *streetViewPublishGRPCClient) GetPhotoSequence(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*publish.GetPhotoSequenceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &GetPhotoSequenceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2033,8 +2042,12 @@ func (c *streetViewPublishRESTClient) CreatePhotoSequence(ctx context.Context, r
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*publish.CreatePhotoSequenceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreatePhotoSequenceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2120,8 +2133,12 @@ func (c *streetViewPublishRESTClient) GetPhotoSequence(ctx context.Context, req 
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*publish.GetPhotoSequenceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &GetPhotoSequenceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2263,7 +2280,7 @@ func (c *streetViewPublishRESTClient) DeletePhotoSequence(ctx context.Context, r
 // The name must be that of a previously created CreatePhotoSequenceOperation, possibly from a different process.
 func (c *streetViewPublishGRPCClient) CreatePhotoSequenceOperation(name string) *CreatePhotoSequenceOperation {
 	return &CreatePhotoSequenceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*publish.CreatePhotoSequenceOperation"),
 	}
 }
 
@@ -2272,7 +2289,7 @@ func (c *streetViewPublishGRPCClient) CreatePhotoSequenceOperation(name string) 
 func (c *streetViewPublishRESTClient) CreatePhotoSequenceOperation(name string) *CreatePhotoSequenceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreatePhotoSequenceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*publish.CreatePhotoSequenceOperation"),
 		pollPath: override,
 	}
 }
@@ -2281,7 +2298,7 @@ func (c *streetViewPublishRESTClient) CreatePhotoSequenceOperation(name string) 
 // The name must be that of a previously created GetPhotoSequenceOperation, possibly from a different process.
 func (c *streetViewPublishGRPCClient) GetPhotoSequenceOperation(name string) *GetPhotoSequenceOperation {
 	return &GetPhotoSequenceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*publish.GetPhotoSequenceOperation"),
 	}
 }
 
@@ -2290,7 +2307,7 @@ func (c *streetViewPublishGRPCClient) GetPhotoSequenceOperation(name string) *Ge
 func (c *streetViewPublishRESTClient) GetPhotoSequenceOperation(name string) *GetPhotoSequenceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &GetPhotoSequenceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*publish.GetPhotoSequenceOperation"),
 		pollPath: override,
 	}
 }

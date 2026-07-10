@@ -33,6 +33,7 @@ import (
 	speechpb "cloud.google.com/go/speech/apiv1p1beta1/speechpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -509,8 +510,12 @@ func (c *gRPCClient) LongRunningRecognize(ctx context.Context, req *speechpb.Lon
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*speech.LongRunningRecognizeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &LongRunningRecognizeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -718,8 +723,12 @@ func (c *restClient) LongRunningRecognize(ctx context.Context, req *speechpb.Lon
 	}
 
 	override := fmt.Sprintf("/v1p1beta1/operations/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*speech.LongRunningRecognizeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &LongRunningRecognizeOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -877,7 +886,7 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // The name must be that of a previously created LongRunningRecognizeOperation, possibly from a different process.
 func (c *gRPCClient) LongRunningRecognizeOperation(name string) *LongRunningRecognizeOperation {
 	return &LongRunningRecognizeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*speech.LongRunningRecognizeOperation"),
 	}
 }
 
@@ -886,7 +895,7 @@ func (c *gRPCClient) LongRunningRecognizeOperation(name string) *LongRunningReco
 func (c *restClient) LongRunningRecognizeOperation(name string) *LongRunningRecognizeOperation {
 	override := fmt.Sprintf("/v1p1beta1/operations/%s", name)
 	return &LongRunningRecognizeOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*speech.LongRunningRecognizeOperation"),
 		pollPath: override,
 	}
 }

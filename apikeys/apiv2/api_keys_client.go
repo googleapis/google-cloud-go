@@ -32,6 +32,7 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -563,8 +564,12 @@ func (c *gRPCClient) CreateKey(ctx context.Context, req *apikeyspb.CreateKeyRequ
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apikeys.CreateKeyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateKeyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -686,8 +691,12 @@ func (c *gRPCClient) UpdateKey(ctx context.Context, req *apikeyspb.UpdateKeyRequ
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apikeys.UpdateKeyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateKeyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -712,8 +721,12 @@ func (c *gRPCClient) DeleteKey(ctx context.Context, req *apikeyspb.DeleteKeyRequ
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apikeys.DeleteKeyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteKeyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -738,8 +751,12 @@ func (c *gRPCClient) UndeleteKey(ctx context.Context, req *apikeyspb.UndeleteKey
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apikeys.UndeleteKeyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UndeleteKeyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -849,8 +866,12 @@ func (c *restClient) CreateKey(ctx context.Context, req *apikeyspb.CreateKeyRequ
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apikeys.CreateKeyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateKeyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1130,8 +1151,12 @@ func (c *restClient) UpdateKey(ctx context.Context, req *apikeyspb.UpdateKeyRequ
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apikeys.UpdateKeyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateKeyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1197,8 +1222,12 @@ func (c *restClient) DeleteKey(ctx context.Context, req *apikeyspb.DeleteKeyRequ
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apikeys.DeleteKeyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteKeyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1266,8 +1295,12 @@ func (c *restClient) UndeleteKey(ctx context.Context, req *apikeyspb.UndeleteKey
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apikeys.UndeleteKeyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UndeleteKeyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1386,7 +1419,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 // The name must be that of a previously created CreateKeyOperation, possibly from a different process.
 func (c *gRPCClient) CreateKeyOperation(name string) *CreateKeyOperation {
 	return &CreateKeyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apikeys.CreateKeyOperation"),
 	}
 }
 
@@ -1395,7 +1428,7 @@ func (c *gRPCClient) CreateKeyOperation(name string) *CreateKeyOperation {
 func (c *restClient) CreateKeyOperation(name string) *CreateKeyOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &CreateKeyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apikeys.CreateKeyOperation"),
 		pollPath: override,
 	}
 }
@@ -1404,7 +1437,7 @@ func (c *restClient) CreateKeyOperation(name string) *CreateKeyOperation {
 // The name must be that of a previously created DeleteKeyOperation, possibly from a different process.
 func (c *gRPCClient) DeleteKeyOperation(name string) *DeleteKeyOperation {
 	return &DeleteKeyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apikeys.DeleteKeyOperation"),
 	}
 }
 
@@ -1413,7 +1446,7 @@ func (c *gRPCClient) DeleteKeyOperation(name string) *DeleteKeyOperation {
 func (c *restClient) DeleteKeyOperation(name string) *DeleteKeyOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &DeleteKeyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apikeys.DeleteKeyOperation"),
 		pollPath: override,
 	}
 }
@@ -1422,7 +1455,7 @@ func (c *restClient) DeleteKeyOperation(name string) *DeleteKeyOperation {
 // The name must be that of a previously created UndeleteKeyOperation, possibly from a different process.
 func (c *gRPCClient) UndeleteKeyOperation(name string) *UndeleteKeyOperation {
 	return &UndeleteKeyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apikeys.UndeleteKeyOperation"),
 	}
 }
 
@@ -1431,7 +1464,7 @@ func (c *gRPCClient) UndeleteKeyOperation(name string) *UndeleteKeyOperation {
 func (c *restClient) UndeleteKeyOperation(name string) *UndeleteKeyOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &UndeleteKeyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apikeys.UndeleteKeyOperation"),
 		pollPath: override,
 	}
 }
@@ -1440,7 +1473,7 @@ func (c *restClient) UndeleteKeyOperation(name string) *UndeleteKeyOperation {
 // The name must be that of a previously created UpdateKeyOperation, possibly from a different process.
 func (c *gRPCClient) UpdateKeyOperation(name string) *UpdateKeyOperation {
 	return &UpdateKeyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apikeys.UpdateKeyOperation"),
 	}
 }
 
@@ -1449,7 +1482,7 @@ func (c *gRPCClient) UpdateKeyOperation(name string) *UpdateKeyOperation {
 func (c *restClient) UpdateKeyOperation(name string) *UpdateKeyOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &UpdateKeyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apikeys.UpdateKeyOperation"),
 		pollPath: override,
 	}
 }

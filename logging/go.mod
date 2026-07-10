@@ -6,7 +6,7 @@ require (
 	cloud.google.com/go v0.123.0
 	cloud.google.com/go/compute/metadata v0.9.0
 	cloud.google.com/go/iam v1.11.0
-	cloud.google.com/go/longrunning v1.0.0
+	cloud.google.com/go/longrunning v1.2.0
 	cloud.google.com/go/storage v1.62.3
 	github.com/google/go-cmp v0.7.0
 	github.com/googleapis/gax-go/v2 v2.23.0

@@ -32,6 +32,7 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -972,8 +973,12 @@ func (c *playbooksGRPCClient) ExportPlaybook(ctx context.Context, req *cxpb.Expo
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cx.ExportPlaybookOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportPlaybookOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -998,8 +1003,12 @@ func (c *playbooksGRPCClient) ImportPlaybook(ctx context.Context, req *cxpb.Impo
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cx.ImportPlaybookOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ImportPlaybookOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1629,8 +1638,12 @@ func (c *playbooksRESTClient) ExportPlaybook(ctx context.Context, req *cxpb.Expo
 	}
 
 	override := fmt.Sprintf("/v3/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cx.ExportPlaybookOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportPlaybookOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1695,8 +1708,12 @@ func (c *playbooksRESTClient) ImportPlaybook(ctx context.Context, req *cxpb.Impo
 	}
 
 	override := fmt.Sprintf("/v3/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cx.ImportPlaybookOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ImportPlaybookOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2405,7 +2422,7 @@ func (c *playbooksRESTClient) ListOperations(ctx context.Context, req *longrunni
 // The name must be that of a previously created ExportPlaybookOperation, possibly from a different process.
 func (c *playbooksGRPCClient) ExportPlaybookOperation(name string) *ExportPlaybookOperation {
 	return &ExportPlaybookOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cx.ExportPlaybookOperation"),
 	}
 }
 
@@ -2414,7 +2431,7 @@ func (c *playbooksGRPCClient) ExportPlaybookOperation(name string) *ExportPlaybo
 func (c *playbooksRESTClient) ExportPlaybookOperation(name string) *ExportPlaybookOperation {
 	override := fmt.Sprintf("/v3/%s", name)
 	return &ExportPlaybookOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cx.ExportPlaybookOperation"),
 		pollPath: override,
 	}
 }
@@ -2423,7 +2440,7 @@ func (c *playbooksRESTClient) ExportPlaybookOperation(name string) *ExportPlaybo
 // The name must be that of a previously created ImportPlaybookOperation, possibly from a different process.
 func (c *playbooksGRPCClient) ImportPlaybookOperation(name string) *ImportPlaybookOperation {
 	return &ImportPlaybookOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cx.ImportPlaybookOperation"),
 	}
 }
 
@@ -2432,7 +2449,7 @@ func (c *playbooksGRPCClient) ImportPlaybookOperation(name string) *ImportPlaybo
 func (c *playbooksRESTClient) ImportPlaybookOperation(name string) *ImportPlaybookOperation {
 	override := fmt.Sprintf("/v3/%s", name)
 	return &ImportPlaybookOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cx.ImportPlaybookOperation"),
 		pollPath: override,
 	}
 }

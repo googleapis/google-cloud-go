@@ -30,6 +30,7 @@ import (
 	pubsublitepb "cloud.google.com/go/pubsublite/apiv1/pubsublitepb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -1161,8 +1162,12 @@ func (c *adminGRPCClient) SeekSubscription(ctx context.Context, req *pubsublitep
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*pubsublite.SeekSubscriptionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &SeekSubscriptionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1467,6 +1472,6 @@ func (c *adminGRPCClient) ListOperations(ctx context.Context, req *longrunningpb
 // The name must be that of a previously created SeekSubscriptionOperation, possibly from a different process.
 func (c *adminGRPCClient) SeekSubscriptionOperation(name string) *SeekSubscriptionOperation {
 	return &SeekSubscriptionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*pubsublite.SeekSubscriptionOperation"),
 	}
 }

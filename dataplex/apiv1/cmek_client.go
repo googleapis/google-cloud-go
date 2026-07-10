@@ -32,6 +32,7 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -583,8 +584,12 @@ func (c *cmekGRPCClient) CreateEncryptionConfig(ctx context.Context, req *datapl
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.CreateEncryptionConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateEncryptionConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -606,8 +611,12 @@ func (c *cmekGRPCClient) UpdateEncryptionConfig(ctx context.Context, req *datapl
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.UpdateEncryptionConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateEncryptionConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -632,8 +641,12 @@ func (c *cmekGRPCClient) DeleteEncryptionConfig(ctx context.Context, req *datapl
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.DeleteEncryptionConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteEncryptionConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1021,8 +1034,12 @@ func (c *cmekRESTClient) CreateEncryptionConfig(ctx context.Context, req *datapl
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.CreateEncryptionConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateEncryptionConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1092,8 +1109,12 @@ func (c *cmekRESTClient) UpdateEncryptionConfig(ctx context.Context, req *datapl
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.UpdateEncryptionConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateEncryptionConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1155,8 +1176,12 @@ func (c *cmekRESTClient) DeleteEncryptionConfig(ctx context.Context, req *datapl
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.DeleteEncryptionConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteEncryptionConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1875,7 +1900,7 @@ func (c *cmekRESTClient) ListOperations(ctx context.Context, req *longrunningpb.
 // The name must be that of a previously created CreateEncryptionConfigOperation, possibly from a different process.
 func (c *cmekGRPCClient) CreateEncryptionConfigOperation(name string) *CreateEncryptionConfigOperation {
 	return &CreateEncryptionConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.CreateEncryptionConfigOperation"),
 	}
 }
 
@@ -1884,7 +1909,7 @@ func (c *cmekGRPCClient) CreateEncryptionConfigOperation(name string) *CreateEnc
 func (c *cmekRESTClient) CreateEncryptionConfigOperation(name string) *CreateEncryptionConfigOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateEncryptionConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.CreateEncryptionConfigOperation"),
 		pollPath: override,
 	}
 }
@@ -1893,7 +1918,7 @@ func (c *cmekRESTClient) CreateEncryptionConfigOperation(name string) *CreateEnc
 // The name must be that of a previously created DeleteEncryptionConfigOperation, possibly from a different process.
 func (c *cmekGRPCClient) DeleteEncryptionConfigOperation(name string) *DeleteEncryptionConfigOperation {
 	return &DeleteEncryptionConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.DeleteEncryptionConfigOperation"),
 	}
 }
 
@@ -1902,7 +1927,7 @@ func (c *cmekGRPCClient) DeleteEncryptionConfigOperation(name string) *DeleteEnc
 func (c *cmekRESTClient) DeleteEncryptionConfigOperation(name string) *DeleteEncryptionConfigOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteEncryptionConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.DeleteEncryptionConfigOperation"),
 		pollPath: override,
 	}
 }
@@ -1911,7 +1936,7 @@ func (c *cmekRESTClient) DeleteEncryptionConfigOperation(name string) *DeleteEnc
 // The name must be that of a previously created UpdateEncryptionConfigOperation, possibly from a different process.
 func (c *cmekGRPCClient) UpdateEncryptionConfigOperation(name string) *UpdateEncryptionConfigOperation {
 	return &UpdateEncryptionConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.UpdateEncryptionConfigOperation"),
 	}
 }
 
@@ -1920,7 +1945,7 @@ func (c *cmekGRPCClient) UpdateEncryptionConfigOperation(name string) *UpdateEnc
 func (c *cmekRESTClient) UpdateEncryptionConfigOperation(name string) *UpdateEncryptionConfigOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateEncryptionConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.UpdateEncryptionConfigOperation"),
 		pollPath: override,
 	}
 }

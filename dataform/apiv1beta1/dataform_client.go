@@ -32,6 +32,7 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -1445,8 +1446,12 @@ func (c *gRPCClient) DeleteTeamFolderTree(ctx context.Context, req *dataformpb.D
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataform.DeleteTeamFolderTreeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteTeamFolderTreeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1664,8 +1669,12 @@ func (c *gRPCClient) DeleteFolderTree(ctx context.Context, req *dataformpb.Delet
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataform.DeleteFolderTreeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteFolderTreeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1794,8 +1803,12 @@ func (c *gRPCClient) MoveFolder(ctx context.Context, req *dataformpb.MoveFolderR
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataform.MoveFolderOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &MoveFolderOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1961,8 +1974,12 @@ func (c *gRPCClient) DeleteRepositoryLongRunning(ctx context.Context, req *dataf
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataform.DeleteRepositoryLongRunningOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteRepositoryLongRunningOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1987,8 +2004,12 @@ func (c *gRPCClient) MoveRepository(ctx context.Context, req *dataformpb.MoveRep
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataform.MoveRepositoryOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &MoveRepositoryOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -3992,8 +4013,12 @@ func (c *restClient) DeleteTeamFolderTree(ctx context.Context, req *dataformpb.D
 	}
 
 	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataform.DeleteTeamFolderTreeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteTeamFolderTreeOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4462,8 +4487,12 @@ func (c *restClient) DeleteFolderTree(ctx context.Context, req *dataformpb.Delet
 	}
 
 	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataform.DeleteFolderTreeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteFolderTreeOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4698,8 +4727,12 @@ func (c *restClient) MoveFolder(ctx context.Context, req *dataformpb.MoveFolderR
 	}
 
 	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataform.MoveFolderOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &MoveFolderOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5091,8 +5124,12 @@ func (c *restClient) DeleteRepositoryLongRunning(ctx context.Context, req *dataf
 	}
 
 	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataform.DeleteRepositoryLongRunningOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteRepositoryLongRunningOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5157,8 +5194,12 @@ func (c *restClient) MoveRepository(ctx context.Context, req *dataformpb.MoveRep
 	}
 
 	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataform.MoveRepositoryOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &MoveRepositoryOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -8917,7 +8958,7 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // The name must be that of a previously created DeleteFolderTreeOperation, possibly from a different process.
 func (c *gRPCClient) DeleteFolderTreeOperation(name string) *DeleteFolderTreeOperation {
 	return &DeleteFolderTreeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataform.DeleteFolderTreeOperation"),
 	}
 }
 
@@ -8926,7 +8967,7 @@ func (c *gRPCClient) DeleteFolderTreeOperation(name string) *DeleteFolderTreeOpe
 func (c *restClient) DeleteFolderTreeOperation(name string) *DeleteFolderTreeOperation {
 	override := fmt.Sprintf("/v1beta1/%s", name)
 	return &DeleteFolderTreeOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataform.DeleteFolderTreeOperation"),
 		pollPath: override,
 	}
 }
@@ -8935,7 +8976,7 @@ func (c *restClient) DeleteFolderTreeOperation(name string) *DeleteFolderTreeOpe
 // The name must be that of a previously created DeleteRepositoryLongRunningOperation, possibly from a different process.
 func (c *gRPCClient) DeleteRepositoryLongRunningOperation(name string) *DeleteRepositoryLongRunningOperation {
 	return &DeleteRepositoryLongRunningOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataform.DeleteRepositoryLongRunningOperation"),
 	}
 }
 
@@ -8944,7 +8985,7 @@ func (c *gRPCClient) DeleteRepositoryLongRunningOperation(name string) *DeleteRe
 func (c *restClient) DeleteRepositoryLongRunningOperation(name string) *DeleteRepositoryLongRunningOperation {
 	override := fmt.Sprintf("/v1beta1/%s", name)
 	return &DeleteRepositoryLongRunningOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataform.DeleteRepositoryLongRunningOperation"),
 		pollPath: override,
 	}
 }
@@ -8953,7 +8994,7 @@ func (c *restClient) DeleteRepositoryLongRunningOperation(name string) *DeleteRe
 // The name must be that of a previously created DeleteTeamFolderTreeOperation, possibly from a different process.
 func (c *gRPCClient) DeleteTeamFolderTreeOperation(name string) *DeleteTeamFolderTreeOperation {
 	return &DeleteTeamFolderTreeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataform.DeleteTeamFolderTreeOperation"),
 	}
 }
 
@@ -8962,7 +9003,7 @@ func (c *gRPCClient) DeleteTeamFolderTreeOperation(name string) *DeleteTeamFolde
 func (c *restClient) DeleteTeamFolderTreeOperation(name string) *DeleteTeamFolderTreeOperation {
 	override := fmt.Sprintf("/v1beta1/%s", name)
 	return &DeleteTeamFolderTreeOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataform.DeleteTeamFolderTreeOperation"),
 		pollPath: override,
 	}
 }
@@ -8971,7 +9012,7 @@ func (c *restClient) DeleteTeamFolderTreeOperation(name string) *DeleteTeamFolde
 // The name must be that of a previously created MoveFolderOperation, possibly from a different process.
 func (c *gRPCClient) MoveFolderOperation(name string) *MoveFolderOperation {
 	return &MoveFolderOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataform.MoveFolderOperation"),
 	}
 }
 
@@ -8980,7 +9021,7 @@ func (c *gRPCClient) MoveFolderOperation(name string) *MoveFolderOperation {
 func (c *restClient) MoveFolderOperation(name string) *MoveFolderOperation {
 	override := fmt.Sprintf("/v1beta1/%s", name)
 	return &MoveFolderOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataform.MoveFolderOperation"),
 		pollPath: override,
 	}
 }
@@ -8989,7 +9030,7 @@ func (c *restClient) MoveFolderOperation(name string) *MoveFolderOperation {
 // The name must be that of a previously created MoveRepositoryOperation, possibly from a different process.
 func (c *gRPCClient) MoveRepositoryOperation(name string) *MoveRepositoryOperation {
 	return &MoveRepositoryOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataform.MoveRepositoryOperation"),
 	}
 }
 
@@ -8998,7 +9039,7 @@ func (c *gRPCClient) MoveRepositoryOperation(name string) *MoveRepositoryOperati
 func (c *restClient) MoveRepositoryOperation(name string) *MoveRepositoryOperation {
 	override := fmt.Sprintf("/v1beta1/%s", name)
 	return &MoveRepositoryOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataform.MoveRepositoryOperation"),
 		pollPath: override,
 	}
 }
