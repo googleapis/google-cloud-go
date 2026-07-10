@@ -1,10 +1,10 @@
-module cloud.google.com/go/internal/integration
+module cloud.google.com/go/longrunning/internal/integration
 
 go 1.25.0
 
-replace cloud.google.com/go/longrunning => ../../longrunning
+replace cloud.google.com/go/longrunning => ../../
 
-replace cloud.google.com/go/texttospeech => ../../texttospeech
+replace cloud.google.com/go/texttospeech => ../../../texttospeech
 
 require (
 	cloud.google.com/go/longrunning v1.2.0
