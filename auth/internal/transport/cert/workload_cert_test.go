@@ -89,3 +89,27 @@ func TestWorkloadCertSource_GetClientCertificateSuccess(t *testing.T) {
 		t.Fatal("got nil, want non-nil PrivateKey")
 	}
 }
+
+func TestWorkloadCertSource_UseEcpSuccess(t *testing.T) {
+	source, err := NewWorkloadX509CertProvider("testdata/certificate_config_workload_use_ecp.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	cert, err := source(nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if cert.Certificate == nil {
+		t.Fatal("got nil, want non-nil Certificate")
+	}
+	if cert.PrivateKey == nil {
+		t.Fatal("got nil, want non-nil PrivateKey")
+	}
+}
+
+func TestWorkloadCertSource_UseEcpFailure(t *testing.T) {
+	_, err := NewWorkloadX509CertProvider("testdata/certificate_config_workload_use_ecp_invalid.json")
+	if err == nil {
+		t.Fatal("got nil, want non-nil error")
+	}
+}

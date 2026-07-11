@@ -31,6 +31,7 @@ type certConfigs struct {
 type workloadSource struct {
 	CertPath string `json:"cert_path"`
 	KeyPath  string `json:"key_path"`
+	UseEcp   bool   `json:"use_ecp"`
 }
 
 type certificateConfig struct {
@@ -60,9 +61,12 @@ func GetCertificatePath(configFilePath string) (string, error) {
 	if configFilePath == "" {
 		configFilePath = getconfigFilePath()
 	}
-	certFile, _, err := getCertAndKeyFiles(configFilePath)
+	certFile, _, useEcp, err := getCertKeyAndUseEcp(configFilePath)
 	if err != nil {
 		return "", err
+	}
+	if useEcp {
+		return "", errors.New("enterprise certificate proxy is enabled, certificate path is not available")
 	}
 	return certFile, nil
 }
@@ -79,14 +83,19 @@ func NewWorkloadX509CertProvider(configFilePath string) (Provider, error) {
 	if configFilePath == "" {
 		configFilePath = getconfigFilePath()
 	}
-	certFile, keyFile, err := getCertAndKeyFiles(configFilePath)
+	certFile, keyFile, useEcp, err := getCertKeyAndUseEcp(configFilePath)
 	if err != nil {
 		return nil, err
+	}
+
+	if useEcp {
+		return NewEnterpriseCertificateProxyProvider(configFilePath)
 	}
 
 	source := &workloadSource{
 		CertPath: certFile,
 		KeyPath:  keyFile,
+		UseEcp:   useEcp,
 	}
 	return source.getClientCertificate, nil
 }
@@ -101,38 +110,41 @@ func (s *workloadSource) getClientCertificate(info *tls.CertificateRequestInfo) 
 	return &cert, nil
 }
 
-// getCertAndKeyFiles attempts to read the provided config file and return the certificate and private
-// key file paths.
-func getCertAndKeyFiles(configFilePath string) (string, string, error) {
+// getCertKeyAndUseEcp attempts to read the provided config file and return the certificate, private
+// key file paths, and a boolean indicating whether to use ECP.
+func getCertKeyAndUseEcp(configFilePath string) (string, string, bool, error) {
 	jsonFile, err := os.Open(configFilePath)
 	if err != nil {
-		return "", "", errSourceUnavailable
+		return "", "", false, errSourceUnavailable
 	}
 
 	byteValue, err := io.ReadAll(jsonFile)
 	if err != nil {
-		return "", "", err
+		return "", "", false, err
 	}
 
 	var config certificateConfig
 	if err := json.Unmarshal(byteValue, &config); err != nil {
-		return "", "", err
+		return "", "", false, err
 	}
 
 	if config.CertConfigs.Workload == nil {
-		return "", "", errSourceUnavailable
+		return "", "", false, errSourceUnavailable
 	}
 
 	certFile := config.CertConfigs.Workload.CertPath
 	keyFile := config.CertConfigs.Workload.KeyPath
+	useEcp := config.CertConfigs.Workload.UseEcp
 
-	if certFile == "" {
-		return "", "", errors.New("certificate configuration is missing the certificate file location")
+	if !useEcp {
+		if certFile == "" {
+			return "", "", false, errors.New("certificate configuration is missing the certificate file location")
+		}
+
+		if keyFile == "" {
+			return "", "", false, errors.New("certificate configuration is missing the key file location")
+		}
 	}
 
-	if keyFile == "" {
-		return "", "", errors.New("certificate configuration is missing the key file location")
-	}
-
-	return certFile, keyFile, nil
+	return certFile, keyFile, useEcp, nil
 }

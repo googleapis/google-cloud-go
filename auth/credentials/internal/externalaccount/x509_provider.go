@@ -30,6 +30,8 @@ import (
 	"time"
 
 	"cloud.google.com/go/auth/internal/transport/cert"
+	"github.com/googleapis/enterprise-certificate-proxy/client"
+	"github.com/googleapis/enterprise-certificate-proxy/client/util"
 )
 
 // x509Provider implements the subjectTokenProvider type for x509 workload
@@ -141,6 +143,83 @@ func readTrustChain(trustChainPath string) ([]*x509.Certificate, error) {
 	return certificateTrustChain, nil
 }
 
+type workloadConfig struct {
+	CertConfigs struct {
+		Workload *struct {
+			UseEcp bool `json:"use_ecp"`
+		} `json:"workload"`
+	} `json:"cert_configs"`
+}
+
+func isECPConfig(configFilePath string) (bool, error) {
+	path := configFilePath
+	if path == "" {
+		envFilePath := util.GetConfigFilePathFromEnv()
+		if envFilePath != "" {
+			path = envFilePath
+		} else {
+			path = util.GetDefaultConfigFilePath()
+		}
+	}
+
+	byteValue, err := os.ReadFile(path)
+	if err != nil {
+		// If the file cannot be read, it's not a valid config or is unavailable.
+		// Fallback to false, or return error. Returning false lets the file provider
+		// run and return the correct descriptive OS file error.
+		return false, nil
+	}
+
+	var config workloadConfig
+	if err := json.Unmarshal(byteValue, &config); err != nil {
+		return false, nil
+	}
+
+	if config.CertConfigs.Workload == nil {
+		return false, nil
+	}
+
+	return config.CertConfigs.Workload.UseEcp, nil
+}
+
+func (xp *x509Provider) ecpSubjectToken() (string, error) {
+	path := xp.ConfigFilePath
+	if path == "" {
+		envFilePath := util.GetConfigFilePathFromEnv()
+		if envFilePath != "" {
+			path = envFilePath
+		} else {
+			path = util.GetDefaultConfigFilePath()
+		}
+	}
+
+	key, err := client.Cred(path)
+	if err != nil {
+		return "", fmt.Errorf("failed to initialize ECP client: %w", err)
+	}
+
+	rawChain := key.CertificateChain()
+	if len(rawChain) == 0 {
+		return "", errors.New("ECP returned an empty certificate chain")
+	}
+
+	certChain := make([]string, 0, len(rawChain))
+	for _, derBytes := range rawChain {
+		cert, err := x509.ParseCertificate(derBytes)
+		if err != nil {
+			return "", fmt.Errorf("failed to parse certificate from ECP chain: %w", err)
+		}
+		certChain = append(certChain, encodeCert(cert))
+	}
+
+	jsonChain, err := json.Marshal(certChain)
+	if err != nil {
+		return "", fmt.Errorf("failed to format certificate data: %w", err)
+	}
+
+	return string(jsonChain), nil
+}
+
 // subjectToken retrieves the X.509 subject token. It loads the leaf
 // certificate and, if a trust chain path is configured, the trust chain
 // certificates. It then constructs a JSON array containing the base64-encoded
@@ -148,6 +227,15 @@ func readTrustChain(trustChainPath string) ([]*x509.Certificate, error) {
 // The leaf certificate must be at the top of the trust chain file. This JSON
 // array is used as the subject token for mTLS authentication.
 func (xp *x509Provider) subjectToken(context.Context) (string, error) {
+	useEcp, err := isECPConfig(xp.ConfigFilePath)
+	if err != nil {
+		return "", err
+	}
+
+	if useEcp {
+		return xp.ecpSubjectToken()
+	}
+
 	// Load the leaf certificate.
 	leafCert, err := loadLeafCertificate(xp.ConfigFilePath)
 	if err != nil {
