@@ -237,10 +237,11 @@ func TestGRPCWriter_MemoryAllocationPaths(t *testing.T) {
 }
 
 type mockSender struct {
-	mu        sync.Mutex
-	requests  []gRPCBidiWriteRequest
-	errResult error
-	wg        sync.WaitGroup // Waits for all async operations to complete.
+	mu         sync.Mutex
+	requests   []gRPCBidiWriteRequest
+	errResult  error
+	wg         sync.WaitGroup // Waits for all async operations to complete.
+	failOnData bool
 }
 
 func (m *mockSender) connect(ctx context.Context, cs gRPCBufSenderChans, opts ...gax.CallOption) {
@@ -267,6 +268,10 @@ func (m *mockSender) connect(ctx context.Context, cs gRPCBufSenderChans, opts ..
 				case <-ctx.Done():
 					return
 				}
+			}
+
+			if m.failOnData && (req.flush || len(req.buf) > 0) {
+				return
 			}
 
 			if req.flush {
@@ -428,125 +433,190 @@ func (i *instantFailSender) err() error {
 	return i.errResult
 }
 
-func TestGRPCWriter_ChunkRetryDeadline(t *testing.T) {
+func TestGRPCWriter_ChunkRetryDeadline_TimeoutEnforcedAcrossRetries(t *testing.T) {
 	ctx := context.Background()
+	deadline := 100 * time.Millisecond
+	sender := &instantFailSender{errResult: errors.New("transient network error")}
+	w := &gRPCWriter{
+		chunkRetryDeadline: deadline,
+		streamSender:       sender,
+		settings:           &settings{},
+		bufUnsentIdx:       100, // Makes isActive() == true.
+		bufFlushedIdx:      0,
+		buf:                make([]byte, 100),
+		sendableUnits:      1,
+		writeQuantum:       100,
+		chunkSize:          100,
+		writesChan:         make(chan gRPCWriterCommand, 1),
+	}
 
-	t.Run("TimeoutEnforcedAcrossRetries", func(t *testing.T) {
-		deadline := 100 * time.Millisecond
-		sender := &instantFailSender{errResult: errors.New("transient network error")}
-		w := &gRPCWriter{
-			chunkRetryDeadline: deadline,
-			streamSender:       sender,
-			settings:           &settings{},
-			bufUnsentIdx:       100, // Makes isActive() == true
-			bufFlushedIdx:      0,
-			buf:                make([]byte, 100),
-			sendableUnits:      1,
-			writeQuantum:       100,
-			chunkSize:          100,
-			writesChan:         make(chan gRPCWriterCommand, 1),
-		}
-
-		var err error
-		for i := 0; i < 20; i++ {
-			err = w.writeLoop(ctx)
-			if err != nil && strings.Contains(err.Error(), "retry deadline") {
-				break
-			}
-			time.Sleep(20 * time.Millisecond)
-		}
-
-		if err == nil || !strings.Contains(err.Error(), "retry deadline") {
-			t.Fatalf("expected retry deadline error, got: %v", err)
-		}
-		if w.attempts < 2 {
-			t.Errorf("expected multiple attempts before deadline was reached, got %d", w.attempts)
-		}
-	})
-
-	t.Run("TimeoutResetOnProgress", func(t *testing.T) {
-		deadline := 200 * time.Millisecond
-		sender := &instantFailSender{errResult: errors.New("transient network error")}
-		w := &gRPCWriter{
-			chunkRetryDeadline: deadline,
-			streamSender:       sender,
-			settings:           &settings{},
-			bufBaseOffset:      0,
-			bufUnsentIdx:       100,
-			bufFlushedIdx:      0,
-			buf:                make([]byte, 100),
-			sendableUnits:      1,
-			writeQuantum:       100,
-			chunkSize:          100,
-			writesChan:         make(chan gRPCWriterCommand, 1),
-			setSize:            func(int64) {},
-			progress:           func(int64) {},
-		}
-
-		// Attempt 1: Start the clock
-		_ = w.writeLoop(ctx)
-
-		// Sleep to consume more than half the deadline
-		time.Sleep(120 * time.Millisecond)
-
-		// Attempt 2: Clock should not be expired yet
-		err := w.writeLoop(ctx)
-		if err != nil && strings.Contains(err.Error(), "retry deadline") {
-			t.Fatalf("deadline reached too early: %v", err)
-		}
-
-		// Simulate forward progress by invoking handleCompletion
-		w.handleCompletion(gRPCBidiWriteCompletion{flushOffset: 50})
-
-		// Sleep to consume another portion of the original deadline.
-		// If the timer wasn't reset, the next writeLoop would fail since
-		// 120ms + 120ms = 240ms > 200ms.
-		time.Sleep(120 * time.Millisecond)
-
-		// Attempt 3: Clock was reset, so this should NOT fail with deadline exceeded.
+	var err error
+	for i := 0; i < 20; i++ {
 		err = w.writeLoop(ctx)
 		if err != nil && strings.Contains(err.Error(), "retry deadline") {
-			t.Fatalf("timer was not reset by forward progress, got deadline error: %v", err)
+			break
 		}
+		time.Sleep(20 * time.Millisecond)
+	}
 
-		// Attempt 4: Wait for the reset timer to actually expire
-		time.Sleep(100 * time.Millisecond)
-		err = w.writeLoop(ctx)
-		if err == nil || !strings.Contains(err.Error(), "retry deadline") {
-			t.Fatalf("expected retry deadline error after reset timer expired, got: %v", err)
+	if err == nil || !strings.Contains(err.Error(), "retry deadline") {
+		t.Fatalf("expected retry deadline error, got: %v", err)
+	}
+	if w.attempts < 2 {
+		t.Errorf("expected multiple attempts before deadline was reached, got %d", w.attempts)
+	}
+}
+
+func TestGRPCWriter_ChunkRetryDeadline_TimeoutResetOnProgress(t *testing.T) {
+	ctx := context.Background()
+	deadline := 200 * time.Millisecond
+	sender := &instantFailSender{errResult: errors.New("transient network error")}
+	w := &gRPCWriter{
+		chunkRetryDeadline: deadline,
+		streamSender:       sender,
+		settings:           &settings{},
+		bufBaseOffset:      0,
+		bufUnsentIdx:       100,
+		bufFlushedIdx:      0,
+		buf:                make([]byte, 100),
+		sendableUnits:      1,
+		writeQuantum:       100,
+		chunkSize:          100,
+		writesChan:         make(chan gRPCWriterCommand, 1),
+		setSize:            func(int64) {},
+		progress:           func(int64) {},
+	}
+
+	// Attempt 1: Start the clock.
+	_ = w.writeLoop(ctx)
+
+	// Sleep to consume more than half the deadline.
+	time.Sleep(120 * time.Millisecond)
+
+	// Attempt 2: Clock should not be expired yet.
+	err := w.writeLoop(ctx)
+	if err != nil && strings.Contains(err.Error(), "retry deadline") {
+		t.Fatalf("deadline reached too early: %v", err)
+	}
+	if err == nil || !strings.Contains(err.Error(), "transient network error") {
+		t.Fatalf("expected transient network error, got: %v", err)
+	}
+
+	// Simulate forward progress by invoking handleCompletion.
+	w.handleCompletion(gRPCBidiWriteCompletion{flushOffset: 50})
+
+	// Sleep to consume another portion of the original deadline.
+	// If the timer wasn't reset, the next writeLoop would fail since
+	// 120ms + 120ms = 240ms > 200ms.
+	time.Sleep(120 * time.Millisecond)
+
+	// Attempt 3: Clock was reset, so this should NOT fail with deadline exceeded.
+	err = w.writeLoop(ctx)
+	if err != nil && strings.Contains(err.Error(), "retry deadline") {
+		t.Fatalf("timer was not reset by forward progress, got deadline error: %v", err)
+	}
+	if err == nil || !strings.Contains(err.Error(), "transient network error") {
+		t.Fatalf("expected transient network error, got: %v", err)
+	}
+
+	// Attempt 4: Wait for the reset timer to actually expire.
+	time.Sleep(100 * time.Millisecond)
+	err = w.writeLoop(ctx)
+	if err == nil || !strings.Contains(err.Error(), "retry deadline") {
+		t.Fatalf("expected retry deadline error after reset timer expired, got: %v", err)
+	}
+}
+
+func TestGRPCWriter_ChunkRetryDeadline_TimeoutPausedOnIdle(t *testing.T) {
+	ctx := context.Background()
+	deadline := 100 * time.Millisecond
+	sender := &instantFailSender{errResult: errors.New("transient network error")}
+	w := &gRPCWriter{
+		chunkRetryDeadline: deadline,
+		streamSender:       sender,
+		settings:           &settings{},
+		bufUnsentIdx:       0, // Makes isActive() == false.
+		bufFlushedIdx:      0,
+		buf:                make([]byte, 100),
+		sendableUnits:      1,
+		writeQuantum:       100,
+		chunkSize:          100,
+		writesChan:         make(chan gRPCWriterCommand, 1),
+	}
+
+	// Call writeLoop. Because isActive() is false, it should set abandonRetriesTime to zero.
+	_ = w.writeLoop(ctx)
+
+	if !w.abandonRetriesTime.IsZero() {
+		t.Fatalf("expected timer to be zeroed when idle, but got: %v", w.abandonRetriesTime)
+	}
+
+	// Wait way past the deadline.
+	time.Sleep(150 * time.Millisecond)
+
+	// Next call should still not fail with deadline exceeded.
+	err := w.writeLoop(ctx)
+	if err != nil && strings.Contains(err.Error(), "retry deadline") {
+		t.Fatalf("expected no deadline error when idle, got: %v", err)
+	}
+}
+
+type checkTimerCmd struct {
+	timerCh chan time.Time
+}
+
+func (c *checkTimerCmd) handle(w *gRPCWriter, cs gRPCWriterCommandHandleChans) error {
+	c.timerCh <- w.abandonRetriesTime
+	return nil
+}
+
+func TestGRPCWriter_ChunkRetryDeadline_TimerStartsOnlyWhenBufferFills(t *testing.T) {
+	ctx := context.Background()
+	deadline := 100 * time.Millisecond
+	sender := &mockSender{errResult: errors.New("transient network error"), failOnData: true}
+
+	w := &gRPCWriter{
+		chunkRetryDeadline: deadline,
+		streamSender:       sender,
+		settings:           &settings{},
+		bufUnsentIdx:       0,
+		bufFlushedIdx:      0,
+		buf:                make([]byte, 0, 100),
+		sendableUnits:      1,
+		writeQuantum:       100,
+		chunkSize:          100,
+		writesChan:         make(chan gRPCWriterCommand, 3),
+		setSize:            func(int64) {},
+		progress:           func(int64) {},
+	}
+
+	errCh := make(chan error, 1)
+	go func() {
+		errCh <- w.writeLoop(ctx)
+	}()
+
+	for i := 0; i < 4; i++ {
+		done := make(chan struct{})
+		w.writesChan <- &gRPCWriterCommandWrite{p: make([]byte, 20), done: done}
+		<-done
+
+		// Assert the timer is not started yet because the chunk size hasn't been reached.
+		timerCh := make(chan time.Time)
+		w.writesChan <- &checkTimerCmd{timerCh: timerCh}
+		if abandonRetriesTime := <-timerCh; !abandonRetriesTime.IsZero() {
+			t.Fatalf("expected timer to NOT be started before buffer fills, but it was %v after %d writes", abandonRetriesTime, i+1)
 		}
-	})
+	}
 
-	t.Run("TimeoutPausedOnIdle", func(t *testing.T) {
-		deadline := 100 * time.Millisecond
-		sender := &instantFailSender{errResult: errors.New("transient network error")}
-		w := &gRPCWriter{
-			chunkRetryDeadline: deadline,
-			streamSender:       sender,
-			settings:           &settings{},
-			bufUnsentIdx:       0, // Makes isActive() == false
-			bufFlushedIdx:      0,
-			buf:                make([]byte, 100),
-			sendableUnits:      1,
-			writeQuantum:       100,
-			chunkSize:          100,
-			writesChan:         make(chan gRPCWriterCommand, 1),
-		}
+	done2 := make(chan struct{})
+	w.writesChan <- &gRPCWriterCommandWrite{p: make([]byte, 20), done: done2} // Fills buffer!
 
-		// Call writeLoop. Because isActive() is false, it should set abandonRetriesTime to zero.
-		_ = w.writeLoop(ctx)
+	err := <-errCh
 
-		if !w.abandonRetriesTime.IsZero() {
-			t.Fatalf("expected timer to be zeroed when idle, but got: %v", w.abandonRetriesTime)
-		}
-
-		// Wait way past the deadline
-		time.Sleep(150 * time.Millisecond)
-
-		// Next call should still not fail with deadline exceeded
-		err := w.writeLoop(ctx)
-		if err != nil && strings.Contains(err.Error(), "retry deadline") {
-			t.Fatalf("expected no deadline error when idle, got: %v", err)
-		}
-	})
+	if err == nil || !strings.Contains(err.Error(), "transient network error") {
+		t.Fatalf("expected transient network error when buffer fills and triggers send, got: %v", err)
+	}
+	if w.abandonRetriesTime.IsZero() {
+		t.Fatalf("expected timer to be started when buffer fills and triggers send, but it was zero")
+	}
 }
