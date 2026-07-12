@@ -22,6 +22,9 @@ import (
 	"net/http/httptest"
 	"os"
 	"testing"
+	"time"
+
+	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 
 	"go.opentelemetry.io/otel/attribute"
 	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
@@ -663,5 +666,39 @@ func TestStandardMetricsRecording(t *testing.T) {
 		if dp.Sum != 11 {
 			t.Errorf("expected sum 11, got %d", dp.Sum)
 		}
+	}
+}
+
+func TestRecordTTFB_MetadataOnly(t *testing.T) {
+	ctx := context.Background()
+	mr := sdkmetric.NewManualReader()
+	provider := sdkmetric.NewMeterProvider(sdkmetric.WithReader(mr))
+	defer provider.Shutdown(ctx)
+
+	cfg := storageConfig{
+		enableOtelMetrics: true,
+		meterProvider:     provider,
+	}
+
+	cm, _, err := initMetrics(ctx, "project-id", &cfg)
+	if err != nil {
+		t.Fatalf("initMetrics: %v", err)
+	}
+
+	w := &wrappedClientStream{
+		metrics:   cm,
+		ctx:       ctx,
+		method:    "/google.storage.v2.Storage/ReadObject",
+		startTime: time.Now(),
+	}
+
+	// First response with only metadata should trigger TTFB
+	resp := &storagepb.ReadObjectResponse{
+		Metadata: &storagepb.Object{Name: "test-object"},
+	}
+	w.recordTTFB(resp)
+
+	if !w.recordedTTFB.Load() {
+		t.Errorf("recordTTFB did not trigger TTFB for metadata-only ReadObjectResponse")
 	}
 }

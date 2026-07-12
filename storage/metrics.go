@@ -756,15 +756,11 @@ func (w *wrappedClientStream) recordTTFB(m interface{}) {
 			methodName = parts[1]
 		}
 	}
-	switch resp := m.(type) {
-	case *storagepb.ReadObjectResponse:
-		if resp.GetChecksummedData() != nil && len(resp.GetChecksummedData().Content) > 0 {
-			isTTFB = true
-		}
-	case *storagepb.WriteObjectResponse:
-		if resp.GetPersistedSize() > 0 {
-			isTTFB = true
-		}
+	switch m.(type) {
+	case *storagepb.ReadObjectResponse, *storagepb.WriteObjectResponse:
+		// The first response from the server, whether it contains metadata,
+		// persisted size, or actual content, indicates TTFB.
+		isTTFB = true
 	default:
 		isTTFB = true
 	}
