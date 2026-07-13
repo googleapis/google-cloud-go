@@ -1,6 +1,6 @@
 {
   "agentplatform": "0.21.0",
-  "auth": "0.21.0",
+  "auth": "0.22.0",
   "auth/oauth2adapt": "0.2.8",
   "bigquery": "1.78.0",
   "bigtable": "1.50.0",
