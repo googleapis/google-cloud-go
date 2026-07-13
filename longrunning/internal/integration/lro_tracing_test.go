@@ -67,7 +67,9 @@ func TestLongAudioSynthesizeTracing(t *testing.T) {
 	// Setup mock OTel TracerProvider
 	sr := tracetest.NewSpanRecorder()
 	tp := sdktrace.NewTracerProvider(sdktrace.WithSpanProcessor(sr))
+	oldTP := otel.GetTracerProvider()
 	otel.SetTracerProvider(tp)
+	defer otel.SetTracerProvider(oldTP)
 
 	// Setup local gRPC mock server
 	mock := &mockLongAudioServer{}
@@ -228,7 +230,9 @@ func TestLongAudioSynthesizeTracingResumed(t *testing.T) {
 	// 1. Setup mock server and exporter
 	sr := tracetest.NewSpanRecorder()
 	tp := sdktrace.NewTracerProvider(sdktrace.WithSpanProcessor(sr))
+	oldTP := otel.GetTracerProvider()
 	otel.SetTracerProvider(tp)
+	defer otel.SetTracerProvider(oldTP)
 
 	mockServer := &mockLongAudioServer{}
 	addr, err := net.ResolveTCPAddr("tcp", "localhost:0")
