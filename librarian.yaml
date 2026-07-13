@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 language: go
-version: v0.25.0
+version: v0.26.0
 repo: googleapis/google-cloud-go
 sources:
   discovery:
@@ -1318,7 +1318,7 @@ libraries:
       - path: google/cloud/speech/v1
       - path: google/cloud/speech/v1p1beta1
   - name: storage
-    version: 1.63.0
+    version: 1.63.1
     apis:
       - path: google/storage/v2
         go:
