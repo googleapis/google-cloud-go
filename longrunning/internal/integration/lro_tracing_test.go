@@ -218,3 +218,149 @@ func TestLongAudioSynthesizeTracing(t *testing.T) {
 		t.Errorf("expected status code to be 0 on terminal poll, got %d", statusCode)
 	}
 }
+
+func TestLongAudioSynthesizeTracingResumed(t *testing.T) {
+	t.Setenv("GOOGLE_SDK_GO_EXPERIMENTAL_TRACING", "true")
+	if !gax.IsFeatureEnabled("TRACING") {
+		t.Skip("TRACING feature flag is not enabled")
+	}
+
+	// 1. Setup mock server and exporter
+	sr := tracetest.NewSpanRecorder()
+	tp := sdktrace.NewTracerProvider(sdktrace.WithSpanProcessor(sr))
+	otel.SetTracerProvider(tp)
+
+	mockServer := &mockLongAudioServer{}
+	addr, err := net.ResolveTCPAddr("tcp", "localhost:0")
+	if err != nil {
+		t.Fatal(err)
+	}
+	lis, err := net.ListenTCP("tcp", addr)
+	if err != nil {
+		t.Fatal(err)
+	}
+	s := grpc.NewServer()
+	texttospeechpb.RegisterTextToSpeechLongAudioSynthesizeServer(s, mockServer)
+	longrunningpb.RegisterOperationsServer(s, mockServer)
+	go s.Serve(lis)
+	defer s.Stop()
+
+	// 2. Setup client
+	ctx := context.Background()
+	conn, err := grpc.Dial(lis.Addr().String(), grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer conn.Close()
+	client, err := texttospeech.NewTextToSpeechLongAudioSynthesizeClient(ctx, option.WithGRPCConn(conn))
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer client.Close()
+
+	// 3. Resumed LRO setup
+	opName := "projects/test-project/locations/global/operations/op-123"
+	responseProto := &texttospeechpb.SynthesizeLongAudioResponse{}
+	responseAny, err := anypb.New(responseProto)
+	if err != nil {
+		t.Fatal(err)
+	}
+	opProto := &longrunningpb.Operation{
+		Name: opName,
+		Done: true,
+		Result: &longrunningpb.Operation_Response{
+			Response: responseAny,
+		},
+	}
+	mockServer.resps = []proto.Message{opProto, opProto}
+
+	op := client.SynthesizeLongAudioOperation(opName)
+
+	// 4. Wait for LRO to complete
+	tracer := otel.GetTracerProvider().Tracer("test-tracer")
+	parentCtx, parentSpan := tracer.Start(ctx, "resumed-polling")
+
+	_, err = op.Wait(parentCtx)
+	parentSpan.End()
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// 5. Verify spans
+	spans := sr.Ended()
+	var waitSpan sdktrace.ReadOnlySpan
+	var pollSpans []sdktrace.ReadOnlySpan
+	for _, span := range spans {
+		switch span.Name() {
+		case "*texttospeech.SynthesizeLongAudioOperation.Wait":
+			waitSpan = span
+		case "*longrunning.OperationsClient.GetOperation":
+			pollSpans = append(pollSpans, span)
+		}
+	}
+
+	if waitSpan == nil {
+		t.Fatal("expected T2 wait span, got nil")
+	}
+
+	// Verify NO Span Links are created in resumed polling
+	links := waitSpan.Links()
+	if len(links) != 0 {
+		t.Fatalf("expected 0 span links for resumed LRO tracing, got %d", len(links))
+	}
+
+	// Verify Resource ID on T2 Wait Span
+	waitAttrs := waitSpan.Attributes()
+	hasResID := false
+	for _, attr := range waitAttrs {
+		if attr.Key == "gcp.resource.destination.id" && attr.Value.AsString() == opName {
+			hasResID = true
+		}
+	}
+	if !hasResID {
+		t.Error("expected wait span to have gcp.resource.destination.id set to Operation ID")
+	}
+
+	// Verify T3 Poll Spans
+	if len(pollSpans) != 1 {
+		t.Fatalf("expected 1 poll attempt span, got %d", len(pollSpans))
+	}
+
+	pollSpan := pollSpans[0]
+	pollAttrs := pollSpan.Attributes()
+	var resID string
+	var attempt int
+	var done bool
+	var statusCode int
+	var hasDone, hasAttempt, hasStatus bool
+
+	for _, attr := range pollAttrs {
+		switch attr.Key {
+		case "gcp.resource.destination.id":
+			resID = attr.Value.AsString()
+		case "gcp.longrunning.poll_attempt_count":
+			attempt = int(attr.Value.AsInt64())
+			hasAttempt = true
+		case "gcp.longrunning.done":
+			done = attr.Value.AsBool()
+			hasDone = true
+		case "gcp.longrunning.status_code":
+			statusCode = int(attr.Value.AsInt64())
+			hasStatus = true
+		}
+	}
+
+	if resID != opName {
+		t.Errorf("expected poll span resource ID to be Operation ID, got '%s'", resID)
+	}
+	if !hasAttempt || attempt != 1 {
+		t.Errorf("expected poll attempt count to be 1, got %d", attempt)
+	}
+	if !hasDone || !done {
+		t.Errorf("expected done to be true on terminal poll, got %t", done)
+	}
+	if !hasStatus || statusCode != 0 {
+		t.Errorf("expected status code to be 0 on terminal poll, got %d", statusCode)
+	}
+}
