@@ -903,6 +903,7 @@ libraries:
       - path: google/maps/places/v1
       - path: google/maps/routeoptimization/v1
       - path: google/maps/solar/v1
+      - path: google/maps/isochrones/v1
       - path: google/maps/fleetengine/delivery/v1
         go:
           no_snippets: true
