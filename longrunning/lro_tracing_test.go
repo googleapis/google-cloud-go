@@ -12,16 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package integration
+package longrunning_test
 
 import (
 	"context"
 	"net"
 	"testing"
+	"time"
 
+	"cloud.google.com/go/longrunning"
+	autogen "cloud.google.com/go/longrunning/autogen"
 	"cloud.google.com/go/longrunning/autogen/longrunningpb"
-	texttospeech "cloud.google.com/go/texttospeech/apiv1"
-	texttospeechpb "cloud.google.com/go/texttospeech/apiv1/texttospeechpb"
 	gax "github.com/googleapis/gax-go/v2"
 	otel "go.opentelemetry.io/otel"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
@@ -33,8 +34,7 @@ import (
 	"google.golang.org/protobuf/types/known/anypb"
 )
 
-type mockLongAudioServer struct {
-	texttospeechpb.UnimplementedTextToSpeechLongAudioSynthesizeServer
+type mockServer struct {
 	longrunningpb.UnimplementedOperationsServer
 
 	reqs  []proto.Message
@@ -42,7 +42,7 @@ type mockLongAudioServer struct {
 	err   error
 }
 
-func (s *mockLongAudioServer) SynthesizeLongAudio(ctx context.Context, req *texttospeechpb.SynthesizeLongAudioRequest) (*longrunningpb.Operation, error) {
+func (s *mockServer) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest) (*longrunningpb.Operation, error) {
 	s.reqs = append(s.reqs, req)
 	if s.err != nil {
 		return nil, s.err
@@ -50,12 +50,22 @@ func (s *mockLongAudioServer) SynthesizeLongAudio(ctx context.Context, req *text
 	return s.resps[0].(*longrunningpb.Operation), nil
 }
 
-func (s *mockLongAudioServer) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest) (*longrunningpb.Operation, error) {
-	s.reqs = append(s.reqs, req)
-	if s.err != nil {
-		return nil, s.err
+type mockClient struct {
+	lroClient *autogen.OperationsClient
+}
+
+type mockOperation struct {
+	lro *longrunning.Operation
+}
+
+func (c *mockClient) SynthesizeLongAudioOperation(name string) *mockOperation {
+	return &mockOperation{
+		lro: longrunning.InternalNewOperationWithMetadata(c.lroClient, &longrunningpb.Operation{Name: name}, "*mock.MockOperation"),
 	}
-	return s.resps[1].(*longrunningpb.Operation), nil
+}
+
+func (op *mockOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
+	return op.lro.WaitWithInterval(ctx, nil, 1000*time.Millisecond, opts...)
 }
 
 func TestLongAudioSynthesizeTracing(t *testing.T) {
@@ -72,9 +82,8 @@ func TestLongAudioSynthesizeTracing(t *testing.T) {
 	defer otel.SetTracerProvider(oldTP)
 
 	// Setup local gRPC mock server
-	mock := &mockLongAudioServer{}
+	mock := &mockServer{}
 	serv := grpc.NewServer()
-	texttospeechpb.RegisterTextToSpeechLongAudioSynthesizeServer(serv, mock)
 	longrunningpb.RegisterOperationsServer(serv, mock)
 
 	lis, err := net.Listen("tcp", "localhost:0")
@@ -91,16 +100,13 @@ func TestLongAudioSynthesizeTracing(t *testing.T) {
 	defer conn.Close()
 
 	// Setup mock responses
-	expectedResponse := &texttospeechpb.SynthesizeLongAudioResponse{}
+	expectedResponse := &longrunningpb.Operation{}
 	anyResp, err := anypb.New(expectedResponse)
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	mock.resps = []proto.Message{
-		&longrunningpb.Operation{
-			Name: "projects/test-project/locations/global/operations/op-123",
-		},
 		&longrunningpb.Operation{
 			Name:   "projects/test-project/locations/global/operations/op-123",
 			Done:   true,
@@ -109,26 +115,23 @@ func TestLongAudioSynthesizeTracing(t *testing.T) {
 	}
 
 	// Create client pointing to mock server
-	client, err := texttospeech.NewTextToSpeechLongAudioSynthesizeClient(context.Background(), option.WithGRPCConn(conn))
+	ctx := context.Background()
+	lroClient, err := autogen.NewOperationsClient(ctx, option.WithGRPCConn(conn))
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer client.Close()
+	defer lroClient.Close()
 
 	// Call LRO method
-	ctx := context.Background()
 	tracer := otel.GetTracerProvider().Tracer("test-tracer")
 	parentCtx, parentSpan := tracer.Start(ctx, "immediate-polling")
 
-	op, err := client.SynthesizeLongAudio(parentCtx, &texttospeechpb.SynthesizeLongAudioRequest{
-		Parent: "projects/test-project/locations/global",
-	})
-	if err != nil {
-		t.Fatal(err)
-	}
+	lro := longrunning.InternalNewOperationWithMetadata(lroClient, &longrunningpb.Operation{Name: "projects/test-project/locations/global/operations/op-123"}, "*mock.MockOperation")
+	lro.SetParentSpanContext(parentSpan.SpanContext())
+	op := &mockOperation{lro: lro}
 
 	// Wait for LRO
-	_, err = op.Wait(parentCtx)
+	err = op.Wait(parentCtx)
 	parentSpan.End()
 
 	if err != nil {
@@ -146,7 +149,7 @@ func TestLongAudioSynthesizeTracing(t *testing.T) {
 
 	for _, span := range spans {
 		switch span.Name() {
-		case "*texttospeech.SynthesizeLongAudioOperation.Wait":
+		case "*mock.MockOperation.Wait":
 			waitSpan = span
 		case "*longrunning.OperationsClient.GetOperation":
 			pollSpans = append(pollSpans, span)
@@ -234,7 +237,7 @@ func TestLongAudioSynthesizeTracingResumed(t *testing.T) {
 	otel.SetTracerProvider(tp)
 	defer otel.SetTracerProvider(oldTP)
 
-	mockServer := &mockLongAudioServer{}
+	mockServer := &mockServer{}
 	addr, err := net.ResolveTCPAddr("tcp", "localhost:0")
 	if err != nil {
 		t.Fatal(err)
@@ -244,7 +247,6 @@ func TestLongAudioSynthesizeTracingResumed(t *testing.T) {
 		t.Fatal(err)
 	}
 	s := grpc.NewServer()
-	texttospeechpb.RegisterTextToSpeechLongAudioSynthesizeServer(s, mockServer)
 	longrunningpb.RegisterOperationsServer(s, mockServer)
 	go s.Serve(lis)
 	defer s.Stop()
@@ -256,15 +258,16 @@ func TestLongAudioSynthesizeTracingResumed(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer conn.Close()
-	client, err := texttospeech.NewTextToSpeechLongAudioSynthesizeClient(ctx, option.WithGRPCConn(conn))
+	lroClient, err := autogen.NewOperationsClient(ctx, option.WithGRPCConn(conn))
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer client.Close()
+	defer lroClient.Close()
+	client := &mockClient{lroClient: lroClient}
 
 	// 3. Resumed LRO setup
 	opName := "projects/test-project/locations/global/operations/op-123"
-	responseProto := &texttospeechpb.SynthesizeLongAudioResponse{}
+	responseProto := &longrunningpb.Operation{}
 	responseAny, err := anypb.New(responseProto)
 	if err != nil {
 		t.Fatal(err)
@@ -284,7 +287,7 @@ func TestLongAudioSynthesizeTracingResumed(t *testing.T) {
 	tracer := otel.GetTracerProvider().Tracer("test-tracer")
 	parentCtx, parentSpan := tracer.Start(ctx, "resumed-polling")
 
-	_, err = op.Wait(parentCtx)
+	err = op.Wait(parentCtx)
 	parentSpan.End()
 
 	if err != nil {
@@ -297,7 +300,7 @@ func TestLongAudioSynthesizeTracingResumed(t *testing.T) {
 	var pollSpans []sdktrace.ReadOnlySpan
 	for _, span := range spans {
 		switch span.Name() {
-		case "*texttospeech.SynthesizeLongAudioOperation.Wait":
+		case "*mock.MockOperation.Wait":
 			waitSpan = span
 		case "*longrunning.OperationsClient.GetOperation":
 			pollSpans = append(pollSpans, span)
