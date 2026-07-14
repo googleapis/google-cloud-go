@@ -19,9 +19,6 @@
         "bigquery/v2"
       ]
     },
-    "bigquery/v2": {
-      "component": "bigquery"
-    },
     "bigtable": {
       "component": "bigtable"
     },

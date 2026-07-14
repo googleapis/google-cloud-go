@@ -32,6 +32,7 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -720,8 +721,12 @@ func (c *businessGlossaryGRPCClient) CreateGlossary(ctx context.Context, req *da
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.CreateGlossaryOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateGlossaryOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -743,8 +748,12 @@ func (c *businessGlossaryGRPCClient) UpdateGlossary(ctx context.Context, req *da
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.UpdateGlossaryOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateGlossaryOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -769,8 +778,12 @@ func (c *businessGlossaryGRPCClient) DeleteGlossary(ctx context.Context, req *da
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.DeleteGlossaryOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteGlossaryOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1443,8 +1456,12 @@ func (c *businessGlossaryRESTClient) CreateGlossary(ctx context.Context, req *da
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.CreateGlossaryOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateGlossaryOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1517,8 +1534,12 @@ func (c *businessGlossaryRESTClient) UpdateGlossary(ctx context.Context, req *da
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.UpdateGlossaryOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateGlossaryOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1581,8 +1602,12 @@ func (c *businessGlossaryRESTClient) DeleteGlossary(ctx context.Context, req *da
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.DeleteGlossaryOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteGlossaryOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2935,7 +2960,7 @@ func (c *businessGlossaryRESTClient) ListOperations(ctx context.Context, req *lo
 // The name must be that of a previously created CreateGlossaryOperation, possibly from a different process.
 func (c *businessGlossaryGRPCClient) CreateGlossaryOperation(name string) *CreateGlossaryOperation {
 	return &CreateGlossaryOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.CreateGlossaryOperation"),
 	}
 }
 
@@ -2944,7 +2969,7 @@ func (c *businessGlossaryGRPCClient) CreateGlossaryOperation(name string) *Creat
 func (c *businessGlossaryRESTClient) CreateGlossaryOperation(name string) *CreateGlossaryOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateGlossaryOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.CreateGlossaryOperation"),
 		pollPath: override,
 	}
 }
@@ -2953,7 +2978,7 @@ func (c *businessGlossaryRESTClient) CreateGlossaryOperation(name string) *Creat
 // The name must be that of a previously created DeleteGlossaryOperation, possibly from a different process.
 func (c *businessGlossaryGRPCClient) DeleteGlossaryOperation(name string) *DeleteGlossaryOperation {
 	return &DeleteGlossaryOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.DeleteGlossaryOperation"),
 	}
 }
 
@@ -2962,7 +2987,7 @@ func (c *businessGlossaryGRPCClient) DeleteGlossaryOperation(name string) *Delet
 func (c *businessGlossaryRESTClient) DeleteGlossaryOperation(name string) *DeleteGlossaryOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteGlossaryOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.DeleteGlossaryOperation"),
 		pollPath: override,
 	}
 }
@@ -2971,7 +2996,7 @@ func (c *businessGlossaryRESTClient) DeleteGlossaryOperation(name string) *Delet
 // The name must be that of a previously created UpdateGlossaryOperation, possibly from a different process.
 func (c *businessGlossaryGRPCClient) UpdateGlossaryOperation(name string) *UpdateGlossaryOperation {
 	return &UpdateGlossaryOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.UpdateGlossaryOperation"),
 	}
 }
 
@@ -2980,7 +3005,7 @@ func (c *businessGlossaryGRPCClient) UpdateGlossaryOperation(name string) *Updat
 func (c *businessGlossaryRESTClient) UpdateGlossaryOperation(name string) *UpdateGlossaryOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateGlossaryOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.UpdateGlossaryOperation"),
 		pollPath: override,
 	}
 }

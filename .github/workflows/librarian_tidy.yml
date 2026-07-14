@@ -11,8 +11,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
-      - uses: dorny/paths-filter@v4
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+        with:
+          persist-credentials: false
+      - uses: dorny/paths-filter@fbd0ab8f3e69293af611ebaee6363fc25e6d187d # v4
         id: changes
         with:
           filters: |
@@ -20,7 +22,7 @@ jobs:
               - 'librarian.yaml'
       # Version of librarian is pulled from librarian.yaml,
       # main corresponds to the action's source definition.
-      - uses: googleapis/librarian@main
+      - uses: googleapis/librarian@main # zizmor: ignore[unpinned-uses]
 
       - name: Run librarian tidy
         if: steps.changes.outputs.librarian == 'true'

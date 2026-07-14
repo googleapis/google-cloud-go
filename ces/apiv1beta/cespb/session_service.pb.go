@@ -28,7 +28,7 @@ import (
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-	_ "google.golang.org/protobuf/types/known/anypb"
+	anypb "google.golang.org/protobuf/types/known/anypb"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 )
 
@@ -902,8 +902,10 @@ type SessionOutput struct {
 	// processing of the input. Only populated in the last SessionOutput (with
 	// `turn_completed=true`) for each turn.
 	DiagnosticInfo *SessionOutput_DiagnosticInfo `protobuf:"bytes,7,opt,name=diagnostic_info,json=diagnosticInfo,proto3" json:"diagnostic_info,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	// Context messages for external supervision guardrails.
+	Context       []*anypb.Any `protobuf:"bytes,12,rep,name=context,proto3" json:"context,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *SessionOutput) Reset() {
@@ -1023,6 +1025,13 @@ func (x *SessionOutput) GetTurnCompleted() bool {
 func (x *SessionOutput) GetDiagnosticInfo() *SessionOutput_DiagnosticInfo {
 	if x != nil {
 		return x.DiagnosticInfo
+	}
+	return nil
+}
+
+func (x *SessionOutput) GetContext() []*anypb.Any {
+	if x != nil {
+		return x.Context
 	}
 	return nil
 }
@@ -1803,7 +1812,7 @@ var File_google_cloud_ces_v1beta_session_service_proto protoreflect.FileDescript
 
 const file_google_cloud_ces_v1beta_session_service_proto_rawDesc = "" +
 	"\n" +
-	"-google/cloud/ces/v1beta/session_service.proto\x12\x17google.cloud.ces.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a$google/cloud/ces/v1beta/common.proto\x1a%google/cloud/ces/v1beta/example.proto\x1a#google/cloud/ces/v1beta/mocks.proto\x1a0google/cloud/ces/v1beta/search_suggestions.proto\x1a\x19google/protobuf/any.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xd3\x02\n" +
+	"-google/cloud/ces/v1beta/session_service.proto\x12\x17google.cloud.ces.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x18google/api/routing.proto\x1a$google/cloud/ces/v1beta/common.proto\x1a%google/cloud/ces/v1beta/example.proto\x1a#google/cloud/ces/v1beta/mocks.proto\x1a0google/cloud/ces/v1beta/search_suggestions.proto\x1a\x19google/protobuf/any.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xd3\x02\n" +
 	"\n" +
 	"MockConfig\x12X\n" +
 	"\x11mocked_tool_calls\x18\x01 \x03(\v2'.google.cloud.ces.v1beta.MockedToolCallB\x03\xe0A\x01R\x0fmockedToolCalls\x12\x83\x01\n" +
@@ -1868,7 +1877,7 @@ const file_google_cloud_ces_v1beta_session_service_proto_rawDesc = "" +
 	"\x05event\x18\t \x01(\v2\x1e.google.cloud.ces.v1beta.EventB\x03\xe0A\x01H\x00R\x05event\x12(\n" +
 	"\rwill_continue\x18\b \x01(\bB\x03\xe0A\x01R\fwillContinueB\f\n" +
 	"\n" +
-	"input_type\"\xfa\x05\n" +
+	"input_type\"\xaa\x06\n" +
 	"\rSessionOutput\x12\x14\n" +
 	"\x04text\x18\x01 \x01(\tH\x00R\x04text\x12\x16\n" +
 	"\x05audio\x18\x02 \x01(\fH\x00R\x05audio\x12C\n" +
@@ -1883,7 +1892,8 @@ const file_google_cloud_ces_v1beta_session_service_proto_rawDesc = "" +
 	"\n" +
 	"turn_index\x18\x06 \x01(\x05R\tturnIndex\x12%\n" +
 	"\x0eturn_completed\x18\x04 \x01(\bR\rturnCompleted\x12c\n" +
-	"\x0fdiagnostic_info\x18\a \x01(\v25.google.cloud.ces.v1beta.SessionOutput.DiagnosticInfoB\x03\xe0A\x01R\x0ediagnosticInfo\x1a\x8a\x01\n" +
+	"\x0fdiagnostic_info\x18\a \x01(\v25.google.cloud.ces.v1beta.SessionOutput.DiagnosticInfoB\x03\xe0A\x01R\x0ediagnosticInfo\x12.\n" +
+	"\acontext\x18\f \x03(\v2\x14.google.protobuf.AnyR\acontext\x1a\x8a\x01\n" +
 	"\x0eDiagnosticInfo\x12<\n" +
 	"\bmessages\x18\x01 \x03(\v2 .google.cloud.ces.v1beta.MessageR\bmessages\x12:\n" +
 	"\troot_span\x18\x03 \x01(\v2\x1d.google.cloud.ces.v1beta.SpanR\brootSpanB\r\n" +
@@ -1919,12 +1929,13 @@ const file_google_cloud_ces_v1beta_session_service_proto_rawDesc = "" +
 	"\x1aAUDIO_ENCODING_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bLINEAR16\x10\x01\x12\t\n" +
 	"\x05MULAW\x10\x02\x12\b\n" +
-	"\x04ALAW\x10\x032\x8a\x05\n" +
+	"\x04ALAW\x10\x032\xd7\x05\n" +
 	"\x0eSessionService\x12\xbe\x01\n" +
 	"\n" +
 	"RunSession\x12*.google.cloud.ces.v1beta.RunSessionRequest\x1a+.google.cloud.ces.v1beta.RunSessionResponse\"W\x82\xd3\xe4\x93\x02Q:\x01*\"L/v1beta/{config.session=projects/*/locations/*/apps/*/sessions/*}:runSession\x12\xcc\x01\n" +
-	"\x10StreamRunSession\x12*.google.cloud.ces.v1beta.RunSessionRequest\x1a+.google.cloud.ces.v1beta.RunSessionResponse\"]\x82\xd3\xe4\x93\x02W:\x01*\"R/v1beta/{config.session=projects/*/locations/*/apps/*/sessions/*}:streamRunSession0\x01\x12|\n" +
-	"\x0eBidiRunSession\x121.google.cloud.ces.v1beta.BidiSessionClientMessage\x1a1.google.cloud.ces.v1beta.BidiSessionServerMessage\"\x00(\x010\x01\x1aj\xcaA\x12ces.googleapis.com\xd2ARhttps://www.googleapis.com/auth/ces,https://www.googleapis.com/auth/cloud-platformB\xc9\x01\xeaAc\n" +
+	"\x10StreamRunSession\x12*.google.cloud.ces.v1beta.RunSessionRequest\x1a+.google.cloud.ces.v1beta.RunSessionResponse\"]\x82\xd3\xe4\x93\x02W:\x01*\"R/v1beta/{config.session=projects/*/locations/*/apps/*/sessions/*}:streamRunSession0\x01\x12\xc8\x01\n" +
+	"\x0eBidiRunSession\x121.google.cloud.ces.v1beta.BidiSessionClientMessage\x1a1.google.cloud.ces.v1beta.BidiSessionServerMessage\"L\x8a\xd3\xe4\x93\x02F\x12D\n" +
+	"\x0econfig.session\x122{session=projects/*/locations/*/apps/*/sessions/*}(\x010\x01\x1aj\xcaA\x12ces.googleapis.com\xd2ARhttps://www.googleapis.com/auth/ces,https://www.googleapis.com/auth/cloud-platformB\xc9\x01\xeaAc\n" +
 	"\x1aces.googleapis.com/Session\x12Eprojects/{project}/locations/{location}/apps/{app}/sessions/{session}\n" +
 	"\x1bcom.google.cloud.ces.v1betaB\x13SessionServiceProtoP\x01Z-cloud.google.com/go/ces/apiv1beta/cespb;cespbb\x06proto3"
 
@@ -1975,7 +1986,8 @@ var file_google_cloud_ces_v1beta_session_service_proto_goTypes = []any{
 	(*Blob)(nil),                         // 29: google.cloud.ces.v1beta.Blob
 	(*structpb.Struct)(nil),              // 30: google.protobuf.Struct
 	(*GoogleSearchSuggestions)(nil),      // 31: google.cloud.ces.v1beta.GoogleSearchSuggestions
-	(*Span)(nil),                         // 32: google.cloud.ces.v1beta.Span
+	(*anypb.Any)(nil),                    // 32: google.protobuf.Any
+	(*Span)(nil),                         // 33: google.cloud.ces.v1beta.Span
 }
 var file_google_cloud_ces_v1beta_session_service_proto_depIdxs = []int32{
 	24, // 0: google.cloud.ces.v1beta.MockConfig.mocked_tool_calls:type_name -> google.cloud.ces.v1beta.MockedToolCall
@@ -2000,33 +2012,34 @@ var file_google_cloud_ces_v1beta_session_service_proto_depIdxs = []int32{
 	14, // 19: google.cloud.ces.v1beta.SessionOutput.end_session:type_name -> google.cloud.ces.v1beta.EndSession
 	30, // 20: google.cloud.ces.v1beta.SessionOutput.payload:type_name -> google.protobuf.Struct
 	23, // 21: google.cloud.ces.v1beta.SessionOutput.diagnostic_info:type_name -> google.cloud.ces.v1beta.SessionOutput.DiagnosticInfo
-	30, // 22: google.cloud.ces.v1beta.EndSession.metadata:type_name -> google.protobuf.Struct
-	5,  // 23: google.cloud.ces.v1beta.RunSessionRequest.config:type_name -> google.cloud.ces.v1beta.SessionConfig
-	10, // 24: google.cloud.ces.v1beta.RunSessionRequest.inputs:type_name -> google.cloud.ces.v1beta.SessionInput
-	11, // 25: google.cloud.ces.v1beta.RunSessionResponse.outputs:type_name -> google.cloud.ces.v1beta.SessionOutput
-	5,  // 26: google.cloud.ces.v1beta.BidiSessionClientMessage.config:type_name -> google.cloud.ces.v1beta.SessionConfig
-	10, // 27: google.cloud.ces.v1beta.BidiSessionClientMessage.realtime_input:type_name -> google.cloud.ces.v1beta.SessionInput
-	11, // 28: google.cloud.ces.v1beta.BidiSessionServerMessage.session_output:type_name -> google.cloud.ces.v1beta.SessionOutput
-	12, // 29: google.cloud.ces.v1beta.BidiSessionServerMessage.recognition_result:type_name -> google.cloud.ces.v1beta.RecognitionResult
-	13, // 30: google.cloud.ces.v1beta.BidiSessionServerMessage.interruption_signal:type_name -> google.cloud.ces.v1beta.InterruptionSignal
-	14, // 31: google.cloud.ces.v1beta.BidiSessionServerMessage.end_session:type_name -> google.cloud.ces.v1beta.EndSession
-	15, // 32: google.cloud.ces.v1beta.BidiSessionServerMessage.go_away:type_name -> google.cloud.ces.v1beta.GoAway
-	21, // 33: google.cloud.ces.v1beta.SessionConfig.RemoteDialogflowQueryParameters.webhook_headers:type_name -> google.cloud.ces.v1beta.SessionConfig.RemoteDialogflowQueryParameters.WebhookHeadersEntry
-	30, // 34: google.cloud.ces.v1beta.SessionConfig.RemoteDialogflowQueryParameters.payload:type_name -> google.protobuf.Struct
-	30, // 35: google.cloud.ces.v1beta.SessionConfig.RemoteDialogflowQueryParameters.end_user_metadata:type_name -> google.protobuf.Struct
-	25, // 36: google.cloud.ces.v1beta.SessionOutput.DiagnosticInfo.messages:type_name -> google.cloud.ces.v1beta.Message
-	32, // 37: google.cloud.ces.v1beta.SessionOutput.DiagnosticInfo.root_span:type_name -> google.cloud.ces.v1beta.Span
-	16, // 38: google.cloud.ces.v1beta.SessionService.RunSession:input_type -> google.cloud.ces.v1beta.RunSessionRequest
-	16, // 39: google.cloud.ces.v1beta.SessionService.StreamRunSession:input_type -> google.cloud.ces.v1beta.RunSessionRequest
-	18, // 40: google.cloud.ces.v1beta.SessionService.BidiRunSession:input_type -> google.cloud.ces.v1beta.BidiSessionClientMessage
-	17, // 41: google.cloud.ces.v1beta.SessionService.RunSession:output_type -> google.cloud.ces.v1beta.RunSessionResponse
-	17, // 42: google.cloud.ces.v1beta.SessionService.StreamRunSession:output_type -> google.cloud.ces.v1beta.RunSessionResponse
-	19, // 43: google.cloud.ces.v1beta.SessionService.BidiRunSession:output_type -> google.cloud.ces.v1beta.BidiSessionServerMessage
-	41, // [41:44] is the sub-list for method output_type
-	38, // [38:41] is the sub-list for method input_type
-	38, // [38:38] is the sub-list for extension type_name
-	38, // [38:38] is the sub-list for extension extendee
-	0,  // [0:38] is the sub-list for field type_name
+	32, // 22: google.cloud.ces.v1beta.SessionOutput.context:type_name -> google.protobuf.Any
+	30, // 23: google.cloud.ces.v1beta.EndSession.metadata:type_name -> google.protobuf.Struct
+	5,  // 24: google.cloud.ces.v1beta.RunSessionRequest.config:type_name -> google.cloud.ces.v1beta.SessionConfig
+	10, // 25: google.cloud.ces.v1beta.RunSessionRequest.inputs:type_name -> google.cloud.ces.v1beta.SessionInput
+	11, // 26: google.cloud.ces.v1beta.RunSessionResponse.outputs:type_name -> google.cloud.ces.v1beta.SessionOutput
+	5,  // 27: google.cloud.ces.v1beta.BidiSessionClientMessage.config:type_name -> google.cloud.ces.v1beta.SessionConfig
+	10, // 28: google.cloud.ces.v1beta.BidiSessionClientMessage.realtime_input:type_name -> google.cloud.ces.v1beta.SessionInput
+	11, // 29: google.cloud.ces.v1beta.BidiSessionServerMessage.session_output:type_name -> google.cloud.ces.v1beta.SessionOutput
+	12, // 30: google.cloud.ces.v1beta.BidiSessionServerMessage.recognition_result:type_name -> google.cloud.ces.v1beta.RecognitionResult
+	13, // 31: google.cloud.ces.v1beta.BidiSessionServerMessage.interruption_signal:type_name -> google.cloud.ces.v1beta.InterruptionSignal
+	14, // 32: google.cloud.ces.v1beta.BidiSessionServerMessage.end_session:type_name -> google.cloud.ces.v1beta.EndSession
+	15, // 33: google.cloud.ces.v1beta.BidiSessionServerMessage.go_away:type_name -> google.cloud.ces.v1beta.GoAway
+	21, // 34: google.cloud.ces.v1beta.SessionConfig.RemoteDialogflowQueryParameters.webhook_headers:type_name -> google.cloud.ces.v1beta.SessionConfig.RemoteDialogflowQueryParameters.WebhookHeadersEntry
+	30, // 35: google.cloud.ces.v1beta.SessionConfig.RemoteDialogflowQueryParameters.payload:type_name -> google.protobuf.Struct
+	30, // 36: google.cloud.ces.v1beta.SessionConfig.RemoteDialogflowQueryParameters.end_user_metadata:type_name -> google.protobuf.Struct
+	25, // 37: google.cloud.ces.v1beta.SessionOutput.DiagnosticInfo.messages:type_name -> google.cloud.ces.v1beta.Message
+	33, // 38: google.cloud.ces.v1beta.SessionOutput.DiagnosticInfo.root_span:type_name -> google.cloud.ces.v1beta.Span
+	16, // 39: google.cloud.ces.v1beta.SessionService.RunSession:input_type -> google.cloud.ces.v1beta.RunSessionRequest
+	16, // 40: google.cloud.ces.v1beta.SessionService.StreamRunSession:input_type -> google.cloud.ces.v1beta.RunSessionRequest
+	18, // 41: google.cloud.ces.v1beta.SessionService.BidiRunSession:input_type -> google.cloud.ces.v1beta.BidiSessionClientMessage
+	17, // 42: google.cloud.ces.v1beta.SessionService.RunSession:output_type -> google.cloud.ces.v1beta.RunSessionResponse
+	17, // 43: google.cloud.ces.v1beta.SessionService.StreamRunSession:output_type -> google.cloud.ces.v1beta.RunSessionResponse
+	19, // 44: google.cloud.ces.v1beta.SessionService.BidiRunSession:output_type -> google.cloud.ces.v1beta.BidiSessionServerMessage
+	42, // [42:45] is the sub-list for method output_type
+	39, // [39:42] is the sub-list for method input_type
+	39, // [39:39] is the sub-list for extension type_name
+	39, // [39:39] is the sub-list for extension extendee
+	0,  // [0:39] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_ces_v1beta_session_service_proto_init() }

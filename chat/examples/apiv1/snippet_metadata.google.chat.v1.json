@@ -8,7 +8,7 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/chat/apiv1",
-    "version": "1.2.0"
+    "version": "1.3.0"
   },
   "snippets": [
     {
@@ -741,6 +741,52 @@
         }
       ],
       "title": "chat GetAttachment Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.chat.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.chat.v1.Client.GetAvailability",
+        "method": {
+          "fullName": "google.chat.v1.ChatService.GetAvailability",
+          "service": {
+            "fullName": "google.chat.v1.ChatService",
+            "shortName": "ChatService"
+          },
+          "shortName": "GetAvailability"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chatpb.GetAvailabilityRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*chatpb.Availability",
+        "shortName": "GetAvailability"
+      },
+      "description": "GetAvailability returns availability information for a human user in Google Chat. For\nexample, this can be used to check if a user is online or away, or to\nretrieve their custom status message.\n\nThis method only retrieves the authenticated user's availability.\n\nRequires [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user)\nwith one of the following [authorization\nscopes](https: //developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes): \n\n- `https: //www.googleapis.com/auth/chat.users.availability.readonly`\n- `https: //www.googleapis.com/auth/chat.users.availability`",
+      "file": "Client/GetAvailability/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chat_v1_generated_ChatService_GetAvailability_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chat GetAvailability Sample"
     },
     {
       "clientMethod": {
@@ -1484,6 +1530,144 @@
           "fullName": "google.chat.v1.Client",
           "shortName": "Client"
         },
+        "fullName": "google.chat.v1.Client.MarkAsActive",
+        "method": {
+          "fullName": "google.chat.v1.ChatService.MarkAsActive",
+          "service": {
+            "fullName": "google.chat.v1.ChatService",
+            "shortName": "ChatService"
+          },
+          "shortName": "MarkAsActive"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chatpb.MarkAsActiveRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*chatpb.Availability",
+        "shortName": "MarkAsActive"
+      },
+      "description": "MarkAsActive marks user as `ACTIVE` in Google Chat.\n\nSets the user's availability state to `ACTIVE`. The `ACTIVE` state\nlasts until the specified expiration, at which point the user's state\nbecomes `AWAY`. Note that if the user is actively using Chat, the `ACTIVE`\nstate duration may extend beyond the provided expiration.\n\nThis method only updates the authenticated user's availability.\n\nRequires [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user)\nwith [authorization\nscope](https: //developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes): \n\n- `https: //www.googleapis.com/auth/chat.users.availability`",
+      "file": "Client/MarkAsActive/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chat_v1_generated_ChatService_MarkAsActive_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chat MarkAsActive Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.chat.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.chat.v1.Client.MarkAsAway",
+        "method": {
+          "fullName": "google.chat.v1.ChatService.MarkAsAway",
+          "service": {
+            "fullName": "google.chat.v1.ChatService",
+            "shortName": "ChatService"
+          },
+          "shortName": "MarkAsAway"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chatpb.MarkAsAwayRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*chatpb.Availability",
+        "shortName": "MarkAsAway"
+      },
+      "description": "MarkAsAway marks user as `AWAY` in Google Chat.\n\nSets the user's state to away and is not affected by the user's\nactivity.\n\nThis method only updates the authenticated user's availability.\n\nRequires [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user)\nwith [authorization\nscope](https: //developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes): \n\n- `https: //www.googleapis.com/auth/chat.users.availability`",
+      "file": "Client/MarkAsAway/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chat_v1_generated_ChatService_MarkAsAway_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chat MarkAsAway Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.chat.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.chat.v1.Client.MarkAsDoNotDisturb",
+        "method": {
+          "fullName": "google.chat.v1.ChatService.MarkAsDoNotDisturb",
+          "service": {
+            "fullName": "google.chat.v1.ChatService",
+            "shortName": "ChatService"
+          },
+          "shortName": "MarkAsDoNotDisturb"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chatpb.MarkAsDoNotDisturbRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*chatpb.Availability",
+        "shortName": "MarkAsDoNotDisturb"
+      },
+      "description": "MarkAsDoNotDisturb marks user as `DO_NOT_DISTURB` in Google Chat.\n\nSets a user's availability state to `DO_NOT_DISTURB` until a specified\nexpiration time.\nWhen in `DO_NOT_DISTURB`, users typically won't receive notifications.\n\nThis method only updates the authenticated user's availability.\n\nRequires [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user)\nwith [authorization\nscope](https: //developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes): \n\n- `https: //www.googleapis.com/auth/chat.users.availability`",
+      "file": "Client/MarkAsDoNotDisturb/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chat_v1_generated_ChatService_MarkAsDoNotDisturb_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chat MarkAsDoNotDisturb Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.chat.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.chat.v1.Client.MoveSectionItem",
         "method": {
           "fullName": "google.chat.v1.ChatService.MoveSectionItem",
@@ -1661,6 +1845,52 @@
         }
       ],
       "title": "chat SetUpSpace Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.chat.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.chat.v1.Client.UpdateAvailability",
+        "method": {
+          "fullName": "google.chat.v1.ChatService.UpdateAvailability",
+          "service": {
+            "fullName": "google.chat.v1.ChatService",
+            "shortName": "ChatService"
+          },
+          "shortName": "UpdateAvailability"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chatpb.UpdateAvailabilityRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*chatpb.Availability",
+        "shortName": "UpdateAvailability"
+      },
+      "description": "UpdateAvailability updates availability information for a human user. Only the `custom_status`\nfield can be updated through this method.\n\nThis method only updates the authenticated user's availability.\n\nRequires [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user)\nwith one of the following [authorization\nscopes](https: //developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes): \n\n- `https: //www.googleapis.com/auth/chat.users.availability`",
+      "file": "Client/UpdateAvailability/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chat_v1_generated_ChatService_UpdateAvailability_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chat UpdateAvailability Sample"
     },
     {
       "clientMethod": {
@@ -1970,7 +2200,7 @@
         "resultType": "*chatpb.UploadAttachmentResponse",
         "shortName": "UploadAttachment"
       },
-      "description": "UploadAttachment uploads an attachment. For an example, see\n[Upload media as a file\nattachment](https: //developers.google.com/workspace/chat/upload-media-attachments).\n\nRequires user\n[authentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user)\nwith one of the following [authorization\nscopes](https: //developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes): \n\n- `https: //www.googleapis.com/auth/chat.messages.create`\n- `https: //www.googleapis.com/auth/chat.messages`\n- `https: //www.googleapis.com/auth/chat.import` (import mode spaces only)\n\nYou can upload attachments up to 200 MB. Certain file types aren't\nsupported. For details, see [File types blocked by Google\nChat](https: //support.google.com/chat/answer/7651457?\u0026co=GENIE.Platform%3DDesktop#File%20types%20blocked%20in%20Google%20Chat).",
+      "description": "UploadAttachment uploads an attachment. For an example, see\n[Upload media as a file\nattachment](https: //developers.google.com/workspace/chat/upload-media-attachments).\n\nRequires user\n[authentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user)\nwith one of the following [authorization\nscopes](https: //developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes): \n\n- `https: //www.googleapis.com/auth/chat.messages.create`\n- `https: //www.googleapis.com/auth/chat.messages`\n- `https: //www.googleapis.com/auth/chat.import` (import mode spaces only)\n\nYou can upload attachments up to 200 MB. Certain file types aren't\nsupported. For details, see [File types blocked by Google\nChat](https: //support.google.com/chat/answer/7651457?&co=GENIE.Platform%3DDesktop#File%20types%20blocked%20in%20Google%20Chat).",
       "file": "Client/UploadAttachment/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",

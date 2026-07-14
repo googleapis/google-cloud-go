@@ -32,6 +32,7 @@ import (
 	recommendationenginepb "cloud.google.com/go/recommendationengine/apiv1beta1/recommendationenginepb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -734,8 +735,12 @@ func (c *catalogGRPCClient) ImportCatalogItems(ctx context.Context, req *recomme
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*recommendationengine.ImportCatalogItemsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ImportCatalogItemsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1120,8 +1125,12 @@ func (c *catalogRESTClient) ImportCatalogItems(ctx context.Context, req *recomme
 	}
 
 	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*recommendationengine.ImportCatalogItemsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ImportCatalogItemsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1130,7 +1139,7 @@ func (c *catalogRESTClient) ImportCatalogItems(ctx context.Context, req *recomme
 // The name must be that of a previously created ImportCatalogItemsOperation, possibly from a different process.
 func (c *catalogGRPCClient) ImportCatalogItemsOperation(name string) *ImportCatalogItemsOperation {
 	return &ImportCatalogItemsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*recommendationengine.ImportCatalogItemsOperation"),
 	}
 }
 
@@ -1139,7 +1148,7 @@ func (c *catalogGRPCClient) ImportCatalogItemsOperation(name string) *ImportCata
 func (c *catalogRESTClient) ImportCatalogItemsOperation(name string) *ImportCatalogItemsOperation {
 	override := fmt.Sprintf("/v1beta1/%s", name)
 	return &ImportCatalogItemsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*recommendationengine.ImportCatalogItemsOperation"),
 		pollPath: override,
 	}
 }

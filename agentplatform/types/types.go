@@ -2499,8 +2499,7 @@ type SandboxEnvironment struct {
 	// this SandboxEnvironment. Format: `projects/{project}/locations/{location}/reasoningEngines/{reasoning_engine}/sandboxEnvironmentSnapshots/{sandbox_environment_snapshot}`
 	SandboxEnvironmentSnapshot string `json:"sandboxEnvironmentSnapshot,omitempty"`
 	// Optional. The name of the SandboxEnvironmentTemplate specified in the parent Agent
-	// Engine resource that this SandboxEnvironment is created from. Only one of `sandbox_environment_template`
-	// and `spec` should be set.
+	// Engine resource that this SandboxEnvironment is created from.
 	SandboxEnvironmentTemplate string `json:"sandboxEnvironmentTemplate,omitempty"`
 }
 
@@ -3443,6 +3442,19 @@ type listPublisherModelDeployOptionsConfig struct {
 	// deploy options (container and machine specs) instead of a list of
 	// ``DeployOption`` objects.
 	Concise bool `json:"concise,omitempty"`
+}
+
+// Config for listing custom model deploy options.
+type listCustomModelDeployOptionsConfig struct {
+	// Optional. Whether to check per-region machine availability. When true (the
+	// default), the API returns per-region recommendations that include the
+	// machine spec, region and user quota state. When false, the API returns a
+	// flat list of specs without per-region or quota information (and
+	// FilterByUserQuota has no effect).
+	CheckMachineAvailability bool `json:"checkMachineAvailability,omitempty"`
+	// Optional. Whether to filter recommendations to regions with user quota.
+	// Only takes effect when CheckMachineAvailability is true.
+	FilterByUserQuota bool `json:"filterByUserQuota,omitempty"`
 }
 
 // A verified deploy option for a model.

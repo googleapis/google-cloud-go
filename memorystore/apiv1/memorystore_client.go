@@ -32,6 +32,7 @@ import (
 	memorystorepb "cloud.google.com/go/memorystore/apiv1/memorystorepb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -63,6 +64,8 @@ type CallOptions struct {
 	DeleteBackup                          []gax.CallOption
 	ExportBackup                          []gax.CallOption
 	BackupInstance                        []gax.CallOption
+	StartMigration                        []gax.CallOption
+	FinishMigration                       []gax.CallOption
 	GetLocation                           []gax.CallOption
 	ListLocations                         []gax.CallOption
 	CancelOperation                       []gax.CallOption
@@ -142,6 +145,8 @@ func defaultCallOptions() *CallOptions {
 		DeleteBackup:                          []gax.CallOption{},
 		ExportBackup:                          []gax.CallOption{},
 		BackupInstance:                        []gax.CallOption{},
+		StartMigration:                        []gax.CallOption{},
+		FinishMigration:                       []gax.CallOption{},
 		GetLocation:                           []gax.CallOption{},
 		ListLocations:                         []gax.CallOption{},
 		CancelOperation:                       []gax.CallOption{},
@@ -204,6 +209,8 @@ func defaultRESTCallOptions() *CallOptions {
 		DeleteBackup:                          []gax.CallOption{},
 		ExportBackup:                          []gax.CallOption{},
 		BackupInstance:                        []gax.CallOption{},
+		StartMigration:                        []gax.CallOption{},
+		FinishMigration:                       []gax.CallOption{},
 		GetLocation:                           []gax.CallOption{},
 		ListLocations:                         []gax.CallOption{},
 		CancelOperation:                       []gax.CallOption{},
@@ -240,6 +247,10 @@ type internalClient interface {
 	ExportBackupOperation(name string) *ExportBackupOperation
 	BackupInstance(context.Context, *memorystorepb.BackupInstanceRequest, ...gax.CallOption) (*BackupInstanceOperation, error)
 	BackupInstanceOperation(name string) *BackupInstanceOperation
+	StartMigration(context.Context, *memorystorepb.StartMigrationRequest, ...gax.CallOption) (*StartMigrationOperation, error)
+	StartMigrationOperation(name string) *StartMigrationOperation
+	FinishMigration(context.Context, *memorystorepb.FinishMigrationRequest, ...gax.CallOption) (*FinishMigrationOperation, error)
+	FinishMigrationOperation(name string) *FinishMigrationOperation
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
@@ -421,12 +432,65 @@ func (c *Client) BackupInstanceOperation(name string) *BackupInstanceOperation {
 	return c.internalClient.BackupInstanceOperation(name)
 }
 
+// StartMigration initiates the migration of a source instance to the target Memorystore
+// instance.
+//
+// After the successful completion of this operation, the target instance
+// will:
+//
+// Set up replication with the source instance and replicate any writes to
+// the source instance.
+//
+// Only allow reads.
+func (c *Client) StartMigration(ctx context.Context, req *memorystorepb.StartMigrationRequest, opts ...gax.CallOption) (*StartMigrationOperation, error) {
+	return c.internalClient.StartMigration(ctx, req, opts...)
+}
+
+// StartMigrationOperation returns a new StartMigrationOperation from a given name.
+// The name must be that of a previously created StartMigrationOperation, possibly from a different process.
+func (c *Client) StartMigrationOperation(name string) *StartMigrationOperation {
+	return c.internalClient.StartMigrationOperation(name)
+}
+
+// FinishMigration finalizes the migration process.
+//
+// After the successful completion of this operation, the target instance
+// will:
+//
+// Stop replicating from the source instance.
+//
+// Allow both reads and writes.
+func (c *Client) FinishMigration(ctx context.Context, req *memorystorepb.FinishMigrationRequest, opts ...gax.CallOption) (*FinishMigrationOperation, error) {
+	return c.internalClient.FinishMigration(ctx, req, opts...)
+}
+
+// FinishMigrationOperation returns a new FinishMigrationOperation from a given name.
+// The name must be that of a previously created FinishMigrationOperation, possibly from a different process.
+func (c *Client) FinishMigrationOperation(name string) *FinishMigrationOperation {
+	return c.internalClient.FinishMigrationOperation(name)
+}
+
 // GetLocation gets information about a location.
 func (c *Client) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	return c.internalClient.GetLocation(ctx, req, opts...)
 }
 
 // ListLocations lists information about the supported locations for this service.
+//
+// This method lists locations based on the resource scope provided in
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)][google.cloud.location.ListLocationsRequest.name (at http://google.cloud.location.ListLocationsRequest.name)] field: *
+// Global locations: If name is empty, the method lists the
+// public locations available to all projects. * Project-specific
+// locations: If name follows the format
+// projects/{project}, the method lists locations visible to that
+// specific project. This includes public, private, or other
+// project-specific locations enabled for the project.
+//
+// For gRPC and client library implementations, the resource name is
+// passed as the name field. For direct service calls, the resource
+// name is
+// incorporated into the request path based on the specific service
+// implementation and version.
 func (c *Client) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	return c.internalClient.ListLocations(ctx, req, opts...)
 }
@@ -545,6 +609,8 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.DeleteBackup = append(client.CallOptions.DeleteBackup, gax.WithClientMetrics(metrics))
 		client.CallOptions.ExportBackup = append(client.CallOptions.ExportBackup, gax.WithClientMetrics(metrics))
 		client.CallOptions.BackupInstance = append(client.CallOptions.BackupInstance, gax.WithClientMetrics(metrics))
+		client.CallOptions.StartMigration = append(client.CallOptions.StartMigration, gax.WithClientMetrics(metrics))
+		client.CallOptions.FinishMigration = append(client.CallOptions.FinishMigration, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
 		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
@@ -672,6 +738,8 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.DeleteBackup = append(callOpts.DeleteBackup, gax.WithClientMetrics(metrics))
 		callOpts.ExportBackup = append(callOpts.ExportBackup, gax.WithClientMetrics(metrics))
 		callOpts.BackupInstance = append(callOpts.BackupInstance, gax.WithClientMetrics(metrics))
+		callOpts.StartMigration = append(callOpts.StartMigration, gax.WithClientMetrics(metrics))
+		callOpts.FinishMigration = append(callOpts.FinishMigration, gax.WithClientMetrics(metrics))
 		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientMetrics(metrics))
 		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientMetrics(metrics))
 		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientMetrics(metrics))
@@ -827,8 +895,12 @@ func (c *gRPCClient) CreateInstance(ctx context.Context, req *memorystorepb.Crea
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*memorystore.CreateInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -850,8 +922,12 @@ func (c *gRPCClient) UpdateInstance(ctx context.Context, req *memorystorepb.Upda
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*memorystore.UpdateInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -876,8 +952,12 @@ func (c *gRPCClient) DeleteInstance(ctx context.Context, req *memorystorepb.Dele
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*memorystore.DeleteInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -950,8 +1030,12 @@ func (c *gRPCClient) RescheduleMaintenance(ctx context.Context, req *memorystore
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*memorystore.RescheduleMaintenanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RescheduleMaintenanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1128,8 +1212,12 @@ func (c *gRPCClient) DeleteBackup(ctx context.Context, req *memorystorepb.Delete
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*memorystore.DeleteBackupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteBackupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1154,8 +1242,12 @@ func (c *gRPCClient) ExportBackup(ctx context.Context, req *memorystorepb.Export
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*memorystore.ExportBackupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportBackupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1180,8 +1272,72 @@ func (c *gRPCClient) BackupInstance(ctx context.Context, req *memorystorepb.Back
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*memorystore.BackupInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &BackupInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
+	}, nil
+}
+
+func (c *gRPCClient) StartMigration(ctx context.Context, req *memorystorepb.StartMigrationRequest, opts ...gax.CallOption) (*StartMigrationOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//memorystore.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.memorystore.v1.Memorystore/StartMigration")
+	}
+	opts = append((*c.CallOptions).StartMigration[0:len((*c.CallOptions).StartMigration):len((*c.CallOptions).StartMigration)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.StartMigration, req, settings.GRPC, c.logger, "StartMigration")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*memorystore.StartMigrationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &StartMigrationOperation{
+		lro: lro,
+	}, nil
+}
+
+func (c *gRPCClient) FinishMigration(ctx context.Context, req *memorystorepb.FinishMigrationRequest, opts ...gax.CallOption) (*FinishMigrationOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//memorystore.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.memorystore.v1.Memorystore/FinishMigration")
+	}
+	opts = append((*c.CallOptions).FinishMigration[0:len((*c.CallOptions).FinishMigration):len((*c.CallOptions).FinishMigration)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.FinishMigration, req, settings.GRPC, c.logger, "FinishMigration")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*memorystore.FinishMigrationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &FinishMigrationOperation{
+		lro: lro,
 	}, nil
 }
 
@@ -1565,8 +1721,12 @@ func (c *restClient) CreateInstance(ctx context.Context, req *memorystorepb.Crea
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*memorystore.CreateInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1639,8 +1799,12 @@ func (c *restClient) UpdateInstance(ctx context.Context, req *memorystorepb.Upda
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*memorystore.UpdateInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1702,8 +1866,12 @@ func (c *restClient) DeleteInstance(ctx context.Context, req *memorystorepb.Dele
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*memorystore.DeleteInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1883,8 +2051,12 @@ func (c *restClient) RescheduleMaintenance(ctx context.Context, req *memorystore
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*memorystore.RescheduleMaintenanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RescheduleMaintenanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2220,8 +2392,12 @@ func (c *restClient) DeleteBackup(ctx context.Context, req *memorystorepb.Delete
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*memorystore.DeleteBackupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteBackupOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2286,8 +2462,12 @@ func (c *restClient) ExportBackup(ctx context.Context, req *memorystorepb.Export
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*memorystore.ExportBackupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportBackupOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2363,8 +2543,168 @@ func (c *restClient) BackupInstance(ctx context.Context, req *memorystorepb.Back
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*memorystore.BackupInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &BackupInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
+		pollPath: override,
+	}, nil
+}
+
+// StartMigration initiates the migration of a source instance to the target Memorystore
+// instance.
+//
+// After the successful completion of this operation, the target instance
+// will:
+//
+// Set up replication with the source instance and replicate any writes to
+// the source instance.
+//
+// Only allow reads.
+func (c *restClient) StartMigration(ctx context.Context, req *memorystorepb.StartMigrationRequest, opts ...gax.CallOption) (*StartMigrationOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:startMigration", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//memorystore.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.memorystore.v1.Memorystore/StartMigration")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*}:startMigration")
+	}
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "StartMigration")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*memorystore.StartMigrationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &StartMigrationOperation{
+		lro:      lro,
+		pollPath: override,
+	}, nil
+}
+
+// FinishMigration finalizes the migration process.
+//
+// After the successful completion of this operation, the target instance
+// will:
+//
+// Stop replicating from the source instance.
+//
+// Allow both reads and writes.
+func (c *restClient) FinishMigration(ctx context.Context, req *memorystorepb.FinishMigrationRequest, opts ...gax.CallOption) (*FinishMigrationOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:finishMigration", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//memorystore.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.memorystore.v1.Memorystore/FinishMigration")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*}:finishMigration")
+	}
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "FinishMigration")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*memorystore.FinishMigrationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &FinishMigrationOperation{
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2424,6 +2764,21 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 }
 
 // ListLocations lists information about the supported locations for this service.
+//
+// This method lists locations based on the resource scope provided in
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)][google.cloud.location.ListLocationsRequest.name (at http://google.cloud.location.ListLocationsRequest.name)] field: *
+// Global locations: If name is empty, the method lists the
+// public locations available to all projects. * Project-specific
+// locations: If name follows the format
+// projects/{project}, the method lists locations visible to that
+// specific project. This includes public, private, or other
+// project-specific locations enabled for the project.
+//
+// For gRPC and client library implementations, the resource name is
+// passed as the name field. For direct service calls, the resource
+// name is
+// incorporated into the request path based on the specific service
+// implementation and version.
 func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
 	req = proto.CloneOf(req)
@@ -2724,7 +3079,7 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // The name must be that of a previously created BackupInstanceOperation, possibly from a different process.
 func (c *gRPCClient) BackupInstanceOperation(name string) *BackupInstanceOperation {
 	return &BackupInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*memorystore.BackupInstanceOperation"),
 	}
 }
 
@@ -2733,7 +3088,7 @@ func (c *gRPCClient) BackupInstanceOperation(name string) *BackupInstanceOperati
 func (c *restClient) BackupInstanceOperation(name string) *BackupInstanceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &BackupInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*memorystore.BackupInstanceOperation"),
 		pollPath: override,
 	}
 }
@@ -2742,7 +3097,7 @@ func (c *restClient) BackupInstanceOperation(name string) *BackupInstanceOperati
 // The name must be that of a previously created CreateInstanceOperation, possibly from a different process.
 func (c *gRPCClient) CreateInstanceOperation(name string) *CreateInstanceOperation {
 	return &CreateInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*memorystore.CreateInstanceOperation"),
 	}
 }
 
@@ -2751,7 +3106,7 @@ func (c *gRPCClient) CreateInstanceOperation(name string) *CreateInstanceOperati
 func (c *restClient) CreateInstanceOperation(name string) *CreateInstanceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*memorystore.CreateInstanceOperation"),
 		pollPath: override,
 	}
 }
@@ -2760,7 +3115,7 @@ func (c *restClient) CreateInstanceOperation(name string) *CreateInstanceOperati
 // The name must be that of a previously created DeleteBackupOperation, possibly from a different process.
 func (c *gRPCClient) DeleteBackupOperation(name string) *DeleteBackupOperation {
 	return &DeleteBackupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*memorystore.DeleteBackupOperation"),
 	}
 }
 
@@ -2769,7 +3124,7 @@ func (c *gRPCClient) DeleteBackupOperation(name string) *DeleteBackupOperation {
 func (c *restClient) DeleteBackupOperation(name string) *DeleteBackupOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteBackupOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*memorystore.DeleteBackupOperation"),
 		pollPath: override,
 	}
 }
@@ -2778,7 +3133,7 @@ func (c *restClient) DeleteBackupOperation(name string) *DeleteBackupOperation {
 // The name must be that of a previously created DeleteInstanceOperation, possibly from a different process.
 func (c *gRPCClient) DeleteInstanceOperation(name string) *DeleteInstanceOperation {
 	return &DeleteInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*memorystore.DeleteInstanceOperation"),
 	}
 }
 
@@ -2787,7 +3142,7 @@ func (c *gRPCClient) DeleteInstanceOperation(name string) *DeleteInstanceOperati
 func (c *restClient) DeleteInstanceOperation(name string) *DeleteInstanceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*memorystore.DeleteInstanceOperation"),
 		pollPath: override,
 	}
 }
@@ -2796,7 +3151,7 @@ func (c *restClient) DeleteInstanceOperation(name string) *DeleteInstanceOperati
 // The name must be that of a previously created ExportBackupOperation, possibly from a different process.
 func (c *gRPCClient) ExportBackupOperation(name string) *ExportBackupOperation {
 	return &ExportBackupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*memorystore.ExportBackupOperation"),
 	}
 }
 
@@ -2805,7 +3160,25 @@ func (c *gRPCClient) ExportBackupOperation(name string) *ExportBackupOperation {
 func (c *restClient) ExportBackupOperation(name string) *ExportBackupOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ExportBackupOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*memorystore.ExportBackupOperation"),
+		pollPath: override,
+	}
+}
+
+// FinishMigrationOperation returns a new FinishMigrationOperation from a given name.
+// The name must be that of a previously created FinishMigrationOperation, possibly from a different process.
+func (c *gRPCClient) FinishMigrationOperation(name string) *FinishMigrationOperation {
+	return &FinishMigrationOperation{
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*memorystore.FinishMigrationOperation"),
+	}
+}
+
+// FinishMigrationOperation returns a new FinishMigrationOperation from a given name.
+// The name must be that of a previously created FinishMigrationOperation, possibly from a different process.
+func (c *restClient) FinishMigrationOperation(name string) *FinishMigrationOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &FinishMigrationOperation{
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*memorystore.FinishMigrationOperation"),
 		pollPath: override,
 	}
 }
@@ -2814,7 +3187,7 @@ func (c *restClient) ExportBackupOperation(name string) *ExportBackupOperation {
 // The name must be that of a previously created RescheduleMaintenanceOperation, possibly from a different process.
 func (c *gRPCClient) RescheduleMaintenanceOperation(name string) *RescheduleMaintenanceOperation {
 	return &RescheduleMaintenanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*memorystore.RescheduleMaintenanceOperation"),
 	}
 }
 
@@ -2823,7 +3196,25 @@ func (c *gRPCClient) RescheduleMaintenanceOperation(name string) *RescheduleMain
 func (c *restClient) RescheduleMaintenanceOperation(name string) *RescheduleMaintenanceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &RescheduleMaintenanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*memorystore.RescheduleMaintenanceOperation"),
+		pollPath: override,
+	}
+}
+
+// StartMigrationOperation returns a new StartMigrationOperation from a given name.
+// The name must be that of a previously created StartMigrationOperation, possibly from a different process.
+func (c *gRPCClient) StartMigrationOperation(name string) *StartMigrationOperation {
+	return &StartMigrationOperation{
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*memorystore.StartMigrationOperation"),
+	}
+}
+
+// StartMigrationOperation returns a new StartMigrationOperation from a given name.
+// The name must be that of a previously created StartMigrationOperation, possibly from a different process.
+func (c *restClient) StartMigrationOperation(name string) *StartMigrationOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &StartMigrationOperation{
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*memorystore.StartMigrationOperation"),
 		pollPath: override,
 	}
 }
@@ -2832,7 +3223,7 @@ func (c *restClient) RescheduleMaintenanceOperation(name string) *RescheduleMain
 // The name must be that of a previously created UpdateInstanceOperation, possibly from a different process.
 func (c *gRPCClient) UpdateInstanceOperation(name string) *UpdateInstanceOperation {
 	return &UpdateInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*memorystore.UpdateInstanceOperation"),
 	}
 }
 
@@ -2841,7 +3232,7 @@ func (c *gRPCClient) UpdateInstanceOperation(name string) *UpdateInstanceOperati
 func (c *restClient) UpdateInstanceOperation(name string) *UpdateInstanceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*memorystore.UpdateInstanceOperation"),
 		pollPath: override,
 	}
 }

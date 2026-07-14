@@ -1,5 +1,12 @@
 # Changes
 
+## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/modelarmor/v1.1.0...modelarmor/v1.2.0) (2026-07-13)
+
+
+### Features
+
+* Update API sources and regenerate ([#20109](https://github.com/googleapis/google-cloud-go/issues/20109)) ([4314d30](https://github.com/googleapis/google-cloud-go/commit/4314d305008d9a4b2d9f464d07519f8081b2277d))
+
 ## [1.1.0](https://github.com/googleapis/google-cloud-go/releases/tag/modelarmor%2Fv1.1.0) (2026-06-11)
 
 ### Features

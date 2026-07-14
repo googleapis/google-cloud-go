@@ -32,6 +32,7 @@ import (
 	networkmanagementpb "cloud.google.com/go/networkmanagement/apiv1/networkmanagementpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -701,8 +702,12 @@ func (c *organizationVpcFlowLogsGRPCClient) CreateVpcFlowLogsConfig(ctx context.
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkmanagement.CreateVpcFlowLogsConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateVpcFlowLogsConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -724,8 +729,12 @@ func (c *organizationVpcFlowLogsGRPCClient) UpdateVpcFlowLogsConfig(ctx context.
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkmanagement.UpdateVpcFlowLogsConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateVpcFlowLogsConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -750,8 +759,12 @@ func (c *organizationVpcFlowLogsGRPCClient) DeleteVpcFlowLogsConfig(ctx context.
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkmanagement.DeleteVpcFlowLogsConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteVpcFlowLogsConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1224,8 +1237,12 @@ func (c *organizationVpcFlowLogsRESTClient) CreateVpcFlowLogsConfig(ctx context.
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkmanagement.CreateVpcFlowLogsConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateVpcFlowLogsConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1315,8 +1332,12 @@ func (c *organizationVpcFlowLogsRESTClient) UpdateVpcFlowLogsConfig(ctx context.
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkmanagement.UpdateVpcFlowLogsConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateVpcFlowLogsConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1375,8 +1396,12 @@ func (c *organizationVpcFlowLogsRESTClient) DeleteVpcFlowLogsConfig(ctx context.
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkmanagement.DeleteVpcFlowLogsConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteVpcFlowLogsConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1947,7 +1972,7 @@ func (c *organizationVpcFlowLogsRESTClient) ListOperations(ctx context.Context, 
 // The name must be that of a previously created CreateVpcFlowLogsConfigOperation, possibly from a different process.
 func (c *organizationVpcFlowLogsGRPCClient) CreateVpcFlowLogsConfigOperation(name string) *CreateVpcFlowLogsConfigOperation {
 	return &CreateVpcFlowLogsConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkmanagement.CreateVpcFlowLogsConfigOperation"),
 	}
 }
 
@@ -1956,7 +1981,7 @@ func (c *organizationVpcFlowLogsGRPCClient) CreateVpcFlowLogsConfigOperation(nam
 func (c *organizationVpcFlowLogsRESTClient) CreateVpcFlowLogsConfigOperation(name string) *CreateVpcFlowLogsConfigOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateVpcFlowLogsConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkmanagement.CreateVpcFlowLogsConfigOperation"),
 		pollPath: override,
 	}
 }
@@ -1965,7 +1990,7 @@ func (c *organizationVpcFlowLogsRESTClient) CreateVpcFlowLogsConfigOperation(nam
 // The name must be that of a previously created DeleteVpcFlowLogsConfigOperation, possibly from a different process.
 func (c *organizationVpcFlowLogsGRPCClient) DeleteVpcFlowLogsConfigOperation(name string) *DeleteVpcFlowLogsConfigOperation {
 	return &DeleteVpcFlowLogsConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkmanagement.DeleteVpcFlowLogsConfigOperation"),
 	}
 }
 
@@ -1974,7 +1999,7 @@ func (c *organizationVpcFlowLogsGRPCClient) DeleteVpcFlowLogsConfigOperation(nam
 func (c *organizationVpcFlowLogsRESTClient) DeleteVpcFlowLogsConfigOperation(name string) *DeleteVpcFlowLogsConfigOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteVpcFlowLogsConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkmanagement.DeleteVpcFlowLogsConfigOperation"),
 		pollPath: override,
 	}
 }
@@ -1983,7 +2008,7 @@ func (c *organizationVpcFlowLogsRESTClient) DeleteVpcFlowLogsConfigOperation(nam
 // The name must be that of a previously created UpdateVpcFlowLogsConfigOperation, possibly from a different process.
 func (c *organizationVpcFlowLogsGRPCClient) UpdateVpcFlowLogsConfigOperation(name string) *UpdateVpcFlowLogsConfigOperation {
 	return &UpdateVpcFlowLogsConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkmanagement.UpdateVpcFlowLogsConfigOperation"),
 	}
 }
 
@@ -1992,7 +2017,7 @@ func (c *organizationVpcFlowLogsGRPCClient) UpdateVpcFlowLogsConfigOperation(nam
 func (c *organizationVpcFlowLogsRESTClient) UpdateVpcFlowLogsConfigOperation(name string) *UpdateVpcFlowLogsConfigOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateVpcFlowLogsConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkmanagement.UpdateVpcFlowLogsConfigOperation"),
 		pollPath: override,
 	}
 }
