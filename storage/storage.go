@@ -1607,6 +1607,7 @@ type ObjectAttrs struct {
 	// MD5 is the MD5 hash of the object's content. This field is read-only,
 	// except when used from a Writer. If set on a Writer, the uploaded
 	// data is rejected if its MD5 hash does not match this field.
+	// Note: MD5 validation is not supported for appendable writes.
 	MD5 []byte
 
 	// CRC32C is the CRC32 checksum of the object's content using the Castagnoli93
