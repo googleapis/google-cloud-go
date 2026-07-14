@@ -1,0 +1,61 @@
+{
+  "clientLibrary": {
+    "apis": [
+      {
+        "id": "google.maps.isochrones.v1",
+        "version": "v1"
+      }
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/maps/isochrones/apiv1",
+    "version": "1.37.0"
+  },
+  "snippets": [
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.maps.isochrones.v1.IsochroneClient",
+          "shortName": "IsochroneClient"
+        },
+        "fullName": "google.maps.isochrones.v1.IsochroneClient.GenerateIsochrone",
+        "method": {
+          "fullName": "google.maps.isochrones.v1.IsochroneService.GenerateIsochrone",
+          "service": {
+            "fullName": "google.maps.isochrones.v1.IsochroneService",
+            "shortName": "IsochroneService"
+          },
+          "shortName": "GenerateIsochrone"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "isochronespb.GenerateIsochroneRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*isochronespb.GenerateIsochroneResponse",
+        "shortName": "GenerateIsochrone"
+      },
+      "description": "GenerateIsochrone calculates and returns a single isochrone for a given set of parameters.",
+      "file": "IsochroneClient/GenerateIsochrone/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "isochrones_v1_generated_IsochroneService_GenerateIsochrone_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "isochrones GenerateIsochrone Sample"
+    }
+  ]
+}
