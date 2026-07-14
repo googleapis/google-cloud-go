@@ -2626,11 +2626,10 @@ func TestIntegration_AppendWriterCRC32CValidation(t *testing.T) {
 				finalizeOnClose:   true,
 			},
 			{
-				name:              "append with correct SendCRC32C but no AppendFinalCRC32C. Finalize",
-				content:           bytes.Repeat([]byte("a"), 1*MiB),
-				sendCRC32C:        true,
-				setAppendFinalCRC: true,
-				finalizeOnClose:   true,
+				name:            "append with correct SendCRC32C but no AppendFinalCRC32C. Finalize",
+				content:         bytes.Repeat([]byte("a"), 1*MiB),
+				sendCRC32C:      true,
+				finalizeOnClose: true,
 			},
 			{
 				name:             "append with incorrect SendCRC32C but no AppendFinalCRC32C. Finalize",
@@ -2641,12 +2640,11 @@ func TestIntegration_AppendWriterCRC32CValidation(t *testing.T) {
 				wantErr:          true,
 			},
 			{
-				name:              "append with incorrect SendCRC32C but no AppendFinalCRC32C. Don't finalize",
-				content:           bytes.Repeat([]byte("a"), 1*MiB),
-				sendCRC32C:        true,
-				incorrectSendCRC:  true,
-				setAppendFinalCRC: true,
-				finalizeOnClose:   false,
+				name:             "append with incorrect SendCRC32C but no AppendFinalCRC32C. Don't finalize",
+				content:          bytes.Repeat([]byte("a"), 1*MiB),
+				sendCRC32C:       true,
+				incorrectSendCRC: true,
+				finalizeOnClose:  false,
 			},
 		}
 
@@ -4618,6 +4616,18 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 				opts: &AppendableWriterOpts{
 					ChunkSize:       4 * MiB,
 					FinalizeOnClose: true,
+				},
+				sendFinalAppendCRC: true,
+				wantErr:            false,
+			},
+			{
+				name:           "takeover and finalize with incorrect inital CRC but correct FinalAppendCRC",
+				content:        randomBytes9MiB,
+				takeoverOffset: MiB,
+				opts: &AppendableWriterOpts{
+					ChunkSize:       4 * MiB,
+					FinalizeOnClose: true,
+					CRC32C:          1234,
 				},
 				sendFinalAppendCRC: true,
 				wantErr:            false,

@@ -971,12 +971,15 @@ func getObjectChecksums(params *getObjectChecksumsParams) *storagepb.ObjectCheck
 		return nil
 	}
 
-	// For append operations, send user's final checksum on last write op if available.
+	// For append operations, send user's final append checksum on last write op if available.
 	// Auto checksum is not supported for appendable writes.
-	if params.append && params.fullObjectChecksum != nil {
-		if val := params.fullObjectChecksum(); val != nil {
-			return &storagepb.ObjectChecksums{Crc32C: val}
-		}
+	var crc32c *uint32
+	if params.fullObjectChecksum != nil {
+		crc32c = params.fullObjectChecksum()
+	}
+
+	if params.append && crc32c != nil {
+		return &storagepb.ObjectChecksums{Crc32C: crc32c}
 	}
 
 	// send user's checksum on last write op if available
@@ -988,8 +991,8 @@ func getObjectChecksums(params *getObjectChecksumsParams) *storagepb.ObjectCheck
 		return nil
 	}
 
-	if val := params.fullObjectChecksum(); val != nil {
-		return &storagepb.ObjectChecksums{Crc32C: val}
+	if crc32c != nil {
+		return &storagepb.ObjectChecksums{Crc32C: crc32c}
 	}
 	return nil
 }

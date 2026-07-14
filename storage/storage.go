@@ -1377,8 +1377,6 @@ type AppendableWriterOpts struct {
 	// CRC32C of the whole object.
 	// See Writer.CRC32C.
 	CRC32C uint32
-	// MD5: See Writer.MD5.
-	MD5 []byte
 }
 
 func (opts *AppendableWriterOpts) apply(w *Writer) {
@@ -1392,7 +1390,6 @@ func (opts *AppendableWriterOpts) apply(w *Writer) {
 	w.DisableAutoChecksum = opts.DisableAutoChecksum
 	w.CRC32C = opts.CRC32C
 	w.SendCRC32C = opts.SendCRC32C
-	w.MD5 = opts.MD5
 }
 
 func (o *ObjectHandle) validate() error {
