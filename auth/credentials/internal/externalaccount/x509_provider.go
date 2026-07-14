@@ -31,7 +31,6 @@ import (
 
 	"cloud.google.com/go/auth/internal/transport/cert"
 	"github.com/googleapis/enterprise-certificate-proxy/client"
-	"github.com/googleapis/enterprise-certificate-proxy/client/util"
 )
 
 // x509Provider implements the subjectTokenProvider type for x509 workload
@@ -152,17 +151,7 @@ type workloadConfig struct {
 }
 
 func isECPConfig(configFilePath string) (bool, error) {
-	path := configFilePath
-	if path == "" {
-		envFilePath := util.GetConfigFilePathFromEnv()
-		if envFilePath != "" {
-			path = envFilePath
-		} else {
-			path = util.GetDefaultConfigFilePath()
-		}
-	}
-
-	byteValue, err := os.ReadFile(path)
+	byteValue, err := os.ReadFile(configFilePath)
 	if err != nil {
 		// If the file cannot be read, it's not a valid config or is unavailable.
 		// Fallback to false, or return error. Returning false lets the file provider
@@ -183,17 +172,7 @@ func isECPConfig(configFilePath string) (bool, error) {
 }
 
 func (xp *x509Provider) ecpSubjectToken() (string, error) {
-	path := xp.ConfigFilePath
-	if path == "" {
-		envFilePath := util.GetConfigFilePathFromEnv()
-		if envFilePath != "" {
-			path = envFilePath
-		} else {
-			path = util.GetDefaultConfigFilePath()
-		}
-	}
-
-	key, err := client.Cred(path)
+	key, err := client.Cred(xp.ConfigFilePath)
 	if err != nil {
 		return "", fmt.Errorf("failed to initialize ECP client: %w", err)
 	}
