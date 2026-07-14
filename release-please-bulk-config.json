@@ -1708,6 +1708,16 @@
         }
       ]
     },
+    "productregistry": {
+      "component": "productregistry",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.productregistry.v1.json",
+          "type": "json"
+        }
+      ]
+    },
     "profiler": {
       "component": "profiler"
     },
