@@ -32,6 +32,7 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -722,8 +723,12 @@ func (c *siteSearchEngineGRPCClient) CreateTargetSite(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.CreateTargetSiteOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateTargetSiteOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -748,8 +753,12 @@ func (c *siteSearchEngineGRPCClient) BatchCreateTargetSites(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.BatchCreateTargetSitesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &BatchCreateTargetSitesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -795,8 +804,12 @@ func (c *siteSearchEngineGRPCClient) UpdateTargetSite(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.UpdateTargetSiteOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateTargetSiteOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -821,8 +834,12 @@ func (c *siteSearchEngineGRPCClient) DeleteTargetSite(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.DeleteTargetSiteOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteTargetSiteOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -899,8 +916,12 @@ func (c *siteSearchEngineGRPCClient) EnableAdvancedSiteSearch(ctx context.Contex
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.EnableAdvancedSiteSearchOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &EnableAdvancedSiteSearchOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -925,8 +946,12 @@ func (c *siteSearchEngineGRPCClient) DisableAdvancedSiteSearch(ctx context.Conte
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.DisableAdvancedSiteSearchOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DisableAdvancedSiteSearchOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -951,8 +976,12 @@ func (c *siteSearchEngineGRPCClient) RecrawlUris(ctx context.Context, req *disco
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.RecrawlUrisOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RecrawlUrisOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -977,8 +1006,12 @@ func (c *siteSearchEngineGRPCClient) BatchVerifyTargetSites(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.BatchVerifyTargetSitesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &BatchVerifyTargetSitesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1055,8 +1088,12 @@ func (c *siteSearchEngineGRPCClient) SetUriPatternDocumentData(ctx context.Conte
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.SetUriPatternDocumentDataOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &SetUriPatternDocumentDataOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1290,8 +1327,12 @@ func (c *siteSearchEngineRESTClient) CreateTargetSite(ctx context.Context, req *
 	}
 
 	override := fmt.Sprintf("/v1alpha/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.CreateTargetSiteOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateTargetSiteOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1357,8 +1398,12 @@ func (c *siteSearchEngineRESTClient) BatchCreateTargetSites(ctx context.Context,
 	}
 
 	override := fmt.Sprintf("/v1alpha/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.BatchCreateTargetSitesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &BatchCreateTargetSitesOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1478,8 +1523,12 @@ func (c *siteSearchEngineRESTClient) UpdateTargetSite(ctx context.Context, req *
 	}
 
 	override := fmt.Sprintf("/v1alpha/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.UpdateTargetSiteOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateTargetSiteOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1538,8 +1587,12 @@ func (c *siteSearchEngineRESTClient) DeleteTargetSite(ctx context.Context, req *
 	}
 
 	override := fmt.Sprintf("/v1alpha/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.DeleteTargetSiteOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteTargetSiteOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1683,8 +1736,12 @@ func (c *siteSearchEngineRESTClient) EnableAdvancedSiteSearch(ctx context.Contex
 	}
 
 	override := fmt.Sprintf("/v1alpha/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.EnableAdvancedSiteSearchOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &EnableAdvancedSiteSearchOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1749,8 +1806,12 @@ func (c *siteSearchEngineRESTClient) DisableAdvancedSiteSearch(ctx context.Conte
 	}
 
 	override := fmt.Sprintf("/v1alpha/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.DisableAdvancedSiteSearchOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DisableAdvancedSiteSearchOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1815,8 +1876,12 @@ func (c *siteSearchEngineRESTClient) RecrawlUris(ctx context.Context, req *disco
 	}
 
 	override := fmt.Sprintf("/v1alpha/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.RecrawlUrisOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RecrawlUrisOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1883,8 +1948,12 @@ func (c *siteSearchEngineRESTClient) BatchVerifyTargetSites(ctx context.Context,
 	}
 
 	override := fmt.Sprintf("/v1alpha/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.BatchVerifyTargetSitesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &BatchVerifyTargetSitesOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2030,8 +2099,12 @@ func (c *siteSearchEngineRESTClient) SetUriPatternDocumentData(ctx context.Conte
 	}
 
 	override := fmt.Sprintf("/v1alpha/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.SetUriPatternDocumentDataOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &SetUriPatternDocumentDataOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2281,7 +2354,7 @@ func (c *siteSearchEngineRESTClient) ListOperations(ctx context.Context, req *lo
 // The name must be that of a previously created BatchCreateTargetSitesOperation, possibly from a different process.
 func (c *siteSearchEngineGRPCClient) BatchCreateTargetSitesOperation(name string) *BatchCreateTargetSitesOperation {
 	return &BatchCreateTargetSitesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.BatchCreateTargetSitesOperation"),
 	}
 }
 
@@ -2290,7 +2363,7 @@ func (c *siteSearchEngineGRPCClient) BatchCreateTargetSitesOperation(name string
 func (c *siteSearchEngineRESTClient) BatchCreateTargetSitesOperation(name string) *BatchCreateTargetSitesOperation {
 	override := fmt.Sprintf("/v1alpha/%s", name)
 	return &BatchCreateTargetSitesOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.BatchCreateTargetSitesOperation"),
 		pollPath: override,
 	}
 }
@@ -2299,7 +2372,7 @@ func (c *siteSearchEngineRESTClient) BatchCreateTargetSitesOperation(name string
 // The name must be that of a previously created BatchVerifyTargetSitesOperation, possibly from a different process.
 func (c *siteSearchEngineGRPCClient) BatchVerifyTargetSitesOperation(name string) *BatchVerifyTargetSitesOperation {
 	return &BatchVerifyTargetSitesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.BatchVerifyTargetSitesOperation"),
 	}
 }
 
@@ -2308,7 +2381,7 @@ func (c *siteSearchEngineGRPCClient) BatchVerifyTargetSitesOperation(name string
 func (c *siteSearchEngineRESTClient) BatchVerifyTargetSitesOperation(name string) *BatchVerifyTargetSitesOperation {
 	override := fmt.Sprintf("/v1alpha/%s", name)
 	return &BatchVerifyTargetSitesOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.BatchVerifyTargetSitesOperation"),
 		pollPath: override,
 	}
 }
@@ -2317,7 +2390,7 @@ func (c *siteSearchEngineRESTClient) BatchVerifyTargetSitesOperation(name string
 // The name must be that of a previously created CreateTargetSiteOperation, possibly from a different process.
 func (c *siteSearchEngineGRPCClient) CreateTargetSiteOperation(name string) *CreateTargetSiteOperation {
 	return &CreateTargetSiteOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.CreateTargetSiteOperation"),
 	}
 }
 
@@ -2326,7 +2399,7 @@ func (c *siteSearchEngineGRPCClient) CreateTargetSiteOperation(name string) *Cre
 func (c *siteSearchEngineRESTClient) CreateTargetSiteOperation(name string) *CreateTargetSiteOperation {
 	override := fmt.Sprintf("/v1alpha/%s", name)
 	return &CreateTargetSiteOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.CreateTargetSiteOperation"),
 		pollPath: override,
 	}
 }
@@ -2335,7 +2408,7 @@ func (c *siteSearchEngineRESTClient) CreateTargetSiteOperation(name string) *Cre
 // The name must be that of a previously created DeleteTargetSiteOperation, possibly from a different process.
 func (c *siteSearchEngineGRPCClient) DeleteTargetSiteOperation(name string) *DeleteTargetSiteOperation {
 	return &DeleteTargetSiteOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.DeleteTargetSiteOperation"),
 	}
 }
 
@@ -2344,7 +2417,7 @@ func (c *siteSearchEngineGRPCClient) DeleteTargetSiteOperation(name string) *Del
 func (c *siteSearchEngineRESTClient) DeleteTargetSiteOperation(name string) *DeleteTargetSiteOperation {
 	override := fmt.Sprintf("/v1alpha/%s", name)
 	return &DeleteTargetSiteOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.DeleteTargetSiteOperation"),
 		pollPath: override,
 	}
 }
@@ -2353,7 +2426,7 @@ func (c *siteSearchEngineRESTClient) DeleteTargetSiteOperation(name string) *Del
 // The name must be that of a previously created DisableAdvancedSiteSearchOperation, possibly from a different process.
 func (c *siteSearchEngineGRPCClient) DisableAdvancedSiteSearchOperation(name string) *DisableAdvancedSiteSearchOperation {
 	return &DisableAdvancedSiteSearchOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.DisableAdvancedSiteSearchOperation"),
 	}
 }
 
@@ -2362,7 +2435,7 @@ func (c *siteSearchEngineGRPCClient) DisableAdvancedSiteSearchOperation(name str
 func (c *siteSearchEngineRESTClient) DisableAdvancedSiteSearchOperation(name string) *DisableAdvancedSiteSearchOperation {
 	override := fmt.Sprintf("/v1alpha/%s", name)
 	return &DisableAdvancedSiteSearchOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.DisableAdvancedSiteSearchOperation"),
 		pollPath: override,
 	}
 }
@@ -2371,7 +2444,7 @@ func (c *siteSearchEngineRESTClient) DisableAdvancedSiteSearchOperation(name str
 // The name must be that of a previously created EnableAdvancedSiteSearchOperation, possibly from a different process.
 func (c *siteSearchEngineGRPCClient) EnableAdvancedSiteSearchOperation(name string) *EnableAdvancedSiteSearchOperation {
 	return &EnableAdvancedSiteSearchOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.EnableAdvancedSiteSearchOperation"),
 	}
 }
 
@@ -2380,7 +2453,7 @@ func (c *siteSearchEngineGRPCClient) EnableAdvancedSiteSearchOperation(name stri
 func (c *siteSearchEngineRESTClient) EnableAdvancedSiteSearchOperation(name string) *EnableAdvancedSiteSearchOperation {
 	override := fmt.Sprintf("/v1alpha/%s", name)
 	return &EnableAdvancedSiteSearchOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.EnableAdvancedSiteSearchOperation"),
 		pollPath: override,
 	}
 }
@@ -2389,7 +2462,7 @@ func (c *siteSearchEngineRESTClient) EnableAdvancedSiteSearchOperation(name stri
 // The name must be that of a previously created RecrawlUrisOperation, possibly from a different process.
 func (c *siteSearchEngineGRPCClient) RecrawlUrisOperation(name string) *RecrawlUrisOperation {
 	return &RecrawlUrisOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.RecrawlUrisOperation"),
 	}
 }
 
@@ -2398,7 +2471,7 @@ func (c *siteSearchEngineGRPCClient) RecrawlUrisOperation(name string) *RecrawlU
 func (c *siteSearchEngineRESTClient) RecrawlUrisOperation(name string) *RecrawlUrisOperation {
 	override := fmt.Sprintf("/v1alpha/%s", name)
 	return &RecrawlUrisOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.RecrawlUrisOperation"),
 		pollPath: override,
 	}
 }
@@ -2407,7 +2480,7 @@ func (c *siteSearchEngineRESTClient) RecrawlUrisOperation(name string) *RecrawlU
 // The name must be that of a previously created SetUriPatternDocumentDataOperation, possibly from a different process.
 func (c *siteSearchEngineGRPCClient) SetUriPatternDocumentDataOperation(name string) *SetUriPatternDocumentDataOperation {
 	return &SetUriPatternDocumentDataOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.SetUriPatternDocumentDataOperation"),
 	}
 }
 
@@ -2416,7 +2489,7 @@ func (c *siteSearchEngineGRPCClient) SetUriPatternDocumentDataOperation(name str
 func (c *siteSearchEngineRESTClient) SetUriPatternDocumentDataOperation(name string) *SetUriPatternDocumentDataOperation {
 	override := fmt.Sprintf("/v1alpha/%s", name)
 	return &SetUriPatternDocumentDataOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.SetUriPatternDocumentDataOperation"),
 		pollPath: override,
 	}
 }
@@ -2425,7 +2498,7 @@ func (c *siteSearchEngineRESTClient) SetUriPatternDocumentDataOperation(name str
 // The name must be that of a previously created UpdateTargetSiteOperation, possibly from a different process.
 func (c *siteSearchEngineGRPCClient) UpdateTargetSiteOperation(name string) *UpdateTargetSiteOperation {
 	return &UpdateTargetSiteOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.UpdateTargetSiteOperation"),
 	}
 }
 
@@ -2434,7 +2507,7 @@ func (c *siteSearchEngineGRPCClient) UpdateTargetSiteOperation(name string) *Upd
 func (c *siteSearchEngineRESTClient) UpdateTargetSiteOperation(name string) *UpdateTargetSiteOperation {
 	override := fmt.Sprintf("/v1alpha/%s", name)
 	return &UpdateTargetSiteOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.UpdateTargetSiteOperation"),
 		pollPath: override,
 	}
 }

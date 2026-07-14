@@ -32,6 +32,7 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -863,8 +864,12 @@ func (c *gRPCClient) CreateConfiguration(ctx context.Context, req *licensemanage
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*licensemanager.CreateConfigurationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateConfigurationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -886,8 +891,12 @@ func (c *gRPCClient) UpdateConfiguration(ctx context.Context, req *licensemanage
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*licensemanager.UpdateConfigurationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateConfigurationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -912,8 +921,12 @@ func (c *gRPCClient) DeleteConfiguration(ctx context.Context, req *licensemanage
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*licensemanager.DeleteConfigurationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteConfigurationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1014,8 +1027,12 @@ func (c *gRPCClient) DeactivateConfiguration(ctx context.Context, req *licensema
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*licensemanager.DeactivateConfigurationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeactivateConfigurationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1040,8 +1057,12 @@ func (c *gRPCClient) ReactivateConfiguration(ctx context.Context, req *licensema
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*licensemanager.ReactivateConfigurationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ReactivateConfigurationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1577,8 +1598,12 @@ func (c *restClient) CreateConfiguration(ctx context.Context, req *licensemanage
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*licensemanager.CreateConfigurationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateConfigurationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1651,8 +1676,12 @@ func (c *restClient) UpdateConfiguration(ctx context.Context, req *licensemanage
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*licensemanager.UpdateConfigurationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateConfigurationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1714,8 +1743,12 @@ func (c *restClient) DeleteConfiguration(ctx context.Context, req *licensemanage
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*licensemanager.DeleteConfigurationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteConfigurationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1921,8 +1954,12 @@ func (c *restClient) DeactivateConfiguration(ctx context.Context, req *licensema
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*licensemanager.DeactivateConfigurationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeactivateConfigurationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1987,8 +2024,12 @@ func (c *restClient) ReactivateConfiguration(ctx context.Context, req *licensema
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*licensemanager.ReactivateConfigurationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ReactivateConfigurationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2664,7 +2705,7 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // The name must be that of a previously created CreateConfigurationOperation, possibly from a different process.
 func (c *gRPCClient) CreateConfigurationOperation(name string) *CreateConfigurationOperation {
 	return &CreateConfigurationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*licensemanager.CreateConfigurationOperation"),
 	}
 }
 
@@ -2673,7 +2714,7 @@ func (c *gRPCClient) CreateConfigurationOperation(name string) *CreateConfigurat
 func (c *restClient) CreateConfigurationOperation(name string) *CreateConfigurationOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateConfigurationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*licensemanager.CreateConfigurationOperation"),
 		pollPath: override,
 	}
 }
@@ -2682,7 +2723,7 @@ func (c *restClient) CreateConfigurationOperation(name string) *CreateConfigurat
 // The name must be that of a previously created DeactivateConfigurationOperation, possibly from a different process.
 func (c *gRPCClient) DeactivateConfigurationOperation(name string) *DeactivateConfigurationOperation {
 	return &DeactivateConfigurationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*licensemanager.DeactivateConfigurationOperation"),
 	}
 }
 
@@ -2691,7 +2732,7 @@ func (c *gRPCClient) DeactivateConfigurationOperation(name string) *DeactivateCo
 func (c *restClient) DeactivateConfigurationOperation(name string) *DeactivateConfigurationOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeactivateConfigurationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*licensemanager.DeactivateConfigurationOperation"),
 		pollPath: override,
 	}
 }
@@ -2700,7 +2741,7 @@ func (c *restClient) DeactivateConfigurationOperation(name string) *DeactivateCo
 // The name must be that of a previously created DeleteConfigurationOperation, possibly from a different process.
 func (c *gRPCClient) DeleteConfigurationOperation(name string) *DeleteConfigurationOperation {
 	return &DeleteConfigurationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*licensemanager.DeleteConfigurationOperation"),
 	}
 }
 
@@ -2709,7 +2750,7 @@ func (c *gRPCClient) DeleteConfigurationOperation(name string) *DeleteConfigurat
 func (c *restClient) DeleteConfigurationOperation(name string) *DeleteConfigurationOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteConfigurationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*licensemanager.DeleteConfigurationOperation"),
 		pollPath: override,
 	}
 }
@@ -2718,7 +2759,7 @@ func (c *restClient) DeleteConfigurationOperation(name string) *DeleteConfigurat
 // The name must be that of a previously created ReactivateConfigurationOperation, possibly from a different process.
 func (c *gRPCClient) ReactivateConfigurationOperation(name string) *ReactivateConfigurationOperation {
 	return &ReactivateConfigurationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*licensemanager.ReactivateConfigurationOperation"),
 	}
 }
 
@@ -2727,7 +2768,7 @@ func (c *gRPCClient) ReactivateConfigurationOperation(name string) *ReactivateCo
 func (c *restClient) ReactivateConfigurationOperation(name string) *ReactivateConfigurationOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ReactivateConfigurationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*licensemanager.ReactivateConfigurationOperation"),
 		pollPath: override,
 	}
 }
@@ -2736,7 +2777,7 @@ func (c *restClient) ReactivateConfigurationOperation(name string) *ReactivateCo
 // The name must be that of a previously created UpdateConfigurationOperation, possibly from a different process.
 func (c *gRPCClient) UpdateConfigurationOperation(name string) *UpdateConfigurationOperation {
 	return &UpdateConfigurationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*licensemanager.UpdateConfigurationOperation"),
 	}
 }
 
@@ -2745,7 +2786,7 @@ func (c *gRPCClient) UpdateConfigurationOperation(name string) *UpdateConfigurat
 func (c *restClient) UpdateConfigurationOperation(name string) *UpdateConfigurationOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateConfigurationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*licensemanager.UpdateConfigurationOperation"),
 		pollPath: override,
 	}
 }

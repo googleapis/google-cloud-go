@@ -33,6 +33,7 @@ import (
 	speechpb "cloud.google.com/go/speech/apiv2/speechpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -1338,8 +1339,12 @@ func (c *gRPCClient) CreateRecognizer(ctx context.Context, req *speechpb.CreateR
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*speech.CreateRecognizerOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateRecognizerOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1437,8 +1442,12 @@ func (c *gRPCClient) UpdateRecognizer(ctx context.Context, req *speechpb.UpdateR
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*speech.UpdateRecognizerOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateRecognizerOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1463,8 +1472,12 @@ func (c *gRPCClient) DeleteRecognizer(ctx context.Context, req *speechpb.DeleteR
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*speech.DeleteRecognizerOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteRecognizerOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1489,8 +1502,12 @@ func (c *gRPCClient) UndeleteRecognizer(ctx context.Context, req *speechpb.Undel
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*speech.UndeleteRecognizerOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UndeleteRecognizerOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1559,8 +1576,12 @@ func (c *gRPCClient) BatchRecognize(ctx context.Context, req *speechpb.BatchReco
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*speech.BatchRecognizeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &BatchRecognizeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1630,8 +1651,12 @@ func (c *gRPCClient) CreateCustomClass(ctx context.Context, req *speechpb.Create
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*speech.CreateCustomClassOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateCustomClassOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1729,8 +1754,12 @@ func (c *gRPCClient) UpdateCustomClass(ctx context.Context, req *speechpb.Update
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*speech.UpdateCustomClassOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateCustomClassOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1755,8 +1784,12 @@ func (c *gRPCClient) DeleteCustomClass(ctx context.Context, req *speechpb.Delete
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*speech.DeleteCustomClassOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteCustomClassOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1781,8 +1814,12 @@ func (c *gRPCClient) UndeleteCustomClass(ctx context.Context, req *speechpb.Unde
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*speech.UndeleteCustomClassOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UndeleteCustomClassOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1807,8 +1844,12 @@ func (c *gRPCClient) CreatePhraseSet(ctx context.Context, req *speechpb.CreatePh
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*speech.CreatePhraseSetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreatePhraseSetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1906,8 +1947,12 @@ func (c *gRPCClient) UpdatePhraseSet(ctx context.Context, req *speechpb.UpdatePh
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*speech.UpdatePhraseSetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdatePhraseSetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1932,8 +1977,12 @@ func (c *gRPCClient) DeletePhraseSet(ctx context.Context, req *speechpb.DeletePh
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*speech.DeletePhraseSetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeletePhraseSetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1958,8 +2007,12 @@ func (c *gRPCClient) UndeletePhraseSet(ctx context.Context, req *speechpb.Undele
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*speech.UndeletePhraseSetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UndeletePhraseSetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2204,8 +2257,12 @@ func (c *restClient) CreateRecognizer(ctx context.Context, req *speechpb.CreateR
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*speech.CreateRecognizerOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateRecognizerOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2419,8 +2476,12 @@ func (c *restClient) UpdateRecognizer(ctx context.Context, req *speechpb.UpdateR
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*speech.UpdateRecognizerOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateRecognizerOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2488,8 +2549,12 @@ func (c *restClient) DeleteRecognizer(ctx context.Context, req *speechpb.DeleteR
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*speech.DeleteRecognizerOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteRecognizerOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2554,8 +2619,12 @@ func (c *restClient) UndeleteRecognizer(ctx context.Context, req *speechpb.Undel
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*speech.UndeleteRecognizerOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UndeleteRecognizerOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2694,8 +2763,12 @@ func (c *restClient) BatchRecognize(ctx context.Context, req *speechpb.BatchReco
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*speech.BatchRecognizeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &BatchRecognizeOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2892,8 +2965,12 @@ func (c *restClient) CreateCustomClass(ctx context.Context, req *speechpb.Create
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*speech.CreateCustomClassOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateCustomClassOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3105,8 +3182,12 @@ func (c *restClient) UpdateCustomClass(ctx context.Context, req *speechpb.Update
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*speech.UpdateCustomClassOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateCustomClassOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3174,8 +3255,12 @@ func (c *restClient) DeleteCustomClass(ctx context.Context, req *speechpb.Delete
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*speech.DeleteCustomClassOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteCustomClassOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3240,8 +3325,12 @@ func (c *restClient) UndeleteCustomClass(ctx context.Context, req *speechpb.Unde
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*speech.UndeleteCustomClassOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UndeleteCustomClassOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3313,8 +3402,12 @@ func (c *restClient) CreatePhraseSet(ctx context.Context, req *speechpb.CreatePh
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*speech.CreatePhraseSetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreatePhraseSetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3526,8 +3619,12 @@ func (c *restClient) UpdatePhraseSet(ctx context.Context, req *speechpb.UpdatePh
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*speech.UpdatePhraseSetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdatePhraseSetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3595,8 +3692,12 @@ func (c *restClient) DeletePhraseSet(ctx context.Context, req *speechpb.DeletePh
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*speech.DeletePhraseSetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeletePhraseSetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3661,8 +3762,12 @@ func (c *restClient) UndeletePhraseSet(ctx context.Context, req *speechpb.Undele
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*speech.UndeletePhraseSetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UndeletePhraseSetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4036,7 +4141,7 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // The name must be that of a previously created BatchRecognizeOperation, possibly from a different process.
 func (c *gRPCClient) BatchRecognizeOperation(name string) *BatchRecognizeOperation {
 	return &BatchRecognizeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*speech.BatchRecognizeOperation"),
 	}
 }
 
@@ -4045,7 +4150,7 @@ func (c *gRPCClient) BatchRecognizeOperation(name string) *BatchRecognizeOperati
 func (c *restClient) BatchRecognizeOperation(name string) *BatchRecognizeOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &BatchRecognizeOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*speech.BatchRecognizeOperation"),
 		pollPath: override,
 	}
 }
@@ -4054,7 +4159,7 @@ func (c *restClient) BatchRecognizeOperation(name string) *BatchRecognizeOperati
 // The name must be that of a previously created CreateCustomClassOperation, possibly from a different process.
 func (c *gRPCClient) CreateCustomClassOperation(name string) *CreateCustomClassOperation {
 	return &CreateCustomClassOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*speech.CreateCustomClassOperation"),
 	}
 }
 
@@ -4063,7 +4168,7 @@ func (c *gRPCClient) CreateCustomClassOperation(name string) *CreateCustomClassO
 func (c *restClient) CreateCustomClassOperation(name string) *CreateCustomClassOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &CreateCustomClassOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*speech.CreateCustomClassOperation"),
 		pollPath: override,
 	}
 }
@@ -4072,7 +4177,7 @@ func (c *restClient) CreateCustomClassOperation(name string) *CreateCustomClassO
 // The name must be that of a previously created CreatePhraseSetOperation, possibly from a different process.
 func (c *gRPCClient) CreatePhraseSetOperation(name string) *CreatePhraseSetOperation {
 	return &CreatePhraseSetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*speech.CreatePhraseSetOperation"),
 	}
 }
 
@@ -4081,7 +4186,7 @@ func (c *gRPCClient) CreatePhraseSetOperation(name string) *CreatePhraseSetOpera
 func (c *restClient) CreatePhraseSetOperation(name string) *CreatePhraseSetOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &CreatePhraseSetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*speech.CreatePhraseSetOperation"),
 		pollPath: override,
 	}
 }
@@ -4090,7 +4195,7 @@ func (c *restClient) CreatePhraseSetOperation(name string) *CreatePhraseSetOpera
 // The name must be that of a previously created CreateRecognizerOperation, possibly from a different process.
 func (c *gRPCClient) CreateRecognizerOperation(name string) *CreateRecognizerOperation {
 	return &CreateRecognizerOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*speech.CreateRecognizerOperation"),
 	}
 }
 
@@ -4099,7 +4204,7 @@ func (c *gRPCClient) CreateRecognizerOperation(name string) *CreateRecognizerOpe
 func (c *restClient) CreateRecognizerOperation(name string) *CreateRecognizerOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &CreateRecognizerOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*speech.CreateRecognizerOperation"),
 		pollPath: override,
 	}
 }
@@ -4108,7 +4213,7 @@ func (c *restClient) CreateRecognizerOperation(name string) *CreateRecognizerOpe
 // The name must be that of a previously created DeleteCustomClassOperation, possibly from a different process.
 func (c *gRPCClient) DeleteCustomClassOperation(name string) *DeleteCustomClassOperation {
 	return &DeleteCustomClassOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*speech.DeleteCustomClassOperation"),
 	}
 }
 
@@ -4117,7 +4222,7 @@ func (c *gRPCClient) DeleteCustomClassOperation(name string) *DeleteCustomClassO
 func (c *restClient) DeleteCustomClassOperation(name string) *DeleteCustomClassOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &DeleteCustomClassOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*speech.DeleteCustomClassOperation"),
 		pollPath: override,
 	}
 }
@@ -4126,7 +4231,7 @@ func (c *restClient) DeleteCustomClassOperation(name string) *DeleteCustomClassO
 // The name must be that of a previously created DeletePhraseSetOperation, possibly from a different process.
 func (c *gRPCClient) DeletePhraseSetOperation(name string) *DeletePhraseSetOperation {
 	return &DeletePhraseSetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*speech.DeletePhraseSetOperation"),
 	}
 }
 
@@ -4135,7 +4240,7 @@ func (c *gRPCClient) DeletePhraseSetOperation(name string) *DeletePhraseSetOpera
 func (c *restClient) DeletePhraseSetOperation(name string) *DeletePhraseSetOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &DeletePhraseSetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*speech.DeletePhraseSetOperation"),
 		pollPath: override,
 	}
 }
@@ -4144,7 +4249,7 @@ func (c *restClient) DeletePhraseSetOperation(name string) *DeletePhraseSetOpera
 // The name must be that of a previously created DeleteRecognizerOperation, possibly from a different process.
 func (c *gRPCClient) DeleteRecognizerOperation(name string) *DeleteRecognizerOperation {
 	return &DeleteRecognizerOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*speech.DeleteRecognizerOperation"),
 	}
 }
 
@@ -4153,7 +4258,7 @@ func (c *gRPCClient) DeleteRecognizerOperation(name string) *DeleteRecognizerOpe
 func (c *restClient) DeleteRecognizerOperation(name string) *DeleteRecognizerOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &DeleteRecognizerOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*speech.DeleteRecognizerOperation"),
 		pollPath: override,
 	}
 }
@@ -4162,7 +4267,7 @@ func (c *restClient) DeleteRecognizerOperation(name string) *DeleteRecognizerOpe
 // The name must be that of a previously created UndeleteCustomClassOperation, possibly from a different process.
 func (c *gRPCClient) UndeleteCustomClassOperation(name string) *UndeleteCustomClassOperation {
 	return &UndeleteCustomClassOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*speech.UndeleteCustomClassOperation"),
 	}
 }
 
@@ -4171,7 +4276,7 @@ func (c *gRPCClient) UndeleteCustomClassOperation(name string) *UndeleteCustomCl
 func (c *restClient) UndeleteCustomClassOperation(name string) *UndeleteCustomClassOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &UndeleteCustomClassOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*speech.UndeleteCustomClassOperation"),
 		pollPath: override,
 	}
 }
@@ -4180,7 +4285,7 @@ func (c *restClient) UndeleteCustomClassOperation(name string) *UndeleteCustomCl
 // The name must be that of a previously created UndeletePhraseSetOperation, possibly from a different process.
 func (c *gRPCClient) UndeletePhraseSetOperation(name string) *UndeletePhraseSetOperation {
 	return &UndeletePhraseSetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*speech.UndeletePhraseSetOperation"),
 	}
 }
 
@@ -4189,7 +4294,7 @@ func (c *gRPCClient) UndeletePhraseSetOperation(name string) *UndeletePhraseSetO
 func (c *restClient) UndeletePhraseSetOperation(name string) *UndeletePhraseSetOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &UndeletePhraseSetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*speech.UndeletePhraseSetOperation"),
 		pollPath: override,
 	}
 }
@@ -4198,7 +4303,7 @@ func (c *restClient) UndeletePhraseSetOperation(name string) *UndeletePhraseSetO
 // The name must be that of a previously created UndeleteRecognizerOperation, possibly from a different process.
 func (c *gRPCClient) UndeleteRecognizerOperation(name string) *UndeleteRecognizerOperation {
 	return &UndeleteRecognizerOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*speech.UndeleteRecognizerOperation"),
 	}
 }
 
@@ -4207,7 +4312,7 @@ func (c *gRPCClient) UndeleteRecognizerOperation(name string) *UndeleteRecognize
 func (c *restClient) UndeleteRecognizerOperation(name string) *UndeleteRecognizerOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &UndeleteRecognizerOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*speech.UndeleteRecognizerOperation"),
 		pollPath: override,
 	}
 }
@@ -4216,7 +4321,7 @@ func (c *restClient) UndeleteRecognizerOperation(name string) *UndeleteRecognize
 // The name must be that of a previously created UpdateCustomClassOperation, possibly from a different process.
 func (c *gRPCClient) UpdateCustomClassOperation(name string) *UpdateCustomClassOperation {
 	return &UpdateCustomClassOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*speech.UpdateCustomClassOperation"),
 	}
 }
 
@@ -4225,7 +4330,7 @@ func (c *gRPCClient) UpdateCustomClassOperation(name string) *UpdateCustomClassO
 func (c *restClient) UpdateCustomClassOperation(name string) *UpdateCustomClassOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &UpdateCustomClassOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*speech.UpdateCustomClassOperation"),
 		pollPath: override,
 	}
 }
@@ -4234,7 +4339,7 @@ func (c *restClient) UpdateCustomClassOperation(name string) *UpdateCustomClassO
 // The name must be that of a previously created UpdatePhraseSetOperation, possibly from a different process.
 func (c *gRPCClient) UpdatePhraseSetOperation(name string) *UpdatePhraseSetOperation {
 	return &UpdatePhraseSetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*speech.UpdatePhraseSetOperation"),
 	}
 }
 
@@ -4243,7 +4348,7 @@ func (c *gRPCClient) UpdatePhraseSetOperation(name string) *UpdatePhraseSetOpera
 func (c *restClient) UpdatePhraseSetOperation(name string) *UpdatePhraseSetOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &UpdatePhraseSetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*speech.UpdatePhraseSetOperation"),
 		pollPath: override,
 	}
 }
@@ -4252,7 +4357,7 @@ func (c *restClient) UpdatePhraseSetOperation(name string) *UpdatePhraseSetOpera
 // The name must be that of a previously created UpdateRecognizerOperation, possibly from a different process.
 func (c *gRPCClient) UpdateRecognizerOperation(name string) *UpdateRecognizerOperation {
 	return &UpdateRecognizerOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*speech.UpdateRecognizerOperation"),
 	}
 }
 
@@ -4261,7 +4366,7 @@ func (c *gRPCClient) UpdateRecognizerOperation(name string) *UpdateRecognizerOpe
 func (c *restClient) UpdateRecognizerOperation(name string) *UpdateRecognizerOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &UpdateRecognizerOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*speech.UpdateRecognizerOperation"),
 		pollPath: override,
 	}
 }

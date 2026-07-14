@@ -31,6 +31,7 @@ import (
 	lustrepb "cloud.google.com/go/lustre/apiv1/lustrepb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -632,8 +633,12 @@ func (c *gRPCClient) CreateInstance(ctx context.Context, req *lustrepb.CreateIns
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*lustre.CreateInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -655,8 +660,12 @@ func (c *gRPCClient) UpdateInstance(ctx context.Context, req *lustrepb.UpdateIns
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*lustre.UpdateInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -681,8 +690,12 @@ func (c *gRPCClient) DeleteInstance(ctx context.Context, req *lustrepb.DeleteIns
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*lustre.DeleteInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -707,8 +720,12 @@ func (c *gRPCClient) ImportData(ctx context.Context, req *lustrepb.ImportDataReq
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*lustre.ImportDataOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ImportDataOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -733,8 +750,12 @@ func (c *gRPCClient) ExportData(ctx context.Context, req *lustrepb.ExportDataReq
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*lustre.ExportDataOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportDataOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1118,8 +1139,12 @@ func (c *restClient) CreateInstance(ctx context.Context, req *lustrepb.CreateIns
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*lustre.CreateInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1192,8 +1217,12 @@ func (c *restClient) UpdateInstance(ctx context.Context, req *lustrepb.UpdateIns
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*lustre.UpdateInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1255,8 +1284,12 @@ func (c *restClient) DeleteInstance(ctx context.Context, req *lustrepb.DeleteIns
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*lustre.DeleteInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1321,8 +1354,12 @@ func (c *restClient) ImportData(ctx context.Context, req *lustrepb.ImportDataReq
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*lustre.ImportDataOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ImportDataOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1387,8 +1424,12 @@ func (c *restClient) ExportData(ctx context.Context, req *lustrepb.ExportDataReq
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*lustre.ExportDataOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportDataOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1748,7 +1789,7 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // The name must be that of a previously created CreateInstanceOperation, possibly from a different process.
 func (c *gRPCClient) CreateInstanceOperation(name string) *CreateInstanceOperation {
 	return &CreateInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*lustre.CreateInstanceOperation"),
 	}
 }
 
@@ -1757,7 +1798,7 @@ func (c *gRPCClient) CreateInstanceOperation(name string) *CreateInstanceOperati
 func (c *restClient) CreateInstanceOperation(name string) *CreateInstanceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*lustre.CreateInstanceOperation"),
 		pollPath: override,
 	}
 }
@@ -1766,7 +1807,7 @@ func (c *restClient) CreateInstanceOperation(name string) *CreateInstanceOperati
 // The name must be that of a previously created DeleteInstanceOperation, possibly from a different process.
 func (c *gRPCClient) DeleteInstanceOperation(name string) *DeleteInstanceOperation {
 	return &DeleteInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*lustre.DeleteInstanceOperation"),
 	}
 }
 
@@ -1775,7 +1816,7 @@ func (c *gRPCClient) DeleteInstanceOperation(name string) *DeleteInstanceOperati
 func (c *restClient) DeleteInstanceOperation(name string) *DeleteInstanceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*lustre.DeleteInstanceOperation"),
 		pollPath: override,
 	}
 }
@@ -1784,7 +1825,7 @@ func (c *restClient) DeleteInstanceOperation(name string) *DeleteInstanceOperati
 // The name must be that of a previously created ExportDataOperation, possibly from a different process.
 func (c *gRPCClient) ExportDataOperation(name string) *ExportDataOperation {
 	return &ExportDataOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*lustre.ExportDataOperation"),
 	}
 }
 
@@ -1793,7 +1834,7 @@ func (c *gRPCClient) ExportDataOperation(name string) *ExportDataOperation {
 func (c *restClient) ExportDataOperation(name string) *ExportDataOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ExportDataOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*lustre.ExportDataOperation"),
 		pollPath: override,
 	}
 }
@@ -1802,7 +1843,7 @@ func (c *restClient) ExportDataOperation(name string) *ExportDataOperation {
 // The name must be that of a previously created ImportDataOperation, possibly from a different process.
 func (c *gRPCClient) ImportDataOperation(name string) *ImportDataOperation {
 	return &ImportDataOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*lustre.ImportDataOperation"),
 	}
 }
 
@@ -1811,7 +1852,7 @@ func (c *gRPCClient) ImportDataOperation(name string) *ImportDataOperation {
 func (c *restClient) ImportDataOperation(name string) *ImportDataOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ImportDataOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*lustre.ImportDataOperation"),
 		pollPath: override,
 	}
 }
@@ -1820,7 +1861,7 @@ func (c *restClient) ImportDataOperation(name string) *ImportDataOperation {
 // The name must be that of a previously created UpdateInstanceOperation, possibly from a different process.
 func (c *gRPCClient) UpdateInstanceOperation(name string) *UpdateInstanceOperation {
 	return &UpdateInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*lustre.UpdateInstanceOperation"),
 	}
 }
 
@@ -1829,7 +1870,7 @@ func (c *gRPCClient) UpdateInstanceOperation(name string) *UpdateInstanceOperati
 func (c *restClient) UpdateInstanceOperation(name string) *UpdateInstanceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*lustre.UpdateInstanceOperation"),
 		pollPath: override,
 	}
 }

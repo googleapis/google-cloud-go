@@ -32,6 +32,7 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -674,8 +675,12 @@ func (c *evaluationGRPCClient) CreateEvaluation(ctx context.Context, req *discov
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.CreateEvaluationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateEvaluationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1018,8 +1023,12 @@ func (c *evaluationRESTClient) CreateEvaluation(ctx context.Context, req *discov
 	}
 
 	override := fmt.Sprintf("/v1alpha/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.CreateEvaluationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateEvaluationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1290,7 +1299,7 @@ func (c *evaluationRESTClient) ListOperations(ctx context.Context, req *longrunn
 // The name must be that of a previously created CreateEvaluationOperation, possibly from a different process.
 func (c *evaluationGRPCClient) CreateEvaluationOperation(name string) *CreateEvaluationOperation {
 	return &CreateEvaluationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.CreateEvaluationOperation"),
 	}
 }
 
@@ -1299,7 +1308,7 @@ func (c *evaluationGRPCClient) CreateEvaluationOperation(name string) *CreateEva
 func (c *evaluationRESTClient) CreateEvaluationOperation(name string) *CreateEvaluationOperation {
 	override := fmt.Sprintf("/v1alpha/%s", name)
 	return &CreateEvaluationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.CreateEvaluationOperation"),
 		pollPath: override,
 	}
 }

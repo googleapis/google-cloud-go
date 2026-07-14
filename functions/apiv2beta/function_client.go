@@ -32,6 +32,7 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -690,8 +691,12 @@ func (c *functionGRPCClient) CreateFunction(ctx context.Context, req *functionsp
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*functions.CreateFunctionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateFunctionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -713,8 +718,12 @@ func (c *functionGRPCClient) UpdateFunction(ctx context.Context, req *functionsp
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*functions.UpdateFunctionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateFunctionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -739,8 +748,12 @@ func (c *functionGRPCClient) DeleteFunction(ctx context.Context, req *functionsp
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*functions.DeleteFunctionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteFunctionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1217,8 +1230,12 @@ func (c *functionRESTClient) CreateFunction(ctx context.Context, req *functionsp
 	}
 
 	override := fmt.Sprintf("/v2beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*functions.CreateFunctionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateFunctionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1288,8 +1305,12 @@ func (c *functionRESTClient) UpdateFunction(ctx context.Context, req *functionsp
 	}
 
 	override := fmt.Sprintf("/v2beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*functions.UpdateFunctionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateFunctionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1350,8 +1371,12 @@ func (c *functionRESTClient) DeleteFunction(ctx context.Context, req *functionsp
 	}
 
 	override := fmt.Sprintf("/v2beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*functions.DeleteFunctionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteFunctionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1989,7 +2014,7 @@ func (c *functionRESTClient) ListOperations(ctx context.Context, req *longrunnin
 // The name must be that of a previously created CreateFunctionOperation, possibly from a different process.
 func (c *functionGRPCClient) CreateFunctionOperation(name string) *CreateFunctionOperation {
 	return &CreateFunctionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*functions.CreateFunctionOperation"),
 	}
 }
 
@@ -1998,7 +2023,7 @@ func (c *functionGRPCClient) CreateFunctionOperation(name string) *CreateFunctio
 func (c *functionRESTClient) CreateFunctionOperation(name string) *CreateFunctionOperation {
 	override := fmt.Sprintf("/v2beta/%s", name)
 	return &CreateFunctionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*functions.CreateFunctionOperation"),
 		pollPath: override,
 	}
 }
@@ -2007,7 +2032,7 @@ func (c *functionRESTClient) CreateFunctionOperation(name string) *CreateFunctio
 // The name must be that of a previously created DeleteFunctionOperation, possibly from a different process.
 func (c *functionGRPCClient) DeleteFunctionOperation(name string) *DeleteFunctionOperation {
 	return &DeleteFunctionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*functions.DeleteFunctionOperation"),
 	}
 }
 
@@ -2016,7 +2041,7 @@ func (c *functionGRPCClient) DeleteFunctionOperation(name string) *DeleteFunctio
 func (c *functionRESTClient) DeleteFunctionOperation(name string) *DeleteFunctionOperation {
 	override := fmt.Sprintf("/v2beta/%s", name)
 	return &DeleteFunctionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*functions.DeleteFunctionOperation"),
 		pollPath: override,
 	}
 }
@@ -2025,7 +2050,7 @@ func (c *functionRESTClient) DeleteFunctionOperation(name string) *DeleteFunctio
 // The name must be that of a previously created UpdateFunctionOperation, possibly from a different process.
 func (c *functionGRPCClient) UpdateFunctionOperation(name string) *UpdateFunctionOperation {
 	return &UpdateFunctionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*functions.UpdateFunctionOperation"),
 	}
 }
 
@@ -2034,7 +2059,7 @@ func (c *functionGRPCClient) UpdateFunctionOperation(name string) *UpdateFunctio
 func (c *functionRESTClient) UpdateFunctionOperation(name string) *UpdateFunctionOperation {
 	override := fmt.Sprintf("/v2beta/%s", name)
 	return &UpdateFunctionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*functions.UpdateFunctionOperation"),
 		pollPath: override,
 	}
 }

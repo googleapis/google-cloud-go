@@ -1324,49 +1324,76 @@ func TestIntegration_OtelMetricsEnablement(t *testing.T) {
 				t.Fatalf("ManualReader.Collect: %v", err)
 			}
 
+			// Validate resource attributes.
+			resAttrs := make(map[string]string)
+			for _, attr := range rm.Resource.Attributes() {
+				resAttrs[string(attr.Key)] = attr.Value.Emit()
+			}
+			if resAttrs["gcp.client.service"] != "storage" {
+				t.Errorf("expected gcp.client.service = storage, got %q", resAttrs["gcp.client.service"])
+			}
+			if resAttrs["gcp.client.repo"] != "googleapis/google-cloud-go" {
+				t.Errorf("expected gcp.client.repo = googleapis/google-cloud-go, got %q", resAttrs["gcp.client.repo"])
+			}
+
+			// Group metrics by name.
+			metricsMap := make(map[string]metricdata.Metrics)
+			for _, sm := range rm.ScopeMetrics {
+				for _, m := range sm.Metrics {
+					metricsMap[m.Name] = m
+				}
+			}
+
+			// Check transport-level duration metric.
 			expectedMetricName := "rpc.client.call.duration"
 			if transportType == "http" {
 				expectedMetricName = "http.client.request.duration"
 			}
-
-			found := false
-			for _, sm := range rm.ScopeMetrics {
-				for _, m := range sm.Metrics {
-					if m.Name == expectedMetricName {
-						found = true
-						hist, ok := m.Data.(metricdata.Histogram[float64])
-						if !ok {
-							t.Fatalf("expected Histogram data, got %T", m.Data)
-						}
-						if len(hist.DataPoints) == 0 {
-							t.Fatalf("expected at least 1 datapoint, got 0")
-						}
-						dp := hist.DataPoints[0]
-
-						resAttrs := make(map[string]string)
-						for _, attr := range rm.Resource.Attributes() {
-							resAttrs[string(attr.Key)] = attr.Value.Emit()
-						}
-						if resAttrs["gcp.client.service"] != "storage" {
-							t.Errorf("expected gcp.client.service = storage, got %q", resAttrs["gcp.client.service"])
-						}
-						if resAttrs["gcp.client.repo"] != "googleapis/google-cloud-go" {
-							t.Errorf("expected gcp.client.repo = googleapis/google-cloud-go, got %q", resAttrs["gcp.client.repo"])
-						}
-
-						attrs := make(map[string]string)
-						for _, kv := range dp.Attributes.ToSlice() {
-							attrs[string(kv.Key)] = kv.Value.Emit()
-						}
-						if attrs["server.address"] == "" {
-							t.Errorf("expected non-empty server.address")
-						}
+			if m, ok := metricsMap[expectedMetricName]; !ok {
+				t.Errorf("expected transport metric %q not found", expectedMetricName)
+			} else {
+				hist, ok := m.Data.(metricdata.Histogram[float64])
+				if !ok {
+					t.Fatalf("expected Histogram data, got %T", m.Data)
+				}
+				if len(hist.DataPoints) == 0 {
+					t.Errorf("expected at least 1 datapoint for %q, got 0", expectedMetricName)
+				} else {
+					dp := hist.DataPoints[0]
+					attrs := make(map[string]string)
+					for _, kv := range dp.Attributes.ToSlice() {
+						attrs[string(kv.Key)] = kv.Value.Emit()
+					}
+					if attrs["server.address"] == "" {
+						t.Errorf("expected non-empty server.address")
 					}
 				}
 			}
 
-			if !found {
-				t.Errorf("expected metric %q not found", expectedMetricName)
+			// Check SDK-level duration metric.
+			if m, ok := metricsMap["gcp.client.request.duration"]; !ok {
+				t.Errorf("expected metric gcp.client.request.duration not found")
+			} else {
+				hist, ok := m.Data.(metricdata.Histogram[float64])
+				if !ok {
+					t.Fatalf("expected Histogram data, got %T", m.Data)
+				}
+				if len(hist.DataPoints) == 0 {
+					t.Errorf("expected at least 1 datapoint for gcp.client.request.duration, got 0")
+				}
+			}
+
+			// Check client operations metric.
+			if m, ok := metricsMap["gcp.storage.client.operations"]; !ok {
+				t.Errorf("expected metric gcp.storage.client.operations not found")
+			} else {
+				sum, ok := m.Data.(metricdata.Sum[int64])
+				if !ok {
+					t.Fatalf("expected Sum data, got %T", m.Data)
+				}
+				if len(sum.DataPoints) == 0 {
+					t.Errorf("expected at least 1 datapoint for gcp.storage.client.operations, got 0")
+				}
 			}
 		})
 	}

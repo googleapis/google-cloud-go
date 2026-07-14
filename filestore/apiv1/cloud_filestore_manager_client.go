@@ -32,6 +32,7 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -998,8 +999,12 @@ func (c *cloudFilestoreManagerGRPCClient) CreateInstance(ctx context.Context, re
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*filestore.CreateInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1021,8 +1026,12 @@ func (c *cloudFilestoreManagerGRPCClient) UpdateInstance(ctx context.Context, re
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*filestore.UpdateInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1047,8 +1056,12 @@ func (c *cloudFilestoreManagerGRPCClient) RestoreInstance(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*filestore.RestoreInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RestoreInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1073,8 +1086,12 @@ func (c *cloudFilestoreManagerGRPCClient) RevertInstance(ctx context.Context, re
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*filestore.RevertInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RevertInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1099,8 +1116,12 @@ func (c *cloudFilestoreManagerGRPCClient) DeleteInstance(ctx context.Context, re
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*filestore.DeleteInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1201,8 +1222,12 @@ func (c *cloudFilestoreManagerGRPCClient) CreateSnapshot(ctx context.Context, re
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*filestore.CreateSnapshotOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateSnapshotOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1227,8 +1252,12 @@ func (c *cloudFilestoreManagerGRPCClient) DeleteSnapshot(ctx context.Context, re
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*filestore.DeleteSnapshotOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteSnapshotOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1250,8 +1279,12 @@ func (c *cloudFilestoreManagerGRPCClient) UpdateSnapshot(ctx context.Context, re
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*filestore.UpdateSnapshotOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateSnapshotOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1352,8 +1385,12 @@ func (c *cloudFilestoreManagerGRPCClient) CreateBackup(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*filestore.CreateBackupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateBackupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1378,8 +1415,12 @@ func (c *cloudFilestoreManagerGRPCClient) DeleteBackup(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*filestore.DeleteBackupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteBackupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1401,8 +1442,12 @@ func (c *cloudFilestoreManagerGRPCClient) UpdateBackup(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*filestore.UpdateBackupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateBackupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1427,8 +1472,12 @@ func (c *cloudFilestoreManagerGRPCClient) PromoteReplica(ctx context.Context, re
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*filestore.PromoteReplicaOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &PromoteReplicaOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1813,8 +1862,12 @@ func (c *cloudFilestoreManagerRESTClient) CreateInstance(ctx context.Context, re
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*filestore.CreateInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1884,8 +1937,12 @@ func (c *cloudFilestoreManagerRESTClient) UpdateInstance(ctx context.Context, re
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*filestore.UpdateInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1954,8 +2011,12 @@ func (c *cloudFilestoreManagerRESTClient) RestoreInstance(ctx context.Context, r
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*filestore.RestoreInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RestoreInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2020,8 +2081,12 @@ func (c *cloudFilestoreManagerRESTClient) RevertInstance(ctx context.Context, re
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*filestore.RevertInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RevertInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2083,8 +2148,12 @@ func (c *cloudFilestoreManagerRESTClient) DeleteInstance(ctx context.Context, re
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*filestore.DeleteInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2296,8 +2365,12 @@ func (c *cloudFilestoreManagerRESTClient) CreateSnapshot(ctx context.Context, re
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*filestore.CreateSnapshotOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateSnapshotOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2356,8 +2429,12 @@ func (c *cloudFilestoreManagerRESTClient) DeleteSnapshot(ctx context.Context, re
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*filestore.DeleteSnapshotOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteSnapshotOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2427,8 +2504,12 @@ func (c *cloudFilestoreManagerRESTClient) UpdateSnapshot(ctx context.Context, re
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*filestore.UpdateSnapshotOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateSnapshotOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2637,8 +2718,12 @@ func (c *cloudFilestoreManagerRESTClient) CreateBackup(ctx context.Context, req 
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*filestore.CreateBackupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateBackupOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2697,8 +2782,12 @@ func (c *cloudFilestoreManagerRESTClient) DeleteBackup(ctx context.Context, req 
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*filestore.DeleteBackupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteBackupOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2768,8 +2857,12 @@ func (c *cloudFilestoreManagerRESTClient) UpdateBackup(ctx context.Context, req 
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*filestore.UpdateBackupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateBackupOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2834,8 +2927,12 @@ func (c *cloudFilestoreManagerRESTClient) PromoteReplica(ctx context.Context, re
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*filestore.PromoteReplicaOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &PromoteReplicaOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3201,7 +3298,7 @@ func (c *cloudFilestoreManagerRESTClient) ListOperations(ctx context.Context, re
 // The name must be that of a previously created CreateBackupOperation, possibly from a different process.
 func (c *cloudFilestoreManagerGRPCClient) CreateBackupOperation(name string) *CreateBackupOperation {
 	return &CreateBackupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*filestore.CreateBackupOperation"),
 	}
 }
 
@@ -3210,7 +3307,7 @@ func (c *cloudFilestoreManagerGRPCClient) CreateBackupOperation(name string) *Cr
 func (c *cloudFilestoreManagerRESTClient) CreateBackupOperation(name string) *CreateBackupOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateBackupOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*filestore.CreateBackupOperation"),
 		pollPath: override,
 	}
 }
@@ -3219,7 +3316,7 @@ func (c *cloudFilestoreManagerRESTClient) CreateBackupOperation(name string) *Cr
 // The name must be that of a previously created CreateInstanceOperation, possibly from a different process.
 func (c *cloudFilestoreManagerGRPCClient) CreateInstanceOperation(name string) *CreateInstanceOperation {
 	return &CreateInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*filestore.CreateInstanceOperation"),
 	}
 }
 
@@ -3228,7 +3325,7 @@ func (c *cloudFilestoreManagerGRPCClient) CreateInstanceOperation(name string) *
 func (c *cloudFilestoreManagerRESTClient) CreateInstanceOperation(name string) *CreateInstanceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*filestore.CreateInstanceOperation"),
 		pollPath: override,
 	}
 }
@@ -3237,7 +3334,7 @@ func (c *cloudFilestoreManagerRESTClient) CreateInstanceOperation(name string) *
 // The name must be that of a previously created CreateSnapshotOperation, possibly from a different process.
 func (c *cloudFilestoreManagerGRPCClient) CreateSnapshotOperation(name string) *CreateSnapshotOperation {
 	return &CreateSnapshotOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*filestore.CreateSnapshotOperation"),
 	}
 }
 
@@ -3246,7 +3343,7 @@ func (c *cloudFilestoreManagerGRPCClient) CreateSnapshotOperation(name string) *
 func (c *cloudFilestoreManagerRESTClient) CreateSnapshotOperation(name string) *CreateSnapshotOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateSnapshotOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*filestore.CreateSnapshotOperation"),
 		pollPath: override,
 	}
 }
@@ -3255,7 +3352,7 @@ func (c *cloudFilestoreManagerRESTClient) CreateSnapshotOperation(name string) *
 // The name must be that of a previously created DeleteBackupOperation, possibly from a different process.
 func (c *cloudFilestoreManagerGRPCClient) DeleteBackupOperation(name string) *DeleteBackupOperation {
 	return &DeleteBackupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*filestore.DeleteBackupOperation"),
 	}
 }
 
@@ -3264,7 +3361,7 @@ func (c *cloudFilestoreManagerGRPCClient) DeleteBackupOperation(name string) *De
 func (c *cloudFilestoreManagerRESTClient) DeleteBackupOperation(name string) *DeleteBackupOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteBackupOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*filestore.DeleteBackupOperation"),
 		pollPath: override,
 	}
 }
@@ -3273,7 +3370,7 @@ func (c *cloudFilestoreManagerRESTClient) DeleteBackupOperation(name string) *De
 // The name must be that of a previously created DeleteInstanceOperation, possibly from a different process.
 func (c *cloudFilestoreManagerGRPCClient) DeleteInstanceOperation(name string) *DeleteInstanceOperation {
 	return &DeleteInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*filestore.DeleteInstanceOperation"),
 	}
 }
 
@@ -3282,7 +3379,7 @@ func (c *cloudFilestoreManagerGRPCClient) DeleteInstanceOperation(name string) *
 func (c *cloudFilestoreManagerRESTClient) DeleteInstanceOperation(name string) *DeleteInstanceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*filestore.DeleteInstanceOperation"),
 		pollPath: override,
 	}
 }
@@ -3291,7 +3388,7 @@ func (c *cloudFilestoreManagerRESTClient) DeleteInstanceOperation(name string) *
 // The name must be that of a previously created DeleteSnapshotOperation, possibly from a different process.
 func (c *cloudFilestoreManagerGRPCClient) DeleteSnapshotOperation(name string) *DeleteSnapshotOperation {
 	return &DeleteSnapshotOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*filestore.DeleteSnapshotOperation"),
 	}
 }
 
@@ -3300,7 +3397,7 @@ func (c *cloudFilestoreManagerGRPCClient) DeleteSnapshotOperation(name string) *
 func (c *cloudFilestoreManagerRESTClient) DeleteSnapshotOperation(name string) *DeleteSnapshotOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteSnapshotOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*filestore.DeleteSnapshotOperation"),
 		pollPath: override,
 	}
 }
@@ -3309,7 +3406,7 @@ func (c *cloudFilestoreManagerRESTClient) DeleteSnapshotOperation(name string) *
 // The name must be that of a previously created PromoteReplicaOperation, possibly from a different process.
 func (c *cloudFilestoreManagerGRPCClient) PromoteReplicaOperation(name string) *PromoteReplicaOperation {
 	return &PromoteReplicaOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*filestore.PromoteReplicaOperation"),
 	}
 }
 
@@ -3318,7 +3415,7 @@ func (c *cloudFilestoreManagerGRPCClient) PromoteReplicaOperation(name string) *
 func (c *cloudFilestoreManagerRESTClient) PromoteReplicaOperation(name string) *PromoteReplicaOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &PromoteReplicaOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*filestore.PromoteReplicaOperation"),
 		pollPath: override,
 	}
 }
@@ -3327,7 +3424,7 @@ func (c *cloudFilestoreManagerRESTClient) PromoteReplicaOperation(name string) *
 // The name must be that of a previously created RestoreInstanceOperation, possibly from a different process.
 func (c *cloudFilestoreManagerGRPCClient) RestoreInstanceOperation(name string) *RestoreInstanceOperation {
 	return &RestoreInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*filestore.RestoreInstanceOperation"),
 	}
 }
 
@@ -3336,7 +3433,7 @@ func (c *cloudFilestoreManagerGRPCClient) RestoreInstanceOperation(name string) 
 func (c *cloudFilestoreManagerRESTClient) RestoreInstanceOperation(name string) *RestoreInstanceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &RestoreInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*filestore.RestoreInstanceOperation"),
 		pollPath: override,
 	}
 }
@@ -3345,7 +3442,7 @@ func (c *cloudFilestoreManagerRESTClient) RestoreInstanceOperation(name string) 
 // The name must be that of a previously created RevertInstanceOperation, possibly from a different process.
 func (c *cloudFilestoreManagerGRPCClient) RevertInstanceOperation(name string) *RevertInstanceOperation {
 	return &RevertInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*filestore.RevertInstanceOperation"),
 	}
 }
 
@@ -3354,7 +3451,7 @@ func (c *cloudFilestoreManagerGRPCClient) RevertInstanceOperation(name string) *
 func (c *cloudFilestoreManagerRESTClient) RevertInstanceOperation(name string) *RevertInstanceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &RevertInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*filestore.RevertInstanceOperation"),
 		pollPath: override,
 	}
 }
@@ -3363,7 +3460,7 @@ func (c *cloudFilestoreManagerRESTClient) RevertInstanceOperation(name string) *
 // The name must be that of a previously created UpdateBackupOperation, possibly from a different process.
 func (c *cloudFilestoreManagerGRPCClient) UpdateBackupOperation(name string) *UpdateBackupOperation {
 	return &UpdateBackupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*filestore.UpdateBackupOperation"),
 	}
 }
 
@@ -3372,7 +3469,7 @@ func (c *cloudFilestoreManagerGRPCClient) UpdateBackupOperation(name string) *Up
 func (c *cloudFilestoreManagerRESTClient) UpdateBackupOperation(name string) *UpdateBackupOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateBackupOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*filestore.UpdateBackupOperation"),
 		pollPath: override,
 	}
 }
@@ -3381,7 +3478,7 @@ func (c *cloudFilestoreManagerRESTClient) UpdateBackupOperation(name string) *Up
 // The name must be that of a previously created UpdateInstanceOperation, possibly from a different process.
 func (c *cloudFilestoreManagerGRPCClient) UpdateInstanceOperation(name string) *UpdateInstanceOperation {
 	return &UpdateInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*filestore.UpdateInstanceOperation"),
 	}
 }
 
@@ -3390,7 +3487,7 @@ func (c *cloudFilestoreManagerGRPCClient) UpdateInstanceOperation(name string) *
 func (c *cloudFilestoreManagerRESTClient) UpdateInstanceOperation(name string) *UpdateInstanceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*filestore.UpdateInstanceOperation"),
 		pollPath: override,
 	}
 }
@@ -3399,7 +3496,7 @@ func (c *cloudFilestoreManagerRESTClient) UpdateInstanceOperation(name string) *
 // The name must be that of a previously created UpdateSnapshotOperation, possibly from a different process.
 func (c *cloudFilestoreManagerGRPCClient) UpdateSnapshotOperation(name string) *UpdateSnapshotOperation {
 	return &UpdateSnapshotOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*filestore.UpdateSnapshotOperation"),
 	}
 }
 
@@ -3408,7 +3505,7 @@ func (c *cloudFilestoreManagerGRPCClient) UpdateSnapshotOperation(name string) *
 func (c *cloudFilestoreManagerRESTClient) UpdateSnapshotOperation(name string) *UpdateSnapshotOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateSnapshotOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*filestore.UpdateSnapshotOperation"),
 		pollPath: override,
 	}
 }
