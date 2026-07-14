@@ -1333,6 +1333,11 @@
         },
         {
           "jsonpath": "$.clientLibrary.version",
+          "path": "examples/isochrones/apiv1/snippet_metadata.google.maps.isochrones.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
           "path": "examples/places/apiv1/snippet_metadata.google.maps.places.v1.json",
           "type": "json"
         },
