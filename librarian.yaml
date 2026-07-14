@@ -604,7 +604,7 @@ libraries:
     apis:
       - path: google/cloud/dataqna/v1alpha
   - name: datastore
-    version: 1.24.0
+    version: 1.25.0
     apis:
       - path: google/datastore/v1
         go:
