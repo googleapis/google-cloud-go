@@ -32,6 +32,7 @@ import (
 	"go.opentelemetry.io/otel/sdk/resource"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 )
 
@@ -93,6 +94,50 @@ func TestIsOtelMetricsEnabled(t *testing.T) {
 	}
 
 	os.Unsetenv("GCP_STORAGE_GO_ENABLE_OTEL_METRICS")
+}
+
+func TestIsOtelDebugMetricsEnabled(t *testing.T) {
+	// Test config option only (env var not set).
+	cfg := storageConfig{enableOtelDebugMetrics: true}
+	os.Unsetenv("GCP_STORAGE_GO_ENABLE_OTEL_DEBUG_METRICS")
+	if !isOtelDebugMetricsEnabled(&cfg) {
+		t.Errorf("expected Otel debug metrics to be enabled via config option")
+	}
+
+	cfg = storageConfig{enableOtelDebugMetrics: false}
+	if isOtelDebugMetricsEnabled(&cfg) {
+		t.Errorf("expected Otel debug metrics to be disabled when config option is false")
+	}
+
+	// Test env var override (option is false, env var is true).
+	cfg = storageConfig{enableOtelDebugMetrics: false}
+	os.Setenv("GCP_STORAGE_GO_ENABLE_OTEL_DEBUG_METRICS", "true")
+	if !isOtelDebugMetricsEnabled(&cfg) {
+		t.Errorf("expected Otel debug metrics to be enabled via env var override (option=false)")
+	}
+
+	// Test env var override (option is true, env var is false).
+	cfg = storageConfig{enableOtelDebugMetrics: true}
+	os.Setenv("GCP_STORAGE_GO_ENABLE_OTEL_DEBUG_METRICS", "false")
+	if isOtelDebugMetricsEnabled(&cfg) {
+		t.Errorf("expected Otel debug metrics to be disabled via env var override (option=true)")
+	}
+
+	// Test env var override with truthy "1".
+	cfg = storageConfig{enableOtelDebugMetrics: false}
+	os.Setenv("GCP_STORAGE_GO_ENABLE_OTEL_DEBUG_METRICS", "1")
+	if !isOtelDebugMetricsEnabled(&cfg) {
+		t.Errorf("expected Otel debug metrics to be enabled via env var override set to 1")
+	}
+
+	// Test env var override with falsy "0".
+	cfg = storageConfig{enableOtelDebugMetrics: true}
+	os.Setenv("GCP_STORAGE_GO_ENABLE_OTEL_DEBUG_METRICS", "0")
+	if isOtelDebugMetricsEnabled(&cfg) {
+		t.Errorf("expected Otel debug metrics to be disabled via env var override set to 0")
+	}
+
+	os.Unsetenv("GCP_STORAGE_GO_ENABLE_OTEL_DEBUG_METRICS")
 }
 
 func TestComputeURLTemplate(t *testing.T) {
@@ -196,8 +241,9 @@ func TestHTTPMetricsRecording(t *testing.T) {
 	defer provider.Shutdown(ctx)
 
 	cfg := storageConfig{
-		enableOtelMetrics: true,
-		meterProvider:     provider,
+		enableOtelMetrics:      true,
+		enableOtelDebugMetrics: true,
+		meterProvider:          provider,
 	}
 
 	cm, _, err := initMetrics(ctx, "project-id", &cfg)
@@ -207,6 +253,7 @@ func TestHTTPMetricsRecording(t *testing.T) {
 
 	// Create a mock HTTP server to respond to requests.
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("X-Goog-Gfe-Service-Time", "150")
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("hello world"))
 	}))
@@ -282,6 +329,17 @@ func TestHTTPMetricsRecording(t *testing.T) {
 					t.Errorf("expected error.type OK, got %q", attrMap["error.type"])
 				}
 			}
+
+			if m.Name == "gcp.storage.client.gfe.duration" {
+				hist, ok := m.Data.(metricdata.Histogram[float64])
+				if ok && len(hist.DataPoints) > 0 {
+					if hist.DataPoints[0].Sum != 0.15 {
+						t.Errorf("expected gfe.duration 0.15s, got %v", hist.DataPoints[0].Sum)
+					}
+				} else {
+					t.Errorf("expected gfe.duration datapoints")
+				}
+			}
 		}
 	}
 
@@ -299,6 +357,14 @@ func (m *mockClientStream) RecvMsg(msg interface{}) error {
 	return m.recvErr
 }
 
+func (m *mockClientStream) Header() (metadata.MD, error) {
+	return metadata.Pairs("x-goog-gfe-service-time", "120"), nil
+}
+
+func (m *mockClientStream) Trailer() metadata.MD {
+	return nil
+}
+
 func TestGRPCMetricsRecording(t *testing.T) {
 	ctx := context.Background()
 	mr := sdkmetric.NewManualReader()
@@ -306,8 +372,9 @@ func TestGRPCMetricsRecording(t *testing.T) {
 	defer provider.Shutdown(ctx)
 
 	cfg := storageConfig{
-		enableOtelMetrics: true,
-		meterProvider:     provider,
+		enableOtelMetrics:      true,
+		enableOtelDebugMetrics: true,
+		meterProvider:          provider,
 	}
 
 	cm, _, err := initMetrics(ctx, "project-id", &cfg)
@@ -392,6 +459,23 @@ func TestGRPCMetricsRecording(t *testing.T) {
 					} else if attrs["rpc.method"] == "WriteObject" {
 						writeDp = &dpCopy
 					}
+				}
+			}
+
+			if m.Name == "gcp.storage.client.gfe.duration" {
+				hist, ok := m.Data.(metricdata.Histogram[float64])
+				if ok && len(hist.DataPoints) > 0 {
+					foundGfeDuration := false
+					for _, dp := range hist.DataPoints {
+						if dp.Sum == 0.12 {
+							foundGfeDuration = true
+						}
+					}
+					if !foundGfeDuration {
+						t.Errorf("expected gfe.duration 0.12s from stream")
+					}
+				} else {
+					t.Errorf("expected gfe.duration datapoints")
 				}
 			}
 		}
@@ -692,7 +776,7 @@ func TestRecordTTFB_MetadataOnly(t *testing.T) {
 		startTime: time.Now(),
 	}
 
-	// First response with only metadata should trigger TTFB
+	// First response with only metadata should trigger TTFB.
 	resp := &storagepb.ReadObjectResponse{
 		Metadata: &storagepb.Object{Name: "test-object"},
 	}

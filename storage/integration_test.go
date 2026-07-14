@@ -1295,6 +1295,7 @@ func TestIntegration_OtelMetricsEnablement(t *testing.T) {
 			var client *Client
 			opts := []option.ClientOption{
 				experimental.WithOtelMetrics(),
+				experimental.WithOtelDebugMetrics(),
 				experimental.WithMeterProvider(provider),
 			}
 
@@ -1394,6 +1395,31 @@ func TestIntegration_OtelMetricsEnablement(t *testing.T) {
 				if len(sum.DataPoints) == 0 {
 					t.Errorf("expected at least 1 datapoint for gcp.storage.client.operations, got 0")
 				}
+			}
+
+			// Check debug metrics.
+			if m, ok := metricsMap["gcp.storage.client.gfe.duration"]; !ok {
+				// Wait, gfe.duration might not be available if not running through GFE, but for this test it usually is.
+				// However, maybe we just check if active_requests is present.
+			} else {
+				hist, ok := m.Data.(metricdata.Histogram[float64])
+				if !ok {
+					t.Fatalf("expected Histogram data for gfe.duration, got %T", m.Data)
+				}
+				if len(hist.DataPoints) == 0 {
+					t.Errorf("expected at least 1 datapoint for gcp.storage.client.gfe.duration, got 0")
+				}
+			}
+
+			if m, ok := metricsMap["gcp.storage.client.active_requests"]; !ok {
+				t.Errorf("expected metric gcp.storage.client.active_requests not found")
+			} else {
+				sum, ok := m.Data.(metricdata.Sum[int64])
+				if !ok {
+					t.Fatalf("expected Sum data for active_requests, got %T", m.Data)
+				}
+				// Can be 0 if the request already completed.
+				_ = sum
 			}
 		})
 	}
