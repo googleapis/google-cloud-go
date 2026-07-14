@@ -790,7 +790,7 @@ func (r *ReasoningEngineContextSpecMemoryBankConfigTTLConfig) MarshalJSON() ([]b
 
 // Represents the OpenAPI schema of the structured memories.
 type StructuredMemorySchemaConfig struct {
-	// Required. Represents the OpenAPI schema of the structured memories.
+	// Optional. Required. Represents the OpenAPI schema of the structured memories.
 	MemorySchema *genai_types.Schema `json:"memorySchema,omitempty"`
 	// Required. Represents the ID of the schema. Must be 1-63 characters, start with a
 	// lowercase letter, and consist of lowercase letters, numbers, and hyphens.
@@ -798,6 +798,8 @@ type StructuredMemorySchemaConfig struct {
 	// Optional. Represents the type of the structured memories associated with the schema.
 	// If not set, then `STRUCTURED_PROFILE` will be used.
 	MemoryType MemoryType `json:"memoryType,omitempty"`
+	// Optional. Required. Represents the OpenAPI schema of the structured memories.
+	MemoryJsonSchema any `json:"memoryJsonSchema,omitempty"`
 }
 
 // Configuration for organizing structured memories within a scope.
