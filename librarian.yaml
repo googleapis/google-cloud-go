@@ -903,6 +903,7 @@ libraries:
       - path: google/maps/places/v1
       - path: google/maps/routeoptimization/v1
       - path: google/maps/solar/v1
+      - path: google/maps/isochrones/v1
       - path: google/maps/fleetengine/delivery/v1
         go:
           no_snippets: true
@@ -1065,6 +1066,11 @@ libraries:
     version: 1.1.0
     apis:
       - path: google/cloud/privilegedaccessmanager/v1
+  - name: productregistry
+    version: 0.0.0
+    apis:
+      - path: google/cloud/productregistry/v1
+    copyright_year: "2026"
   - name: profiler
     version: 0.6.0
     keep:
