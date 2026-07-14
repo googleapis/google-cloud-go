@@ -31,7 +31,6 @@ import (
 
 	"cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/storage/internal"
-	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	mexporter "github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/metric"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
@@ -748,7 +747,6 @@ func (w *wrappedClientStream) recordTTFB(m interface{}) {
 	if w.recordedTTFB.Load() {
 		return
 	}
-	isTTFB := false
 	methodName := w.method
 	if strings.HasPrefix(methodName, "/") {
 		parts := strings.Split(strings.TrimPrefix(methodName, "/"), "/")
@@ -756,16 +754,10 @@ func (w *wrappedClientStream) recordTTFB(m interface{}) {
 			methodName = parts[1]
 		}
 	}
-	switch m.(type) {
-	case *storagepb.ReadObjectResponse, *storagepb.WriteObjectResponse:
-		// The first response from the server, whether it contains metadata,
-		// persisted size, or actual content, indicates TTFB.
-		isTTFB = true
-	default:
-		isTTFB = true
-	}
 
-	if isTTFB && w.recordedTTFB.CompareAndSwap(false, true) {
+	// The first response from the server, whether it contains metadata,
+	// persisted size, or actual content, indicates TTFB.
+	if w.recordedTTFB.CompareAndSwap(false, true) {
 		duration := time.Since(w.startTime).Seconds()
 		state := metricsStateFromContext(w.ctx)
 		logicalMethod := methodName
