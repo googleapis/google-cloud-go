@@ -27,6 +27,7 @@ import (
 	"time"
 
 	binaryauthorizationpb "cloud.google.com/go/binaryauthorization/apiv1beta1/binaryauthorizationpb"
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
@@ -44,13 +45,16 @@ var newBinauthzManagementServiceV1Beta1ClientHook clientHook
 
 // BinauthzManagementServiceV1Beta1CallOptions contains the retry settings for each method of BinauthzManagementServiceV1Beta1Client.
 type BinauthzManagementServiceV1Beta1CallOptions struct {
-	GetPolicy      []gax.CallOption
-	UpdatePolicy   []gax.CallOption
-	CreateAttestor []gax.CallOption
-	GetAttestor    []gax.CallOption
-	UpdateAttestor []gax.CallOption
-	ListAttestors  []gax.CallOption
-	DeleteAttestor []gax.CallOption
+	GetPolicy          []gax.CallOption
+	UpdatePolicy       []gax.CallOption
+	CreateAttestor     []gax.CallOption
+	GetAttestor        []gax.CallOption
+	UpdateAttestor     []gax.CallOption
+	ListAttestors      []gax.CallOption
+	DeleteAttestor     []gax.CallOption
+	GetIamPolicy       []gax.CallOption
+	SetIamPolicy       []gax.CallOption
+	TestIamPermissions []gax.CallOption
 }
 
 func defaultBinauthzManagementServiceV1Beta1GRPCClientOptions() []option.ClientOption {
@@ -151,6 +155,9 @@ func defaultBinauthzManagementServiceV1Beta1CallOptions() *BinauthzManagementSer
 				})
 			}),
 		},
+		GetIamPolicy:       []gax.CallOption{},
+		SetIamPolicy:       []gax.CallOption{},
+		TestIamPermissions: []gax.CallOption{},
 	}
 }
 
@@ -231,6 +238,9 @@ func defaultBinauthzManagementServiceV1Beta1RESTCallOptions() *BinauthzManagemen
 					http.StatusServiceUnavailable)
 			}),
 		},
+		GetIamPolicy:       []gax.CallOption{},
+		SetIamPolicy:       []gax.CallOption{},
+		TestIamPermissions: []gax.CallOption{},
 	}
 }
 
@@ -246,6 +256,9 @@ type internalBinauthzManagementServiceV1Beta1Client interface {
 	UpdateAttestor(context.Context, *binaryauthorizationpb.UpdateAttestorRequest, ...gax.CallOption) (*binaryauthorizationpb.Attestor, error)
 	ListAttestors(context.Context, *binaryauthorizationpb.ListAttestorsRequest, ...gax.CallOption) *AttestorIterator
 	DeleteAttestor(context.Context, *binaryauthorizationpb.DeleteAttestorRequest, ...gax.CallOption) error
+	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
+	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
+	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest, ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error)
 }
 
 // BinauthzManagementServiceV1Beta1Client is a client for interacting with Binary Authorization API.
@@ -290,42 +303,54 @@ func (c *BinauthzManagementServiceV1Beta1Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// GetPolicy a policy specifies the attestors that must attest to
-// a container image, before the project is allowed to deploy that
+// GetPolicy a policy specifies the
+// attestors that must
+// attest to a container image, before the project is allowed to deploy that
 // image. There is at most one policy per project. All image admission
 // requests are permitted if a project has no policy.
 //
-// Gets the policy for this project. Returns a default
-// policy if the project does not have one.
+// Gets the policy for this
+// project. Returns a default
+// policy if the project
+// does not have one.
 func (c *BinauthzManagementServiceV1Beta1Client) GetPolicy(ctx context.Context, req *binaryauthorizationpb.GetPolicyRequest, opts ...gax.CallOption) (*binaryauthorizationpb.Policy, error) {
 	return c.internalClient.GetPolicy(ctx, req, opts...)
 }
 
-// UpdatePolicy creates or updates a project’s policy, and returns a copy of the
-// new policy. A policy is always updated as a whole, to avoid race
-// conditions with concurrent policy enforcement (or management!)
-// requests. Returns NOT_FOUND if the project does not exist, INVALID_ARGUMENT
-// if the request is malformed.
+// UpdatePolicy creates or updates a project’s
+// policy, and returns a
+// copy of the new policy.
+// A policy is always updated as a whole, to avoid race conditions with
+// concurrent policy enforcement (or management!) requests. Returns NOT_FOUND
+// if the project does not exist, INVALID_ARGUMENT if the request is
+// malformed.
 func (c *BinauthzManagementServiceV1Beta1Client) UpdatePolicy(ctx context.Context, req *binaryauthorizationpb.UpdatePolicyRequest, opts ...gax.CallOption) (*binaryauthorizationpb.Policy, error) {
 	return c.internalClient.UpdatePolicy(ctx, req, opts...)
 }
 
-// CreateAttestor creates an attestor, and returns a copy of the new
-// attestor. Returns NOT_FOUND if the project does not exist,
-// INVALID_ARGUMENT if the request is malformed, ALREADY_EXISTS if the
-// attestor already exists.
+// CreateAttestor creates an attestor,
+// and returns a copy of the new
+// attestor. Returns
+// NOT_FOUND if the project does not exist, INVALID_ARGUMENT if the request is
+// malformed, ALREADY_EXISTS if the
+// attestor already
+// exists.
 func (c *BinauthzManagementServiceV1Beta1Client) CreateAttestor(ctx context.Context, req *binaryauthorizationpb.CreateAttestorRequest, opts ...gax.CallOption) (*binaryauthorizationpb.Attestor, error) {
 	return c.internalClient.CreateAttestor(ctx, req, opts...)
 }
 
 // GetAttestor gets an attestor.
-// Returns NOT_FOUND if the attestor does not exist.
+// Returns NOT_FOUND if the
+// attestor does not
+// exist.
 func (c *BinauthzManagementServiceV1Beta1Client) GetAttestor(ctx context.Context, req *binaryauthorizationpb.GetAttestorRequest, opts ...gax.CallOption) (*binaryauthorizationpb.Attestor, error) {
 	return c.internalClient.GetAttestor(ctx, req, opts...)
 }
 
 // UpdateAttestor updates an attestor.
-// Returns NOT_FOUND if the attestor does not exist.
+// Returns NOT_FOUND if the
+// attestor does not
+// exist.
 func (c *BinauthzManagementServiceV1Beta1Client) UpdateAttestor(ctx context.Context, req *binaryauthorizationpb.UpdateAttestorRequest, opts ...gax.CallOption) (*binaryauthorizationpb.Attestor, error) {
 	return c.internalClient.UpdateAttestor(ctx, req, opts...)
 }
@@ -336,10 +361,38 @@ func (c *BinauthzManagementServiceV1Beta1Client) ListAttestors(ctx context.Conte
 	return c.internalClient.ListAttestors(ctx, req, opts...)
 }
 
-// DeleteAttestor deletes an attestor. Returns NOT_FOUND if the
-// attestor does not exist.
+// DeleteAttestor deletes an attestor.
+// Returns NOT_FOUND if the
+// attestor does not
+// exist.
 func (c *BinauthzManagementServiceV1Beta1Client) DeleteAttestor(ctx context.Context, req *binaryauthorizationpb.DeleteAttestorRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteAttestor(ctx, req, opts...)
+}
+
+// GetIamPolicy gets the access control policy for a resource. Returns an empty policy
+// if the resource exists and does not have a policy set.
+func (c *BinauthzManagementServiceV1Beta1Client) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	return c.internalClient.GetIamPolicy(ctx, req, opts...)
+}
+
+// SetIamPolicy sets the access control policy on the specified resource. Replaces
+// any existing policy.
+//
+// Can return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED
+// errors.
+func (c *BinauthzManagementServiceV1Beta1Client) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	return c.internalClient.SetIamPolicy(ctx, req, opts...)
+}
+
+// TestIamPermissions returns permissions that a caller has on the specified resource. If the
+// resource does not exist, this will return an empty set of
+// permissions, not a NOT_FOUND error.
+//
+// Note: This operation is designed to be used for building
+// permission-aware UIs and command-line tools, not for authorization
+// checking. This operation may “fail open” without warning.
+func (c *BinauthzManagementServiceV1Beta1Client) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	return c.internalClient.TestIamPermissions(ctx, req, opts...)
 }
 
 // binauthzManagementServiceV1Beta1GRPCClient is a client for interacting with Binary Authorization API over gRPC transport.
@@ -354,6 +407,8 @@ type binauthzManagementServiceV1Beta1GRPCClient struct {
 
 	// The gRPC API client.
 	binauthzManagementServiceV1Beta1Client binaryauthorizationpb.BinauthzManagementServiceV1Beta1Client
+
+	iamPolicyClient iampb.IAMPolicyClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
@@ -403,6 +458,7 @@ func NewBinauthzManagementServiceV1Beta1Client(ctx context.Context, opts ...opti
 		binauthzManagementServiceV1Beta1Client: binaryauthorizationpb.NewBinauthzManagementServiceV1Beta1Client(connPool),
 		CallOptions:                            &client.CallOptions,
 		logger:                                 internaloption.GetLogger(opts),
+		iamPolicyClient:                        iampb.NewIAMPolicyClient(connPool),
 	}
 	c.setGoogleClientInfo()
 	if gax.IsFeatureEnabled("METRICS") {
@@ -424,6 +480,9 @@ func NewBinauthzManagementServiceV1Beta1Client(ctx context.Context, opts ...opti
 		client.CallOptions.UpdateAttestor = append(client.CallOptions.UpdateAttestor, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListAttestors = append(client.CallOptions.ListAttestors, gax.WithClientMetrics(metrics))
 		client.CallOptions.DeleteAttestor = append(client.CallOptions.DeleteAttestor, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientMetrics(metrics))
 	}
 
 	client.internalClient = c
@@ -528,6 +587,9 @@ func NewBinauthzManagementServiceV1Beta1RESTClient(ctx context.Context, opts ...
 		callOpts.UpdateAttestor = append(callOpts.UpdateAttestor, gax.WithClientMetrics(metrics))
 		callOpts.ListAttestors = append(callOpts.ListAttestors, gax.WithClientMetrics(metrics))
 		callOpts.DeleteAttestor = append(callOpts.DeleteAttestor, gax.WithClientMetrics(metrics))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientMetrics(metrics))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientMetrics(metrics))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientMetrics(metrics))
 	}
 
 	return &BinauthzManagementServiceV1Beta1Client{internalClient: c, CallOptions: callOpts}, nil
@@ -756,13 +818,88 @@ func (c *binauthzManagementServiceV1Beta1GRPCClient) DeleteAttestor(ctx context.
 	return err
 }
 
-// GetPolicy a policy specifies the attestors that must attest to
-// a container image, before the project is allowed to deploy that
+func (c *binauthzManagementServiceV1Beta1GRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/GetIamPolicy")
+	}
+	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
+	var resp *iampb.Policy
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.iamPolicyClient.GetIamPolicy, req, settings.GRPC, c.logger, "GetIamPolicy")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *binauthzManagementServiceV1Beta1GRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/SetIamPolicy")
+	}
+	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
+	var resp *iampb.Policy
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.iamPolicyClient.SetIamPolicy, req, settings.GRPC, c.logger, "SetIamPolicy")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *binauthzManagementServiceV1Beta1GRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/TestIamPermissions")
+	}
+	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
+	var resp *iampb.TestIamPermissionsResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.iamPolicyClient.TestIamPermissions, req, settings.GRPC, c.logger, "TestIamPermissions")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// GetPolicy a policy specifies the
+// attestors that must
+// attest to a container image, before the project is allowed to deploy that
 // image. There is at most one policy per project. All image admission
 // requests are permitted if a project has no policy.
 //
-// Gets the policy for this project. Returns a default
-// policy if the project does not have one.
+// Gets the policy for this
+// project. Returns a default
+// policy if the project
+// does not have one.
 func (c *binauthzManagementServiceV1Beta1RESTClient) GetPolicy(ctx context.Context, req *binaryauthorizationpb.GetPolicyRequest, opts ...gax.CallOption) (*binaryauthorizationpb.Policy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -819,11 +956,13 @@ func (c *binauthzManagementServiceV1Beta1RESTClient) GetPolicy(ctx context.Conte
 	return resp, nil
 }
 
-// UpdatePolicy creates or updates a project’s policy, and returns a copy of the
-// new policy. A policy is always updated as a whole, to avoid race
-// conditions with concurrent policy enforcement (or management!)
-// requests. Returns NOT_FOUND if the project does not exist, INVALID_ARGUMENT
-// if the request is malformed.
+// UpdatePolicy creates or updates a project’s
+// policy, and returns a
+// copy of the new policy.
+// A policy is always updated as a whole, to avoid race conditions with
+// concurrent policy enforcement (or management!) requests. Returns NOT_FOUND
+// if the project does not exist, INVALID_ARGUMENT if the request is
+// malformed.
 func (c *binauthzManagementServiceV1Beta1RESTClient) UpdatePolicy(ctx context.Context, req *binaryauthorizationpb.UpdatePolicyRequest, opts ...gax.CallOption) (*binaryauthorizationpb.Policy, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetPolicy()
@@ -884,10 +1023,13 @@ func (c *binauthzManagementServiceV1Beta1RESTClient) UpdatePolicy(ctx context.Co
 	return resp, nil
 }
 
-// CreateAttestor creates an attestor, and returns a copy of the new
-// attestor. Returns NOT_FOUND if the project does not exist,
-// INVALID_ARGUMENT if the request is malformed, ALREADY_EXISTS if the
-// attestor already exists.
+// CreateAttestor creates an attestor,
+// and returns a copy of the new
+// attestor. Returns
+// NOT_FOUND if the project does not exist, INVALID_ARGUMENT if the request is
+// malformed, ALREADY_EXISTS if the
+// attestor already
+// exists.
 func (c *binauthzManagementServiceV1Beta1RESTClient) CreateAttestor(ctx context.Context, req *binaryauthorizationpb.CreateAttestorRequest, opts ...gax.CallOption) (*binaryauthorizationpb.Attestor, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetAttestor()
@@ -953,7 +1095,9 @@ func (c *binauthzManagementServiceV1Beta1RESTClient) CreateAttestor(ctx context.
 }
 
 // GetAttestor gets an attestor.
-// Returns NOT_FOUND if the attestor does not exist.
+// Returns NOT_FOUND if the
+// attestor does not
+// exist.
 func (c *binauthzManagementServiceV1Beta1RESTClient) GetAttestor(ctx context.Context, req *binaryauthorizationpb.GetAttestorRequest, opts ...gax.CallOption) (*binaryauthorizationpb.Attestor, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -1011,7 +1155,9 @@ func (c *binauthzManagementServiceV1Beta1RESTClient) GetAttestor(ctx context.Con
 }
 
 // UpdateAttestor updates an attestor.
-// Returns NOT_FOUND if the attestor does not exist.
+// Returns NOT_FOUND if the
+// attestor does not
+// exist.
 func (c *binauthzManagementServiceV1Beta1RESTClient) UpdateAttestor(ctx context.Context, req *binaryauthorizationpb.UpdateAttestorRequest, opts ...gax.CallOption) (*binaryauthorizationpb.Attestor, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetAttestor()
@@ -1151,8 +1297,10 @@ func (c *binauthzManagementServiceV1Beta1RESTClient) ListAttestors(ctx context.C
 	return it
 }
 
-// DeleteAttestor deletes an attestor. Returns NOT_FOUND if the
-// attestor does not exist.
+// DeleteAttestor deletes an attestor.
+// Returns NOT_FOUND if the
+// attestor does not
+// exist.
 func (c *binauthzManagementServiceV1Beta1RESTClient) DeleteAttestor(ctx context.Context, req *binaryauthorizationpb.DeleteAttestorRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -1192,4 +1340,201 @@ func (c *binauthzManagementServiceV1Beta1RESTClient) DeleteAttestor(ctx context.
 		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteAttestor")
 		return err
 	}, opts...)
+}
+
+// GetIamPolicy gets the access control policy for a resource. Returns an empty policy
+// if the resource exists and does not have a policy set.
+func (c *binauthzManagementServiceV1Beta1RESTClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:getIamPolicy", req.GetResource())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetOptions().GetRequestedPolicyVersion() != 0 {
+		params.Add("options.requestedPolicyVersion", fmt.Sprintf("%v", req.GetOptions().GetRequestedPolicyVersion()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/GetIamPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{resource=projects/*/policy}:getIamPolicy")
+	}
+	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &iampb.Policy{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetIamPolicy")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// SetIamPolicy sets the access control policy on the specified resource. Replaces
+// any existing policy.
+//
+// Can return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED
+// errors.
+func (c *binauthzManagementServiceV1Beta1RESTClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:setIamPolicy", req.GetResource())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/SetIamPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{resource=projects/*/policy}:setIamPolicy")
+	}
+	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &iampb.Policy{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SetIamPolicy")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// TestIamPermissions returns permissions that a caller has on the specified resource. If the
+// resource does not exist, this will return an empty set of
+// permissions, not a NOT_FOUND error.
+//
+// Note: This operation is designed to be used for building
+// permission-aware UIs and command-line tools, not for authorization
+// checking. This operation may “fail open” without warning.
+func (c *binauthzManagementServiceV1Beta1RESTClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:testIamPermissions", req.GetResource())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/TestIamPermissions")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{resource=projects/*/policy}:testIamPermissions")
+	}
+	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &iampb.TestIamPermissionsResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "TestIamPermissions")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }

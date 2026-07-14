@@ -31,6 +31,7 @@ import (
 	networkconnectivitypb "cloud.google.com/go/networkconnectivity/apiv1beta/networkconnectivitypb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -690,8 +691,12 @@ func (c *transportManagerGRPCClient) CreateTransport(ctx context.Context, req *n
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkconnectivity.CreateTransportOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateTransportOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -713,8 +718,12 @@ func (c *transportManagerGRPCClient) UpdateTransport(ctx context.Context, req *n
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkconnectivity.UpdateTransportOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateTransportOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -739,8 +748,12 @@ func (c *transportManagerGRPCClient) DeleteTransport(ctx context.Context, req *n
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkconnectivity.DeleteTransportOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteTransportOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -994,7 +1007,7 @@ func (c *transportManagerGRPCClient) ListOperations(ctx context.Context, req *lo
 // The name must be that of a previously created CreateTransportOperation, possibly from a different process.
 func (c *transportManagerGRPCClient) CreateTransportOperation(name string) *CreateTransportOperation {
 	return &CreateTransportOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkconnectivity.CreateTransportOperation"),
 	}
 }
 
@@ -1002,7 +1015,7 @@ func (c *transportManagerGRPCClient) CreateTransportOperation(name string) *Crea
 // The name must be that of a previously created DeleteTransportOperation, possibly from a different process.
 func (c *transportManagerGRPCClient) DeleteTransportOperation(name string) *DeleteTransportOperation {
 	return &DeleteTransportOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkconnectivity.DeleteTransportOperation"),
 	}
 }
 
@@ -1010,6 +1023,6 @@ func (c *transportManagerGRPCClient) DeleteTransportOperation(name string) *Dele
 // The name must be that of a previously created UpdateTransportOperation, possibly from a different process.
 func (c *transportManagerGRPCClient) UpdateTransportOperation(name string) *UpdateTransportOperation {
 	return &UpdateTransportOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkconnectivity.UpdateTransportOperation"),
 	}
 }

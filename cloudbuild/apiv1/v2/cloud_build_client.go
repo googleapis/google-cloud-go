@@ -34,6 +34,7 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -910,8 +911,12 @@ func (c *gRPCClient) CreateBuild(ctx context.Context, req *cloudbuildpb.CreateBu
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cloudbuild.CreateBuildOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateBuildOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1072,8 +1077,12 @@ func (c *gRPCClient) RetryBuild(ctx context.Context, req *cloudbuildpb.RetryBuil
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cloudbuild.RetryBuildOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RetryBuildOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1104,8 +1113,12 @@ func (c *gRPCClient) ApproveBuild(ctx context.Context, req *cloudbuildpb.Approve
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cloudbuild.ApproveBuildOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ApproveBuildOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1325,8 +1338,12 @@ func (c *gRPCClient) RunBuildTrigger(ctx context.Context, req *cloudbuildpb.RunB
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cloudbuild.RunBuildTriggerOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RunBuildTriggerOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1381,8 +1398,12 @@ func (c *gRPCClient) CreateWorkerPool(ctx context.Context, req *cloudbuildpb.Cre
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cloudbuild.CreateWorkerPoolOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateWorkerPoolOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1449,8 +1470,12 @@ func (c *gRPCClient) DeleteWorkerPool(ctx context.Context, req *cloudbuildpb.Del
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cloudbuild.DeleteWorkerPoolOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteWorkerPoolOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1481,8 +1506,12 @@ func (c *gRPCClient) UpdateWorkerPool(ctx context.Context, req *cloudbuildpb.Upd
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cloudbuild.UpdateWorkerPoolOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateWorkerPoolOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1657,8 +1686,12 @@ func (c *restClient) CreateBuild(ctx context.Context, req *cloudbuildpb.CreateBu
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cloudbuild.CreateBuildOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateBuildOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1991,8 +2024,12 @@ func (c *restClient) RetryBuild(ctx context.Context, req *cloudbuildpb.RetryBuil
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cloudbuild.RetryBuildOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RetryBuildOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2068,8 +2105,12 @@ func (c *restClient) ApproveBuild(ctx context.Context, req *cloudbuildpb.Approve
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cloudbuild.ApproveBuildOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ApproveBuildOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2510,8 +2551,12 @@ func (c *restClient) RunBuildTrigger(ctx context.Context, req *cloudbuildpb.RunB
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cloudbuild.RunBuildTriggerOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RunBuildTriggerOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2658,8 +2703,12 @@ func (c *restClient) CreateWorkerPool(ctx context.Context, req *cloudbuildpb.Cre
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cloudbuild.CreateWorkerPoolOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateWorkerPoolOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2802,8 +2851,12 @@ func (c *restClient) DeleteWorkerPool(ctx context.Context, req *cloudbuildpb.Del
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cloudbuild.DeleteWorkerPoolOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteWorkerPoolOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2885,8 +2938,12 @@ func (c *restClient) UpdateWorkerPool(ctx context.Context, req *cloudbuildpb.Upd
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*cloudbuild.UpdateWorkerPoolOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateWorkerPoolOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3039,7 +3096,7 @@ func (c *restClient) GetDefaultServiceAccount(ctx context.Context, req *cloudbui
 // The name must be that of a previously created ApproveBuildOperation, possibly from a different process.
 func (c *gRPCClient) ApproveBuildOperation(name string) *ApproveBuildOperation {
 	return &ApproveBuildOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cloudbuild.ApproveBuildOperation"),
 	}
 }
 
@@ -3048,7 +3105,7 @@ func (c *gRPCClient) ApproveBuildOperation(name string) *ApproveBuildOperation {
 func (c *restClient) ApproveBuildOperation(name string) *ApproveBuildOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ApproveBuildOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cloudbuild.ApproveBuildOperation"),
 		pollPath: override,
 	}
 }
@@ -3057,7 +3114,7 @@ func (c *restClient) ApproveBuildOperation(name string) *ApproveBuildOperation {
 // The name must be that of a previously created CreateBuildOperation, possibly from a different process.
 func (c *gRPCClient) CreateBuildOperation(name string) *CreateBuildOperation {
 	return &CreateBuildOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cloudbuild.CreateBuildOperation"),
 	}
 }
 
@@ -3066,7 +3123,7 @@ func (c *gRPCClient) CreateBuildOperation(name string) *CreateBuildOperation {
 func (c *restClient) CreateBuildOperation(name string) *CreateBuildOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateBuildOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cloudbuild.CreateBuildOperation"),
 		pollPath: override,
 	}
 }
@@ -3075,7 +3132,7 @@ func (c *restClient) CreateBuildOperation(name string) *CreateBuildOperation {
 // The name must be that of a previously created CreateWorkerPoolOperation, possibly from a different process.
 func (c *gRPCClient) CreateWorkerPoolOperation(name string) *CreateWorkerPoolOperation {
 	return &CreateWorkerPoolOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cloudbuild.CreateWorkerPoolOperation"),
 	}
 }
 
@@ -3084,7 +3141,7 @@ func (c *gRPCClient) CreateWorkerPoolOperation(name string) *CreateWorkerPoolOpe
 func (c *restClient) CreateWorkerPoolOperation(name string) *CreateWorkerPoolOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateWorkerPoolOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cloudbuild.CreateWorkerPoolOperation"),
 		pollPath: override,
 	}
 }
@@ -3093,7 +3150,7 @@ func (c *restClient) CreateWorkerPoolOperation(name string) *CreateWorkerPoolOpe
 // The name must be that of a previously created DeleteWorkerPoolOperation, possibly from a different process.
 func (c *gRPCClient) DeleteWorkerPoolOperation(name string) *DeleteWorkerPoolOperation {
 	return &DeleteWorkerPoolOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cloudbuild.DeleteWorkerPoolOperation"),
 	}
 }
 
@@ -3102,7 +3159,7 @@ func (c *gRPCClient) DeleteWorkerPoolOperation(name string) *DeleteWorkerPoolOpe
 func (c *restClient) DeleteWorkerPoolOperation(name string) *DeleteWorkerPoolOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteWorkerPoolOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cloudbuild.DeleteWorkerPoolOperation"),
 		pollPath: override,
 	}
 }
@@ -3111,7 +3168,7 @@ func (c *restClient) DeleteWorkerPoolOperation(name string) *DeleteWorkerPoolOpe
 // The name must be that of a previously created RetryBuildOperation, possibly from a different process.
 func (c *gRPCClient) RetryBuildOperation(name string) *RetryBuildOperation {
 	return &RetryBuildOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cloudbuild.RetryBuildOperation"),
 	}
 }
 
@@ -3120,7 +3177,7 @@ func (c *gRPCClient) RetryBuildOperation(name string) *RetryBuildOperation {
 func (c *restClient) RetryBuildOperation(name string) *RetryBuildOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &RetryBuildOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cloudbuild.RetryBuildOperation"),
 		pollPath: override,
 	}
 }
@@ -3129,7 +3186,7 @@ func (c *restClient) RetryBuildOperation(name string) *RetryBuildOperation {
 // The name must be that of a previously created RunBuildTriggerOperation, possibly from a different process.
 func (c *gRPCClient) RunBuildTriggerOperation(name string) *RunBuildTriggerOperation {
 	return &RunBuildTriggerOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cloudbuild.RunBuildTriggerOperation"),
 	}
 }
 
@@ -3138,7 +3195,7 @@ func (c *gRPCClient) RunBuildTriggerOperation(name string) *RunBuildTriggerOpera
 func (c *restClient) RunBuildTriggerOperation(name string) *RunBuildTriggerOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &RunBuildTriggerOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cloudbuild.RunBuildTriggerOperation"),
 		pollPath: override,
 	}
 }
@@ -3147,7 +3204,7 @@ func (c *restClient) RunBuildTriggerOperation(name string) *RunBuildTriggerOpera
 // The name must be that of a previously created UpdateWorkerPoolOperation, possibly from a different process.
 func (c *gRPCClient) UpdateWorkerPoolOperation(name string) *UpdateWorkerPoolOperation {
 	return &UpdateWorkerPoolOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cloudbuild.UpdateWorkerPoolOperation"),
 	}
 }
 
@@ -3156,7 +3213,7 @@ func (c *gRPCClient) UpdateWorkerPoolOperation(name string) *UpdateWorkerPoolOpe
 func (c *restClient) UpdateWorkerPoolOperation(name string) *UpdateWorkerPoolOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateWorkerPoolOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*cloudbuild.UpdateWorkerPoolOperation"),
 		pollPath: override,
 	}
 }

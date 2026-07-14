@@ -32,6 +32,7 @@ import (
 	optimizationpb "cloud.google.com/go/optimization/apiv1/optimizationpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -574,8 +575,12 @@ func (c *fleetRoutingGRPCClient) BatchOptimizeTours(ctx context.Context, req *op
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*optimization.BatchOptimizeToursOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &BatchOptimizeToursOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -739,8 +744,12 @@ func (c *fleetRoutingRESTClient) BatchOptimizeTours(ctx context.Context, req *op
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*optimization.BatchOptimizeToursOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &BatchOptimizeToursOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -803,7 +812,7 @@ func (c *fleetRoutingRESTClient) GetOperation(ctx context.Context, req *longrunn
 // The name must be that of a previously created BatchOptimizeToursOperation, possibly from a different process.
 func (c *fleetRoutingGRPCClient) BatchOptimizeToursOperation(name string) *BatchOptimizeToursOperation {
 	return &BatchOptimizeToursOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*optimization.BatchOptimizeToursOperation"),
 	}
 }
 
@@ -812,7 +821,7 @@ func (c *fleetRoutingGRPCClient) BatchOptimizeToursOperation(name string) *Batch
 func (c *fleetRoutingRESTClient) BatchOptimizeToursOperation(name string) *BatchOptimizeToursOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &BatchOptimizeToursOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*optimization.BatchOptimizeToursOperation"),
 		pollPath: override,
 	}
 }

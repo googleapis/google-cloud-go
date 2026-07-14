@@ -31,6 +31,7 @@ import (
 	workflowspb "cloud.google.com/go/workflows/apiv1beta/workflowspb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -600,8 +601,12 @@ func (c *gRPCClient) CreateWorkflow(ctx context.Context, req *workflowspb.Create
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*workflows.CreateWorkflowOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateWorkflowOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -626,8 +631,12 @@ func (c *gRPCClient) DeleteWorkflow(ctx context.Context, req *workflowspb.Delete
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*workflows.DeleteWorkflowOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteWorkflowOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -649,8 +658,12 @@ func (c *gRPCClient) UpdateWorkflow(ctx context.Context, req *workflowspb.Update
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*workflows.UpdateWorkflowOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateWorkflowOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1017,8 +1030,12 @@ func (c *restClient) CreateWorkflow(ctx context.Context, req *workflowspb.Create
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*workflows.CreateWorkflowOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateWorkflowOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1079,8 +1096,12 @@ func (c *restClient) DeleteWorkflow(ctx context.Context, req *workflowspb.Delete
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*workflows.DeleteWorkflowOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteWorkflowOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1154,8 +1175,12 @@ func (c *restClient) UpdateWorkflow(ctx context.Context, req *workflowspb.Update
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*workflows.UpdateWorkflowOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateWorkflowOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1476,7 +1501,7 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // The name must be that of a previously created CreateWorkflowOperation, possibly from a different process.
 func (c *gRPCClient) CreateWorkflowOperation(name string) *CreateWorkflowOperation {
 	return &CreateWorkflowOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*workflows.CreateWorkflowOperation"),
 	}
 }
 
@@ -1485,7 +1510,7 @@ func (c *gRPCClient) CreateWorkflowOperation(name string) *CreateWorkflowOperati
 func (c *restClient) CreateWorkflowOperation(name string) *CreateWorkflowOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &CreateWorkflowOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*workflows.CreateWorkflowOperation"),
 		pollPath: override,
 	}
 }
@@ -1494,7 +1519,7 @@ func (c *restClient) CreateWorkflowOperation(name string) *CreateWorkflowOperati
 // The name must be that of a previously created DeleteWorkflowOperation, possibly from a different process.
 func (c *gRPCClient) DeleteWorkflowOperation(name string) *DeleteWorkflowOperation {
 	return &DeleteWorkflowOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*workflows.DeleteWorkflowOperation"),
 	}
 }
 
@@ -1503,7 +1528,7 @@ func (c *gRPCClient) DeleteWorkflowOperation(name string) *DeleteWorkflowOperati
 func (c *restClient) DeleteWorkflowOperation(name string) *DeleteWorkflowOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &DeleteWorkflowOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*workflows.DeleteWorkflowOperation"),
 		pollPath: override,
 	}
 }
@@ -1512,7 +1537,7 @@ func (c *restClient) DeleteWorkflowOperation(name string) *DeleteWorkflowOperati
 // The name must be that of a previously created UpdateWorkflowOperation, possibly from a different process.
 func (c *gRPCClient) UpdateWorkflowOperation(name string) *UpdateWorkflowOperation {
 	return &UpdateWorkflowOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*workflows.UpdateWorkflowOperation"),
 	}
 }
 
@@ -1521,7 +1546,7 @@ func (c *gRPCClient) UpdateWorkflowOperation(name string) *UpdateWorkflowOperati
 func (c *restClient) UpdateWorkflowOperation(name string) *UpdateWorkflowOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &UpdateWorkflowOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*workflows.UpdateWorkflowOperation"),
 		pollPath: override,
 	}
 }

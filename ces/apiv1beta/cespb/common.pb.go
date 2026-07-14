@@ -112,33 +112,45 @@ const (
 	ChannelProfile_GOOGLE_TELEPHONY_PLATFORM ChannelProfile_ChannelType = 5
 	// Contact Center as a Service (CCaaS) channel.
 	ChannelProfile_CONTACT_CENTER_AS_A_SERVICE ChannelProfile_ChannelType = 6
+	// Contact Center as a Service (CCaaS Chat) channel.
+	ChannelProfile_CONTACT_CENTER_AS_A_SERVICE_CHAT ChannelProfile_ChannelType = 11
 	// Five9 channel.
 	ChannelProfile_FIVE9 ChannelProfile_ChannelType = 7
 	// Third party contact center integration channel.
 	ChannelProfile_CONTACT_CENTER_INTEGRATION ChannelProfile_ChannelType = 8
+	// WhatsApp channel.
+	ChannelProfile_WHATSAPP ChannelProfile_ChannelType = 9
+	// Instagram channel.
+	ChannelProfile_INSTAGRAM ChannelProfile_ChannelType = 10
 )
 
 // Enum value maps for ChannelProfile_ChannelType.
 var (
 	ChannelProfile_ChannelType_name = map[int32]string{
-		0: "UNKNOWN",
-		2: "WEB_UI",
-		3: "API",
-		4: "TWILIO",
-		5: "GOOGLE_TELEPHONY_PLATFORM",
-		6: "CONTACT_CENTER_AS_A_SERVICE",
-		7: "FIVE9",
-		8: "CONTACT_CENTER_INTEGRATION",
+		0:  "UNKNOWN",
+		2:  "WEB_UI",
+		3:  "API",
+		4:  "TWILIO",
+		5:  "GOOGLE_TELEPHONY_PLATFORM",
+		6:  "CONTACT_CENTER_AS_A_SERVICE",
+		11: "CONTACT_CENTER_AS_A_SERVICE_CHAT",
+		7:  "FIVE9",
+		8:  "CONTACT_CENTER_INTEGRATION",
+		9:  "WHATSAPP",
+		10: "INSTAGRAM",
 	}
 	ChannelProfile_ChannelType_value = map[string]int32{
-		"UNKNOWN":                     0,
-		"WEB_UI":                      2,
-		"API":                         3,
-		"TWILIO":                      4,
-		"GOOGLE_TELEPHONY_PLATFORM":   5,
-		"CONTACT_CENTER_AS_A_SERVICE": 6,
-		"FIVE9":                       7,
-		"CONTACT_CENTER_INTEGRATION":  8,
+		"UNKNOWN":                          0,
+		"WEB_UI":                           2,
+		"API":                              3,
+		"TWILIO":                           4,
+		"GOOGLE_TELEPHONY_PLATFORM":        5,
+		"CONTACT_CENTER_AS_A_SERVICE":      6,
+		"CONTACT_CENTER_AS_A_SERVICE_CHAT": 11,
+		"FIVE9":                            7,
+		"CONTACT_CENTER_INTEGRATION":       8,
+		"WHATSAPP":                         9,
+		"INSTAGRAM":                        10,
 	}
 )
 
@@ -334,6 +346,62 @@ func (x ChannelProfile_WebWidgetConfig_Theme) Number() protoreflect.EnumNumber {
 // Deprecated: Use ChannelProfile_WebWidgetConfig_Theme.Descriptor instead.
 func (ChannelProfile_WebWidgetConfig_Theme) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_ces_v1beta_common_proto_rawDescGZIP(), []int{5, 1, 1}
+}
+
+// The evaluation result caching behavior. Controls whether to return the last
+// completed evaluation result (if existing) or to execute a new evaluation.
+type EvaluationRunCachingSettings_EvaluationRunCachingMode int32
+
+const (
+	// The run caching mode is unspecified.
+	EvaluationRunCachingSettings_EVALUATION_RUN_CACHING_MODE_UNSPECIFIED EvaluationRunCachingSettings_EvaluationRunCachingMode = 0
+	// Always execute a full live simulation regardless of whether changelogs
+	// exist.
+	EvaluationRunCachingSettings_FORCE_RUN EvaluationRunCachingSettings_EvaluationRunCachingMode = 1
+	// Skip execution and copy previous verified results if no dependencies have
+	// mutated, the evaluation channel/run method are the same.
+	EvaluationRunCachingSettings_SKIP_IF_UNCHANGED EvaluationRunCachingSettings_EvaluationRunCachingMode = 2
+)
+
+// Enum value maps for EvaluationRunCachingSettings_EvaluationRunCachingMode.
+var (
+	EvaluationRunCachingSettings_EvaluationRunCachingMode_name = map[int32]string{
+		0: "EVALUATION_RUN_CACHING_MODE_UNSPECIFIED",
+		1: "FORCE_RUN",
+		2: "SKIP_IF_UNCHANGED",
+	}
+	EvaluationRunCachingSettings_EvaluationRunCachingMode_value = map[string]int32{
+		"EVALUATION_RUN_CACHING_MODE_UNSPECIFIED": 0,
+		"FORCE_RUN":         1,
+		"SKIP_IF_UNCHANGED": 2,
+	}
+)
+
+func (x EvaluationRunCachingSettings_EvaluationRunCachingMode) Enum() *EvaluationRunCachingSettings_EvaluationRunCachingMode {
+	p := new(EvaluationRunCachingSettings_EvaluationRunCachingMode)
+	*p = x
+	return p
+}
+
+func (x EvaluationRunCachingSettings_EvaluationRunCachingMode) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (EvaluationRunCachingSettings_EvaluationRunCachingMode) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_ces_v1beta_common_proto_enumTypes[5].Descriptor()
+}
+
+func (EvaluationRunCachingSettings_EvaluationRunCachingMode) Type() protoreflect.EnumType {
+	return &file_google_cloud_ces_v1beta_common_proto_enumTypes[5]
+}
+
+func (x EvaluationRunCachingSettings_EvaluationRunCachingMode) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use EvaluationRunCachingSettings_EvaluationRunCachingMode.Descriptor instead.
+func (EvaluationRunCachingSettings_EvaluationRunCachingMode) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_ces_v1beta_common_proto_rawDescGZIP(), []int{7, 0}
 }
 
 // A callback defines the custom logic to be executed at various stages of
@@ -723,8 +791,12 @@ type ChannelProfile struct {
 	// Optional. The noise suppression level of the channel profile.
 	// Available values are "low", "moderate", "high", "very_high".
 	NoiseSuppressionLevel string `protobuf:"bytes,8,opt,name=noise_suppression_level,json=noiseSuppressionLevel,proto3" json:"noise_suppression_level,omitempty"`
-	unknownFields         protoimpl.UnknownFields
-	sizeCache             protoimpl.SizeCache
+	// Optional. Configuration specific to WhatsApp deployments.
+	WhatsappConfig *ChannelProfile_WhatsAppConfig `protobuf:"bytes,9,opt,name=whatsapp_config,json=whatsappConfig,proto3" json:"whatsapp_config,omitempty"`
+	// Optional. Configuration specific to Instagram deployments.
+	InstagramConfig *ChannelProfile_InstagramConfig `protobuf:"bytes,10,opt,name=instagram_config,json=instagramConfig,proto3" json:"instagram_config,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
 }
 
 func (x *ChannelProfile) Reset() {
@@ -804,6 +876,20 @@ func (x *ChannelProfile) GetNoiseSuppressionLevel() string {
 		return x.NoiseSuppressionLevel
 	}
 	return ""
+}
+
+func (x *ChannelProfile) GetWhatsappConfig() *ChannelProfile_WhatsAppConfig {
+	if x != nil {
+		return x.WhatsappConfig
+	}
+	return nil
+}
+
+func (x *ChannelProfile) GetInstagramConfig() *ChannelProfile_InstagramConfig {
+	if x != nil {
+		return x.InstagramConfig
+	}
+	return nil
 }
 
 // A span is a unit of work or a single operation during the request processing.
@@ -897,6 +983,53 @@ func (x *Span) GetChildSpans() []*Span {
 	return nil
 }
 
+// Settings for evaluation run caching.
+type EvaluationRunCachingSettings struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. The caching mode to use for the evaluation run. If not set,
+	// default to FORCE_RUN.
+	RunCachingMode EvaluationRunCachingSettings_EvaluationRunCachingMode `protobuf:"varint,1,opt,name=run_caching_mode,json=runCachingMode,proto3,enum=google.cloud.ces.v1beta.EvaluationRunCachingSettings_EvaluationRunCachingMode" json:"run_caching_mode,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *EvaluationRunCachingSettings) Reset() {
+	*x = EvaluationRunCachingSettings{}
+	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *EvaluationRunCachingSettings) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EvaluationRunCachingSettings) ProtoMessage() {}
+
+func (x *EvaluationRunCachingSettings) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use EvaluationRunCachingSettings.ProtoReflect.Descriptor instead.
+func (*EvaluationRunCachingSettings) Descriptor() ([]byte, []int) {
+	return file_google_cloud_ces_v1beta_common_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *EvaluationRunCachingSettings) GetRunCachingMode() EvaluationRunCachingSettings_EvaluationRunCachingMode {
+	if x != nil {
+		return x.RunCachingMode
+	}
+	return EvaluationRunCachingSettings_EVALUATION_RUN_CACHING_MODE_UNSPECIFIED
+}
+
 // Represents a response from the agent.
 type TriggerAction_Response struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -911,7 +1044,7 @@ type TriggerAction_Response struct {
 
 func (x *TriggerAction_Response) Reset() {
 	*x = TriggerAction_Response{}
-	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[7]
+	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -923,7 +1056,7 @@ func (x *TriggerAction_Response) String() string {
 func (*TriggerAction_Response) ProtoMessage() {}
 
 func (x *TriggerAction_Response) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[7]
+	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -965,7 +1098,7 @@ type TriggerAction_RespondImmediately struct {
 
 func (x *TriggerAction_RespondImmediately) Reset() {
 	*x = TriggerAction_RespondImmediately{}
-	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[8]
+	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -977,7 +1110,7 @@ func (x *TriggerAction_RespondImmediately) String() string {
 func (*TriggerAction_RespondImmediately) ProtoMessage() {}
 
 func (x *TriggerAction_RespondImmediately) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[8]
+	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1011,7 +1144,7 @@ type TriggerAction_GenerativeAnswer struct {
 
 func (x *TriggerAction_GenerativeAnswer) Reset() {
 	*x = TriggerAction_GenerativeAnswer{}
-	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[9]
+	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1023,7 +1156,7 @@ func (x *TriggerAction_GenerativeAnswer) String() string {
 func (*TriggerAction_GenerativeAnswer) ProtoMessage() {}
 
 func (x *TriggerAction_GenerativeAnswer) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[9]
+	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1059,7 +1192,7 @@ type TriggerAction_TransferAgent struct {
 
 func (x *TriggerAction_TransferAgent) Reset() {
 	*x = TriggerAction_TransferAgent{}
-	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[10]
+	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1071,7 +1204,7 @@ func (x *TriggerAction_TransferAgent) String() string {
 func (*TriggerAction_TransferAgent) ProtoMessage() {}
 
 func (x *TriggerAction_TransferAgent) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[10]
+	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1122,7 +1255,7 @@ type TlsConfig_CaCert struct {
 
 func (x *TlsConfig_CaCert) Reset() {
 	*x = TlsConfig_CaCert{}
-	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[11]
+	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1134,7 +1267,7 @@ func (x *TlsConfig_CaCert) String() string {
 func (*TlsConfig_CaCert) ProtoMessage() {}
 
 func (x *TlsConfig_CaCert) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[11]
+	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1175,7 +1308,7 @@ type ChannelProfile_PersonaProperty struct {
 
 func (x *ChannelProfile_PersonaProperty) Reset() {
 	*x = ChannelProfile_PersonaProperty{}
-	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[12]
+	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1187,7 +1320,7 @@ func (x *ChannelProfile_PersonaProperty) String() string {
 func (*ChannelProfile_PersonaProperty) ProtoMessage() {}
 
 func (x *ChannelProfile_PersonaProperty) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[12]
+	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1227,7 +1360,7 @@ type ChannelProfile_WebWidgetConfig struct {
 
 func (x *ChannelProfile_WebWidgetConfig) Reset() {
 	*x = ChannelProfile_WebWidgetConfig{}
-	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[13]
+	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1239,7 +1372,7 @@ func (x *ChannelProfile_WebWidgetConfig) String() string {
 func (*ChannelProfile_WebWidgetConfig) ProtoMessage() {}
 
 func (x *ChannelProfile_WebWidgetConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[13]
+	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1283,6 +1416,170 @@ func (x *ChannelProfile_WebWidgetConfig) GetSecuritySettings() *ChannelProfile_W
 	return nil
 }
 
+// Configuration specific to WhatsApp deployments.
+type ChannelProfile_WhatsAppConfig struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The WhatsApp Business Account ID.
+	WabaId string `protobuf:"bytes,1,opt,name=waba_id,json=wabaId,proto3" json:"waba_id,omitempty"`
+	// Required. The Meta phone number ID.
+	PhoneNumberId string `protobuf:"bytes,2,opt,name=phone_number_id,json=phoneNumberId,proto3" json:"phone_number_id,omitempty"`
+	// Optional. The phone number in E.164 format.
+	PhoneNumber string `protobuf:"bytes,3,opt,name=phone_number,json=phoneNumber,proto3" json:"phone_number,omitempty"`
+	// Output only. The fetched Meta business page name.
+	DisplayName string `protobuf:"bytes,4,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
+	// Output only. The fetched Meta business profile thumbnail URL.
+	ThumbnailUrl string `protobuf:"bytes,5,opt,name=thumbnail_url,json=thumbnailUrl,proto3" json:"thumbnail_url,omitempty"`
+	// Output only. The description of the Meta business page or profile.
+	Description   string `protobuf:"bytes,6,opt,name=description,proto3" json:"description,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ChannelProfile_WhatsAppConfig) Reset() {
+	*x = ChannelProfile_WhatsAppConfig{}
+	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[15]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ChannelProfile_WhatsAppConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ChannelProfile_WhatsAppConfig) ProtoMessage() {}
+
+func (x *ChannelProfile_WhatsAppConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[15]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ChannelProfile_WhatsAppConfig.ProtoReflect.Descriptor instead.
+func (*ChannelProfile_WhatsAppConfig) Descriptor() ([]byte, []int) {
+	return file_google_cloud_ces_v1beta_common_proto_rawDescGZIP(), []int{5, 2}
+}
+
+func (x *ChannelProfile_WhatsAppConfig) GetWabaId() string {
+	if x != nil {
+		return x.WabaId
+	}
+	return ""
+}
+
+func (x *ChannelProfile_WhatsAppConfig) GetPhoneNumberId() string {
+	if x != nil {
+		return x.PhoneNumberId
+	}
+	return ""
+}
+
+func (x *ChannelProfile_WhatsAppConfig) GetPhoneNumber() string {
+	if x != nil {
+		return x.PhoneNumber
+	}
+	return ""
+}
+
+func (x *ChannelProfile_WhatsAppConfig) GetDisplayName() string {
+	if x != nil {
+		return x.DisplayName
+	}
+	return ""
+}
+
+func (x *ChannelProfile_WhatsAppConfig) GetThumbnailUrl() string {
+	if x != nil {
+		return x.ThumbnailUrl
+	}
+	return ""
+}
+
+func (x *ChannelProfile_WhatsAppConfig) GetDescription() string {
+	if x != nil {
+		return x.Description
+	}
+	return ""
+}
+
+// Configuration specific to Instagram deployments.
+type ChannelProfile_InstagramConfig struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The Instagram Account ID.
+	InstagramAccountId string `protobuf:"bytes,1,opt,name=instagram_account_id,json=instagramAccountId,proto3" json:"instagram_account_id,omitempty"`
+	// Output only. The fetched Meta business page name.
+	DisplayName string `protobuf:"bytes,2,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
+	// Output only. The fetched Meta business profile thumbnail URL.
+	ThumbnailUrl string `protobuf:"bytes,3,opt,name=thumbnail_url,json=thumbnailUrl,proto3" json:"thumbnail_url,omitempty"`
+	// Output only. The description of the Meta business page or profile.
+	Description   string `protobuf:"bytes,4,opt,name=description,proto3" json:"description,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ChannelProfile_InstagramConfig) Reset() {
+	*x = ChannelProfile_InstagramConfig{}
+	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[16]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ChannelProfile_InstagramConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ChannelProfile_InstagramConfig) ProtoMessage() {}
+
+func (x *ChannelProfile_InstagramConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[16]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ChannelProfile_InstagramConfig.ProtoReflect.Descriptor instead.
+func (*ChannelProfile_InstagramConfig) Descriptor() ([]byte, []int) {
+	return file_google_cloud_ces_v1beta_common_proto_rawDescGZIP(), []int{5, 3}
+}
+
+func (x *ChannelProfile_InstagramConfig) GetInstagramAccountId() string {
+	if x != nil {
+		return x.InstagramAccountId
+	}
+	return ""
+}
+
+func (x *ChannelProfile_InstagramConfig) GetDisplayName() string {
+	if x != nil {
+		return x.DisplayName
+	}
+	return ""
+}
+
+func (x *ChannelProfile_InstagramConfig) GetThumbnailUrl() string {
+	if x != nil {
+		return x.ThumbnailUrl
+	}
+	return ""
+}
+
+func (x *ChannelProfile_InstagramConfig) GetDescription() string {
+	if x != nil {
+		return x.Description
+	}
+	return ""
+}
+
 // Security settings for the web widget.
 type ChannelProfile_WebWidgetConfig_SecuritySettings struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -1310,7 +1607,7 @@ type ChannelProfile_WebWidgetConfig_SecuritySettings struct {
 
 func (x *ChannelProfile_WebWidgetConfig_SecuritySettings) Reset() {
 	*x = ChannelProfile_WebWidgetConfig_SecuritySettings{}
-	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[14]
+	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1322,7 +1619,7 @@ func (x *ChannelProfile_WebWidgetConfig_SecuritySettings) String() string {
 func (*ChannelProfile_WebWidgetConfig_SecuritySettings) ProtoMessage() {}
 
 func (x *ChannelProfile_WebWidgetConfig_SecuritySettings) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[14]
+	mi := &file_google_cloud_ces_v1beta_common_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1405,7 +1702,7 @@ const file_google_cloud_ces_v1beta_common_proto_rawDesc = "" +
 	"\x04cert\x18\x02 \x01(\fB\x03\xe0A\x02R\x04cert\"c\n" +
 	"\x16ServiceDirectoryConfig\x12I\n" +
 	"\aservice\x18\x01 \x01(\tB/\xe0A\x02\xfaA)\n" +
-	"'servicedirectory.googleapis.com/ServiceR\aservice\"\xd8\f\n" +
+	"'servicedirectory.googleapis.com/ServiceR\aservice\"\xad\x12\n" +
 	"\x0eChannelProfile\x12\"\n" +
 	"\n" +
 	"profile_id\x18\x01 \x01(\tB\x03\xe0A\x01R\tprofileId\x12[\n" +
@@ -1414,7 +1711,10 @@ const file_google_cloud_ces_v1beta_common_proto_rawDesc = "" +
 	"\fdisable_dtmf\x18\x04 \x01(\bB\x03\xe0A\x01R\vdisableDtmf\x12<\n" +
 	"\x18disable_barge_in_control\x18\x05 \x01(\bB\x03\xe0A\x01R\x15disableBargeInControl\x12h\n" +
 	"\x11web_widget_config\x18\a \x01(\v27.google.cloud.ces.v1beta.ChannelProfile.WebWidgetConfigB\x03\xe0A\x01R\x0fwebWidgetConfig\x12;\n" +
-	"\x17noise_suppression_level\x18\b \x01(\tB\x03\xe0A\x01R\x15noiseSuppressionLevel\x1a\xa2\x01\n" +
+	"\x17noise_suppression_level\x18\b \x01(\tB\x03\xe0A\x01R\x15noiseSuppressionLevel\x12d\n" +
+	"\x0fwhatsapp_config\x18\t \x01(\v26.google.cloud.ces.v1beta.ChannelProfile.WhatsAppConfigB\x03\xe0A\x01R\x0ewhatsappConfig\x12g\n" +
+	"\x10instagram_config\x18\n" +
+	" \x01(\v27.google.cloud.ces.v1beta.ChannelProfile.InstagramConfigB\x03\xe0A\x01R\x0finstagramConfig\x1a\xa2\x01\n" +
 	"\x0fPersonaProperty\x12^\n" +
 	"\apersona\x18\x01 \x01(\x0e2?.google.cloud.ces.v1beta.ChannelProfile.PersonaProperty.PersonaB\x03\xe0A\x01R\apersona\"/\n" +
 	"\aPersona\x12\v\n" +
@@ -1442,7 +1742,19 @@ const file_google_cloud_ces_v1beta_common_proto_rawDesc = "" +
 	"\x05Theme\x12\x15\n" +
 	"\x11THEME_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05LIGHT\x10\x01\x12\b\n" +
-	"\x04DARK\x10\x02\"\xa6\x01\n" +
+	"\x04DARK\x10\x02\x1a\xfc\x01\n" +
+	"\x0eWhatsAppConfig\x12\x1c\n" +
+	"\awaba_id\x18\x01 \x01(\tB\x03\xe0A\x02R\x06wabaId\x12+\n" +
+	"\x0fphone_number_id\x18\x02 \x01(\tB\x03\xe0A\x02R\rphoneNumberId\x12&\n" +
+	"\fphone_number\x18\x03 \x01(\tB\x03\xe0A\x01R\vphoneNumber\x12&\n" +
+	"\fdisplay_name\x18\x04 \x01(\tB\x03\xe0A\x03R\vdisplayName\x12(\n" +
+	"\rthumbnail_url\x18\x05 \x01(\tB\x03\xe0A\x03R\fthumbnailUrl\x12%\n" +
+	"\vdescription\x18\x06 \x01(\tB\x03\xe0A\x03R\vdescription\x1a\xc1\x01\n" +
+	"\x0fInstagramConfig\x125\n" +
+	"\x14instagram_account_id\x18\x01 \x01(\tB\x03\xe0A\x02R\x12instagramAccountId\x12&\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x03R\vdisplayName\x12(\n" +
+	"\rthumbnail_url\x18\x03 \x01(\tB\x03\xe0A\x03R\fthumbnailUrl\x12%\n" +
+	"\vdescription\x18\x04 \x01(\tB\x03\xe0A\x03R\vdescription\"\xe9\x01\n" +
 	"\vChannelType\x12\v\n" +
 	"\aUNKNOWN\x10\x00\x12\n" +
 	"\n" +
@@ -1451,9 +1763,13 @@ const file_google_cloud_ces_v1beta_common_proto_rawDesc = "" +
 	"\n" +
 	"\x06TWILIO\x10\x04\x12\x1d\n" +
 	"\x19GOOGLE_TELEPHONY_PLATFORM\x10\x05\x12\x1f\n" +
-	"\x1bCONTACT_CENTER_AS_A_SERVICE\x10\x06\x12\t\n" +
+	"\x1bCONTACT_CENTER_AS_A_SERVICE\x10\x06\x12$\n" +
+	" CONTACT_CENTER_AS_A_SERVICE_CHAT\x10\v\x12\t\n" +
 	"\x05FIVE9\x10\a\x12\x1e\n" +
-	"\x1aCONTACT_CENTER_INTEGRATION\x10\b\"\xda\x02\n" +
+	"\x1aCONTACT_CENTER_INTEGRATION\x10\b\x12\f\n" +
+	"\bWHATSAPP\x10\t\x12\r\n" +
+	"\tINSTAGRAM\x10\n" +
+	"\"\xda\x02\n" +
 	"\x04Span\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12>\n" +
 	"\n" +
@@ -1464,7 +1780,13 @@ const file_google_cloud_ces_v1beta_common_proto_rawDesc = "" +
 	"attributes\x18\x04 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x03R\n" +
 	"attributes\x12C\n" +
 	"\vchild_spans\x18\x05 \x03(\v2\x1d.google.cloud.ces.v1beta.SpanB\x03\xe0A\x03R\n" +
-	"childSpans*R\n" +
+	"childSpans\"\x8c\x02\n" +
+	"\x1cEvaluationRunCachingSettings\x12}\n" +
+	"\x10run_caching_mode\x18\x01 \x01(\x0e2N.google.cloud.ces.v1beta.EvaluationRunCachingSettings.EvaluationRunCachingModeB\x03\xe0A\x01R\x0erunCachingMode\"m\n" +
+	"\x18EvaluationRunCachingMode\x12+\n" +
+	"'EVALUATION_RUN_CACHING_MODE_UNSPECIFIED\x10\x00\x12\r\n" +
+	"\tFORCE_RUN\x10\x01\x12\x15\n" +
+	"\x11SKIP_IF_UNCHANGED\x10\x02*R\n" +
 	"\rExecutionType\x12\x1e\n" +
 	"\x1aEXECUTION_TYPE_UNSPECIFIED\x10\x00\x12\x0f\n" +
 	"\vSYNCHRONOUS\x10\x01\x12\x10\n" +
@@ -1484,56 +1806,63 @@ func file_google_cloud_ces_v1beta_common_proto_rawDescGZIP() []byte {
 	return file_google_cloud_ces_v1beta_common_proto_rawDescData
 }
 
-var file_google_cloud_ces_v1beta_common_proto_enumTypes = make([]protoimpl.EnumInfo, 5)
-var file_google_cloud_ces_v1beta_common_proto_msgTypes = make([]protoimpl.MessageInfo, 15)
+var file_google_cloud_ces_v1beta_common_proto_enumTypes = make([]protoimpl.EnumInfo, 6)
+var file_google_cloud_ces_v1beta_common_proto_msgTypes = make([]protoimpl.MessageInfo, 18)
 var file_google_cloud_ces_v1beta_common_proto_goTypes = []any{
-	(ExecutionType)(0),                                      // 0: google.cloud.ces.v1beta.ExecutionType
-	(ChannelProfile_ChannelType)(0),                         // 1: google.cloud.ces.v1beta.ChannelProfile.ChannelType
-	(ChannelProfile_PersonaProperty_Persona)(0),             // 2: google.cloud.ces.v1beta.ChannelProfile.PersonaProperty.Persona
-	(ChannelProfile_WebWidgetConfig_Modality)(0),            // 3: google.cloud.ces.v1beta.ChannelProfile.WebWidgetConfig.Modality
-	(ChannelProfile_WebWidgetConfig_Theme)(0),               // 4: google.cloud.ces.v1beta.ChannelProfile.WebWidgetConfig.Theme
-	(*Callback)(nil),                                        // 5: google.cloud.ces.v1beta.Callback
-	(*ModelSettings)(nil),                                   // 6: google.cloud.ces.v1beta.ModelSettings
-	(*TriggerAction)(nil),                                   // 7: google.cloud.ces.v1beta.TriggerAction
-	(*TlsConfig)(nil),                                       // 8: google.cloud.ces.v1beta.TlsConfig
-	(*ServiceDirectoryConfig)(nil),                          // 9: google.cloud.ces.v1beta.ServiceDirectoryConfig
-	(*ChannelProfile)(nil),                                  // 10: google.cloud.ces.v1beta.ChannelProfile
-	(*Span)(nil),                                            // 11: google.cloud.ces.v1beta.Span
-	(*TriggerAction_Response)(nil),                          // 12: google.cloud.ces.v1beta.TriggerAction.Response
-	(*TriggerAction_RespondImmediately)(nil),                // 13: google.cloud.ces.v1beta.TriggerAction.RespondImmediately
-	(*TriggerAction_GenerativeAnswer)(nil),                  // 14: google.cloud.ces.v1beta.TriggerAction.GenerativeAnswer
-	(*TriggerAction_TransferAgent)(nil),                     // 15: google.cloud.ces.v1beta.TriggerAction.TransferAgent
-	(*TlsConfig_CaCert)(nil),                                // 16: google.cloud.ces.v1beta.TlsConfig.CaCert
-	(*ChannelProfile_PersonaProperty)(nil),                  // 17: google.cloud.ces.v1beta.ChannelProfile.PersonaProperty
-	(*ChannelProfile_WebWidgetConfig)(nil),                  // 18: google.cloud.ces.v1beta.ChannelProfile.WebWidgetConfig
-	(*ChannelProfile_WebWidgetConfig_SecuritySettings)(nil), // 19: google.cloud.ces.v1beta.ChannelProfile.WebWidgetConfig.SecuritySettings
-	(*timestamppb.Timestamp)(nil),                           // 20: google.protobuf.Timestamp
-	(*durationpb.Duration)(nil),                             // 21: google.protobuf.Duration
-	(*structpb.Struct)(nil),                                 // 22: google.protobuf.Struct
+	(ExecutionType)(0),                                         // 0: google.cloud.ces.v1beta.ExecutionType
+	(ChannelProfile_ChannelType)(0),                            // 1: google.cloud.ces.v1beta.ChannelProfile.ChannelType
+	(ChannelProfile_PersonaProperty_Persona)(0),                // 2: google.cloud.ces.v1beta.ChannelProfile.PersonaProperty.Persona
+	(ChannelProfile_WebWidgetConfig_Modality)(0),               // 3: google.cloud.ces.v1beta.ChannelProfile.WebWidgetConfig.Modality
+	(ChannelProfile_WebWidgetConfig_Theme)(0),                  // 4: google.cloud.ces.v1beta.ChannelProfile.WebWidgetConfig.Theme
+	(EvaluationRunCachingSettings_EvaluationRunCachingMode)(0), // 5: google.cloud.ces.v1beta.EvaluationRunCachingSettings.EvaluationRunCachingMode
+	(*Callback)(nil),                                           // 6: google.cloud.ces.v1beta.Callback
+	(*ModelSettings)(nil),                                      // 7: google.cloud.ces.v1beta.ModelSettings
+	(*TriggerAction)(nil),                                      // 8: google.cloud.ces.v1beta.TriggerAction
+	(*TlsConfig)(nil),                                          // 9: google.cloud.ces.v1beta.TlsConfig
+	(*ServiceDirectoryConfig)(nil),                             // 10: google.cloud.ces.v1beta.ServiceDirectoryConfig
+	(*ChannelProfile)(nil),                                     // 11: google.cloud.ces.v1beta.ChannelProfile
+	(*Span)(nil),                                               // 12: google.cloud.ces.v1beta.Span
+	(*EvaluationRunCachingSettings)(nil),                       // 13: google.cloud.ces.v1beta.EvaluationRunCachingSettings
+	(*TriggerAction_Response)(nil),                             // 14: google.cloud.ces.v1beta.TriggerAction.Response
+	(*TriggerAction_RespondImmediately)(nil),                   // 15: google.cloud.ces.v1beta.TriggerAction.RespondImmediately
+	(*TriggerAction_GenerativeAnswer)(nil),                     // 16: google.cloud.ces.v1beta.TriggerAction.GenerativeAnswer
+	(*TriggerAction_TransferAgent)(nil),                        // 17: google.cloud.ces.v1beta.TriggerAction.TransferAgent
+	(*TlsConfig_CaCert)(nil),                                   // 18: google.cloud.ces.v1beta.TlsConfig.CaCert
+	(*ChannelProfile_PersonaProperty)(nil),                     // 19: google.cloud.ces.v1beta.ChannelProfile.PersonaProperty
+	(*ChannelProfile_WebWidgetConfig)(nil),                     // 20: google.cloud.ces.v1beta.ChannelProfile.WebWidgetConfig
+	(*ChannelProfile_WhatsAppConfig)(nil),                      // 21: google.cloud.ces.v1beta.ChannelProfile.WhatsAppConfig
+	(*ChannelProfile_InstagramConfig)(nil),                     // 22: google.cloud.ces.v1beta.ChannelProfile.InstagramConfig
+	(*ChannelProfile_WebWidgetConfig_SecuritySettings)(nil),    // 23: google.cloud.ces.v1beta.ChannelProfile.WebWidgetConfig.SecuritySettings
+	(*timestamppb.Timestamp)(nil),                              // 24: google.protobuf.Timestamp
+	(*durationpb.Duration)(nil),                                // 25: google.protobuf.Duration
+	(*structpb.Struct)(nil),                                    // 26: google.protobuf.Struct
 }
 var file_google_cloud_ces_v1beta_common_proto_depIdxs = []int32{
-	13, // 0: google.cloud.ces.v1beta.TriggerAction.respond_immediately:type_name -> google.cloud.ces.v1beta.TriggerAction.RespondImmediately
-	15, // 1: google.cloud.ces.v1beta.TriggerAction.transfer_agent:type_name -> google.cloud.ces.v1beta.TriggerAction.TransferAgent
-	14, // 2: google.cloud.ces.v1beta.TriggerAction.generative_answer:type_name -> google.cloud.ces.v1beta.TriggerAction.GenerativeAnswer
-	16, // 3: google.cloud.ces.v1beta.TlsConfig.ca_certs:type_name -> google.cloud.ces.v1beta.TlsConfig.CaCert
+	15, // 0: google.cloud.ces.v1beta.TriggerAction.respond_immediately:type_name -> google.cloud.ces.v1beta.TriggerAction.RespondImmediately
+	17, // 1: google.cloud.ces.v1beta.TriggerAction.transfer_agent:type_name -> google.cloud.ces.v1beta.TriggerAction.TransferAgent
+	16, // 2: google.cloud.ces.v1beta.TriggerAction.generative_answer:type_name -> google.cloud.ces.v1beta.TriggerAction.GenerativeAnswer
+	18, // 3: google.cloud.ces.v1beta.TlsConfig.ca_certs:type_name -> google.cloud.ces.v1beta.TlsConfig.CaCert
 	1,  // 4: google.cloud.ces.v1beta.ChannelProfile.channel_type:type_name -> google.cloud.ces.v1beta.ChannelProfile.ChannelType
-	17, // 5: google.cloud.ces.v1beta.ChannelProfile.persona_property:type_name -> google.cloud.ces.v1beta.ChannelProfile.PersonaProperty
-	18, // 6: google.cloud.ces.v1beta.ChannelProfile.web_widget_config:type_name -> google.cloud.ces.v1beta.ChannelProfile.WebWidgetConfig
-	20, // 7: google.cloud.ces.v1beta.Span.start_time:type_name -> google.protobuf.Timestamp
-	20, // 8: google.cloud.ces.v1beta.Span.end_time:type_name -> google.protobuf.Timestamp
-	21, // 9: google.cloud.ces.v1beta.Span.duration:type_name -> google.protobuf.Duration
-	22, // 10: google.cloud.ces.v1beta.Span.attributes:type_name -> google.protobuf.Struct
-	11, // 11: google.cloud.ces.v1beta.Span.child_spans:type_name -> google.cloud.ces.v1beta.Span
-	12, // 12: google.cloud.ces.v1beta.TriggerAction.RespondImmediately.responses:type_name -> google.cloud.ces.v1beta.TriggerAction.Response
-	2,  // 13: google.cloud.ces.v1beta.ChannelProfile.PersonaProperty.persona:type_name -> google.cloud.ces.v1beta.ChannelProfile.PersonaProperty.Persona
-	3,  // 14: google.cloud.ces.v1beta.ChannelProfile.WebWidgetConfig.modality:type_name -> google.cloud.ces.v1beta.ChannelProfile.WebWidgetConfig.Modality
-	4,  // 15: google.cloud.ces.v1beta.ChannelProfile.WebWidgetConfig.theme:type_name -> google.cloud.ces.v1beta.ChannelProfile.WebWidgetConfig.Theme
-	19, // 16: google.cloud.ces.v1beta.ChannelProfile.WebWidgetConfig.security_settings:type_name -> google.cloud.ces.v1beta.ChannelProfile.WebWidgetConfig.SecuritySettings
-	17, // [17:17] is the sub-list for method output_type
-	17, // [17:17] is the sub-list for method input_type
-	17, // [17:17] is the sub-list for extension type_name
-	17, // [17:17] is the sub-list for extension extendee
-	0,  // [0:17] is the sub-list for field type_name
+	19, // 5: google.cloud.ces.v1beta.ChannelProfile.persona_property:type_name -> google.cloud.ces.v1beta.ChannelProfile.PersonaProperty
+	20, // 6: google.cloud.ces.v1beta.ChannelProfile.web_widget_config:type_name -> google.cloud.ces.v1beta.ChannelProfile.WebWidgetConfig
+	21, // 7: google.cloud.ces.v1beta.ChannelProfile.whatsapp_config:type_name -> google.cloud.ces.v1beta.ChannelProfile.WhatsAppConfig
+	22, // 8: google.cloud.ces.v1beta.ChannelProfile.instagram_config:type_name -> google.cloud.ces.v1beta.ChannelProfile.InstagramConfig
+	24, // 9: google.cloud.ces.v1beta.Span.start_time:type_name -> google.protobuf.Timestamp
+	24, // 10: google.cloud.ces.v1beta.Span.end_time:type_name -> google.protobuf.Timestamp
+	25, // 11: google.cloud.ces.v1beta.Span.duration:type_name -> google.protobuf.Duration
+	26, // 12: google.cloud.ces.v1beta.Span.attributes:type_name -> google.protobuf.Struct
+	12, // 13: google.cloud.ces.v1beta.Span.child_spans:type_name -> google.cloud.ces.v1beta.Span
+	5,  // 14: google.cloud.ces.v1beta.EvaluationRunCachingSettings.run_caching_mode:type_name -> google.cloud.ces.v1beta.EvaluationRunCachingSettings.EvaluationRunCachingMode
+	14, // 15: google.cloud.ces.v1beta.TriggerAction.RespondImmediately.responses:type_name -> google.cloud.ces.v1beta.TriggerAction.Response
+	2,  // 16: google.cloud.ces.v1beta.ChannelProfile.PersonaProperty.persona:type_name -> google.cloud.ces.v1beta.ChannelProfile.PersonaProperty.Persona
+	3,  // 17: google.cloud.ces.v1beta.ChannelProfile.WebWidgetConfig.modality:type_name -> google.cloud.ces.v1beta.ChannelProfile.WebWidgetConfig.Modality
+	4,  // 18: google.cloud.ces.v1beta.ChannelProfile.WebWidgetConfig.theme:type_name -> google.cloud.ces.v1beta.ChannelProfile.WebWidgetConfig.Theme
+	23, // 19: google.cloud.ces.v1beta.ChannelProfile.WebWidgetConfig.security_settings:type_name -> google.cloud.ces.v1beta.ChannelProfile.WebWidgetConfig.SecuritySettings
+	20, // [20:20] is the sub-list for method output_type
+	20, // [20:20] is the sub-list for method input_type
+	20, // [20:20] is the sub-list for extension type_name
+	20, // [20:20] is the sub-list for extension extendee
+	0,  // [0:20] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_ces_v1beta_common_proto_init() }
@@ -1555,8 +1884,8 @@ func file_google_cloud_ces_v1beta_common_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_ces_v1beta_common_proto_rawDesc), len(file_google_cloud_ces_v1beta_common_proto_rawDesc)),
-			NumEnums:      5,
-			NumMessages:   15,
+			NumEnums:      6,
+			NumMessages:   18,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

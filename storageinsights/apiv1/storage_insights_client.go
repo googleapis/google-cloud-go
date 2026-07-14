@@ -32,6 +32,7 @@ import (
 	storageinsightspb "cloud.google.com/go/storageinsights/apiv1/storageinsightspb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -1155,8 +1156,12 @@ func (c *gRPCClient) CreateDatasetConfig(ctx context.Context, req *storageinsigh
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*storageinsights.CreateDatasetConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateDatasetConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1178,8 +1183,12 @@ func (c *gRPCClient) UpdateDatasetConfig(ctx context.Context, req *storageinsigh
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*storageinsights.UpdateDatasetConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateDatasetConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1204,8 +1213,12 @@ func (c *gRPCClient) DeleteDatasetConfig(ctx context.Context, req *storageinsigh
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*storageinsights.DeleteDatasetConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteDatasetConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1230,8 +1243,12 @@ func (c *gRPCClient) LinkDataset(ctx context.Context, req *storageinsightspb.Lin
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*storageinsights.LinkDatasetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &LinkDatasetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1256,8 +1273,12 @@ func (c *gRPCClient) UnlinkDataset(ctx context.Context, req *storageinsightspb.U
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*storageinsights.UnlinkDatasetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UnlinkDatasetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2109,8 +2130,12 @@ func (c *restClient) CreateDatasetConfig(ctx context.Context, req *storageinsigh
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*storageinsights.CreateDatasetConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateDatasetConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2183,8 +2208,12 @@ func (c *restClient) UpdateDatasetConfig(ctx context.Context, req *storageinsigh
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*storageinsights.UpdateDatasetConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateDatasetConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2246,8 +2275,12 @@ func (c *restClient) DeleteDatasetConfig(ctx context.Context, req *storageinsigh
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*storageinsights.DeleteDatasetConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteDatasetConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2312,8 +2345,12 @@ func (c *restClient) LinkDataset(ctx context.Context, req *storageinsightspb.Lin
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*storageinsights.LinkDatasetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &LinkDatasetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2379,8 +2416,12 @@ func (c *restClient) UnlinkDataset(ctx context.Context, req *storageinsightspb.U
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*storageinsights.UnlinkDatasetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UnlinkDatasetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2746,7 +2787,7 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // The name must be that of a previously created CreateDatasetConfigOperation, possibly from a different process.
 func (c *gRPCClient) CreateDatasetConfigOperation(name string) *CreateDatasetConfigOperation {
 	return &CreateDatasetConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*storageinsights.CreateDatasetConfigOperation"),
 	}
 }
 
@@ -2755,7 +2796,7 @@ func (c *gRPCClient) CreateDatasetConfigOperation(name string) *CreateDatasetCon
 func (c *restClient) CreateDatasetConfigOperation(name string) *CreateDatasetConfigOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateDatasetConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*storageinsights.CreateDatasetConfigOperation"),
 		pollPath: override,
 	}
 }
@@ -2764,7 +2805,7 @@ func (c *restClient) CreateDatasetConfigOperation(name string) *CreateDatasetCon
 // The name must be that of a previously created DeleteDatasetConfigOperation, possibly from a different process.
 func (c *gRPCClient) DeleteDatasetConfigOperation(name string) *DeleteDatasetConfigOperation {
 	return &DeleteDatasetConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*storageinsights.DeleteDatasetConfigOperation"),
 	}
 }
 
@@ -2773,7 +2814,7 @@ func (c *gRPCClient) DeleteDatasetConfigOperation(name string) *DeleteDatasetCon
 func (c *restClient) DeleteDatasetConfigOperation(name string) *DeleteDatasetConfigOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteDatasetConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*storageinsights.DeleteDatasetConfigOperation"),
 		pollPath: override,
 	}
 }
@@ -2782,7 +2823,7 @@ func (c *restClient) DeleteDatasetConfigOperation(name string) *DeleteDatasetCon
 // The name must be that of a previously created LinkDatasetOperation, possibly from a different process.
 func (c *gRPCClient) LinkDatasetOperation(name string) *LinkDatasetOperation {
 	return &LinkDatasetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*storageinsights.LinkDatasetOperation"),
 	}
 }
 
@@ -2791,7 +2832,7 @@ func (c *gRPCClient) LinkDatasetOperation(name string) *LinkDatasetOperation {
 func (c *restClient) LinkDatasetOperation(name string) *LinkDatasetOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &LinkDatasetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*storageinsights.LinkDatasetOperation"),
 		pollPath: override,
 	}
 }
@@ -2800,7 +2841,7 @@ func (c *restClient) LinkDatasetOperation(name string) *LinkDatasetOperation {
 // The name must be that of a previously created UnlinkDatasetOperation, possibly from a different process.
 func (c *gRPCClient) UnlinkDatasetOperation(name string) *UnlinkDatasetOperation {
 	return &UnlinkDatasetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*storageinsights.UnlinkDatasetOperation"),
 	}
 }
 
@@ -2809,7 +2850,7 @@ func (c *gRPCClient) UnlinkDatasetOperation(name string) *UnlinkDatasetOperation
 func (c *restClient) UnlinkDatasetOperation(name string) *UnlinkDatasetOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UnlinkDatasetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*storageinsights.UnlinkDatasetOperation"),
 		pollPath: override,
 	}
 }
@@ -2818,7 +2859,7 @@ func (c *restClient) UnlinkDatasetOperation(name string) *UnlinkDatasetOperation
 // The name must be that of a previously created UpdateDatasetConfigOperation, possibly from a different process.
 func (c *gRPCClient) UpdateDatasetConfigOperation(name string) *UpdateDatasetConfigOperation {
 	return &UpdateDatasetConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*storageinsights.UpdateDatasetConfigOperation"),
 	}
 }
 
@@ -2827,7 +2868,7 @@ func (c *gRPCClient) UpdateDatasetConfigOperation(name string) *UpdateDatasetCon
 func (c *restClient) UpdateDatasetConfigOperation(name string) *UpdateDatasetConfigOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateDatasetConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*storageinsights.UpdateDatasetConfigOperation"),
 		pollPath: override,
 	}
 }

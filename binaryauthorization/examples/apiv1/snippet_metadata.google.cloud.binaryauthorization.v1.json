@@ -8,7 +8,7 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/binaryauthorization/apiv1",
-    "version": "1.15.0"
+    "version": "1.16.0"
   },
   "snippets": [
     {
@@ -43,7 +43,7 @@
         "resultType": "*binaryauthorizationpb.Attestor",
         "shortName": "CreateAttestor"
       },
-      "description": "CreateAttestor creates an [attestor][google.cloud.binaryauthorization.v1.Attestor], and returns a copy of the new\n[attestor][google.cloud.binaryauthorization.v1.Attestor]. Returns NOT_FOUND if the project does not exist,\nINVALID_ARGUMENT if the request is malformed, ALREADY_EXISTS if the\n[attestor][google.cloud.binaryauthorization.v1.Attestor] already exists.",
+      "description": "CreateAttestor creates an [attestor][google.cloud.binaryauthorization.v1.Attestor], and\nreturns a copy of the new\n[attestor][google.cloud.binaryauthorization.v1.Attestor]. Returns\n`NOT_FOUND` if the project does not exist, `INVALID_ARGUMENT` if the\nrequest is malformed, `ALREADY_EXISTS` if the\n[attestor][google.cloud.binaryauthorization.v1.Attestor] already exists.",
       "file": "BinauthzManagementClient/CreateAttestor/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -88,7 +88,7 @@
         ],
         "shortName": "DeleteAttestor"
       },
-      "description": "DeleteAttestor deletes an [attestor][google.cloud.binaryauthorization.v1.Attestor]. Returns NOT_FOUND if the\n[attestor][google.cloud.binaryauthorization.v1.Attestor] does not exist.",
+      "description": "DeleteAttestor deletes an [attestor][google.cloud.binaryauthorization.v1.Attestor].\nReturns `NOT_FOUND` if the\n[attestor][google.cloud.binaryauthorization.v1.Attestor] does not exist.",
       "file": "BinauthzManagementClient/DeleteAttestor/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -134,7 +134,7 @@
         "resultType": "*binaryauthorizationpb.Attestor",
         "shortName": "GetAttestor"
       },
-      "description": "GetAttestor gets an [attestor][google.cloud.binaryauthorization.v1.Attestor].\nReturns NOT_FOUND if the [attestor][google.cloud.binaryauthorization.v1.Attestor] does not exist.",
+      "description": "GetAttestor gets an [attestor][google.cloud.binaryauthorization.v1.Attestor].\nReturns `NOT_FOUND` if the\n[attestor][google.cloud.binaryauthorization.v1.Attestor] does not exist.",
       "file": "BinauthzManagementClient/GetAttestor/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -147,6 +147,52 @@
         }
       ],
       "title": "binaryauthorization GetAttestor Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.binaryauthorization.v1.BinauthzManagementClient",
+          "shortName": "BinauthzManagementClient"
+        },
+        "fullName": "google.cloud.binaryauthorization.v1.BinauthzManagementClient.GetIamPolicy",
+        "method": {
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
+          "service": {
+            "fullName": "google.iam.v1.IAMPolicy",
+            "shortName": "IAMPolicy"
+          },
+          "shortName": "GetIamPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iampb.GetIamPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "shortName": "GetIamPolicy"
+      },
+      "description": "GetIamPolicy gets the access control policy for a resource. Returns an empty policy\nif the resource exists and does not have a policy set.",
+      "file": "BinauthzManagementClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "binaryauthorization_v1_generated_BinauthzManagementServiceV1_GetIamPolicy_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "binaryauthorization GetIamPolicy Sample"
     },
     {
       "clientMethod": {
@@ -180,7 +226,7 @@
         "resultType": "*binaryauthorizationpb.Policy",
         "shortName": "GetPolicy"
       },
-      "description": "GetPolicy a [policy][google.cloud.binaryauthorization.v1.Policy] specifies the [attestors][google.cloud.binaryauthorization.v1.Attestor] that must attest to\na container image, before the project is allowed to deploy that\nimage. There is at most one policy per project. All image admission\nrequests are permitted if a project has no policy.\n\nGets the [policy][google.cloud.binaryauthorization.v1.Policy] for this project. Returns a default\n[policy][google.cloud.binaryauthorization.v1.Policy] if the project does not have one.",
+      "description": "GetPolicy a [policy][google.cloud.binaryauthorization.v1.Policy] specifies the\n[attestors][google.cloud.binaryauthorization.v1.Attestor] that must attest\nto a container image, before the project is allowed to deploy that image.\nThere is at most one policy per project. All image admission requests are\npermitted if a project has no policy.\n\nGets the [policy][google.cloud.binaryauthorization.v1.Policy] for this\nproject. Returns a default\n[policy][google.cloud.binaryauthorization.v1.Policy] if the project does\nnot have one.",
       "file": "BinauthzManagementClient/GetPolicy/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -226,7 +272,7 @@
         "resultType": "AttestorIterator",
         "shortName": "ListAttestors"
       },
-      "description": "ListAttestors lists [attestors][google.cloud.binaryauthorization.v1.Attestor].\nReturns INVALID_ARGUMENT if the project does not exist.",
+      "description": "ListAttestors lists [attestors][google.cloud.binaryauthorization.v1.Attestor].\nReturns `INVALID_ARGUMENT` if the project does not exist.",
       "file": "BinauthzManagementClient/ListAttestors/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -239,6 +285,98 @@
         }
       ],
       "title": "binaryauthorization ListAttestors Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.binaryauthorization.v1.BinauthzManagementClient",
+          "shortName": "BinauthzManagementClient"
+        },
+        "fullName": "google.cloud.binaryauthorization.v1.BinauthzManagementClient.SetIamPolicy",
+        "method": {
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
+          "service": {
+            "fullName": "google.iam.v1.IAMPolicy",
+            "shortName": "IAMPolicy"
+          },
+          "shortName": "SetIamPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iampb.SetIamPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "shortName": "SetIamPolicy"
+      },
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
+      "file": "BinauthzManagementClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "binaryauthorization_v1_generated_BinauthzManagementServiceV1_SetIamPolicy_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "binaryauthorization SetIamPolicy Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.binaryauthorization.v1.BinauthzManagementClient",
+          "shortName": "BinauthzManagementClient"
+        },
+        "fullName": "google.cloud.binaryauthorization.v1.BinauthzManagementClient.TestIamPermissions",
+        "method": {
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
+          "service": {
+            "fullName": "google.iam.v1.IAMPolicy",
+            "shortName": "IAMPolicy"
+          },
+          "shortName": "TestIamPermissions"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iampb.TestIamPermissionsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iampb.TestIamPermissionsResponse",
+        "shortName": "TestIamPermissions"
+      },
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
+      "file": "BinauthzManagementClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "binaryauthorization_v1_generated_BinauthzManagementServiceV1_TestIamPermissions_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "binaryauthorization TestIamPermissions Sample"
     },
     {
       "clientMethod": {
@@ -272,7 +410,7 @@
         "resultType": "*binaryauthorizationpb.Attestor",
         "shortName": "UpdateAttestor"
       },
-      "description": "UpdateAttestor updates an [attestor][google.cloud.binaryauthorization.v1.Attestor].\nReturns NOT_FOUND if the [attestor][google.cloud.binaryauthorization.v1.Attestor] does not exist.",
+      "description": "UpdateAttestor updates an [attestor][google.cloud.binaryauthorization.v1.Attestor].\nReturns `NOT_FOUND` if the\n[attestor][google.cloud.binaryauthorization.v1.Attestor] does not exist.",
       "file": "BinauthzManagementClient/UpdateAttestor/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -318,7 +456,7 @@
         "resultType": "*binaryauthorizationpb.Policy",
         "shortName": "UpdatePolicy"
       },
-      "description": "UpdatePolicy creates or updates a project's [policy][google.cloud.binaryauthorization.v1.Policy], and returns a copy of the\nnew [policy][google.cloud.binaryauthorization.v1.Policy]. A policy is always updated as a whole, to avoid race\nconditions with concurrent policy enforcement (or management!)\nrequests. Returns NOT_FOUND if the project does not exist, INVALID_ARGUMENT\nif the request is malformed.",
+      "description": "UpdatePolicy creates or updates a project's\n[policy][google.cloud.binaryauthorization.v1.Policy], and returns a copy of\nthe new [policy][google.cloud.binaryauthorization.v1.Policy]. A policy is\nalways updated as a whole, to avoid race conditions with concurrent policy\nenforcement (or management!) requests. Returns `NOT_FOUND` if the project\ndoes not exist, `INVALID_ARGUMENT` if the request is malformed.",
       "file": "BinauthzManagementClient/UpdatePolicy/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -331,6 +469,52 @@
         }
       ],
       "title": "binaryauthorization UpdatePolicy Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.binaryauthorization.v1.SystemPolicyClient",
+          "shortName": "SystemPolicyClient"
+        },
+        "fullName": "google.cloud.binaryauthorization.v1.SystemPolicyClient.GetIamPolicy",
+        "method": {
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
+          "service": {
+            "fullName": "google.iam.v1.IAMPolicy",
+            "shortName": "IAMPolicy"
+          },
+          "shortName": "GetIamPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iampb.GetIamPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "shortName": "GetIamPolicy"
+      },
+      "description": "GetIamPolicy gets the access control policy for a resource. Returns an empty policy\nif the resource exists and does not have a policy set.",
+      "file": "SystemPolicyClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "binaryauthorization_v1_generated_SystemPolicyV1_GetIamPolicy_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "binaryauthorization GetIamPolicy Sample"
     },
     {
       "clientMethod": {
@@ -381,6 +565,236 @@
     {
       "clientMethod": {
         "client": {
+          "fullName": "google.cloud.binaryauthorization.v1.SystemPolicyClient",
+          "shortName": "SystemPolicyClient"
+        },
+        "fullName": "google.cloud.binaryauthorization.v1.SystemPolicyClient.SetIamPolicy",
+        "method": {
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
+          "service": {
+            "fullName": "google.iam.v1.IAMPolicy",
+            "shortName": "IAMPolicy"
+          },
+          "shortName": "SetIamPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iampb.SetIamPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "shortName": "SetIamPolicy"
+      },
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
+      "file": "SystemPolicyClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "binaryauthorization_v1_generated_SystemPolicyV1_SetIamPolicy_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "binaryauthorization SetIamPolicy Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.binaryauthorization.v1.SystemPolicyClient",
+          "shortName": "SystemPolicyClient"
+        },
+        "fullName": "google.cloud.binaryauthorization.v1.SystemPolicyClient.TestIamPermissions",
+        "method": {
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
+          "service": {
+            "fullName": "google.iam.v1.IAMPolicy",
+            "shortName": "IAMPolicy"
+          },
+          "shortName": "TestIamPermissions"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iampb.TestIamPermissionsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iampb.TestIamPermissionsResponse",
+        "shortName": "TestIamPermissions"
+      },
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
+      "file": "SystemPolicyClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "binaryauthorization_v1_generated_SystemPolicyV1_TestIamPermissions_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "binaryauthorization TestIamPermissions Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.binaryauthorization.v1.ValidationHelperClient",
+          "shortName": "ValidationHelperClient"
+        },
+        "fullName": "google.cloud.binaryauthorization.v1.ValidationHelperClient.GetIamPolicy",
+        "method": {
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
+          "service": {
+            "fullName": "google.iam.v1.IAMPolicy",
+            "shortName": "IAMPolicy"
+          },
+          "shortName": "GetIamPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iampb.GetIamPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "shortName": "GetIamPolicy"
+      },
+      "description": "GetIamPolicy gets the access control policy for a resource. Returns an empty policy\nif the resource exists and does not have a policy set.",
+      "file": "ValidationHelperClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "binaryauthorization_v1_generated_ValidationHelperV1_GetIamPolicy_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "binaryauthorization GetIamPolicy Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.binaryauthorization.v1.ValidationHelperClient",
+          "shortName": "ValidationHelperClient"
+        },
+        "fullName": "google.cloud.binaryauthorization.v1.ValidationHelperClient.SetIamPolicy",
+        "method": {
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
+          "service": {
+            "fullName": "google.iam.v1.IAMPolicy",
+            "shortName": "IAMPolicy"
+          },
+          "shortName": "SetIamPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iampb.SetIamPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "shortName": "SetIamPolicy"
+      },
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
+      "file": "ValidationHelperClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "binaryauthorization_v1_generated_ValidationHelperV1_SetIamPolicy_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "binaryauthorization SetIamPolicy Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.binaryauthorization.v1.ValidationHelperClient",
+          "shortName": "ValidationHelperClient"
+        },
+        "fullName": "google.cloud.binaryauthorization.v1.ValidationHelperClient.TestIamPermissions",
+        "method": {
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
+          "service": {
+            "fullName": "google.iam.v1.IAMPolicy",
+            "shortName": "IAMPolicy"
+          },
+          "shortName": "TestIamPermissions"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iampb.TestIamPermissionsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iampb.TestIamPermissionsResponse",
+        "shortName": "TestIamPermissions"
+      },
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
+      "file": "ValidationHelperClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "binaryauthorization_v1_generated_ValidationHelperV1_TestIamPermissions_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "binaryauthorization TestIamPermissions Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
           "fullName": "google.cloud.binaryauthorization.v1.ValidationHelperClient",
           "shortName": "ValidationHelperClient"
         },
@@ -410,7 +824,7 @@
         "resultType": "*binaryauthorizationpb.ValidateAttestationOccurrenceResponse",
         "shortName": "ValidateAttestationOccurrence"
       },
-      "description": "ValidateAttestationOccurrence returns whether the given Attestation for the given image URI\nwas signed by the given Attestor",
+      "description": "ValidateAttestationOccurrence returns whether the given `Attestation` for the given image URI\nwas signed by the given `Attestor`",
       "file": "ValidationHelperClient/ValidateAttestationOccurrence/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",

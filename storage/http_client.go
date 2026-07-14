@@ -1627,7 +1627,7 @@ func readerReopen(ctx context.Context, header http.Header, params *newRangeReade
 				params.gen = gen64
 			}
 			return nil
-		}, s.retry, s.idempotent)
+		}, s.retry, s.idempotent, withOperation("ReadObject"), withBucket(params.bucket), withObject(params.object))
 		if err != nil {
 			return nil, err
 		}

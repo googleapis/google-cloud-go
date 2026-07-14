@@ -32,6 +32,7 @@ import (
 	serviceusagepb "cloud.google.com/go/serviceusage/apiv1/serviceusagepb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -538,8 +539,12 @@ func (c *gRPCClient) EnableService(ctx context.Context, req *serviceusagepb.Enab
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*serviceusage.EnableServiceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &EnableServiceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -561,8 +566,12 @@ func (c *gRPCClient) DisableService(ctx context.Context, req *serviceusagepb.Dis
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*serviceusage.DisableServiceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DisableServiceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -654,8 +663,12 @@ func (c *gRPCClient) BatchEnableServices(ctx context.Context, req *serviceusagep
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*serviceusage.BatchEnableServicesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &BatchEnableServicesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -799,8 +812,12 @@ func (c *restClient) EnableService(ctx context.Context, req *serviceusagepb.Enab
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*serviceusage.EnableServiceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &EnableServiceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -863,8 +880,12 @@ func (c *restClient) DisableService(ctx context.Context, req *serviceusagepb.Dis
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*serviceusage.DisableServiceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DisableServiceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1064,8 +1085,12 @@ func (c *restClient) BatchEnableServices(ctx context.Context, req *serviceusagep
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*serviceusage.BatchEnableServicesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &BatchEnableServicesOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1268,7 +1293,7 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // The name must be that of a previously created BatchEnableServicesOperation, possibly from a different process.
 func (c *gRPCClient) BatchEnableServicesOperation(name string) *BatchEnableServicesOperation {
 	return &BatchEnableServicesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*serviceusage.BatchEnableServicesOperation"),
 	}
 }
 
@@ -1277,7 +1302,7 @@ func (c *gRPCClient) BatchEnableServicesOperation(name string) *BatchEnableServi
 func (c *restClient) BatchEnableServicesOperation(name string) *BatchEnableServicesOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &BatchEnableServicesOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*serviceusage.BatchEnableServicesOperation"),
 		pollPath: override,
 	}
 }
@@ -1286,7 +1311,7 @@ func (c *restClient) BatchEnableServicesOperation(name string) *BatchEnableServi
 // The name must be that of a previously created DisableServiceOperation, possibly from a different process.
 func (c *gRPCClient) DisableServiceOperation(name string) *DisableServiceOperation {
 	return &DisableServiceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*serviceusage.DisableServiceOperation"),
 	}
 }
 
@@ -1295,7 +1320,7 @@ func (c *gRPCClient) DisableServiceOperation(name string) *DisableServiceOperati
 func (c *restClient) DisableServiceOperation(name string) *DisableServiceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DisableServiceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*serviceusage.DisableServiceOperation"),
 		pollPath: override,
 	}
 }
@@ -1304,7 +1329,7 @@ func (c *restClient) DisableServiceOperation(name string) *DisableServiceOperati
 // The name must be that of a previously created EnableServiceOperation, possibly from a different process.
 func (c *gRPCClient) EnableServiceOperation(name string) *EnableServiceOperation {
 	return &EnableServiceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*serviceusage.EnableServiceOperation"),
 	}
 }
 
@@ -1313,7 +1338,7 @@ func (c *gRPCClient) EnableServiceOperation(name string) *EnableServiceOperation
 func (c *restClient) EnableServiceOperation(name string) *EnableServiceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &EnableServiceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*serviceusage.EnableServiceOperation"),
 		pollPath: override,
 	}
 }

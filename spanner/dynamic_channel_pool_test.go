@@ -974,6 +974,32 @@ func TestDynamicChannelPoolScaleUpDialFailureDoesNotPublishEntry(t *testing.T) {
 	}
 }
 
+func TestDefaultDynamicChannelPoolConfigValues(t *testing.T) {
+	// Pins the documented DCP default values via a full-struct comparison, so any
+	// default change (or a new knob added without a pinned default) is a deliberate,
+	// test-visible decision rather than a silently green diff.
+	got := DefaultDynamicChannelPoolConfig()
+	want := DynamicChannelPoolConfig{
+		DCPInitialChannels:                   4,
+		DCPMinChannels:                       2,
+		DCPMaxChannels:                       10,
+		DCPMaxRPCPerChannel:                  25,
+		DCPMinRPCPerChannel:                  15,
+		DCPScaleDownCheckInterval:            3 * time.Minute,
+		DCPScaleUpCooldown:                   10 * time.Second,
+		DCPDownscaleConsecutiveLowLoadChecks: 3,
+		DCPMaxScaleUpPercent:                 30,
+		DCPMaxRemoveChannels:                 2,
+		DCPDrainIdleGrace:                    time.Minute,
+		DCPPrimeTimeout:                      10 * time.Second,
+		DCPPrimeMaxAttempts:                  3,
+		DCPSelectionStrategy:                 DCPPowerOfTwoLeastBusy,
+	}
+	if got != want {
+		t.Fatalf("DefaultDynamicChannelPoolConfig() = %+v, want %+v", got, want)
+	}
+}
+
 func TestDynamicChannelPoolConfigDefaultsInitialChannelsToMinWhenInitialUnset(t *testing.T) {
 	cfg, err := normalizeDCPConfig(DynamicChannelPoolConfig{DCPEnabled: true, DCPMinChannels: 8, DCPMaxChannels: 10})
 	if err != nil {

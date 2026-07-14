@@ -31,6 +31,7 @@ import (
 	networkconnectivitypb "cloud.google.com/go/networkconnectivity/apiv1/networkconnectivitypb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -924,8 +925,12 @@ func (c *hubGRPCClient) CreateHub(ctx context.Context, req *networkconnectivityp
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkconnectivity.CreateHubOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateHubOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -947,8 +952,12 @@ func (c *hubGRPCClient) UpdateHub(ctx context.Context, req *networkconnectivityp
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkconnectivity.UpdateHubOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateHubOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -973,8 +982,12 @@ func (c *hubGRPCClient) DeleteHub(ctx context.Context, req *networkconnectivityp
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkconnectivity.DeleteHubOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteHubOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1179,8 +1192,12 @@ func (c *hubGRPCClient) CreateSpoke(ctx context.Context, req *networkconnectivit
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkconnectivity.CreateSpokeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateSpokeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1202,8 +1219,12 @@ func (c *hubGRPCClient) UpdateSpoke(ctx context.Context, req *networkconnectivit
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkconnectivity.UpdateSpokeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateSpokeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1228,8 +1249,12 @@ func (c *hubGRPCClient) RejectHubSpoke(ctx context.Context, req *networkconnecti
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkconnectivity.RejectHubSpokeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RejectHubSpokeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1254,8 +1279,12 @@ func (c *hubGRPCClient) AcceptHubSpoke(ctx context.Context, req *networkconnecti
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkconnectivity.AcceptHubSpokeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &AcceptHubSpokeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1280,8 +1309,12 @@ func (c *hubGRPCClient) AcceptSpokeUpdate(ctx context.Context, req *networkconne
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkconnectivity.AcceptSpokeUpdateOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &AcceptSpokeUpdateOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1306,8 +1339,12 @@ func (c *hubGRPCClient) RejectSpokeUpdate(ctx context.Context, req *networkconne
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkconnectivity.RejectSpokeUpdateOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RejectSpokeUpdateOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1332,8 +1369,12 @@ func (c *hubGRPCClient) DeleteSpoke(ctx context.Context, req *networkconnectivit
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkconnectivity.DeleteSpokeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteSpokeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1583,8 +1624,12 @@ func (c *hubGRPCClient) UpdateGroup(ctx context.Context, req *networkconnectivit
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkconnectivity.UpdateGroupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateGroupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1838,7 +1883,7 @@ func (c *hubGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.L
 // The name must be that of a previously created AcceptHubSpokeOperation, possibly from a different process.
 func (c *hubGRPCClient) AcceptHubSpokeOperation(name string) *AcceptHubSpokeOperation {
 	return &AcceptHubSpokeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkconnectivity.AcceptHubSpokeOperation"),
 	}
 }
 
@@ -1846,7 +1891,7 @@ func (c *hubGRPCClient) AcceptHubSpokeOperation(name string) *AcceptHubSpokeOper
 // The name must be that of a previously created AcceptSpokeUpdateOperation, possibly from a different process.
 func (c *hubGRPCClient) AcceptSpokeUpdateOperation(name string) *AcceptSpokeUpdateOperation {
 	return &AcceptSpokeUpdateOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkconnectivity.AcceptSpokeUpdateOperation"),
 	}
 }
 
@@ -1854,7 +1899,7 @@ func (c *hubGRPCClient) AcceptSpokeUpdateOperation(name string) *AcceptSpokeUpda
 // The name must be that of a previously created CreateHubOperation, possibly from a different process.
 func (c *hubGRPCClient) CreateHubOperation(name string) *CreateHubOperation {
 	return &CreateHubOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkconnectivity.CreateHubOperation"),
 	}
 }
 
@@ -1862,7 +1907,7 @@ func (c *hubGRPCClient) CreateHubOperation(name string) *CreateHubOperation {
 // The name must be that of a previously created CreateSpokeOperation, possibly from a different process.
 func (c *hubGRPCClient) CreateSpokeOperation(name string) *CreateSpokeOperation {
 	return &CreateSpokeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkconnectivity.CreateSpokeOperation"),
 	}
 }
 
@@ -1870,7 +1915,7 @@ func (c *hubGRPCClient) CreateSpokeOperation(name string) *CreateSpokeOperation 
 // The name must be that of a previously created DeleteHubOperation, possibly from a different process.
 func (c *hubGRPCClient) DeleteHubOperation(name string) *DeleteHubOperation {
 	return &DeleteHubOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkconnectivity.DeleteHubOperation"),
 	}
 }
 
@@ -1878,7 +1923,7 @@ func (c *hubGRPCClient) DeleteHubOperation(name string) *DeleteHubOperation {
 // The name must be that of a previously created DeleteSpokeOperation, possibly from a different process.
 func (c *hubGRPCClient) DeleteSpokeOperation(name string) *DeleteSpokeOperation {
 	return &DeleteSpokeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkconnectivity.DeleteSpokeOperation"),
 	}
 }
 
@@ -1886,7 +1931,7 @@ func (c *hubGRPCClient) DeleteSpokeOperation(name string) *DeleteSpokeOperation 
 // The name must be that of a previously created RejectHubSpokeOperation, possibly from a different process.
 func (c *hubGRPCClient) RejectHubSpokeOperation(name string) *RejectHubSpokeOperation {
 	return &RejectHubSpokeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkconnectivity.RejectHubSpokeOperation"),
 	}
 }
 
@@ -1894,7 +1939,7 @@ func (c *hubGRPCClient) RejectHubSpokeOperation(name string) *RejectHubSpokeOper
 // The name must be that of a previously created RejectSpokeUpdateOperation, possibly from a different process.
 func (c *hubGRPCClient) RejectSpokeUpdateOperation(name string) *RejectSpokeUpdateOperation {
 	return &RejectSpokeUpdateOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkconnectivity.RejectSpokeUpdateOperation"),
 	}
 }
 
@@ -1902,7 +1947,7 @@ func (c *hubGRPCClient) RejectSpokeUpdateOperation(name string) *RejectSpokeUpda
 // The name must be that of a previously created UpdateGroupOperation, possibly from a different process.
 func (c *hubGRPCClient) UpdateGroupOperation(name string) *UpdateGroupOperation {
 	return &UpdateGroupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkconnectivity.UpdateGroupOperation"),
 	}
 }
 
@@ -1910,7 +1955,7 @@ func (c *hubGRPCClient) UpdateGroupOperation(name string) *UpdateGroupOperation 
 // The name must be that of a previously created UpdateHubOperation, possibly from a different process.
 func (c *hubGRPCClient) UpdateHubOperation(name string) *UpdateHubOperation {
 	return &UpdateHubOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkconnectivity.UpdateHubOperation"),
 	}
 }
 
@@ -1918,6 +1963,6 @@ func (c *hubGRPCClient) UpdateHubOperation(name string) *UpdateHubOperation {
 // The name must be that of a previously created UpdateSpokeOperation, possibly from a different process.
 func (c *hubGRPCClient) UpdateSpokeOperation(name string) *UpdateSpokeOperation {
 	return &UpdateSpokeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkconnectivity.UpdateSpokeOperation"),
 	}
 }

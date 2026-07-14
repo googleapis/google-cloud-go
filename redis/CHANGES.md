@@ -1,5 +1,12 @@
 # Changes
 
+## [1.24.0](https://github.com/googleapis/google-cloud-go/compare/redis/v1.23.0...redis/v1.24.0) (2026-07-13)
+
+
+### Features
+
+* **o11y:** Regenerate clients for LRO tracing ([#20107](https://github.com/googleapis/google-cloud-go/issues/20107)) ([779074e](https://github.com/googleapis/google-cloud-go/commit/779074edd267a26520bae459307660953129eb07))
+
 ## [1.23.0](https://github.com/googleapis/google-cloud-go/releases/tag/redis%2Fv1.23.0) (2026-05-07)
 
 ## [1.22.0](https://github.com/googleapis/google-cloud-go/releases/tag/redis%2Fv1.22.0) (2026-04-30)

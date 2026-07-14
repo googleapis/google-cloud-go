@@ -30,6 +30,7 @@ import (
 	tpupb "cloud.google.com/go/tpu/apiv1/tpupb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -545,8 +546,12 @@ func (c *gRPCClient) CreateNode(ctx context.Context, req *tpupb.CreateNodeReques
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*tpu.CreateNodeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateNodeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -571,8 +576,12 @@ func (c *gRPCClient) DeleteNode(ctx context.Context, req *tpupb.DeleteNodeReques
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*tpu.DeleteNodeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteNodeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -594,8 +603,12 @@ func (c *gRPCClient) ReimageNode(ctx context.Context, req *tpupb.ReimageNodeRequ
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*tpu.ReimageNodeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ReimageNodeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -617,8 +630,12 @@ func (c *gRPCClient) StopNode(ctx context.Context, req *tpupb.StopNodeRequest, o
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*tpu.StopNodeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &StopNodeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -640,8 +657,12 @@ func (c *gRPCClient) StartNode(ctx context.Context, req *tpupb.StartNodeRequest,
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*tpu.StartNodeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &StartNodeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -975,7 +996,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // The name must be that of a previously created CreateNodeOperation, possibly from a different process.
 func (c *gRPCClient) CreateNodeOperation(name string) *CreateNodeOperation {
 	return &CreateNodeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*tpu.CreateNodeOperation"),
 	}
 }
 
@@ -983,7 +1004,7 @@ func (c *gRPCClient) CreateNodeOperation(name string) *CreateNodeOperation {
 // The name must be that of a previously created DeleteNodeOperation, possibly from a different process.
 func (c *gRPCClient) DeleteNodeOperation(name string) *DeleteNodeOperation {
 	return &DeleteNodeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*tpu.DeleteNodeOperation"),
 	}
 }
 
@@ -991,7 +1012,7 @@ func (c *gRPCClient) DeleteNodeOperation(name string) *DeleteNodeOperation {
 // The name must be that of a previously created ReimageNodeOperation, possibly from a different process.
 func (c *gRPCClient) ReimageNodeOperation(name string) *ReimageNodeOperation {
 	return &ReimageNodeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*tpu.ReimageNodeOperation"),
 	}
 }
 
@@ -999,7 +1020,7 @@ func (c *gRPCClient) ReimageNodeOperation(name string) *ReimageNodeOperation {
 // The name must be that of a previously created StartNodeOperation, possibly from a different process.
 func (c *gRPCClient) StartNodeOperation(name string) *StartNodeOperation {
 	return &StartNodeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*tpu.StartNodeOperation"),
 	}
 }
 
@@ -1007,6 +1028,6 @@ func (c *gRPCClient) StartNodeOperation(name string) *StartNodeOperation {
 // The name must be that of a previously created StopNodeOperation, possibly from a different process.
 func (c *gRPCClient) StopNodeOperation(name string) *StopNodeOperation {
 	return &StopNodeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*tpu.StopNodeOperation"),
 	}
 }

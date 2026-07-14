@@ -26,6 +26,9 @@ import (
 	pb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/apierror"
+	"go.opentelemetry.io/otel"
+	sdktrace "go.opentelemetry.io/otel/sdk/trace"
+	"go.opentelemetry.io/otel/sdk/trace/tracetest"
 	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	rpcstatus "google.golang.org/genproto/googleapis/rpc/status"
@@ -239,4 +242,320 @@ func TestInternalNewOperationWithMetadata(t *testing.T) {
 	if !op.initSpanContext.Equal(sc) {
 		t.Error("expected initSpanContext to match the set SpanContext")
 	}
+}
+
+func TestWaitTraced(t *testing.T) {
+	t.Setenv("GOOGLE_SDK_GO_EXPERIMENTAL_TRACING", "true")
+	if !gax.IsFeatureEnabled("TRACING") {
+		t.Skip("TRACING feature flag is not enabled")
+	}
+
+	sr := tracetest.NewSpanRecorder()
+	tp := sdktrace.NewTracerProvider(sdktrace.WithSpanProcessor(sr))
+	oldTP := otel.GetTracerProvider()
+	defer otel.SetTracerProvider(oldTP)
+	otel.SetTracerProvider(tp)
+
+	responseDur := durationpb.New(42 * time.Second)
+	responseAny, err := anypb.New(responseDur)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	s := &getterService{
+		results: []*pb.Operation{
+			{Name: "foo"},
+			{Name: "foo"},
+			{
+				Name: "foo",
+				Done: true,
+				Result: &pb.Operation_Response{
+					Response: responseAny,
+				},
+			},
+		},
+	}
+
+	op := &Operation{
+		c:      s,
+		proto:  &pb.Operation{Name: "foo"},
+		opName: "*speech.Client.BatchRecognizeOperation",
+	}
+
+	ctx := context.Background()
+	tracer := otel.GetTracerProvider().Tracer("test-tracer")
+	parentCtx, parentSpan := tracer.Start(ctx, "creation-span")
+	op.SetParentSpanContext(parentSpan.SpanContext())
+
+	var resp durationpb.Duration
+	err = op.waitWithInterval(parentCtx, &resp, 3*time.Millisecond, s.sleeper())
+	parentSpan.End()
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	spans := sr.Ended()
+	var waitSpan sdktrace.ReadOnlySpan
+	var pollSpans []sdktrace.ReadOnlySpan
+	var sleepSpans []sdktrace.ReadOnlySpan
+
+	for _, span := range spans {
+		switch span.Name() {
+		case "*speech.Client.BatchRecognizeOperation.Wait":
+			waitSpan = span
+		case "*longrunning.OperationsClient.GetOperation":
+			pollSpans = append(pollSpans, span)
+		case "LRO Sleep":
+			sleepSpans = append(sleepSpans, span)
+		}
+	}
+
+	if waitSpan == nil {
+		t.Fatal("expected a T2 LRO Wait span, got nil")
+	}
+
+	links := waitSpan.Links()
+	if len(links) != 1 {
+		t.Fatalf("expected 1 span link, got %d", len(links))
+	}
+	if links[0].SpanContext.SpanID() != parentSpan.SpanContext().SpanID() {
+		t.Errorf("expected span link pointing to parent span, got different span ID")
+	}
+
+	waitAttrs := waitSpan.Attributes()
+	hasResID := false
+	for _, attr := range waitAttrs {
+		if attr.Key == "gcp.resource.destination.id" && attr.Value.AsString() == "foo" {
+			hasResID = true
+		}
+	}
+	if !hasResID {
+		t.Error("expected wait span to have gcp.resource.destination.id attribute set to 'foo'")
+	}
+
+	// Verify T3 Poll Spans
+	if len(pollSpans) != 3 {
+		t.Fatalf("expected 3 poll spans, got %d", len(pollSpans))
+	}
+
+	verifyPollAndSleepSpans(t, pollSpans, sleepSpans, "foo")
+}
+
+func verifyPollAndSleepSpans(t *testing.T, pollSpans, sleepSpans []sdktrace.ReadOnlySpan, expectedResID string) {
+	t.Helper()
+	for i, pollSpan := range pollSpans {
+		attrs := pollSpan.Attributes()
+		var resID string
+		var hasCount bool
+		var count int
+		var done bool
+		for _, attr := range attrs {
+			if attr.Key == "gcp.resource.destination.id" {
+				resID = attr.Value.AsString()
+			}
+			if attr.Key == "gcp.longrunning.poll_attempt_count" {
+				hasCount = true
+				count = int(attr.Value.AsInt64())
+			}
+			if attr.Key == "gcp.longrunning.done" {
+				done = attr.Value.AsBool()
+			}
+		}
+
+		if resID != expectedResID {
+			t.Errorf("poll span %d expected gcp.resource.destination.id to be '%s', got '%s'", i, expectedResID, resID)
+		}
+		if !hasCount || count != i+1 {
+			t.Errorf("poll span %d expected count to be %d, got %d", i, i+1, count)
+		}
+
+		if i != len(pollSpans)-1 && done {
+			t.Errorf("poll span %d expected gcp.longrunning.done to be set", i)
+		}
+
+		if i == len(pollSpans)-1 {
+			if !done {
+				t.Error("expected done to be true on terminal poll span")
+			}
+			hasStatus := false
+			var statusCode int
+			for _, attr := range attrs {
+				if attr.Key == "gcp.longrunning.status_code" {
+					statusCode = int(attr.Value.AsInt64())
+					hasStatus = true
+				}
+			}
+			if !hasStatus || statusCode != 0 {
+				t.Errorf("expected status code 0 on terminal poll, got %d (hasStatus: %t)", statusCode, hasStatus)
+			}
+		}
+	}
+
+	// Verify T5 Sleep Spans
+	expectedSleeps := len(pollSpans) - 1
+	if len(sleepSpans) != expectedSleeps {
+		t.Errorf("expected %d sleep spans, got %d", expectedSleeps, len(sleepSpans))
+	}
+}
+
+func TestWaitTracedResumed(t *testing.T) {
+	t.Setenv("GOOGLE_SDK_GO_EXPERIMENTAL_TRACING", "true")
+	if !gax.IsFeatureEnabled("TRACING") {
+		t.Skip("TRACING feature flag is not enabled")
+	}
+
+	sr := tracetest.NewSpanRecorder()
+	tp := sdktrace.NewTracerProvider(sdktrace.WithSpanProcessor(sr))
+	oldTP := otel.GetTracerProvider()
+	defer otel.SetTracerProvider(oldTP)
+	otel.SetTracerProvider(tp)
+
+	responseDur := durationpb.New(42 * time.Second)
+	responseAny, err := anypb.New(responseDur)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	s := &getterService{
+		results: []*pb.Operation{
+			{Name: "foo"},
+			{
+				Name: "foo",
+				Done: true,
+				Result: &pb.Operation_Response{
+					Response: responseAny,
+				},
+			},
+		},
+	}
+
+	op := &Operation{
+		c:      s,
+		proto:  &pb.Operation{Name: "foo"},
+		opName: "*speech.BatchRecognizeOperation",
+	}
+
+	ctx := context.Background()
+	tracer := otel.GetTracerProvider().Tracer("test-tracer")
+	parentCtx, parentSpan := tracer.Start(ctx, "resumed-polling")
+
+	var resp durationpb.Duration
+	err = op.waitWithInterval(parentCtx, &resp, 3*time.Millisecond, s.sleeper())
+	parentSpan.End()
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	spans := sr.Ended()
+	var waitSpan sdktrace.ReadOnlySpan
+	var pollSpans []sdktrace.ReadOnlySpan
+	var sleepSpans []sdktrace.ReadOnlySpan
+
+	for _, span := range spans {
+		switch span.Name() {
+		case "*speech.BatchRecognizeOperation.Wait":
+			waitSpan = span
+		case "*longrunning.OperationsClient.GetOperation":
+			pollSpans = append(pollSpans, span)
+		case "LRO Sleep":
+			sleepSpans = append(sleepSpans, span)
+		}
+	}
+
+	if waitSpan == nil {
+		t.Fatal("expected a T2 LRO Wait span, got nil")
+	}
+
+	links := waitSpan.Links()
+	if len(links) != 0 {
+		t.Fatalf("expected 0 span links for resumed LRO tracing, got %d", len(links))
+	}
+
+	if len(pollSpans) != 2 {
+		t.Fatalf("expected 2 poll spans, got %d", len(pollSpans))
+	}
+
+	verifyPollAndSleepSpans(t, pollSpans, sleepSpans, "foo")
+}
+
+func TestWaitTracedFallback(t *testing.T) {
+	t.Setenv("GOOGLE_SDK_GO_EXPERIMENTAL_TRACING", "true")
+	if !gax.IsFeatureEnabled("TRACING") {
+		t.Skip("TRACING feature flag is not enabled")
+	}
+
+	sr := tracetest.NewSpanRecorder()
+	tp := sdktrace.NewTracerProvider(sdktrace.WithSpanProcessor(sr))
+	oldTP := otel.GetTracerProvider()
+	defer otel.SetTracerProvider(oldTP)
+	otel.SetTracerProvider(tp)
+
+	responseDur := durationpb.New(42 * time.Second)
+	responseAny, err := anypb.New(responseDur)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	s := &getterService{
+		results: []*pb.Operation{
+			{Name: "foo"},
+			{
+				Name: "foo",
+				Done: true,
+				Result: &pb.Operation_Response{
+					Response: responseAny,
+				},
+			},
+		},
+	}
+
+	op := &Operation{
+		c:     s,
+		proto: &pb.Operation{Name: "foo"},
+	}
+
+	ctx := context.Background()
+	tracer := otel.GetTracerProvider().Tracer("test-tracer")
+	parentCtx, parentSpan := tracer.Start(ctx, "fallback-polling")
+
+	var resp durationpb.Duration
+	err = op.waitWithInterval(parentCtx, &resp, 3*time.Millisecond, s.sleeper())
+	parentSpan.End()
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	spans := sr.Ended()
+	var waitSpan sdktrace.ReadOnlySpan
+	var pollSpans []sdktrace.ReadOnlySpan
+	var sleepSpans []sdktrace.ReadOnlySpan
+
+	for _, span := range spans {
+		switch span.Name() {
+		case "*longrunning.Operation.Wait":
+			waitSpan = span
+		case "*longrunning.OperationsClient.GetOperation":
+			pollSpans = append(pollSpans, span)
+		case "LRO Sleep":
+			sleepSpans = append(sleepSpans, span)
+		}
+	}
+
+	if waitSpan == nil {
+		t.Fatal("expected a T2 LRO Wait span, got nil")
+	}
+
+	links := waitSpan.Links()
+	if len(links) != 0 {
+		t.Fatalf("expected 0 span links for fallback LRO tracing, got %d", len(links))
+	}
+
+	if len(pollSpans) != 2 {
+		t.Fatalf("expected 2 poll spans, got %d", len(pollSpans))
+	}
+
+	verifyPollAndSleepSpans(t, pollSpans, sleepSpans, "foo")
 }

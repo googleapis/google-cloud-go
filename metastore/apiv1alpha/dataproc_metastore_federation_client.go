@@ -32,6 +32,7 @@ import (
 	metastorepb "cloud.google.com/go/metastore/apiv1alpha/metastorepb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -692,8 +693,12 @@ func (c *dataprocMetastoreFederationGRPCClient) CreateFederation(ctx context.Con
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*metastore.CreateFederationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateFederationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -715,8 +720,12 @@ func (c *dataprocMetastoreFederationGRPCClient) UpdateFederation(ctx context.Con
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*metastore.UpdateFederationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateFederationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -741,8 +750,12 @@ func (c *dataprocMetastoreFederationGRPCClient) DeleteFederation(ctx context.Con
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*metastore.DeleteFederationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteFederationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1198,8 +1211,12 @@ func (c *dataprocMetastoreFederationRESTClient) CreateFederation(ctx context.Con
 	}
 
 	override := fmt.Sprintf("/v1alpha/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*metastore.CreateFederationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateFederationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1272,8 +1289,12 @@ func (c *dataprocMetastoreFederationRESTClient) UpdateFederation(ctx context.Con
 	}
 
 	override := fmt.Sprintf("/v1alpha/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*metastore.UpdateFederationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateFederationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1335,8 +1356,12 @@ func (c *dataprocMetastoreFederationRESTClient) DeleteFederation(ctx context.Con
 	}
 
 	override := fmt.Sprintf("/v1alpha/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*metastore.DeleteFederationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteFederationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1899,7 +1924,7 @@ func (c *dataprocMetastoreFederationRESTClient) ListOperations(ctx context.Conte
 // The name must be that of a previously created CreateFederationOperation, possibly from a different process.
 func (c *dataprocMetastoreFederationGRPCClient) CreateFederationOperation(name string) *CreateFederationOperation {
 	return &CreateFederationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*metastore.CreateFederationOperation"),
 	}
 }
 
@@ -1908,7 +1933,7 @@ func (c *dataprocMetastoreFederationGRPCClient) CreateFederationOperation(name s
 func (c *dataprocMetastoreFederationRESTClient) CreateFederationOperation(name string) *CreateFederationOperation {
 	override := fmt.Sprintf("/v1alpha/%s", name)
 	return &CreateFederationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*metastore.CreateFederationOperation"),
 		pollPath: override,
 	}
 }
@@ -1917,7 +1942,7 @@ func (c *dataprocMetastoreFederationRESTClient) CreateFederationOperation(name s
 // The name must be that of a previously created DeleteFederationOperation, possibly from a different process.
 func (c *dataprocMetastoreFederationGRPCClient) DeleteFederationOperation(name string) *DeleteFederationOperation {
 	return &DeleteFederationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*metastore.DeleteFederationOperation"),
 	}
 }
 
@@ -1926,7 +1951,7 @@ func (c *dataprocMetastoreFederationGRPCClient) DeleteFederationOperation(name s
 func (c *dataprocMetastoreFederationRESTClient) DeleteFederationOperation(name string) *DeleteFederationOperation {
 	override := fmt.Sprintf("/v1alpha/%s", name)
 	return &DeleteFederationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*metastore.DeleteFederationOperation"),
 		pollPath: override,
 	}
 }
@@ -1935,7 +1960,7 @@ func (c *dataprocMetastoreFederationRESTClient) DeleteFederationOperation(name s
 // The name must be that of a previously created UpdateFederationOperation, possibly from a different process.
 func (c *dataprocMetastoreFederationGRPCClient) UpdateFederationOperation(name string) *UpdateFederationOperation {
 	return &UpdateFederationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*metastore.UpdateFederationOperation"),
 	}
 }
 
@@ -1944,7 +1969,7 @@ func (c *dataprocMetastoreFederationGRPCClient) UpdateFederationOperation(name s
 func (c *dataprocMetastoreFederationRESTClient) UpdateFederationOperation(name string) *UpdateFederationOperation {
 	override := fmt.Sprintf("/v1alpha/%s", name)
 	return &UpdateFederationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*metastore.UpdateFederationOperation"),
 		pollPath: override,
 	}
 }

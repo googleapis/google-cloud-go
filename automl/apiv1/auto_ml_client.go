@@ -32,6 +32,7 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -961,8 +962,12 @@ func (c *gRPCClient) CreateDataset(ctx context.Context, req *automlpb.CreateData
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*automl.CreateDatasetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateDatasetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1084,8 +1089,12 @@ func (c *gRPCClient) DeleteDataset(ctx context.Context, req *automlpb.DeleteData
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*automl.DeleteDatasetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteDatasetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1110,8 +1119,12 @@ func (c *gRPCClient) ImportData(ctx context.Context, req *automlpb.ImportDataReq
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*automl.ImportDataOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ImportDataOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1136,8 +1149,12 @@ func (c *gRPCClient) ExportData(ctx context.Context, req *automlpb.ExportDataReq
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*automl.ExportDataOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportDataOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1186,8 +1203,12 @@ func (c *gRPCClient) CreateModel(ctx context.Context, req *automlpb.CreateModelR
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*automl.CreateModelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateModelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1288,8 +1309,12 @@ func (c *gRPCClient) DeleteModel(ctx context.Context, req *automlpb.DeleteModelR
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*automl.DeleteModelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteModelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1335,8 +1360,12 @@ func (c *gRPCClient) DeployModel(ctx context.Context, req *automlpb.DeployModelR
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*automl.DeployModelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeployModelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1361,8 +1390,12 @@ func (c *gRPCClient) UndeployModel(ctx context.Context, req *automlpb.UndeployMo
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*automl.UndeployModelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UndeployModelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1387,8 +1420,12 @@ func (c *gRPCClient) ExportModel(ctx context.Context, req *automlpb.ExportModelR
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*automl.ExportModelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportModelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1529,8 +1566,12 @@ func (c *restClient) CreateDataset(ctx context.Context, req *automlpb.CreateData
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*automl.CreateDatasetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateDatasetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1799,8 +1840,12 @@ func (c *restClient) DeleteDataset(ctx context.Context, req *automlpb.DeleteData
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*automl.DeleteDatasetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteDatasetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1874,8 +1919,12 @@ func (c *restClient) ImportData(ctx context.Context, req *automlpb.ImportDataReq
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*automl.ImportDataOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ImportDataOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1942,8 +1991,12 @@ func (c *restClient) ExportData(ctx context.Context, req *automlpb.ExportDataReq
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*automl.ExportDataOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportDataOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2070,8 +2123,12 @@ func (c *restClient) CreateModel(ctx context.Context, req *automlpb.CreateModelR
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*automl.CreateModelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateModelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2272,8 +2329,12 @@ func (c *restClient) DeleteModel(ctx context.Context, req *automlpb.DeleteModelR
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*automl.DeleteModelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteModelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2416,8 +2477,12 @@ func (c *restClient) DeployModel(ctx context.Context, req *automlpb.DeployModelR
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*automl.DeployModelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeployModelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2488,8 +2553,12 @@ func (c *restClient) UndeployModel(ctx context.Context, req *automlpb.UndeployMo
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*automl.UndeployModelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UndeployModelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2560,8 +2629,12 @@ func (c *restClient) ExportModel(ctx context.Context, req *automlpb.ExportModelR
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*automl.ExportModelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportModelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2706,7 +2779,7 @@ func (c *restClient) ListModelEvaluations(ctx context.Context, req *automlpb.Lis
 // The name must be that of a previously created CreateDatasetOperation, possibly from a different process.
 func (c *gRPCClient) CreateDatasetOperation(name string) *CreateDatasetOperation {
 	return &CreateDatasetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*automl.CreateDatasetOperation"),
 	}
 }
 
@@ -2715,7 +2788,7 @@ func (c *gRPCClient) CreateDatasetOperation(name string) *CreateDatasetOperation
 func (c *restClient) CreateDatasetOperation(name string) *CreateDatasetOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateDatasetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*automl.CreateDatasetOperation"),
 		pollPath: override,
 	}
 }
@@ -2724,7 +2797,7 @@ func (c *restClient) CreateDatasetOperation(name string) *CreateDatasetOperation
 // The name must be that of a previously created CreateModelOperation, possibly from a different process.
 func (c *gRPCClient) CreateModelOperation(name string) *CreateModelOperation {
 	return &CreateModelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*automl.CreateModelOperation"),
 	}
 }
 
@@ -2733,7 +2806,7 @@ func (c *gRPCClient) CreateModelOperation(name string) *CreateModelOperation {
 func (c *restClient) CreateModelOperation(name string) *CreateModelOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateModelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*automl.CreateModelOperation"),
 		pollPath: override,
 	}
 }
@@ -2742,7 +2815,7 @@ func (c *restClient) CreateModelOperation(name string) *CreateModelOperation {
 // The name must be that of a previously created DeleteDatasetOperation, possibly from a different process.
 func (c *gRPCClient) DeleteDatasetOperation(name string) *DeleteDatasetOperation {
 	return &DeleteDatasetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*automl.DeleteDatasetOperation"),
 	}
 }
 
@@ -2751,7 +2824,7 @@ func (c *gRPCClient) DeleteDatasetOperation(name string) *DeleteDatasetOperation
 func (c *restClient) DeleteDatasetOperation(name string) *DeleteDatasetOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteDatasetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*automl.DeleteDatasetOperation"),
 		pollPath: override,
 	}
 }
@@ -2760,7 +2833,7 @@ func (c *restClient) DeleteDatasetOperation(name string) *DeleteDatasetOperation
 // The name must be that of a previously created DeleteModelOperation, possibly from a different process.
 func (c *gRPCClient) DeleteModelOperation(name string) *DeleteModelOperation {
 	return &DeleteModelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*automl.DeleteModelOperation"),
 	}
 }
 
@@ -2769,7 +2842,7 @@ func (c *gRPCClient) DeleteModelOperation(name string) *DeleteModelOperation {
 func (c *restClient) DeleteModelOperation(name string) *DeleteModelOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteModelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*automl.DeleteModelOperation"),
 		pollPath: override,
 	}
 }
@@ -2778,7 +2851,7 @@ func (c *restClient) DeleteModelOperation(name string) *DeleteModelOperation {
 // The name must be that of a previously created DeployModelOperation, possibly from a different process.
 func (c *gRPCClient) DeployModelOperation(name string) *DeployModelOperation {
 	return &DeployModelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*automl.DeployModelOperation"),
 	}
 }
 
@@ -2787,7 +2860,7 @@ func (c *gRPCClient) DeployModelOperation(name string) *DeployModelOperation {
 func (c *restClient) DeployModelOperation(name string) *DeployModelOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeployModelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*automl.DeployModelOperation"),
 		pollPath: override,
 	}
 }
@@ -2796,7 +2869,7 @@ func (c *restClient) DeployModelOperation(name string) *DeployModelOperation {
 // The name must be that of a previously created ExportDataOperation, possibly from a different process.
 func (c *gRPCClient) ExportDataOperation(name string) *ExportDataOperation {
 	return &ExportDataOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*automl.ExportDataOperation"),
 	}
 }
 
@@ -2805,7 +2878,7 @@ func (c *gRPCClient) ExportDataOperation(name string) *ExportDataOperation {
 func (c *restClient) ExportDataOperation(name string) *ExportDataOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ExportDataOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*automl.ExportDataOperation"),
 		pollPath: override,
 	}
 }
@@ -2814,7 +2887,7 @@ func (c *restClient) ExportDataOperation(name string) *ExportDataOperation {
 // The name must be that of a previously created ExportModelOperation, possibly from a different process.
 func (c *gRPCClient) ExportModelOperation(name string) *ExportModelOperation {
 	return &ExportModelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*automl.ExportModelOperation"),
 	}
 }
 
@@ -2823,7 +2896,7 @@ func (c *gRPCClient) ExportModelOperation(name string) *ExportModelOperation {
 func (c *restClient) ExportModelOperation(name string) *ExportModelOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ExportModelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*automl.ExportModelOperation"),
 		pollPath: override,
 	}
 }
@@ -2832,7 +2905,7 @@ func (c *restClient) ExportModelOperation(name string) *ExportModelOperation {
 // The name must be that of a previously created ImportDataOperation, possibly from a different process.
 func (c *gRPCClient) ImportDataOperation(name string) *ImportDataOperation {
 	return &ImportDataOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*automl.ImportDataOperation"),
 	}
 }
 
@@ -2841,7 +2914,7 @@ func (c *gRPCClient) ImportDataOperation(name string) *ImportDataOperation {
 func (c *restClient) ImportDataOperation(name string) *ImportDataOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ImportDataOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*automl.ImportDataOperation"),
 		pollPath: override,
 	}
 }
@@ -2850,7 +2923,7 @@ func (c *restClient) ImportDataOperation(name string) *ImportDataOperation {
 // The name must be that of a previously created UndeployModelOperation, possibly from a different process.
 func (c *gRPCClient) UndeployModelOperation(name string) *UndeployModelOperation {
 	return &UndeployModelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*automl.UndeployModelOperation"),
 	}
 }
 
@@ -2859,7 +2932,7 @@ func (c *gRPCClient) UndeployModelOperation(name string) *UndeployModelOperation
 func (c *restClient) UndeployModelOperation(name string) *UndeployModelOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UndeployModelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*automl.UndeployModelOperation"),
 		pollPath: override,
 	}
 }

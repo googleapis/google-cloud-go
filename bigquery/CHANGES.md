@@ -3,6 +3,27 @@
 
 
 
+## [1.79.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.78.0...bigquery/v1.79.0) (2026-07-13)
+
+
+### Features
+
+* **o11y:** Regenerate clients for LRO tracing ([#20107](https://github.com/googleapis/google-cloud-go/issues/20107)) ([779074e](https://github.com/googleapis/google-cloud-go/commit/779074edd267a26520bae459307660953129eb07))
+
+## [1.78.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.77.0...bigquery/v1.78.0) (2026-07-09)
+
+
+### Features
+
+* **bigquery:** Augment external data config ([#14397](https://github.com/googleapis/google-cloud-go/issues/14397)) ([a120310](https://github.com/googleapis/google-cloud-go/commit/a12031099add502fdab72aa141dca8c3a6067469))
+* Update API sources and regenerate ([#14621](https://github.com/googleapis/google-cloud-go/issues/14621)) ([6641db8](https://github.com/googleapis/google-cloud-go/commit/6641db88e5a1c62a967d0505d35c3bc1dedefe9f))
+
+
+### Bug Fixes
+
+* **bigquery:** Handle reset case for table clustering ([#14579](https://github.com/googleapis/google-cloud-go/issues/14579)) ([658faa8](https://github.com/googleapis/google-cloud-go/commit/658faa82786023c80b13d3653dc4260d012c63e6))
+* **bigquery:** Improve random ID generation in bigquery ([#20111](https://github.com/googleapis/google-cloud-go/issues/20111)) ([ee8d3e1](https://github.com/googleapis/google-cloud-go/commit/ee8d3e122a0bc4efed3859d891bb536500db1e9e))
+
 ## [1.77.0](https://github.com/googleapis/google-cloud-go/releases/tag/bigquery%2Fv1.77.0) (2026-05-04)
 
 ## [1.76.0](https://github.com/googleapis/google-cloud-go/releases/tag/bigquery%2Fv1.76.0) (2026-04-09)

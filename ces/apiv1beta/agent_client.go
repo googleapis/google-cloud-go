@@ -32,6 +32,7 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -2325,8 +2326,12 @@ func (c *agentGRPCClient) CreateApp(ctx context.Context, req *cespb.CreateAppReq
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*ces.CreateAppOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateAppOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2372,8 +2377,12 @@ func (c *agentGRPCClient) DeleteApp(ctx context.Context, req *cespb.DeleteAppReq
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*ces.DeleteAppOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteAppOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2398,8 +2407,12 @@ func (c *agentGRPCClient) ExportApp(ctx context.Context, req *cespb.ExportAppReq
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*ces.ExportAppOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportAppOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2424,8 +2437,12 @@ func (c *agentGRPCClient) ImportApp(ctx context.Context, req *cespb.ImportAppReq
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*ces.ImportAppOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ImportAppOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2949,8 +2966,12 @@ func (c *agentGRPCClient) BatchDeleteConversations(ctx context.Context, req *ces
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*ces.BatchDeleteConversationsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &BatchDeleteConversationsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -3583,8 +3604,12 @@ func (c *agentGRPCClient) RestoreAppVersion(ctx context.Context, req *cespb.Rest
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*ces.RestoreAppVersionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RestoreAppVersionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -3609,8 +3634,12 @@ func (c *agentGRPCClient) GenerateAppResource(ctx context.Context, req *cespb.Ge
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*ces.GenerateAppResourceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &GenerateAppResourceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -4069,8 +4098,12 @@ func (c *agentRESTClient) CreateApp(ctx context.Context, req *cespb.CreateAppReq
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*ces.CreateAppOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateAppOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4200,8 +4233,12 @@ func (c *agentRESTClient) DeleteApp(ctx context.Context, req *cespb.DeleteAppReq
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*ces.DeleteAppOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteAppOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4266,8 +4303,12 @@ func (c *agentRESTClient) ExportApp(ctx context.Context, req *cespb.ExportAppReq
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*ces.ExportAppOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportAppOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4332,8 +4373,12 @@ func (c *agentRESTClient) ImportApp(ctx context.Context, req *cespb.ImportAppReq
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*ces.ImportAppOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ImportAppOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5503,8 +5548,12 @@ func (c *agentRESTClient) BatchDeleteConversations(ctx context.Context, req *ces
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*ces.BatchDeleteConversationsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &BatchDeleteConversationsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -6973,8 +7022,12 @@ func (c *agentRESTClient) RestoreAppVersion(ctx context.Context, req *cespb.Rest
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*ces.RestoreAppVersionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RestoreAppVersionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -7039,8 +7092,12 @@ func (c *agentRESTClient) GenerateAppResource(ctx context.Context, req *cespb.Ge
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*ces.GenerateAppResourceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &GenerateAppResourceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -7562,7 +7619,7 @@ func (c *agentRESTClient) ListOperations(ctx context.Context, req *longrunningpb
 // The name must be that of a previously created BatchDeleteConversationsOperation, possibly from a different process.
 func (c *agentGRPCClient) BatchDeleteConversationsOperation(name string) *BatchDeleteConversationsOperation {
 	return &BatchDeleteConversationsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*ces.BatchDeleteConversationsOperation"),
 	}
 }
 
@@ -7571,7 +7628,7 @@ func (c *agentGRPCClient) BatchDeleteConversationsOperation(name string) *BatchD
 func (c *agentRESTClient) BatchDeleteConversationsOperation(name string) *BatchDeleteConversationsOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &BatchDeleteConversationsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*ces.BatchDeleteConversationsOperation"),
 		pollPath: override,
 	}
 }
@@ -7580,7 +7637,7 @@ func (c *agentRESTClient) BatchDeleteConversationsOperation(name string) *BatchD
 // The name must be that of a previously created CreateAppOperation, possibly from a different process.
 func (c *agentGRPCClient) CreateAppOperation(name string) *CreateAppOperation {
 	return &CreateAppOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*ces.CreateAppOperation"),
 	}
 }
 
@@ -7589,7 +7646,7 @@ func (c *agentGRPCClient) CreateAppOperation(name string) *CreateAppOperation {
 func (c *agentRESTClient) CreateAppOperation(name string) *CreateAppOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &CreateAppOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*ces.CreateAppOperation"),
 		pollPath: override,
 	}
 }
@@ -7598,7 +7655,7 @@ func (c *agentRESTClient) CreateAppOperation(name string) *CreateAppOperation {
 // The name must be that of a previously created DeleteAppOperation, possibly from a different process.
 func (c *agentGRPCClient) DeleteAppOperation(name string) *DeleteAppOperation {
 	return &DeleteAppOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*ces.DeleteAppOperation"),
 	}
 }
 
@@ -7607,7 +7664,7 @@ func (c *agentGRPCClient) DeleteAppOperation(name string) *DeleteAppOperation {
 func (c *agentRESTClient) DeleteAppOperation(name string) *DeleteAppOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &DeleteAppOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*ces.DeleteAppOperation"),
 		pollPath: override,
 	}
 }
@@ -7616,7 +7673,7 @@ func (c *agentRESTClient) DeleteAppOperation(name string) *DeleteAppOperation {
 // The name must be that of a previously created ExportAppOperation, possibly from a different process.
 func (c *agentGRPCClient) ExportAppOperation(name string) *ExportAppOperation {
 	return &ExportAppOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*ces.ExportAppOperation"),
 	}
 }
 
@@ -7625,7 +7682,7 @@ func (c *agentGRPCClient) ExportAppOperation(name string) *ExportAppOperation {
 func (c *agentRESTClient) ExportAppOperation(name string) *ExportAppOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &ExportAppOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*ces.ExportAppOperation"),
 		pollPath: override,
 	}
 }
@@ -7634,7 +7691,7 @@ func (c *agentRESTClient) ExportAppOperation(name string) *ExportAppOperation {
 // The name must be that of a previously created GenerateAppResourceOperation, possibly from a different process.
 func (c *agentGRPCClient) GenerateAppResourceOperation(name string) *GenerateAppResourceOperation {
 	return &GenerateAppResourceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*ces.GenerateAppResourceOperation"),
 	}
 }
 
@@ -7643,7 +7700,7 @@ func (c *agentGRPCClient) GenerateAppResourceOperation(name string) *GenerateApp
 func (c *agentRESTClient) GenerateAppResourceOperation(name string) *GenerateAppResourceOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &GenerateAppResourceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*ces.GenerateAppResourceOperation"),
 		pollPath: override,
 	}
 }
@@ -7652,7 +7709,7 @@ func (c *agentRESTClient) GenerateAppResourceOperation(name string) *GenerateApp
 // The name must be that of a previously created ImportAppOperation, possibly from a different process.
 func (c *agentGRPCClient) ImportAppOperation(name string) *ImportAppOperation {
 	return &ImportAppOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*ces.ImportAppOperation"),
 	}
 }
 
@@ -7661,7 +7718,7 @@ func (c *agentGRPCClient) ImportAppOperation(name string) *ImportAppOperation {
 func (c *agentRESTClient) ImportAppOperation(name string) *ImportAppOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &ImportAppOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*ces.ImportAppOperation"),
 		pollPath: override,
 	}
 }
@@ -7670,7 +7727,7 @@ func (c *agentRESTClient) ImportAppOperation(name string) *ImportAppOperation {
 // The name must be that of a previously created RestoreAppVersionOperation, possibly from a different process.
 func (c *agentGRPCClient) RestoreAppVersionOperation(name string) *RestoreAppVersionOperation {
 	return &RestoreAppVersionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*ces.RestoreAppVersionOperation"),
 	}
 }
 
@@ -7679,7 +7736,7 @@ func (c *agentGRPCClient) RestoreAppVersionOperation(name string) *RestoreAppVer
 func (c *agentRESTClient) RestoreAppVersionOperation(name string) *RestoreAppVersionOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &RestoreAppVersionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*ces.RestoreAppVersionOperation"),
 		pollPath: override,
 	}
 }

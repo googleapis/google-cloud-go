@@ -1,5 +1,12 @@
 # Changes
 
+## [1.28.0](https://github.com/googleapis/google-cloud-go/compare/asset/v1.27.0...asset/v1.28.0) (2026-07-13)
+
+
+### Features
+
+* **o11y:** Regenerate clients for LRO tracing ([#20107](https://github.com/googleapis/google-cloud-go/issues/20107)) ([779074e](https://github.com/googleapis/google-cloud-go/commit/779074edd267a26520bae459307660953129eb07))
+
 ## [1.27.0](https://github.com/googleapis/google-cloud-go/releases/tag/asset%2Fv1.27.0) (2026-05-07)
 
 ## [1.26.0](https://github.com/googleapis/google-cloud-go/releases/tag/asset%2Fv1.26.0) (2026-04-30)

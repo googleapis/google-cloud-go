@@ -31,6 +31,7 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -875,8 +876,12 @@ func (c *bigtableTableAdminGRPCClient) CreateTableFromSnapshot(ctx context.Conte
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*admin.CreateTableFromSnapshotOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateTableFromSnapshotOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -974,8 +979,12 @@ func (c *bigtableTableAdminGRPCClient) UpdateTable(ctx context.Context, req *adm
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*admin.UpdateTableOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateTableOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1020,8 +1029,12 @@ func (c *bigtableTableAdminGRPCClient) UndeleteTable(ctx context.Context, req *a
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*admin.UndeleteTableOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UndeleteTableOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1046,8 +1059,12 @@ func (c *bigtableTableAdminGRPCClient) CreateAuthorizedView(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*admin.CreateAuthorizedViewOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateAuthorizedViewOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1145,8 +1162,12 @@ func (c *bigtableTableAdminGRPCClient) UpdateAuthorizedView(ctx context.Context,
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*admin.UpdateAuthorizedViewOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateAuthorizedViewOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1283,8 +1304,12 @@ func (c *bigtableTableAdminGRPCClient) SnapshotTable(ctx context.Context, req *a
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*admin.SnapshotTableOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &SnapshotTableOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1405,8 +1430,12 @@ func (c *bigtableTableAdminGRPCClient) CreateBackup(ctx context.Context, req *ad
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*admin.CreateBackupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateBackupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1548,8 +1577,12 @@ func (c *bigtableTableAdminGRPCClient) restoreTable(ctx context.Context, req *ad
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*admin.RestoreTableOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RestoreTableOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1574,8 +1607,12 @@ func (c *bigtableTableAdminGRPCClient) CopyBackup(ctx context.Context, req *admi
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*admin.CopyBackupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CopyBackupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1672,8 +1709,12 @@ func (c *bigtableTableAdminGRPCClient) CreateSchemaBundle(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*admin.CreateSchemaBundleOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateSchemaBundleOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1695,8 +1736,12 @@ func (c *bigtableTableAdminGRPCClient) UpdateSchemaBundle(ctx context.Context, r
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*admin.UpdateSchemaBundleOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateSchemaBundleOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1800,7 +1845,7 @@ func (c *bigtableTableAdminGRPCClient) DeleteSchemaBundle(ctx context.Context, r
 // The name must be that of a previously created CopyBackupOperation, possibly from a different process.
 func (c *bigtableTableAdminGRPCClient) CopyBackupOperation(name string) *CopyBackupOperation {
 	return &CopyBackupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*admin.CopyBackupOperation"),
 	}
 }
 
@@ -1808,7 +1853,7 @@ func (c *bigtableTableAdminGRPCClient) CopyBackupOperation(name string) *CopyBac
 // The name must be that of a previously created CreateAuthorizedViewOperation, possibly from a different process.
 func (c *bigtableTableAdminGRPCClient) CreateAuthorizedViewOperation(name string) *CreateAuthorizedViewOperation {
 	return &CreateAuthorizedViewOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*admin.CreateAuthorizedViewOperation"),
 	}
 }
 
@@ -1816,7 +1861,7 @@ func (c *bigtableTableAdminGRPCClient) CreateAuthorizedViewOperation(name string
 // The name must be that of a previously created CreateBackupOperation, possibly from a different process.
 func (c *bigtableTableAdminGRPCClient) CreateBackupOperation(name string) *CreateBackupOperation {
 	return &CreateBackupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*admin.CreateBackupOperation"),
 	}
 }
 
@@ -1824,7 +1869,7 @@ func (c *bigtableTableAdminGRPCClient) CreateBackupOperation(name string) *Creat
 // The name must be that of a previously created CreateSchemaBundleOperation, possibly from a different process.
 func (c *bigtableTableAdminGRPCClient) CreateSchemaBundleOperation(name string) *CreateSchemaBundleOperation {
 	return &CreateSchemaBundleOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*admin.CreateSchemaBundleOperation"),
 	}
 }
 
@@ -1832,7 +1877,7 @@ func (c *bigtableTableAdminGRPCClient) CreateSchemaBundleOperation(name string) 
 // The name must be that of a previously created CreateTableFromSnapshotOperation, possibly from a different process.
 func (c *bigtableTableAdminGRPCClient) CreateTableFromSnapshotOperation(name string) *CreateTableFromSnapshotOperation {
 	return &CreateTableFromSnapshotOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*admin.CreateTableFromSnapshotOperation"),
 	}
 }
 
@@ -1840,7 +1885,7 @@ func (c *bigtableTableAdminGRPCClient) CreateTableFromSnapshotOperation(name str
 // The name must be that of a previously created RestoreTableOperation, possibly from a different process.
 func (c *bigtableTableAdminGRPCClient) restoreTableOperation(name string) *RestoreTableOperation {
 	return &RestoreTableOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*admin.RestoreTableOperation"),
 	}
 }
 
@@ -1848,7 +1893,7 @@ func (c *bigtableTableAdminGRPCClient) restoreTableOperation(name string) *Resto
 // The name must be that of a previously created SnapshotTableOperation, possibly from a different process.
 func (c *bigtableTableAdminGRPCClient) SnapshotTableOperation(name string) *SnapshotTableOperation {
 	return &SnapshotTableOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*admin.SnapshotTableOperation"),
 	}
 }
 
@@ -1856,7 +1901,7 @@ func (c *bigtableTableAdminGRPCClient) SnapshotTableOperation(name string) *Snap
 // The name must be that of a previously created UndeleteTableOperation, possibly from a different process.
 func (c *bigtableTableAdminGRPCClient) UndeleteTableOperation(name string) *UndeleteTableOperation {
 	return &UndeleteTableOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*admin.UndeleteTableOperation"),
 	}
 }
 
@@ -1864,7 +1909,7 @@ func (c *bigtableTableAdminGRPCClient) UndeleteTableOperation(name string) *Unde
 // The name must be that of a previously created UpdateAuthorizedViewOperation, possibly from a different process.
 func (c *bigtableTableAdminGRPCClient) UpdateAuthorizedViewOperation(name string) *UpdateAuthorizedViewOperation {
 	return &UpdateAuthorizedViewOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*admin.UpdateAuthorizedViewOperation"),
 	}
 }
 
@@ -1872,7 +1917,7 @@ func (c *bigtableTableAdminGRPCClient) UpdateAuthorizedViewOperation(name string
 // The name must be that of a previously created UpdateSchemaBundleOperation, possibly from a different process.
 func (c *bigtableTableAdminGRPCClient) UpdateSchemaBundleOperation(name string) *UpdateSchemaBundleOperation {
 	return &UpdateSchemaBundleOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*admin.UpdateSchemaBundleOperation"),
 	}
 }
 
@@ -1880,6 +1925,6 @@ func (c *bigtableTableAdminGRPCClient) UpdateSchemaBundleOperation(name string) 
 // The name must be that of a previously created UpdateTableOperation, possibly from a different process.
 func (c *bigtableTableAdminGRPCClient) UpdateTableOperation(name string) *UpdateTableOperation {
 	return &UpdateTableOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*admin.UpdateTableOperation"),
 	}
 }

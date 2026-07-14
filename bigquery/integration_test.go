@@ -249,8 +249,6 @@ func initTestState(client *Client, t time.Time) func() {
 	modelIDs = uid.NewSpace("model", opts)
 	routineIDs = uid.NewSpace("routine", opts)
 	testTableExpiration = t.Add(2 * time.Hour).Round(time.Second)
-	// For replayability, seed the random source with t.
-	Seed(t.UnixNano())
 
 	prefixes := []string{
 		"dataset_",                    // bigquery package tests
