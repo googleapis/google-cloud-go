@@ -2,7 +2,7 @@
   "agentplatform": "0.21.0",
   "auth": "0.22.0",
   "auth/oauth2adapt": "0.2.8",
-  "bigquery": "1.78.0",
+  "bigquery": "1.79.0",
   "bigtable": "1.50.0",
   "compute/metadata": "0.9.0",
   "datastore": "1.24.0",
