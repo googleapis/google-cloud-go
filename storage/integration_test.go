@@ -75,7 +75,6 @@ import (
 	"google.golang.org/api/transport"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"google.golang.org/protobuf/proto"
 )
 
 type skipTransportTestKey string
@@ -2668,20 +2667,16 @@ func TestIntegration_AppendWriterCRC32CValidation(t *testing.T) {
 					}
 				}
 
-				var finalCRC uint32
-				if tc.setAppendFinalCRC {
-					w.AppendFinalCRC32C = &finalCRC
-				}
-
 				if _, err := w.Write(tc.content); err != nil {
 					t.Fatalf("Writer.Write: %v", err)
 				}
 				// Provide CRC after write, before close.
 				if tc.setAppendFinalCRC {
+					w.SendAppendFinalCRC32C = true
 					if tc.incorrectAppendCRC {
-						finalCRC = correctCRC32C + 1
+						w.AppendFinalCRC32C = correctCRC32C + 1
 					} else {
-						finalCRC = correctCRC32C
+						w.AppendFinalCRC32C = correctCRC32C
 					}
 				}
 				err := w.Close()
@@ -4704,10 +4699,11 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 				}
 				actualCRC := crc32.Checksum(tc.content, crc32cTable)
 				if tc.sendFinalAppendCRC {
+					w2.SendAppendFinalCRC32C = true
 					if tc.incorrectAppendCRC {
-						w2.AppendFinalCRC32C = proto.Uint32(actualCRC + 1)
+						w2.AppendFinalCRC32C = actualCRC + 1
 					} else {
-						w2.AppendFinalCRC32C = proto.Uint32(actualCRC)
+						w2.AppendFinalCRC32C = actualCRC
 					}
 				}
 				err = w2.Close()

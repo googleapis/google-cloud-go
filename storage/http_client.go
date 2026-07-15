@@ -1121,7 +1121,7 @@ func (hiw *httpInternalWriter) Flush() (int64, error) {
 }
 
 // Not supported on HTTP Client as this is for setting CRC on appendable objects.
-func (hiw *httpInternalWriter) setAppendFinalCRC32C(c *uint32) {}
+func (hiw *httpInternalWriter) setAppendFinalCRC32C(sendAppendFinalCRC32C bool, c uint32) {}
 
 func (c *httpStorageClient) OpenWriter(params *openWriterParams, opts ...storageOption) (internalWriter, error) {
 	if params.append {

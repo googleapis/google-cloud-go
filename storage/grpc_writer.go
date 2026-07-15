@@ -110,7 +110,8 @@ func (w *gRPCWriter) CloseWithError(err error) error {
 	return nil
 }
 
-func (w *gRPCWriter) setAppendFinalCRC32C(c *uint32) {
+func (w *gRPCWriter) setAppendFinalCRC32C(sendAppendFinalCRC32C bool, c uint32) {
+	w.sendAppendFinalCRC32C = sendAppendFinalCRC32C
 	w.appendFinalCRC32C = c
 }
 
@@ -264,8 +265,9 @@ type gRPCWriter struct {
 	setSize           func(int64)
 	setTakeoverOffset func(int64)
 
-	fullObjectChecksum uint32
-	appendFinalCRC32C  *uint32
+	fullObjectChecksum    uint32
+	appendFinalCRC32C     uint32
+	sendAppendFinalCRC32C bool
 
 	flushSupported        bool
 	sendCRC32C            bool
@@ -1342,7 +1344,11 @@ func (w *gRPCWriter) newGRPCAppendableObjectBufferSender() *gRPCAppendBidiWriteB
 		disableAutoChecksum: w.disableAutoChecksum,
 		objectAttrs:         w.attrs,
 		fullObjectChecksum: func() *uint32 {
-			return w.appendFinalCRC32C
+			if !w.sendAppendFinalCRC32C {
+				return nil
+			}
+			checksum := w.appendFinalCRC32C
+			return &checksum
 		},
 	}
 }
@@ -1458,7 +1464,11 @@ func (w *gRPCWriter) newGRPCAppendTakeoverWriteBufferSender() *gRPCAppendTakeove
 			disableAutoChecksum: w.disableAutoChecksum,
 			objectAttrs:         w.attrs,
 			fullObjectChecksum: func() *uint32 {
-				return w.appendFinalCRC32C
+				if !w.sendAppendFinalCRC32C {
+					return nil
+				}
+				checksum := w.appendFinalCRC32C
+				return &checksum
 			},
 		},
 		takeoverReported: false,
