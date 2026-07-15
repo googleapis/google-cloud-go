@@ -208,12 +208,18 @@ type Writer struct {
 	ParallelUploadConfig ParallelUploadConfig
 
 	// AppendFinalCRC32C is the final object checksum to be used for the validation of
-	// appendable object when using gRPC writer. This field has to be set on the writer
-	// before calling the close operation. Alternatively, it can be assigned a pointer to
-	// a local variable at initialization, and the underlying value can be updated before
-	// Close is called. If this field is not set, no checksum validation will be
-	// performed for the complete object. However, chunk level validation will be
-	// performed for all chunks if writer.DisableAutoChecksum is not set.
+	// an appendable object when using the gRPC writer. This field has to be set on the
+	// Writer before calling the Close method. Alternatively, it can be assigned a pointer
+	// to a local variable at initialization, and the underlying value can be updated
+	// before Close is called.
+	//
+	// If this field is not set, checksum validation for the full object will fall back to
+	// using ObjectAttrs.CRC32C if Writer.SendCRC32C is true. If both are set,
+	// AppendFinalCRC32C takes precedence.
+	//
+	// This field is ignored if Writer.Append is false or if using the JSON API.
+	// Chunk-level validation will still be performed for all chunks during upload if
+	// Writer.DisableAutoChecksum is false.
 	AppendFinalCRC32C *uint32
 
 	ctx context.Context
