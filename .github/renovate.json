@@ -43,6 +43,7 @@
             "go": "1.25"
         }
     },
+    "constraintsFiltering": "strict", 
     "baseBranchPatterns": [
         "main",
         "preview"
