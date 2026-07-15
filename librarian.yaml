@@ -707,7 +707,7 @@ libraries:
     apis:
       - path: google/cloud/financialservices/v1
   - name: firestore
-    version: 1.23.0
+    version: 1.24.0
     apis:
       - path: google/firestore/v1
         go:
