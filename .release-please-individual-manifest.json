@@ -9,7 +9,7 @@
   "firestore": "1.24.0",
   "pubsub": "1.51.0",
   "pubsub/v2": "2.6.1",
-  "pubsublite": "1.9.0",
+  "pubsublite": "1.10.0",
   "spanner": "1.92.0",
   "storage": "1.63.1",
   "vertexai": "0.19.0"
