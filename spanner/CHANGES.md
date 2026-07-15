@@ -1,5 +1,20 @@
 # Changes
 
+## [1.93.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.92.0...spanner/v1.93.0) (2026-07-15)
+
+
+### Features
+
+* **o11y:** Regenerate clients for LRO tracing ([#20107](https://github.com/googleapis/google-cloud-go/issues/20107)) ([779074e](https://github.com/googleapis/google-cloud-go/commit/779074edd267a26520bae459307660953129eb07))
+* **spanner:** Abstract Spanner Omni gRPC connection logic for TLS/mTLS/plaintext as foundation of auth login functionality ([#14694](https://github.com/googleapis/google-cloud-go/issues/14694)) ([07d1ba5](https://github.com/googleapis/google-cloud-go/commit/07d1ba54b7d88a8c41a38484b3b13fc44c9287cc))
+* Update API sources and regenerate ([#20109](https://github.com/googleapis/google-cloud-go/issues/20109)) ([4314d30](https://github.com/googleapis/google-cloud-go/commit/4314d305008d9a4b2d9f464d07519f8081b2277d))
+
+
+### Bug Fixes
+
+* **spanner:** Roll back read-write transaction before retrying caller-returned Aborted errors ([#20131](https://github.com/googleapis/google-cloud-go/issues/20131)) ([83772f5](https://github.com/googleapis/google-cloud-go/commit/83772f5980e8a11a679d04b3d3fce717f3a6f707))
+* **spanner:** Update dynamic channel pool default configuration ([#20080](https://github.com/googleapis/google-cloud-go/issues/20080)) ([308659c](https://github.com/googleapis/google-cloud-go/commit/308659cc6991ae846fa0d5e3de1e194b9ffd0efe))
+
 ## [1.92.0](https://github.com/googleapis/google-cloud-go/releases/tag/spanner%2Fv1.92.0) (2026-06-15)
 
 ### Features
