@@ -7,7 +7,7 @@
   "compute/metadata": "0.9.0",
   "datastore": "1.25.0",
   "firestore": "1.24.0",
-  "pubsub": "1.50.4",
+  "pubsub": "1.51.0",
   "pubsub/v2": "2.6.1",
   "pubsublite": "1.10.0",
   "spanner": "1.92.0",
