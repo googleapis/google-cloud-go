@@ -682,7 +682,7 @@ func (rt *metricsRoundTripper) RoundTrip(req *http.Request) (*http.Response, err
 		}
 	}()
 
-	if rt.metrics != nil {
+	if rt.metrics != nil && (rt.metrics.dnsLookupDuration != nil || rt.metrics.tcpConnectDuration != nil || rt.metrics.tlsHandshakeDuration != nil) {
 		var mu sync.Mutex
 		var dnsStart, tlsStart time.Time
 		tcpStarts := make(map[string]time.Time)
@@ -1517,21 +1517,26 @@ func (h *grpcMetricsStatsHandler) HandleConn(ctx context.Context, s stats.ConnSt
 
 // grpcNetworkMetricsDialOptions returns dial options that instrument DNS, TCP, and TLS handshake metrics.
 func grpcNetworkMetricsDialOptions(metrics *clientMetrics) []option.ClientOption {
+	if metrics == nil || (metrics.dnsLookupDuration == nil && metrics.tcpConnectDuration == nil && metrics.tlsHandshakeDuration == nil) {
+		return nil
+	}
 	var dialTimes sync.Map
 
 	dialer := func(ctx context.Context, addr string) (net.Conn, error) {
 		host, _, _ := net.SplitHostPort(addr)
 
-		dnsStart := time.Now()
-		// Perform DNS lookup manually to time it
-		_, err := net.DefaultResolver.LookupIPAddr(ctx, host)
-		if err == nil && metrics.dnsLookupDuration != nil {
-			dnsDuration := time.Since(dnsStart).Seconds()
-			attrs := []attribute.KeyValue{
-				attribute.String("rpc.system.name", "grpc"),
-				attribute.String("server.address", host),
+		if metrics.dnsLookupDuration != nil {
+			dnsStart := time.Now()
+			// Perform DNS lookup manually to time it
+			_, err := net.DefaultResolver.LookupIPAddr(ctx, host)
+			if err == nil {
+				dnsDuration := time.Since(dnsStart).Seconds()
+				attrs := []attribute.KeyValue{
+					attribute.String("rpc.system.name", "grpc"),
+					attribute.String("server.address", host),
+				}
+				metrics.dnsLookupDuration.Record(ctx, dnsDuration, metric.WithAttributes(attrs...))
 			}
-			metrics.dnsLookupDuration.Record(ctx, dnsDuration, metric.WithAttributes(attrs...))
 		}
 
 		// Fallback to normal dial for TCP
