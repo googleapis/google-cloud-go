@@ -189,7 +189,7 @@ func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (client *g
 				option.WithGRPCDialOption(grpc.WithChainUnaryInterceptor(unaryInt)),
 				option.WithGRPCDialOption(grpc.WithChainStreamInterceptor(streamInt)),
 			)
-			s.clientOption = append(s.clientOption, grpcNetworkMetricsDialOptions(clientMetrics)...)
+			s.clientOption = append(s.clientOption, grpcNetworkMetricsDialOptions("storage.googleapis.com", clientMetrics)...)
 		}
 	}
 

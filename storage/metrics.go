@@ -82,7 +82,7 @@ func isOtelMetricsEnabled(config *storageConfig) bool {
 	if config.disableClientMetrics {
 		return false
 	}
-	if valStr, present := os.LookupEnv("GCP_STORAGE_GO_ENABLE_OTEL_METRICS"); present {
+	if valStr, present := os.LookupEnv(envOtelMetrics); present {
 		v, err := strconv.ParseBool(valStr)
 		if err == nil {
 			return v
@@ -97,7 +97,7 @@ func isOtelDebugMetricsEnabled(config *storageConfig) bool {
 	if config.disableClientMetrics {
 		return false
 	}
-	if valStr, present := os.LookupEnv("GCP_STORAGE_GO_ENABLE_OTEL_DEBUG_METRICS"); present {
+	if valStr, present := os.LookupEnv(envOtelDebugMetrics); present {
 		v, err := strconv.ParseBool(valStr)
 		if err == nil {
 			return v
@@ -664,21 +664,26 @@ func (rt *metricsRoundTripper) RoundTrip(req *http.Request) (*http.Response, err
 	}
 
 	var decrementActiveRequests bool
-	if rt.metrics != nil && rt.metrics.activeRequests != nil {
-		rt.metrics.activeRequests.Add(req.Context(), 1, metric.WithAttributes(
+	var netAttrs, rpcAttrs metric.MeasurementOption
+	if rt.metrics != nil {
+		host := stripPort(req.URL.Host)
+		netAttrs = metric.WithAttributes(
+			attribute.String("rpc.system.name", "http"),
+			attribute.String("server.address", host),
+		)
+		rpcAttrs = metric.WithAttributes(
 			attribute.String("rpc.method", logicalMethod),
 			attribute.String("rpc.system.name", "http"),
-			attribute.String("server.address", stripPort(req.URL.Host)),
-		))
-		decrementActiveRequests = true
+			attribute.String("server.address", host),
+		)
+		if rt.metrics.activeRequests != nil {
+			rt.metrics.activeRequests.Add(req.Context(), 1, rpcAttrs)
+			decrementActiveRequests = true
+		}
 	}
 	defer func() {
-		if decrementActiveRequests {
-			rt.metrics.activeRequests.Add(req.Context(), -1, metric.WithAttributes(
-				attribute.String("rpc.method", logicalMethod),
-				attribute.String("rpc.system.name", "http"),
-				attribute.String("server.address", stripPort(req.URL.Host)),
-			))
+		if decrementActiveRequests && rt.metrics != nil && rt.metrics.activeRequests != nil {
+			rt.metrics.activeRequests.Add(req.Context(), -1, rpcAttrs)
 		}
 	}()
 
@@ -700,11 +705,7 @@ func (rt *metricsRoundTripper) RoundTrip(req *http.Request) (*http.Response, err
 					mu.Unlock()
 					if !start.IsZero() {
 						duration := time.Since(start).Seconds()
-						attrs := []attribute.KeyValue{
-							attribute.String("rpc.system.name", "http"),
-							attribute.String("server.address", stripPort(req.URL.Host)),
-						}
-						rt.metrics.dnsLookupDuration.Record(req.Context(), duration, metric.WithAttributes(attrs...))
+						rt.metrics.dnsLookupDuration.Record(req.Context(), duration, netAttrs)
 					}
 				}
 			},
@@ -723,11 +724,7 @@ func (rt *metricsRoundTripper) RoundTrip(req *http.Request) (*http.Response, err
 					mu.Unlock()
 					if ok {
 						duration := time.Since(start).Seconds()
-						attrs := []attribute.KeyValue{
-							attribute.String("rpc.system.name", "http"),
-							attribute.String("server.address", stripPort(req.URL.Host)),
-						}
-						rt.metrics.tcpConnectDuration.Record(req.Context(), duration, metric.WithAttributes(attrs...))
+						rt.metrics.tcpConnectDuration.Record(req.Context(), duration, netAttrs)
 					}
 				}
 			},
@@ -743,11 +740,7 @@ func (rt *metricsRoundTripper) RoundTrip(req *http.Request) (*http.Response, err
 					mu.Unlock()
 					if !start.IsZero() {
 						duration := time.Since(start).Seconds()
-						attrs := []attribute.KeyValue{
-							attribute.String("rpc.system.name", "http"),
-							attribute.String("server.address", stripPort(req.URL.Host)),
-						}
-						rt.metrics.tlsHandshakeDuration.Record(req.Context(), duration, metric.WithAttributes(attrs...))
+						rt.metrics.tlsHandshakeDuration.Record(req.Context(), duration, netAttrs)
 					}
 				}
 			},
@@ -789,14 +782,10 @@ func (rt *metricsRoundTripper) RoundTrip(req *http.Request) (*http.Response, err
 				headerVal = resp.Header.Get("X-Goog-Gfe-Service-Time")
 			}
 			if resp == nil || headerVal == "" {
-				rt.metrics.gfeHeaderMissing.Add(req.Context(), 1, metric.WithAttributes(
-					attribute.String("rpc.method", logicalMethod),
-					attribute.String("rpc.system.name", "http"),
-					attribute.String("server.address", stripPort(req.URL.Host)),
-				))
+				rt.metrics.gfeHeaderMissing.Add(req.Context(), 1, rpcAttrs)
 			} else if rt.metrics.gfeDuration != nil {
 				if ms, parseErr := strconv.ParseFloat(headerVal, 64); parseErr == nil {
-					rt.metrics.gfeDuration.Record(req.Context(), ms/1000.0)
+					rt.metrics.gfeDuration.Record(req.Context(), ms/1000.0, rpcAttrs)
 				}
 			}
 		}
@@ -906,17 +895,18 @@ func metricsInterceptors(cm *clientMetrics) (grpc.UnaryClientInterceptor, grpc.S
 			target = cc.Target()
 		}
 
+		var rpcAttrs metric.MeasurementOption
+		if cm.activeRequests != nil || cm.gfeHeaderMissing != nil {
+			rpcAttrs = metric.WithAttributes(
+				attribute.String("rpc.method", logicalMethod),
+				attribute.String("rpc.system.name", "grpc"),
+				attribute.String("server.address", stripPort(target)),
+			)
+		}
+
 		if cm.activeRequests != nil {
-			cm.activeRequests.Add(ctx, 1, metric.WithAttributes(
-				attribute.String("rpc.method", logicalMethod),
-				attribute.String("rpc.system.name", "grpc"),
-				attribute.String("server.address", target),
-			))
-			defer cm.activeRequests.Add(ctx, -1, metric.WithAttributes(
-				attribute.String("rpc.method", logicalMethod),
-				attribute.String("rpc.system.name", "grpc"),
-				attribute.String("server.address", target),
-			))
+			cm.activeRequests.Add(ctx, 1, rpcAttrs)
+			defer cm.activeRequests.Add(ctx, -1, rpcAttrs)
 		}
 
 		var headerMD, trailerMD metadata.MD
@@ -935,14 +925,10 @@ func metricsInterceptors(cm *clientMetrics) (grpc.UnaryClientInterceptor, grpc.S
 				headerVal = headerVals[0]
 			}
 			if headerVal == "" {
-				cm.gfeHeaderMissing.Add(ctx, 1, metric.WithAttributes(
-					attribute.String("rpc.method", logicalMethod),
-					attribute.String("rpc.system.name", "grpc"),
-					attribute.String("server.address", target),
-				))
+				cm.gfeHeaderMissing.Add(ctx, 1, rpcAttrs)
 			} else if cm.gfeDuration != nil {
 				if ms, parseErr := strconv.ParseFloat(headerVal, 64); parseErr == nil {
-					cm.gfeDuration.Record(ctx, ms/1000.0)
+					cm.gfeDuration.Record(ctx, ms/1000.0, rpcAttrs)
 				}
 			}
 		}
@@ -963,12 +949,14 @@ func metricsInterceptors(cm *clientMetrics) (grpc.UnaryClientInterceptor, grpc.S
 			target = cc.Target()
 		}
 
+		var rpcAttrs metric.MeasurementOption
 		if cm.activeRequests != nil {
-			cm.activeRequests.Add(ctx, 1, metric.WithAttributes(
+			rpcAttrs = metric.WithAttributes(
 				attribute.String("rpc.method", logicalMethod),
 				attribute.String("rpc.system.name", "grpc"),
-				attribute.String("server.address", target),
-			))
+				attribute.String("server.address", stripPort(target)),
+			)
+			cm.activeRequests.Add(ctx, 1, rpcAttrs)
 		}
 
 		startTime := time.Now()
@@ -976,11 +964,7 @@ func metricsInterceptors(cm *clientMetrics) (grpc.UnaryClientInterceptor, grpc.S
 
 		if err != nil {
 			if cm.activeRequests != nil {
-				cm.activeRequests.Add(ctx, -1, metric.WithAttributes(
-					attribute.String("rpc.method", logicalMethod),
-					attribute.String("rpc.system.name", "grpc"),
-					attribute.String("server.address", target),
-				))
+				cm.activeRequests.Add(ctx, -1, rpcAttrs)
 			}
 			duration := time.Since(startTime).Seconds()
 			cm.recordRPC(ctx, method, target, duration, err)
@@ -1047,12 +1031,17 @@ func (w *wrappedClientStream) record(err error) {
 			logicalMethod = logicalMethod[idx+1:]
 		}
 
-		if w.metrics.activeRequests != nil {
-			w.metrics.activeRequests.Add(w.ctx, -1, metric.WithAttributes(
+		var rpcAttrs metric.MeasurementOption
+		if w.metrics.activeRequests != nil || w.metrics.gfeHeaderMissing != nil {
+			rpcAttrs = metric.WithAttributes(
 				attribute.String("rpc.method", logicalMethod),
 				attribute.String("rpc.system.name", "grpc"),
-				attribute.String("server.address", w.target),
-			))
+				attribute.String("server.address", stripPort(w.target)),
+			)
+		}
+
+		if w.metrics.activeRequests != nil {
+			w.metrics.activeRequests.Add(w.ctx, -1, rpcAttrs)
 		}
 
 		if w.metrics.gfeHeaderMissing != nil {
@@ -1067,14 +1056,10 @@ func (w *wrappedClientStream) record(err error) {
 				headerVal = headerVals[0]
 			}
 			if headerVal == "" {
-				w.metrics.gfeHeaderMissing.Add(w.ctx, 1, metric.WithAttributes(
-					attribute.String("rpc.method", logicalMethod),
-					attribute.String("rpc.system.name", "grpc"),
-					attribute.String("server.address", w.target),
-				))
+				w.metrics.gfeHeaderMissing.Add(w.ctx, 1, rpcAttrs)
 			} else if w.metrics.gfeDuration != nil {
 				if ms, parseErr := strconv.ParseFloat(headerVal, 64); parseErr == nil {
-					w.metrics.gfeDuration.Record(w.ctx, ms/1000.0)
+					w.metrics.gfeDuration.Record(w.ctx, ms/1000.0, rpcAttrs)
 				}
 			}
 		}
@@ -1515,41 +1500,28 @@ func (h *grpcMetricsStatsHandler) HandleConn(ctx context.Context, s stats.ConnSt
 	}
 }
 
-// grpcNetworkMetricsDialOptions returns dial options that instrument DNS, TCP, and TLS handshake metrics.
-func grpcNetworkMetricsDialOptions(metrics *clientMetrics) []option.ClientOption {
-	if metrics == nil || (metrics.dnsLookupDuration == nil && metrics.tcpConnectDuration == nil && metrics.tlsHandshakeDuration == nil) {
+// grpcNetworkMetricsDialOptions returns dial options that instrument TCP and TLS handshake metrics.
+func grpcNetworkMetricsDialOptions(host string, metrics *clientMetrics) []option.ClientOption {
+	if metrics == nil || (metrics.tcpConnectDuration == nil && metrics.tlsHandshakeDuration == nil) {
 		return nil
 	}
 	var dialTimes sync.Map
 
 	dialer := func(ctx context.Context, addr string) (net.Conn, error) {
-		host, _, _ := net.SplitHostPort(addr)
-
-		if metrics.dnsLookupDuration != nil {
-			dnsStart := time.Now()
-			// Perform DNS lookup manually to time it
-			_, err := net.DefaultResolver.LookupIPAddr(ctx, host)
-			if err == nil {
-				dnsDuration := time.Since(dnsStart).Seconds()
-				attrs := []attribute.KeyValue{
-					attribute.String("rpc.system.name", "grpc"),
-					attribute.String("server.address", host),
-				}
-				metrics.dnsLookupDuration.Record(ctx, dnsDuration, metric.WithAttributes(attrs...))
-			}
+		var netAttrs metric.MeasurementOption
+		if metrics.tcpConnectDuration != nil {
+			netAttrs = metric.WithAttributes(
+				attribute.String("rpc.system.name", "grpc"),
+				attribute.String("server.address", host),
+			)
 		}
 
-		// Fallback to normal dial for TCP
 		tcpStart := time.Now()
 		var d net.Dialer
 		conn, err := d.DialContext(ctx, "tcp", addr)
 		if err == nil && metrics.tcpConnectDuration != nil {
 			tcpDuration := time.Since(tcpStart).Seconds()
-			attrs := []attribute.KeyValue{
-				attribute.String("rpc.system.name", "grpc"),
-				attribute.String("server.address", host),
-			}
-			metrics.tcpConnectDuration.Record(ctx, tcpDuration, metric.WithAttributes(attrs...))
+			metrics.tcpConnectDuration.Record(ctx, tcpDuration, netAttrs)
 			if conn != nil {
 				dialTimes.Store(conn.LocalAddr().String(), dialInfo{doneTime: time.Now(), host: host})
 			}

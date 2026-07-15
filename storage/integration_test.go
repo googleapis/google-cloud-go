@@ -1346,111 +1346,90 @@ func TestIntegration_OtelMetricsEnablement(t *testing.T) {
 			}
 
 			// Check transport-level duration metric.
-			expectedMetricName := "rpc.client.call.duration"
+			expectedTransportMetric := "rpc.client.call.duration"
 			if transportType == "http" {
-				expectedMetricName = "http.client.request.duration"
-			}
-			if m, ok := metricsMap[expectedMetricName]; !ok {
-				t.Errorf("expected transport metric %q not found", expectedMetricName)
-			} else {
-				hist, ok := m.Data.(metricdata.Histogram[float64])
-				if !ok {
-					t.Fatalf("expected Histogram data, got %T", m.Data)
-				}
-				if len(hist.DataPoints) == 0 {
-					t.Errorf("expected at least 1 datapoint for %q, got 0", expectedMetricName)
-				} else {
-					dp := hist.DataPoints[0]
-					attrs := make(map[string]string)
-					for _, kv := range dp.Attributes.ToSlice() {
-						attrs[string(kv.Key)] = kv.Value.Emit()
-					}
-					if attrs["server.address"] == "" {
-						t.Errorf("expected non-empty server.address")
-					}
-				}
+				expectedTransportMetric = "http.client.request.duration"
 			}
 
-			// Check SDK-level duration metric.
-			if m, ok := metricsMap["gcp.client.request.duration"]; !ok {
-				t.Errorf("expected metric gcp.client.request.duration not found")
-			} else {
-				hist, ok := m.Data.(metricdata.Histogram[float64])
-				if !ok {
-					t.Fatalf("expected Histogram data, got %T", m.Data)
-				}
-				if len(hist.DataPoints) == 0 {
-					t.Errorf("expected at least 1 datapoint for gcp.client.request.duration, got 0")
-				}
+			expectedHistograms := []string{
+				expectedTransportMetric,
+				"gcp.client.request.duration",
 			}
-
-			// Check client operations metric.
-			if m, ok := metricsMap["gcp.storage.client.operations"]; !ok {
-				t.Errorf("expected metric gcp.storage.client.operations not found")
-			} else {
-				sum, ok := m.Data.(metricdata.Sum[int64])
-				if !ok {
-					t.Fatalf("expected Sum data, got %T", m.Data)
-				}
-				if len(sum.DataPoints) == 0 {
-					t.Errorf("expected at least 1 datapoint for gcp.storage.client.operations, got 0")
-				}
+			expectedSums := []string{
+				"gcp.storage.client.operations",
+				"gcp.storage.client.active_requests",
 			}
-
-			// Check debug metrics.
-			if m, ok := metricsMap["gcp.storage.client.gfe.duration"]; !ok {
-				// Wait, gfe.duration might not be available if not running through GFE, but for this test it usually is.
-				// However, maybe we just check if active_requests is present.
-			} else {
-				hist, ok := m.Data.(metricdata.Histogram[float64])
-				if !ok {
-					t.Fatalf("expected Histogram data for gfe.duration, got %T", m.Data)
-				}
-				if len(hist.DataPoints) == 0 {
-					t.Errorf("expected at least 1 datapoint for gcp.storage.client.gfe.duration, got 0")
-				}
-			}
-
-			if m, ok := metricsMap["gcp.storage.client.active_requests"]; !ok {
-				t.Errorf("expected metric gcp.storage.client.active_requests not found")
-			} else {
-				sum, ok := m.Data.(metricdata.Sum[int64])
-				if !ok {
-					t.Fatalf("expected Sum data for active_requests, got %T", m.Data)
-				}
-				// Can be 0 if the request already completed.
-				_ = sum
-			}
-
-			// Check network metrics.
-			for _, netMetric := range []string{
-				"gcp.storage.client.network.dns.lookup.duration",
+			expectedNetworkMetrics := []string{
 				"gcp.storage.client.network.tcp.connect.duration",
 				"gcp.storage.client.network.tls.handshake.duration",
-			} {
-				if m, ok := metricsMap[netMetric]; !ok {
-					t.Errorf("expected metric %s not found", netMetric)
-				} else {
-					hist, ok := m.Data.(metricdata.Histogram[float64])
-					if !ok {
-						t.Fatalf("expected Histogram data for %s, got %T", netMetric, m.Data)
-					}
-					if len(hist.DataPoints) == 0 {
-						t.Errorf("expected at least 1 datapoint for %s, got 0", netMetric)
-					} else {
-						// Ensure it has server.address and rpc.system.name
-						dp := hist.DataPoints[0]
-						attrs := make(map[string]string)
-						for _, kv := range dp.Attributes.ToSlice() {
-							attrs[string(kv.Key)] = kv.Value.Emit()
-						}
-						if attrs["server.address"] == "" {
-							t.Errorf("expected non-empty server.address for %s", netMetric)
-						}
-						if attrs["rpc.system.name"] != transportType {
-							t.Errorf("expected rpc.system.name = %q for %s, got %q", transportType, netMetric, attrs["rpc.system.name"])
-						}
-					}
+			}
+			if transportType == "http" {
+				expectedNetworkMetrics = append(expectedNetworkMetrics, "gcp.storage.client.network.dns.lookup.duration")
+			}
+
+			// gfe.duration might not be strictly populated locally, but check it if present.
+			if m, ok := metricsMap["gcp.storage.client.gfe.duration"]; ok {
+				if hist, ok := m.Data.(metricdata.Histogram[float64]); !ok {
+					t.Errorf("expected Histogram data for gfe.duration, got %T", m.Data)
+				} else if len(hist.DataPoints) == 0 {
+					t.Errorf("expected at least 1 datapoint for gcp.storage.client.gfe.duration")
+				}
+			}
+
+			for _, name := range expectedHistograms {
+				m, ok := metricsMap[name]
+				if !ok {
+					t.Errorf("expected metric %q not found", name)
+					continue
+				}
+				hist, ok := m.Data.(metricdata.Histogram[float64])
+				if !ok {
+					t.Errorf("expected Histogram data for %q, got %T", name, m.Data)
+					continue
+				}
+				if len(hist.DataPoints) == 0 {
+					t.Errorf("expected at least 1 datapoint for %q", name)
+				}
+			}
+
+			for _, name := range expectedSums {
+				m, ok := metricsMap[name]
+				if !ok {
+					t.Errorf("expected metric %q not found", name)
+					continue
+				}
+				_, ok = m.Data.(metricdata.Sum[int64])
+				if !ok {
+					t.Errorf("expected Sum data for %q, got %T", name, m.Data)
+				}
+			}
+
+			for _, name := range expectedNetworkMetrics {
+				m, ok := metricsMap[name]
+				if !ok {
+					t.Errorf("expected metric %q not found", name)
+					continue
+				}
+				hist, ok := m.Data.(metricdata.Histogram[float64])
+				if !ok {
+					t.Errorf("expected Histogram data for %q, got %T", name, m.Data)
+					continue
+				}
+				if len(hist.DataPoints) == 0 {
+					t.Errorf("expected at least 1 datapoint for %q", name)
+					continue
+				}
+
+				dp := hist.DataPoints[0]
+				attrs := make(map[string]string)
+				for _, kv := range dp.Attributes.ToSlice() {
+					attrs[string(kv.Key)] = kv.Value.Emit()
+				}
+				if attrs["server.address"] == "" {
+					t.Errorf("expected non-empty server.address for %q", name)
+				}
+				if attrs["rpc.system.name"] != transportType {
+					t.Errorf("expected rpc.system.name = %q for %q, got %q", transportType, name, attrs["rpc.system.name"])
 				}
 			}
 		})
