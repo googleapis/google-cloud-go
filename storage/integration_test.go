@@ -1421,6 +1421,38 @@ func TestIntegration_OtelMetricsEnablement(t *testing.T) {
 				// Can be 0 if the request already completed.
 				_ = sum
 			}
+
+			// Check network metrics.
+			for _, netMetric := range []string{
+				"gcp.storage.client.network.dns.lookup.duration",
+				"gcp.storage.client.network.tcp.connect.duration",
+				"gcp.storage.client.network.tls.handshake.duration",
+			} {
+				if m, ok := metricsMap[netMetric]; !ok {
+					t.Errorf("expected metric %s not found", netMetric)
+				} else {
+					hist, ok := m.Data.(metricdata.Histogram[float64])
+					if !ok {
+						t.Fatalf("expected Histogram data for %s, got %T", netMetric, m.Data)
+					}
+					if len(hist.DataPoints) == 0 {
+						t.Errorf("expected at least 1 datapoint for %s, got 0", netMetric)
+					} else {
+						// Ensure it has server.address and rpc.system.name
+						dp := hist.DataPoints[0]
+						attrs := make(map[string]string)
+						for _, kv := range dp.Attributes.ToSlice() {
+							attrs[string(kv.Key)] = kv.Value.Emit()
+						}
+						if attrs["server.address"] == "" {
+							t.Errorf("expected non-empty server.address for %s", netMetric)
+						}
+						if attrs["rpc.system.name"] != transportType {
+							t.Errorf("expected rpc.system.name = %q for %s, got %q", transportType, netMetric, attrs["rpc.system.name"])
+						}
+					}
+				}
+			}
 		})
 	}
 }
