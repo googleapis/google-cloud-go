@@ -2,6 +2,7 @@
   "accessapproval": "1.13.0",
   "accesscontextmanager": "1.15.0",
   "advisorynotifications": "1.10.0",
+  "agentidentity": "0.0.0",
   "agentregistry": "0.2.0",
   "ai": "1.1.0",
   "aiplatform": "1.126.0",
