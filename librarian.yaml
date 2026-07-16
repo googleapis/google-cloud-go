@@ -52,6 +52,12 @@ libraries:
     version: 1.10.0
     apis:
       - path: google/cloud/advisorynotifications/v1
+  - name: agentidentity
+    version: 0.0.0
+    apis:
+      - path: google/cloud/agentidentity/v1
+      - path: google/cloud/agentidentity/v1beta
+    copyright_year: "2026"
   - name: agentplatform
     version: 0.21.0
     skip_generate: true
