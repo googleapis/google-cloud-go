@@ -34,7 +34,6 @@ import (
 	"testing"
 	"time"
 
-	"filippo.io/nistec"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -587,13 +586,14 @@ func blindEvaluateServer(username string, pubKey, oprfSeed []byte) ([]byte, erro
 	if err != nil {
 		return nil, fmt.Errorf("deriveKeyPair() failed: %v", err)
 	}
-	blindElement, err := nistec.NewP256Point().SetBytes(pubKey)
-	if err != nil {
-		return nil, fmt.Errorf("SetBytes() failed: %v", err)
+	curve := elliptic.P256()
+	x, y := elliptic.UnmarshalCompressed(curve, pubKey)
+	if x == nil {
+		return nil, fmt.Errorf("UnmarshalCompressed() failed")
 	}
-	point, err := blindElement.ScalarMult(blindElement, oprfKey)
-	if err != nil {
-		return nil, fmt.Errorf("ScalarMult() failed: %v", err)
+	sx, sy := curve.ScalarMult(x, y, oprfKey)
+	if sx == nil {
+		return nil, fmt.Errorf("ScalarMult() failed")
 	}
-	return point.Bytes(), nil
+	return elliptic.MarshalCompressed(curve, sx, sy), nil
 }

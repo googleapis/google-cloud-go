@@ -11,9 +11,7 @@ require (
 	cloud.google.com/go/iam v1.11.0
 	cloud.google.com/go/longrunning v1.0.0
 	cloud.google.com/go/monitoring v1.29.0
-	filippo.io/nistec v0.0.4
 	github.com/GoogleCloudPlatform/grpc-gcp-go/grpcgcp v1.6.0
-	github.com/bytemare/hash2curve v0.5.4
 	github.com/google/go-cmp v0.7.0
 	github.com/google/uuid v1.6.0
 	github.com/googleapis/gax-go/v2 v2.23.0
@@ -41,7 +39,6 @@ require (
 	cloud.google.com/go/auth/oauth2adapt v0.2.8 // indirect
 	cloud.google.com/go/compute/metadata v0.9.0 // indirect
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/detectors/gcp v1.32.0 // indirect
-	github.com/bytemare/hash v0.5.2 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/cncf/xds/go v0.0.0-20260202195803-dba9d589def2 // indirect
 	github.com/envoyproxy/go-control-plane/envoy v1.37.0 // indirect

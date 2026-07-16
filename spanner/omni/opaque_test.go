@@ -23,8 +23,7 @@ import (
 	"math/big"
 	"testing"
 
-	"filippo.io/nistec"
-	"github.com/bytemare/hash2curve/nist/p256"
+	"crypto/elliptic"
 )
 
 func TestRandomOracleSha256(t *testing.T) {
@@ -576,23 +575,25 @@ func blindEvaluate(t *testing.T, username string, pubKey, oprfSeed []byte) ([]by
 	if err != nil {
 		return nil, fmt.Errorf("deriveKeyPair() failed: %v", err)
 	}
-	blindElement, err := nistec.NewP256Point().SetBytes(pubKey)
-	if err != nil {
-		return nil, fmt.Errorf("SetBytes() failed: %v", err)
+	curve := elliptic.P256()
+	x, y := elliptic.UnmarshalCompressed(curve, pubKey)
+	if x == nil {
+		return nil, fmt.Errorf("UnmarshalCompressed() failed")
 	}
-	point, err := blindElement.ScalarMult(blindElement, oprfKey)
-	if err != nil {
-		return nil, fmt.Errorf("ScalarMult() failed: %v", err)
+	sx, sy := curve.ScalarMult(x, y, oprfKey)
+	if sx == nil {
+		return nil, fmt.Errorf("ScalarMult() failed")
 	}
-	return point.Bytes(), nil
+	return elliptic.MarshalCompressed(curve, sx, sy), nil
 }
 
 func evaluate(t *testing.T, password []byte, serverPrivateKey []byte) ([]byte, error) {
 	t.Helper()
-	inputElement := p256.HashToCurve(password, []byte(loginDomainSeparationTag))
-	point, err := inputElement.ScalarMult(inputElement, serverPrivateKey)
-	if err != nil {
-		return nil, err
+	hx, hy := hashToCurveP256(password, []byte(loginDomainSeparationTag))
+	curve := elliptic.P256()
+	sx, sy := curve.ScalarMult(hx, hy, serverPrivateKey)
+	if sx == nil {
+		return nil, fmt.Errorf("ScalarMult() failed")
 	}
-	return point.BytesCompressed(), nil
+	return elliptic.MarshalCompressed(curve, sx, sy), nil
 }

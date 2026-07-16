@@ -27,8 +27,6 @@ import (
 	"math/big"
 	"slices"
 
-	"filippo.io/nistec"
-	"github.com/bytemare/hash2curve/nist/p256"
 	"golang.org/x/crypto/argon2"
 	"golang.org/x/crypto/hkdf"
 )
@@ -318,15 +316,16 @@ func (ua *userAuthenticator) preamble(evaluatedElement, serverPublicKey, serverN
 
 // diffieHellman computes the Diffie-Hellman shared secret.
 func diffieHellman(privateKey, publicKey []byte) ([]byte, error) {
-	point, err := nistec.NewP256Point().SetBytes(publicKey)
-	if err != nil {
-		return nil, err
+	curve := elliptic.P256()
+	x, y := elliptic.UnmarshalCompressed(curve, publicKey)
+	if x == nil {
+		return nil, fmt.Errorf("invalid public key")
 	}
-	secretPoint, err := point.ScalarMult(point, privateKey)
-	if err != nil {
-		return nil, err
+	sx, sy := curve.ScalarMult(x, y, privateKey)
+	if sx == nil {
+		return nil, fmt.Errorf("scalar multiplication failed")
 	}
-	return secretPoint.BytesCompressed(), nil
+	return elliptic.MarshalCompressed(curve, sx, sy), nil
 }
 
 // recoverClient recovers the client's export key and private key from the envelope.
@@ -370,29 +369,28 @@ func finalize(blind []byte, evaluatedMessage []byte) ([]byte, error) {
 	if len(blind) == 0 {
 		return nil, fmt.Errorf("blind scalar cannot be empty")
 	}
-	evaluatedElement, err := nistec.NewP256Point().SetBytes(evaluatedMessage)
-	if err != nil {
-		return nil, err
+	curve := elliptic.P256()
+	x, y := elliptic.UnmarshalCompressed(curve, evaluatedMessage)
+	if x == nil {
+		return nil, fmt.Errorf("invalid evaluated message point")
 	}
 	privateKey := new(big.Int).SetBytes(blind)
-	curve := elliptic.P256()
 	order := curve.Params().N
 	orderMinusTwo := new(big.Int).Sub(order, big.NewInt(2))
 	inversedBlind := new(big.Int).Exp(privateKey, orderMinusTwo, order)
 	bytesInversedBlind := make([]byte, 32)
 	inversedBlind.FillBytes(bytesInversedBlind)
 	defer clear(bytesInversedBlind)
-	oprf, err := evaluatedElement.ScalarMult(evaluatedElement, bytesInversedBlind)
-	if err != nil {
-		return nil, err
+
+	sx, sy := curve.ScalarMult(x, y, bytesInversedBlind)
+	if sx == nil {
+		return nil, fmt.Errorf("scalar multiplication failed")
 	}
-	return oprf.BytesCompressed(), nil
+	return elliptic.MarshalCompressed(curve, sx, sy), nil
 }
 
 // deriveKeyPair derives a public/private keypair from a seed.
 func deriveKeyPair(seed, info []byte) (publicKey, privateKey []byte, err error) {
-	p := nistec.NewP256Point()
-	p = p.SetGenerator()
 	deriveInput := slices.Concat(seed, info)
 	curve := elliptic.P256()
 	order := curve.Params().N
@@ -400,12 +398,12 @@ func deriveKeyPair(seed, info []byte) (publicKey, privateKey []byte, err error) 
 	if err != nil {
 		return nil, nil, err
 	}
-	pubKey, err := p.ScalarMult(p, privateKey)
-	if err != nil {
+	pubX, pubY := curve.ScalarBaseMult(privateKey)
+	if pubX == nil {
 		clear(privateKey)
-		return nil, nil, err
+		return nil, nil, fmt.Errorf("scalar base mult failed")
 	}
-	return pubKey.BytesCompressed(), privateKey, nil
+	return elliptic.MarshalCompressed(curve, pubX, pubY), privateKey, nil
 }
 
 // randomOracleSha256 implements a random oracle based on SHA-256.
@@ -438,7 +436,7 @@ func randomOracleSha256(x []byte, max *big.Int) ([]byte, error) {
 
 // blind blinds the client password point using a random scalar.
 func blind(plaintext []byte) (publicKey, privateKey []byte, err error) {
-	point := p256.HashToCurve(plaintext, []byte(loginDomainSeparationTag))
+	hx, hy := hashToCurveP256(plaintext, []byte(loginDomainSeparationTag))
 	curve := elliptic.P256()
 	order := curve.Params().N
 	var scalarInt *big.Int
@@ -453,12 +451,12 @@ func blind(plaintext []byte) (publicKey, privateKey []byte, err error) {
 	}
 	scalar := make([]byte, 32)
 	scalarInt.FillBytes(scalar)
-	point, err = point.ScalarMult(point, scalar)
-	if err != nil {
+	px, py := curve.ScalarMult(hx, hy, scalar)
+	if px == nil {
 		clear(scalar)
-		return nil, nil, err
+		return nil, nil, fmt.Errorf("scalar mult failed")
 	}
-	return point.BytesCompressed(), scalar, nil
+	return elliptic.MarshalCompressed(curve, px, py), scalar, nil
 }
 
 // stretch stretches the OPRF output using Argon2Id.
@@ -523,4 +521,122 @@ func xorBytes(a, b []byte) ([]byte, error) {
 	result := make([]byte, len(a))
 	subtle.XORBytes(result, a, b)
 	return result, nil
+}
+
+var (
+	p256P, _         = new(big.Int).SetString("ffffffff00000001000000000000000000000000ffffffffffffffffffffffff", 16)
+	p256A            = modP(big.NewInt(-3))
+	p256B, _         = new(big.Int).SetString("5ac635d8aa3a93e7b3ebbd55769886bc651d06b0cc53b0f63bce3c3e27d2604b", 16)
+	p256Z            = modP(big.NewInt(-10))
+	p256PMinus1Over2 = new(big.Int).Rsh(new(big.Int).Sub(p256P, big.NewInt(1)), 1)
+	p256PPlus1Over4  = new(big.Int).Rsh(new(big.Int).Add(p256P, big.NewInt(1)), 2)
+)
+
+func modP(x *big.Int) *big.Int {
+	res := new(big.Int).Mod(x, p256P)
+	if res.Sign() < 0 {
+		res.Add(res, p256P)
+	}
+	return res
+}
+
+// expandMessageXMD implements expand_message_xmd for SHA-256 (RFC 9380 Section 5.3.1).
+func expandMessageXMD(msg, dst []byte, lenInBytes int) []byte {
+	ell := (lenInBytes + 31) / 32
+	if len(dst) > 255 {
+		h := sha256.Sum256(slices.Concat([]byte("H2C-OVERSIZE-DST-"), dst))
+		dst = h[:]
+	}
+	dstLen := byte(len(dst))
+	bIn := slices.Concat(
+		make([]byte, 64),
+		msg,
+		[]byte{byte(lenInBytes >> 8), byte(lenInBytes)},
+		[]byte{0x00},
+		dst,
+		[]byte{dstLen},
+	)
+	b0 := sha256.Sum256(bIn)
+
+	b1Input := slices.Concat(b0[:], []byte{0x01}, dst, []byte{dstLen})
+	b1 := sha256.Sum256(b1Input)
+
+	res := make([]byte, 0, lenInBytes)
+	res = append(res, b1[:]...)
+	prev := b1
+
+	for i := 2; i <= ell; i++ {
+		tmp := make([]byte, 32)
+		for j := 0; j < 32; j++ {
+			tmp[j] = b0[j] ^ prev[j]
+		}
+		biInput := slices.Concat(tmp, []byte{byte(i)}, dst, []byte{dstLen})
+		bi := sha256.Sum256(biInput)
+		res = append(res, bi[:]...)
+		prev = bi
+	}
+	return res[:lenInBytes]
+}
+
+// mapToCurveSSWU implements Simplified SWU mapping for P-256 (RFC 9380 Section 6.6.2).
+func mapToCurveSSWU(u *big.Int) (x, y *big.Int) {
+	tv1 := modP(new(big.Int).Mul(u, u))
+	tv1 = modP(new(big.Int).Mul(p256Z, tv1))
+	tv2 := modP(new(big.Int).Mul(tv1, tv1))
+	tv2 = modP(new(big.Int).Add(tv2, tv1))
+	tv3 := modP(new(big.Int).Add(tv2, big.NewInt(1)))
+	tv3 = modP(new(big.Int).Mul(p256B, tv3))
+
+	var tv4 *big.Int
+	if tv2.Sign() != 0 {
+		tv4 = modP(new(big.Int).Neg(tv2))
+	} else {
+		tv4 = new(big.Int).Set(p256Z)
+	}
+	tv4 = modP(new(big.Int).Mul(p256A, tv4))
+
+	tv4Inv := new(big.Int).ModInverse(tv4, p256P)
+	x1 := modP(new(big.Int).Mul(tv3, tv4Inv))
+
+	x1Cube := modP(new(big.Int).Exp(x1, big.NewInt(3), p256P))
+	ax1 := modP(new(big.Int).Mul(p256A, x1))
+	gx1 := modP(new(big.Int).Add(new(big.Int).Add(x1Cube, ax1), p256B))
+
+	e1 := new(big.Int).Exp(gx1, p256PMinus1Over2, p256P)
+	isSquare := (e1.Cmp(big.NewInt(1)) == 0 || gx1.Sign() == 0)
+
+	if isSquare {
+		x = x1
+		y = new(big.Int).Exp(gx1, p256PPlus1Over4, p256P)
+	} else {
+		x = modP(new(big.Int).Mul(tv1, x1))
+		x2Cube := modP(new(big.Int).Exp(x, big.NewInt(3), p256P))
+		ax2 := modP(new(big.Int).Mul(p256A, x))
+		gx2 := modP(new(big.Int).Add(new(big.Int).Add(x2Cube, ax2), p256B))
+		y = new(big.Int).Exp(gx2, p256PPlus1Over4, p256P)
+	}
+
+	if u.Bit(0) != y.Bit(0) {
+		y = modP(new(big.Int).Neg(y))
+	}
+	return x, y
+}
+
+// hashToCurveP256 implements P256_XMD:SHA-256_SSWU_RO_ (RFC 9380 Section 8.2).
+func hashToCurveP256(msg, dst []byte) (x, y *big.Int) {
+	uniformBytes := expandMessageXMD(msg, dst, 96)
+	u0 := modP(new(big.Int).SetBytes(uniformBytes[:48]))
+	u1 := modP(new(big.Int).SetBytes(uniformBytes[48:]))
+
+	x0, y0 := mapToCurveSSWU(u0)
+	x1, y1 := mapToCurveSSWU(u1)
+
+	curve := elliptic.P256()
+	if !curve.IsOnCurve(x0, y0) {
+		fmt.Printf("x0,y0 NOT ON CURVE: x0=%x y0=%x\n", x0, y0)
+	}
+	if !curve.IsOnCurve(x1, y1) {
+		fmt.Printf("x1,y1 NOT ON CURVE: x1=%x y1=%x\n", x1, y1)
+	}
+	return curve.Add(x0, y0, x1, y1)
 }
