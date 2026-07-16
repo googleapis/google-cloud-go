@@ -31,6 +31,7 @@ import (
 	notebookspb "cloud.google.com/go/notebooks/apiv1/notebookspb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -690,8 +691,12 @@ func (c *managedNotebookGRPCClient) CreateRuntime(ctx context.Context, req *note
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*notebooks.CreateRuntimeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateRuntimeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -713,8 +718,12 @@ func (c *managedNotebookGRPCClient) UpdateRuntime(ctx context.Context, req *note
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*notebooks.UpdateRuntimeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateRuntimeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -739,8 +748,12 @@ func (c *managedNotebookGRPCClient) DeleteRuntime(ctx context.Context, req *note
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*notebooks.DeleteRuntimeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteRuntimeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -762,8 +775,12 @@ func (c *managedNotebookGRPCClient) StartRuntime(ctx context.Context, req *noteb
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*notebooks.StartRuntimeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &StartRuntimeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -785,8 +802,12 @@ func (c *managedNotebookGRPCClient) StopRuntime(ctx context.Context, req *notebo
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*notebooks.StopRuntimeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &StopRuntimeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -808,8 +829,12 @@ func (c *managedNotebookGRPCClient) SwitchRuntime(ctx context.Context, req *note
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*notebooks.SwitchRuntimeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &SwitchRuntimeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -831,8 +856,12 @@ func (c *managedNotebookGRPCClient) ResetRuntime(ctx context.Context, req *noteb
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*notebooks.ResetRuntimeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ResetRuntimeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -854,8 +883,12 @@ func (c *managedNotebookGRPCClient) UpgradeRuntime(ctx context.Context, req *not
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*notebooks.UpgradeRuntimeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpgradeRuntimeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -880,8 +913,12 @@ func (c *managedNotebookGRPCClient) ReportRuntimeEvent(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*notebooks.ReportRuntimeEventOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ReportRuntimeEventOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -930,8 +967,12 @@ func (c *managedNotebookGRPCClient) DiagnoseRuntime(ctx context.Context, req *no
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*notebooks.DiagnoseRuntimeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DiagnoseRuntimeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1185,7 +1226,7 @@ func (c *managedNotebookGRPCClient) ListOperations(ctx context.Context, req *lon
 // The name must be that of a previously created CreateRuntimeOperation, possibly from a different process.
 func (c *managedNotebookGRPCClient) CreateRuntimeOperation(name string) *CreateRuntimeOperation {
 	return &CreateRuntimeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*notebooks.CreateRuntimeOperation"),
 	}
 }
 
@@ -1193,7 +1234,7 @@ func (c *managedNotebookGRPCClient) CreateRuntimeOperation(name string) *CreateR
 // The name must be that of a previously created DeleteRuntimeOperation, possibly from a different process.
 func (c *managedNotebookGRPCClient) DeleteRuntimeOperation(name string) *DeleteRuntimeOperation {
 	return &DeleteRuntimeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*notebooks.DeleteRuntimeOperation"),
 	}
 }
 
@@ -1201,7 +1242,7 @@ func (c *managedNotebookGRPCClient) DeleteRuntimeOperation(name string) *DeleteR
 // The name must be that of a previously created DiagnoseRuntimeOperation, possibly from a different process.
 func (c *managedNotebookGRPCClient) DiagnoseRuntimeOperation(name string) *DiagnoseRuntimeOperation {
 	return &DiagnoseRuntimeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*notebooks.DiagnoseRuntimeOperation"),
 	}
 }
 
@@ -1209,7 +1250,7 @@ func (c *managedNotebookGRPCClient) DiagnoseRuntimeOperation(name string) *Diagn
 // The name must be that of a previously created ReportRuntimeEventOperation, possibly from a different process.
 func (c *managedNotebookGRPCClient) ReportRuntimeEventOperation(name string) *ReportRuntimeEventOperation {
 	return &ReportRuntimeEventOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*notebooks.ReportRuntimeEventOperation"),
 	}
 }
 
@@ -1217,7 +1258,7 @@ func (c *managedNotebookGRPCClient) ReportRuntimeEventOperation(name string) *Re
 // The name must be that of a previously created ResetRuntimeOperation, possibly from a different process.
 func (c *managedNotebookGRPCClient) ResetRuntimeOperation(name string) *ResetRuntimeOperation {
 	return &ResetRuntimeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*notebooks.ResetRuntimeOperation"),
 	}
 }
 
@@ -1225,7 +1266,7 @@ func (c *managedNotebookGRPCClient) ResetRuntimeOperation(name string) *ResetRun
 // The name must be that of a previously created StartRuntimeOperation, possibly from a different process.
 func (c *managedNotebookGRPCClient) StartRuntimeOperation(name string) *StartRuntimeOperation {
 	return &StartRuntimeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*notebooks.StartRuntimeOperation"),
 	}
 }
 
@@ -1233,7 +1274,7 @@ func (c *managedNotebookGRPCClient) StartRuntimeOperation(name string) *StartRun
 // The name must be that of a previously created StopRuntimeOperation, possibly from a different process.
 func (c *managedNotebookGRPCClient) StopRuntimeOperation(name string) *StopRuntimeOperation {
 	return &StopRuntimeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*notebooks.StopRuntimeOperation"),
 	}
 }
 
@@ -1241,7 +1282,7 @@ func (c *managedNotebookGRPCClient) StopRuntimeOperation(name string) *StopRunti
 // The name must be that of a previously created SwitchRuntimeOperation, possibly from a different process.
 func (c *managedNotebookGRPCClient) SwitchRuntimeOperation(name string) *SwitchRuntimeOperation {
 	return &SwitchRuntimeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*notebooks.SwitchRuntimeOperation"),
 	}
 }
 
@@ -1249,7 +1290,7 @@ func (c *managedNotebookGRPCClient) SwitchRuntimeOperation(name string) *SwitchR
 // The name must be that of a previously created UpdateRuntimeOperation, possibly from a different process.
 func (c *managedNotebookGRPCClient) UpdateRuntimeOperation(name string) *UpdateRuntimeOperation {
 	return &UpdateRuntimeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*notebooks.UpdateRuntimeOperation"),
 	}
 }
 
@@ -1257,6 +1298,6 @@ func (c *managedNotebookGRPCClient) UpdateRuntimeOperation(name string) *UpdateR
 // The name must be that of a previously created UpgradeRuntimeOperation, possibly from a different process.
 func (c *managedNotebookGRPCClient) UpgradeRuntimeOperation(name string) *UpgradeRuntimeOperation {
 	return &UpgradeRuntimeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*notebooks.UpgradeRuntimeOperation"),
 	}
 }

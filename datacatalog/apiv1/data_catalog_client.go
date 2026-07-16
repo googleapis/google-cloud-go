@@ -33,6 +33,7 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -2808,8 +2809,12 @@ func (c *gRPCClient) ReconcileTags(ctx context.Context, req *datacatalogpb.Recon
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*datacatalog.ReconcileTagsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ReconcileTagsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2954,8 +2959,12 @@ func (c *gRPCClient) ImportEntries(ctx context.Context, req *datacatalogpb.Impor
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*datacatalog.ImportEntriesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ImportEntriesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -5022,8 +5031,12 @@ func (c *restClient) ReconcileTags(ctx context.Context, req *datacatalogpb.Recon
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*datacatalog.ReconcileTagsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ReconcileTagsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5459,8 +5472,12 @@ func (c *restClient) ImportEntries(ctx context.Context, req *datacatalogpb.Impor
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*datacatalog.ImportEntriesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ImportEntriesOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5835,7 +5852,7 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // The name must be that of a previously created ImportEntriesOperation, possibly from a different process.
 func (c *gRPCClient) ImportEntriesOperation(name string) *ImportEntriesOperation {
 	return &ImportEntriesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*datacatalog.ImportEntriesOperation"),
 	}
 }
 
@@ -5844,7 +5861,7 @@ func (c *gRPCClient) ImportEntriesOperation(name string) *ImportEntriesOperation
 func (c *restClient) ImportEntriesOperation(name string) *ImportEntriesOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ImportEntriesOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*datacatalog.ImportEntriesOperation"),
 		pollPath: override,
 	}
 }
@@ -5853,7 +5870,7 @@ func (c *restClient) ImportEntriesOperation(name string) *ImportEntriesOperation
 // The name must be that of a previously created ReconcileTagsOperation, possibly from a different process.
 func (c *gRPCClient) ReconcileTagsOperation(name string) *ReconcileTagsOperation {
 	return &ReconcileTagsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*datacatalog.ReconcileTagsOperation"),
 	}
 }
 
@@ -5862,7 +5879,7 @@ func (c *gRPCClient) ReconcileTagsOperation(name string) *ReconcileTagsOperation
 func (c *restClient) ReconcileTagsOperation(name string) *ReconcileTagsOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ReconcileTagsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*datacatalog.ReconcileTagsOperation"),
 		pollPath: override,
 	}
 }

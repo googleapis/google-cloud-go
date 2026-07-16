@@ -1306,10 +1306,14 @@ func checkNestedTxn(ctx context.Context) error {
 // The function f will be called one or more times. It must not maintain
 // any state between calls.
 //
-// If the transaction cannot be committed or if f returns an ABORTED error,
-// ReadWriteTransaction will call f again. It will continue to call f until the
-// transaction can be committed or the Context times out or is cancelled.  If f
-// returns an error other than ABORTED, ReadWriteTransaction will abort the
+// If Spanner aborts the transaction or f returns an ABORTED error,
+// ReadWriteTransaction will call f again. If f returns ABORTED while the
+// server-side transaction is still active, ReadWriteTransaction rolls back the
+// transaction before retrying. If that rollback fails, ReadWriteTransaction
+// returns a FAILED_PRECONDITION error instead of retrying because the
+// transaction may still hold locks. Otherwise, it will continue to call f until
+// the transaction can be committed or the Context times out or is cancelled.
+// If f returns an error other than ABORTED, ReadWriteTransaction will abort the
 // transaction and return the error.
 //
 // To limit the number of retries, set a deadline on the Context rather than
@@ -1373,6 +1377,9 @@ func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *Rea
 			t.txReadOnly.ro = c.ro
 			t.txReadOnly.disableRouteToLeader = c.disableRouteToLeader
 			t.txReadOnly.clientContext = c.clientContext
+			// Track server-initiated aborts so runInTransaction can distinguish
+			// them from application-fabricated codes.Aborted errors.
+			t.txReadOnly.updateTxStateFunc = t.markTxAbortedOnError
 			t.wb = []*Mutation{}
 			t.txOpts = c.txo.merge(options)
 			t.txReadOnly.clientContext = mergeClientContext(c.clientContext, t.txOpts.ClientContext)
@@ -1381,10 +1388,17 @@ func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *Rea
 			t.otConfig = c.otConfig
 		}
 		if t.shouldExplicitBegin(attempt, options) {
-			if t == nil {
-				t = &ReadWriteTransaction{
-					txReadyOrClosed: make(chan struct{}),
-				}
+			// Always allocate a fresh transaction object for explicit begin.
+			// Retries must not reuse a rolled-back or aborted transaction id
+			// still stored on a previous attempt's object; only previousTx is
+			// carried for wound-wait after a genuine server abort.
+			var previousTx transactionID
+			if t != nil {
+				previousTx = t.previousTx
+			}
+			t = &ReadWriteTransaction{
+				txReadyOrClosed: make(chan struct{}),
+				previousTx:      previousTx,
 			}
 			initTx(t)
 			// Make sure we set the current session handle before calling BeginTransaction.

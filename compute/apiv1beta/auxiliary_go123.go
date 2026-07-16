@@ -255,6 +255,12 @@ func (it *HealthSourcesScopedListPairIterator) All() iter.Seq2[HealthSourcesScop
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *HostIterator) All() iter.Seq2[*computepb.Host, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *ImageIterator) All() iter.Seq2[*computepb.Image, error] {
 	return iterator.RangeAdapter(it.Next)
 }
@@ -616,6 +622,12 @@ func (it *ReferenceIterator) All() iter.Seq2[*computepb.Reference, error] {
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
 func (it *RegionIterator) All() iter.Seq2[*computepb.Region, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ReliabilityRiskIterator) All() iter.Seq2[*computepb.ReliabilityRisk, error] {
 	return iterator.RangeAdapter(it.Next)
 }
 

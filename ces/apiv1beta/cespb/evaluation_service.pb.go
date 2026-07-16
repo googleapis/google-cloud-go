@@ -42,6 +42,59 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// The type of evaluation to generate.
+type GenerateEvaluationRequest_EvaluationType int32
+
+const (
+	// Unspecified type. Defaults to GOLDEN.
+	GenerateEvaluationRequest_EVALUATION_TYPE_UNSPECIFIED GenerateEvaluationRequest_EvaluationType = 0
+	// Golden evaluation.
+	GenerateEvaluationRequest_GOLDEN GenerateEvaluationRequest_EvaluationType = 1
+	// Scenario evaluation.
+	GenerateEvaluationRequest_SCENARIO GenerateEvaluationRequest_EvaluationType = 2
+)
+
+// Enum value maps for GenerateEvaluationRequest_EvaluationType.
+var (
+	GenerateEvaluationRequest_EvaluationType_name = map[int32]string{
+		0: "EVALUATION_TYPE_UNSPECIFIED",
+		1: "GOLDEN",
+		2: "SCENARIO",
+	}
+	GenerateEvaluationRequest_EvaluationType_value = map[string]int32{
+		"EVALUATION_TYPE_UNSPECIFIED": 0,
+		"GOLDEN":                      1,
+		"SCENARIO":                    2,
+	}
+)
+
+func (x GenerateEvaluationRequest_EvaluationType) Enum() *GenerateEvaluationRequest_EvaluationType {
+	p := new(GenerateEvaluationRequest_EvaluationType)
+	*p = x
+	return p
+}
+
+func (x GenerateEvaluationRequest_EvaluationType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (GenerateEvaluationRequest_EvaluationType) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_ces_v1beta_evaluation_service_proto_enumTypes[0].Descriptor()
+}
+
+func (GenerateEvaluationRequest_EvaluationType) Type() protoreflect.EnumType {
+	return &file_google_cloud_ces_v1beta_evaluation_service_proto_enumTypes[0]
+}
+
+func (x GenerateEvaluationRequest_EvaluationType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use GenerateEvaluationRequest_EvaluationType.Descriptor instead.
+func (GenerateEvaluationRequest_EvaluationType) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP(), []int{7, 0}
+}
+
 // Defines the strategy for handling conflicts when an evaluation with the
 // same evaluation ID already exists in the app.
 type ImportEvaluationsRequest_ImportOptions_ConflictResolutionStrategy int32
@@ -85,11 +138,11 @@ func (x ImportEvaluationsRequest_ImportOptions_ConflictResolutionStrategy) Strin
 }
 
 func (ImportEvaluationsRequest_ImportOptions_ConflictResolutionStrategy) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_ces_v1beta_evaluation_service_proto_enumTypes[0].Descriptor()
+	return file_google_cloud_ces_v1beta_evaluation_service_proto_enumTypes[1].Descriptor()
 }
 
 func (ImportEvaluationsRequest_ImportOptions_ConflictResolutionStrategy) Type() protoreflect.EnumType {
-	return &file_google_cloud_ces_v1beta_evaluation_service_proto_enumTypes[0]
+	return &file_google_cloud_ces_v1beta_evaluation_service_proto_enumTypes[1]
 }
 
 func (x ImportEvaluationsRequest_ImportOptions_ConflictResolutionStrategy) Number() protoreflect.EnumNumber {
@@ -139,11 +192,11 @@ func (x ExportOptions_ExportFormat) String() string {
 }
 
 func (ExportOptions_ExportFormat) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_ces_v1beta_evaluation_service_proto_enumTypes[1].Descriptor()
+	return file_google_cloud_ces_v1beta_evaluation_service_proto_enumTypes[2].Descriptor()
 }
 
 func (ExportOptions_ExportFormat) Type() protoreflect.EnumType {
-	return &file_google_cloud_ces_v1beta_evaluation_service_proto_enumTypes[1]
+	return &file_google_cloud_ces_v1beta_evaluation_service_proto_enumTypes[2]
 }
 
 func (x ExportOptions_ExportFormat) Number() protoreflect.EnumNumber {
@@ -557,9 +610,12 @@ type GenerateEvaluationRequest struct {
 	// will be searched.
 	//
 	// Deprecated: Marked as deprecated in google/cloud/ces/v1beta/evaluation_service.proto.
-	Source        Conversation_Source `protobuf:"varint,2,opt,name=source,proto3,enum=google.cloud.ces.v1beta.Conversation_Source" json:"source,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	Source Conversation_Source `protobuf:"varint,2,opt,name=source,proto3,enum=google.cloud.ces.v1beta.Conversation_Source" json:"source,omitempty"`
+	// Optional. The type of evaluation to generate. Defaults to GOLDEN if
+	// unspecified.
+	EvaluationType GenerateEvaluationRequest_EvaluationType `protobuf:"varint,3,opt,name=evaluation_type,json=evaluationType,proto3,enum=google.cloud.ces.v1beta.GenerateEvaluationRequest_EvaluationType" json:"evaluation_type,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *GenerateEvaluationRequest) Reset() {
@@ -605,6 +661,13 @@ func (x *GenerateEvaluationRequest) GetSource() Conversation_Source {
 		return x.Source
 	}
 	return Conversation_SOURCE_UNSPECIFIED
+}
+
+func (x *GenerateEvaluationRequest) GetEvaluationType() GenerateEvaluationRequest_EvaluationType {
+	if x != nil {
+		return x.EvaluationType
+	}
+	return GenerateEvaluationRequest_EVALUATION_TYPE_UNSPECIFIED
 }
 
 // Request message for
@@ -3972,11 +4035,17 @@ const file_google_cloud_ces_v1beta_evaluation_service_proto_rawDesc = "" +
 	"\revaluation_id\x18\x02 \x01(\tB\x03\xe0A\x01R\fevaluationId\x12H\n" +
 	"\n" +
 	"evaluation\x18\x03 \x01(\v2#.google.cloud.ces.v1beta.EvaluationB\x03\xe0A\x02R\n" +
-	"evaluation\"\xb5\x01\n" +
+	"evaluation\"\xf3\x02\n" +
 	"\x19GenerateEvaluationRequest\x12K\n" +
 	"\fconversation\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
 	"\x1fces.googleapis.com/ConversationR\fconversation\x12K\n" +
-	"\x06source\x18\x02 \x01(\x0e2,.google.cloud.ces.v1beta.Conversation.SourceB\x05\xe0A\x01\x18\x01R\x06source\"\xe3\x05\n" +
+	"\x06source\x18\x02 \x01(\x0e2,.google.cloud.ces.v1beta.Conversation.SourceB\x05\xe0A\x01\x18\x01R\x06source\x12o\n" +
+	"\x0fevaluation_type\x18\x03 \x01(\x0e2A.google.cloud.ces.v1beta.GenerateEvaluationRequest.EvaluationTypeB\x03\xe0A\x01R\x0eevaluationType\"K\n" +
+	"\x0eEvaluationType\x12\x1f\n" +
+	"\x1bEVALUATION_TYPE_UNSPECIFIED\x10\x00\x12\n" +
+	"\n" +
+	"\x06GOLDEN\x10\x01\x12\f\n" +
+	"\bSCENARIO\x10\x02\"\xe3\x05\n" +
 	"\x18ImportEvaluationsRequest\x12q\n" +
 	"\x11conversation_list\x18\x02 \x01(\v2B.google.cloud.ces.v1beta.ImportEvaluationsRequest.ConversationListH\x00R\x10conversationList\x12\x19\n" +
 	"\agcs_uri\x18\x03 \x01(\tH\x00R\x06gcsUri\x12!\n" +
@@ -4271,197 +4340,199 @@ func file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescGZIP() []byte 
 	return file_google_cloud_ces_v1beta_evaluation_service_proto_rawDescData
 }
 
-var file_google_cloud_ces_v1beta_evaluation_service_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
+var file_google_cloud_ces_v1beta_evaluation_service_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
 var file_google_cloud_ces_v1beta_evaluation_service_proto_msgTypes = make([]protoimpl.MessageInfo, 59)
 var file_google_cloud_ces_v1beta_evaluation_service_proto_goTypes = []any{
-	(ImportEvaluationsRequest_ImportOptions_ConflictResolutionStrategy)(0), // 0: google.cloud.ces.v1beta.ImportEvaluationsRequest.ImportOptions.ConflictResolutionStrategy
-	(ExportOptions_ExportFormat)(0),                                        // 1: google.cloud.ces.v1beta.ExportOptions.ExportFormat
-	(*RunEvaluationResultMetricsRequest)(nil),                              // 2: google.cloud.ces.v1beta.RunEvaluationResultMetricsRequest
-	(*RunEvaluationResultMetricsResponse)(nil),                             // 3: google.cloud.ces.v1beta.RunEvaluationResultMetricsResponse
-	(*RunEvaluationResponse)(nil),                                          // 4: google.cloud.ces.v1beta.RunEvaluationResponse
-	(*RunEvaluationOperationMetadata)(nil),                                 // 5: google.cloud.ces.v1beta.RunEvaluationOperationMetadata
-	(*GenerateEvaluationOperationMetadata)(nil),                            // 6: google.cloud.ces.v1beta.GenerateEvaluationOperationMetadata
-	(*DeleteEvaluationRunOperationMetadata)(nil),                           // 7: google.cloud.ces.v1beta.DeleteEvaluationRunOperationMetadata
-	(*CreateEvaluationRequest)(nil),                                        // 8: google.cloud.ces.v1beta.CreateEvaluationRequest
-	(*GenerateEvaluationRequest)(nil),                                      // 9: google.cloud.ces.v1beta.GenerateEvaluationRequest
-	(*ImportEvaluationsRequest)(nil),                                       // 10: google.cloud.ces.v1beta.ImportEvaluationsRequest
-	(*ImportEvaluationsResponse)(nil),                                      // 11: google.cloud.ces.v1beta.ImportEvaluationsResponse
-	(*ImportEvaluationsOperationMetadata)(nil),                             // 12: google.cloud.ces.v1beta.ImportEvaluationsOperationMetadata
-	(*CreateEvaluationDatasetRequest)(nil),                                 // 13: google.cloud.ces.v1beta.CreateEvaluationDatasetRequest
-	(*UpdateEvaluationRequest)(nil),                                        // 14: google.cloud.ces.v1beta.UpdateEvaluationRequest
-	(*UpdateEvaluationDatasetRequest)(nil),                                 // 15: google.cloud.ces.v1beta.UpdateEvaluationDatasetRequest
-	(*DeleteEvaluationRequest)(nil),                                        // 16: google.cloud.ces.v1beta.DeleteEvaluationRequest
-	(*DeleteEvaluationResultRequest)(nil),                                  // 17: google.cloud.ces.v1beta.DeleteEvaluationResultRequest
-	(*DeleteEvaluationDatasetRequest)(nil),                                 // 18: google.cloud.ces.v1beta.DeleteEvaluationDatasetRequest
-	(*DeleteEvaluationRunRequest)(nil),                                     // 19: google.cloud.ces.v1beta.DeleteEvaluationRunRequest
-	(*GetEvaluationRequest)(nil),                                           // 20: google.cloud.ces.v1beta.GetEvaluationRequest
-	(*GetEvaluationResultRequest)(nil),                                     // 21: google.cloud.ces.v1beta.GetEvaluationResultRequest
-	(*GetEvaluationDatasetRequest)(nil),                                    // 22: google.cloud.ces.v1beta.GetEvaluationDatasetRequest
-	(*GetEvaluationRunRequest)(nil),                                        // 23: google.cloud.ces.v1beta.GetEvaluationRunRequest
-	(*ListEvaluationsRequest)(nil),                                         // 24: google.cloud.ces.v1beta.ListEvaluationsRequest
-	(*ListEvaluationResultsRequest)(nil),                                   // 25: google.cloud.ces.v1beta.ListEvaluationResultsRequest
-	(*ListEvaluationDatasetsRequest)(nil),                                  // 26: google.cloud.ces.v1beta.ListEvaluationDatasetsRequest
-	(*ListEvaluationRunsRequest)(nil),                                      // 27: google.cloud.ces.v1beta.ListEvaluationRunsRequest
-	(*ListEvaluationsResponse)(nil),                                        // 28: google.cloud.ces.v1beta.ListEvaluationsResponse
-	(*ListEvaluationResultsResponse)(nil),                                  // 29: google.cloud.ces.v1beta.ListEvaluationResultsResponse
-	(*ListEvaluationDatasetsResponse)(nil),                                 // 30: google.cloud.ces.v1beta.ListEvaluationDatasetsResponse
-	(*ListEvaluationRunsResponse)(nil),                                     // 31: google.cloud.ces.v1beta.ListEvaluationRunsResponse
-	(*CreateScheduledEvaluationRunRequest)(nil),                            // 32: google.cloud.ces.v1beta.CreateScheduledEvaluationRunRequest
-	(*GetScheduledEvaluationRunRequest)(nil),                               // 33: google.cloud.ces.v1beta.GetScheduledEvaluationRunRequest
-	(*ListScheduledEvaluationRunsRequest)(nil),                             // 34: google.cloud.ces.v1beta.ListScheduledEvaluationRunsRequest
-	(*ListScheduledEvaluationRunsResponse)(nil),                            // 35: google.cloud.ces.v1beta.ListScheduledEvaluationRunsResponse
-	(*UpdateScheduledEvaluationRunRequest)(nil),                            // 36: google.cloud.ces.v1beta.UpdateScheduledEvaluationRunRequest
-	(*DeleteScheduledEvaluationRunRequest)(nil),                            // 37: google.cloud.ces.v1beta.DeleteScheduledEvaluationRunRequest
-	(*TestPersonaVoiceRequest)(nil),                                        // 38: google.cloud.ces.v1beta.TestPersonaVoiceRequest
-	(*UploadEvaluationAudioRequest)(nil),                                   // 39: google.cloud.ces.v1beta.UploadEvaluationAudioRequest
-	(*UploadEvaluationAudioResponse)(nil),                                  // 40: google.cloud.ces.v1beta.UploadEvaluationAudioResponse
-	(*TestPersonaVoiceResponse)(nil),                                       // 41: google.cloud.ces.v1beta.TestPersonaVoiceResponse
-	(*CreateEvaluationExpectationRequest)(nil),                             // 42: google.cloud.ces.v1beta.CreateEvaluationExpectationRequest
-	(*UpdateEvaluationExpectationRequest)(nil),                             // 43: google.cloud.ces.v1beta.UpdateEvaluationExpectationRequest
-	(*DeleteEvaluationExpectationRequest)(nil),                             // 44: google.cloud.ces.v1beta.DeleteEvaluationExpectationRequest
-	(*GetEvaluationExpectationRequest)(nil),                                // 45: google.cloud.ces.v1beta.GetEvaluationExpectationRequest
-	(*ListEvaluationExpectationsRequest)(nil),                              // 46: google.cloud.ces.v1beta.ListEvaluationExpectationsRequest
-	(*ListEvaluationExpectationsResponse)(nil),                             // 47: google.cloud.ces.v1beta.ListEvaluationExpectationsResponse
-	(*ExportOptions)(nil),                                                  // 48: google.cloud.ces.v1beta.ExportOptions
-	(*ExportEvaluationsRequest)(nil),                                       // 49: google.cloud.ces.v1beta.ExportEvaluationsRequest
-	(*ExportEvaluationsResponse)(nil),                                      // 50: google.cloud.ces.v1beta.ExportEvaluationsResponse
-	(*ExportEvaluationResultsRequest)(nil),                                 // 51: google.cloud.ces.v1beta.ExportEvaluationResultsRequest
-	(*ExportEvaluationResultsResponse)(nil),                                // 52: google.cloud.ces.v1beta.ExportEvaluationResultsResponse
-	(*ExportEvaluationRunsRequest)(nil),                                    // 53: google.cloud.ces.v1beta.ExportEvaluationRunsRequest
-	(*ExportEvaluationRunsResponse)(nil),                                   // 54: google.cloud.ces.v1beta.ExportEvaluationRunsResponse
-	(*ExportEvaluationRunsOperationMetadata)(nil),                          // 55: google.cloud.ces.v1beta.ExportEvaluationRunsOperationMetadata
-	(*ExportEvaluationResultsOperationMetadata)(nil),                       // 56: google.cloud.ces.v1beta.ExportEvaluationResultsOperationMetadata
-	(*RunEvaluationResultMetricsOperationMetadata)(nil),                    // 57: google.cloud.ces.v1beta.RunEvaluationResultMetricsOperationMetadata
-	(*ImportEvaluationsRequest_ConversationList)(nil),                      // 58: google.cloud.ces.v1beta.ImportEvaluationsRequest.ConversationList
-	(*ImportEvaluationsRequest_ImportOptions)(nil),                         // 59: google.cloud.ces.v1beta.ImportEvaluationsRequest.ImportOptions
-	nil,                             // 60: google.cloud.ces.v1beta.ExportEvaluationsResponse.FailedEvaluationsEntry
-	(EvaluationResult_Outcome)(0),   // 61: google.cloud.ces.v1beta.EvaluationResult.Outcome
-	(*timestamppb.Timestamp)(nil),   // 62: google.protobuf.Timestamp
-	(*Evaluation)(nil),              // 63: google.cloud.ces.v1beta.Evaluation
-	(Conversation_Source)(0),        // 64: google.cloud.ces.v1beta.Conversation.Source
-	(*EvaluationResult)(nil),        // 65: google.cloud.ces.v1beta.EvaluationResult
-	(*EvaluationRun)(nil),           // 66: google.cloud.ces.v1beta.EvaluationRun
-	(*EvaluationDataset)(nil),       // 67: google.cloud.ces.v1beta.EvaluationDataset
-	(*fieldmaskpb.FieldMask)(nil),   // 68: google.protobuf.FieldMask
-	(*ScheduledEvaluationRun)(nil),  // 69: google.cloud.ces.v1beta.ScheduledEvaluationRun
-	(*durationpb.Duration)(nil),     // 70: google.protobuf.Duration
-	(*EvaluationExpectation)(nil),   // 71: google.cloud.ces.v1beta.EvaluationExpectation
-	(*RunEvaluationRequest)(nil),    // 72: google.cloud.ces.v1beta.RunEvaluationRequest
-	(*longrunningpb.Operation)(nil), // 73: google.longrunning.Operation
-	(*emptypb.Empty)(nil),           // 74: google.protobuf.Empty
+	(GenerateEvaluationRequest_EvaluationType)(0),                          // 0: google.cloud.ces.v1beta.GenerateEvaluationRequest.EvaluationType
+	(ImportEvaluationsRequest_ImportOptions_ConflictResolutionStrategy)(0), // 1: google.cloud.ces.v1beta.ImportEvaluationsRequest.ImportOptions.ConflictResolutionStrategy
+	(ExportOptions_ExportFormat)(0),                                        // 2: google.cloud.ces.v1beta.ExportOptions.ExportFormat
+	(*RunEvaluationResultMetricsRequest)(nil),                              // 3: google.cloud.ces.v1beta.RunEvaluationResultMetricsRequest
+	(*RunEvaluationResultMetricsResponse)(nil),                             // 4: google.cloud.ces.v1beta.RunEvaluationResultMetricsResponse
+	(*RunEvaluationResponse)(nil),                                          // 5: google.cloud.ces.v1beta.RunEvaluationResponse
+	(*RunEvaluationOperationMetadata)(nil),                                 // 6: google.cloud.ces.v1beta.RunEvaluationOperationMetadata
+	(*GenerateEvaluationOperationMetadata)(nil),                            // 7: google.cloud.ces.v1beta.GenerateEvaluationOperationMetadata
+	(*DeleteEvaluationRunOperationMetadata)(nil),                           // 8: google.cloud.ces.v1beta.DeleteEvaluationRunOperationMetadata
+	(*CreateEvaluationRequest)(nil),                                        // 9: google.cloud.ces.v1beta.CreateEvaluationRequest
+	(*GenerateEvaluationRequest)(nil),                                      // 10: google.cloud.ces.v1beta.GenerateEvaluationRequest
+	(*ImportEvaluationsRequest)(nil),                                       // 11: google.cloud.ces.v1beta.ImportEvaluationsRequest
+	(*ImportEvaluationsResponse)(nil),                                      // 12: google.cloud.ces.v1beta.ImportEvaluationsResponse
+	(*ImportEvaluationsOperationMetadata)(nil),                             // 13: google.cloud.ces.v1beta.ImportEvaluationsOperationMetadata
+	(*CreateEvaluationDatasetRequest)(nil),                                 // 14: google.cloud.ces.v1beta.CreateEvaluationDatasetRequest
+	(*UpdateEvaluationRequest)(nil),                                        // 15: google.cloud.ces.v1beta.UpdateEvaluationRequest
+	(*UpdateEvaluationDatasetRequest)(nil),                                 // 16: google.cloud.ces.v1beta.UpdateEvaluationDatasetRequest
+	(*DeleteEvaluationRequest)(nil),                                        // 17: google.cloud.ces.v1beta.DeleteEvaluationRequest
+	(*DeleteEvaluationResultRequest)(nil),                                  // 18: google.cloud.ces.v1beta.DeleteEvaluationResultRequest
+	(*DeleteEvaluationDatasetRequest)(nil),                                 // 19: google.cloud.ces.v1beta.DeleteEvaluationDatasetRequest
+	(*DeleteEvaluationRunRequest)(nil),                                     // 20: google.cloud.ces.v1beta.DeleteEvaluationRunRequest
+	(*GetEvaluationRequest)(nil),                                           // 21: google.cloud.ces.v1beta.GetEvaluationRequest
+	(*GetEvaluationResultRequest)(nil),                                     // 22: google.cloud.ces.v1beta.GetEvaluationResultRequest
+	(*GetEvaluationDatasetRequest)(nil),                                    // 23: google.cloud.ces.v1beta.GetEvaluationDatasetRequest
+	(*GetEvaluationRunRequest)(nil),                                        // 24: google.cloud.ces.v1beta.GetEvaluationRunRequest
+	(*ListEvaluationsRequest)(nil),                                         // 25: google.cloud.ces.v1beta.ListEvaluationsRequest
+	(*ListEvaluationResultsRequest)(nil),                                   // 26: google.cloud.ces.v1beta.ListEvaluationResultsRequest
+	(*ListEvaluationDatasetsRequest)(nil),                                  // 27: google.cloud.ces.v1beta.ListEvaluationDatasetsRequest
+	(*ListEvaluationRunsRequest)(nil),                                      // 28: google.cloud.ces.v1beta.ListEvaluationRunsRequest
+	(*ListEvaluationsResponse)(nil),                                        // 29: google.cloud.ces.v1beta.ListEvaluationsResponse
+	(*ListEvaluationResultsResponse)(nil),                                  // 30: google.cloud.ces.v1beta.ListEvaluationResultsResponse
+	(*ListEvaluationDatasetsResponse)(nil),                                 // 31: google.cloud.ces.v1beta.ListEvaluationDatasetsResponse
+	(*ListEvaluationRunsResponse)(nil),                                     // 32: google.cloud.ces.v1beta.ListEvaluationRunsResponse
+	(*CreateScheduledEvaluationRunRequest)(nil),                            // 33: google.cloud.ces.v1beta.CreateScheduledEvaluationRunRequest
+	(*GetScheduledEvaluationRunRequest)(nil),                               // 34: google.cloud.ces.v1beta.GetScheduledEvaluationRunRequest
+	(*ListScheduledEvaluationRunsRequest)(nil),                             // 35: google.cloud.ces.v1beta.ListScheduledEvaluationRunsRequest
+	(*ListScheduledEvaluationRunsResponse)(nil),                            // 36: google.cloud.ces.v1beta.ListScheduledEvaluationRunsResponse
+	(*UpdateScheduledEvaluationRunRequest)(nil),                            // 37: google.cloud.ces.v1beta.UpdateScheduledEvaluationRunRequest
+	(*DeleteScheduledEvaluationRunRequest)(nil),                            // 38: google.cloud.ces.v1beta.DeleteScheduledEvaluationRunRequest
+	(*TestPersonaVoiceRequest)(nil),                                        // 39: google.cloud.ces.v1beta.TestPersonaVoiceRequest
+	(*UploadEvaluationAudioRequest)(nil),                                   // 40: google.cloud.ces.v1beta.UploadEvaluationAudioRequest
+	(*UploadEvaluationAudioResponse)(nil),                                  // 41: google.cloud.ces.v1beta.UploadEvaluationAudioResponse
+	(*TestPersonaVoiceResponse)(nil),                                       // 42: google.cloud.ces.v1beta.TestPersonaVoiceResponse
+	(*CreateEvaluationExpectationRequest)(nil),                             // 43: google.cloud.ces.v1beta.CreateEvaluationExpectationRequest
+	(*UpdateEvaluationExpectationRequest)(nil),                             // 44: google.cloud.ces.v1beta.UpdateEvaluationExpectationRequest
+	(*DeleteEvaluationExpectationRequest)(nil),                             // 45: google.cloud.ces.v1beta.DeleteEvaluationExpectationRequest
+	(*GetEvaluationExpectationRequest)(nil),                                // 46: google.cloud.ces.v1beta.GetEvaluationExpectationRequest
+	(*ListEvaluationExpectationsRequest)(nil),                              // 47: google.cloud.ces.v1beta.ListEvaluationExpectationsRequest
+	(*ListEvaluationExpectationsResponse)(nil),                             // 48: google.cloud.ces.v1beta.ListEvaluationExpectationsResponse
+	(*ExportOptions)(nil),                                                  // 49: google.cloud.ces.v1beta.ExportOptions
+	(*ExportEvaluationsRequest)(nil),                                       // 50: google.cloud.ces.v1beta.ExportEvaluationsRequest
+	(*ExportEvaluationsResponse)(nil),                                      // 51: google.cloud.ces.v1beta.ExportEvaluationsResponse
+	(*ExportEvaluationResultsRequest)(nil),                                 // 52: google.cloud.ces.v1beta.ExportEvaluationResultsRequest
+	(*ExportEvaluationResultsResponse)(nil),                                // 53: google.cloud.ces.v1beta.ExportEvaluationResultsResponse
+	(*ExportEvaluationRunsRequest)(nil),                                    // 54: google.cloud.ces.v1beta.ExportEvaluationRunsRequest
+	(*ExportEvaluationRunsResponse)(nil),                                   // 55: google.cloud.ces.v1beta.ExportEvaluationRunsResponse
+	(*ExportEvaluationRunsOperationMetadata)(nil),                          // 56: google.cloud.ces.v1beta.ExportEvaluationRunsOperationMetadata
+	(*ExportEvaluationResultsOperationMetadata)(nil),                       // 57: google.cloud.ces.v1beta.ExportEvaluationResultsOperationMetadata
+	(*RunEvaluationResultMetricsOperationMetadata)(nil),                    // 58: google.cloud.ces.v1beta.RunEvaluationResultMetricsOperationMetadata
+	(*ImportEvaluationsRequest_ConversationList)(nil),                      // 59: google.cloud.ces.v1beta.ImportEvaluationsRequest.ConversationList
+	(*ImportEvaluationsRequest_ImportOptions)(nil),                         // 60: google.cloud.ces.v1beta.ImportEvaluationsRequest.ImportOptions
+	nil,                             // 61: google.cloud.ces.v1beta.ExportEvaluationsResponse.FailedEvaluationsEntry
+	(EvaluationResult_Outcome)(0),   // 62: google.cloud.ces.v1beta.EvaluationResult.Outcome
+	(*timestamppb.Timestamp)(nil),   // 63: google.protobuf.Timestamp
+	(*Evaluation)(nil),              // 64: google.cloud.ces.v1beta.Evaluation
+	(Conversation_Source)(0),        // 65: google.cloud.ces.v1beta.Conversation.Source
+	(*EvaluationResult)(nil),        // 66: google.cloud.ces.v1beta.EvaluationResult
+	(*EvaluationRun)(nil),           // 67: google.cloud.ces.v1beta.EvaluationRun
+	(*EvaluationDataset)(nil),       // 68: google.cloud.ces.v1beta.EvaluationDataset
+	(*fieldmaskpb.FieldMask)(nil),   // 69: google.protobuf.FieldMask
+	(*ScheduledEvaluationRun)(nil),  // 70: google.cloud.ces.v1beta.ScheduledEvaluationRun
+	(*durationpb.Duration)(nil),     // 71: google.protobuf.Duration
+	(*EvaluationExpectation)(nil),   // 72: google.cloud.ces.v1beta.EvaluationExpectation
+	(*RunEvaluationRequest)(nil),    // 73: google.cloud.ces.v1beta.RunEvaluationRequest
+	(*longrunningpb.Operation)(nil), // 74: google.longrunning.Operation
+	(*emptypb.Empty)(nil),           // 75: google.protobuf.Empty
 }
 var file_google_cloud_ces_v1beta_evaluation_service_proto_depIdxs = []int32{
-	61, // 0: google.cloud.ces.v1beta.RunEvaluationResultMetricsResponse.status:type_name -> google.cloud.ces.v1beta.EvaluationResult.Outcome
-	62, // 1: google.cloud.ces.v1beta.RunEvaluationOperationMetadata.create_time:type_name -> google.protobuf.Timestamp
-	62, // 2: google.cloud.ces.v1beta.RunEvaluationOperationMetadata.end_time:type_name -> google.protobuf.Timestamp
-	63, // 3: google.cloud.ces.v1beta.CreateEvaluationRequest.evaluation:type_name -> google.cloud.ces.v1beta.Evaluation
-	64, // 4: google.cloud.ces.v1beta.GenerateEvaluationRequest.source:type_name -> google.cloud.ces.v1beta.Conversation.Source
-	58, // 5: google.cloud.ces.v1beta.ImportEvaluationsRequest.conversation_list:type_name -> google.cloud.ces.v1beta.ImportEvaluationsRequest.ConversationList
-	59, // 6: google.cloud.ces.v1beta.ImportEvaluationsRequest.import_options:type_name -> google.cloud.ces.v1beta.ImportEvaluationsRequest.ImportOptions
-	63, // 7: google.cloud.ces.v1beta.ImportEvaluationsResponse.evaluations:type_name -> google.cloud.ces.v1beta.Evaluation
-	65, // 8: google.cloud.ces.v1beta.ImportEvaluationsResponse.evaluation_results:type_name -> google.cloud.ces.v1beta.EvaluationResult
-	66, // 9: google.cloud.ces.v1beta.ImportEvaluationsResponse.evaluation_runs:type_name -> google.cloud.ces.v1beta.EvaluationRun
-	62, // 10: google.cloud.ces.v1beta.ImportEvaluationsOperationMetadata.create_time:type_name -> google.protobuf.Timestamp
-	62, // 11: google.cloud.ces.v1beta.ImportEvaluationsOperationMetadata.end_time:type_name -> google.protobuf.Timestamp
-	67, // 12: google.cloud.ces.v1beta.CreateEvaluationDatasetRequest.evaluation_dataset:type_name -> google.cloud.ces.v1beta.EvaluationDataset
-	63, // 13: google.cloud.ces.v1beta.UpdateEvaluationRequest.evaluation:type_name -> google.cloud.ces.v1beta.Evaluation
-	68, // 14: google.cloud.ces.v1beta.UpdateEvaluationRequest.update_mask:type_name -> google.protobuf.FieldMask
-	67, // 15: google.cloud.ces.v1beta.UpdateEvaluationDatasetRequest.evaluation_dataset:type_name -> google.cloud.ces.v1beta.EvaluationDataset
-	68, // 16: google.cloud.ces.v1beta.UpdateEvaluationDatasetRequest.update_mask:type_name -> google.protobuf.FieldMask
-	63, // 17: google.cloud.ces.v1beta.ListEvaluationsResponse.evaluations:type_name -> google.cloud.ces.v1beta.Evaluation
-	65, // 18: google.cloud.ces.v1beta.ListEvaluationResultsResponse.evaluation_results:type_name -> google.cloud.ces.v1beta.EvaluationResult
-	67, // 19: google.cloud.ces.v1beta.ListEvaluationDatasetsResponse.evaluation_datasets:type_name -> google.cloud.ces.v1beta.EvaluationDataset
-	66, // 20: google.cloud.ces.v1beta.ListEvaluationRunsResponse.evaluation_runs:type_name -> google.cloud.ces.v1beta.EvaluationRun
-	69, // 21: google.cloud.ces.v1beta.CreateScheduledEvaluationRunRequest.scheduled_evaluation_run:type_name -> google.cloud.ces.v1beta.ScheduledEvaluationRun
-	69, // 22: google.cloud.ces.v1beta.ListScheduledEvaluationRunsResponse.scheduled_evaluation_runs:type_name -> google.cloud.ces.v1beta.ScheduledEvaluationRun
-	69, // 23: google.cloud.ces.v1beta.UpdateScheduledEvaluationRunRequest.scheduled_evaluation_run:type_name -> google.cloud.ces.v1beta.ScheduledEvaluationRun
-	68, // 24: google.cloud.ces.v1beta.UpdateScheduledEvaluationRunRequest.update_mask:type_name -> google.protobuf.FieldMask
-	70, // 25: google.cloud.ces.v1beta.UploadEvaluationAudioResponse.duration:type_name -> google.protobuf.Duration
-	71, // 26: google.cloud.ces.v1beta.CreateEvaluationExpectationRequest.evaluation_expectation:type_name -> google.cloud.ces.v1beta.EvaluationExpectation
-	71, // 27: google.cloud.ces.v1beta.UpdateEvaluationExpectationRequest.evaluation_expectation:type_name -> google.cloud.ces.v1beta.EvaluationExpectation
-	68, // 28: google.cloud.ces.v1beta.UpdateEvaluationExpectationRequest.update_mask:type_name -> google.protobuf.FieldMask
-	71, // 29: google.cloud.ces.v1beta.ListEvaluationExpectationsResponse.evaluation_expectations:type_name -> google.cloud.ces.v1beta.EvaluationExpectation
-	1,  // 30: google.cloud.ces.v1beta.ExportOptions.export_format:type_name -> google.cloud.ces.v1beta.ExportOptions.ExportFormat
-	48, // 31: google.cloud.ces.v1beta.ExportEvaluationsRequest.export_options:type_name -> google.cloud.ces.v1beta.ExportOptions
-	60, // 32: google.cloud.ces.v1beta.ExportEvaluationsResponse.failed_evaluations:type_name -> google.cloud.ces.v1beta.ExportEvaluationsResponse.FailedEvaluationsEntry
-	48, // 33: google.cloud.ces.v1beta.ExportEvaluationResultsRequest.export_options:type_name -> google.cloud.ces.v1beta.ExportOptions
-	48, // 34: google.cloud.ces.v1beta.ExportEvaluationRunsRequest.export_options:type_name -> google.cloud.ces.v1beta.ExportOptions
-	0,  // 35: google.cloud.ces.v1beta.ImportEvaluationsRequest.ImportOptions.conflict_resolution_strategy:type_name -> google.cloud.ces.v1beta.ImportEvaluationsRequest.ImportOptions.ConflictResolutionStrategy
-	72, // 36: google.cloud.ces.v1beta.EvaluationService.RunEvaluation:input_type -> google.cloud.ces.v1beta.RunEvaluationRequest
-	39, // 37: google.cloud.ces.v1beta.EvaluationService.UploadEvaluationAudio:input_type -> google.cloud.ces.v1beta.UploadEvaluationAudioRequest
-	8,  // 38: google.cloud.ces.v1beta.EvaluationService.CreateEvaluation:input_type -> google.cloud.ces.v1beta.CreateEvaluationRequest
-	9,  // 39: google.cloud.ces.v1beta.EvaluationService.GenerateEvaluation:input_type -> google.cloud.ces.v1beta.GenerateEvaluationRequest
-	10, // 40: google.cloud.ces.v1beta.EvaluationService.ImportEvaluations:input_type -> google.cloud.ces.v1beta.ImportEvaluationsRequest
-	13, // 41: google.cloud.ces.v1beta.EvaluationService.CreateEvaluationDataset:input_type -> google.cloud.ces.v1beta.CreateEvaluationDatasetRequest
-	14, // 42: google.cloud.ces.v1beta.EvaluationService.UpdateEvaluation:input_type -> google.cloud.ces.v1beta.UpdateEvaluationRequest
-	15, // 43: google.cloud.ces.v1beta.EvaluationService.UpdateEvaluationDataset:input_type -> google.cloud.ces.v1beta.UpdateEvaluationDatasetRequest
-	16, // 44: google.cloud.ces.v1beta.EvaluationService.DeleteEvaluation:input_type -> google.cloud.ces.v1beta.DeleteEvaluationRequest
-	17, // 45: google.cloud.ces.v1beta.EvaluationService.DeleteEvaluationResult:input_type -> google.cloud.ces.v1beta.DeleteEvaluationResultRequest
-	18, // 46: google.cloud.ces.v1beta.EvaluationService.DeleteEvaluationDataset:input_type -> google.cloud.ces.v1beta.DeleteEvaluationDatasetRequest
-	19, // 47: google.cloud.ces.v1beta.EvaluationService.DeleteEvaluationRun:input_type -> google.cloud.ces.v1beta.DeleteEvaluationRunRequest
-	20, // 48: google.cloud.ces.v1beta.EvaluationService.GetEvaluation:input_type -> google.cloud.ces.v1beta.GetEvaluationRequest
-	21, // 49: google.cloud.ces.v1beta.EvaluationService.GetEvaluationResult:input_type -> google.cloud.ces.v1beta.GetEvaluationResultRequest
-	22, // 50: google.cloud.ces.v1beta.EvaluationService.GetEvaluationDataset:input_type -> google.cloud.ces.v1beta.GetEvaluationDatasetRequest
-	23, // 51: google.cloud.ces.v1beta.EvaluationService.GetEvaluationRun:input_type -> google.cloud.ces.v1beta.GetEvaluationRunRequest
-	24, // 52: google.cloud.ces.v1beta.EvaluationService.ListEvaluations:input_type -> google.cloud.ces.v1beta.ListEvaluationsRequest
-	25, // 53: google.cloud.ces.v1beta.EvaluationService.ListEvaluationResults:input_type -> google.cloud.ces.v1beta.ListEvaluationResultsRequest
-	26, // 54: google.cloud.ces.v1beta.EvaluationService.ListEvaluationDatasets:input_type -> google.cloud.ces.v1beta.ListEvaluationDatasetsRequest
-	27, // 55: google.cloud.ces.v1beta.EvaluationService.ListEvaluationRuns:input_type -> google.cloud.ces.v1beta.ListEvaluationRunsRequest
-	46, // 56: google.cloud.ces.v1beta.EvaluationService.ListEvaluationExpectations:input_type -> google.cloud.ces.v1beta.ListEvaluationExpectationsRequest
-	45, // 57: google.cloud.ces.v1beta.EvaluationService.GetEvaluationExpectation:input_type -> google.cloud.ces.v1beta.GetEvaluationExpectationRequest
-	42, // 58: google.cloud.ces.v1beta.EvaluationService.CreateEvaluationExpectation:input_type -> google.cloud.ces.v1beta.CreateEvaluationExpectationRequest
-	43, // 59: google.cloud.ces.v1beta.EvaluationService.UpdateEvaluationExpectation:input_type -> google.cloud.ces.v1beta.UpdateEvaluationExpectationRequest
-	44, // 60: google.cloud.ces.v1beta.EvaluationService.DeleteEvaluationExpectation:input_type -> google.cloud.ces.v1beta.DeleteEvaluationExpectationRequest
-	32, // 61: google.cloud.ces.v1beta.EvaluationService.CreateScheduledEvaluationRun:input_type -> google.cloud.ces.v1beta.CreateScheduledEvaluationRunRequest
-	33, // 62: google.cloud.ces.v1beta.EvaluationService.GetScheduledEvaluationRun:input_type -> google.cloud.ces.v1beta.GetScheduledEvaluationRunRequest
-	34, // 63: google.cloud.ces.v1beta.EvaluationService.ListScheduledEvaluationRuns:input_type -> google.cloud.ces.v1beta.ListScheduledEvaluationRunsRequest
-	36, // 64: google.cloud.ces.v1beta.EvaluationService.UpdateScheduledEvaluationRun:input_type -> google.cloud.ces.v1beta.UpdateScheduledEvaluationRunRequest
-	37, // 65: google.cloud.ces.v1beta.EvaluationService.DeleteScheduledEvaluationRun:input_type -> google.cloud.ces.v1beta.DeleteScheduledEvaluationRunRequest
-	38, // 66: google.cloud.ces.v1beta.EvaluationService.TestPersonaVoice:input_type -> google.cloud.ces.v1beta.TestPersonaVoiceRequest
-	49, // 67: google.cloud.ces.v1beta.EvaluationService.ExportEvaluations:input_type -> google.cloud.ces.v1beta.ExportEvaluationsRequest
-	53, // 68: google.cloud.ces.v1beta.EvaluationService.ExportEvaluationRuns:input_type -> google.cloud.ces.v1beta.ExportEvaluationRunsRequest
-	51, // 69: google.cloud.ces.v1beta.EvaluationService.ExportEvaluationResults:input_type -> google.cloud.ces.v1beta.ExportEvaluationResultsRequest
-	2,  // 70: google.cloud.ces.v1beta.EvaluationService.RunEvaluationResultMetrics:input_type -> google.cloud.ces.v1beta.RunEvaluationResultMetricsRequest
-	73, // 71: google.cloud.ces.v1beta.EvaluationService.RunEvaluation:output_type -> google.longrunning.Operation
-	40, // 72: google.cloud.ces.v1beta.EvaluationService.UploadEvaluationAudio:output_type -> google.cloud.ces.v1beta.UploadEvaluationAudioResponse
-	63, // 73: google.cloud.ces.v1beta.EvaluationService.CreateEvaluation:output_type -> google.cloud.ces.v1beta.Evaluation
-	73, // 74: google.cloud.ces.v1beta.EvaluationService.GenerateEvaluation:output_type -> google.longrunning.Operation
-	73, // 75: google.cloud.ces.v1beta.EvaluationService.ImportEvaluations:output_type -> google.longrunning.Operation
-	67, // 76: google.cloud.ces.v1beta.EvaluationService.CreateEvaluationDataset:output_type -> google.cloud.ces.v1beta.EvaluationDataset
-	63, // 77: google.cloud.ces.v1beta.EvaluationService.UpdateEvaluation:output_type -> google.cloud.ces.v1beta.Evaluation
-	67, // 78: google.cloud.ces.v1beta.EvaluationService.UpdateEvaluationDataset:output_type -> google.cloud.ces.v1beta.EvaluationDataset
-	74, // 79: google.cloud.ces.v1beta.EvaluationService.DeleteEvaluation:output_type -> google.protobuf.Empty
-	74, // 80: google.cloud.ces.v1beta.EvaluationService.DeleteEvaluationResult:output_type -> google.protobuf.Empty
-	74, // 81: google.cloud.ces.v1beta.EvaluationService.DeleteEvaluationDataset:output_type -> google.protobuf.Empty
-	73, // 82: google.cloud.ces.v1beta.EvaluationService.DeleteEvaluationRun:output_type -> google.longrunning.Operation
-	63, // 83: google.cloud.ces.v1beta.EvaluationService.GetEvaluation:output_type -> google.cloud.ces.v1beta.Evaluation
-	65, // 84: google.cloud.ces.v1beta.EvaluationService.GetEvaluationResult:output_type -> google.cloud.ces.v1beta.EvaluationResult
-	67, // 85: google.cloud.ces.v1beta.EvaluationService.GetEvaluationDataset:output_type -> google.cloud.ces.v1beta.EvaluationDataset
-	66, // 86: google.cloud.ces.v1beta.EvaluationService.GetEvaluationRun:output_type -> google.cloud.ces.v1beta.EvaluationRun
-	28, // 87: google.cloud.ces.v1beta.EvaluationService.ListEvaluations:output_type -> google.cloud.ces.v1beta.ListEvaluationsResponse
-	29, // 88: google.cloud.ces.v1beta.EvaluationService.ListEvaluationResults:output_type -> google.cloud.ces.v1beta.ListEvaluationResultsResponse
-	30, // 89: google.cloud.ces.v1beta.EvaluationService.ListEvaluationDatasets:output_type -> google.cloud.ces.v1beta.ListEvaluationDatasetsResponse
-	31, // 90: google.cloud.ces.v1beta.EvaluationService.ListEvaluationRuns:output_type -> google.cloud.ces.v1beta.ListEvaluationRunsResponse
-	47, // 91: google.cloud.ces.v1beta.EvaluationService.ListEvaluationExpectations:output_type -> google.cloud.ces.v1beta.ListEvaluationExpectationsResponse
-	71, // 92: google.cloud.ces.v1beta.EvaluationService.GetEvaluationExpectation:output_type -> google.cloud.ces.v1beta.EvaluationExpectation
-	71, // 93: google.cloud.ces.v1beta.EvaluationService.CreateEvaluationExpectation:output_type -> google.cloud.ces.v1beta.EvaluationExpectation
-	71, // 94: google.cloud.ces.v1beta.EvaluationService.UpdateEvaluationExpectation:output_type -> google.cloud.ces.v1beta.EvaluationExpectation
-	74, // 95: google.cloud.ces.v1beta.EvaluationService.DeleteEvaluationExpectation:output_type -> google.protobuf.Empty
-	69, // 96: google.cloud.ces.v1beta.EvaluationService.CreateScheduledEvaluationRun:output_type -> google.cloud.ces.v1beta.ScheduledEvaluationRun
-	69, // 97: google.cloud.ces.v1beta.EvaluationService.GetScheduledEvaluationRun:output_type -> google.cloud.ces.v1beta.ScheduledEvaluationRun
-	35, // 98: google.cloud.ces.v1beta.EvaluationService.ListScheduledEvaluationRuns:output_type -> google.cloud.ces.v1beta.ListScheduledEvaluationRunsResponse
-	69, // 99: google.cloud.ces.v1beta.EvaluationService.UpdateScheduledEvaluationRun:output_type -> google.cloud.ces.v1beta.ScheduledEvaluationRun
-	74, // 100: google.cloud.ces.v1beta.EvaluationService.DeleteScheduledEvaluationRun:output_type -> google.protobuf.Empty
-	41, // 101: google.cloud.ces.v1beta.EvaluationService.TestPersonaVoice:output_type -> google.cloud.ces.v1beta.TestPersonaVoiceResponse
-	73, // 102: google.cloud.ces.v1beta.EvaluationService.ExportEvaluations:output_type -> google.longrunning.Operation
-	73, // 103: google.cloud.ces.v1beta.EvaluationService.ExportEvaluationRuns:output_type -> google.longrunning.Operation
-	73, // 104: google.cloud.ces.v1beta.EvaluationService.ExportEvaluationResults:output_type -> google.longrunning.Operation
-	73, // 105: google.cloud.ces.v1beta.EvaluationService.RunEvaluationResultMetrics:output_type -> google.longrunning.Operation
-	71, // [71:106] is the sub-list for method output_type
-	36, // [36:71] is the sub-list for method input_type
-	36, // [36:36] is the sub-list for extension type_name
-	36, // [36:36] is the sub-list for extension extendee
-	0,  // [0:36] is the sub-list for field type_name
+	62, // 0: google.cloud.ces.v1beta.RunEvaluationResultMetricsResponse.status:type_name -> google.cloud.ces.v1beta.EvaluationResult.Outcome
+	63, // 1: google.cloud.ces.v1beta.RunEvaluationOperationMetadata.create_time:type_name -> google.protobuf.Timestamp
+	63, // 2: google.cloud.ces.v1beta.RunEvaluationOperationMetadata.end_time:type_name -> google.protobuf.Timestamp
+	64, // 3: google.cloud.ces.v1beta.CreateEvaluationRequest.evaluation:type_name -> google.cloud.ces.v1beta.Evaluation
+	65, // 4: google.cloud.ces.v1beta.GenerateEvaluationRequest.source:type_name -> google.cloud.ces.v1beta.Conversation.Source
+	0,  // 5: google.cloud.ces.v1beta.GenerateEvaluationRequest.evaluation_type:type_name -> google.cloud.ces.v1beta.GenerateEvaluationRequest.EvaluationType
+	59, // 6: google.cloud.ces.v1beta.ImportEvaluationsRequest.conversation_list:type_name -> google.cloud.ces.v1beta.ImportEvaluationsRequest.ConversationList
+	60, // 7: google.cloud.ces.v1beta.ImportEvaluationsRequest.import_options:type_name -> google.cloud.ces.v1beta.ImportEvaluationsRequest.ImportOptions
+	64, // 8: google.cloud.ces.v1beta.ImportEvaluationsResponse.evaluations:type_name -> google.cloud.ces.v1beta.Evaluation
+	66, // 9: google.cloud.ces.v1beta.ImportEvaluationsResponse.evaluation_results:type_name -> google.cloud.ces.v1beta.EvaluationResult
+	67, // 10: google.cloud.ces.v1beta.ImportEvaluationsResponse.evaluation_runs:type_name -> google.cloud.ces.v1beta.EvaluationRun
+	63, // 11: google.cloud.ces.v1beta.ImportEvaluationsOperationMetadata.create_time:type_name -> google.protobuf.Timestamp
+	63, // 12: google.cloud.ces.v1beta.ImportEvaluationsOperationMetadata.end_time:type_name -> google.protobuf.Timestamp
+	68, // 13: google.cloud.ces.v1beta.CreateEvaluationDatasetRequest.evaluation_dataset:type_name -> google.cloud.ces.v1beta.EvaluationDataset
+	64, // 14: google.cloud.ces.v1beta.UpdateEvaluationRequest.evaluation:type_name -> google.cloud.ces.v1beta.Evaluation
+	69, // 15: google.cloud.ces.v1beta.UpdateEvaluationRequest.update_mask:type_name -> google.protobuf.FieldMask
+	68, // 16: google.cloud.ces.v1beta.UpdateEvaluationDatasetRequest.evaluation_dataset:type_name -> google.cloud.ces.v1beta.EvaluationDataset
+	69, // 17: google.cloud.ces.v1beta.UpdateEvaluationDatasetRequest.update_mask:type_name -> google.protobuf.FieldMask
+	64, // 18: google.cloud.ces.v1beta.ListEvaluationsResponse.evaluations:type_name -> google.cloud.ces.v1beta.Evaluation
+	66, // 19: google.cloud.ces.v1beta.ListEvaluationResultsResponse.evaluation_results:type_name -> google.cloud.ces.v1beta.EvaluationResult
+	68, // 20: google.cloud.ces.v1beta.ListEvaluationDatasetsResponse.evaluation_datasets:type_name -> google.cloud.ces.v1beta.EvaluationDataset
+	67, // 21: google.cloud.ces.v1beta.ListEvaluationRunsResponse.evaluation_runs:type_name -> google.cloud.ces.v1beta.EvaluationRun
+	70, // 22: google.cloud.ces.v1beta.CreateScheduledEvaluationRunRequest.scheduled_evaluation_run:type_name -> google.cloud.ces.v1beta.ScheduledEvaluationRun
+	70, // 23: google.cloud.ces.v1beta.ListScheduledEvaluationRunsResponse.scheduled_evaluation_runs:type_name -> google.cloud.ces.v1beta.ScheduledEvaluationRun
+	70, // 24: google.cloud.ces.v1beta.UpdateScheduledEvaluationRunRequest.scheduled_evaluation_run:type_name -> google.cloud.ces.v1beta.ScheduledEvaluationRun
+	69, // 25: google.cloud.ces.v1beta.UpdateScheduledEvaluationRunRequest.update_mask:type_name -> google.protobuf.FieldMask
+	71, // 26: google.cloud.ces.v1beta.UploadEvaluationAudioResponse.duration:type_name -> google.protobuf.Duration
+	72, // 27: google.cloud.ces.v1beta.CreateEvaluationExpectationRequest.evaluation_expectation:type_name -> google.cloud.ces.v1beta.EvaluationExpectation
+	72, // 28: google.cloud.ces.v1beta.UpdateEvaluationExpectationRequest.evaluation_expectation:type_name -> google.cloud.ces.v1beta.EvaluationExpectation
+	69, // 29: google.cloud.ces.v1beta.UpdateEvaluationExpectationRequest.update_mask:type_name -> google.protobuf.FieldMask
+	72, // 30: google.cloud.ces.v1beta.ListEvaluationExpectationsResponse.evaluation_expectations:type_name -> google.cloud.ces.v1beta.EvaluationExpectation
+	2,  // 31: google.cloud.ces.v1beta.ExportOptions.export_format:type_name -> google.cloud.ces.v1beta.ExportOptions.ExportFormat
+	49, // 32: google.cloud.ces.v1beta.ExportEvaluationsRequest.export_options:type_name -> google.cloud.ces.v1beta.ExportOptions
+	61, // 33: google.cloud.ces.v1beta.ExportEvaluationsResponse.failed_evaluations:type_name -> google.cloud.ces.v1beta.ExportEvaluationsResponse.FailedEvaluationsEntry
+	49, // 34: google.cloud.ces.v1beta.ExportEvaluationResultsRequest.export_options:type_name -> google.cloud.ces.v1beta.ExportOptions
+	49, // 35: google.cloud.ces.v1beta.ExportEvaluationRunsRequest.export_options:type_name -> google.cloud.ces.v1beta.ExportOptions
+	1,  // 36: google.cloud.ces.v1beta.ImportEvaluationsRequest.ImportOptions.conflict_resolution_strategy:type_name -> google.cloud.ces.v1beta.ImportEvaluationsRequest.ImportOptions.ConflictResolutionStrategy
+	73, // 37: google.cloud.ces.v1beta.EvaluationService.RunEvaluation:input_type -> google.cloud.ces.v1beta.RunEvaluationRequest
+	40, // 38: google.cloud.ces.v1beta.EvaluationService.UploadEvaluationAudio:input_type -> google.cloud.ces.v1beta.UploadEvaluationAudioRequest
+	9,  // 39: google.cloud.ces.v1beta.EvaluationService.CreateEvaluation:input_type -> google.cloud.ces.v1beta.CreateEvaluationRequest
+	10, // 40: google.cloud.ces.v1beta.EvaluationService.GenerateEvaluation:input_type -> google.cloud.ces.v1beta.GenerateEvaluationRequest
+	11, // 41: google.cloud.ces.v1beta.EvaluationService.ImportEvaluations:input_type -> google.cloud.ces.v1beta.ImportEvaluationsRequest
+	14, // 42: google.cloud.ces.v1beta.EvaluationService.CreateEvaluationDataset:input_type -> google.cloud.ces.v1beta.CreateEvaluationDatasetRequest
+	15, // 43: google.cloud.ces.v1beta.EvaluationService.UpdateEvaluation:input_type -> google.cloud.ces.v1beta.UpdateEvaluationRequest
+	16, // 44: google.cloud.ces.v1beta.EvaluationService.UpdateEvaluationDataset:input_type -> google.cloud.ces.v1beta.UpdateEvaluationDatasetRequest
+	17, // 45: google.cloud.ces.v1beta.EvaluationService.DeleteEvaluation:input_type -> google.cloud.ces.v1beta.DeleteEvaluationRequest
+	18, // 46: google.cloud.ces.v1beta.EvaluationService.DeleteEvaluationResult:input_type -> google.cloud.ces.v1beta.DeleteEvaluationResultRequest
+	19, // 47: google.cloud.ces.v1beta.EvaluationService.DeleteEvaluationDataset:input_type -> google.cloud.ces.v1beta.DeleteEvaluationDatasetRequest
+	20, // 48: google.cloud.ces.v1beta.EvaluationService.DeleteEvaluationRun:input_type -> google.cloud.ces.v1beta.DeleteEvaluationRunRequest
+	21, // 49: google.cloud.ces.v1beta.EvaluationService.GetEvaluation:input_type -> google.cloud.ces.v1beta.GetEvaluationRequest
+	22, // 50: google.cloud.ces.v1beta.EvaluationService.GetEvaluationResult:input_type -> google.cloud.ces.v1beta.GetEvaluationResultRequest
+	23, // 51: google.cloud.ces.v1beta.EvaluationService.GetEvaluationDataset:input_type -> google.cloud.ces.v1beta.GetEvaluationDatasetRequest
+	24, // 52: google.cloud.ces.v1beta.EvaluationService.GetEvaluationRun:input_type -> google.cloud.ces.v1beta.GetEvaluationRunRequest
+	25, // 53: google.cloud.ces.v1beta.EvaluationService.ListEvaluations:input_type -> google.cloud.ces.v1beta.ListEvaluationsRequest
+	26, // 54: google.cloud.ces.v1beta.EvaluationService.ListEvaluationResults:input_type -> google.cloud.ces.v1beta.ListEvaluationResultsRequest
+	27, // 55: google.cloud.ces.v1beta.EvaluationService.ListEvaluationDatasets:input_type -> google.cloud.ces.v1beta.ListEvaluationDatasetsRequest
+	28, // 56: google.cloud.ces.v1beta.EvaluationService.ListEvaluationRuns:input_type -> google.cloud.ces.v1beta.ListEvaluationRunsRequest
+	47, // 57: google.cloud.ces.v1beta.EvaluationService.ListEvaluationExpectations:input_type -> google.cloud.ces.v1beta.ListEvaluationExpectationsRequest
+	46, // 58: google.cloud.ces.v1beta.EvaluationService.GetEvaluationExpectation:input_type -> google.cloud.ces.v1beta.GetEvaluationExpectationRequest
+	43, // 59: google.cloud.ces.v1beta.EvaluationService.CreateEvaluationExpectation:input_type -> google.cloud.ces.v1beta.CreateEvaluationExpectationRequest
+	44, // 60: google.cloud.ces.v1beta.EvaluationService.UpdateEvaluationExpectation:input_type -> google.cloud.ces.v1beta.UpdateEvaluationExpectationRequest
+	45, // 61: google.cloud.ces.v1beta.EvaluationService.DeleteEvaluationExpectation:input_type -> google.cloud.ces.v1beta.DeleteEvaluationExpectationRequest
+	33, // 62: google.cloud.ces.v1beta.EvaluationService.CreateScheduledEvaluationRun:input_type -> google.cloud.ces.v1beta.CreateScheduledEvaluationRunRequest
+	34, // 63: google.cloud.ces.v1beta.EvaluationService.GetScheduledEvaluationRun:input_type -> google.cloud.ces.v1beta.GetScheduledEvaluationRunRequest
+	35, // 64: google.cloud.ces.v1beta.EvaluationService.ListScheduledEvaluationRuns:input_type -> google.cloud.ces.v1beta.ListScheduledEvaluationRunsRequest
+	37, // 65: google.cloud.ces.v1beta.EvaluationService.UpdateScheduledEvaluationRun:input_type -> google.cloud.ces.v1beta.UpdateScheduledEvaluationRunRequest
+	38, // 66: google.cloud.ces.v1beta.EvaluationService.DeleteScheduledEvaluationRun:input_type -> google.cloud.ces.v1beta.DeleteScheduledEvaluationRunRequest
+	39, // 67: google.cloud.ces.v1beta.EvaluationService.TestPersonaVoice:input_type -> google.cloud.ces.v1beta.TestPersonaVoiceRequest
+	50, // 68: google.cloud.ces.v1beta.EvaluationService.ExportEvaluations:input_type -> google.cloud.ces.v1beta.ExportEvaluationsRequest
+	54, // 69: google.cloud.ces.v1beta.EvaluationService.ExportEvaluationRuns:input_type -> google.cloud.ces.v1beta.ExportEvaluationRunsRequest
+	52, // 70: google.cloud.ces.v1beta.EvaluationService.ExportEvaluationResults:input_type -> google.cloud.ces.v1beta.ExportEvaluationResultsRequest
+	3,  // 71: google.cloud.ces.v1beta.EvaluationService.RunEvaluationResultMetrics:input_type -> google.cloud.ces.v1beta.RunEvaluationResultMetricsRequest
+	74, // 72: google.cloud.ces.v1beta.EvaluationService.RunEvaluation:output_type -> google.longrunning.Operation
+	41, // 73: google.cloud.ces.v1beta.EvaluationService.UploadEvaluationAudio:output_type -> google.cloud.ces.v1beta.UploadEvaluationAudioResponse
+	64, // 74: google.cloud.ces.v1beta.EvaluationService.CreateEvaluation:output_type -> google.cloud.ces.v1beta.Evaluation
+	74, // 75: google.cloud.ces.v1beta.EvaluationService.GenerateEvaluation:output_type -> google.longrunning.Operation
+	74, // 76: google.cloud.ces.v1beta.EvaluationService.ImportEvaluations:output_type -> google.longrunning.Operation
+	68, // 77: google.cloud.ces.v1beta.EvaluationService.CreateEvaluationDataset:output_type -> google.cloud.ces.v1beta.EvaluationDataset
+	64, // 78: google.cloud.ces.v1beta.EvaluationService.UpdateEvaluation:output_type -> google.cloud.ces.v1beta.Evaluation
+	68, // 79: google.cloud.ces.v1beta.EvaluationService.UpdateEvaluationDataset:output_type -> google.cloud.ces.v1beta.EvaluationDataset
+	75, // 80: google.cloud.ces.v1beta.EvaluationService.DeleteEvaluation:output_type -> google.protobuf.Empty
+	75, // 81: google.cloud.ces.v1beta.EvaluationService.DeleteEvaluationResult:output_type -> google.protobuf.Empty
+	75, // 82: google.cloud.ces.v1beta.EvaluationService.DeleteEvaluationDataset:output_type -> google.protobuf.Empty
+	74, // 83: google.cloud.ces.v1beta.EvaluationService.DeleteEvaluationRun:output_type -> google.longrunning.Operation
+	64, // 84: google.cloud.ces.v1beta.EvaluationService.GetEvaluation:output_type -> google.cloud.ces.v1beta.Evaluation
+	66, // 85: google.cloud.ces.v1beta.EvaluationService.GetEvaluationResult:output_type -> google.cloud.ces.v1beta.EvaluationResult
+	68, // 86: google.cloud.ces.v1beta.EvaluationService.GetEvaluationDataset:output_type -> google.cloud.ces.v1beta.EvaluationDataset
+	67, // 87: google.cloud.ces.v1beta.EvaluationService.GetEvaluationRun:output_type -> google.cloud.ces.v1beta.EvaluationRun
+	29, // 88: google.cloud.ces.v1beta.EvaluationService.ListEvaluations:output_type -> google.cloud.ces.v1beta.ListEvaluationsResponse
+	30, // 89: google.cloud.ces.v1beta.EvaluationService.ListEvaluationResults:output_type -> google.cloud.ces.v1beta.ListEvaluationResultsResponse
+	31, // 90: google.cloud.ces.v1beta.EvaluationService.ListEvaluationDatasets:output_type -> google.cloud.ces.v1beta.ListEvaluationDatasetsResponse
+	32, // 91: google.cloud.ces.v1beta.EvaluationService.ListEvaluationRuns:output_type -> google.cloud.ces.v1beta.ListEvaluationRunsResponse
+	48, // 92: google.cloud.ces.v1beta.EvaluationService.ListEvaluationExpectations:output_type -> google.cloud.ces.v1beta.ListEvaluationExpectationsResponse
+	72, // 93: google.cloud.ces.v1beta.EvaluationService.GetEvaluationExpectation:output_type -> google.cloud.ces.v1beta.EvaluationExpectation
+	72, // 94: google.cloud.ces.v1beta.EvaluationService.CreateEvaluationExpectation:output_type -> google.cloud.ces.v1beta.EvaluationExpectation
+	72, // 95: google.cloud.ces.v1beta.EvaluationService.UpdateEvaluationExpectation:output_type -> google.cloud.ces.v1beta.EvaluationExpectation
+	75, // 96: google.cloud.ces.v1beta.EvaluationService.DeleteEvaluationExpectation:output_type -> google.protobuf.Empty
+	70, // 97: google.cloud.ces.v1beta.EvaluationService.CreateScheduledEvaluationRun:output_type -> google.cloud.ces.v1beta.ScheduledEvaluationRun
+	70, // 98: google.cloud.ces.v1beta.EvaluationService.GetScheduledEvaluationRun:output_type -> google.cloud.ces.v1beta.ScheduledEvaluationRun
+	36, // 99: google.cloud.ces.v1beta.EvaluationService.ListScheduledEvaluationRuns:output_type -> google.cloud.ces.v1beta.ListScheduledEvaluationRunsResponse
+	70, // 100: google.cloud.ces.v1beta.EvaluationService.UpdateScheduledEvaluationRun:output_type -> google.cloud.ces.v1beta.ScheduledEvaluationRun
+	75, // 101: google.cloud.ces.v1beta.EvaluationService.DeleteScheduledEvaluationRun:output_type -> google.protobuf.Empty
+	42, // 102: google.cloud.ces.v1beta.EvaluationService.TestPersonaVoice:output_type -> google.cloud.ces.v1beta.TestPersonaVoiceResponse
+	74, // 103: google.cloud.ces.v1beta.EvaluationService.ExportEvaluations:output_type -> google.longrunning.Operation
+	74, // 104: google.cloud.ces.v1beta.EvaluationService.ExportEvaluationRuns:output_type -> google.longrunning.Operation
+	74, // 105: google.cloud.ces.v1beta.EvaluationService.ExportEvaluationResults:output_type -> google.longrunning.Operation
+	74, // 106: google.cloud.ces.v1beta.EvaluationService.RunEvaluationResultMetrics:output_type -> google.longrunning.Operation
+	72, // [72:107] is the sub-list for method output_type
+	37, // [37:72] is the sub-list for method input_type
+	37, // [37:37] is the sub-list for extension type_name
+	37, // [37:37] is the sub-list for extension extendee
+	0,  // [0:37] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_ces_v1beta_evaluation_service_proto_init() }
@@ -4494,7 +4565,7 @@ func file_google_cloud_ces_v1beta_evaluation_service_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_ces_v1beta_evaluation_service_proto_rawDesc), len(file_google_cloud_ces_v1beta_evaluation_service_proto_rawDesc)),
-			NumEnums:      2,
+			NumEnums:      3,
 			NumMessages:   59,
 			NumExtensions: 0,
 			NumServices:   1,

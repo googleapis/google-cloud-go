@@ -9,7 +9,7 @@ retract v1.84.0 // due to https://github.com/googleapis/google-cloud-go/issues/1
 require (
 	cloud.google.com/go v0.123.0
 	cloud.google.com/go/iam v1.11.0
-	cloud.google.com/go/longrunning v1.0.0
+	cloud.google.com/go/longrunning v1.2.0
 	cloud.google.com/go/monitoring v1.29.0
 	github.com/GoogleCloudPlatform/grpc-gcp-go/grpcgcp v1.6.0
 	github.com/google/go-cmp v0.7.0

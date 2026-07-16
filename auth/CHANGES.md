@@ -1,5 +1,12 @@
 # Changes
 
+## [0.22.0](https://github.com/googleapis/google-cloud-go/compare/auth/v0.21.0...auth/v0.22.0) (2026-07-13)
+
+
+### Features
+
+* **auth:** Populate http.response.status_code in http transport ([#20053](https://github.com/googleapis/google-cloud-go/issues/20053)) ([bff5d7c](https://github.com/googleapis/google-cloud-go/commit/bff5d7c9bc7f8ea8c0059f7d8e2d4294ba92c5bc))
+
 ## [0.21.0](https://github.com/googleapis/google-cloud-go/compare/auth/v0.20.0...auth/v0.21.0) (2026-07-07)
 
 

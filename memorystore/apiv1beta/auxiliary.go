@@ -28,6 +28,198 @@ import (
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
 
+// AddAuthTokenOperation manages a long-running operation from AddAuthToken.
+type AddAuthTokenOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *AddAuthTokenOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*memorystorepb.TokenAuthUser, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp memorystorepb.TokenAuthUser
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *AddAuthTokenOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*memorystorepb.TokenAuthUser, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp memorystorepb.TokenAuthUser
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *AddAuthTokenOperation) Metadata() (*memorystorepb.OperationMetadata, error) {
+	var meta memorystorepb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *AddAuthTokenOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *AddAuthTokenOperation) Name() string {
+	return op.lro.Name()
+}
+
+// AddTokenAuthUserOperation manages a long-running operation from AddTokenAuthUser.
+type AddTokenAuthUserOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *AddTokenAuthUserOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*memorystorepb.Instance, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp memorystorepb.Instance
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *AddTokenAuthUserOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*memorystorepb.Instance, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp memorystorepb.Instance
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *AddTokenAuthUserOperation) Metadata() (*memorystorepb.OperationMetadata, error) {
+	var meta memorystorepb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *AddTokenAuthUserOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *AddTokenAuthUserOperation) Name() string {
+	return op.lro.Name()
+}
+
+// BackupInstanceOperation manages a long-running operation from BackupInstance.
+type BackupInstanceOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *BackupInstanceOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*memorystorepb.Instance, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp memorystorepb.Instance
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *BackupInstanceOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*memorystorepb.Instance, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp memorystorepb.Instance
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *BackupInstanceOperation) Metadata() (*memorystorepb.OperationMetadata, error) {
+	var meta memorystorepb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *BackupInstanceOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *BackupInstanceOperation) Name() string {
+	return op.lro.Name()
+}
+
 // CreateInstanceOperation manages a long-running operation from CreateInstance.
 type CreateInstanceOperation struct {
 	lro      *longrunning.Operation
@@ -92,6 +284,112 @@ func (op *CreateInstanceOperation) Name() string {
 	return op.lro.Name()
 }
 
+// DeleteAuthTokenOperation manages a long-running operation from DeleteAuthToken.
+type DeleteAuthTokenOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *DeleteAuthTokenOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *DeleteAuthTokenOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	return op.lro.Poll(ctx, nil, opts...)
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *DeleteAuthTokenOperation) Metadata() (*memorystorepb.OperationMetadata, error) {
+	var meta memorystorepb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *DeleteAuthTokenOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *DeleteAuthTokenOperation) Name() string {
+	return op.lro.Name()
+}
+
+// DeleteBackupOperation manages a long-running operation from DeleteBackup.
+type DeleteBackupOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *DeleteBackupOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *DeleteBackupOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	return op.lro.Poll(ctx, nil, opts...)
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *DeleteBackupOperation) Metadata() (*memorystorepb.OperationMetadata, error) {
+	var meta memorystorepb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *DeleteBackupOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *DeleteBackupOperation) Name() string {
+	return op.lro.Name()
+}
+
 // DeleteInstanceOperation manages a long-running operation from DeleteInstance.
 type DeleteInstanceOperation struct {
 	lro      *longrunning.Operation
@@ -142,6 +440,315 @@ func (op *DeleteInstanceOperation) Done() bool {
 // Name returns the name of the long-running operation.
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *DeleteInstanceOperation) Name() string {
+	return op.lro.Name()
+}
+
+// DeleteTokenAuthUserOperation manages a long-running operation from DeleteTokenAuthUser.
+type DeleteTokenAuthUserOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *DeleteTokenAuthUserOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *DeleteTokenAuthUserOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	return op.lro.Poll(ctx, nil, opts...)
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *DeleteTokenAuthUserOperation) Metadata() (*memorystorepb.OperationMetadata, error) {
+	var meta memorystorepb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *DeleteTokenAuthUserOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *DeleteTokenAuthUserOperation) Name() string {
+	return op.lro.Name()
+}
+
+// ExportBackupOperation manages a long-running operation from ExportBackup.
+type ExportBackupOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *ExportBackupOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*memorystorepb.Backup, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp memorystorepb.Backup
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *ExportBackupOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*memorystorepb.Backup, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp memorystorepb.Backup
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *ExportBackupOperation) Metadata() (*memorystorepb.OperationMetadata, error) {
+	var meta memorystorepb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *ExportBackupOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *ExportBackupOperation) Name() string {
+	return op.lro.Name()
+}
+
+// FinishMigrationOperation manages a long-running operation from FinishMigration.
+type FinishMigrationOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *FinishMigrationOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*memorystorepb.Instance, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp memorystorepb.Instance
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *FinishMigrationOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*memorystorepb.Instance, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp memorystorepb.Instance
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *FinishMigrationOperation) Metadata() (*memorystorepb.OperationMetadata, error) {
+	var meta memorystorepb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *FinishMigrationOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *FinishMigrationOperation) Name() string {
+	return op.lro.Name()
+}
+
+// RescheduleMaintenanceOperation manages a long-running operation from RescheduleMaintenance.
+type RescheduleMaintenanceOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *RescheduleMaintenanceOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*memorystorepb.Instance, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp memorystorepb.Instance
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *RescheduleMaintenanceOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*memorystorepb.Instance, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp memorystorepb.Instance
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *RescheduleMaintenanceOperation) Metadata() (*memorystorepb.OperationMetadata, error) {
+	var meta memorystorepb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *RescheduleMaintenanceOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *RescheduleMaintenanceOperation) Name() string {
+	return op.lro.Name()
+}
+
+// StartMigrationOperation manages a long-running operation from StartMigration.
+type StartMigrationOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *StartMigrationOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*memorystorepb.Instance, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp memorystorepb.Instance
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *StartMigrationOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*memorystorepb.Instance, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp memorystorepb.Instance
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *StartMigrationOperation) Metadata() (*memorystorepb.OperationMetadata, error) {
+	var meta memorystorepb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *StartMigrationOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *StartMigrationOperation) Name() string {
 	return op.lro.Name()
 }
 
@@ -207,6 +814,147 @@ func (op *UpdateInstanceOperation) Done() bool {
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *UpdateInstanceOperation) Name() string {
 	return op.lro.Name()
+}
+
+// AuthTokenIterator manages a stream of *memorystorepb.AuthToken.
+type AuthTokenIterator struct {
+	items    []*memorystorepb.AuthToken
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*memorystorepb.AuthToken, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *AuthTokenIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *AuthTokenIterator) Next() (*memorystorepb.AuthToken, error) {
+	var item *memorystorepb.AuthToken
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *AuthTokenIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *AuthTokenIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// BackupCollectionIterator manages a stream of *memorystorepb.BackupCollection.
+type BackupCollectionIterator struct {
+	items    []*memorystorepb.BackupCollection
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*memorystorepb.BackupCollection, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *BackupCollectionIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *BackupCollectionIterator) Next() (*memorystorepb.BackupCollection, error) {
+	var item *memorystorepb.BackupCollection
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *BackupCollectionIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *BackupCollectionIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// BackupIterator manages a stream of *memorystorepb.Backup.
+type BackupIterator struct {
+	items    []*memorystorepb.Backup
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*memorystorepb.Backup, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *BackupIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *BackupIterator) Next() (*memorystorepb.Backup, error) {
+	var item *memorystorepb.Backup
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *BackupIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *BackupIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
 }
 
 // InstanceIterator manages a stream of *memorystorepb.Instance.
@@ -345,6 +1093,53 @@ func (it *OperationIterator) bufLen() int {
 }
 
 func (it *OperationIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// TokenAuthUserIterator manages a stream of *memorystorepb.TokenAuthUser.
+type TokenAuthUserIterator struct {
+	items    []*memorystorepb.TokenAuthUser
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*memorystorepb.TokenAuthUser, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *TokenAuthUserIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *TokenAuthUserIterator) Next() (*memorystorepb.TokenAuthUser, error) {
+	var item *memorystorepb.TokenAuthUser
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *TokenAuthUserIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *TokenAuthUserIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b

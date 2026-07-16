@@ -31,6 +31,7 @@ import (
 	runpb "cloud.google.com/go/run/apiv2/runpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -553,8 +554,12 @@ func (c *executionsGRPCClient) DeleteExecution(ctx context.Context, req *runpb.D
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*run.DeleteExecutionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteExecutionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -579,8 +584,12 @@ func (c *executionsGRPCClient) CancelExecution(ctx context.Context, req *runpb.C
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*run.CancelExecutionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CancelExecutionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -891,8 +900,12 @@ func (c *executionsRESTClient) DeleteExecution(ctx context.Context, req *runpb.D
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*run.DeleteExecutionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteExecutionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -957,8 +970,12 @@ func (c *executionsRESTClient) CancelExecution(ctx context.Context, req *runpb.C
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*run.CancelExecutionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CancelExecutionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1204,7 +1221,7 @@ func (c *executionsRESTClient) WaitOperation(ctx context.Context, req *longrunni
 // The name must be that of a previously created CancelExecutionOperation, possibly from a different process.
 func (c *executionsGRPCClient) CancelExecutionOperation(name string) *CancelExecutionOperation {
 	return &CancelExecutionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*run.CancelExecutionOperation"),
 	}
 }
 
@@ -1213,7 +1230,7 @@ func (c *executionsGRPCClient) CancelExecutionOperation(name string) *CancelExec
 func (c *executionsRESTClient) CancelExecutionOperation(name string) *CancelExecutionOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &CancelExecutionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*run.CancelExecutionOperation"),
 		pollPath: override,
 	}
 }
@@ -1222,7 +1239,7 @@ func (c *executionsRESTClient) CancelExecutionOperation(name string) *CancelExec
 // The name must be that of a previously created DeleteExecutionOperation, possibly from a different process.
 func (c *executionsGRPCClient) DeleteExecutionOperation(name string) *DeleteExecutionOperation {
 	return &DeleteExecutionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*run.DeleteExecutionOperation"),
 	}
 }
 
@@ -1231,7 +1248,7 @@ func (c *executionsGRPCClient) DeleteExecutionOperation(name string) *DeleteExec
 func (c *executionsRESTClient) DeleteExecutionOperation(name string) *DeleteExecutionOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &DeleteExecutionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*run.DeleteExecutionOperation"),
 		pollPath: override,
 	}
 }

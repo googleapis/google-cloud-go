@@ -445,6 +445,64 @@ func (StreamingMode) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_modelarmor_v1_service_proto_rawDescGZIP(), []int{6}
 }
 
+// This enum is used in the TemplateMetadata message to indicate the modality
+// supported for sanitize API calls.
+type Modality int32
+
+const (
+	// Unspecified modality. If specified, all modalities will be sanitized.
+	Modality_MODALITY_UNSPECIFIED Modality = 0
+	// Represents text modality. If specified, it will sanitize text fields, and
+	// text extracted from rich text files (like PDFs, DOCs) and plain text files
+	// (like TXT).
+	Modality_MODALITY_TEXT Modality = 1
+	// Represents image modality. If specified, it will sanitize image files. The
+	// visual content and the text content in the image will be sanitized
+	// depending on the filter configuration.
+	Modality_MODALITY_IMAGE Modality = 2
+)
+
+// Enum value maps for Modality.
+var (
+	Modality_name = map[int32]string{
+		0: "MODALITY_UNSPECIFIED",
+		1: "MODALITY_TEXT",
+		2: "MODALITY_IMAGE",
+	}
+	Modality_value = map[string]int32{
+		"MODALITY_UNSPECIFIED": 0,
+		"MODALITY_TEXT":        1,
+		"MODALITY_IMAGE":       2,
+	}
+)
+
+func (x Modality) Enum() *Modality {
+	p := new(Modality)
+	*p = x
+	return p
+}
+
+func (x Modality) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (Modality) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_modelarmor_v1_service_proto_enumTypes[7].Descriptor()
+}
+
+func (Modality) Type() protoreflect.EnumType {
+	return &file_google_cloud_modelarmor_v1_service_proto_enumTypes[7]
+}
+
+func (x Modality) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use Modality.Descriptor instead.
+func (Modality) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_modelarmor_v1_service_proto_rawDescGZIP(), []int{7}
+}
+
 // Enforcement type for Model Armor filters.
 type Template_TemplateMetadata_EnforcementType int32
 
@@ -484,11 +542,11 @@ func (x Template_TemplateMetadata_EnforcementType) String() string {
 }
 
 func (Template_TemplateMetadata_EnforcementType) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_modelarmor_v1_service_proto_enumTypes[7].Descriptor()
+	return file_google_cloud_modelarmor_v1_service_proto_enumTypes[8].Descriptor()
 }
 
 func (Template_TemplateMetadata_EnforcementType) Type() protoreflect.EnumType {
-	return &file_google_cloud_modelarmor_v1_service_proto_enumTypes[7]
+	return &file_google_cloud_modelarmor_v1_service_proto_enumTypes[8]
 }
 
 func (x Template_TemplateMetadata_EnforcementType) Number() protoreflect.EnumNumber {
@@ -533,11 +591,11 @@ func (x FloorSetting_IntegratedService) String() string {
 }
 
 func (FloorSetting_IntegratedService) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_modelarmor_v1_service_proto_enumTypes[8].Descriptor()
+	return file_google_cloud_modelarmor_v1_service_proto_enumTypes[9].Descriptor()
 }
 
 func (FloorSetting_IntegratedService) Type() protoreflect.EnumType {
-	return &file_google_cloud_modelarmor_v1_service_proto_enumTypes[8]
+	return &file_google_cloud_modelarmor_v1_service_proto_enumTypes[9]
 }
 
 func (x FloorSetting_IntegratedService) Number() protoreflect.EnumNumber {
@@ -558,7 +616,7 @@ const (
 	PiAndJailbreakFilterSettings_PI_AND_JAILBREAK_FILTER_ENFORCEMENT_UNSPECIFIED PiAndJailbreakFilterSettings_PiAndJailbreakFilterEnforcement = 0
 	// Enabled
 	PiAndJailbreakFilterSettings_ENABLED PiAndJailbreakFilterSettings_PiAndJailbreakFilterEnforcement = 1
-	// Enabled
+	// Disabled
 	PiAndJailbreakFilterSettings_DISABLED PiAndJailbreakFilterSettings_PiAndJailbreakFilterEnforcement = 2
 )
 
@@ -587,11 +645,11 @@ func (x PiAndJailbreakFilterSettings_PiAndJailbreakFilterEnforcement) String() s
 }
 
 func (PiAndJailbreakFilterSettings_PiAndJailbreakFilterEnforcement) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_modelarmor_v1_service_proto_enumTypes[9].Descriptor()
+	return file_google_cloud_modelarmor_v1_service_proto_enumTypes[10].Descriptor()
 }
 
 func (PiAndJailbreakFilterSettings_PiAndJailbreakFilterEnforcement) Type() protoreflect.EnumType {
-	return &file_google_cloud_modelarmor_v1_service_proto_enumTypes[9]
+	return &file_google_cloud_modelarmor_v1_service_proto_enumTypes[10]
 }
 
 func (x PiAndJailbreakFilterSettings_PiAndJailbreakFilterEnforcement) Number() protoreflect.EnumNumber {
@@ -640,11 +698,11 @@ func (x MaliciousUriFilterSettings_MaliciousUriFilterEnforcement) String() strin
 }
 
 func (MaliciousUriFilterSettings_MaliciousUriFilterEnforcement) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_modelarmor_v1_service_proto_enumTypes[10].Descriptor()
+	return file_google_cloud_modelarmor_v1_service_proto_enumTypes[11].Descriptor()
 }
 
 func (MaliciousUriFilterSettings_MaliciousUriFilterEnforcement) Type() protoreflect.EnumType {
-	return &file_google_cloud_modelarmor_v1_service_proto_enumTypes[10]
+	return &file_google_cloud_modelarmor_v1_service_proto_enumTypes[11]
 }
 
 func (x MaliciousUriFilterSettings_MaliciousUriFilterEnforcement) Number() protoreflect.EnumNumber {
@@ -694,11 +752,11 @@ func (x SdpBasicConfig_SdpBasicConfigEnforcement) String() string {
 }
 
 func (SdpBasicConfig_SdpBasicConfigEnforcement) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_modelarmor_v1_service_proto_enumTypes[11].Descriptor()
+	return file_google_cloud_modelarmor_v1_service_proto_enumTypes[12].Descriptor()
 }
 
 func (SdpBasicConfig_SdpBasicConfigEnforcement) Type() protoreflect.EnumType {
-	return &file_google_cloud_modelarmor_v1_service_proto_enumTypes[11]
+	return &file_google_cloud_modelarmor_v1_service_proto_enumTypes[12]
 }
 
 func (x SdpBasicConfig_SdpBasicConfigEnforcement) Number() protoreflect.EnumNumber {
@@ -730,6 +788,8 @@ const (
 	ByteDataItem_TXT ByteDataItem_ByteItemType = 6
 	// CSV
 	ByteDataItem_CSV ByteDataItem_ByteItemType = 7
+	// IMAGE
+	ByteDataItem_IMAGE ByteDataItem_ByteItemType = 8
 )
 
 // Enum value maps for ByteDataItem_ByteItemType.
@@ -743,6 +803,7 @@ var (
 		5: "POWERPOINT_DOCUMENT",
 		6: "TXT",
 		7: "CSV",
+		8: "IMAGE",
 	}
 	ByteDataItem_ByteItemType_value = map[string]int32{
 		"BYTE_ITEM_TYPE_UNSPECIFIED": 0,
@@ -753,6 +814,7 @@ var (
 		"POWERPOINT_DOCUMENT":        5,
 		"TXT":                        6,
 		"CSV":                        7,
+		"IMAGE":                      8,
 	}
 )
 
@@ -767,11 +829,11 @@ func (x ByteDataItem_ByteItemType) String() string {
 }
 
 func (ByteDataItem_ByteItemType) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_modelarmor_v1_service_proto_enumTypes[12].Descriptor()
+	return file_google_cloud_modelarmor_v1_service_proto_enumTypes[13].Descriptor()
 }
 
 func (ByteDataItem_ByteItemType) Type() protoreflect.EnumType {
-	return &file_google_cloud_modelarmor_v1_service_proto_enumTypes[12]
+	return &file_google_cloud_modelarmor_v1_service_proto_enumTypes[13]
 }
 
 func (x ByteDataItem_ByteItemType) Number() protoreflect.EnumNumber {
@@ -825,11 +887,11 @@ func (x VirusScanFilterResult_ScannedContentType) String() string {
 }
 
 func (VirusScanFilterResult_ScannedContentType) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_modelarmor_v1_service_proto_enumTypes[13].Descriptor()
+	return file_google_cloud_modelarmor_v1_service_proto_enumTypes[14].Descriptor()
 }
 
 func (VirusScanFilterResult_ScannedContentType) Type() protoreflect.EnumType {
-	return &file_google_cloud_modelarmor_v1_service_proto_enumTypes[13]
+	return &file_google_cloud_modelarmor_v1_service_proto_enumTypes[14]
 }
 
 func (x VirusScanFilterResult_ScannedContentType) Number() protoreflect.EnumNumber {
@@ -838,7 +900,7 @@ func (x VirusScanFilterResult_ScannedContentType) Number() protoreflect.EnumNumb
 
 // Deprecated: Use VirusScanFilterResult_ScannedContentType.Descriptor instead.
 func (VirusScanFilterResult_ScannedContentType) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_modelarmor_v1_service_proto_rawDescGZIP(), []int{34, 0}
+	return file_google_cloud_modelarmor_v1_service_proto_rawDescGZIP(), []int{37, 0}
 }
 
 // Defines all the threat types of a virus
@@ -890,11 +952,11 @@ func (x VirusDetail_ThreatType) String() string {
 }
 
 func (VirusDetail_ThreatType) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_modelarmor_v1_service_proto_enumTypes[14].Descriptor()
+	return file_google_cloud_modelarmor_v1_service_proto_enumTypes[15].Descriptor()
 }
 
 func (VirusDetail_ThreatType) Type() protoreflect.EnumType {
-	return &file_google_cloud_modelarmor_v1_service_proto_enumTypes[14]
+	return &file_google_cloud_modelarmor_v1_service_proto_enumTypes[15]
 }
 
 func (x VirusDetail_ThreatType) Number() protoreflect.EnumNumber {
@@ -903,7 +965,7 @@ func (x VirusDetail_ThreatType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use VirusDetail_ThreatType.Descriptor instead.
 func (VirusDetail_ThreatType) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_modelarmor_v1_service_proto_rawDescGZIP(), []int{35, 0}
+	return file_google_cloud_modelarmor_v1_service_proto_rawDescGZIP(), []int{38, 0}
 }
 
 // Option to specify the type of message.
@@ -947,11 +1009,11 @@ func (x MessageItem_MessageType) String() string {
 }
 
 func (MessageItem_MessageType) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_modelarmor_v1_service_proto_enumTypes[15].Descriptor()
+	return file_google_cloud_modelarmor_v1_service_proto_enumTypes[16].Descriptor()
 }
 
 func (MessageItem_MessageType) Type() protoreflect.EnumType {
-	return &file_google_cloud_modelarmor_v1_service_proto_enumTypes[15]
+	return &file_google_cloud_modelarmor_v1_service_proto_enumTypes[16]
 }
 
 func (x MessageItem_MessageType) Number() protoreflect.EnumNumber {
@@ -960,7 +1022,7 @@ func (x MessageItem_MessageType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use MessageItem_MessageType.Descriptor instead.
 func (MessageItem_MessageType) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_modelarmor_v1_service_proto_rawDescGZIP(), []int{37, 0}
+	return file_google_cloud_modelarmor_v1_service_proto_rawDescGZIP(), []int{40, 0}
 }
 
 // Message describing Template resource
@@ -2797,7 +2859,8 @@ type RaiFilterResult struct {
 	// equal to or higher than the confidence level defined in configuration.
 	MatchState FilterMatchState `protobuf:"varint,3,opt,name=match_state,json=matchState,proto3,enum=google.cloud.modelarmor.v1.FilterMatchState" json:"match_state,omitempty"`
 	// The map of RAI filter results where key is RAI filter type - either of
-	// "sexually_explicit", "hate_speech", "harassment", "dangerous".
+	// "sexually_explicit", "hate_speech", "harassment", "dangerous", "violence",
+	// "sexually_suggestive".
 	RaiFilterTypeResults map[string]*RaiFilterResult_RaiFilterTypeResult `protobuf:"bytes,4,rep,name=rai_filter_type_results,json=raiFilterTypeResults,proto3" json:"rai_filter_type_results,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	unknownFields        protoimpl.UnknownFields
 	sizeCache            protoimpl.SizeCache
@@ -2870,6 +2933,7 @@ type SdpFilterResult struct {
 	//
 	//	*SdpFilterResult_InspectResult
 	//	*SdpFilterResult_DeidentifyResult
+	//	*SdpFilterResult_RedactResult
 	Result        isSdpFilterResult_Result `protobuf_oneof:"result"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -2930,6 +2994,15 @@ func (x *SdpFilterResult) GetDeidentifyResult() *SdpDeidentifyResult {
 	return nil
 }
 
+func (x *SdpFilterResult) GetRedactResult() *SdpRedactResult {
+	if x != nil {
+		if x, ok := x.Result.(*SdpFilterResult_RedactResult); ok {
+			return x.RedactResult
+		}
+	}
+	return nil
+}
+
 type isSdpFilterResult_Result interface {
 	isSdpFilterResult_Result()
 }
@@ -2945,9 +3018,17 @@ type SdpFilterResult_DeidentifyResult struct {
 	DeidentifyResult *SdpDeidentifyResult `protobuf:"bytes,2,opt,name=deidentify_result,json=deidentifyResult,proto3,oneof"`
 }
 
+type SdpFilterResult_RedactResult struct {
+	// Sensitive Data Protection Redaction result if redaction is performed.
+	// This is primarily used for image redaction.
+	RedactResult *SdpRedactResult `protobuf:"bytes,3,opt,name=redact_result,json=redactResult,proto3,oneof"`
+}
+
 func (*SdpFilterResult_InspectResult) isSdpFilterResult_Result() {}
 
 func (*SdpFilterResult_DeidentifyResult) isSdpFilterResult_Result() {}
+
+func (*SdpFilterResult_RedactResult) isSdpFilterResult_Result() {}
 
 // Sensitive Data Protection Inspection Result.
 type SdpInspectResult struct {
@@ -2972,8 +3053,10 @@ type SdpInspectResult struct {
 	// the server reached the maximum amount of resources allowed for a single API
 	// call.
 	FindingsTruncated bool `protobuf:"varint,5,opt,name=findings_truncated,json=findingsTruncated,proto3" json:"findings_truncated,omitempty"`
-	unknownFields     protoimpl.UnknownFields
-	sizeCache         protoimpl.SizeCache
+	// Contains text extracted from the image, if applicable.
+	ExtractedImageText string `protobuf:"bytes,6,opt,name=extracted_image_text,json=extractedImageText,proto3" json:"extracted_image_text,omitempty"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
 }
 
 func (x *SdpInspectResult) Reset() {
@@ -3039,6 +3122,13 @@ func (x *SdpInspectResult) GetFindingsTruncated() bool {
 		return x.FindingsTruncated
 	}
 	return false
+}
+
+func (x *SdpInspectResult) GetExtractedImageText() string {
+	if x != nil {
+		return x.ExtractedImageText
+	}
+	return ""
 }
 
 // Represents Data item
@@ -3279,6 +3369,138 @@ func (x *SdpDeidentifyResult) GetInfoTypes() []string {
 	return nil
 }
 
+// Location of the finding within an image.
+type SdpImageFindingLocation struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Bounding boxes locating the pixels within the image containing the finding.
+	BoundingBoxes []*SdpImageFindingLocation_SdpBoundingBox `protobuf:"bytes,1,rep,name=bounding_boxes,json=boundingBoxes,proto3" json:"bounding_boxes,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SdpImageFindingLocation) Reset() {
+	*x = SdpImageFindingLocation{}
+	mi := &file_google_cloud_modelarmor_v1_service_proto_msgTypes[31]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SdpImageFindingLocation) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SdpImageFindingLocation) ProtoMessage() {}
+
+func (x *SdpImageFindingLocation) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_modelarmor_v1_service_proto_msgTypes[31]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SdpImageFindingLocation.ProtoReflect.Descriptor instead.
+func (*SdpImageFindingLocation) Descriptor() ([]byte, []int) {
+	return file_google_cloud_modelarmor_v1_service_proto_rawDescGZIP(), []int{31}
+}
+
+func (x *SdpImageFindingLocation) GetBoundingBoxes() []*SdpImageFindingLocation_SdpBoundingBox {
+	if x != nil {
+		return x.BoundingBoxes
+	}
+	return nil
+}
+
+// Precise location of the finding within a document, record, image, or
+// metadata container.
+type SdpContentLocation struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Type of the container within the file with location of the finding. This
+	// may be extended to include other container types like audio, video, etc in
+	// future.
+	//
+	// Types that are valid to be assigned to Location:
+	//
+	//	*SdpContentLocation_ImageFindingLocation
+	Location isSdpContentLocation_Location `protobuf_oneof:"location"`
+	// Name of the container where the finding is located.
+	// The top level name is the source file name or table name.
+	//
+	// Nested names could be absent if the embedded object has no string
+	// identifier (for example, an image contained within a document).
+	ContainerName string `protobuf:"bytes,1,opt,name=container_name,json=containerName,proto3" json:"container_name,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SdpContentLocation) Reset() {
+	*x = SdpContentLocation{}
+	mi := &file_google_cloud_modelarmor_v1_service_proto_msgTypes[32]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SdpContentLocation) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SdpContentLocation) ProtoMessage() {}
+
+func (x *SdpContentLocation) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_modelarmor_v1_service_proto_msgTypes[32]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SdpContentLocation.ProtoReflect.Descriptor instead.
+func (*SdpContentLocation) Descriptor() ([]byte, []int) {
+	return file_google_cloud_modelarmor_v1_service_proto_rawDescGZIP(), []int{32}
+}
+
+func (x *SdpContentLocation) GetLocation() isSdpContentLocation_Location {
+	if x != nil {
+		return x.Location
+	}
+	return nil
+}
+
+func (x *SdpContentLocation) GetImageFindingLocation() *SdpImageFindingLocation {
+	if x != nil {
+		if x, ok := x.Location.(*SdpContentLocation_ImageFindingLocation); ok {
+			return x.ImageFindingLocation
+		}
+	}
+	return nil
+}
+
+func (x *SdpContentLocation) GetContainerName() string {
+	if x != nil {
+		return x.ContainerName
+	}
+	return ""
+}
+
+type isSdpContentLocation_Location interface {
+	isSdpContentLocation_Location()
+}
+
+type SdpContentLocation_ImageFindingLocation struct {
+	// Location within an image's pixels.
+	ImageFindingLocation *SdpImageFindingLocation `protobuf:"bytes,2,opt,name=image_finding_location,json=imageFindingLocation,proto3,oneof"`
+}
+
+func (*SdpContentLocation_ImageFindingLocation) isSdpContentLocation_Location() {}
+
 // Finding corresponding to Sensitive Data Protection filter.
 type SdpFinding struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -3294,7 +3516,7 @@ type SdpFinding struct {
 
 func (x *SdpFinding) Reset() {
 	*x = SdpFinding{}
-	mi := &file_google_cloud_modelarmor_v1_service_proto_msgTypes[31]
+	mi := &file_google_cloud_modelarmor_v1_service_proto_msgTypes[33]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3306,7 +3528,7 @@ func (x *SdpFinding) String() string {
 func (*SdpFinding) ProtoMessage() {}
 
 func (x *SdpFinding) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_modelarmor_v1_service_proto_msgTypes[31]
+	mi := &file_google_cloud_modelarmor_v1_service_proto_msgTypes[33]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3319,7 +3541,7 @@ func (x *SdpFinding) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SdpFinding.ProtoReflect.Descriptor instead.
 func (*SdpFinding) Descriptor() ([]byte, []int) {
-	return file_google_cloud_modelarmor_v1_service_proto_rawDescGZIP(), []int{31}
+	return file_google_cloud_modelarmor_v1_service_proto_rawDescGZIP(), []int{33}
 }
 
 func (x *SdpFinding) GetInfoType() string {
@@ -3343,6 +3565,104 @@ func (x *SdpFinding) GetLocation() *SdpFinding_SdpFindingLocation {
 	return nil
 }
 
+// Sensitive Data Protection Redaction Result.
+type SdpRedactResult struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Output only. Reports whether Sensitive Data Protection redaction was
+	// successfully executed or not.
+	ExecutionState FilterExecutionState `protobuf:"varint,1,opt,name=execution_state,json=executionState,proto3,enum=google.cloud.modelarmor.v1.FilterExecutionState" json:"execution_state,omitempty"`
+	// Output only. Optional messages corresponding to the result.
+	// A message can provide warnings or error details.
+	// For example, if execution state is skipped then this field provides
+	// related reason/explanation.
+	MessageItems []*MessageItem `protobuf:"bytes,2,rep,name=message_items,json=messageItems,proto3" json:"message_items,omitempty"`
+	// Output only. Match state for Sensitive Data Protection Redaction.
+	// Value is MATCH_FOUND if content is redacted.
+	MatchState FilterMatchState `protobuf:"varint,3,opt,name=match_state,json=matchState,proto3,enum=google.cloud.modelarmor.v1.FilterMatchState" json:"match_state,omitempty"`
+	// Output only. The redacted image. The type will be the same as the original
+	// image.
+	RedactedImage []byte `protobuf:"bytes,4,opt,name=redacted_image,json=redactedImage,proto3" json:"redacted_image,omitempty"`
+	// Output only. The findings. This field is populated in the response only
+	// when include_findings in the SDP template is set to true.
+	Findings []*SdpFinding `protobuf:"bytes,5,rep,name=findings,proto3" json:"findings,omitempty"`
+	// The extracted text from the image.
+	ExtractedImageText string `protobuf:"bytes,6,opt,name=extracted_image_text,json=extractedImageText,proto3" json:"extracted_image_text,omitempty"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
+}
+
+func (x *SdpRedactResult) Reset() {
+	*x = SdpRedactResult{}
+	mi := &file_google_cloud_modelarmor_v1_service_proto_msgTypes[34]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SdpRedactResult) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SdpRedactResult) ProtoMessage() {}
+
+func (x *SdpRedactResult) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_modelarmor_v1_service_proto_msgTypes[34]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SdpRedactResult.ProtoReflect.Descriptor instead.
+func (*SdpRedactResult) Descriptor() ([]byte, []int) {
+	return file_google_cloud_modelarmor_v1_service_proto_rawDescGZIP(), []int{34}
+}
+
+func (x *SdpRedactResult) GetExecutionState() FilterExecutionState {
+	if x != nil {
+		return x.ExecutionState
+	}
+	return FilterExecutionState_FILTER_EXECUTION_STATE_UNSPECIFIED
+}
+
+func (x *SdpRedactResult) GetMessageItems() []*MessageItem {
+	if x != nil {
+		return x.MessageItems
+	}
+	return nil
+}
+
+func (x *SdpRedactResult) GetMatchState() FilterMatchState {
+	if x != nil {
+		return x.MatchState
+	}
+	return FilterMatchState_FILTER_MATCH_STATE_UNSPECIFIED
+}
+
+func (x *SdpRedactResult) GetRedactedImage() []byte {
+	if x != nil {
+		return x.RedactedImage
+	}
+	return nil
+}
+
+func (x *SdpRedactResult) GetFindings() []*SdpFinding {
+	if x != nil {
+		return x.Findings
+	}
+	return nil
+}
+
+func (x *SdpRedactResult) GetExtractedImageText() string {
+	if x != nil {
+		return x.ExtractedImageText
+	}
+	return ""
+}
+
 // Prompt injection and Jailbreak Filter Result.
 type PiAndJailbreakFilterResult struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -3364,7 +3684,7 @@ type PiAndJailbreakFilterResult struct {
 
 func (x *PiAndJailbreakFilterResult) Reset() {
 	*x = PiAndJailbreakFilterResult{}
-	mi := &file_google_cloud_modelarmor_v1_service_proto_msgTypes[32]
+	mi := &file_google_cloud_modelarmor_v1_service_proto_msgTypes[35]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3376,7 +3696,7 @@ func (x *PiAndJailbreakFilterResult) String() string {
 func (*PiAndJailbreakFilterResult) ProtoMessage() {}
 
 func (x *PiAndJailbreakFilterResult) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_modelarmor_v1_service_proto_msgTypes[32]
+	mi := &file_google_cloud_modelarmor_v1_service_proto_msgTypes[35]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3389,7 +3709,7 @@ func (x *PiAndJailbreakFilterResult) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PiAndJailbreakFilterResult.ProtoReflect.Descriptor instead.
 func (*PiAndJailbreakFilterResult) Descriptor() ([]byte, []int) {
-	return file_google_cloud_modelarmor_v1_service_proto_rawDescGZIP(), []int{32}
+	return file_google_cloud_modelarmor_v1_service_proto_rawDescGZIP(), []int{35}
 }
 
 func (x *PiAndJailbreakFilterResult) GetExecutionState() FilterExecutionState {
@@ -3442,7 +3762,7 @@ type MaliciousUriFilterResult struct {
 
 func (x *MaliciousUriFilterResult) Reset() {
 	*x = MaliciousUriFilterResult{}
-	mi := &file_google_cloud_modelarmor_v1_service_proto_msgTypes[33]
+	mi := &file_google_cloud_modelarmor_v1_service_proto_msgTypes[36]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3454,7 +3774,7 @@ func (x *MaliciousUriFilterResult) String() string {
 func (*MaliciousUriFilterResult) ProtoMessage() {}
 
 func (x *MaliciousUriFilterResult) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_modelarmor_v1_service_proto_msgTypes[33]
+	mi := &file_google_cloud_modelarmor_v1_service_proto_msgTypes[36]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3467,7 +3787,7 @@ func (x *MaliciousUriFilterResult) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MaliciousUriFilterResult.ProtoReflect.Descriptor instead.
 func (*MaliciousUriFilterResult) Descriptor() ([]byte, []int) {
-	return file_google_cloud_modelarmor_v1_service_proto_rawDescGZIP(), []int{33}
+	return file_google_cloud_modelarmor_v1_service_proto_rawDescGZIP(), []int{36}
 }
 
 func (x *MaliciousUriFilterResult) GetExecutionState() FilterExecutionState {
@@ -3524,7 +3844,7 @@ type VirusScanFilterResult struct {
 
 func (x *VirusScanFilterResult) Reset() {
 	*x = VirusScanFilterResult{}
-	mi := &file_google_cloud_modelarmor_v1_service_proto_msgTypes[34]
+	mi := &file_google_cloud_modelarmor_v1_service_proto_msgTypes[37]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3536,7 +3856,7 @@ func (x *VirusScanFilterResult) String() string {
 func (*VirusScanFilterResult) ProtoMessage() {}
 
 func (x *VirusScanFilterResult) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_modelarmor_v1_service_proto_msgTypes[34]
+	mi := &file_google_cloud_modelarmor_v1_service_proto_msgTypes[37]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3549,7 +3869,7 @@ func (x *VirusScanFilterResult) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use VirusScanFilterResult.ProtoReflect.Descriptor instead.
 func (*VirusScanFilterResult) Descriptor() ([]byte, []int) {
-	return file_google_cloud_modelarmor_v1_service_proto_rawDescGZIP(), []int{34}
+	return file_google_cloud_modelarmor_v1_service_proto_rawDescGZIP(), []int{37}
 }
 
 func (x *VirusScanFilterResult) GetExecutionState() FilterExecutionState {
@@ -3609,7 +3929,7 @@ type VirusDetail struct {
 
 func (x *VirusDetail) Reset() {
 	*x = VirusDetail{}
-	mi := &file_google_cloud_modelarmor_v1_service_proto_msgTypes[35]
+	mi := &file_google_cloud_modelarmor_v1_service_proto_msgTypes[38]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3621,7 +3941,7 @@ func (x *VirusDetail) String() string {
 func (*VirusDetail) ProtoMessage() {}
 
 func (x *VirusDetail) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_modelarmor_v1_service_proto_msgTypes[35]
+	mi := &file_google_cloud_modelarmor_v1_service_proto_msgTypes[38]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3634,7 +3954,7 @@ func (x *VirusDetail) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use VirusDetail.ProtoReflect.Descriptor instead.
 func (*VirusDetail) Descriptor() ([]byte, []int) {
-	return file_google_cloud_modelarmor_v1_service_proto_rawDescGZIP(), []int{35}
+	return file_google_cloud_modelarmor_v1_service_proto_rawDescGZIP(), []int{38}
 }
 
 func (x *VirusDetail) GetVendor() string {
@@ -3677,7 +3997,7 @@ type CsamFilterResult struct {
 
 func (x *CsamFilterResult) Reset() {
 	*x = CsamFilterResult{}
-	mi := &file_google_cloud_modelarmor_v1_service_proto_msgTypes[36]
+	mi := &file_google_cloud_modelarmor_v1_service_proto_msgTypes[39]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3689,7 +4009,7 @@ func (x *CsamFilterResult) String() string {
 func (*CsamFilterResult) ProtoMessage() {}
 
 func (x *CsamFilterResult) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_modelarmor_v1_service_proto_msgTypes[36]
+	mi := &file_google_cloud_modelarmor_v1_service_proto_msgTypes[39]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3702,7 +4022,7 @@ func (x *CsamFilterResult) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CsamFilterResult.ProtoReflect.Descriptor instead.
 func (*CsamFilterResult) Descriptor() ([]byte, []int) {
-	return file_google_cloud_modelarmor_v1_service_proto_rawDescGZIP(), []int{36}
+	return file_google_cloud_modelarmor_v1_service_proto_rawDescGZIP(), []int{39}
 }
 
 func (x *CsamFilterResult) GetExecutionState() FilterExecutionState {
@@ -3739,7 +4059,7 @@ type MessageItem struct {
 
 func (x *MessageItem) Reset() {
 	*x = MessageItem{}
-	mi := &file_google_cloud_modelarmor_v1_service_proto_msgTypes[37]
+	mi := &file_google_cloud_modelarmor_v1_service_proto_msgTypes[40]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3751,7 +4071,7 @@ func (x *MessageItem) String() string {
 func (*MessageItem) ProtoMessage() {}
 
 func (x *MessageItem) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_modelarmor_v1_service_proto_msgTypes[37]
+	mi := &file_google_cloud_modelarmor_v1_service_proto_msgTypes[40]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3764,7 +4084,7 @@ func (x *MessageItem) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MessageItem.ProtoReflect.Descriptor instead.
 func (*MessageItem) Descriptor() ([]byte, []int) {
-	return file_google_cloud_modelarmor_v1_service_proto_rawDescGZIP(), []int{37}
+	return file_google_cloud_modelarmor_v1_service_proto_rawDescGZIP(), []int{40}
 }
 
 func (x *MessageItem) GetMessageType() MessageItem_MessageType {
@@ -3796,7 +4116,7 @@ type RangeInfo struct {
 
 func (x *RangeInfo) Reset() {
 	*x = RangeInfo{}
-	mi := &file_google_cloud_modelarmor_v1_service_proto_msgTypes[38]
+	mi := &file_google_cloud_modelarmor_v1_service_proto_msgTypes[41]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3808,7 +4128,7 @@ func (x *RangeInfo) String() string {
 func (*RangeInfo) ProtoMessage() {}
 
 func (x *RangeInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_modelarmor_v1_service_proto_msgTypes[38]
+	mi := &file_google_cloud_modelarmor_v1_service_proto_msgTypes[41]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3821,7 +4141,7 @@ func (x *RangeInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RangeInfo.ProtoReflect.Descriptor instead.
 func (*RangeInfo) Descriptor() ([]byte, []int) {
-	return file_google_cloud_modelarmor_v1_service_proto_rawDescGZIP(), []int{38}
+	return file_google_cloud_modelarmor_v1_service_proto_rawDescGZIP(), []int{41}
 }
 
 func (x *RangeInfo) GetStart() int64 {
@@ -3864,13 +4184,16 @@ type Template_TemplateMetadata struct {
 	EnforcementType Template_TemplateMetadata_EnforcementType `protobuf:"varint,8,opt,name=enforcement_type,json=enforcementType,proto3,enum=google.cloud.modelarmor.v1.Template_TemplateMetadata_EnforcementType" json:"enforcement_type,omitempty"`
 	// Optional. Metadata for multi language detection.
 	MultiLanguageDetection *Template_TemplateMetadata_MultiLanguageDetection `protobuf:"bytes,9,opt,name=multi_language_detection,json=multiLanguageDetection,proto3" json:"multi_language_detection,omitempty"`
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
+	// Optional. Specifies the modalities to scan.
+	// If empty, only text modality will be scanned.
+	Modalities    []Modality `protobuf:"varint,11,rep,packed,name=modalities,proto3,enum=google.cloud.modelarmor.v1.Modality" json:"modalities,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *Template_TemplateMetadata) Reset() {
 	*x = Template_TemplateMetadata{}
-	mi := &file_google_cloud_modelarmor_v1_service_proto_msgTypes[39]
+	mi := &file_google_cloud_modelarmor_v1_service_proto_msgTypes[42]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3882,7 +4205,7 @@ func (x *Template_TemplateMetadata) String() string {
 func (*Template_TemplateMetadata) ProtoMessage() {}
 
 func (x *Template_TemplateMetadata) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_modelarmor_v1_service_proto_msgTypes[39]
+	mi := &file_google_cloud_modelarmor_v1_service_proto_msgTypes[42]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3961,6 +4284,13 @@ func (x *Template_TemplateMetadata) GetMultiLanguageDetection() *Template_Templa
 	return nil
 }
 
+func (x *Template_TemplateMetadata) GetModalities() []Modality {
+	if x != nil {
+		return x.Modalities
+	}
+	return nil
+}
+
 // Metadata to enable multi language detection via template.
 type Template_TemplateMetadata_MultiLanguageDetection struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -3972,7 +4302,7 @@ type Template_TemplateMetadata_MultiLanguageDetection struct {
 
 func (x *Template_TemplateMetadata_MultiLanguageDetection) Reset() {
 	*x = Template_TemplateMetadata_MultiLanguageDetection{}
-	mi := &file_google_cloud_modelarmor_v1_service_proto_msgTypes[41]
+	mi := &file_google_cloud_modelarmor_v1_service_proto_msgTypes[44]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3984,7 +4314,7 @@ func (x *Template_TemplateMetadata_MultiLanguageDetection) String() string {
 func (*Template_TemplateMetadata_MultiLanguageDetection) ProtoMessage() {}
 
 func (x *Template_TemplateMetadata_MultiLanguageDetection) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_modelarmor_v1_service_proto_msgTypes[41]
+	mi := &file_google_cloud_modelarmor_v1_service_proto_msgTypes[44]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4018,7 +4348,7 @@ type FloorSetting_FloorSettingMetadata struct {
 
 func (x *FloorSetting_FloorSettingMetadata) Reset() {
 	*x = FloorSetting_FloorSettingMetadata{}
-	mi := &file_google_cloud_modelarmor_v1_service_proto_msgTypes[42]
+	mi := &file_google_cloud_modelarmor_v1_service_proto_msgTypes[45]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4030,7 +4360,7 @@ func (x *FloorSetting_FloorSettingMetadata) String() string {
 func (*FloorSetting_FloorSettingMetadata) ProtoMessage() {}
 
 func (x *FloorSetting_FloorSettingMetadata) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_modelarmor_v1_service_proto_msgTypes[42]
+	mi := &file_google_cloud_modelarmor_v1_service_proto_msgTypes[45]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4064,7 +4394,7 @@ type FloorSetting_FloorSettingMetadata_MultiLanguageDetection struct {
 
 func (x *FloorSetting_FloorSettingMetadata_MultiLanguageDetection) Reset() {
 	*x = FloorSetting_FloorSettingMetadata_MultiLanguageDetection{}
-	mi := &file_google_cloud_modelarmor_v1_service_proto_msgTypes[43]
+	mi := &file_google_cloud_modelarmor_v1_service_proto_msgTypes[46]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4076,7 +4406,7 @@ func (x *FloorSetting_FloorSettingMetadata_MultiLanguageDetection) String() stri
 func (*FloorSetting_FloorSettingMetadata_MultiLanguageDetection) ProtoMessage() {}
 
 func (x *FloorSetting_FloorSettingMetadata_MultiLanguageDetection) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_modelarmor_v1_service_proto_msgTypes[43]
+	mi := &file_google_cloud_modelarmor_v1_service_proto_msgTypes[46]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4116,7 +4446,7 @@ type RaiFilterSettings_RaiFilter struct {
 
 func (x *RaiFilterSettings_RaiFilter) Reset() {
 	*x = RaiFilterSettings_RaiFilter{}
-	mi := &file_google_cloud_modelarmor_v1_service_proto_msgTypes[44]
+	mi := &file_google_cloud_modelarmor_v1_service_proto_msgTypes[47]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4128,7 +4458,7 @@ func (x *RaiFilterSettings_RaiFilter) String() string {
 func (*RaiFilterSettings_RaiFilter) ProtoMessage() {}
 
 func (x *RaiFilterSettings_RaiFilter) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_modelarmor_v1_service_proto_msgTypes[44]
+	mi := &file_google_cloud_modelarmor_v1_service_proto_msgTypes[47]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4176,7 +4506,7 @@ type SanitizationResult_SanitizationMetadata struct {
 
 func (x *SanitizationResult_SanitizationMetadata) Reset() {
 	*x = SanitizationResult_SanitizationMetadata{}
-	mi := &file_google_cloud_modelarmor_v1_service_proto_msgTypes[45]
+	mi := &file_google_cloud_modelarmor_v1_service_proto_msgTypes[48]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4188,7 +4518,7 @@ func (x *SanitizationResult_SanitizationMetadata) String() string {
 func (*SanitizationResult_SanitizationMetadata) ProtoMessage() {}
 
 func (x *SanitizationResult_SanitizationMetadata) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_modelarmor_v1_service_proto_msgTypes[45]
+	mi := &file_google_cloud_modelarmor_v1_service_proto_msgTypes[48]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4247,7 +4577,7 @@ type RaiFilterResult_RaiFilterTypeResult struct {
 
 func (x *RaiFilterResult_RaiFilterTypeResult) Reset() {
 	*x = RaiFilterResult_RaiFilterTypeResult{}
-	mi := &file_google_cloud_modelarmor_v1_service_proto_msgTypes[47]
+	mi := &file_google_cloud_modelarmor_v1_service_proto_msgTypes[50]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4259,7 +4589,7 @@ func (x *RaiFilterResult_RaiFilterTypeResult) String() string {
 func (*RaiFilterResult_RaiFilterTypeResult) ProtoMessage() {}
 
 func (x *RaiFilterResult_RaiFilterTypeResult) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_modelarmor_v1_service_proto_msgTypes[47]
+	mi := &file_google_cloud_modelarmor_v1_service_proto_msgTypes[50]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4296,6 +4626,79 @@ func (x *RaiFilterResult_RaiFilterTypeResult) GetMatchState() FilterMatchState {
 	return FilterMatchState_FILTER_MATCH_STATE_UNSPECIFIED
 }
 
+// Bounding box encompassing a finding within an image.
+type SdpImageFindingLocation_SdpBoundingBox struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Top coordinate of the bounding box. (0,0) is upper left.
+	Top int32 `protobuf:"varint,1,opt,name=top,proto3" json:"top,omitempty"`
+	// Left coordinate of the bounding box. (0,0) is upper left.
+	Left int32 `protobuf:"varint,2,opt,name=left,proto3" json:"left,omitempty"`
+	// Width of the bounding box in pixels.
+	Width int32 `protobuf:"varint,3,opt,name=width,proto3" json:"width,omitempty"`
+	// Height of the bounding box in pixels.
+	Height        int32 `protobuf:"varint,4,opt,name=height,proto3" json:"height,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SdpImageFindingLocation_SdpBoundingBox) Reset() {
+	*x = SdpImageFindingLocation_SdpBoundingBox{}
+	mi := &file_google_cloud_modelarmor_v1_service_proto_msgTypes[52]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SdpImageFindingLocation_SdpBoundingBox) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SdpImageFindingLocation_SdpBoundingBox) ProtoMessage() {}
+
+func (x *SdpImageFindingLocation_SdpBoundingBox) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_modelarmor_v1_service_proto_msgTypes[52]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SdpImageFindingLocation_SdpBoundingBox.ProtoReflect.Descriptor instead.
+func (*SdpImageFindingLocation_SdpBoundingBox) Descriptor() ([]byte, []int) {
+	return file_google_cloud_modelarmor_v1_service_proto_rawDescGZIP(), []int{31, 0}
+}
+
+func (x *SdpImageFindingLocation_SdpBoundingBox) GetTop() int32 {
+	if x != nil {
+		return x.Top
+	}
+	return 0
+}
+
+func (x *SdpImageFindingLocation_SdpBoundingBox) GetLeft() int32 {
+	if x != nil {
+		return x.Left
+	}
+	return 0
+}
+
+func (x *SdpImageFindingLocation_SdpBoundingBox) GetWidth() int32 {
+	if x != nil {
+		return x.Width
+	}
+	return 0
+}
+
+func (x *SdpImageFindingLocation_SdpBoundingBox) GetHeight() int32 {
+	if x != nil {
+		return x.Height
+	}
+	return 0
+}
+
 // Location of this Sensitive Data Protection Finding within input content.
 type SdpFinding_SdpFindingLocation struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -4303,18 +4706,29 @@ type SdpFinding_SdpFindingLocation struct {
 	// These are relative to the finding's containing element.
 	// Note that when the content is not textual, this references
 	// the UTF-8 encoded textual representation of the content.
+	// Note: Omitted if content is an image.
 	ByteRange *RangeInfo `protobuf:"bytes,1,opt,name=byte_range,json=byteRange,proto3" json:"byte_range,omitempty"`
 	// Unicode character offsets delimiting the finding.
 	// These are relative to the finding's containing element.
 	// Provided when the content is text.
+	// Note: Omitted if content is an image.
 	CodepointRange *RangeInfo `protobuf:"bytes,2,opt,name=codepoint_range,json=codepointRange,proto3" json:"codepoint_range,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	// List of nested objects pointing to the precise location of the finding
+	// within an image, file or record.
+	//
+	// For example, a single finding might be detected in two
+	// separate bounding boxes within an image (e.g., if it wraps across
+	// a line or is partially obscured). In such cases, content_locations
+	// would contain two SdpContentLocation entries, each with an
+	// image_finding_location pointing to a different bounding box.
+	ContentLocations []*SdpContentLocation `protobuf:"bytes,3,rep,name=content_locations,json=contentLocations,proto3" json:"content_locations,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
 }
 
 func (x *SdpFinding_SdpFindingLocation) Reset() {
 	*x = SdpFinding_SdpFindingLocation{}
-	mi := &file_google_cloud_modelarmor_v1_service_proto_msgTypes[49]
+	mi := &file_google_cloud_modelarmor_v1_service_proto_msgTypes[53]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4326,7 +4740,7 @@ func (x *SdpFinding_SdpFindingLocation) String() string {
 func (*SdpFinding_SdpFindingLocation) ProtoMessage() {}
 
 func (x *SdpFinding_SdpFindingLocation) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_modelarmor_v1_service_proto_msgTypes[49]
+	mi := &file_google_cloud_modelarmor_v1_service_proto_msgTypes[53]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4339,7 +4753,7 @@ func (x *SdpFinding_SdpFindingLocation) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SdpFinding_SdpFindingLocation.ProtoReflect.Descriptor instead.
 func (*SdpFinding_SdpFindingLocation) Descriptor() ([]byte, []int) {
-	return file_google_cloud_modelarmor_v1_service_proto_rawDescGZIP(), []int{31, 0}
+	return file_google_cloud_modelarmor_v1_service_proto_rawDescGZIP(), []int{33, 0}
 }
 
 func (x *SdpFinding_SdpFindingLocation) GetByteRange() *RangeInfo {
@@ -4352,6 +4766,13 @@ func (x *SdpFinding_SdpFindingLocation) GetByteRange() *RangeInfo {
 func (x *SdpFinding_SdpFindingLocation) GetCodepointRange() *RangeInfo {
 	if x != nil {
 		return x.CodepointRange
+	}
+	return nil
+}
+
+func (x *SdpFinding_SdpFindingLocation) GetContentLocations() []*SdpContentLocation {
+	if x != nil {
+		return x.ContentLocations
 	}
 	return nil
 }
@@ -4372,7 +4793,7 @@ type MaliciousUriFilterResult_MaliciousUriMatchedItem struct {
 
 func (x *MaliciousUriFilterResult_MaliciousUriMatchedItem) Reset() {
 	*x = MaliciousUriFilterResult_MaliciousUriMatchedItem{}
-	mi := &file_google_cloud_modelarmor_v1_service_proto_msgTypes[50]
+	mi := &file_google_cloud_modelarmor_v1_service_proto_msgTypes[54]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4384,7 +4805,7 @@ func (x *MaliciousUriFilterResult_MaliciousUriMatchedItem) String() string {
 func (*MaliciousUriFilterResult_MaliciousUriMatchedItem) ProtoMessage() {}
 
 func (x *MaliciousUriFilterResult_MaliciousUriMatchedItem) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_modelarmor_v1_service_proto_msgTypes[50]
+	mi := &file_google_cloud_modelarmor_v1_service_proto_msgTypes[54]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4397,7 +4818,7 @@ func (x *MaliciousUriFilterResult_MaliciousUriMatchedItem) ProtoReflect() protor
 
 // Deprecated: Use MaliciousUriFilterResult_MaliciousUriMatchedItem.ProtoReflect.Descriptor instead.
 func (*MaliciousUriFilterResult_MaliciousUriMatchedItem) Descriptor() ([]byte, []int) {
-	return file_google_cloud_modelarmor_v1_service_proto_rawDescGZIP(), []int{33, 0}
+	return file_google_cloud_modelarmor_v1_service_proto_rawDescGZIP(), []int{36, 0}
 }
 
 func (x *MaliciousUriFilterResult_MaliciousUriMatchedItem) GetUri() string {
@@ -4418,7 +4839,7 @@ var File_google_cloud_modelarmor_v1_service_proto protoreflect.FileDescriptor
 
 const file_google_cloud_modelarmor_v1_service_proto_rawDesc = "" +
 	"\n" +
-	"(google/cloud/modelarmor/v1/service.proto\x12\x1agoogle.cloud.modelarmor.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x16google/type/date.proto\"\xe2\f\n" +
+	"(google/cloud/modelarmor/v1/service.proto\x12\x1agoogle.cloud.modelarmor.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x16google/type/date.proto\"\xad\r\n" +
 	"\bTemplate\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12@\n" +
 	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
@@ -4427,7 +4848,7 @@ const file_google_cloud_modelarmor_v1_service_proto_rawDesc = "" +
 	"updateTime\x12M\n" +
 	"\x06labels\x18\x04 \x03(\v20.google.cloud.modelarmor.v1.Template.LabelsEntryB\x03\xe0A\x01R\x06labels\x12R\n" +
 	"\rfilter_config\x18\x05 \x01(\v2(.google.cloud.modelarmor.v1.FilterConfigB\x03\xe0A\x02R\ffilterConfig\x12g\n" +
-	"\x11template_metadata\x18\x06 \x01(\v25.google.cloud.modelarmor.v1.Template.TemplateMetadataB\x03\xe0A\x01R\x10templateMetadata\x1a\xf5\a\n" +
+	"\x11template_metadata\x18\x06 \x01(\v25.google.cloud.modelarmor.v1.Template.TemplateMetadataB\x03\xe0A\x01R\x10templateMetadata\x1a\xc0\b\n" +
 	"\x10TemplateMetadata\x12P\n" +
 	"\"ignore_partial_invocation_failures\x18\x01 \x01(\bB\x03\xe0A\x01R\x1fignorePartialInvocationFailures\x12I\n" +
 	"\x1fcustom_prompt_safety_error_code\x18\x02 \x01(\x05B\x03\xe0A\x01R\x1bcustomPromptSafetyErrorCode\x12O\n" +
@@ -4437,7 +4858,10 @@ const file_google_cloud_modelarmor_v1_service_proto_rawDesc = "" +
 	"\x17log_template_operations\x18\x06 \x01(\bB\x03\xe0A\x01R\x15logTemplateOperations\x12;\n" +
 	"\x17log_sanitize_operations\x18\a \x01(\bB\x03\xe0A\x01R\x15logSanitizeOperations\x12u\n" +
 	"\x10enforcement_type\x18\b \x01(\x0e2E.google.cloud.modelarmor.v1.Template.TemplateMetadata.EnforcementTypeB\x03\xe0A\x01R\x0fenforcementType\x12\x8b\x01\n" +
-	"\x18multi_language_detection\x18\t \x01(\v2L.google.cloud.modelarmor.v1.Template.TemplateMetadata.MultiLanguageDetectionB\x03\xe0A\x01R\x16multiLanguageDetection\x1ad\n" +
+	"\x18multi_language_detection\x18\t \x01(\v2L.google.cloud.modelarmor.v1.Template.TemplateMetadata.MultiLanguageDetectionB\x03\xe0A\x01R\x16multiLanguageDetection\x12I\n" +
+	"\n" +
+	"modalities\x18\v \x03(\x0e2$.google.cloud.modelarmor.v1.ModalityB\x03\xe0A\x01R\n" +
+	"modalities\x1ad\n" +
 	"\x16MultiLanguageDetection\x12J\n" +
 	"\x1fenable_multi_language_detection\x18\x01 \x01(\bB\x03\xe0A\x02R\x1cenableMultiLanguageDetection\"\\\n" +
 	"\x0fEnforcementType\x12 \n" +
@@ -4611,25 +5035,27 @@ const file_google_cloud_modelarmor_v1_service_proto_rawDesc = "" +
 	"matchState\x1a\x88\x01\n" +
 	"\x19RaiFilterTypeResultsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12U\n" +
-	"\x05value\x18\x02 \x01(\v2?.google.cloud.modelarmor.v1.RaiFilterResult.RaiFilterTypeResultR\x05value:\x028\x01\"\xd2\x01\n" +
+	"\x05value\x18\x02 \x01(\v2?.google.cloud.modelarmor.v1.RaiFilterResult.RaiFilterTypeResultR\x05value:\x028\x01\"\xa6\x02\n" +
 	"\x0fSdpFilterResult\x12U\n" +
 	"\x0einspect_result\x18\x01 \x01(\v2,.google.cloud.modelarmor.v1.SdpInspectResultH\x00R\rinspectResult\x12^\n" +
-	"\x11deidentify_result\x18\x02 \x01(\v2/.google.cloud.modelarmor.v1.SdpDeidentifyResultH\x00R\x10deidentifyResultB\b\n" +
-	"\x06result\"\x87\x03\n" +
+	"\x11deidentify_result\x18\x02 \x01(\v2/.google.cloud.modelarmor.v1.SdpDeidentifyResultH\x00R\x10deidentifyResult\x12R\n" +
+	"\rredact_result\x18\x03 \x01(\v2+.google.cloud.modelarmor.v1.SdpRedactResultH\x00R\fredactResultB\b\n" +
+	"\x06result\"\xb9\x03\n" +
 	"\x10SdpInspectResult\x12^\n" +
 	"\x0fexecution_state\x18\x01 \x01(\x0e20.google.cloud.modelarmor.v1.FilterExecutionStateB\x03\xe0A\x03R\x0eexecutionState\x12L\n" +
 	"\rmessage_items\x18\x02 \x03(\v2'.google.cloud.modelarmor.v1.MessageItemR\fmessageItems\x12R\n" +
 	"\vmatch_state\x18\x03 \x01(\x0e2,.google.cloud.modelarmor.v1.FilterMatchStateB\x03\xe0A\x03R\n" +
 	"matchState\x12B\n" +
 	"\bfindings\x18\x04 \x03(\v2&.google.cloud.modelarmor.v1.SdpFindingR\bfindings\x12-\n" +
-	"\x12findings_truncated\x18\x05 \x01(\bR\x11findingsTruncated\"v\n" +
+	"\x12findings_truncated\x18\x05 \x01(\bR\x11findingsTruncated\x120\n" +
+	"\x14extracted_image_text\x18\x06 \x01(\tR\x12extractedImageText\"v\n" +
 	"\bDataItem\x12\x14\n" +
 	"\x04text\x18\x01 \x01(\tH\x00R\x04text\x12G\n" +
 	"\tbyte_item\x18\x02 \x01(\v2(.google.cloud.modelarmor.v1.ByteDataItemH\x00R\bbyteItemB\v\n" +
-	"\tdata_item\"\xb2\x02\n" +
+	"\tdata_item\"\xbd\x02\n" +
 	"\fByteDataItem\x12`\n" +
 	"\x0ebyte_data_type\x18\x01 \x01(\x0e25.google.cloud.modelarmor.v1.ByteDataItem.ByteItemTypeB\x03\xe0A\x02R\fbyteDataType\x12 \n" +
-	"\tbyte_data\x18\x02 \x01(\fB\x03\xe0A\x02R\bbyteData\"\x9d\x01\n" +
+	"\tbyte_data\x18\x02 \x01(\fB\x03\xe0A\x02R\bbyteData\"\xa8\x01\n" +
 	"\fByteItemType\x12\x1e\n" +
 	"\x1aBYTE_ITEM_TYPE_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0ePLAINTEXT_UTF8\x10\x01\x12\a\n" +
@@ -4638,7 +5064,8 @@ const file_google_cloud_modelarmor_v1_service_proto_rawDesc = "" +
 	"\x0eEXCEL_DOCUMENT\x10\x04\x12\x17\n" +
 	"\x13POWERPOINT_DOCUMENT\x10\x05\x12\a\n" +
 	"\x03TXT\x10\x06\x12\a\n" +
-	"\x03CSV\x10\a\"\x9d\x03\n" +
+	"\x03CSV\x10\a\x12\t\n" +
+	"\x05IMAGE\x10\b\"\x9d\x03\n" +
 	"\x13SdpDeidentifyResult\x12^\n" +
 	"\x0fexecution_state\x18\x01 \x01(\x0e20.google.cloud.modelarmor.v1.FilterExecutionStateB\x03\xe0A\x03R\x0eexecutionState\x12L\n" +
 	"\rmessage_items\x18\x02 \x03(\v2'.google.cloud.modelarmor.v1.MessageItemR\fmessageItems\x12R\n" +
@@ -4647,18 +5074,39 @@ const file_google_cloud_modelarmor_v1_service_proto_rawDesc = "" +
 	"\x04data\x18\x04 \x01(\v2$.google.cloud.modelarmor.v1.DataItemR\x04data\x12+\n" +
 	"\x11transformed_bytes\x18\x05 \x01(\x03R\x10transformedBytes\x12\x1d\n" +
 	"\n" +
-	"info_types\x18\x06 \x03(\tR\tinfoTypes\"\xff\x02\n" +
+	"info_types\x18\x06 \x03(\tR\tinfoTypes\"\xea\x01\n" +
+	"\x17SdpImageFindingLocation\x12i\n" +
+	"\x0ebounding_boxes\x18\x01 \x03(\v2B.google.cloud.modelarmor.v1.SdpImageFindingLocation.SdpBoundingBoxR\rboundingBoxes\x1ad\n" +
+	"\x0eSdpBoundingBox\x12\x10\n" +
+	"\x03top\x18\x01 \x01(\x05R\x03top\x12\x12\n" +
+	"\x04left\x18\x02 \x01(\x05R\x04left\x12\x14\n" +
+	"\x05width\x18\x03 \x01(\x05R\x05width\x12\x16\n" +
+	"\x06height\x18\x04 \x01(\x05R\x06height\"\xb4\x01\n" +
+	"\x12SdpContentLocation\x12k\n" +
+	"\x16image_finding_location\x18\x02 \x01(\v23.google.cloud.modelarmor.v1.SdpImageFindingLocationH\x00R\x14imageFindingLocation\x12%\n" +
+	"\x0econtainer_name\x18\x01 \x01(\tR\rcontainerNameB\n" +
+	"\n" +
+	"\blocation\"\xdc\x03\n" +
 	"\n" +
 	"SdpFinding\x12\x1b\n" +
 	"\tinfo_type\x18\x01 \x01(\tR\binfoType\x12P\n" +
 	"\n" +
 	"likelihood\x18\x02 \x01(\x0e20.google.cloud.modelarmor.v1.SdpFindingLikelihoodR\n" +
 	"likelihood\x12U\n" +
-	"\blocation\x18\x03 \x01(\v29.google.cloud.modelarmor.v1.SdpFinding.SdpFindingLocationR\blocation\x1a\xaa\x01\n" +
+	"\blocation\x18\x03 \x01(\v29.google.cloud.modelarmor.v1.SdpFinding.SdpFindingLocationR\blocation\x1a\x87\x02\n" +
 	"\x12SdpFindingLocation\x12D\n" +
 	"\n" +
 	"byte_range\x18\x01 \x01(\v2%.google.cloud.modelarmor.v1.RangeInfoR\tbyteRange\x12N\n" +
-	"\x0fcodepoint_range\x18\x02 \x01(\v2%.google.cloud.modelarmor.v1.RangeInfoR\x0ecodepointRange\"\xff\x02\n" +
+	"\x0fcodepoint_range\x18\x02 \x01(\v2%.google.cloud.modelarmor.v1.RangeInfoR\x0ecodepointRange\x12[\n" +
+	"\x11content_locations\x18\x03 \x03(\v2..google.cloud.modelarmor.v1.SdpContentLocationR\x10contentLocations\"\xbf\x03\n" +
+	"\x0fSdpRedactResult\x12^\n" +
+	"\x0fexecution_state\x18\x01 \x01(\x0e20.google.cloud.modelarmor.v1.FilterExecutionStateB\x03\xe0A\x03R\x0eexecutionState\x12Q\n" +
+	"\rmessage_items\x18\x02 \x03(\v2'.google.cloud.modelarmor.v1.MessageItemB\x03\xe0A\x03R\fmessageItems\x12R\n" +
+	"\vmatch_state\x18\x03 \x01(\x0e2,.google.cloud.modelarmor.v1.FilterMatchStateB\x03\xe0A\x03R\n" +
+	"matchState\x12*\n" +
+	"\x0eredacted_image\x18\x04 \x01(\fB\x03\xe0A\x03R\rredactedImage\x12G\n" +
+	"\bfindings\x18\x05 \x03(\v2&.google.cloud.modelarmor.v1.SdpFindingB\x03\xe0A\x03R\bfindings\x120\n" +
+	"\x14extracted_image_text\x18\x06 \x01(\tR\x12extractedImageText\"\xff\x02\n" +
 	"\x1aPiAndJailbreakFilterResult\x12^\n" +
 	"\x0fexecution_state\x18\x01 \x01(\x0e20.google.cloud.modelarmor.v1.FilterExecutionStateB\x03\xe0A\x03R\x0eexecutionState\x12L\n" +
 	"\rmessage_items\x18\x02 \x03(\v2'.google.cloud.modelarmor.v1.MessageItemR\fmessageItems\x12R\n" +
@@ -4755,7 +5203,11 @@ const file_google_cloud_modelarmor_v1_service_proto_rawDesc = "" +
 	"\rStreamingMode\x12\x1e\n" +
 	"\x1aSTREAMING_MODE_UNSPECIFIED\x10\x00\x12\x1b\n" +
 	"\x17STREAMING_MODE_BUFFERED\x10\x01\x12\x1b\n" +
-	"\x17STREAMING_MODE_REALTIME\x10\x022\xf1\x12\n" +
+	"\x17STREAMING_MODE_REALTIME\x10\x02*K\n" +
+	"\bModality\x12\x18\n" +
+	"\x14MODALITY_UNSPECIFIED\x10\x00\x12\x11\n" +
+	"\rMODALITY_TEXT\x10\x01\x12\x12\n" +
+	"\x0eMODALITY_IMAGE\x10\x022\xf1\x12\n" +
 	"\n" +
 	"ModelArmor\x12\xb4\x01\n" +
 	"\rListTemplates\x120.google.cloud.modelarmor.v1.ListTemplatesRequest\x1a1.google.cloud.modelarmor.v1.ListTemplatesResponse\">\xdaA\x06parent\x82\xd3\xe4\x93\x02/\x12-/v1/{parent=projects/*/locations/*}/templates\x12\xa1\x01\n" +
@@ -4783,8 +5235,8 @@ func file_google_cloud_modelarmor_v1_service_proto_rawDescGZIP() []byte {
 	return file_google_cloud_modelarmor_v1_service_proto_rawDescData
 }
 
-var file_google_cloud_modelarmor_v1_service_proto_enumTypes = make([]protoimpl.EnumInfo, 16)
-var file_google_cloud_modelarmor_v1_service_proto_msgTypes = make([]protoimpl.MessageInfo, 51)
+var file_google_cloud_modelarmor_v1_service_proto_enumTypes = make([]protoimpl.EnumInfo, 17)
+var file_google_cloud_modelarmor_v1_service_proto_msgTypes = make([]protoimpl.MessageInfo, 55)
 var file_google_cloud_modelarmor_v1_service_proto_goTypes = []any{
 	(FilterMatchState)(0),                          // 0: google.cloud.modelarmor.v1.FilterMatchState
 	(FilterExecutionState)(0),                      // 1: google.cloud.modelarmor.v1.FilterExecutionState
@@ -4793,194 +5245,208 @@ var file_google_cloud_modelarmor_v1_service_proto_goTypes = []any{
 	(SdpFindingLikelihood)(0),                      // 4: google.cloud.modelarmor.v1.SdpFindingLikelihood
 	(InvocationResult)(0),                          // 5: google.cloud.modelarmor.v1.InvocationResult
 	(StreamingMode)(0),                             // 6: google.cloud.modelarmor.v1.StreamingMode
-	(Template_TemplateMetadata_EnforcementType)(0), // 7: google.cloud.modelarmor.v1.Template.TemplateMetadata.EnforcementType
-	(FloorSetting_IntegratedService)(0),            // 8: google.cloud.modelarmor.v1.FloorSetting.IntegratedService
-	(PiAndJailbreakFilterSettings_PiAndJailbreakFilterEnforcement)(0), // 9: google.cloud.modelarmor.v1.PiAndJailbreakFilterSettings.PiAndJailbreakFilterEnforcement
-	(MaliciousUriFilterSettings_MaliciousUriFilterEnforcement)(0),     // 10: google.cloud.modelarmor.v1.MaliciousUriFilterSettings.MaliciousUriFilterEnforcement
-	(SdpBasicConfig_SdpBasicConfigEnforcement)(0),                     // 11: google.cloud.modelarmor.v1.SdpBasicConfig.SdpBasicConfigEnforcement
-	(ByteDataItem_ByteItemType)(0),                                    // 12: google.cloud.modelarmor.v1.ByteDataItem.ByteItemType
-	(VirusScanFilterResult_ScannedContentType)(0),                     // 13: google.cloud.modelarmor.v1.VirusScanFilterResult.ScannedContentType
-	(VirusDetail_ThreatType)(0),                                       // 14: google.cloud.modelarmor.v1.VirusDetail.ThreatType
-	(MessageItem_MessageType)(0),                                      // 15: google.cloud.modelarmor.v1.MessageItem.MessageType
-	(*Template)(nil),                                                  // 16: google.cloud.modelarmor.v1.Template
-	(*FloorSetting)(nil),                                              // 17: google.cloud.modelarmor.v1.FloorSetting
-	(*AiPlatformFloorSetting)(nil),                                    // 18: google.cloud.modelarmor.v1.AiPlatformFloorSetting
-	(*ListTemplatesRequest)(nil),                                      // 19: google.cloud.modelarmor.v1.ListTemplatesRequest
-	(*ListTemplatesResponse)(nil),                                     // 20: google.cloud.modelarmor.v1.ListTemplatesResponse
-	(*GetTemplateRequest)(nil),                                        // 21: google.cloud.modelarmor.v1.GetTemplateRequest
-	(*CreateTemplateRequest)(nil),                                     // 22: google.cloud.modelarmor.v1.CreateTemplateRequest
-	(*UpdateTemplateRequest)(nil),                                     // 23: google.cloud.modelarmor.v1.UpdateTemplateRequest
-	(*DeleteTemplateRequest)(nil),                                     // 24: google.cloud.modelarmor.v1.DeleteTemplateRequest
-	(*GetFloorSettingRequest)(nil),                                    // 25: google.cloud.modelarmor.v1.GetFloorSettingRequest
-	(*UpdateFloorSettingRequest)(nil),                                 // 26: google.cloud.modelarmor.v1.UpdateFloorSettingRequest
-	(*FilterConfig)(nil),                                              // 27: google.cloud.modelarmor.v1.FilterConfig
-	(*PiAndJailbreakFilterSettings)(nil),                              // 28: google.cloud.modelarmor.v1.PiAndJailbreakFilterSettings
-	(*MaliciousUriFilterSettings)(nil),                                // 29: google.cloud.modelarmor.v1.MaliciousUriFilterSettings
-	(*RaiFilterSettings)(nil),                                         // 30: google.cloud.modelarmor.v1.RaiFilterSettings
-	(*SdpFilterSettings)(nil),                                         // 31: google.cloud.modelarmor.v1.SdpFilterSettings
-	(*SdpBasicConfig)(nil),                                            // 32: google.cloud.modelarmor.v1.SdpBasicConfig
-	(*SdpAdvancedConfig)(nil),                                         // 33: google.cloud.modelarmor.v1.SdpAdvancedConfig
-	(*SanitizeUserPromptRequest)(nil),                                 // 34: google.cloud.modelarmor.v1.SanitizeUserPromptRequest
-	(*SanitizeModelResponseRequest)(nil),                              // 35: google.cloud.modelarmor.v1.SanitizeModelResponseRequest
-	(*SanitizeUserPromptResponse)(nil),                                // 36: google.cloud.modelarmor.v1.SanitizeUserPromptResponse
-	(*SanitizeModelResponseResponse)(nil),                             // 37: google.cloud.modelarmor.v1.SanitizeModelResponseResponse
-	(*SanitizationResult)(nil),                                        // 38: google.cloud.modelarmor.v1.SanitizationResult
-	(*MultiLanguageDetectionMetadata)(nil),                            // 39: google.cloud.modelarmor.v1.MultiLanguageDetectionMetadata
-	(*FilterResult)(nil),                                              // 40: google.cloud.modelarmor.v1.FilterResult
-	(*RaiFilterResult)(nil),                                           // 41: google.cloud.modelarmor.v1.RaiFilterResult
-	(*SdpFilterResult)(nil),                                           // 42: google.cloud.modelarmor.v1.SdpFilterResult
-	(*SdpInspectResult)(nil),                                          // 43: google.cloud.modelarmor.v1.SdpInspectResult
-	(*DataItem)(nil),                                                  // 44: google.cloud.modelarmor.v1.DataItem
-	(*ByteDataItem)(nil),                                              // 45: google.cloud.modelarmor.v1.ByteDataItem
-	(*SdpDeidentifyResult)(nil),                                       // 46: google.cloud.modelarmor.v1.SdpDeidentifyResult
-	(*SdpFinding)(nil),                                                // 47: google.cloud.modelarmor.v1.SdpFinding
-	(*PiAndJailbreakFilterResult)(nil),                                // 48: google.cloud.modelarmor.v1.PiAndJailbreakFilterResult
-	(*MaliciousUriFilterResult)(nil),                                  // 49: google.cloud.modelarmor.v1.MaliciousUriFilterResult
-	(*VirusScanFilterResult)(nil),                                     // 50: google.cloud.modelarmor.v1.VirusScanFilterResult
-	(*VirusDetail)(nil),                                               // 51: google.cloud.modelarmor.v1.VirusDetail
-	(*CsamFilterResult)(nil),                                          // 52: google.cloud.modelarmor.v1.CsamFilterResult
-	(*MessageItem)(nil),                                               // 53: google.cloud.modelarmor.v1.MessageItem
-	(*RangeInfo)(nil),                                                 // 54: google.cloud.modelarmor.v1.RangeInfo
-	(*Template_TemplateMetadata)(nil),                                 // 55: google.cloud.modelarmor.v1.Template.TemplateMetadata
-	nil,                                                               // 56: google.cloud.modelarmor.v1.Template.LabelsEntry
-	(*Template_TemplateMetadata_MultiLanguageDetection)(nil),          // 57: google.cloud.modelarmor.v1.Template.TemplateMetadata.MultiLanguageDetection
-	(*FloorSetting_FloorSettingMetadata)(nil),                         // 58: google.cloud.modelarmor.v1.FloorSetting.FloorSettingMetadata
-	(*FloorSetting_FloorSettingMetadata_MultiLanguageDetection)(nil),  // 59: google.cloud.modelarmor.v1.FloorSetting.FloorSettingMetadata.MultiLanguageDetection
-	(*RaiFilterSettings_RaiFilter)(nil),                               // 60: google.cloud.modelarmor.v1.RaiFilterSettings.RaiFilter
-	(*SanitizationResult_SanitizationMetadata)(nil),                   // 61: google.cloud.modelarmor.v1.SanitizationResult.SanitizationMetadata
-	nil, // 62: google.cloud.modelarmor.v1.SanitizationResult.FilterResultsEntry
-	(*RaiFilterResult_RaiFilterTypeResult)(nil), // 63: google.cloud.modelarmor.v1.RaiFilterResult.RaiFilterTypeResult
-	nil,                                   // 64: google.cloud.modelarmor.v1.RaiFilterResult.RaiFilterTypeResultsEntry
-	(*SdpFinding_SdpFindingLocation)(nil), // 65: google.cloud.modelarmor.v1.SdpFinding.SdpFindingLocation
-	(*MaliciousUriFilterResult_MaliciousUriMatchedItem)(nil), // 66: google.cloud.modelarmor.v1.MaliciousUriFilterResult.MaliciousUriMatchedItem
-	(*timestamppb.Timestamp)(nil),                            // 67: google.protobuf.Timestamp
-	(*fieldmaskpb.FieldMask)(nil),                            // 68: google.protobuf.FieldMask
-	(*emptypb.Empty)(nil),                                    // 69: google.protobuf.Empty
+	(Modality)(0),                                  // 7: google.cloud.modelarmor.v1.Modality
+	(Template_TemplateMetadata_EnforcementType)(0), // 8: google.cloud.modelarmor.v1.Template.TemplateMetadata.EnforcementType
+	(FloorSetting_IntegratedService)(0),            // 9: google.cloud.modelarmor.v1.FloorSetting.IntegratedService
+	(PiAndJailbreakFilterSettings_PiAndJailbreakFilterEnforcement)(0), // 10: google.cloud.modelarmor.v1.PiAndJailbreakFilterSettings.PiAndJailbreakFilterEnforcement
+	(MaliciousUriFilterSettings_MaliciousUriFilterEnforcement)(0),     // 11: google.cloud.modelarmor.v1.MaliciousUriFilterSettings.MaliciousUriFilterEnforcement
+	(SdpBasicConfig_SdpBasicConfigEnforcement)(0),                     // 12: google.cloud.modelarmor.v1.SdpBasicConfig.SdpBasicConfigEnforcement
+	(ByteDataItem_ByteItemType)(0),                                    // 13: google.cloud.modelarmor.v1.ByteDataItem.ByteItemType
+	(VirusScanFilterResult_ScannedContentType)(0),                     // 14: google.cloud.modelarmor.v1.VirusScanFilterResult.ScannedContentType
+	(VirusDetail_ThreatType)(0),                                       // 15: google.cloud.modelarmor.v1.VirusDetail.ThreatType
+	(MessageItem_MessageType)(0),                                      // 16: google.cloud.modelarmor.v1.MessageItem.MessageType
+	(*Template)(nil),                                                  // 17: google.cloud.modelarmor.v1.Template
+	(*FloorSetting)(nil),                                              // 18: google.cloud.modelarmor.v1.FloorSetting
+	(*AiPlatformFloorSetting)(nil),                                    // 19: google.cloud.modelarmor.v1.AiPlatformFloorSetting
+	(*ListTemplatesRequest)(nil),                                      // 20: google.cloud.modelarmor.v1.ListTemplatesRequest
+	(*ListTemplatesResponse)(nil),                                     // 21: google.cloud.modelarmor.v1.ListTemplatesResponse
+	(*GetTemplateRequest)(nil),                                        // 22: google.cloud.modelarmor.v1.GetTemplateRequest
+	(*CreateTemplateRequest)(nil),                                     // 23: google.cloud.modelarmor.v1.CreateTemplateRequest
+	(*UpdateTemplateRequest)(nil),                                     // 24: google.cloud.modelarmor.v1.UpdateTemplateRequest
+	(*DeleteTemplateRequest)(nil),                                     // 25: google.cloud.modelarmor.v1.DeleteTemplateRequest
+	(*GetFloorSettingRequest)(nil),                                    // 26: google.cloud.modelarmor.v1.GetFloorSettingRequest
+	(*UpdateFloorSettingRequest)(nil),                                 // 27: google.cloud.modelarmor.v1.UpdateFloorSettingRequest
+	(*FilterConfig)(nil),                                              // 28: google.cloud.modelarmor.v1.FilterConfig
+	(*PiAndJailbreakFilterSettings)(nil),                              // 29: google.cloud.modelarmor.v1.PiAndJailbreakFilterSettings
+	(*MaliciousUriFilterSettings)(nil),                                // 30: google.cloud.modelarmor.v1.MaliciousUriFilterSettings
+	(*RaiFilterSettings)(nil),                                         // 31: google.cloud.modelarmor.v1.RaiFilterSettings
+	(*SdpFilterSettings)(nil),                                         // 32: google.cloud.modelarmor.v1.SdpFilterSettings
+	(*SdpBasicConfig)(nil),                                            // 33: google.cloud.modelarmor.v1.SdpBasicConfig
+	(*SdpAdvancedConfig)(nil),                                         // 34: google.cloud.modelarmor.v1.SdpAdvancedConfig
+	(*SanitizeUserPromptRequest)(nil),                                 // 35: google.cloud.modelarmor.v1.SanitizeUserPromptRequest
+	(*SanitizeModelResponseRequest)(nil),                              // 36: google.cloud.modelarmor.v1.SanitizeModelResponseRequest
+	(*SanitizeUserPromptResponse)(nil),                                // 37: google.cloud.modelarmor.v1.SanitizeUserPromptResponse
+	(*SanitizeModelResponseResponse)(nil),                             // 38: google.cloud.modelarmor.v1.SanitizeModelResponseResponse
+	(*SanitizationResult)(nil),                                        // 39: google.cloud.modelarmor.v1.SanitizationResult
+	(*MultiLanguageDetectionMetadata)(nil),                            // 40: google.cloud.modelarmor.v1.MultiLanguageDetectionMetadata
+	(*FilterResult)(nil),                                              // 41: google.cloud.modelarmor.v1.FilterResult
+	(*RaiFilterResult)(nil),                                           // 42: google.cloud.modelarmor.v1.RaiFilterResult
+	(*SdpFilterResult)(nil),                                           // 43: google.cloud.modelarmor.v1.SdpFilterResult
+	(*SdpInspectResult)(nil),                                          // 44: google.cloud.modelarmor.v1.SdpInspectResult
+	(*DataItem)(nil),                                                  // 45: google.cloud.modelarmor.v1.DataItem
+	(*ByteDataItem)(nil),                                              // 46: google.cloud.modelarmor.v1.ByteDataItem
+	(*SdpDeidentifyResult)(nil),                                       // 47: google.cloud.modelarmor.v1.SdpDeidentifyResult
+	(*SdpImageFindingLocation)(nil),                                   // 48: google.cloud.modelarmor.v1.SdpImageFindingLocation
+	(*SdpContentLocation)(nil),                                        // 49: google.cloud.modelarmor.v1.SdpContentLocation
+	(*SdpFinding)(nil),                                                // 50: google.cloud.modelarmor.v1.SdpFinding
+	(*SdpRedactResult)(nil),                                           // 51: google.cloud.modelarmor.v1.SdpRedactResult
+	(*PiAndJailbreakFilterResult)(nil),                                // 52: google.cloud.modelarmor.v1.PiAndJailbreakFilterResult
+	(*MaliciousUriFilterResult)(nil),                                  // 53: google.cloud.modelarmor.v1.MaliciousUriFilterResult
+	(*VirusScanFilterResult)(nil),                                     // 54: google.cloud.modelarmor.v1.VirusScanFilterResult
+	(*VirusDetail)(nil),                                               // 55: google.cloud.modelarmor.v1.VirusDetail
+	(*CsamFilterResult)(nil),                                          // 56: google.cloud.modelarmor.v1.CsamFilterResult
+	(*MessageItem)(nil),                                               // 57: google.cloud.modelarmor.v1.MessageItem
+	(*RangeInfo)(nil),                                                 // 58: google.cloud.modelarmor.v1.RangeInfo
+	(*Template_TemplateMetadata)(nil),                                 // 59: google.cloud.modelarmor.v1.Template.TemplateMetadata
+	nil,                                                               // 60: google.cloud.modelarmor.v1.Template.LabelsEntry
+	(*Template_TemplateMetadata_MultiLanguageDetection)(nil),          // 61: google.cloud.modelarmor.v1.Template.TemplateMetadata.MultiLanguageDetection
+	(*FloorSetting_FloorSettingMetadata)(nil),                         // 62: google.cloud.modelarmor.v1.FloorSetting.FloorSettingMetadata
+	(*FloorSetting_FloorSettingMetadata_MultiLanguageDetection)(nil),  // 63: google.cloud.modelarmor.v1.FloorSetting.FloorSettingMetadata.MultiLanguageDetection
+	(*RaiFilterSettings_RaiFilter)(nil),                               // 64: google.cloud.modelarmor.v1.RaiFilterSettings.RaiFilter
+	(*SanitizationResult_SanitizationMetadata)(nil),                   // 65: google.cloud.modelarmor.v1.SanitizationResult.SanitizationMetadata
+	nil, // 66: google.cloud.modelarmor.v1.SanitizationResult.FilterResultsEntry
+	(*RaiFilterResult_RaiFilterTypeResult)(nil), // 67: google.cloud.modelarmor.v1.RaiFilterResult.RaiFilterTypeResult
+	nil, // 68: google.cloud.modelarmor.v1.RaiFilterResult.RaiFilterTypeResultsEntry
+	(*SdpImageFindingLocation_SdpBoundingBox)(nil),           // 69: google.cloud.modelarmor.v1.SdpImageFindingLocation.SdpBoundingBox
+	(*SdpFinding_SdpFindingLocation)(nil),                    // 70: google.cloud.modelarmor.v1.SdpFinding.SdpFindingLocation
+	(*MaliciousUriFilterResult_MaliciousUriMatchedItem)(nil), // 71: google.cloud.modelarmor.v1.MaliciousUriFilterResult.MaliciousUriMatchedItem
+	(*timestamppb.Timestamp)(nil),                            // 72: google.protobuf.Timestamp
+	(*fieldmaskpb.FieldMask)(nil),                            // 73: google.protobuf.FieldMask
+	(*emptypb.Empty)(nil),                                    // 74: google.protobuf.Empty
 }
 var file_google_cloud_modelarmor_v1_service_proto_depIdxs = []int32{
-	67,  // 0: google.cloud.modelarmor.v1.Template.create_time:type_name -> google.protobuf.Timestamp
-	67,  // 1: google.cloud.modelarmor.v1.Template.update_time:type_name -> google.protobuf.Timestamp
-	56,  // 2: google.cloud.modelarmor.v1.Template.labels:type_name -> google.cloud.modelarmor.v1.Template.LabelsEntry
-	27,  // 3: google.cloud.modelarmor.v1.Template.filter_config:type_name -> google.cloud.modelarmor.v1.FilterConfig
-	55,  // 4: google.cloud.modelarmor.v1.Template.template_metadata:type_name -> google.cloud.modelarmor.v1.Template.TemplateMetadata
-	67,  // 5: google.cloud.modelarmor.v1.FloorSetting.create_time:type_name -> google.protobuf.Timestamp
-	67,  // 6: google.cloud.modelarmor.v1.FloorSetting.update_time:type_name -> google.protobuf.Timestamp
-	27,  // 7: google.cloud.modelarmor.v1.FloorSetting.filter_config:type_name -> google.cloud.modelarmor.v1.FilterConfig
-	8,   // 8: google.cloud.modelarmor.v1.FloorSetting.integrated_services:type_name -> google.cloud.modelarmor.v1.FloorSetting.IntegratedService
-	18,  // 9: google.cloud.modelarmor.v1.FloorSetting.ai_platform_floor_setting:type_name -> google.cloud.modelarmor.v1.AiPlatformFloorSetting
-	58,  // 10: google.cloud.modelarmor.v1.FloorSetting.floor_setting_metadata:type_name -> google.cloud.modelarmor.v1.FloorSetting.FloorSettingMetadata
-	16,  // 11: google.cloud.modelarmor.v1.ListTemplatesResponse.templates:type_name -> google.cloud.modelarmor.v1.Template
-	16,  // 12: google.cloud.modelarmor.v1.CreateTemplateRequest.template:type_name -> google.cloud.modelarmor.v1.Template
-	68,  // 13: google.cloud.modelarmor.v1.UpdateTemplateRequest.update_mask:type_name -> google.protobuf.FieldMask
-	16,  // 14: google.cloud.modelarmor.v1.UpdateTemplateRequest.template:type_name -> google.cloud.modelarmor.v1.Template
-	17,  // 15: google.cloud.modelarmor.v1.UpdateFloorSettingRequest.floor_setting:type_name -> google.cloud.modelarmor.v1.FloorSetting
-	68,  // 16: google.cloud.modelarmor.v1.UpdateFloorSettingRequest.update_mask:type_name -> google.protobuf.FieldMask
-	30,  // 17: google.cloud.modelarmor.v1.FilterConfig.rai_settings:type_name -> google.cloud.modelarmor.v1.RaiFilterSettings
-	31,  // 18: google.cloud.modelarmor.v1.FilterConfig.sdp_settings:type_name -> google.cloud.modelarmor.v1.SdpFilterSettings
-	28,  // 19: google.cloud.modelarmor.v1.FilterConfig.pi_and_jailbreak_filter_settings:type_name -> google.cloud.modelarmor.v1.PiAndJailbreakFilterSettings
-	29,  // 20: google.cloud.modelarmor.v1.FilterConfig.malicious_uri_filter_settings:type_name -> google.cloud.modelarmor.v1.MaliciousUriFilterSettings
-	9,   // 21: google.cloud.modelarmor.v1.PiAndJailbreakFilterSettings.filter_enforcement:type_name -> google.cloud.modelarmor.v1.PiAndJailbreakFilterSettings.PiAndJailbreakFilterEnforcement
+	72,  // 0: google.cloud.modelarmor.v1.Template.create_time:type_name -> google.protobuf.Timestamp
+	72,  // 1: google.cloud.modelarmor.v1.Template.update_time:type_name -> google.protobuf.Timestamp
+	60,  // 2: google.cloud.modelarmor.v1.Template.labels:type_name -> google.cloud.modelarmor.v1.Template.LabelsEntry
+	28,  // 3: google.cloud.modelarmor.v1.Template.filter_config:type_name -> google.cloud.modelarmor.v1.FilterConfig
+	59,  // 4: google.cloud.modelarmor.v1.Template.template_metadata:type_name -> google.cloud.modelarmor.v1.Template.TemplateMetadata
+	72,  // 5: google.cloud.modelarmor.v1.FloorSetting.create_time:type_name -> google.protobuf.Timestamp
+	72,  // 6: google.cloud.modelarmor.v1.FloorSetting.update_time:type_name -> google.protobuf.Timestamp
+	28,  // 7: google.cloud.modelarmor.v1.FloorSetting.filter_config:type_name -> google.cloud.modelarmor.v1.FilterConfig
+	9,   // 8: google.cloud.modelarmor.v1.FloorSetting.integrated_services:type_name -> google.cloud.modelarmor.v1.FloorSetting.IntegratedService
+	19,  // 9: google.cloud.modelarmor.v1.FloorSetting.ai_platform_floor_setting:type_name -> google.cloud.modelarmor.v1.AiPlatformFloorSetting
+	62,  // 10: google.cloud.modelarmor.v1.FloorSetting.floor_setting_metadata:type_name -> google.cloud.modelarmor.v1.FloorSetting.FloorSettingMetadata
+	17,  // 11: google.cloud.modelarmor.v1.ListTemplatesResponse.templates:type_name -> google.cloud.modelarmor.v1.Template
+	17,  // 12: google.cloud.modelarmor.v1.CreateTemplateRequest.template:type_name -> google.cloud.modelarmor.v1.Template
+	73,  // 13: google.cloud.modelarmor.v1.UpdateTemplateRequest.update_mask:type_name -> google.protobuf.FieldMask
+	17,  // 14: google.cloud.modelarmor.v1.UpdateTemplateRequest.template:type_name -> google.cloud.modelarmor.v1.Template
+	18,  // 15: google.cloud.modelarmor.v1.UpdateFloorSettingRequest.floor_setting:type_name -> google.cloud.modelarmor.v1.FloorSetting
+	73,  // 16: google.cloud.modelarmor.v1.UpdateFloorSettingRequest.update_mask:type_name -> google.protobuf.FieldMask
+	31,  // 17: google.cloud.modelarmor.v1.FilterConfig.rai_settings:type_name -> google.cloud.modelarmor.v1.RaiFilterSettings
+	32,  // 18: google.cloud.modelarmor.v1.FilterConfig.sdp_settings:type_name -> google.cloud.modelarmor.v1.SdpFilterSettings
+	29,  // 19: google.cloud.modelarmor.v1.FilterConfig.pi_and_jailbreak_filter_settings:type_name -> google.cloud.modelarmor.v1.PiAndJailbreakFilterSettings
+	30,  // 20: google.cloud.modelarmor.v1.FilterConfig.malicious_uri_filter_settings:type_name -> google.cloud.modelarmor.v1.MaliciousUriFilterSettings
+	10,  // 21: google.cloud.modelarmor.v1.PiAndJailbreakFilterSettings.filter_enforcement:type_name -> google.cloud.modelarmor.v1.PiAndJailbreakFilterSettings.PiAndJailbreakFilterEnforcement
 	3,   // 22: google.cloud.modelarmor.v1.PiAndJailbreakFilterSettings.confidence_level:type_name -> google.cloud.modelarmor.v1.DetectionConfidenceLevel
-	10,  // 23: google.cloud.modelarmor.v1.MaliciousUriFilterSettings.filter_enforcement:type_name -> google.cloud.modelarmor.v1.MaliciousUriFilterSettings.MaliciousUriFilterEnforcement
-	60,  // 24: google.cloud.modelarmor.v1.RaiFilterSettings.rai_filters:type_name -> google.cloud.modelarmor.v1.RaiFilterSettings.RaiFilter
-	32,  // 25: google.cloud.modelarmor.v1.SdpFilterSettings.basic_config:type_name -> google.cloud.modelarmor.v1.SdpBasicConfig
-	33,  // 26: google.cloud.modelarmor.v1.SdpFilterSettings.advanced_config:type_name -> google.cloud.modelarmor.v1.SdpAdvancedConfig
-	11,  // 27: google.cloud.modelarmor.v1.SdpBasicConfig.filter_enforcement:type_name -> google.cloud.modelarmor.v1.SdpBasicConfig.SdpBasicConfigEnforcement
-	44,  // 28: google.cloud.modelarmor.v1.SanitizeUserPromptRequest.user_prompt_data:type_name -> google.cloud.modelarmor.v1.DataItem
-	39,  // 29: google.cloud.modelarmor.v1.SanitizeUserPromptRequest.multi_language_detection_metadata:type_name -> google.cloud.modelarmor.v1.MultiLanguageDetectionMetadata
+	11,  // 23: google.cloud.modelarmor.v1.MaliciousUriFilterSettings.filter_enforcement:type_name -> google.cloud.modelarmor.v1.MaliciousUriFilterSettings.MaliciousUriFilterEnforcement
+	64,  // 24: google.cloud.modelarmor.v1.RaiFilterSettings.rai_filters:type_name -> google.cloud.modelarmor.v1.RaiFilterSettings.RaiFilter
+	33,  // 25: google.cloud.modelarmor.v1.SdpFilterSettings.basic_config:type_name -> google.cloud.modelarmor.v1.SdpBasicConfig
+	34,  // 26: google.cloud.modelarmor.v1.SdpFilterSettings.advanced_config:type_name -> google.cloud.modelarmor.v1.SdpAdvancedConfig
+	12,  // 27: google.cloud.modelarmor.v1.SdpBasicConfig.filter_enforcement:type_name -> google.cloud.modelarmor.v1.SdpBasicConfig.SdpBasicConfigEnforcement
+	45,  // 28: google.cloud.modelarmor.v1.SanitizeUserPromptRequest.user_prompt_data:type_name -> google.cloud.modelarmor.v1.DataItem
+	40,  // 29: google.cloud.modelarmor.v1.SanitizeUserPromptRequest.multi_language_detection_metadata:type_name -> google.cloud.modelarmor.v1.MultiLanguageDetectionMetadata
 	6,   // 30: google.cloud.modelarmor.v1.SanitizeUserPromptRequest.streaming_mode:type_name -> google.cloud.modelarmor.v1.StreamingMode
-	44,  // 31: google.cloud.modelarmor.v1.SanitizeModelResponseRequest.model_response_data:type_name -> google.cloud.modelarmor.v1.DataItem
-	39,  // 32: google.cloud.modelarmor.v1.SanitizeModelResponseRequest.multi_language_detection_metadata:type_name -> google.cloud.modelarmor.v1.MultiLanguageDetectionMetadata
+	45,  // 31: google.cloud.modelarmor.v1.SanitizeModelResponseRequest.model_response_data:type_name -> google.cloud.modelarmor.v1.DataItem
+	40,  // 32: google.cloud.modelarmor.v1.SanitizeModelResponseRequest.multi_language_detection_metadata:type_name -> google.cloud.modelarmor.v1.MultiLanguageDetectionMetadata
 	6,   // 33: google.cloud.modelarmor.v1.SanitizeModelResponseRequest.streaming_mode:type_name -> google.cloud.modelarmor.v1.StreamingMode
-	38,  // 34: google.cloud.modelarmor.v1.SanitizeUserPromptResponse.sanitization_result:type_name -> google.cloud.modelarmor.v1.SanitizationResult
-	38,  // 35: google.cloud.modelarmor.v1.SanitizeModelResponseResponse.sanitization_result:type_name -> google.cloud.modelarmor.v1.SanitizationResult
+	39,  // 34: google.cloud.modelarmor.v1.SanitizeUserPromptResponse.sanitization_result:type_name -> google.cloud.modelarmor.v1.SanitizationResult
+	39,  // 35: google.cloud.modelarmor.v1.SanitizeModelResponseResponse.sanitization_result:type_name -> google.cloud.modelarmor.v1.SanitizationResult
 	0,   // 36: google.cloud.modelarmor.v1.SanitizationResult.filter_match_state:type_name -> google.cloud.modelarmor.v1.FilterMatchState
-	62,  // 37: google.cloud.modelarmor.v1.SanitizationResult.filter_results:type_name -> google.cloud.modelarmor.v1.SanitizationResult.FilterResultsEntry
+	66,  // 37: google.cloud.modelarmor.v1.SanitizationResult.filter_results:type_name -> google.cloud.modelarmor.v1.SanitizationResult.FilterResultsEntry
 	5,   // 38: google.cloud.modelarmor.v1.SanitizationResult.invocation_result:type_name -> google.cloud.modelarmor.v1.InvocationResult
-	61,  // 39: google.cloud.modelarmor.v1.SanitizationResult.sanitization_metadata:type_name -> google.cloud.modelarmor.v1.SanitizationResult.SanitizationMetadata
-	41,  // 40: google.cloud.modelarmor.v1.FilterResult.rai_filter_result:type_name -> google.cloud.modelarmor.v1.RaiFilterResult
-	42,  // 41: google.cloud.modelarmor.v1.FilterResult.sdp_filter_result:type_name -> google.cloud.modelarmor.v1.SdpFilterResult
-	48,  // 42: google.cloud.modelarmor.v1.FilterResult.pi_and_jailbreak_filter_result:type_name -> google.cloud.modelarmor.v1.PiAndJailbreakFilterResult
-	49,  // 43: google.cloud.modelarmor.v1.FilterResult.malicious_uri_filter_result:type_name -> google.cloud.modelarmor.v1.MaliciousUriFilterResult
-	52,  // 44: google.cloud.modelarmor.v1.FilterResult.csam_filter_filter_result:type_name -> google.cloud.modelarmor.v1.CsamFilterResult
-	50,  // 45: google.cloud.modelarmor.v1.FilterResult.virus_scan_filter_result:type_name -> google.cloud.modelarmor.v1.VirusScanFilterResult
+	65,  // 39: google.cloud.modelarmor.v1.SanitizationResult.sanitization_metadata:type_name -> google.cloud.modelarmor.v1.SanitizationResult.SanitizationMetadata
+	42,  // 40: google.cloud.modelarmor.v1.FilterResult.rai_filter_result:type_name -> google.cloud.modelarmor.v1.RaiFilterResult
+	43,  // 41: google.cloud.modelarmor.v1.FilterResult.sdp_filter_result:type_name -> google.cloud.modelarmor.v1.SdpFilterResult
+	52,  // 42: google.cloud.modelarmor.v1.FilterResult.pi_and_jailbreak_filter_result:type_name -> google.cloud.modelarmor.v1.PiAndJailbreakFilterResult
+	53,  // 43: google.cloud.modelarmor.v1.FilterResult.malicious_uri_filter_result:type_name -> google.cloud.modelarmor.v1.MaliciousUriFilterResult
+	56,  // 44: google.cloud.modelarmor.v1.FilterResult.csam_filter_filter_result:type_name -> google.cloud.modelarmor.v1.CsamFilterResult
+	54,  // 45: google.cloud.modelarmor.v1.FilterResult.virus_scan_filter_result:type_name -> google.cloud.modelarmor.v1.VirusScanFilterResult
 	1,   // 46: google.cloud.modelarmor.v1.RaiFilterResult.execution_state:type_name -> google.cloud.modelarmor.v1.FilterExecutionState
-	53,  // 47: google.cloud.modelarmor.v1.RaiFilterResult.message_items:type_name -> google.cloud.modelarmor.v1.MessageItem
+	57,  // 47: google.cloud.modelarmor.v1.RaiFilterResult.message_items:type_name -> google.cloud.modelarmor.v1.MessageItem
 	0,   // 48: google.cloud.modelarmor.v1.RaiFilterResult.match_state:type_name -> google.cloud.modelarmor.v1.FilterMatchState
-	64,  // 49: google.cloud.modelarmor.v1.RaiFilterResult.rai_filter_type_results:type_name -> google.cloud.modelarmor.v1.RaiFilterResult.RaiFilterTypeResultsEntry
-	43,  // 50: google.cloud.modelarmor.v1.SdpFilterResult.inspect_result:type_name -> google.cloud.modelarmor.v1.SdpInspectResult
-	46,  // 51: google.cloud.modelarmor.v1.SdpFilterResult.deidentify_result:type_name -> google.cloud.modelarmor.v1.SdpDeidentifyResult
-	1,   // 52: google.cloud.modelarmor.v1.SdpInspectResult.execution_state:type_name -> google.cloud.modelarmor.v1.FilterExecutionState
-	53,  // 53: google.cloud.modelarmor.v1.SdpInspectResult.message_items:type_name -> google.cloud.modelarmor.v1.MessageItem
-	0,   // 54: google.cloud.modelarmor.v1.SdpInspectResult.match_state:type_name -> google.cloud.modelarmor.v1.FilterMatchState
-	47,  // 55: google.cloud.modelarmor.v1.SdpInspectResult.findings:type_name -> google.cloud.modelarmor.v1.SdpFinding
-	45,  // 56: google.cloud.modelarmor.v1.DataItem.byte_item:type_name -> google.cloud.modelarmor.v1.ByteDataItem
-	12,  // 57: google.cloud.modelarmor.v1.ByteDataItem.byte_data_type:type_name -> google.cloud.modelarmor.v1.ByteDataItem.ByteItemType
-	1,   // 58: google.cloud.modelarmor.v1.SdpDeidentifyResult.execution_state:type_name -> google.cloud.modelarmor.v1.FilterExecutionState
-	53,  // 59: google.cloud.modelarmor.v1.SdpDeidentifyResult.message_items:type_name -> google.cloud.modelarmor.v1.MessageItem
-	0,   // 60: google.cloud.modelarmor.v1.SdpDeidentifyResult.match_state:type_name -> google.cloud.modelarmor.v1.FilterMatchState
-	44,  // 61: google.cloud.modelarmor.v1.SdpDeidentifyResult.data:type_name -> google.cloud.modelarmor.v1.DataItem
-	4,   // 62: google.cloud.modelarmor.v1.SdpFinding.likelihood:type_name -> google.cloud.modelarmor.v1.SdpFindingLikelihood
-	65,  // 63: google.cloud.modelarmor.v1.SdpFinding.location:type_name -> google.cloud.modelarmor.v1.SdpFinding.SdpFindingLocation
-	1,   // 64: google.cloud.modelarmor.v1.PiAndJailbreakFilterResult.execution_state:type_name -> google.cloud.modelarmor.v1.FilterExecutionState
-	53,  // 65: google.cloud.modelarmor.v1.PiAndJailbreakFilterResult.message_items:type_name -> google.cloud.modelarmor.v1.MessageItem
-	0,   // 66: google.cloud.modelarmor.v1.PiAndJailbreakFilterResult.match_state:type_name -> google.cloud.modelarmor.v1.FilterMatchState
-	3,   // 67: google.cloud.modelarmor.v1.PiAndJailbreakFilterResult.confidence_level:type_name -> google.cloud.modelarmor.v1.DetectionConfidenceLevel
-	1,   // 68: google.cloud.modelarmor.v1.MaliciousUriFilterResult.execution_state:type_name -> google.cloud.modelarmor.v1.FilterExecutionState
-	53,  // 69: google.cloud.modelarmor.v1.MaliciousUriFilterResult.message_items:type_name -> google.cloud.modelarmor.v1.MessageItem
-	0,   // 70: google.cloud.modelarmor.v1.MaliciousUriFilterResult.match_state:type_name -> google.cloud.modelarmor.v1.FilterMatchState
-	66,  // 71: google.cloud.modelarmor.v1.MaliciousUriFilterResult.malicious_uri_matched_items:type_name -> google.cloud.modelarmor.v1.MaliciousUriFilterResult.MaliciousUriMatchedItem
-	1,   // 72: google.cloud.modelarmor.v1.VirusScanFilterResult.execution_state:type_name -> google.cloud.modelarmor.v1.FilterExecutionState
-	53,  // 73: google.cloud.modelarmor.v1.VirusScanFilterResult.message_items:type_name -> google.cloud.modelarmor.v1.MessageItem
-	0,   // 74: google.cloud.modelarmor.v1.VirusScanFilterResult.match_state:type_name -> google.cloud.modelarmor.v1.FilterMatchState
-	13,  // 75: google.cloud.modelarmor.v1.VirusScanFilterResult.scanned_content_type:type_name -> google.cloud.modelarmor.v1.VirusScanFilterResult.ScannedContentType
-	51,  // 76: google.cloud.modelarmor.v1.VirusScanFilterResult.virus_details:type_name -> google.cloud.modelarmor.v1.VirusDetail
-	14,  // 77: google.cloud.modelarmor.v1.VirusDetail.threat_type:type_name -> google.cloud.modelarmor.v1.VirusDetail.ThreatType
-	1,   // 78: google.cloud.modelarmor.v1.CsamFilterResult.execution_state:type_name -> google.cloud.modelarmor.v1.FilterExecutionState
-	53,  // 79: google.cloud.modelarmor.v1.CsamFilterResult.message_items:type_name -> google.cloud.modelarmor.v1.MessageItem
-	0,   // 80: google.cloud.modelarmor.v1.CsamFilterResult.match_state:type_name -> google.cloud.modelarmor.v1.FilterMatchState
-	15,  // 81: google.cloud.modelarmor.v1.MessageItem.message_type:type_name -> google.cloud.modelarmor.v1.MessageItem.MessageType
-	7,   // 82: google.cloud.modelarmor.v1.Template.TemplateMetadata.enforcement_type:type_name -> google.cloud.modelarmor.v1.Template.TemplateMetadata.EnforcementType
-	57,  // 83: google.cloud.modelarmor.v1.Template.TemplateMetadata.multi_language_detection:type_name -> google.cloud.modelarmor.v1.Template.TemplateMetadata.MultiLanguageDetection
-	59,  // 84: google.cloud.modelarmor.v1.FloorSetting.FloorSettingMetadata.multi_language_detection:type_name -> google.cloud.modelarmor.v1.FloorSetting.FloorSettingMetadata.MultiLanguageDetection
-	2,   // 85: google.cloud.modelarmor.v1.RaiFilterSettings.RaiFilter.filter_type:type_name -> google.cloud.modelarmor.v1.RaiFilterType
-	3,   // 86: google.cloud.modelarmor.v1.RaiFilterSettings.RaiFilter.confidence_level:type_name -> google.cloud.modelarmor.v1.DetectionConfidenceLevel
-	44,  // 87: google.cloud.modelarmor.v1.SanitizationResult.SanitizationMetadata.stream_chunk_processed:type_name -> google.cloud.modelarmor.v1.DataItem
-	40,  // 88: google.cloud.modelarmor.v1.SanitizationResult.FilterResultsEntry.value:type_name -> google.cloud.modelarmor.v1.FilterResult
-	2,   // 89: google.cloud.modelarmor.v1.RaiFilterResult.RaiFilterTypeResult.filter_type:type_name -> google.cloud.modelarmor.v1.RaiFilterType
-	3,   // 90: google.cloud.modelarmor.v1.RaiFilterResult.RaiFilterTypeResult.confidence_level:type_name -> google.cloud.modelarmor.v1.DetectionConfidenceLevel
-	0,   // 91: google.cloud.modelarmor.v1.RaiFilterResult.RaiFilterTypeResult.match_state:type_name -> google.cloud.modelarmor.v1.FilterMatchState
-	63,  // 92: google.cloud.modelarmor.v1.RaiFilterResult.RaiFilterTypeResultsEntry.value:type_name -> google.cloud.modelarmor.v1.RaiFilterResult.RaiFilterTypeResult
-	54,  // 93: google.cloud.modelarmor.v1.SdpFinding.SdpFindingLocation.byte_range:type_name -> google.cloud.modelarmor.v1.RangeInfo
-	54,  // 94: google.cloud.modelarmor.v1.SdpFinding.SdpFindingLocation.codepoint_range:type_name -> google.cloud.modelarmor.v1.RangeInfo
-	54,  // 95: google.cloud.modelarmor.v1.MaliciousUriFilterResult.MaliciousUriMatchedItem.locations:type_name -> google.cloud.modelarmor.v1.RangeInfo
-	19,  // 96: google.cloud.modelarmor.v1.ModelArmor.ListTemplates:input_type -> google.cloud.modelarmor.v1.ListTemplatesRequest
-	21,  // 97: google.cloud.modelarmor.v1.ModelArmor.GetTemplate:input_type -> google.cloud.modelarmor.v1.GetTemplateRequest
-	22,  // 98: google.cloud.modelarmor.v1.ModelArmor.CreateTemplate:input_type -> google.cloud.modelarmor.v1.CreateTemplateRequest
-	23,  // 99: google.cloud.modelarmor.v1.ModelArmor.UpdateTemplate:input_type -> google.cloud.modelarmor.v1.UpdateTemplateRequest
-	24,  // 100: google.cloud.modelarmor.v1.ModelArmor.DeleteTemplate:input_type -> google.cloud.modelarmor.v1.DeleteTemplateRequest
-	25,  // 101: google.cloud.modelarmor.v1.ModelArmor.GetFloorSetting:input_type -> google.cloud.modelarmor.v1.GetFloorSettingRequest
-	26,  // 102: google.cloud.modelarmor.v1.ModelArmor.UpdateFloorSetting:input_type -> google.cloud.modelarmor.v1.UpdateFloorSettingRequest
-	34,  // 103: google.cloud.modelarmor.v1.ModelArmor.SanitizeUserPrompt:input_type -> google.cloud.modelarmor.v1.SanitizeUserPromptRequest
-	35,  // 104: google.cloud.modelarmor.v1.ModelArmor.SanitizeModelResponse:input_type -> google.cloud.modelarmor.v1.SanitizeModelResponseRequest
-	34,  // 105: google.cloud.modelarmor.v1.ModelArmor.StreamSanitizeUserPrompt:input_type -> google.cloud.modelarmor.v1.SanitizeUserPromptRequest
-	35,  // 106: google.cloud.modelarmor.v1.ModelArmor.StreamSanitizeModelResponse:input_type -> google.cloud.modelarmor.v1.SanitizeModelResponseRequest
-	20,  // 107: google.cloud.modelarmor.v1.ModelArmor.ListTemplates:output_type -> google.cloud.modelarmor.v1.ListTemplatesResponse
-	16,  // 108: google.cloud.modelarmor.v1.ModelArmor.GetTemplate:output_type -> google.cloud.modelarmor.v1.Template
-	16,  // 109: google.cloud.modelarmor.v1.ModelArmor.CreateTemplate:output_type -> google.cloud.modelarmor.v1.Template
-	16,  // 110: google.cloud.modelarmor.v1.ModelArmor.UpdateTemplate:output_type -> google.cloud.modelarmor.v1.Template
-	69,  // 111: google.cloud.modelarmor.v1.ModelArmor.DeleteTemplate:output_type -> google.protobuf.Empty
-	17,  // 112: google.cloud.modelarmor.v1.ModelArmor.GetFloorSetting:output_type -> google.cloud.modelarmor.v1.FloorSetting
-	17,  // 113: google.cloud.modelarmor.v1.ModelArmor.UpdateFloorSetting:output_type -> google.cloud.modelarmor.v1.FloorSetting
-	36,  // 114: google.cloud.modelarmor.v1.ModelArmor.SanitizeUserPrompt:output_type -> google.cloud.modelarmor.v1.SanitizeUserPromptResponse
-	37,  // 115: google.cloud.modelarmor.v1.ModelArmor.SanitizeModelResponse:output_type -> google.cloud.modelarmor.v1.SanitizeModelResponseResponse
-	36,  // 116: google.cloud.modelarmor.v1.ModelArmor.StreamSanitizeUserPrompt:output_type -> google.cloud.modelarmor.v1.SanitizeUserPromptResponse
-	37,  // 117: google.cloud.modelarmor.v1.ModelArmor.StreamSanitizeModelResponse:output_type -> google.cloud.modelarmor.v1.SanitizeModelResponseResponse
-	107, // [107:118] is the sub-list for method output_type
-	96,  // [96:107] is the sub-list for method input_type
-	96,  // [96:96] is the sub-list for extension type_name
-	96,  // [96:96] is the sub-list for extension extendee
-	0,   // [0:96] is the sub-list for field type_name
+	68,  // 49: google.cloud.modelarmor.v1.RaiFilterResult.rai_filter_type_results:type_name -> google.cloud.modelarmor.v1.RaiFilterResult.RaiFilterTypeResultsEntry
+	44,  // 50: google.cloud.modelarmor.v1.SdpFilterResult.inspect_result:type_name -> google.cloud.modelarmor.v1.SdpInspectResult
+	47,  // 51: google.cloud.modelarmor.v1.SdpFilterResult.deidentify_result:type_name -> google.cloud.modelarmor.v1.SdpDeidentifyResult
+	51,  // 52: google.cloud.modelarmor.v1.SdpFilterResult.redact_result:type_name -> google.cloud.modelarmor.v1.SdpRedactResult
+	1,   // 53: google.cloud.modelarmor.v1.SdpInspectResult.execution_state:type_name -> google.cloud.modelarmor.v1.FilterExecutionState
+	57,  // 54: google.cloud.modelarmor.v1.SdpInspectResult.message_items:type_name -> google.cloud.modelarmor.v1.MessageItem
+	0,   // 55: google.cloud.modelarmor.v1.SdpInspectResult.match_state:type_name -> google.cloud.modelarmor.v1.FilterMatchState
+	50,  // 56: google.cloud.modelarmor.v1.SdpInspectResult.findings:type_name -> google.cloud.modelarmor.v1.SdpFinding
+	46,  // 57: google.cloud.modelarmor.v1.DataItem.byte_item:type_name -> google.cloud.modelarmor.v1.ByteDataItem
+	13,  // 58: google.cloud.modelarmor.v1.ByteDataItem.byte_data_type:type_name -> google.cloud.modelarmor.v1.ByteDataItem.ByteItemType
+	1,   // 59: google.cloud.modelarmor.v1.SdpDeidentifyResult.execution_state:type_name -> google.cloud.modelarmor.v1.FilterExecutionState
+	57,  // 60: google.cloud.modelarmor.v1.SdpDeidentifyResult.message_items:type_name -> google.cloud.modelarmor.v1.MessageItem
+	0,   // 61: google.cloud.modelarmor.v1.SdpDeidentifyResult.match_state:type_name -> google.cloud.modelarmor.v1.FilterMatchState
+	45,  // 62: google.cloud.modelarmor.v1.SdpDeidentifyResult.data:type_name -> google.cloud.modelarmor.v1.DataItem
+	69,  // 63: google.cloud.modelarmor.v1.SdpImageFindingLocation.bounding_boxes:type_name -> google.cloud.modelarmor.v1.SdpImageFindingLocation.SdpBoundingBox
+	48,  // 64: google.cloud.modelarmor.v1.SdpContentLocation.image_finding_location:type_name -> google.cloud.modelarmor.v1.SdpImageFindingLocation
+	4,   // 65: google.cloud.modelarmor.v1.SdpFinding.likelihood:type_name -> google.cloud.modelarmor.v1.SdpFindingLikelihood
+	70,  // 66: google.cloud.modelarmor.v1.SdpFinding.location:type_name -> google.cloud.modelarmor.v1.SdpFinding.SdpFindingLocation
+	1,   // 67: google.cloud.modelarmor.v1.SdpRedactResult.execution_state:type_name -> google.cloud.modelarmor.v1.FilterExecutionState
+	57,  // 68: google.cloud.modelarmor.v1.SdpRedactResult.message_items:type_name -> google.cloud.modelarmor.v1.MessageItem
+	0,   // 69: google.cloud.modelarmor.v1.SdpRedactResult.match_state:type_name -> google.cloud.modelarmor.v1.FilterMatchState
+	50,  // 70: google.cloud.modelarmor.v1.SdpRedactResult.findings:type_name -> google.cloud.modelarmor.v1.SdpFinding
+	1,   // 71: google.cloud.modelarmor.v1.PiAndJailbreakFilterResult.execution_state:type_name -> google.cloud.modelarmor.v1.FilterExecutionState
+	57,  // 72: google.cloud.modelarmor.v1.PiAndJailbreakFilterResult.message_items:type_name -> google.cloud.modelarmor.v1.MessageItem
+	0,   // 73: google.cloud.modelarmor.v1.PiAndJailbreakFilterResult.match_state:type_name -> google.cloud.modelarmor.v1.FilterMatchState
+	3,   // 74: google.cloud.modelarmor.v1.PiAndJailbreakFilterResult.confidence_level:type_name -> google.cloud.modelarmor.v1.DetectionConfidenceLevel
+	1,   // 75: google.cloud.modelarmor.v1.MaliciousUriFilterResult.execution_state:type_name -> google.cloud.modelarmor.v1.FilterExecutionState
+	57,  // 76: google.cloud.modelarmor.v1.MaliciousUriFilterResult.message_items:type_name -> google.cloud.modelarmor.v1.MessageItem
+	0,   // 77: google.cloud.modelarmor.v1.MaliciousUriFilterResult.match_state:type_name -> google.cloud.modelarmor.v1.FilterMatchState
+	71,  // 78: google.cloud.modelarmor.v1.MaliciousUriFilterResult.malicious_uri_matched_items:type_name -> google.cloud.modelarmor.v1.MaliciousUriFilterResult.MaliciousUriMatchedItem
+	1,   // 79: google.cloud.modelarmor.v1.VirusScanFilterResult.execution_state:type_name -> google.cloud.modelarmor.v1.FilterExecutionState
+	57,  // 80: google.cloud.modelarmor.v1.VirusScanFilterResult.message_items:type_name -> google.cloud.modelarmor.v1.MessageItem
+	0,   // 81: google.cloud.modelarmor.v1.VirusScanFilterResult.match_state:type_name -> google.cloud.modelarmor.v1.FilterMatchState
+	14,  // 82: google.cloud.modelarmor.v1.VirusScanFilterResult.scanned_content_type:type_name -> google.cloud.modelarmor.v1.VirusScanFilterResult.ScannedContentType
+	55,  // 83: google.cloud.modelarmor.v1.VirusScanFilterResult.virus_details:type_name -> google.cloud.modelarmor.v1.VirusDetail
+	15,  // 84: google.cloud.modelarmor.v1.VirusDetail.threat_type:type_name -> google.cloud.modelarmor.v1.VirusDetail.ThreatType
+	1,   // 85: google.cloud.modelarmor.v1.CsamFilterResult.execution_state:type_name -> google.cloud.modelarmor.v1.FilterExecutionState
+	57,  // 86: google.cloud.modelarmor.v1.CsamFilterResult.message_items:type_name -> google.cloud.modelarmor.v1.MessageItem
+	0,   // 87: google.cloud.modelarmor.v1.CsamFilterResult.match_state:type_name -> google.cloud.modelarmor.v1.FilterMatchState
+	16,  // 88: google.cloud.modelarmor.v1.MessageItem.message_type:type_name -> google.cloud.modelarmor.v1.MessageItem.MessageType
+	8,   // 89: google.cloud.modelarmor.v1.Template.TemplateMetadata.enforcement_type:type_name -> google.cloud.modelarmor.v1.Template.TemplateMetadata.EnforcementType
+	61,  // 90: google.cloud.modelarmor.v1.Template.TemplateMetadata.multi_language_detection:type_name -> google.cloud.modelarmor.v1.Template.TemplateMetadata.MultiLanguageDetection
+	7,   // 91: google.cloud.modelarmor.v1.Template.TemplateMetadata.modalities:type_name -> google.cloud.modelarmor.v1.Modality
+	63,  // 92: google.cloud.modelarmor.v1.FloorSetting.FloorSettingMetadata.multi_language_detection:type_name -> google.cloud.modelarmor.v1.FloorSetting.FloorSettingMetadata.MultiLanguageDetection
+	2,   // 93: google.cloud.modelarmor.v1.RaiFilterSettings.RaiFilter.filter_type:type_name -> google.cloud.modelarmor.v1.RaiFilterType
+	3,   // 94: google.cloud.modelarmor.v1.RaiFilterSettings.RaiFilter.confidence_level:type_name -> google.cloud.modelarmor.v1.DetectionConfidenceLevel
+	45,  // 95: google.cloud.modelarmor.v1.SanitizationResult.SanitizationMetadata.stream_chunk_processed:type_name -> google.cloud.modelarmor.v1.DataItem
+	41,  // 96: google.cloud.modelarmor.v1.SanitizationResult.FilterResultsEntry.value:type_name -> google.cloud.modelarmor.v1.FilterResult
+	2,   // 97: google.cloud.modelarmor.v1.RaiFilterResult.RaiFilterTypeResult.filter_type:type_name -> google.cloud.modelarmor.v1.RaiFilterType
+	3,   // 98: google.cloud.modelarmor.v1.RaiFilterResult.RaiFilterTypeResult.confidence_level:type_name -> google.cloud.modelarmor.v1.DetectionConfidenceLevel
+	0,   // 99: google.cloud.modelarmor.v1.RaiFilterResult.RaiFilterTypeResult.match_state:type_name -> google.cloud.modelarmor.v1.FilterMatchState
+	67,  // 100: google.cloud.modelarmor.v1.RaiFilterResult.RaiFilterTypeResultsEntry.value:type_name -> google.cloud.modelarmor.v1.RaiFilterResult.RaiFilterTypeResult
+	58,  // 101: google.cloud.modelarmor.v1.SdpFinding.SdpFindingLocation.byte_range:type_name -> google.cloud.modelarmor.v1.RangeInfo
+	58,  // 102: google.cloud.modelarmor.v1.SdpFinding.SdpFindingLocation.codepoint_range:type_name -> google.cloud.modelarmor.v1.RangeInfo
+	49,  // 103: google.cloud.modelarmor.v1.SdpFinding.SdpFindingLocation.content_locations:type_name -> google.cloud.modelarmor.v1.SdpContentLocation
+	58,  // 104: google.cloud.modelarmor.v1.MaliciousUriFilterResult.MaliciousUriMatchedItem.locations:type_name -> google.cloud.modelarmor.v1.RangeInfo
+	20,  // 105: google.cloud.modelarmor.v1.ModelArmor.ListTemplates:input_type -> google.cloud.modelarmor.v1.ListTemplatesRequest
+	22,  // 106: google.cloud.modelarmor.v1.ModelArmor.GetTemplate:input_type -> google.cloud.modelarmor.v1.GetTemplateRequest
+	23,  // 107: google.cloud.modelarmor.v1.ModelArmor.CreateTemplate:input_type -> google.cloud.modelarmor.v1.CreateTemplateRequest
+	24,  // 108: google.cloud.modelarmor.v1.ModelArmor.UpdateTemplate:input_type -> google.cloud.modelarmor.v1.UpdateTemplateRequest
+	25,  // 109: google.cloud.modelarmor.v1.ModelArmor.DeleteTemplate:input_type -> google.cloud.modelarmor.v1.DeleteTemplateRequest
+	26,  // 110: google.cloud.modelarmor.v1.ModelArmor.GetFloorSetting:input_type -> google.cloud.modelarmor.v1.GetFloorSettingRequest
+	27,  // 111: google.cloud.modelarmor.v1.ModelArmor.UpdateFloorSetting:input_type -> google.cloud.modelarmor.v1.UpdateFloorSettingRequest
+	35,  // 112: google.cloud.modelarmor.v1.ModelArmor.SanitizeUserPrompt:input_type -> google.cloud.modelarmor.v1.SanitizeUserPromptRequest
+	36,  // 113: google.cloud.modelarmor.v1.ModelArmor.SanitizeModelResponse:input_type -> google.cloud.modelarmor.v1.SanitizeModelResponseRequest
+	35,  // 114: google.cloud.modelarmor.v1.ModelArmor.StreamSanitizeUserPrompt:input_type -> google.cloud.modelarmor.v1.SanitizeUserPromptRequest
+	36,  // 115: google.cloud.modelarmor.v1.ModelArmor.StreamSanitizeModelResponse:input_type -> google.cloud.modelarmor.v1.SanitizeModelResponseRequest
+	21,  // 116: google.cloud.modelarmor.v1.ModelArmor.ListTemplates:output_type -> google.cloud.modelarmor.v1.ListTemplatesResponse
+	17,  // 117: google.cloud.modelarmor.v1.ModelArmor.GetTemplate:output_type -> google.cloud.modelarmor.v1.Template
+	17,  // 118: google.cloud.modelarmor.v1.ModelArmor.CreateTemplate:output_type -> google.cloud.modelarmor.v1.Template
+	17,  // 119: google.cloud.modelarmor.v1.ModelArmor.UpdateTemplate:output_type -> google.cloud.modelarmor.v1.Template
+	74,  // 120: google.cloud.modelarmor.v1.ModelArmor.DeleteTemplate:output_type -> google.protobuf.Empty
+	18,  // 121: google.cloud.modelarmor.v1.ModelArmor.GetFloorSetting:output_type -> google.cloud.modelarmor.v1.FloorSetting
+	18,  // 122: google.cloud.modelarmor.v1.ModelArmor.UpdateFloorSetting:output_type -> google.cloud.modelarmor.v1.FloorSetting
+	37,  // 123: google.cloud.modelarmor.v1.ModelArmor.SanitizeUserPrompt:output_type -> google.cloud.modelarmor.v1.SanitizeUserPromptResponse
+	38,  // 124: google.cloud.modelarmor.v1.ModelArmor.SanitizeModelResponse:output_type -> google.cloud.modelarmor.v1.SanitizeModelResponseResponse
+	37,  // 125: google.cloud.modelarmor.v1.ModelArmor.StreamSanitizeUserPrompt:output_type -> google.cloud.modelarmor.v1.SanitizeUserPromptResponse
+	38,  // 126: google.cloud.modelarmor.v1.ModelArmor.StreamSanitizeModelResponse:output_type -> google.cloud.modelarmor.v1.SanitizeModelResponseResponse
+	116, // [116:127] is the sub-list for method output_type
+	105, // [105:116] is the sub-list for method input_type
+	105, // [105:105] is the sub-list for extension type_name
+	105, // [105:105] is the sub-list for extension extendee
+	0,   // [0:105] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_modelarmor_v1_service_proto_init() }
@@ -5010,20 +5476,24 @@ func file_google_cloud_modelarmor_v1_service_proto_init() {
 	file_google_cloud_modelarmor_v1_service_proto_msgTypes[26].OneofWrappers = []any{
 		(*SdpFilterResult_InspectResult)(nil),
 		(*SdpFilterResult_DeidentifyResult)(nil),
+		(*SdpFilterResult_RedactResult)(nil),
 	}
 	file_google_cloud_modelarmor_v1_service_proto_msgTypes[28].OneofWrappers = []any{
 		(*DataItem_Text)(nil),
 		(*DataItem_ByteItem)(nil),
 	}
-	file_google_cloud_modelarmor_v1_service_proto_msgTypes[34].OneofWrappers = []any{}
-	file_google_cloud_modelarmor_v1_service_proto_msgTypes[38].OneofWrappers = []any{}
+	file_google_cloud_modelarmor_v1_service_proto_msgTypes[32].OneofWrappers = []any{
+		(*SdpContentLocation_ImageFindingLocation)(nil),
+	}
+	file_google_cloud_modelarmor_v1_service_proto_msgTypes[37].OneofWrappers = []any{}
+	file_google_cloud_modelarmor_v1_service_proto_msgTypes[41].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_modelarmor_v1_service_proto_rawDesc), len(file_google_cloud_modelarmor_v1_service_proto_rawDesc)),
-			NumEnums:      16,
-			NumMessages:   51,
+			NumEnums:      17,
+			NumMessages:   55,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

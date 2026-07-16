@@ -1,5 +1,5 @@
-cloud.google.com/go/longrunning v0.9.0 h1:0EzbDEGsAvOZNbqXopgniY0w0a1phvu5IdUFq8grmqY=
-cloud.google.com/go/longrunning v0.9.0/go.mod h1:pkTz846W7bF4o2SzdWJ40Hu0Re+UoNT6Q5t+igIcb8E=
+cloud.google.com/go/longrunning v1.2.0 h1:WjYH3YHBGCxGJP9M4dWGHBfXr/cFIjMkNgWcJj7/iMM=
+cloud.google.com/go/longrunning v1.2.0/go.mod h1:5KMQALFGOCtFoi2xSOA1u3H7WKlhmckgiyFw7+LGQp0=
 cloud.google.com/go/translate v1.17.0 h1:6ecjspRHAOHU+x+e4HOK/2o+bzw7KHwu//eyLVf4TuM=
 cloud.google.com/go/translate v1.17.0/go.mod h1:3mErnHTQBu9yeLiL35K0HBBuaM6Vk2fD/vyWFz790VU=
 github.com/cespare/xxhash/v2 v2.3.0 h1:UL815xU9SqsFlibzuggzjXhog7bL6oX9BbNZnL2UFvs=

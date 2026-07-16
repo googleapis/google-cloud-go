@@ -32,6 +32,7 @@ import (
 	managedkafkapb "cloud.google.com/go/managedkafka/apiv1/managedkafkapb"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -824,8 +825,12 @@ func (c *managedKafkaConnectGRPCClient) CreateConnectCluster(ctx context.Context
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*managedkafka.CreateConnectClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateConnectClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -847,8 +852,12 @@ func (c *managedKafkaConnectGRPCClient) UpdateConnectCluster(ctx context.Context
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*managedkafka.UpdateConnectClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateConnectClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -873,8 +882,12 @@ func (c *managedKafkaConnectGRPCClient) DeleteConnectCluster(ctx context.Context
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*managedkafka.DeleteConnectClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteConnectClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1495,8 +1508,12 @@ func (c *managedKafkaConnectRESTClient) CreateConnectCluster(ctx context.Context
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*managedkafka.CreateConnectClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateConnectClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1569,8 +1586,12 @@ func (c *managedKafkaConnectRESTClient) UpdateConnectCluster(ctx context.Context
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*managedkafka.UpdateConnectClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateConnectClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1632,8 +1653,12 @@ func (c *managedKafkaConnectRESTClient) DeleteConnectCluster(ctx context.Context
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*managedkafka.DeleteConnectClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteConnectClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2561,7 +2586,7 @@ func (c *managedKafkaConnectRESTClient) ListOperations(ctx context.Context, req 
 // The name must be that of a previously created CreateConnectClusterOperation, possibly from a different process.
 func (c *managedKafkaConnectGRPCClient) CreateConnectClusterOperation(name string) *CreateConnectClusterOperation {
 	return &CreateConnectClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*managedkafka.CreateConnectClusterOperation"),
 	}
 }
 
@@ -2570,7 +2595,7 @@ func (c *managedKafkaConnectGRPCClient) CreateConnectClusterOperation(name strin
 func (c *managedKafkaConnectRESTClient) CreateConnectClusterOperation(name string) *CreateConnectClusterOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateConnectClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*managedkafka.CreateConnectClusterOperation"),
 		pollPath: override,
 	}
 }
@@ -2579,7 +2604,7 @@ func (c *managedKafkaConnectRESTClient) CreateConnectClusterOperation(name strin
 // The name must be that of a previously created DeleteConnectClusterOperation, possibly from a different process.
 func (c *managedKafkaConnectGRPCClient) DeleteConnectClusterOperation(name string) *DeleteConnectClusterOperation {
 	return &DeleteConnectClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*managedkafka.DeleteConnectClusterOperation"),
 	}
 }
 
@@ -2588,7 +2613,7 @@ func (c *managedKafkaConnectGRPCClient) DeleteConnectClusterOperation(name strin
 func (c *managedKafkaConnectRESTClient) DeleteConnectClusterOperation(name string) *DeleteConnectClusterOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteConnectClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*managedkafka.DeleteConnectClusterOperation"),
 		pollPath: override,
 	}
 }
@@ -2597,7 +2622,7 @@ func (c *managedKafkaConnectRESTClient) DeleteConnectClusterOperation(name strin
 // The name must be that of a previously created UpdateConnectClusterOperation, possibly from a different process.
 func (c *managedKafkaConnectGRPCClient) UpdateConnectClusterOperation(name string) *UpdateConnectClusterOperation {
 	return &UpdateConnectClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*managedkafka.UpdateConnectClusterOperation"),
 	}
 }
 
@@ -2606,7 +2631,7 @@ func (c *managedKafkaConnectGRPCClient) UpdateConnectClusterOperation(name strin
 func (c *managedKafkaConnectRESTClient) UpdateConnectClusterOperation(name string) *UpdateConnectClusterOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateConnectClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*managedkafka.UpdateConnectClusterOperation"),
 		pollPath: override,
 	}
 }
