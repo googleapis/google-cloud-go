@@ -863,9 +863,9 @@ func TestUUIDColumn(t *testing.T) {
 	invalidUUIDs := []string{
 		"not-a-uuid",
 		"a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a1",   // too short (35 chars)
-		"a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a111",  // too long (37 chars)
-		"a0eebc999c0b4ef8bb6d6bb9bd380a11",       // missing hyphens
-		"g0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",   // non-hex char
+		"a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a111", // too long (37 chars)
+		"a0eebc999c0b4ef8bb6d6bb9bd380a11",      // missing hyphens
+		"g0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",  // non-hex char
 	}
 	for _, badUUID := range invalidUUIDs {
 		txBad := db.NewTransaction()
@@ -879,4 +879,3 @@ func TestUUIDColumn(t *testing.T) {
 		txBad.Rollback()
 	}
 }
-
