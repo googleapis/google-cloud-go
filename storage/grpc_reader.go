@@ -21,12 +21,17 @@ import (
 	"fmt"
 	"hash/crc32"
 	"io"
+	"log"
+	"time"
 
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
+	"github.com/google/uuid"
 	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/encoding"
 	"google.golang.org/grpc/mem"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/encoding/protowire"
 	"google.golang.org/protobuf/proto"
 )
@@ -85,6 +90,7 @@ func (c *grpcStorageClient) NewRangeReaderReadObject(ctx context.Context, params
 	ctx, _ = startSpan(ctx, "grpcStorageClient.NewRangeReaderReadObject")
 	defer func() { endSpan(ctx, err) }()
 
+	requestID := uuid.New()
 	s := callSettings(c.settings, opts...)
 
 	s.gax = append(s.gax, gax.WithGRPCOptions(
@@ -134,7 +140,7 @@ func (c *grpcStorageClient) NewRangeReaderReadObject(ctx context.Context, params
 		var err error
 		var decoder *readObjectResponseDecoder
 
-		err = run(cc, func(ctx context.Context) error {
+		openStream := func(ctx context.Context) error {
 			stream, err = c.raw.ReadObject(ctx, req, s.gax...)
 			if err != nil {
 				return err
@@ -157,6 +163,47 @@ func (c *grpcStorageClient) NewRangeReaderReadObject(ctx context.Context, params
 			}
 			err = decoder.readFullObjectResponse()
 			return err
+		}
+
+		err = run(cc, func(ctx context.Context) error {
+			if c.dynamicReadReqStallTimeout == nil {
+				return openStream(ctx)
+			}
+
+			cancelCtx, cancel := context.WithCancel(ctx)
+			var (
+				innerErr error
+				done     = make(chan struct{}, 1)
+			)
+
+			go func() {
+				reqStartTime := time.Now()
+				innerErr = openStream(cancelCtx)
+				if innerErr == nil {
+					reqLatency := time.Since(reqStartTime)
+					c.dynamicReadReqStallTimeout.update(params.bucket, reqLatency)
+				} else if errors.Is(innerErr, context.Canceled) || status.Code(innerErr) == codes.Canceled {
+					c.dynamicReadReqStallTimeout.increase(params.bucket)
+				}
+				done <- struct{}{}
+			}()
+
+			stallTimeout := c.dynamicReadReqStallTimeout.getValue(params.bucket)
+			timer := time.After(stallTimeout)
+			select {
+			case <-timer:
+				log.Printf("[%s] stalled read-req cancelled after %fs", requestID, stallTimeout.Seconds())
+				cancel()
+				<-done
+				if decoder != nil && decoder.databufs != nil {
+					decoder.databufs.Free()
+					decoder = nil
+				}
+				return context.DeadlineExceeded
+			case <-done:
+				cancel()
+			}
+			return innerErr
 		}, s.retry, s.idempotent, withOperation("ReadObject"), withBucket(params.bucket), withObject(params.object))
 		if err != nil {
 			// Close the stream context we just created to ensure we don't leak
