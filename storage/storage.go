@@ -1370,6 +1370,13 @@ type AppendableWriterOpts struct {
 	ProgressFunc func(int64)
 	// FinalizeOnClose: See Writer.FinalizeOnClose.
 	FinalizeOnClose bool
+	// DisableAutoChecksum: See Writer.DisableAutoChecksum.
+	DisableAutoChecksum bool
+	// SendCRC32C: See Writer.SendCRC32C.
+	SendCRC32C bool
+	// CRC32C of the whole object.
+	// See Writer.CRC32C.
+	CRC32C uint32
 }
 
 func (opts *AppendableWriterOpts) apply(w *Writer) {
@@ -1380,6 +1387,9 @@ func (opts *AppendableWriterOpts) apply(w *Writer) {
 	w.ProgressFunc = opts.ProgressFunc
 	w.ChunkSize = opts.ChunkSize
 	w.FinalizeOnClose = opts.FinalizeOnClose
+	w.DisableAutoChecksum = opts.DisableAutoChecksum
+	w.CRC32C = opts.CRC32C
+	w.SendCRC32C = opts.SendCRC32C
 }
 
 func (o *ObjectHandle) validate() error {
@@ -1597,6 +1607,7 @@ type ObjectAttrs struct {
 	// MD5 is the MD5 hash of the object's content. This field is read-only,
 	// except when used from a Writer. If set on a Writer, the uploaded
 	// data is rejected if its MD5 hash does not match this field.
+	// Note: MD5 validation is not supported for appendable writes.
 	MD5 []byte
 
 	// CRC32C is the CRC32 checksum of the object's content using the Castagnoli93
