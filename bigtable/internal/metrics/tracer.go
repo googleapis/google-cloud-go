@@ -555,29 +555,36 @@ func (mt *Tracer) ingestMetadata(headerMD, trailerMD metadata.MD) {
 	a := &mt.currOp.currAttempt
 
 	if !a.locationExtracted {
-		if clusterID, zoneID, err := extractLocation(headerMD, trailerMD); err == nil {
-			// Don't overwrite a cluster/zone that the vRPC path has
-			// already populated (SessionTable sets these directly from
-			// the ClusterInformation payload); only fill in if the
-			// attempt's value is missing or the sentinel default.
-			// lastClusterID / lastZoneID always track the freshest real
-			// value so operation-level metrics get a sensible fallback.
-			if clusterID != "" {
-				if existing := a.clusterID; existing == "" || existing == defaultCluster {
-					a.SetClusterID(clusterID)
-				}
-				if clusterID != defaultCluster {
-					mt.currOp.lastClusterID = clusterID
-				}
+		// extractLocation returns (defaultCluster, defaultZone, err) when the
+		// LocationMDKey header is missing. Stamp the sentinel anyway —
+		// RecordAttemptCompletion uses clusterID == defaultCluster as the
+		// "no server-side signals" marker that feeds connectivity_error_count.
+		// Only mark locationExtracted when we got a real value, so a later
+		// InTrailer carrying real data can still overwrite the sentinel.
+		clusterID, zoneID, err := extractLocation(headerMD, trailerMD)
+		// Don't overwrite a cluster/zone that the vRPC path has
+		// already populated (SessionTable sets these directly from
+		// the ClusterInformation payload); only fill in if the
+		// attempt's value is missing or the sentinel default.
+		// lastClusterID / lastZoneID always track the freshest real
+		// value so operation-level metrics get a sensible fallback.
+		if clusterID != "" {
+			if existing := a.clusterID; existing == "" || existing == defaultCluster {
+				a.SetClusterID(clusterID)
 			}
-			if zoneID != "" {
-				if existing := a.zoneID; existing == "" || existing == defaultZone {
-					a.SetZoneID(zoneID)
-				}
-				if zoneID != defaultZone {
-					mt.currOp.lastZoneID = zoneID
-				}
+			if clusterID != defaultCluster {
+				mt.currOp.lastClusterID = clusterID
 			}
+		}
+		if zoneID != "" {
+			if existing := a.zoneID; existing == "" || existing == defaultZone {
+				a.SetZoneID(zoneID)
+			}
+			if zoneID != defaultZone {
+				mt.currOp.lastZoneID = zoneID
+			}
+		}
+		if err == nil {
 			a.locationExtracted = true
 		}
 	}
