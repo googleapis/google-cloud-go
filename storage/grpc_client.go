@@ -25,7 +25,6 @@ import (
 	"os"
 	"strconv"
 	"strings"
-	"time"
 
 	"cloud.google.com/go/iam/apiv1/iampb"
 	gapic "cloud.google.com/go/storage/internal/apiv2"
@@ -1390,44 +1389,12 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 		}
 
 		err = run(cc, func(ctx context.Context) error {
-			if c.dynamicReadReqStallTimeout == nil {
-				return openStream(ctx)
-			}
-
-			cancelCtx, cancel := context.WithCancel(ctx)
-			var (
-				innerErr error
-				done     = make(chan struct{}, 1)
-			)
-
-			go func() {
-				reqStartTime := time.Now()
-				innerErr = openStream(cancelCtx)
-				if innerErr == nil {
-					reqLatency := time.Since(reqStartTime)
-					c.dynamicReadReqStallTimeout.update(params.bucket, reqLatency)
-				} else if errors.Is(innerErr, context.Canceled) || status.Code(innerErr) == codes.Canceled {
-					c.dynamicReadReqStallTimeout.increase(params.bucket)
-				}
-				done <- struct{}{}
-			}()
-
-			stallTimeout := c.dynamicReadReqStallTimeout.getValue(params.bucket)
-			timer := time.After(stallTimeout)
-			select {
-			case <-timer:
-				log.Printf("[%s] stalled read-req cancelled after %fs", requestID, stallTimeout.Seconds())
-				cancel()
-				<-done
+			return executeWithReadStallTimeout(ctx, c.dynamicReadReqStallTimeout, params.bucket, requestID, openStream, func() {
 				if decoder != nil && decoder.databufs != nil {
 					decoder.databufs.Free()
 					decoder = nil
 				}
-				return context.DeadlineExceeded
-			case <-done:
-				cancel()
-			}
-			return innerErr
+			})
 		}, s.retry, s.idempotent, withOperation("ReadObject"), withBucket(params.bucket), withObject(params.object))
 		if err != nil {
 			// Close the stream context we just created to ensure we don't leak

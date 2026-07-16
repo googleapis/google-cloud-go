@@ -15,10 +15,17 @@
 package storage
 
 import (
+	"context"
+	"errors"
 	"fmt"
+	"log"
 	"math"
 	"sync"
 	"time"
+
+	"github.com/google/uuid"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 // dynamicDelay dynamically calculates the delay at a fixed percentile, based on
@@ -234,4 +241,54 @@ func (b *bucketDelayManager) update(bucketName string, latency time.Duration) {
 // getValue returns the desired delay to wait before retrying the operation for the given bucket.
 func (b *bucketDelayManager) getValue(bucketName string) time.Duration {
 	return b.getDelay(bucketName).getValue()
+}
+
+// executeWithReadStallTimeout executes openStream with dynamic delay stall retry tracking.
+func executeWithReadStallTimeout(
+	ctx context.Context,
+	dm *bucketDelayManager,
+	bucket string,
+	requestID uuid.UUID,
+	openStream func(ctx context.Context) error,
+	onStall func(),
+) error {
+	if dm == nil {
+		return openStream(ctx)
+	}
+
+	cancelCtx, cancel := context.WithCancel(ctx)
+	var (
+		innerErr error
+		done     = make(chan struct{}, 1)
+	)
+
+	go func() {
+		reqStartTime := time.Now()
+		innerErr = openStream(cancelCtx)
+		if innerErr == nil {
+			reqLatency := time.Since(reqStartTime)
+			dm.update(bucket, reqLatency)
+		} else if (errors.Is(innerErr, context.Canceled) || status.Code(innerErr) == codes.Canceled) && ctx.Err() == nil {
+			dm.increase(bucket)
+		}
+		done <- struct{}{}
+	}()
+
+	stallTimeout := dm.getValue(bucket)
+	timer := time.NewTimer(stallTimeout)
+	defer timer.Stop()
+
+	select {
+	case <-timer.C:
+		log.Printf("[%s] stalled read-req cancelled after %fs", requestID, stallTimeout.Seconds())
+		cancel()
+		<-done
+		if onStall != nil {
+			onStall()
+		}
+		return context.DeadlineExceeded
+	case <-done:
+		cancel()
+	}
+	return innerErr
 }
