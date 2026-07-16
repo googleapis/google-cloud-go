@@ -102,13 +102,28 @@ type Publisher struct {
 
 	hedgingMu      sync.Mutex
 	hedgingQueue   []*hedgedRequest
+	hedgingTimer   *time.Timer
 	hedgingStopped bool
 }
 
+type attemptResult struct {
+	res *pb.PublishResponse
+	err error
+	id  int
+}
+
 type hedgedRequest struct {
+	attemptID int
 	sendAfter time.Time
-	exec      func()
-	isDone    func() bool
+	resCh     chan attemptResult
+	cs        *cancellationSharer
+	ctx       context.Context
+	pbMsgs    []*pb.PubsubMessage
+	gaxOpts   []gax.CallOption
+}
+
+func (req *hedgedRequest) isDone() bool {
+	return req.cs.isDone()
 }
 
 // cancellationSharer coordinates cancellation between all publish attempts.
@@ -515,13 +530,16 @@ func (t *Publisher) initBundler() {
 		if t.hedgingDelay == 0 {
 			t.hedgingDelay = defaultHedgingDelay
 		}
-		go t.runHedgingQueue()
 	}
 }
 
 func (t *Publisher) stopHedging() {
 	t.hedgingMu.Lock()
 	t.hedgingStopped = true
+	if t.hedgingTimer != nil {
+		t.hedgingTimer.Stop()
+		t.hedgingTimer = nil
+	}
 	t.hedgingQueue = nil
 	t.hedgingMu.Unlock()
 }
@@ -533,48 +551,95 @@ func (t *Publisher) enqueueHedgedRequest(req *hedgedRequest) {
 		return
 	}
 	t.hedgingQueue = append(t.hedgingQueue, req)
+	if len(t.hedgingQueue) == 1 {
+		delay := time.Until(req.sendAfter)
+		if delay < 0 {
+			delay = 0
+		}
+		t.hedgingTimer = time.AfterFunc(delay, t.processHedgingQueue)
+	}
 }
 
-func (t *Publisher) runHedgingQueue() {
-	ticker := time.NewTicker(5 * time.Millisecond)
-	defer ticker.Stop()
-	for range ticker.C {
+func (t *Publisher) processHedgingQueue() {
+	t.hedgingMu.Lock()
+	if t.hedgingStopped {
+		t.hedgingMu.Unlock()
+		return
+	}
+
+	now := time.Now()
+	var ready []*hedgedRequest
+	for len(t.hedgingQueue) > 0 {
+		head := t.hedgingQueue[0]
+		if head.sendAfter.After(now) {
+			break
+		}
+		ready = append(ready, head)
+		t.hedgingQueue = t.hedgingQueue[1:]
+	}
+
+	if len(t.hedgingQueue) > 0 {
+		nextDelay := time.Until(t.hedgingQueue[0].sendAfter)
+		if nextDelay < 0 {
+			nextDelay = 0
+		}
+		t.hedgingTimer = time.AfterFunc(nextDelay, t.processHedgingQueue)
+	} else {
+		t.hedgingTimer = nil
+	}
+	t.hedgingMu.Unlock()
+
+	for _, req := range ready {
+		if req.isDone() {
+			continue
+		}
 		t.hedgingMu.Lock()
-		if t.hedgingStopped {
-			t.hedgingMu.Unlock()
-			return
+		hasToken := t.hedgingTokenBucket >= 1.0
+		if hasToken {
+			t.hedgingTokenBucket -= 1.0
 		}
-		now := time.Now()
-		var ready []*hedgedRequest
-		var remaining []*hedgedRequest
-		for _, req := range t.hedgingQueue {
-			if req.isDone != nil && req.isDone() {
-				// Request already completed or cancelled; discard without token usage.
-				continue
-			}
-			if !now.Before(req.sendAfter) {
-				ready = append(ready, req)
-			} else {
-				remaining = append(remaining, req)
-			}
-		}
-		t.hedgingQueue = remaining
 		t.hedgingMu.Unlock()
 
-		for _, req := range ready {
-			if req.isDone != nil && req.isDone() {
-				continue
-			}
-			t.hedgingMu.Lock()
-			hasToken := t.hedgingTokenBucket >= 1.0
-			if hasToken {
-				t.hedgingTokenBucket -= 1.0
-			}
-			t.hedgingMu.Unlock()
+		if hasToken {
+			go t.fireHedgedAttempt(req)
+		}
+	}
+}
 
-			if hasToken {
-				go req.exec()
-			}
+func (t *Publisher) fireHedgedAttempt(req *hedgedRequest) {
+	if req.isDone() || req.ctx.Err() != nil {
+		return
+	}
+
+	maxHedged := t.PublishSettings.HedgingSettings.MaxHedgedAttempts
+	if maxHedged == 0 || req.attemptID < maxHedged {
+		t.enqueueHedgedRequest(&hedgedRequest{
+			attemptID: req.attemptID + 1,
+			sendAfter: time.Now().Add(t.hedgingDelay),
+			resCh:     req.resCh,
+			cs:        req.cs,
+			ctx:       req.ctx,
+			pbMsgs:    req.pbMsgs,
+			gaxOpts:   req.gaxOpts,
+		})
+	}
+
+	hedgedCtx, hedgedCancel := context.WithCancel(req.ctx)
+	id := req.cs.add(hedgedCancel)
+	if id == -1 {
+		return
+	}
+
+	r, e := t.c.TopicAdminClient.Publish(hedgedCtx, &pb.PublishRequest{
+		Topic:    t.name,
+		Messages: req.pbMsgs,
+	}, req.gaxOpts...)
+
+	if e == nil {
+		select {
+		case req.resCh <- attemptResult{res: r, err: e, id: id}:
+			req.cs.win(id)
+		default:
 		}
 	}
 }
@@ -695,52 +760,21 @@ func (t *Publisher) publishMessageBundle(ctx context.Context, bms []*bundledMess
 		}
 
 		if t.hedgingDelay > 0 && orderingKey == "" {
-			type attemptResult struct {
-				res    *pb.PublishResponse
-				err    error
-				isMain bool
-				id     int
-			}
 			cs := newCancellationSharer()
 			defer cs.cancelAll()
 
 			resCh := make(chan attemptResult, 1)
 
-			var scheduleNextHedge func(int)
-			scheduleNextHedge = func(attemptNum int) {
-				maxHedged := t.PublishSettings.HedgingSettings.MaxHedgedAttempts
-				if maxHedged > 0 && attemptNum > maxHedged {
-					return
-				}
-				t.enqueueHedgedRequest(&hedgedRequest{
-					sendAfter: time.Now().Add(t.hedgingDelay),
-					isDone:    cs.isDone,
-					exec: func() {
-						if cs.isDone() || ctx.Err() != nil {
-							return
-						}
-						// Schedule the next hedged attempt dynamically
-						scheduleNextHedge(attemptNum + 1)
-
-						hedgedCtx, hedgedCancel := context.WithCancel(ctx)
-						id := cs.add(hedgedCancel)
-						if id == -1 {
-							return
-						}
-						r, e := t.c.TopicAdminClient.Publish(hedgedCtx, &pb.PublishRequest{
-							Topic:    t.name,
-							Messages: pbMsgs,
-						}, gaxOpts...)
-						select {
-						case resCh <- attemptResult{res: r, err: e, isMain: false, id: id}:
-							cs.win(id)
-						default:
-						}
-					},
-				})
+			initialHedge := &hedgedRequest{
+				attemptID: 1,
+				sendAfter: time.Now().Add(t.hedgingDelay),
+				resCh:     resCh,
+				cs:        cs,
+				ctx:       ctx,
+				pbMsgs:    pbMsgs,
+				gaxOpts:   gaxOpts,
 			}
-
-			scheduleNextHedge(1)
+			t.enqueueHedgedRequest(initialHedge)
 
 			mainCtx, mainCancel := context.WithCancel(ctx)
 			mainID := cs.add(mainCancel)
@@ -749,16 +783,33 @@ func (t *Publisher) publishMessageBundle(ctx context.Context, bms []*bundledMess
 				Messages: pbMsgs,
 			}, gaxOpts...)
 
+			if e == nil {
+				select {
+				case resCh <- attemptResult{res: r, err: e, id: mainID}:
+					cs.win(mainID)
+				default:
+				}
+			}
+
 			select {
 			case winner := <-resCh:
 				res = winner.res
 				err = winner.err
-			default:
-				cs.win(mainID)
-				res = r
-				err = e
 				if err == nil {
 					t.replenishHedgingTokens()
+				}
+			default:
+				// Main attempt failed or delayed; wait for a winning hedged attempt if one succeeds
+				select {
+				case winner := <-resCh:
+					res = winner.res
+					err = winner.err
+					if err == nil {
+						t.replenishHedgingTokens()
+					}
+				default:
+					res = r
+					err = e
 				}
 			}
 		} else {
