@@ -248,7 +248,7 @@ func (w *withTestMetricReaderConfig) ApplyStorageOpt(c *storageConfig) {
 // storage.Reader creation. As the name suggest, timeout is adjusted dynamically
 // based on past observed read-req latencies.
 //
-// This is supported for read operations on HTTP (XML) and gRPC clients.
+// This is supported for read operations on HTTP (XML) and gRPC clients (not implemented for HTTP JSON client).
 func withReadStallTimeout(rstc *experimental.ReadStallTimeoutConfig) option.ClientOption {
 	// TODO (raj-prince): To keep separate dynamicDelay instance for different BucketHandle.
 	// Currently, dynamicTimeout is kept at the client and hence shared across all the

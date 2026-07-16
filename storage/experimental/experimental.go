@@ -61,7 +61,7 @@ func WithMeterProvider(mp *metric.MeterProvider) option.ClientOption {
 // adjust the timeout higher to the target percentile when latency for request to that
 // bucket is high.
 // Currently, this is supported for downloads ([storage.NewReader] and
-// [storage.NewRangeReader] calls) on the XML API and gRPC API.
+// [storage.NewRangeReader] calls) on the XML API and gRPC API (not implemented for JSON API).
 func WithReadStallTimeout(rstc *ReadStallTimeoutConfig) option.ClientOption {
 	return internal.WithReadStallTimeout.(func(config *ReadStallTimeoutConfig) option.ClientOption)(rstc)
 }
