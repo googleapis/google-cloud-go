@@ -58,7 +58,7 @@ func (xp *x509Provider) providerType() string {
 // reads the certificate file, and parses the certificate data.
 func loadLeafCertificate(configFilePath string) (*x509.Certificate, error) {
 	// Get the path to the certificate file from the configuration file.
-	path, err := cert.GetCertificatePath(configFilePath)
+	path, err := cert.GetFileBasedCertificatePath(configFilePath)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get certificate path from config file: %w", err)
 	}
@@ -142,35 +142,6 @@ func readTrustChain(trustChainPath string) ([]*x509.Certificate, error) {
 	return certificateTrustChain, nil
 }
 
-type workloadConfig struct {
-	CertConfigs struct {
-		Workload *struct {
-			UseEcp bool `json:"use_ecp"`
-		} `json:"workload"`
-	} `json:"cert_configs"`
-}
-
-func isECPConfig(configFilePath string) (bool, error) {
-	byteValue, err := os.ReadFile(configFilePath)
-	if err != nil {
-		// If the file cannot be read, it's not a valid config or is unavailable.
-		// Fallback to false, or return error. Returning false lets the file provider
-		// run and return the correct descriptive OS file error.
-		return false, nil
-	}
-
-	var config workloadConfig
-	if err := json.Unmarshal(byteValue, &config); err != nil {
-		return false, nil
-	}
-
-	if config.CertConfigs.Workload == nil {
-		return false, nil
-	}
-
-	return config.CertConfigs.Workload.UseEcp, nil
-}
-
 func (xp *x509Provider) ecpSubjectToken() (string, error) {
 	key, err := client.Cred(xp.ConfigFilePath)
 	if err != nil {
@@ -206,15 +177,14 @@ func (xp *x509Provider) ecpSubjectToken() (string, error) {
 // The leaf certificate must be at the top of the trust chain file. This JSON
 // array is used as the subject token for mTLS authentication.
 func (xp *x509Provider) subjectToken(context.Context) (string, error) {
-	useEcp, err := isECPConfig(xp.ConfigFilePath)
-	if err != nil {
-		return "", err
-	}
+	xp.ConfigFilePath = cert.GetConfigFilePath(xp.ConfigFilePath)
 
-	if useEcp {
+	// First check if it's ECP based cert config
+	if _, err := cert.GetECPConfigPath(xp.ConfigFilePath); err == nil {
 		return xp.ecpSubjectToken()
 	}
 
+	// It's not ECP, do the normal file based cert config way.
 	// Load the leaf certificate.
 	leafCert, err := loadLeafCertificate(xp.ConfigFilePath)
 	if err != nil {

@@ -16,6 +16,7 @@ package cert
 
 import (
 	"errors"
+	"strings"
 	"testing"
 )
 
@@ -111,5 +112,42 @@ func TestWorkloadCertSource_UseEcpFailure(t *testing.T) {
 	_, err := NewWorkloadX509CertProvider("testdata/certificate_config_workload_use_ecp_invalid.json")
 	if err == nil {
 		t.Fatal("got nil, want non-nil error")
+	}
+}
+
+func TestGetFileBasedCertificatePath(t *testing.T) {
+	got, err := GetFileBasedCertificatePath("testdata/certificate_config_workload.json")
+	if err != nil {
+		t.Fatalf("GetFileBasedCertificatePath failed: %v", err)
+	}
+	if !strings.HasSuffix(got, "workload_cert.pem") {
+		t.Errorf("GetFileBasedCertificatePath() = %q, want path ending with workload_cert.pem", got)
+	}
+
+	_, err = GetFileBasedCertificatePath("testdata/certificate_config_workload_use_ecp.json")
+	if err == nil {
+		t.Error("GetFileBasedCertificatePath() with use_ecp expected error, got nil")
+	}
+}
+
+func TestGetECPConfigPath(t *testing.T) {
+	got, err := GetECPConfigPath("testdata/certificate_config_workload_use_ecp.json")
+	if err != nil {
+		t.Fatalf("GetECPConfigPath failed: %v", err)
+	}
+	if got != "testdata/certificate_config_workload_use_ecp.json" {
+		t.Errorf("GetECPConfigPath() = %q, want %q", got, "testdata/certificate_config_workload_use_ecp.json")
+	}
+
+	_, err = GetECPConfigPath("testdata/certificate_config_workload.json")
+	if err == nil {
+		t.Error("GetECPConfigPath() with use_ecp=false expected error, got nil")
+	}
+}
+
+func TestGetConfigFilePath(t *testing.T) {
+	t.Setenv("GOOGLE_API_CERTIFICATE_CONFIG", "some/path.json")
+	if got := GetConfigFilePath(""); got != "some/path.json" {
+		t.Errorf("GetConfigFilePath() = %q, want %q", got, "some/path.json")
 	}
 }
