@@ -498,6 +498,11 @@ libraries:
     version: 1.8.0
     apis:
       - path: google/cloud/commerce/consumer/procurement/v1
+  - name: commerceproducer
+    version: 0.0.0
+    apis:
+      - path: google/cloud/commerceproducer/v1beta
+    copyright_year: "2026"
   - name: compute
     version: 1.64.0
     apis:

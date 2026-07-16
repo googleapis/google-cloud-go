@@ -602,6 +602,16 @@
         }
       ]
     },
+    "commerceproducer": {
+      "component": "commerceproducer",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1beta/snippet_metadata.google.cloud.commerceproducer.v1beta.json",
+          "type": "json"
+        }
+      ]
+    },
     "compute": {
       "component": "compute",
       "exclude-paths": [
