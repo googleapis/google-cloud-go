@@ -572,8 +572,3 @@ func TestPublishDynamicMultiHedging(t *testing.T) {
 		t.Errorf("got msg ID %q, want msg-multi-123", id)
 	}
 }
-
-
-
-
-
