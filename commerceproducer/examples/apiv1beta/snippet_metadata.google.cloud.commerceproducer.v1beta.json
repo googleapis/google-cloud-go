@@ -1,0 +1,1207 @@
+{
+  "clientLibrary": {
+    "apis": [
+      {
+        "id": "google.cloud.commerceproducer.v1beta",
+        "version": "v1beta"
+      }
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/commerceproducer/apiv1beta",
+    "version": "0.0.0"
+  },
+  "snippets": [
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransactionClient",
+          "shortName": "CommerceTransactionClient"
+        },
+        "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransactionClient.CancelOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "CancelOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.CancelOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "CancelOperation"
+      },
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "CommerceTransactionClient/CancelOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "commerceproducer_v1beta_generated_CommerceTransaction_CancelOperation_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "commerceproducer CancelOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransactionClient",
+          "shortName": "CommerceTransactionClient"
+        },
+        "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransactionClient.CancelPrivateOffer",
+        "method": {
+          "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransaction.CancelPrivateOffer",
+          "service": {
+            "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransaction",
+            "shortName": "CommerceTransaction"
+          },
+          "shortName": "CancelPrivateOffer"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "commerceproducerpb.CancelPrivateOfferRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*commerceproducerpb.PrivateOffer",
+        "shortName": "CancelPrivateOffer"
+      },
+      "description": "CancelPrivateOffer cancels the target PrivateOffer.",
+      "file": "CommerceTransactionClient/CancelPrivateOffer/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "commerceproducer_v1beta_generated_CommerceTransaction_CancelPrivateOffer_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "commerceproducer CancelPrivateOffer Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransactionClient",
+          "shortName": "CommerceTransactionClient"
+        },
+        "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransactionClient.CreatePrivateOffer",
+        "method": {
+          "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransaction.CreatePrivateOffer",
+          "service": {
+            "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransaction",
+            "shortName": "CommerceTransaction"
+          },
+          "shortName": "CreatePrivateOffer"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "commerceproducerpb.CreatePrivateOfferRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*commerceproducerpb.PrivateOffer",
+        "shortName": "CreatePrivateOffer"
+      },
+      "description": "CreatePrivateOffer creates a new PrivateOffer in a given project and location.",
+      "file": "CommerceTransactionClient/CreatePrivateOffer/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "commerceproducer_v1beta_generated_CommerceTransaction_CreatePrivateOffer_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "commerceproducer CreatePrivateOffer Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransactionClient",
+          "shortName": "CommerceTransactionClient"
+        },
+        "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransactionClient.CreatePrivateOfferDocument",
+        "method": {
+          "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransaction.CreatePrivateOfferDocument",
+          "service": {
+            "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransaction",
+            "shortName": "CommerceTransaction"
+          },
+          "shortName": "CreatePrivateOfferDocument"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "commerceproducerpb.CreatePrivateOfferDocumentRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*commerceproducerpb.PrivateOfferDocument",
+        "shortName": "CreatePrivateOfferDocument"
+      },
+      "description": "CreatePrivateOfferDocument creates a new PrivateOfferDocument in a given project and location.",
+      "file": "CommerceTransactionClient/CreatePrivateOfferDocument/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "commerceproducer_v1beta_generated_CommerceTransaction_CreatePrivateOfferDocument_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "commerceproducer CreatePrivateOfferDocument Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransactionClient",
+          "shortName": "CommerceTransactionClient"
+        },
+        "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransactionClient.DeleteOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "DeleteOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.DeleteOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteOperation"
+      },
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "CommerceTransactionClient/DeleteOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "commerceproducer_v1beta_generated_CommerceTransaction_DeleteOperation_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "commerceproducer DeleteOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransactionClient",
+          "shortName": "CommerceTransactionClient"
+        },
+        "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransactionClient.DeletePrivateOffer",
+        "method": {
+          "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransaction.DeletePrivateOffer",
+          "service": {
+            "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransaction",
+            "shortName": "CommerceTransaction"
+          },
+          "shortName": "DeletePrivateOffer"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "commerceproducerpb.DeletePrivateOfferRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeletePrivateOffer"
+      },
+      "description": "DeletePrivateOffer deletes the target PrivateOffer.",
+      "file": "CommerceTransactionClient/DeletePrivateOffer/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "commerceproducer_v1beta_generated_CommerceTransaction_DeletePrivateOffer_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "commerceproducer DeletePrivateOffer Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransactionClient",
+          "shortName": "CommerceTransactionClient"
+        },
+        "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransactionClient.DeletePrivateOfferDocument",
+        "method": {
+          "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransaction.DeletePrivateOfferDocument",
+          "service": {
+            "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransaction",
+            "shortName": "CommerceTransaction"
+          },
+          "shortName": "DeletePrivateOfferDocument"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "commerceproducerpb.DeletePrivateOfferDocumentRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeletePrivateOfferDocument"
+      },
+      "description": "DeletePrivateOfferDocument deletes the target PrivateOfferDocument.",
+      "file": "CommerceTransactionClient/DeletePrivateOfferDocument/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "commerceproducer_v1beta_generated_CommerceTransaction_DeletePrivateOfferDocument_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "commerceproducer DeletePrivateOfferDocument Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransactionClient",
+          "shortName": "CommerceTransactionClient"
+        },
+        "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransactionClient.GetLocation",
+        "method": {
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "GetLocation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "locationpb.GetLocationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "shortName": "GetLocation"
+      },
+      "description": "GetLocation gets information about a location.",
+      "file": "CommerceTransactionClient/GetLocation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "commerceproducer_v1beta_generated_CommerceTransaction_GetLocation_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "commerceproducer GetLocation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransactionClient",
+          "shortName": "CommerceTransactionClient"
+        },
+        "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransactionClient.GetOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "GetOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.GetOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "shortName": "GetOperation"
+      },
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "CommerceTransactionClient/GetOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "commerceproducer_v1beta_generated_CommerceTransaction_GetOperation_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "commerceproducer GetOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransactionClient",
+          "shortName": "CommerceTransactionClient"
+        },
+        "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransactionClient.GetPrivateOffer",
+        "method": {
+          "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransaction.GetPrivateOffer",
+          "service": {
+            "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransaction",
+            "shortName": "CommerceTransaction"
+          },
+          "shortName": "GetPrivateOffer"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "commerceproducerpb.GetPrivateOfferRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*commerceproducerpb.PrivateOffer",
+        "shortName": "GetPrivateOffer"
+      },
+      "description": "GetPrivateOffer gets details of a single PrivateOffer.",
+      "file": "CommerceTransactionClient/GetPrivateOffer/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "commerceproducer_v1beta_generated_CommerceTransaction_GetPrivateOffer_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "commerceproducer GetPrivateOffer Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransactionClient",
+          "shortName": "CommerceTransactionClient"
+        },
+        "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransactionClient.GetPrivateOfferDocument",
+        "method": {
+          "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransaction.GetPrivateOfferDocument",
+          "service": {
+            "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransaction",
+            "shortName": "CommerceTransaction"
+          },
+          "shortName": "GetPrivateOfferDocument"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "commerceproducerpb.GetPrivateOfferDocumentRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*commerceproducerpb.PrivateOfferDocument",
+        "shortName": "GetPrivateOfferDocument"
+      },
+      "description": "GetPrivateOfferDocument gets details of a single PrivateOfferDocument.",
+      "file": "CommerceTransactionClient/GetPrivateOfferDocument/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "commerceproducer_v1beta_generated_CommerceTransaction_GetPrivateOfferDocument_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "commerceproducer GetPrivateOfferDocument Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransactionClient",
+          "shortName": "CommerceTransactionClient"
+        },
+        "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransactionClient.GetService",
+        "method": {
+          "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransaction.GetService",
+          "service": {
+            "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransaction",
+            "shortName": "CommerceTransaction"
+          },
+          "shortName": "GetService"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "commerceproducerpb.GetServiceRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*commerceproducerpb.Service",
+        "shortName": "GetService"
+      },
+      "description": "GetService gets details of a single Service.",
+      "file": "CommerceTransactionClient/GetService/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "commerceproducer_v1beta_generated_CommerceTransaction_GetService_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "commerceproducer GetService Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransactionClient",
+          "shortName": "CommerceTransactionClient"
+        },
+        "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransactionClient.GetSku",
+        "method": {
+          "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransaction.GetSku",
+          "service": {
+            "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransaction",
+            "shortName": "CommerceTransaction"
+          },
+          "shortName": "GetSku"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "commerceproducerpb.GetSkuRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*commerceproducerpb.Sku",
+        "shortName": "GetSku"
+      },
+      "description": "GetSku gets details of a single Sku.",
+      "file": "CommerceTransactionClient/GetSku/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "commerceproducer_v1beta_generated_CommerceTransaction_GetSku_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "commerceproducer GetSku Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransactionClient",
+          "shortName": "CommerceTransactionClient"
+        },
+        "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransactionClient.GetSkuGroup",
+        "method": {
+          "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransaction.GetSkuGroup",
+          "service": {
+            "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransaction",
+            "shortName": "CommerceTransaction"
+          },
+          "shortName": "GetSkuGroup"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "commerceproducerpb.GetSkuGroupRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*commerceproducerpb.SkuGroup",
+        "shortName": "GetSkuGroup"
+      },
+      "description": "GetSkuGroup gets details of a single SkuGroup.",
+      "file": "CommerceTransactionClient/GetSkuGroup/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "commerceproducer_v1beta_generated_CommerceTransaction_GetSkuGroup_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "commerceproducer GetSkuGroup Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransactionClient",
+          "shortName": "CommerceTransactionClient"
+        },
+        "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransactionClient.GetStandardOffer",
+        "method": {
+          "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransaction.GetStandardOffer",
+          "service": {
+            "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransaction",
+            "shortName": "CommerceTransaction"
+          },
+          "shortName": "GetStandardOffer"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "commerceproducerpb.GetStandardOfferRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*commerceproducerpb.StandardOffer",
+        "shortName": "GetStandardOffer"
+      },
+      "description": "GetStandardOffer gets details of a single StandardOffer.",
+      "file": "CommerceTransactionClient/GetStandardOffer/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "commerceproducer_v1beta_generated_CommerceTransaction_GetStandardOffer_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "commerceproducer GetStandardOffer Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransactionClient",
+          "shortName": "CommerceTransactionClient"
+        },
+        "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransactionClient.ListLocations",
+        "method": {
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "ListLocations"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "locationpb.ListLocationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "shortName": "ListLocations"
+      },
+      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name][google.cloud.location.ListLocationsRequest.name] field: *\n**Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
+      "file": "CommerceTransactionClient/ListLocations/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "commerceproducer_v1beta_generated_CommerceTransaction_ListLocations_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "commerceproducer ListLocations Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransactionClient",
+          "shortName": "CommerceTransactionClient"
+        },
+        "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransactionClient.ListOperations",
+        "method": {
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "ListOperations"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.ListOperationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "shortName": "ListOperations"
+      },
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "CommerceTransactionClient/ListOperations/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "commerceproducer_v1beta_generated_CommerceTransaction_ListOperations_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "commerceproducer ListOperations Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransactionClient",
+          "shortName": "CommerceTransactionClient"
+        },
+        "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransactionClient.ListPrivateOfferDocuments",
+        "method": {
+          "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransaction.ListPrivateOfferDocuments",
+          "service": {
+            "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransaction",
+            "shortName": "CommerceTransaction"
+          },
+          "shortName": "ListPrivateOfferDocuments"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "commerceproducerpb.ListPrivateOfferDocumentsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "PrivateOfferDocumentIterator",
+        "shortName": "ListPrivateOfferDocuments"
+      },
+      "description": "ListPrivateOfferDocuments lists PrivateOfferDocuments for the given parent.",
+      "file": "CommerceTransactionClient/ListPrivateOfferDocuments/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "commerceproducer_v1beta_generated_CommerceTransaction_ListPrivateOfferDocuments_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "commerceproducer ListPrivateOfferDocuments Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransactionClient",
+          "shortName": "CommerceTransactionClient"
+        },
+        "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransactionClient.ListPrivateOffers",
+        "method": {
+          "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransaction.ListPrivateOffers",
+          "service": {
+            "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransaction",
+            "shortName": "CommerceTransaction"
+          },
+          "shortName": "ListPrivateOffers"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "commerceproducerpb.ListPrivateOffersRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "PrivateOfferIterator",
+        "shortName": "ListPrivateOffers"
+      },
+      "description": "ListPrivateOffers lists PrivateOffers for the given parent.",
+      "file": "CommerceTransactionClient/ListPrivateOffers/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "commerceproducer_v1beta_generated_CommerceTransaction_ListPrivateOffers_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "commerceproducer ListPrivateOffers Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransactionClient",
+          "shortName": "CommerceTransactionClient"
+        },
+        "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransactionClient.ListServices",
+        "method": {
+          "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransaction.ListServices",
+          "service": {
+            "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransaction",
+            "shortName": "CommerceTransaction"
+          },
+          "shortName": "ListServices"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "commerceproducerpb.ListServicesRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "ServiceIterator",
+        "shortName": "ListServices"
+      },
+      "description": "ListServices lists Services in a given project and location.",
+      "file": "CommerceTransactionClient/ListServices/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "commerceproducer_v1beta_generated_CommerceTransaction_ListServices_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "commerceproducer ListServices Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransactionClient",
+          "shortName": "CommerceTransactionClient"
+        },
+        "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransactionClient.ListSkuGroups",
+        "method": {
+          "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransaction.ListSkuGroups",
+          "service": {
+            "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransaction",
+            "shortName": "CommerceTransaction"
+          },
+          "shortName": "ListSkuGroups"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "commerceproducerpb.ListSkuGroupsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "SkuGroupIterator",
+        "shortName": "ListSkuGroups"
+      },
+      "description": "ListSkuGroups lists SkuGroups for the given parent.",
+      "file": "CommerceTransactionClient/ListSkuGroups/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "commerceproducer_v1beta_generated_CommerceTransaction_ListSkuGroups_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "commerceproducer ListSkuGroups Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransactionClient",
+          "shortName": "CommerceTransactionClient"
+        },
+        "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransactionClient.ListSkus",
+        "method": {
+          "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransaction.ListSkus",
+          "service": {
+            "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransaction",
+            "shortName": "CommerceTransaction"
+          },
+          "shortName": "ListSkus"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "commerceproducerpb.ListSkusRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "SkuIterator",
+        "shortName": "ListSkus"
+      },
+      "description": "ListSkus lists Skus for the given parent.",
+      "file": "CommerceTransactionClient/ListSkus/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "commerceproducer_v1beta_generated_CommerceTransaction_ListSkus_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "commerceproducer ListSkus Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransactionClient",
+          "shortName": "CommerceTransactionClient"
+        },
+        "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransactionClient.ListStandardOffers",
+        "method": {
+          "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransaction.ListStandardOffers",
+          "service": {
+            "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransaction",
+            "shortName": "CommerceTransaction"
+          },
+          "shortName": "ListStandardOffers"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "commerceproducerpb.ListStandardOffersRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "StandardOfferIterator",
+        "shortName": "ListStandardOffers"
+      },
+      "description": "ListStandardOffers lists StandardOffers for the given parent.",
+      "file": "CommerceTransactionClient/ListStandardOffers/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "commerceproducer_v1beta_generated_CommerceTransaction_ListStandardOffers_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "commerceproducer ListStandardOffers Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransactionClient",
+          "shortName": "CommerceTransactionClient"
+        },
+        "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransactionClient.PublishPrivateOffer",
+        "method": {
+          "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransaction.PublishPrivateOffer",
+          "service": {
+            "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransaction",
+            "shortName": "CommerceTransaction"
+          },
+          "shortName": "PublishPrivateOffer"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "commerceproducerpb.PublishPrivateOfferRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*commerceproducerpb.PrivateOffer",
+        "shortName": "PublishPrivateOffer"
+      },
+      "description": "PublishPrivateOffer publishes the target PrivateOffer.",
+      "file": "CommerceTransactionClient/PublishPrivateOffer/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "commerceproducer_v1beta_generated_CommerceTransaction_PublishPrivateOffer_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "commerceproducer PublishPrivateOffer Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransactionClient",
+          "shortName": "CommerceTransactionClient"
+        },
+        "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransactionClient.UpdatePrivateOffer",
+        "method": {
+          "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransaction.UpdatePrivateOffer",
+          "service": {
+            "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransaction",
+            "shortName": "CommerceTransaction"
+          },
+          "shortName": "UpdatePrivateOffer"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "commerceproducerpb.UpdatePrivateOfferRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*commerceproducerpb.PrivateOffer",
+        "shortName": "UpdatePrivateOffer"
+      },
+      "description": "UpdatePrivateOffer updates the target PrivateOffer.",
+      "file": "CommerceTransactionClient/UpdatePrivateOffer/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "commerceproducer_v1beta_generated_CommerceTransaction_UpdatePrivateOffer_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "commerceproducer UpdatePrivateOffer Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransactionClient",
+          "shortName": "CommerceTransactionClient"
+        },
+        "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransactionClient.UpdatePrivateOfferDocument",
+        "method": {
+          "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransaction.UpdatePrivateOfferDocument",
+          "service": {
+            "fullName": "google.cloud.commerceproducer.v1beta.CommerceTransaction",
+            "shortName": "CommerceTransaction"
+          },
+          "shortName": "UpdatePrivateOfferDocument"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "commerceproducerpb.UpdatePrivateOfferDocumentRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*commerceproducerpb.PrivateOfferDocument",
+        "shortName": "UpdatePrivateOfferDocument"
+      },
+      "description": "UpdatePrivateOfferDocument updates the target PrivateOfferDocument.",
+      "file": "CommerceTransactionClient/UpdatePrivateOfferDocument/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "commerceproducer_v1beta_generated_CommerceTransaction_UpdatePrivateOfferDocument_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "commerceproducer UpdatePrivateOfferDocument Sample"
+    }
+  ]
+}

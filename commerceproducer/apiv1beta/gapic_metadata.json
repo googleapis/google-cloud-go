@@ -1,0 +1,283 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.commerceproducer.v1beta",
+  "libraryPackage": "cloud.google.com/go/commerceproducer/apiv1beta",
+  "services": {
+    "CommerceTransaction": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "CommerceTransactionClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CancelPrivateOffer": {
+              "methods": [
+                "CancelPrivateOffer"
+              ]
+            },
+            "CreatePrivateOffer": {
+              "methods": [
+                "CreatePrivateOffer"
+              ]
+            },
+            "CreatePrivateOfferDocument": {
+              "methods": [
+                "CreatePrivateOfferDocument"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeletePrivateOffer": {
+              "methods": [
+                "DeletePrivateOffer"
+              ]
+            },
+            "DeletePrivateOfferDocument": {
+              "methods": [
+                "DeletePrivateOfferDocument"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetPrivateOffer": {
+              "methods": [
+                "GetPrivateOffer"
+              ]
+            },
+            "GetPrivateOfferDocument": {
+              "methods": [
+                "GetPrivateOfferDocument"
+              ]
+            },
+            "GetService": {
+              "methods": [
+                "GetService"
+              ]
+            },
+            "GetSku": {
+              "methods": [
+                "GetSku"
+              ]
+            },
+            "GetSkuGroup": {
+              "methods": [
+                "GetSkuGroup"
+              ]
+            },
+            "GetStandardOffer": {
+              "methods": [
+                "GetStandardOffer"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListPrivateOfferDocuments": {
+              "methods": [
+                "ListPrivateOfferDocuments"
+              ]
+            },
+            "ListPrivateOffers": {
+              "methods": [
+                "ListPrivateOffers"
+              ]
+            },
+            "ListServices": {
+              "methods": [
+                "ListServices"
+              ]
+            },
+            "ListSkuGroups": {
+              "methods": [
+                "ListSkuGroups"
+              ]
+            },
+            "ListSkus": {
+              "methods": [
+                "ListSkus"
+              ]
+            },
+            "ListStandardOffers": {
+              "methods": [
+                "ListStandardOffers"
+              ]
+            },
+            "PublishPrivateOffer": {
+              "methods": [
+                "PublishPrivateOffer"
+              ]
+            },
+            "UpdatePrivateOffer": {
+              "methods": [
+                "UpdatePrivateOffer"
+              ]
+            },
+            "UpdatePrivateOfferDocument": {
+              "methods": [
+                "UpdatePrivateOfferDocument"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "CommerceTransactionClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CancelPrivateOffer": {
+              "methods": [
+                "CancelPrivateOffer"
+              ]
+            },
+            "CreatePrivateOffer": {
+              "methods": [
+                "CreatePrivateOffer"
+              ]
+            },
+            "CreatePrivateOfferDocument": {
+              "methods": [
+                "CreatePrivateOfferDocument"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeletePrivateOffer": {
+              "methods": [
+                "DeletePrivateOffer"
+              ]
+            },
+            "DeletePrivateOfferDocument": {
+              "methods": [
+                "DeletePrivateOfferDocument"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetPrivateOffer": {
+              "methods": [
+                "GetPrivateOffer"
+              ]
+            },
+            "GetPrivateOfferDocument": {
+              "methods": [
+                "GetPrivateOfferDocument"
+              ]
+            },
+            "GetService": {
+              "methods": [
+                "GetService"
+              ]
+            },
+            "GetSku": {
+              "methods": [
+                "GetSku"
+              ]
+            },
+            "GetSkuGroup": {
+              "methods": [
+                "GetSkuGroup"
+              ]
+            },
+            "GetStandardOffer": {
+              "methods": [
+                "GetStandardOffer"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListPrivateOfferDocuments": {
+              "methods": [
+                "ListPrivateOfferDocuments"
+              ]
+            },
+            "ListPrivateOffers": {
+              "methods": [
+                "ListPrivateOffers"
+              ]
+            },
+            "ListServices": {
+              "methods": [
+                "ListServices"
+              ]
+            },
+            "ListSkuGroups": {
+              "methods": [
+                "ListSkuGroups"
+              ]
+            },
+            "ListSkus": {
+              "methods": [
+                "ListSkus"
+              ]
+            },
+            "ListStandardOffers": {
+              "methods": [
+                "ListStandardOffers"
+              ]
+            },
+            "PublishPrivateOffer": {
+              "methods": [
+                "PublishPrivateOffer"
+              ]
+            },
+            "UpdatePrivateOffer": {
+              "methods": [
+                "UpdatePrivateOffer"
+              ]
+            },
+            "UpdatePrivateOfferDocument": {
+              "methods": [
+                "UpdatePrivateOfferDocument"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -46,6 +46,7 @@
   "cloudsecuritycompliance": "1.1.0",
   "cloudtasks": "1.18.0",
   "commerce": "1.8.0",
+  "commerceproducer": "0.0.0",
   "compute": "1.64.0",
   "confidentialcomputing": "1.17.0",
   "config": "1.12.0",
