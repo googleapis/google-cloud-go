@@ -531,14 +531,6 @@ func (mt *Tracer) RecordAttemptStart() {
 // those primitives, so stats.End (which may dispatch on a different
 // goroutine under cancel/deadline/GOAWAY) never touches the raw MD.
 //
-// The old code stored ev.Header / ev.Trailer on the attempt and re-read
-// them inside RecordAttemptCompletion. When csAttempt.finish raced the
-// transport reader, End and InTrailer collided on both the MD field
-// and the underlying map — the race dump on
-// https://github.com/googleapis/google-cloud-go/issues/20152 (and
-// several sibling FlakyBot P1 issues from the same nightly run) is the
-// downstream symptom.
-//
 // extractLocation / extractPeerInfo / extractServerLatency all check
 // header first then trailer, so passing one MD at a time and gating on
 // the *Extracted booleans preserves the header-preferred-trailer-fallback
@@ -594,6 +586,12 @@ func (mt *Tracer) ingestMetadata(headerMD, trailerMD metadata.MD) {
 		// metadata (populated by the server when the PeerInfo feature
 		// flag is negotiated on). Feeds attempt_latencies2 only; other
 		// metrics stay on the classic label set.
+		//
+		// Latch peerInfoExtracted only when extractPeerInfo returned a
+		// parsed *PeerInfo (which implies err == nil). Bare
+		// (nil, err) — a base64 or proto-decode failure — and bare
+		// (nil, nil) — the key is absent — both leave the latch off so
+		// the trailer still gets a chance to populate.
 		if peerInfo, _ := extractPeerInfo(headerMD, trailerMD); peerInfo != nil {
 			a.transportType = TransportTypeName(peerInfo.GetTransportType())
 			a.transportRegion = peerInfo.GetApplicationFrontendRegion()
