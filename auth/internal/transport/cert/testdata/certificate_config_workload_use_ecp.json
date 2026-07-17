@@ -1,8 +1,5 @@
 {
   "cert_configs": {
-    "workload": {
-      "use_ecp": true
-    }
   },
   "libs": {
     "ecp": "./testdata/signer.sh"

@@ -31,7 +31,6 @@ type certConfigs struct {
 type workloadSource struct {
 	CertPath string `json:"cert_path"`
 	KeyPath  string `json:"key_path"`
-	UseEcp   bool   `json:"use_ecp"`
 }
 
 type certificateConfig struct {
@@ -111,7 +110,6 @@ func NewWorkloadX509CertProvider(configFilePath string) (Provider, error) {
 	source := &workloadSource{
 		CertPath: certFile,
 		KeyPath:  keyFile,
-		UseEcp:   useEcp,
 	}
 	return source.getClientCertificate, nil
 }
@@ -145,22 +143,20 @@ func getCertKeyAndUseEcp(configFilePath string) (string, string, bool, error) {
 	}
 
 	if config.CertConfigs.Workload == nil {
-		return "", "", false, errSourceUnavailable
+		// If 'workload' field is absent, it is an ECP config.
+		return "", "", true, nil
 	}
 
 	certFile := config.CertConfigs.Workload.CertPath
 	keyFile := config.CertConfigs.Workload.KeyPath
-	useEcp := config.CertConfigs.Workload.UseEcp
 
-	if !useEcp {
-		if certFile == "" {
-			return "", "", false, errors.New("certificate configuration is missing the certificate file location")
-		}
-
-		if keyFile == "" {
-			return "", "", false, errors.New("certificate configuration is missing the key file location")
-		}
+	if certFile == "" {
+		return "", "", false, errors.New("certificate configuration is missing the certificate file location")
 	}
 
-	return certFile, keyFile, useEcp, nil
+	if keyFile == "" {
+		return "", "", false, errors.New("certificate configuration is missing the key file location")
+	}
+
+	return certFile, keyFile, false, nil
 }
