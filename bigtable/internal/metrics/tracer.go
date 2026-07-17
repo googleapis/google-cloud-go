@@ -121,7 +121,6 @@ type contextKey string
 
 const (
 	statsContextKey         contextKey = "bigtable/clientBlockingLatencyTracker"
-	t4t7ContextKey          contextKey = "bigtable/t4t7Tracker"
 	metricsTracerContextKey contextKey = "bigtable/metricsTracer"
 )
 
@@ -354,9 +353,6 @@ type AttemptTracer struct {
 
 	// Client blocking latency in ms
 	clientBlockingLatency float64
-
-	// Tracker for t4t7
-	t4t7Tracker *t4t7Tracker
 
 	// locationExtracted is set once cluster/zone have been read from a
 	// response-metadata frame. Guards against a later InTrailer
@@ -656,17 +652,6 @@ func (mt *Tracer) RecordAttemptCompletion(err error) {
 		}
 	}
 
-	// Apply the t4t7 fallback for server latency: if the header/trailer
-	// didn't carry a server-timing value (serverLatency still 0), fall
-	// back to the client-observed T4-T7 span. Runs here rather than in
-	// ingestMetadata because the T4-T7 window closes only at End.
-	if mt.currOp.currAttempt.serverLatency == 0 && mt.currOp.currAttempt.t4t7Tracker != nil {
-		if fallbackLatency := mt.currOp.currAttempt.t4t7Tracker.getLatencyMs(); fallbackLatency > 0 {
-			mt.currOp.currAttempt.serverLatency = fallbackLatency
-			mt.currOp.currAttempt.serverLatencyErr = nil
-		}
-	}
-
 	// Calculate elapsed time
 	elapsedTime := ConvertToMs(time.Since(mt.currOp.currAttempt.startTime))
 
@@ -840,52 +825,25 @@ func (t *blockingLatencyTracker) getMessageSentNanos() int64 {
 	return t.endNanos.Load()
 }
 
-// t4t7Tracker measures the time between sending the client
-// request headers and receiving the initial metadata (InHeader) from the server.
-type t4t7Tracker struct {
-	outHeaderSentNanos atomic.Int64
-	inHeaderRecvNanos  atomic.Int64
-}
-
-func (t *t4t7Tracker) recordOutHeaderSent(start time.Time) {
-	// Ensure we only record the very first time headers are sent
-	t.outHeaderSentNanos.CompareAndSwap(0, start.UnixNano())
-}
-
-func (t *t4t7Tracker) recordInHeaderRecv(end time.Time) {
-	// Ensure we only record the very first time headers are received
-	t.inHeaderRecvNanos.CompareAndSwap(0, end.UnixNano())
-}
-
-// getLatencyMs returns the calculated latency in milliseconds.
-func (t *t4t7Tracker) getLatencyMs() float64 {
-	start := t.outHeaderSentNanos.Load()
-	end := t.inHeaderRecvNanos.Load()
-	if start == 0 || end == 0 {
-		return 0
-	}
-	return float64(end-start) / float64(time.Millisecond)
-}
-
 // StatsHandler is the gRPC stats.Handler that drives per-attempt metrics
 // recording. It is the single source of truth for attempt boundaries: TagRPC
 // starts a new attempt, HandleRPC observes the OutPayload/Header/Trailer events
-// to feed the blocking-latency and t4t7 trackers, and the End event records
-// attempt completion with the final status from gRPC (no io.EOF translation
-// needed because stats.End.Error is nil on successful stream close).
+// to feed the blocking-latency tracker, and the End event records attempt
+// completion with the final status from gRPC (no io.EOF translation needed
+// because stats.End.Error is nil on successful stream close).
 //
 // A *Tracer is plumbed through the call context by the public
 // entry points (ReadRows, Apply, etc.) via NewContext. RPCs that
 // don't carry a tracer (or carry a disabled one) are observed only for the
-// existing blocking/t4t7 trackers if present, so non-Bigtable RPCs on the same
-// channel emit no metrics.
+// existing blocking-latency tracker if present, so non-Bigtable RPCs on the
+// same channel emit no metrics.
 type StatsHandler struct{}
 
 var _ stats.Handler = (*StatsHandler)(nil)
 
 // TagRPC implements grpc/stats.Handler. Called once per attempt when
 // the client begins the RPC; drives RecordAttemptStart and installs
-// the per-attempt blocking / t4t7 trackers onto ctx.
+// the per-attempt blocking-latency tracker onto ctx.
 func (h *StatsHandler) TagRPC(ctx context.Context, info *stats.RPCTagInfo) context.Context {
 	mt := FromContext(ctx)
 	if !mt.BuiltInEnabled {
@@ -909,10 +867,6 @@ func (h *StatsHandler) TagRPC(ctx context.Context, info *stats.RPCTagInfo) conte
 	mt.currOp.currAttempt.blockingLatencyTracker = blockTracker
 	ctx = context.WithValue(ctx, statsContextKey, blockTracker)
 
-	t4t7 := &t4t7Tracker{}
-	mt.currOp.currAttempt.t4t7Tracker = t4t7
-	ctx = context.WithValue(ctx, t4t7ContextKey, t4t7)
-
 	return ctx
 }
 
@@ -923,17 +877,6 @@ func (h *StatsHandler) HandleRPC(ctx context.Context, s stats.RPCStats) {
 	if tracker, ok := ctx.Value(statsContextKey).(*blockingLatencyTracker); ok {
 		if op, ok := s.(*stats.OutPayload); ok {
 			tracker.recordLatency(op.SentTime)
-		}
-	}
-
-	if t4t7, ok := ctx.Value(t4t7ContextKey).(*t4t7Tracker); ok {
-		switch s.(type) {
-		case *stats.OutHeader:
-			// The client has sent the request headers.
-			t4t7.recordOutHeaderSent(time.Now())
-		case *stats.InHeader:
-			// The client has received the initial metadata from the server.
-			t4t7.recordInHeaderRecv(time.Now())
 		}
 	}
 
