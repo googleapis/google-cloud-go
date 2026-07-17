@@ -228,13 +228,22 @@ func (c *Client) validateOptions(ctx context.Context, ms *ManagedStream) error {
 
 // resolvePool either returns an existing connectionPool, or returns a new pool if this is the first writer in a given region.
 func (c *Client) resolvePool(ctx context.Context, settings *streamSettings, streamFunc streamClientFunc) (*connectionPool, error) {
-	c.mu.Lock()
-	defer c.mu.Unlock()
+	// Resolve the stream's location via GetWriteStream *outside* the lock. This is
+	// a network RPC and touches no shared state (only rawClient, which is
+	// immutable after construction), so holding c.mu across it would needlessly
+	// serialize all concurrent stream opens on this client behind a single RPC.
 	resp, err := c.getWriteStream(ctx, settings.streamID, false)
 	if err != nil {
 		return nil, err
 	}
 	loc := resp.GetLocation()
+
+	// The lock guards only the pools map. The lookup and createPool remain atomic
+	// under it, exactly as before, so at most one pool per location is created
+	// even when several opens race for a not-yet-seen location: whichever caller
+	// takes the lock first creates the pool, and the rest find it in the lookup.
+	c.mu.Lock()
+	defer c.mu.Unlock()
 	if pool, ok := c.pools[loc]; ok {
 		return pool, nil
 	}
