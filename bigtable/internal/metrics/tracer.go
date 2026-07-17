@@ -670,17 +670,9 @@ func (mt *Tracer) RecordAttemptCompletion(err error) {
 	clientBlockingLatAttrs, _ := mt.toOtelMetricAttrs(MetricNameClientBlockingLatencies)
 	mt.instrumentClientBlockingLatencies.Record(mt.ctx, mt.currOp.currAttempt.clientBlockingLatency, metric.WithAttributeSet(clientBlockingLatAttrs))
 
-	// Record server_latencies. Two gates:
-	//   1. serverLatencyErr == nil — extractServerLatency succeeded on
-	//      one of the InHeader/InTrailer dispatches.
-	//   2. serverLatency > 0 — guards the aborted-stream path where
-	//      neither InHeader nor InTrailer ever fires (pre-connect
-	//      failure, DEADLINE_EXCEEDED before response, transport
-	//      hangup): ingestMetadata never runs, so serverLatencyErr
-	//      stays at its zero-value nil, but serverLatency is also 0.
-	//      Also silences the (unrealistic) server-reported 0ms case.
+	// Record server_latencies
 	serverLatAttrs, _ := mt.toOtelMetricAttrs(MetricNameServerLatencies)
-	if mt.currOp.currAttempt.serverLatencyErr == nil && mt.currOp.currAttempt.serverLatency > 0 {
+	if mt.currOp.currAttempt.serverLatencyErr == nil {
 		mt.instrumentServerLatencies.Record(mt.ctx, mt.currOp.currAttempt.serverLatency, metric.WithAttributeSet(serverLatAttrs))
 	}
 
