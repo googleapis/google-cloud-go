@@ -3373,6 +3373,7 @@ func TestGRPCRetryReadStallEmulated(t *testing.T) {
 				t.Fatalf("storage.NewGRPCClient: %v", err)
 			}
 			defer client.Close()
+			client.SetRetry(WithBackoff(gax.Backoff{Initial: 10 * time.Millisecond}))
 
 			project := "fake-project"
 			bucket := fmt.Sprintf("grpc-bucket-%d", time.Now().Nanosecond())
