@@ -53,7 +53,7 @@ libraries:
     apis:
       - path: google/cloud/advisorynotifications/v1
   - name: agentidentity
-    version: 0.0.0
+    version: 0.1.0
     apis:
       - path: google/cloud/agentidentity/v1
       - path: google/cloud/agentidentity/v1beta
@@ -426,7 +426,7 @@ libraries:
     apis:
       - path: google/cloud/channel/v1
   - name: chat
-    version: 1.3.0
+    version: 1.4.0
     apis:
       - path: google/chat/v1
   - name: chronicle
@@ -499,12 +499,12 @@ libraries:
     apis:
       - path: google/cloud/commerce/consumer/procurement/v1
   - name: commerceproducer
-    version: 0.0.0
+    version: 0.1.0
     apis:
       - path: google/cloud/commerceproducer/v1beta
     copyright_year: "2026"
   - name: compute
-    version: 1.64.0
+    version: 1.65.0
     apis:
       - path: google/cloud/compute/v1
         go:
@@ -649,14 +649,14 @@ libraries:
     apis:
       - path: google/cloud/devicestreaming/v1
   - name: dialogflow
-    version: 1.84.0
+    version: 1.85.0
     apis:
       - path: google/cloud/dialogflow/v2
       - path: google/cloud/dialogflow/cx/v3
       - path: google/cloud/dialogflow/cx/v3beta1
       - path: google/cloud/dialogflow/v2beta1
   - name: discoveryengine
-    version: 1.31.0
+    version: 1.32.0
     apis:
       - path: google/cloud/discoveryengine/v1
       - path: google/cloud/discoveryengine/v1beta
@@ -902,7 +902,7 @@ libraries:
       - path: google/cloud/managedkafka/v1
       - path: google/cloud/managedkafka/schemaregistry/v1
   - name: maps
-    version: 1.37.0
+    version: 1.38.0
     apis:
       - path: google/maps/geocode/v4
       - path: google/maps/routing/v2
@@ -933,7 +933,7 @@ libraries:
       - path: google/cloud/memcache/v1
       - path: google/cloud/memcache/v1beta2
   - name: memorystore
-    version: 1.1.0
+    version: 1.2.0
     apis:
       - path: google/cloud/memorystore/v1
       - path: google/cloud/memorystore/v1beta
@@ -1078,7 +1078,7 @@ libraries:
     apis:
       - path: google/cloud/privilegedaccessmanager/v1
   - name: productregistry
-    version: 0.0.0
+    version: 0.1.0
     apis:
       - path: google/cloud/productregistry/v1
     copyright_year: "2026"
@@ -1197,7 +1197,7 @@ libraries:
       - path: google/cloud/scheduler/v1
       - path: google/cloud/scheduler/v1beta1
   - name: secretmanager
-    version: 1.20.0
+    version: 1.21.0
     apis:
       - path: google/cloud/secretmanager/v1
         go:
@@ -1220,7 +1220,7 @@ libraries:
       - path: google/cloud/security/publicca/v1
       - path: google/cloud/security/publicca/v1beta1
   - name: securitycenter
-    version: 1.45.0
+    version: 1.46.0
     apis:
       - path: google/cloud/securitycenter/v2
       - path: google/cloud/securitycenter/v1
@@ -1267,7 +1267,7 @@ libraries:
     apis:
       - path: google/cloud/shell/v1
   - name: shopping
-    version: 1.11.0
+    version: 1.12.0
     apis:
       - path: google/shopping/css/v1
       - path: google/shopping/merchant/promotions/v1
